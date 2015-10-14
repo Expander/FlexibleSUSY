@@ -25,15 +25,6 @@
 #include <string>
 #include <vector>
 
-/// returns directory from file name
-std::string directory(const std::string& file_name)
-{
-   const std::size_t pos = file_name.find_last_of("/\\");
-   if (pos == std::string::npos)
-      return ".";
-   return file_name.substr(0,pos);
-}
-
 /// returns file name w/o directory
 std::string filename(const std::string& file_name)
 {
