@@ -64,7 +64,7 @@ std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
 }
 
 /// replace file name extension by `ext'
-std::string replace_extension_by(const std::string& str, const std::string& ext)
+std::string replace_extension(const std::string& str, const std::string& ext)
 {
    const std::string no_ext(str.substr(0, str.find_last_of(".")));
    return no_ext + '.' + ext;
@@ -254,7 +254,7 @@ int main(int argc, const char* argv[])
    dependencies.insert(dependencies.begin(), file_name);
 
    if (target_name.empty())
-      target_name = replace_extension_by(file_name, "o");
+      target_name = replace_extension(file_name, "o");
 
    if (output_file.empty()) {
       print_dependencies(target_name, dependencies);
