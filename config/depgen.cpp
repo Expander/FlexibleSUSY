@@ -25,13 +25,6 @@
 #include <string>
 #include <vector>
 
-/// returns file name w/o directory
-std::string filename(const std::string& file_name)
-{
-   const std::size_t pos = file_name.find_last_of("/\\");
-   return file_name.substr(pos+1);
-}
-
 /// checks if given file exists
 bool file_exists(const std::string& name)
 {
