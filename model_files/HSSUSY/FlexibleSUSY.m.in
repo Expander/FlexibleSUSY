@@ -188,9 +188,9 @@ lambda1LChi2 = 1/(4 Pi)^2 (
 (* lambda 1-loop threshold correction O(alpha_b),
    taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
 lambda1Lbottom = With[{
-    mQ3 = Sqrt[msq2[2,2]],
-    mU3 = Sqrt[msu2[2,2]],
-    mD3 = Sqrt[msd2[2,2]],
+    mQ3 = Sqrt[msq2[3,3]],
+    mU3 = Sqrt[msu2[3,3]],
+    mD3 = Sqrt[msd2[3,3]],
     M3 = M3Input,
     Mu = MuInput,
     Xt = xt,
@@ -213,8 +213,8 @@ lambda1Lbottom = With[{
 (* lambda 1-loop threshold correction O(alpha_tau),
    taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
 lambda1Ltau = With[{
-    mL3 = Sqrt[msl2[2,2]],
-    mE3 = Sqrt[mse2[2,2]],
+    mL3 = Sqrt[msl2[3,3]],
+    mE3 = Sqrt[mse2[3,3]],
     M1 = M1Input,
     M2 = M2Input,
     Mu = MuInput,
@@ -333,7 +333,7 @@ betaLambda = (
    arxiv:1504.05200, Eq. (21) *)
 lambda2LHSSAlphaT2 = With[{
     tan\[Beta] = TanBeta,
-    mst = Sqrt[msq2[2,2]], (* average stop mass *)
+    mst = Sqrt[msq2[3,3]], (* average stop mass *)
     Q = SCALE,
     \[Mu] = MuInput,
     K = -0.1953256,
