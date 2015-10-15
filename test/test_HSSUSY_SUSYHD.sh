@@ -25,6 +25,9 @@ MS2=$(echo "$MS*$MS" | bc)
 Mu="$MS"
 TB=10
 
+printf "Comparison FlexibleSUSY/HSSUSY and SUSYHD\n"
+printf "MS = ${MS}, Mu = ${Mu}, MSf^2 = ${MS2}, tan(beta) = ${TB}\n\n"
+
 printf "%8s\t%16s\n" "xt/MSUSY" "MH / GeV"
 
 for Xt in ${Xt_values}
