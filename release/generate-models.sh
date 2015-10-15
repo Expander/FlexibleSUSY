@@ -60,6 +60,8 @@ models_array="             \
    MRSSM,MRSSM             \
    TMSSM,TMSSM             \
    SM,SM                   \
+   HSSUSY,HSSUSY           \
+   SplitMSSM,SplitMSSM     \
 "
 
 models="`echo $models_array | sed 's/,[a-zA-Z0-9]*//g'`"
