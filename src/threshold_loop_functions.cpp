@@ -27,6 +27,10 @@ namespace threshold_loop_functions {
 namespace {
    double sqr(double x) { return x*x; }
 
+   template <typename T> T cube(T x) { return x*x*x; }
+
+   template <typename T> T quad(T x) { return x*x*x*x; }
+
    template <typename T>
    bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
    {
@@ -37,6 +41,18 @@ namespace {
    bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
    {
       return is_zero(a - b, prec);
+   }
+
+   template <typename T>
+   bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+   {
+      if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+         return true;
+
+      if (std::fabs(a) < std::numeric_limits<T>::epsilon())
+         return is_equal(a, b, prec);
+
+      return std::fabs((a - b)/a) < prec;
    }
 }
 
@@ -606,6 +622,45 @@ double f8(double r1, double r2)
       - (std::pow(r2,4)*std::log(r22))/((r1-r2)*sqr(r22-1));
 
    return 1.5 * result;
+}
+
+/// Iabc(a,a,a)
+static double Iaaa(double a, double b, double c)
+{
+   return (151.*quad(a) + 13.*sqr(b)*sqr(c) - 128.*cube(a)*(b + c) - 40.*a*b*c*(b + c)
+           + sqr(a)*(37.*sqr(b) + 128.*b*c + 37.*sqr(c))) / (60.*std::pow(a,6));
+}
+
+/// Iabc(a,a,c)
+static double Iaac(double a, double b, double c)
+{
+   return ((sqr(a) - sqr(c))
+           * (17.*std::pow(a,6) - 16.*std::pow(a,5)*b - 40.*cube(a)*b*sqr(c)
+              + 8.*a*b*quad(c) - sqr(b)*quad(c) + quad(a)*(5.*sqr(b) + 8.*sqr(c))
+              + sqr(a)*(20.*sqr(b)*sqr(c) - quad(c)))
+           - 6.*sqr(a)*sqr(c) * log(sqr(a)/sqr(c))
+           * (6.*quad(a) - 8.*cube(a)*b + 3.*sqr(a)*(sqr(b) - sqr(c)) + sqr(c)*(sqr(b) + sqr(c))))
+      / (6.*sqr(a)*quad(sqr(a) - sqr(c)));
+}
+
+double Iabc(double a, double b, double c)
+{
+   if (is_equal_rel(std::abs(a), std::abs(b), 0.01) && is_equal_rel(std::abs(a), std::abs(c), 0.01))
+      return Iaaa(std::abs(a),std::abs(b),std::abs(c));
+
+   if (is_equal_rel(std::abs(a), std::abs(b), 0.01))
+      return Iaac(std::abs(a),std::abs(b),c);
+
+   if (is_equal_rel(std::abs(b), std::abs(c), 0.01))
+      return Iaac(std::abs(b),std::abs(c),a);
+
+   if (is_equal_rel(std::abs(a), std::abs(c), 0.01))
+      return Iaac(std::abs(a),std::abs(c),b);
+
+   return ( (sqr(a * b) * log(sqr(a / b))
+           + sqr(b * c) * log(sqr(b / c))
+           + sqr(c * a) * log(sqr(c / a)))
+           / ((sqr(a) - sqr(b)) * (sqr(b) - sqr(c)) * (sqr(a) - sqr(c))) );
 }
 
 } // namespace threshold_loop_functions

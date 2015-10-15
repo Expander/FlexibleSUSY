@@ -23,6 +23,7 @@
 #define TCf(n) threshold_loop_functions::f ## n
 #define TCf0 threshold_loop_functions::f
 #define TCg0 threshold_loop_functions::g
+#define TCIabc threshold_loop_functions::Iabc
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
@@ -50,6 +51,9 @@ double f5(double, double);
 double f6(double, double);
 double f7(double, double);
 double f8(double, double);
+
+/// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
+double Iabc(double, double, double);
 
 } // namespace threshold_loop_functions
 } // namespace flexiblesusy
