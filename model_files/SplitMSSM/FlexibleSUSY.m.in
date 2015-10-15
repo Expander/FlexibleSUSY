@@ -94,6 +94,7 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
+UseHiggs3LoopSplit = True;
 
 SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],

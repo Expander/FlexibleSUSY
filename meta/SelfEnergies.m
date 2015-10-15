@@ -43,6 +43,9 @@ definitions for two-loop Higgs self-energies in the MSSM";
 CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the NMSSM";
 
+CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
+definitions for three-loop Higgs self-energies in split-SUSY";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -382,11 +385,11 @@ CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
-CreateTwoLoopTadpoleFunctionName[field_] :=
-    "tadpole_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+CreateNLoopTadpoleFunctionName[field_, loop_] :=
+    CreateTadpoleFunctionName[field] <> "_" <> ToString[loop] <> "loop";
 
-CreateTwoLoopSelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+CreateNLoopSelfEnergyFunctionName[field_, loop_] :=
+    CreateSelfEnergyFunctionName[field] <> "_" <> ToString[loop] <> "loop";
 
 CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
@@ -502,7 +505,7 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-"
 
 FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
-           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
            body = "double two_loop_tadpole[" <> dimStr <> "];\n" <>
@@ -740,7 +743,7 @@ CreateTwoLoopTadpoles[higgsBoson_, model_String] :=
     Module[{prototype, function, functionName, dim, dimStr},
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
-           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
            prototype = "void " <> functionName <> "(double result[" <>
                        dimStr <> "]) const;\n";
            body = GetTwoLoopTadpoleCorrections[model];
@@ -756,8 +759,8 @@ CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
 CreateTwoLoopTadpolesNMSSM[higgsBoson_] :=
     CreateTwoLoopTadpoles[higgsBoson, "NMSSM"];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
-                                model_String /; model === "SM"] :=
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "SM", 2] :=
     Module[{body, mTop, mtStr, yt, ytStr, g3Str},
            AssertFieldDimension[particle, 1, model];
            mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
@@ -785,8 +788,36 @@ result[0] = self_energy;
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
-                                model_String /; model === "MSSM"] :=
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "Split", 3] :=
+    Module[{body, mTop, mGluino, mtStr, mgStr, yt, ytStr, g3Str},
+           AssertFieldDimension[particle, 1, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mGluino = TreeMasses`GetMass[Parameters`GetParticleFromDescription["Gluino"]];
+           mgStr   = CConversion`RValueToCFormString[mGluino];
+           yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
+           ytStr   = CConversion`RValueToCFormString[yt];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           body = "\
+const double mt = " <> mtStr <> ";
+const double mg = " <> mgStr <> ";
+const double yt = " <> ytStr <> ";
+const double gs = " <> g3Str <> ";
+const double scale = get_scale();
+double self_energy = 0.;
+
+if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+   self_energy += self_energy_higgs_3loop_gluino_split(scale, mt, yt, gs, mg);
+}
+
+result[0] = self_energy;
+";
+           Return[body];
+          ];
+
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "MSSM", 2] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             mTop, mBot, mTau,
@@ -902,7 +933,7 @@ const double dMA = p2s + p2w + p2b + p2tau;
 
 // dMA contains two loop tadpoles, which we'll subtract
 double tadpole[2];
-" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+" <> CreateNLoopTadpoleFunctionName[SARAH`HiggsBoson,2] <> "(tadpole);
 
 result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
 result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
@@ -915,8 +946,8 @@ result[2] += - dMA * Sqr(cosb) + tadpole[1] / " <> vuStr <> ";
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
-                                model_String /; model === "MSSM"] :=
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                              model_String /; model === "MSSM", 2] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             mTop, mBot, mTau,
@@ -1017,7 +1048,7 @@ result[2] = - dMA * cosb2;
 
 // dMA contains two loop tadpoles, which we'll now subtract
 double tadpole[2];
-" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+" <> CreateNLoopTadpoleFunctionName[SARAH`HiggsBoson,2] <> "(tadpole);
 
 result[0] += tadpole[0] / " <> vdStr <> ";
 result[2] += tadpole[1] / " <> vuStr <> ";
@@ -1025,8 +1056,8 @@ result[2] += tadpole[1] / " <> vuStr <> ";
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
-                                model_String /; model === "NMSSM"] :=
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "NMSSM", 2] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             mTop, mBot, mTau,
@@ -1160,7 +1191,7 @@ const double dMA = p2w + p2tau;
 
 // subtract two-loop tadpoles
 double tadpole[3];
-" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+" <> CreateNLoopTadpoleFunctionName[SARAH`HiggsBoson,2] <> "(tadpole);
 
 DMS[0][0] += s11w + s11tau + dMA * Sqr(sinb) - tadpole[0] / " <> vdStr <> ";
 DMS[0][1] += s12w + s12tau - dMA * sinb * cosb;
@@ -1177,8 +1208,8 @@ result[5] = - DMS[2][2]; // 3,3 element
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
-                                model_String /; model === "NMSSM"] :=
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                              model_String /; model === "NMSSM", 2] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             mTop, mBot, mTau,
@@ -1307,7 +1338,7 @@ DMP[1][1] += dMA * cosb2;
 
 // subtract two-loop tadpoles
 double tadpole[3];
-" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+" <> CreateNLoopTadpoleFunctionName[SARAH`HiggsBoson,2] <> "(tadpole);
 
 DMP[0][0] += - tadpole[0] / " <> vdStr <> ";
 DMP[1][1] += - tadpole[1] / " <> vuStr <> ";
@@ -1323,31 +1354,31 @@ result[5] = - DMP[2][2]; // 3,3 element
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
+GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
     Module[{},
-           Print["Error: two-loop self-energy corrections not available for ",
+           Print["Error: ", loop,"-loop self-energy corrections not available for ",
                  particle, " in the ", model];
            ""
           ];
 
-CreateTwoLoopSelfEnergy[particle_, model_String] :=
+CreateNLoopSelfEnergy[particle_, model_String, loop_] :=
     Module[{prototype, function, functionName, dim, dimStr},
            dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
            dimStr = ToString[dim];
-           functionName = CreateTwoLoopSelfEnergyFunctionName[particle];
+           functionName = CreateNLoopSelfEnergyFunctionName[particle,loop];
            prototype = "void " <> functionName <> "(double result[" <>
                        dimStr <> "]) const;\n";
-           body = GetTwoLoopSelfEnergyCorrections[particle, model];
+           body = GetNLoopSelfEnergyCorrections[particle, model, loop];
            function = "void CLASSNAME::" <> functionName <>
                       "(double result[" <> dimStr <> "]) const\n{\n" <>
                       IndentText[body] <> "\n}\n";
            Return[{prototype, function}];
           ];
 
-CreateTwoLoopSelfEnergies[particles_List, model_String] :=
+CreateNLoopSelfEnergies[particles_List, model_String, loop_] :=
     Module[{prototype = "", function = "", i, p, f},
            For[i = 1, i <= Length[particles], i++,
-               {p, f} = CreateTwoLoopSelfEnergy[particles[[i]], model];
+               {p, f} = CreateNLoopSelfEnergy[particles[[i]], model, loop];
                prototype = prototype <> p;
                function = function <> f <> "\n";
               ];
@@ -1355,13 +1386,16 @@ CreateTwoLoopSelfEnergies[particles_List, model_String] :=
           ];
 
 CreateTwoLoopSelfEnergiesSM[particles_List] :=
-    CreateTwoLoopSelfEnergies[particles, "SM"];
+    CreateNLoopSelfEnergies[particles, "SM", 2];
 
 CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
-    CreateTwoLoopSelfEnergies[particles, "MSSM"];
+    CreateNLoopSelfEnergies[particles, "MSSM", 2];
 
 CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
-    CreateTwoLoopSelfEnergies[particles, "NMSSM"];
+    CreateNLoopSelfEnergies[particles, "NMSSM", 2];
+
+CreateThreeLoopSelfEnergiesSplit[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "Split", 3];
 
 End[];
 

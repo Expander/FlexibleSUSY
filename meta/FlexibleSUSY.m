@@ -95,6 +95,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseHiggs2LoopSM;
+UseHiggs3LoopSplit;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -821,6 +822,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
+            threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
             phasesInit = "",
@@ -842,7 +844,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             reorderDRbarMasses = "", reorderPoleMasses = "",
             checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
-            twoLoopHiggsHeaders = "",
+            twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
             EWSBSolvers = "",
             setEWSBSolution = "",
@@ -902,9 +904,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
-           If[SARAH`UseHiggs2LoopSM === True,
+           If[FlexibleSUSY`UseHiggs2LoopSM === True,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
               twoLoopHiggsHeaders = "#include \"sm_twoloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseHiggs3LoopSplit === True,
+              {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSplit[{SARAH`HiggsBoson}];
+              threeLoopHiggsHeaders = "#include \"split_threeloophiggs.hpp\"\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -1016,6 +1022,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
+                            "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
+                            "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
+                            "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],

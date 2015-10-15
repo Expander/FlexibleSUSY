@@ -57,9 +57,9 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
 Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
-    If[SARAH`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
+    "double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+    If[FlexibleSUSY`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
        "\
-double self_energy = Re(" <> selfEnergyFunction <> "(p));
 if (pole_mass_loop_order > 1) {
 " <> IndentText["\
 double two_loop[1] = { 0. };
@@ -67,9 +67,17 @@ self_energy_" <> particleName <> "_2loop(two_loop);
 self_energy += two_loop[0];
 "] <> "}
 "
-       ,
-       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n"
-      ] <>
+       , ""] <>
+    If[FlexibleSUSY`UseHiggs3LoopSplit === True && particle === SARAH`HiggsBoson,
+       "\
+if (pole_mass_loop_order > 2) {
+" <> IndentText["\
+double three_loop[1] = { 0. };
+self_energy_" <> particleName <> "_3loop(three_loop);
+self_energy += three_loop[0];
+"] <> "}
+"
+       , ""] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(mass_sqr);\n";
