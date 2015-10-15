@@ -4,6 +4,11 @@ FlexibleSUSY-1.2.3 [not released yet]
    contraints.  In addition, the IsClose[a,b,eps] function has been
    added to allow for a comparison of parameters.
 
+ * Feature: Allow adding 3-loop gluino contribution to Higgs
+   self-energy in split-SUSY models with a physical singlet Higgs.
+   The 3-loop gluino contribution is enabled by default in the
+   SplitMSSM.
+
  * Change (commit f7cd242): The `test' and `examples' modules are no
    longer loaded into the makefile by default.  To load them, run
    ./configure --with-optional-modules="test examples"
