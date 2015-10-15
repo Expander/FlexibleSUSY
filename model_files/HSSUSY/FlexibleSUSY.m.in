@@ -36,7 +36,8 @@ HighScaleFirstGuess = MSUSY;
 HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi
-                                         + lambda1LChi1 + lambda1LChi2)
+                                         + lambda1LChi1 + lambda1LChi2
+                                         + lambda1Lbottom)
                 + UnitStep[THRESHOLD-2] (
                     If[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                        IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
@@ -183,6 +184,31 @@ lambda1LChi2 = 1/(4 Pi)^2 (
         + (9/25 g1^4 + g2^4) Log[MuInput^2/SCALE^2]
     )
 );
+
+(* lambda 1-loop threshold correction O(alpha_b),
+   taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
+lambda1Lbottom = With[{
+    mQ3 = Sqrt[msq2[2,2]],
+    mU3 = Sqrt[msu2[2,2]],
+    mD3 = Sqrt[msd2[2,2]],
+    M3 = M3Input,
+    Mu = MuInput,
+    Xt = xt,
+    gb = Yd[3,3], (* SM Yukawa coupling *)
+    gt = Yu[3,3] (* SM Yukawa coupling *)
+    },
+    gbDR[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_] := (
+        gb/Cos[ArcTan[TanBeta]] (
+            1 - (-(8/3) M3 TanBeta Mu II[mQ3,mD3,M3] g3^2
+                 - ((1+TanBeta^2) Xt Mu II[mQ3,mU3,Mu] gt^2)/TanBeta)/(16 Pi^2))^-1
+    );
+
+    (
+        6/(16 Pi^2) (
+            gbDR[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt] Cos[ArcTan[TanBeta]])^4 (TanBeta^2 Mu^2)/(mD3 mQ3) (
+                TCF[1][mQ3/mD3] - (TanBeta^2 Mu^2 TCF[2][mQ3/mD3])/(12 mD3 mQ3))
+    ) /. II[a_,b_,c_] :> TCIabc[a,b,c]
+    ];
 
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    arXiv:1407.4081, Eq. (36)
