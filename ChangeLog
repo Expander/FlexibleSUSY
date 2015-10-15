@@ -4,6 +4,30 @@ FlexibleSUSY-1.2.3 [not released yet]
    contraints.  In addition, the IsClose[a,b,eps] function has been
    added to allow for a comparison of parameters.
 
+ * Feature: New model SplitMSSM, which implements low-energy EFT of
+   the MSSM where the sfermions and one Higgs doublet have been
+   integrated out.  The model implements the 1- and 2-loop matching
+   conditions from arxiv:1407.4081.  The Higgs pole mass is calculated
+   at complete 1-loop order plus 2-loop contributions O(alpha_t^2) and
+   O(alpha_t alpha_s) from arxiv:1205.6497 plus 3-loop leading-log
+   contribution from the gluino O(alpha_t alpha_s^2)
+   (arxiv:1312.5220).
+
+ * Feature: New model HSSUSY, which implements a high-scale SUSY
+   scenario, where the sfermions, the gauginos, the Higgsinos and one
+   Higgs doublet have been integrated out, leaving the Standard Model
+   as low-energy EFT.  The model uses the 3-loop Standard Model RGEs
+   (arxiv:1303.4364, arXiv:1307.3536) and implements the 1- and 2-loop
+   matching conditions to lambda(MSUSY) from arxiv:1407.4081.
+   Furthermore, the 1-loop matching conditions O(alpha_b) and
+   O(alpha_tau) as well as the 2-loop matching condition O(alpha_t^2)
+   from SUSYHD (arxiv:1504.05200) are implemented.  The Higgs pole
+   mass is calculated at complete 1-loop order plus 2-loop
+   contributions O(alpha_t^2) and O(alpha_t alpha_s) from
+   arxiv:1205.6497.  The calculation of the Higgs pole mass in the
+   HSSUSY model coincides with the one obtained with SUSYHD 1.0.2 with
+   a relative deviation of < 0.15%.
+
  * Feature: Allow adding 3-loop gluino contribution to Higgs
    self-energy in split-SUSY models with a physical singlet Higgs.
    The 3-loop gluino contribution is enabled by default in the
