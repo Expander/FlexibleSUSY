@@ -37,7 +37,7 @@ HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi
                                          + lambda1LChi1 + lambda1LChi2
-                                         + lambda1Lbottom)
+                                         + lambda1Lbottom + lambda1Ltau)
                 + UnitStep[THRESHOLD-2] (
                     If[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                        IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
@@ -207,6 +207,30 @@ lambda1Lbottom = With[{
         6/(16 Pi^2) (
             gbDR[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt] Cos[ArcTan[TanBeta]])^4 (TanBeta^2 Mu^2)/(mD3 mQ3) (
                 TCF[1][mQ3/mD3] - (TanBeta^2 Mu^2 TCF[2][mQ3/mD3])/(12 mD3 mQ3))
+    ) /. II[a_,b_,c_] :> TCIabc[a,b,c]
+    ];
+
+(* lambda 1-loop threshold correction O(alpha_tau),
+   taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
+lambda1Ltau = With[{
+    mL3 = Sqrt[msl2[2,2]],
+    mE3 = Sqrt[mse2[2,2]],
+    M1 = M1Input,
+    M2 = M2Input,
+    Mu = MuInput,
+    gtau = Ye[3,3] (* SM Yukawa coupling *)
+    },
+    gtauDR[mL3_,mE3_,M2_,M1_,Mu_,TanBeta_] := (
+        gtau/Cos[ArcTan[TanBeta]] (
+            1 - 1/(4Pi)^2 TanBeta (
+                g2^2 M2 Mu (II[mL3,M2,Mu]+1/2 II[mL3,M2,Mu])
+                - 3/5 g1^2 M1 (-Mu II[mL3,mE3,M1] + 1/2 Mu II[mL3,M1,Mu] - Mu II[mE3,M1,Mu])))^-1
+    );
+
+    (
+        (2/(16Pi^2))(
+            gtauDR[mL3,mE3,M2,M1,Mu,TanBeta] Cos[ArcTan[TanBeta]])^4 (TanBeta^2 Mu^2)/(mL3 mE3) (
+                TCF[1][mL3/mE3] - (TanBeta^2 Mu^2 TCF[2][mL3/mE3])/(12 mL3 mE3))
     ) /. II[a_,b_,c_] :> TCIabc[a,b,c]
     ];
 
