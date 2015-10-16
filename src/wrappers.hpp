@@ -506,21 +506,15 @@ unsigned UnitStep(T x)
 }
 
 template <typename T>
-inline T Which(bool cond, T value)
+T Which(bool cond, T value)
 {
    return cond ? value : T(0);
 }
 
 template<typename T, typename ... Trest>
-inline T Which(bool cond, T value, Trest... rest)
+T Which(bool cond, T value, Trest... rest)
 {
    return cond ? value : Which(rest...);
-}
-
-template<typename T>
-inline T Which(T)
-{
-   throw("Which() takes even number of arguments!");
 }
 
 inline double ZeroSqrt(double x)
