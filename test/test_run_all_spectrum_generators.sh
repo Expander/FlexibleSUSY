@@ -75,7 +75,11 @@ SMHighPrecision,${DEFAULT_SM_INPUT},0
 SMSSM,_DEFAULT_,0
 SplitMSSM,_DEFAULT_,0
 HSSUSY,_DEFAULT_,0
-HSSUSY,${HOMEDIR}/model_files/HSSUSY/LesHouches.in.HSSUSY_nondegenerate,0
+HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msq_msu_m3_msusy_degenerate.in.spc,0
+HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msq_msu_m3_degenerate.in.spc,0
+HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msq_m3_degenerate.in.spc,0
+HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msu_m3_degenerate.in.spc,0
+HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_nondegenerate.in.spc,0
 THDMII,_DEFAULT_,0
 TMSSM,_DEFAULT_,0
 UMSSM,_DEFAULT_,0

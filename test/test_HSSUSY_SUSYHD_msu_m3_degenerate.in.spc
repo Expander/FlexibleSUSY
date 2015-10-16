@@ -24,7 +24,7 @@ Block SMINPUTS               # Standard Model inputs
     6   1.733400000e+02      # mtop(pole)
     7   1.777000000e+00      # mtau(pole)
     8   0.000000000e+00      # mnu3(pole)
-    9   80.384               # MW pole
+    9   80.425               # MW pole
    11   5.109989020e-04      # melectron(pole)
    12   0.000000000e+00      # mnu1(pole)
    13   1.056583570e-01      # mmuon(pole)
@@ -34,33 +34,32 @@ Block SMINPUTS               # Standard Model inputs
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
 Block EXTPAR                 # Input parameters
-    0   2001                 # MSUSY
-    1   2002                # M1(MSUSY)
-    2   2003                # M2(MSUSY)
-    3   2004                # M3(MSUSY)
-    4   2005                # Mu(MSUSY)
-    5   2006                # mA(MSUSY)
+    0   2020                 # MSUSY
+    1   2000                 # M1(MSUSY)
+    2   2000                 # M2(MSUSY)
+    3   2000                 # M3(MSUSY)
+    4   2000                 # Mu(MSUSY)
+    5   2000                 # mA(MSUSY)
     6   173.34               # MEWSB
+    7   200                  # At(MSUSY)
    25   10                   # TanBeta(MSUSY)
-Block TUIN
-    3   3     3800.00000000
 Block MSQ2IN
-  1  1     4000049   # mq2(1,1)
-  2  2     4000064   # mq2(2,2)
-  3  3     4000081   # mq2(3,3)
+  1  1     4e6               # mq2(1,1)
+  2  2     4e6               # mq2(2,2)
+  3  3     4.002e6           # mq2(3,3)
 Block MSE2IN
-  1  1     4000085  # me2(1,1)
-  2  2     4000090  # me2(2,2)
-  3  3     4000095   # me2(3,3)
+  1  1     4e6               # me2(1,1)
+  2  2     4e6               # me2(2,2)
+  3  3     4e6               # me2(3,3)
 Block MSL2IN
-  1  1     4000100   # ml2(1,1)
-  2  2     4000105   # ml2(2,2)
-  3  3     4000110   # ml2(3,3)
+  1  1     4e6               # ml2(1,1)
+  2  2     4e6               # ml2(2,2)
+  3  3     4e6               # ml2(3,3)
 Block MSU2IN
-  1  1     4000115   # mu2(1,1)
-  2  2     4000120   # mu2(2,2)
-  3  3     4000125   # mu2(3,3)
+  1  1     4e6               # mu2(1,1)
+  2  2     4e6               # mu2(2,2)
+  3  3     4e6               # mu2(3,3)
 Block MSD2IN
-  1  1     4000130   # md2(1,1)
-  2  2     4000135   # md2(2,2)
-  3  3     4000140   # md2(3,3)
+  1  1     4e6               # md2(1,1)
+  2  2     4e6               # md2(2,2)
+  3  3     4e6               # md2(3,3)
