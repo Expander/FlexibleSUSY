@@ -1,5 +1,5 @@
 
-BeginPackage["CConversion`", {"SARAH`", "TextFormatting`"}];
+BeginPackage["CConversion`", {"SARAH`", "TextFormatting`", "Utils`"}];
 
 MatrixType::usage="";
 ArrayType::usage="";
@@ -568,6 +568,13 @@ Format[If[c_,a_,b_],CForm] :=
            ToString[CForm[Evaluate[a]]] <> ", " <>
            ToString[CForm[Evaluate[b]]] <> ")", OutputForm];
 Protect[If];
+
+Unprotect[Which];
+Format[Which[args__],CForm] :=
+    Format["Which(" <>
+           Utils`StringJoinWithSeparator[CForm[Evaluate[#]]& /@ {args}, ", "] <>
+           ")", OutputForm];
+Protect[Which];
 
 Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
     Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
