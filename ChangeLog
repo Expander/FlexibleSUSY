@@ -1,8 +1,8 @@
 FlexibleSUSY-1.2.3 [not released yet]
 
- * Feature: Adding support for If[] statements at the r.h.s. of
-   contraints.  In addition, the IsClose[a,b,eps] function has been
-   added to allow for a comparison of parameters.
+ * Feature: Adding support for If[] and Which[] statements at the
+   r.h.s. of contraints.  In addition, the IsClose[a,b,eps] function
+   has been added to allow for a comparison of parameters.
 
  * Feature: New model SplitMSSM, which implements low-energy EFT of
    the MSSM where the sfermions and one Higgs doublet have been
