@@ -242,3 +242,17 @@ BOOST_AUTO_TEST_CASE(test_calculate_singlet_mass)
    BOOST_CHECK_EQUAL(std::abs(phase), 1.);
    BOOST_CHECK_CLOSE(std::arg(phase), 0.5 * Pi/4., 1e-13);
 }
+
+BOOST_AUTO_TEST_CASE(test_If)
+{
+   BOOST_CHECK_EQUAL(If(true , 1., 2.), 1.);
+   BOOST_CHECK_EQUAL(If(false, 1., 2.), 2.);
+   BOOST_CHECK_EQUAL(If(true , 1 , 2.), 1 );
+   BOOST_CHECK_EQUAL(If(false, 1., 2 ), 2 );
+
+   BOOST_CHECK_EQUAL(std::real(If(true , std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 1.);
+   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 2.);
+
+   BOOST_CHECK_EQUAL(std::real(If(true , 1, std::complex<double>(2.,2.))), 1);
+   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), 2)), 2);
+}
