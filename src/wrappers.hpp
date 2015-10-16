@@ -37,6 +37,7 @@ static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static const bool True = true;
 
 inline double Abs(double z)
 {
