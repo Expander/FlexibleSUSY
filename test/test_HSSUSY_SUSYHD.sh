@@ -110,6 +110,9 @@ EOF
     printf "%8s\t%16s\n" ${Xt} ${MH} >> "$output"
 done
 
+echo ""
+echo "Testing for maximum relative deviation < $rel_error ..."
+
 # remove comments from input file
 awk '{ if ($1 != "#") print $0 }' "$input" > "$input.tmp"
 
