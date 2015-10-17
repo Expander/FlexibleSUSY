@@ -74,20 +74,20 @@ bool file_exists(const std::string& name)
    return false;
 }
 
-template <typename T>
 struct Is_not_duplicate {
-   bool operator()(const T& element) {
+   bool operator()(const std::string& element) {
       return s.insert(element).second;
    }
 private:
-   std::set<T> s;
+   std::set<std::string> s;
 };
 
 /// deletes duplicate elements from a vector (preseves order)
+template <typename Predicate = Is_not_duplicate>
 std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
 {
    std::vector<std::string> unique_vector;
-   Is_not_duplicate<std::string> pred;
+   Predicate pred;
 
    depgen::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
                    std::ref(pred));
