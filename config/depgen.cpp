@@ -342,8 +342,8 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
+   paths.insert(paths.begin(), directory(file_name));
    paths.push_back(".");
-   paths.push_back(directory(file_name));
    paths = delete_duplicates(paths);
 
    // search for header inclusions
