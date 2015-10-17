@@ -259,7 +259,8 @@ std::vector<std::string> search_includes(const std::string& file_name,
    const std::vector<std::string> tmp_existing(existing);
    for (std::vector<std::string>::const_iterator it = tmp_existing.begin(),
            end = tmp_existing.end(); it != end; ++it) {
-      const std::vector<std::string> sub_existing(search_includes(*it, paths, max_depth - 1));
+      const std::vector<std::string> sub_existing(
+         search_includes(*it, paths, ignore_non_existing, max_depth - 1));
       existing.insert(existing.end(), sub_existing.begin(), sub_existing.end());
    }
 
