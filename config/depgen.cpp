@@ -82,6 +82,14 @@ private:
    std::set<std::string> s;
 };
 
+struct Is_not_duplicate_ignore_path {
+   bool operator()(const std::string& element) {
+      return s.insert(filename(element)).second;
+   }
+private:
+   std::set<std::string> s;
+};
+
 /// deletes duplicate elements from a vector (preseves order)
 template <typename Predicate = Is_not_duplicate>
 std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
@@ -346,9 +354,10 @@ int main(int argc, const char* argv[])
    paths.push_back(".");
    paths = delete_duplicates(paths);
 
-   // search for header inclusions
+   // search for header inclusions (remove duplicate headers)
    std::vector<std::string> dependencies
-      = delete_duplicates(search_includes(file_name, paths, ignore_non_existing));
+      = delete_duplicates<Is_not_duplicate_ignore_path>(
+           search_includes(file_name, paths, ignore_non_existing));
 
    // add file name to dependency list
    std::vector<std::string> dependencies_and_main(dependencies);
