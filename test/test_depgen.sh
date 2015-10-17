@@ -73,7 +73,7 @@ run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting
 flags="-MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/include_basedir_header.cpp"
 
-# fails with all generators:
+# fails with g++, clang++, icpc
 # run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
 
 rm -f ${OUTPUT}*
