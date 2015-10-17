@@ -73,6 +73,18 @@ run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting
 flags="-MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/include_basedir_header.cpp"
 
+# test creation of phony targets
+
+flags="-MM -MP"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
+
+# test setting of target name
+
+flags="-MM -MT 'X.o'"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
+
 # fails with g++, clang++, icpc
 # run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
 
