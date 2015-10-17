@@ -570,9 +570,9 @@ Format[If[c_,a_,b_],CForm] :=
 Protect[If];
 
 Unprotect[Which];
-Format[Which[args__],CForm] :=
+Format[Which[cond_,args__],CForm] :=
     Format["Which(" <>
-           Utils`StringJoinWithSeparator[CForm[Evaluate[#]]& /@ {args}, ", "] <>
+           Utils`StringJoinWithSeparator[CForm[Evaluate[#]]& /@ {cond,args}, ", "] <>
            ")", OutputForm];
 Protect[Which];
 
