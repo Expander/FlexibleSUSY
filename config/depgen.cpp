@@ -22,6 +22,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -73,14 +74,23 @@ bool file_exists(const std::string& name)
    return false;
 }
 
-/// deletes duplicate elements from a vector
+template <typename T>
+struct Is_not_duplicate {
+   bool operator()(const T& element) {
+      return s.insert(element).second;
+   }
+private:
+   std::set<T> s;
+};
+
+/// deletes duplicate elements from a vector (preseves order)
 std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
 {
-   std::vector<std::string> unique_vector(vec);
+   std::vector<std::string> unique_vector;
+   Is_not_duplicate<std::string> pred;
 
-   std::sort(unique_vector.begin(), unique_vector.end());
-   unique_vector.erase(std::unique(unique_vector.begin(), unique_vector.end()),
-                       unique_vector.end());
+   depgen::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
+                   std::ref(pred));
 
    return unique_vector;
 }
