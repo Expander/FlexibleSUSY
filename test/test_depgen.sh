@@ -8,15 +8,19 @@ CXX=$($FSCONFIG --cxx)
 DEPGEN="${HOMEDIR}/config/depgen.x"
 OUTPUT="${BASEDIR}/test_depgen.out"
 
+error=0
+
 run_depgens() {
     local cmd1="$1"
     local cmd2="$2"
     local file="$3"
     local diff=
 
-    echo "======================================"
+    echo "--------------------------------------"
     echo "running: $cmd1 $file"
     echo "running: $cmd2 $file"
+
+    rm -f ${OUTPUT}.1 ${OUTPUT}.2
 
     $cmd1 $file | sed ':a;N;$!ba;s/ \\\n */ /g' > ${OUTPUT}.1
     $cmd2 $file | sed ':a;N;$!ba;s/ \\\n */ /g' > ${OUTPUT}.2
@@ -28,10 +32,11 @@ run_depgens() {
         echo "Difference:"
         echo "$diff"
         echo "Test result: FAIL"
+        error=1
     else
         echo "Test result: OK"
     fi
-    echo "======================================"
+    echo "--------------------------------------"
     echo ""
 }
 
@@ -59,7 +64,7 @@ flags="-I. -MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
 
-flags="-I. -Isrc -MM -MG"
+flags="-I. -Isubdir -MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
 
@@ -72,3 +77,14 @@ run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/include_bas
 # run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
 
 rm -f ${OUTPUT}*
+
+echo ""
+echo "======================================"
+if test ${error} -eq 0 ; then
+    echo "Test result: OK"
+else
+    echo "Test result: FAIL"
+fi
+echo "======================================"
+
+exit ${error}
