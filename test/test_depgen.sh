@@ -1,0 +1,74 @@
+#!/bin/sh
+
+# directory of this script
+BASEDIR=$(dirname $0 | sed 's|^./||')
+HOMEDIR=$(readlink -f "${BASEDIR}/../")
+FSCONFIG="${HOMEDIR}/flexiblesusy-config"
+CXX=$($FSCONFIG --cxx)
+DEPGEN="${HOMEDIR}/config/depgen.x"
+OUTPUT="${BASEDIR}/test_depgen.out"
+
+run_depgens() {
+    local cmd1="$1"
+    local cmd2="$2"
+    local file="$3"
+    local diff=
+
+    echo "======================================"
+    echo "running: $cmd1 $file"
+    echo "running: $cmd2 $file"
+
+    $cmd1 $file | sed ':a;N;$!ba;s/ \\\n */ /g' > ${OUTPUT}.1
+    $cmd2 $file | sed ':a;N;$!ba;s/ \\\n */ /g' > ${OUTPUT}.2
+
+    diff=$(diff -u ${OUTPUT}.1 ${OUTPUT}.2)
+
+    if test -n "$diff"; then
+        echo "Error: files are not equal ${OUTPUT}.1 and ${OUTPUT}.2"
+        echo "Difference:"
+        echo "$diff"
+        echo "Test result: FAIL"
+    else
+        echo "Test result: OK"
+    fi
+    echo "======================================"
+    echo ""
+}
+
+# test inclusion of "base.hpp" header that exists in different directories
+
+flags="-MM"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
+
+flags="-I. -MM"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
+
+flags="-I. -Isubdir -MM"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
+
+# test inclusion of non-existing header files
+
+flags="-MM -MG"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
+
+flags="-I. -MM -MG"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
+
+flags="-I. -Isrc -MM -MG"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
+
+# test inclusion of header in base directory
+
+flags="-MM -MG"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/include_basedir_header.cpp"
+
+# fails with all generators:
+# run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
+
+rm -f ${OUTPUT}*
