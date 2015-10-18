@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.3 [not released yet]
+FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Feature: Adding support for If[] and Which[] statements at the
    r.h.s. of contraints.  In addition, the IsClose[a,b,eps] and
