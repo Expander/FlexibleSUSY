@@ -60,7 +60,7 @@ models_array="             \
    MRSSM,MRSSM             \
    TMSSM,TMSSM             \
    SM,SM                   \
-   HSSUSY,HSSUSY           \
+   HSSUSY,SM               \
    SplitMSSM,SplitMSSM     \
 "
 
