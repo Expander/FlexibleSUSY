@@ -25,9 +25,18 @@
 
 namespace gm2calc {
 
+/**
+ * @class MSSMNoFV_onshell_soft_parameters
+ * @brief contains soft-breaking parameters of the MSSMNoFV model
+ *
+ * Soft-breaking parameters are: soft-breaking squared mass parameters
+ * for the sfermions and Higgs dupletts, soft-breaking gaugino mass
+ * parameters, soft-breaking trilinear couplings and the BMu
+ * parameter.
+ */
 class MSSMNoFV_onshell_soft_parameters : public MSSMNoFV_onshell_susy_parameters {
 public:
-   explicit MSSMNoFV_onshell_soft_parameters();
+   MSSMNoFV_onshell_soft_parameters();
    MSSMNoFV_onshell_soft_parameters(const MSSMNoFV_onshell_susy_parameters& , const Eigen::Matrix<double,3,3>& TYd_, const Eigen::Matrix<double,3,3>&
    TYe_, const Eigen::Matrix<double,3,3>& TYu_, double BMu_, const
    Eigen::Matrix<double,3,3>& mq2_, const Eigen::Matrix<double,3,3>& ml2_,
@@ -101,10 +110,6 @@ protected:
    double MassB;
    double MassWB;
    double MassG;
-
-
-private:
-   static const int numberOfParameters = 111;
 };
 
 std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell_soft_parameters&);

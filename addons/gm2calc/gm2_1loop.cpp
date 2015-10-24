@@ -48,6 +48,7 @@ double calculate_amu_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
    MSSMNoFV_onshell model_ytree(model);
    model_ytree.convert_yukawa_couplings_treelevel();
    model_ytree.calculate_DRbar_masses();
+   model_ytree.check_problems();
 
    return amuChi0(model_ytree) + amuChipm(model_ytree);
 }
@@ -413,6 +414,13 @@ double amu1Lapprox(const MSSMNoFV_onshell& model) {
 
 // tan(beta) corrections
 
+/**
+ * Calculates \f$\frac{1}{1 + \Delta_{\mu}}\f$
+ *
+ * @param model model parameters
+ *
+ * @return \f$\frac{1}{1 + \Delta_{\mu}}\f$
+ */
 double tan_beta_cor(const MSSMNoFV_onshell& model)
 {
    const double delta_mu = delta_mu_correction(model);
@@ -420,8 +428,16 @@ double tan_beta_cor(const MSSMNoFV_onshell& model)
    return 1. / (1. + delta_mu);
 }
 
+/**
+ * Calculates \f$\Delta_{\ell}\f$ using a generalized form of Eq (8)
+ * arxiv:0808.1530.
+ *
+ * @param model model parameters
+ * @param gen lepton generation (0 = electron, 1 = muon, 2 = tau)
+ *
+ * @return \f$\Delta_{\ell}\f$
+ */
 double delta_down_lepton_correction(const MSSMNoFV_onshell& model, int gen) {
-   double delta_lep;
    const double mu = model.get_Mu();
    const double TB = model.get_TB();
    const double g2 = model.get_g2();
@@ -432,27 +448,46 @@ double delta_down_lepton_correction(const MSSMNoFV_onshell& model, int gen) {
    const double MZ = model.get_MZ();
    const double SW = sqrt(1. - sqr(MW / MZ));
 
-   double m1 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m_sneu_lep = sqrt(model.get_ml2(gen, gen) - 0.5 * sqr(MZ));
-   double m_slep_L = sqrt(model.get_ml2(gen, gen) - sqr(MZ) * (sqr(SW) - 0.5));
-   double m_slep_R = sqrt(model.get_me2(gen, gen) + sqr(MZ * SW));
+   const double m1 =
+      sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+                  - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW))
+                         - sqr(2. * M2 * mu))));
+   const double m2 =
+      sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+                  + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW))
+                         - sqr(2. * M2 * mu))));
+   const double m_sneu_lep = sqrt(model.get_ml2(gen, gen) - 0.5 * sqr(MZ));
+   const double m_slep_L = sqrt(model.get_ml2(gen, gen) - sqr(MZ) * (sqr(SW) - 0.5));
+   const double m_slep_R = sqrt(model.get_me2(gen, gen) + sqr(MZ * SW));
 
-   delta_lep = ( - mu * TB * oneOver16PiSqr
-            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_lep) + 0.5 * Iabc(m1, m2, m_slep_L))
-            + sqr(gY) * M1 * (Iabc(mu, M1, m_slep_R) - 0.5 * Iabc(mu, M1, m_slep_L)
-                              - Iabc(M1, m_slep_L, m_slep_R))) );
+   const double delta_lep =
+      - mu * TB * oneOver16PiSqr
+        * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_lep) + 0.5 * Iabc(m1, m2, m_slep_L))
+           + sqr(gY) * M1 * (Iabc(mu, M1, m_slep_R) - 0.5 * Iabc(mu, M1, m_slep_L)
+                              - Iabc(M1, m_slep_L, m_slep_R)));
 
    return delta_lep;
 }
 
+/**
+ * Calculates \f$\Delta_{\mu}\f$ using delta_down_lepton_correction()
+ *
+ * @param model model parameters
+ *
+ * @return \f$\Delta_{\mu}\f$
+ */
 double delta_mu_correction(const MSSMNoFV_onshell& model)
 {
    return delta_down_lepton_correction(model, 1);
 }
 
+/**
+ * Calculates \f$\Delta_{\tau}\f$ using delta_down_lepton_correction()
+ *
+ * @param model model parameters
+ *
+ * @return \f$\Delta_{\tau}\f$
+ */
 double delta_tau_correction(const MSSMNoFV_onshell& model)
 {
    return delta_down_lepton_correction(model, 2);
@@ -480,27 +515,27 @@ double delta_bottom_correction(const MSSMNoFV_onshell& model)
    const double msbR2 = std::abs(model.get_md2(1,1));
 
    const double eps_0 =
-      - 2. * alpha_S / (3*M_PI) * std::conj(mu) / M3
+      - 2. * alpha_S / (3*M_PI) * mu / M3
         * H2(msbL2 / std::norm(M3), msbR2 / std::norm(M3))
 
-      + sqr(gY) / (96.*sqr(M_PI)) * std::conj(mu) / M1
+      + sqr(gY) / (96.*sqr(M_PI)) * mu / M1
         * (H2(msbL2 / std::norm(M1), std::norm(mu) / std::norm(M1))
            + 2. * H2(msbR2 / std::norm(M1), std::norm(mu) / std::norm(M1)))
 
-      + sqr(gY) / (144.*sqr(M_PI)) * std::conj(mu) / M1
+      + sqr(gY) / (144.*sqr(M_PI)) * mu / M1
         * H2(msbL2 / std::norm(M1), msbR2 / std::norm(M1))
 
-      + 3. * sqr(g2) / (32.*sqr(M_PI)) * std::conj(mu) / M2
+      + 3. * sqr(g2) / (32.*sqr(M_PI)) * mu / M2
         * H2(msbL2 / std::norm(M2), std::norm(mu) / std::norm(M2))
       ;
 
    const double eps_Y_vM =
-      oneOver16PiSqr * std::conj(At) / mu
+      oneOver16PiSqr * At / mu
       * H2(mstL2 / std::norm(mu), mstR2 / std::norm(mu))
       // term ~ self-energy neglected
       ;
 
-   const double eps_Y = - oneOver16PiSqr * std::conj(At) / mu
+   const double eps_Y = - oneOver16PiSqr * At / mu
       * H2(mstL2 / std::norm(mu), mstR2 / std::norm(mu))
       + eps_Y_vM;
 

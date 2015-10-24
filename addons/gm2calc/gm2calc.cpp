@@ -19,6 +19,7 @@
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "gm2_error.hpp"
+#include "gm2_uncertainty.hpp"
 #include "config.h"
 
 #include "gm2_slha_io.hpp"
@@ -32,11 +33,15 @@
 
 using namespace flexiblesusy;
 
+/**
+ * @class Gm2_cmd_line_options
+ * @brief command line options for GM2Calc
+ */
 struct Gm2_cmd_line_options {
    enum E_input_type { SLHA, GM2Calc };
 
-   std::string input_source;
-   E_input_type input_type;
+   std::string input_source; ///< input source (file name or `-' for stdin)
+   E_input_type input_type;  ///< input format (SLHA or GM2Calc)
 
    static bool starts_with(const std::string& str, const std::string& prefix) {
       return !str.compare(0, prefix.size(), prefix);
@@ -92,6 +97,32 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
 }
 
 /**
+ * Set the config options to default values, depending on the input
+ * parameter set (chosen by the user).
+ *
+ * If SLHA input format has been selected, the default output format
+ * will be SLHA format.  By default \f$a_\mu\f$ will be written to the
+ * SPheno block SPhenoLowEnergy[21].
+ *
+ * If GM2Calc input format has been chosen, the default values set in
+ * \a Config_options are used.
+ */
+void set_to_default(gm2calc::Config_options& config_options,
+                    const Gm2_cmd_line_options& options)
+{
+   switch (options.input_type) {
+   case Gm2_cmd_line_options::SLHA:
+      config_options.output_format = gm2calc::Config_options::SPheno;
+      break;
+   case Gm2_cmd_line_options::GM2Calc:
+      break;
+   default:
+      throw gm2calc::ESetupError("Unknown input option");
+      break;
+   }
+}
+
+/**
  * Setup the model parameters consistently, depending on the input
  * parameter set (chosen by the user).
  *
@@ -130,7 +161,7 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
       model.calculate_masses();
       break;
    default:
-      throw gm2calc::SetupError("Unknown input option");
+      throw gm2calc::ESetupError("Unknown input option");
       break;
    }
 
@@ -147,31 +178,62 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
 void print_amu_detailed(
    const gm2calc::MSSMNoFV_onshell& model)
 {
-#define FORMAT_AMU(amu) boost::format("% 16.14e") % (amu)
+#define FORMAT_AMU(amu) boost::format("% 14.8e") % (amu)
+#define FORMAT_DEL(amu) boost::format("%14.8e") % (amu)
 #define FORMAT_PCT(pct) boost::format("%2.1f") % (pct)
 
+   std::string error_str;
+   if (model.get_problems().have_problem()) {
+      error_str = model.get_problems().get_problems()
+         + " (with tan(beta) resummation)\n\n";
+   }
+
    const double amu_1l = gm2calc::calculate_amu_1loop(model);
-   const double amu_1l_non_tan_beta_resummed =
-      gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
    const double amu_2l_photonic_chipm = gm2calc::amuChipmPhotonic(model);
    const double amu_2l_photonic_chi0 = gm2calc::amuChi0Photonic(model);
    const double amu_2l_a_sfermion = gm2calc::amu2LaSferm(model);
    const double amu_2l_a_cha = gm2calc::amu2LaCha(model);
    const double amu_2l_ferm_sferm_approx = gm2calc::amu2LFSfapprox(model);
    const double amu_2l = gm2calc::calculate_amu_2loop(model);
-   const double amu_2l_non_tan_beta_resummed =
-      gm2calc::calculate_amu_2loop_non_tan_beta_resummed(model);
+   const double amu_2l_uncertainty = gm2calc::calculate_uncertainty_amu_2loop(model);
    const double tan_beta_cor = gm2calc::tan_beta_cor(model);
+
+   // no tan(beta) resummation
+   double amu_1l_non_tan_beta_resummed = 0.;
+   double amu_2l_non_tan_beta_resummed = 0.;
+   std::string error_str_non_tan_beta_resummation;
+
+   try {
+      // w/o tan(beta) resummation, allow throwing exceptions
+      gm2calc::MSSMNoFV_onshell model_except(model);
+      model_except.do_force_output(false);
+      amu_1l_non_tan_beta_resummed =
+         gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model_except);
+      amu_2l_non_tan_beta_resummed =
+         gm2calc::calculate_amu_2loop_non_tan_beta_resummed(model_except);
+   } catch (const gm2calc::Error& error) {
+      error_str_non_tan_beta_resummation = " (" + error.what() + ")";
+      // try to redo calculation w/o throwing an exception
+      gm2calc::MSSMNoFV_onshell model_no_except(model);
+      model_no_except.do_force_output(true);
+      amu_1l_non_tan_beta_resummed =
+         gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model_no_except);
+      amu_2l_non_tan_beta_resummed =
+         gm2calc::calculate_amu_2loop_non_tan_beta_resummed(model_no_except);
+   }
+
    const double amu_2l_tanb_approx =
       + (tan_beta_cor - 1.) * amu_1l_non_tan_beta_resummed;
 
    const double amu_best = amu_1l + amu_2l;
 
    std::cout <<
-      "========================================================\n"
-      "   amu (1-loop + 2-loop best) = " << FORMAT_AMU(amu_best) << '\n' <<
-      "========================================================\n"
-      "\n"
+      "====================================================================\n"
+      "   amu (1-loop + 2-loop best) = " << FORMAT_AMU(amu_best) << ' ' <<
+      "+- " << FORMAT_DEL(amu_2l_uncertainty) << '\n' <<
+      "====================================================================\n"
+      "\n" <<
+      error_str <<
       "==============================\n"
       "   amu (1-loop) corrections\n"
       "==============================\n"
@@ -184,7 +246,8 @@ void print_amu_detailed(
       " (" << FORMAT_PCT(100. * amu_1l / amu_best) << "% of full 1L + 2L result)\n"
       "\n"
       "full 1L without tan(beta) resummation:\n"
-      "             " << FORMAT_AMU(amu_1l_non_tan_beta_resummed) << '\n' <<
+      "             " << FORMAT_AMU(amu_1l_non_tan_beta_resummed) <<
+      error_str_non_tan_beta_resummation << '\n' <<
       "\n"
       "1L approximation with tan(beta) resummation:\n"
       "   W-H-nu    " << FORMAT_AMU(gm2calc::amuWHnu(model) * tan_beta_cor) << '\n' <<
@@ -204,7 +267,8 @@ void print_amu_detailed(
       " (" << FORMAT_PCT(100. * amu_2l / amu_best) << "% of full 1L + 2L result)\n"
       "\n"
       "2L best without tan(beta) resummation:\n"
-      "             " << FORMAT_AMU(amu_2l_non_tan_beta_resummed) << '\n' <<
+      "             " << FORMAT_AMU(amu_2l_non_tan_beta_resummed) <<
+      error_str_non_tan_beta_resummation << '\n' <<
       "\n"
       "photonic with tan(beta) resummation:\n"
       "   chi^0     " << FORMAT_AMU(amu_2l_photonic_chi0) << '\n' <<
@@ -257,7 +321,7 @@ double calculate_amu(const gm2calc::MSSMNoFV_onshell& model,
 
    switch (config_options.loop_order) {
    case 0:
-      ERROR("0-loop order not supported!");
+      result = 0.;
       break;
    case 1:
       if (config_options.tanb_resummation)
@@ -295,9 +359,11 @@ void print_amu(const gm2calc::MSSMNoFV_onshell& model,
 {
    switch (config_options.output_format) {
    case gm2calc::Config_options::Minimal:
-      std::cout << std::setprecision(std::numeric_limits<double>::digits10)
-                << std::scientific
-                << calculate_amu(model, config_options) << '\n';
+      std::cout << boost::format("%.8e") %
+                   (!config_options.calculate_uncertainty ?
+                    calculate_amu(model, config_options) :
+                    calculate_uncertainty_amu_2loop(model))
+                << '\n';
       break;
    case gm2calc::Config_options::Detailed:
       print_amu_detailed(model);
@@ -306,12 +372,33 @@ void print_amu(const gm2calc::MSSMNoFV_onshell& model,
       slha_io.fill_block_entry("LOWEN", 6,
                                calculate_amu(model, config_options),
                                "Delta(g-2)_muon/2");
+      if (config_options.calculate_uncertainty) {
+         slha_io.fill_block_entry("GM2CalcOutput", 1,
+                                  calculate_uncertainty_amu_2loop(model),
+                                  "uncertainty of a_mu(2-loop, tan(beta) resummation)");
+      }
       slha_io.write_to_stream(std::cout);
       break;
    case gm2calc::Config_options::SPheno:
       slha_io.fill_block_entry("SPhenoLowEnergy", 21,
                                calculate_amu(model, config_options),
                                "Delta(g-2)_muon/2");
+      if (config_options.calculate_uncertainty) {
+         slha_io.fill_block_entry("GM2CalcOutput", 1,
+                                  calculate_uncertainty_amu_2loop(model),
+                                  "uncertainty of a_mu(2-loop, tan(beta) resummation)");
+      }
+      slha_io.write_to_stream(std::cout);
+      break;
+   case gm2calc::Config_options::GM2Calc:
+      slha_io.fill_block_entry("GM2CalcOutput", 0,
+                               calculate_amu(model, config_options),
+                               "Delta(g-2)_muon/2");
+      if (config_options.calculate_uncertainty) {
+         slha_io.fill_block_entry("GM2CalcOutput", 1,
+                                  calculate_uncertainty_amu_2loop(model),
+                                  "uncertainty of a_mu(2-loop, tan(beta) resummation)");
+      }
       slha_io.write_to_stream(std::cout);
       break;
    default:
@@ -336,6 +423,7 @@ void print_error(const gm2calc::Error& error,
    switch (config_options.output_format) {
    case gm2calc::Config_options::NMSSMTools:
    case gm2calc::Config_options::SPheno:
+   case gm2calc::Config_options::GM2Calc:
       // print SPINFO block with error description
       slha_io.fill_block_entry("SPINFO", 1, "GM2Calc");
       slha_io.fill_block_entry("SPINFO", 2, GM2CALC_VERSION);
@@ -359,14 +447,19 @@ void print_warnings(const gm2calc::MSSMNoFV_onshell& model,
                     gm2calc::GM2_slha_io& slha_io,
                     const gm2calc::Config_options& config_options)
 {
+   if (model.get_problems().have_problem() ||
+       model.get_problems().have_warning())
+      WARNING(model.get_problems());
+
    if (model.get_problems().have_warning()) {
       switch (config_options.output_format) {
       case gm2calc::Config_options::NMSSMTools:
       case gm2calc::Config_options::SPheno:
+      case gm2calc::Config_options::GM2Calc:
          // print SPINFO block with warning description
          slha_io.fill_block_entry("SPINFO", 1, "GM2Calc");
          slha_io.fill_block_entry("SPINFO", 2, GM2CALC_VERSION);
-         slha_io.fill_block_entry("SPINFO", 3, model.get_problems().get_warning());
+         slha_io.fill_block_entry("SPINFO", 3, model.get_problems().get_warnings());
          break;
       default:
          break;
@@ -391,6 +484,7 @@ int main(int argc, const char* argv[])
    int exit_code = EXIT_SUCCESS;
 
    try {
+      set_to_default(config_options, options);
       slha_io.read_from_source(options.input_source);
       fill(slha_io, config_options);
       model.do_force_output(config_options.force_output);
