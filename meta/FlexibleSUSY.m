@@ -706,6 +706,13 @@ ExpandGaugeIndices[gauge_List] :=
    Example: MRSSM
    In[] := CreateHiggsToEWSBEqAssociation[]
    Out[] = {{hh, 1, Re}, {hh, 2, Re}, {hh, 4, Re}, {hh, 3, Re}}
+
+   This result means:
+
+   EWSB eq. 1 corresponds to hh[1], the 1L tadpole[1] is real
+   EWSB eq. 2 corresponds to hh[2], the 1L tadpole[2] is real
+   EWSB eq. 3 corresponds to hh[4], the 1L tadpole[3] is real
+   EWSB eq. 4 corresponds to hh[3], the 1L tadpole[4] is real
  *)
 CreateHiggsToEWSBEqAssociation[] :=
     Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
