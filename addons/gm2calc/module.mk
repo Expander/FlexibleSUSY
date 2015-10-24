@@ -90,8 +90,8 @@ $(LIBgm2calc_DEP) $(EXEgm2calc_DEP) $(LIBgm2calc_OBJ) $(EXEgm2calc_OBJ): CPPFLAG
 $(LIBgm2calc): $(LIBgm2calc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBgm2calc) $(LIBMSSMNoFV_onshell) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIBgm2calc) $(LIBFLEXI)
+		$(CXX) -o $@ $(call abspathx,$^)
 
 ALLDEP += $(LIBgm2calc_DEP) $(EXEgm2calc_DEP)
 ALLSRC += $(LIBgm2calc_SRC) $(EXEgm2calc_SRC)
