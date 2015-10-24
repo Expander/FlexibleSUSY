@@ -4,6 +4,11 @@ FlexibleSUSY-1.2.4 [not released yet]
    will no longer overwrite the user-given input parameters of the
    SMINPUTS block.
 
+ * Bugfix (commit 9067f3a): There was an internal programming error in
+   the meta code concerning the assignment of tadpole diagrams to the
+   Higgs fields, which resulted in a compilation error in the SSM.
+   Thanks to John McDowall and Peter Athron.
+
 FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Feature: Adding support for If[] and Which[] statements at the
