@@ -1,3 +1,9 @@
+FlexibleSUSY-1.2.4 [not released yet]
+
+ * Change (commit 33af37c): The spectrum generator, run_<model>.x,
+   will no longer overwrite the user-given input parameters of the
+   SMINPUTS block.
+
 FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Feature: Adding support for If[] and Which[] statements at the
