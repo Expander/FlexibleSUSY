@@ -4,6 +4,7 @@ doc/release                     export-ignore
 doc/FlexibleFuture.txt          export-ignore
 TODO                            export-ignore
 
+addons                          export-ignore
 addons/gm2calc                  export-ignore
 
 examples/lattice_fmssm.cpp                  export-ignore
