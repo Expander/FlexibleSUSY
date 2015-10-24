@@ -37,6 +37,15 @@ LIBgm2calc_HDR := \
 		$(DIR)/MSSMNoFV_onshell_soft_parameters.hpp \
 		$(DIR)/MSSMNoFV_onshell_susy_parameters.hpp
 
+LIBgm2calc_SLHA_INPUT := \
+		$(DIR)/example.slha \
+		$(DIR)/example.gm2
+
+LIBgm2calc_INFO := \
+		$(DIR)/AUTHORS \
+		$(DIR)/COPYING \
+		$(DIR)/README
+
 LIBgm2calc_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBgm2calc_SRC)))
 
@@ -56,7 +65,7 @@ LIBgm2calc     := \
 		$(DIR)/lib$(MODNAME)$(LIBEXT)
 
 .PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) export-gm2calc
+		distclean-$(MODNAME)
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBgm2calc_DEP)
@@ -75,15 +84,6 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
-
-LIBgm2calc_SLHA_INPUT := \
-		$(DIR)/example.slha \
-		$(DIR)/example.gm2
-
-LIBgm2calc_INFO := \
-		$(DIR)/AUTHORS \
-		$(DIR)/COPYING \
-		$(DIR)/README
 
 $(LIBgm2calc_DEP) $(EXEgm2calc_DEP) $(LIBgm2calc_OBJ) $(EXEgm2calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
