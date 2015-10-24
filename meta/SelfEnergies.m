@@ -491,7 +491,7 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-"
                idx = higgsAndIdx[[v,2]];
                head = CConversion`ToValidCSymbolString[higgsAndIdx[[v,3]]];
                functionName = CreateTadpoleFunctionName[field];
-               If[Length[higgsAndIdx] == 1,
+               If[TreeMasses`GetDimension[field] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          head <> "(" <> struct <> functionName <> "());\n";
                   ,
