@@ -36,6 +36,12 @@ TEST_SRC := \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_wrappers.cpp
 
+TEST_SH := \
+		$(DIR)/test_depgen.sh \
+		$(DIR)/test_run_examples.sh \
+		$(DIR)/test_run_all_spectrum_generators.sh \
+		$(DIR)/test_space_dir.sh
+
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 TEST_SRC +=
 endif
@@ -78,6 +84,8 @@ ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-CMSSMCKM),yes yes yes)
@@ -149,12 +157,6 @@ ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-cCMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_cCMSSM.sh
 endif
-
-TEST_SH := \
-		$(DIR)/test_depgen.sh \
-		$(DIR)/test_run_examples.sh \
-		$(DIR)/test_run_all_spectrum_generators.sh \
-		$(DIR)/test_space_dir.sh
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_SH +=	$(DIR)/test_pv_crosschecks.sh
