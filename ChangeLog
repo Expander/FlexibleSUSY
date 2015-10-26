@@ -7,7 +7,13 @@ FlexibleSUSY-1.2.4 [not released yet]
  * Bugfix (commit 9067f3a): There was an internal programming error in
    the meta code concerning the assignment of tadpole diagrams to the
    Higgs fields, which resulted in a compilation error in the SSM.
-   Thanks to John McDowall and Peter Athron.
+   Thanks to John McDowall.
+
+ * Bugfix (commit 77d2a86): For the special case where M3 < 0 the Gluino
+   mass corrections were not calculated correctly due to the different
+   treatment of a 1-diemnsional fermion multiplet in SARAH, which had not
+   been accounted for in FlexibleSUSY. This is fixed here. Thanks to
+   Dylan Harries.
 
 FlexibleSUSY-1.2.3 [October, 18 2015]
 
