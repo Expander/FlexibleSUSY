@@ -9,19 +9,13 @@ FlexibleSUSY-1.2.4 [not released yet]
    Higgs fields, which resulted in a compilation error in the SSM.
    Thanks to John McDowall.
 
- * Bugfix (commit 77d2a86): For the special case where M3 < 0 the Gluino
-   mass corrections were not calculated correctly due to the different
-   treatment of a 1-diemnsional fermion multiplet in SARAH, which had not
-   been accounted for in FlexibleSUSY. This is fixed here. Thanks to
-   Dylan Harries.
-
- * Bugfix (commit ce1ef83): Ensure that in the calculation of the pole
+ * Bugfix (commit 77d2a86): Ensure that in the calculation of the pole
    mass of a fermion singlet the prefactor of the self-energies is the
    positive tree-level mass.  Before commit ce1ef83, the prefactor of
    the gluino self-energies in MSSM for example was the soft-breaking
    parameter M3.  If M3 < 0 the gluino pole mass was not calculated
    correctly.
-   Thanks to Dylan Harries and Peter Athron.
+   Thanks to Dylan Harries.
 
 FlexibleSUSY-1.2.3 [October, 18 2015]
 
