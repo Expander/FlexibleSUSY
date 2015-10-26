@@ -15,6 +15,14 @@ FlexibleSUSY-1.2.4 [not released yet]
    been accounted for in FlexibleSUSY. This is fixed here. Thanks to
    Dylan Harries.
 
+ * Bugfix (commit ce1ef83): Ensure that in the calculation of the pole
+   mass of a fermion singlet the prefactor of the self-energies is the
+   positive tree-level mass.  Before commit ce1ef83, the prefactor of
+   the gluino self-energies in MSSM for example was the soft-breaking
+   parameter M3.  If M3 < 0 the gluino pole mass was not calculated
+   correctly.
+   Thanks to Dylan Harries and Peter Athron.
+
 FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Feature: Adding support for If[] and Which[] statements at the
