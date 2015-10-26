@@ -285,7 +285,16 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana ferimion or not *)
-              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+
+              (* Note: For a 1-dimensional fermion multiplet SARAH
+                 provides the self-energies in mass eigenstates, i.e.
+                 the fermions at the external legs are multiplied by
+                 their phase (= mixing matrix).  Therfore, M_tree must
+                 be set to the (positive) tree-level mass.  M_tree
+                 must not be set to the gauge eigenstate mass
+                 parameter! *)
+
+              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massName <> ");\n" <>
                        Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      massName, CConversion`GetScalarElementType[selfEnergyMatrixType]];
@@ -586,7 +595,16 @@ if (add_2loop_corrections) {
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana fermion or not *)
-              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+
+              (* Note: For a 1-dimensional fermion multiplet SARAH
+                 provides the self-energies in mass eigenstates, i.e.
+                 the fermions at the external legs are multiplied by
+                 their phase (= mixing matrix).  Therfore, M_tree must
+                 be set to the (positive) tree-level mass.  M_tree
+                 must not be set to the gauge eigenstate mass
+                 parameter! *)
+
+              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massName <> ");\n" <>
                        Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      momentum, CConversion`GetScalarElementType[selfEnergyMatrixType]];
