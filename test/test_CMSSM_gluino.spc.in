@@ -16,6 +16,12 @@ Block FlexibleSUSY
    12   0                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1.000000000e-11      # beta-function zero threshold
+Block SOFTSUSY
+    1   1.000000000e-04      # Numerical precision
+    5   1                    # Include 2-loop scalar mass squared/trilinear RGEs
+    7   2                    # EWSB and Higgs mass loop order
+Block MODSEL
+    1   1                    # mSUGRA
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
@@ -35,8 +41,8 @@ Block SMINPUTS               # Standard Model inputs
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR                 # Input parameters
-    1   9.136327140e+03      # m0
-    2  -5.482174580e+03      # m12
+    1   9.000000000e+03      # m0
+    2  -5.000000000e+03      # m12
     3   10.                  # TanBeta
     4   1                    # SignMu
-    5  -6.475322160e+03      # Azero
+    5   5.000000000e+03      # Azero
