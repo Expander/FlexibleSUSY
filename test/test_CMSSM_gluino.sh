@@ -9,7 +9,7 @@ input="$BASEDIR/test_CMSSM_gluino.spc.in"
 output="$BASEDIR/test_CMSSM_gluino.spc.out"
 softsusy_output="$BASEDIR/test_CMSSM_gluino.softsusy.spc.out"
 
-rel_error="0.00005"
+rel_error="0.00001"
 
 if test ! -x "$mssm_exe"; then
     echo "Error: CMSSM spectrum generator not found: $mssm_exe"
@@ -44,7 +44,7 @@ mg_softsusy="`echo ${mg_softsusy} | sed -e 's/[eE]+*/\\*10\\^/'`"
 
 diff=$(cat <<EOF | bc $BASEDIR/abs.bc
 scale=10
-abs($mg_softsusy - $mg_mssm) / ($mg_softsusy) < $rel_error
+abs((abs($mg_softsusy) - abs($mg_mssm)) / ($mg_softsusy)) < $rel_error
 EOF
     )
 
@@ -54,6 +54,8 @@ if test $diff -ne 1 ; then
     echo "Test status: FAIL"
     exit 1
 else
+    echo "FlexibleSUSY gluino pole mass: $mg_mssm"
+    echo "SoftSUSY     gluino pole mass: $mg_softsusy"
     echo "Test status: OK"
 fi
 
