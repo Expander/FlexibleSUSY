@@ -38,7 +38,7 @@ public:
    Eigen::ArrayXd get_parameters(const @ModelName@_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const @ModelName@_mass_eigenstates&) const {
+   std::vector<std::string> get_parameter_names() const {
       using namespace @ModelName@_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
