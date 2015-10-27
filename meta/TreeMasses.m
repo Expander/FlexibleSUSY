@@ -98,6 +98,12 @@ GetMassMatrixType::usage="returns mass matrix type of particle";
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
 
+ReplaceDependenciesReverse::usage="returs expression with dependencies
+(ThetaW etc.) replaced back";
+
+ExpressionToString::usage="Converts an expression to a valid C++
+string.";
+
 FindColorGaugeGroup::usage="returns triplet of color gauge coupling,
 group and SARAH name";
 
@@ -121,7 +127,29 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
+IsQuark::usage="";
+IsLepton::usage="";
+IsSMChargedLepton::usage="";
+IsSMNeutralLepton::usage="";
+IsSMLepton::usage="";
+IsSMUpQuark::usage="";
+IsSMDownQuark::usage="";
+IsSMQuark::usage="";
 ContainsGoldstone::usage="";
+
+GetSMChargedLeptons::usage="";
+GetSMNeutralLeptons::usage="";
+GetSMLeptons::usage="";
+GetSMUpQuarks::usage="";
+GetSMDownQuarks::usage="";
+GetSMQuarks::usage="";
+
+GetUpQuark::usage="";
+GetDownQuark::usage="";
+GetUpLepton::usage="";
+GetDownLepton::usage="";
+
+GetMass::usage="wraps M[] head around particle";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -216,6 +244,91 @@ IsRealScalar[sym_Symbol] :=
 
 IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
+
+GetColoredParticles[] :=
+    Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
+
+IsQuark[sym_[___]] := IsQuark[sym];
+IsQuark[sym_Symbol] := MemberQ[GetColoredParticles[], sym];
+
+IsLepton[sym_[___]] := IsLepton[sym];
+IsLepton[sym_Symbol] :=
+    MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
+
+IsSMChargedLepton[sym_[__]] := IsSMChargedLepton[sym];
+IsSMChargedLepton[sym_]     := MemberQ[GetSMChargedLeptons[], sym];
+
+IsSMNeutralLepton[sym_[__]] := IsSMNeutralLepton[sym];
+IsSMNeutralLepton[sym_]     := MemberQ[GetSMNeutralLeptons[], sym];
+
+IsSMLepton[sym_[__]]        := IsSMLepton[sym];
+IsSMLepton[sym_]            := MemberQ[GetSMLeptons[], sym];
+
+IsSMUpQuark[sym_[__]]       := IsSMUpQuark[sym];
+IsSMUpQuark[sym_]           := MemberQ[GetSMUpQuarks[], sym];
+
+IsSMDownQuark[sym_[__]]     := IsSMDownQuark[sym];
+IsSMDownQuark[sym_]         := MemberQ[GetSMDownQuarks[], sym];
+
+IsSMQuark[sym_[__]]         := IsSMQuark[sym];
+IsSMQuark[sym_]             := MemberQ[GetSMQuarks[], sym];
+
+GetSMChargedLeptons[] :=
+    Parameters`GetParticleFromDescription["Leptons", {"Electron","Muon","Tau"}];
+
+GetSMNeutralLeptons[] :=
+    Parameters`GetParticleFromDescription["Neutrinos", {"Electron Neutrino","Muon Neutrino","Tau Neutrino"}];
+
+GetSMLeptons[] :=
+    Join[GetSMNeutralLeptons[], GetSMChargedLeptons[]];
+
+GetSMUpQuarks[] :=
+    Parameters`GetParticleFromDescription["Up-Quarks", {"Up Quark","Charmed Quark","Top Quark"}];
+
+GetSMDownQuarks[] :=
+    Parameters`GetParticleFromDescription["Down-Quarks", {"Down Quark","Strange Quark","Bottom Quark"}];
+
+GetSMQuarks[] :=
+    Join[GetSMDownQuarks[], GetSMUpQuarks[]];
+
+GetUpQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMUpQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMDownQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetUpLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMNeutralLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMChargedLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetMass[particle_[idx__]] := GetMass[particle][idx];
+GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.
@@ -1266,6 +1379,9 @@ CreateDependenceNumFunctions[massMatrices_List] :=
 ReplaceDependencies[expr_] :=
     expr /. FindDependenceNumRules[];
 
+ReplaceDependenciesReverse[expr_] :=
+    expr /. (Reverse /@ FindDependenceNumRules[]);
+
 CallThirdGenerationHelperFunctionName[fermion_, msf1_String, msf2_String, theta_] :=
     "calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
@@ -1424,6 +1540,30 @@ GetLightestMass[par_] :=
               mass = FlexibleSUSY`M[par][0];
              ];
            Return[mass];
+          ];
+
+(* Converts an expression to a valid C++ string.  The result of the
+   expression will be stored in `result'.
+*)
+ExpressionToString[expr_, result_String] :=
+    Module[{type, exprStr, initalValue},
+           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
+              exprStr = result <> " = " <>
+                  CConversion`RValueToCFormString[
+                      Simplify[Parameters`DecreaseIndexLiterals[expr]]] <> ";\n";
+              ,
+              If[Parameters`IsRealExpression[expr],
+                 type = CConversion`ScalarType[CConversion`realScalarCType];
+                 initalValue = " = 0.0";,
+                 type = CConversion`ScalarType[CConversion`complexScalarCType];
+                 initalValue = "";
+                ];
+              exprStr = CConversion`ExpandSums[
+                  Parameters`DecreaseIndexLiterals[
+                      Parameters`DecreaseSumIdices[expr]],
+                  result, type, initalValue];
+             ];
+           exprStr
           ];
 
 End[];

@@ -38,7 +38,7 @@ namespace flexiblesusy {
 MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::MSSMD5O_MSSMRHN_initial_guesser(
    MSSMD5O<Two_scale>* model_1_, MSSMRHN<Two_scale>* model_2_,
    const MSSMD5O_input_parameters& input_pars_,
-   const QedQcd& oneset_,
+   const softsusy::QedQcd& oneset_,
    const MSSMD5O_low_scale_constraint<Two_scale>& low_constraint_1_,
    const MSSMD5O_susy_scale_constraint<Two_scale>& susy_constraint_1_,
    const MSSMRHN_high_scale_constraint<Two_scale>& high_constraint_2_,
@@ -68,6 +68,8 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess()
 
 void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
 {
+   using namespace softsusy;
+
    QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;

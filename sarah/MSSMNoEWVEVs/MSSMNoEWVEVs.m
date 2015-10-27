@@ -1,12 +1,14 @@
 Off[General::spell]
 
-Model`Name = "UnbrokenMSSM";
-Model`NameLaTeX ="UnbrokenMSSM";
+Model`Name = "MSSMNoEWVEVs";
+Model`NameLaTeX ="MSSMNoEWVEVs";
 Model`Authors = "F.Staub,A.Voigt";
 Model`Date = "2015-02-17";
 
-(* 2015-02-16: VEV normalization w/o factor 1/Sqrt[2] *)
+(* This is a variant of the MSSM, where all VEVs have been set to
+   zero. *)
 
+(* 2015-02-16: VEV normalization w/o factor 1/Sqrt[2] *)
 
 
 (*-------------------------------------------*)

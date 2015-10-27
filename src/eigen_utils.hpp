@@ -20,7 +20,6 @@
 #define EIGEN_UTILS_H
 
 #include "compare.hpp"
-#include "wrappers.hpp"
 #include <Eigen/Core>
 #include <iomanip>
 #include <sstream>
@@ -58,7 +57,7 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
    if (pos == idx)
       return;
 
-   const int sign = Sign(idx - pos);
+   const int sign = (idx - pos) < 0 ? -1 : 1;
    int steps = std::abs(idx - pos);
 
    // now we shuffle the states

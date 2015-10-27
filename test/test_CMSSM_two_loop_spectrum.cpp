@@ -10,6 +10,7 @@
 #include "lowe.h"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 void ensure_tree_level_ewsb(CMSSM<Two_scale>& m)
 {

@@ -29,12 +29,15 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
+#include "dilog.hpp"
+
 namespace flexiblesusy {
 
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static const bool True = true;
 
 inline double Abs(double z)
 {
@@ -169,6 +172,33 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+template <typename T>
+T If(bool c, T a, T b) { return c ? a : b; }
+
+template <typename T>
+T If(bool c, int a, T b) { return c ? T(a) : b; }
+
+template <typename T>
+T If(bool c, T a, int b) { return c ? a : T(b); }
+
+inline bool IsClose(double a, double b,
+                    double eps = std::numeric_limits<double>::epsilon())
+{
+   return std::abs(a - b) < eps;
+}
+
+inline bool IsCloseRel(double a, double b,
+                       double eps = std::numeric_limits<double>::epsilon())
+{
+   if (IsClose(a, b, std::numeric_limits<double>::epsilon()))
+      return true;
+
+   if (std::abs(a) < std::numeric_limits<double>::epsilon())
+      return IsClose(a, b, eps);
+
+   return std::abs((a - b)/a) < eps;
+}
+
 inline bool IsFinite(double x)
 {
    return std::isfinite(x);
@@ -248,9 +278,9 @@ double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
    typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
 
    for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
-      const double max = maximum(a(i), b(i));
+      const double max = std::max(a(i), b(i));
       if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+         sumTol(i) = fabs(1.0 - std::min(a(i), b(i)) / max);
       else
          sumTol(i) = 0.;
    }
@@ -289,6 +319,13 @@ inline int Sign(double x)
 inline int Sign(int x)
 {
    return (x >= 0 ? 1 : -1);
+}
+
+template <typename T>
+T PolyLog(int n, T z) {
+   if (n == 2)
+      return gm2calc::dilog(z);
+   assert(false && "PolyLog(n!=2) not implemented");
 }
 
 template <typename Base, typename Exponent>
@@ -459,6 +496,25 @@ template <typename T>
 std::string ToString(T a)
 {
    return boost::lexical_cast<std::string>(a);
+}
+
+/// step function (0 for x < 0, 1 otherwise)
+template <typename T>
+unsigned UnitStep(T x)
+{
+   return x < T() ? 0 : 1;
+}
+
+template <typename T>
+T Which(bool cond, T value)
+{
+   return cond ? value : T(0);
+}
+
+template<typename T, typename ... Trest>
+T Which(bool cond, T value, Trest... rest)
+{
+   return cond ? value : Which(rest...);
 }
 
 inline double ZeroSqrt(double x)

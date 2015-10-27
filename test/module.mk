@@ -25,6 +25,7 @@ TEST_SRC := \
 		$(DIR)/test_goldstones.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
+		$(DIR)/test_namespace_collisions.cpp \
 		$(DIR)/test_numerics.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_pv.cpp \
@@ -34,6 +35,12 @@ TEST_SRC := \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_wrappers.cpp
+
+TEST_SH := \
+		$(DIR)/test_depgen.sh \
+		$(DIR)/test_run_examples.sh \
+		$(DIR)/test_run_all_spectrum_generators.sh \
+		$(DIR)/test_space_dir.sh
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 TEST_SRC +=
@@ -77,6 +84,8 @@ ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-CMSSMCKM),yes yes yes)
@@ -131,6 +140,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-gm2calc),yes)
+TEST_SRC += \
+		$(DIR)/test_gm2calc.cpp \
+		$(DIR)/test_MSSMNoFV_onshell.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
@@ -142,11 +157,6 @@ ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-cCMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_cCMSSM.sh
 endif
-
-TEST_SH := \
-		$(DIR)/test_run_examples.sh \
-		$(DIR)/test_run_all_spectrum_generators.sh \
-		$(DIR)/test_space_dir.sh
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_SH +=	$(DIR)/test_pv_crosschecks.sh
@@ -254,6 +264,11 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM --with-SoftsusyNMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-HSSUSY),yes)
+TEST_SH += \
+		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
 TEST_META := \
@@ -560,6 +575,10 @@ $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFL
 $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2calc) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2calc) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

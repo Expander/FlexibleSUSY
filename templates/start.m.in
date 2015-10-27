@@ -1,11 +1,7 @@
-$flexiblesusyOutputDir   = "@DIR@";
-$flexiblesusyConfigDir   = FileNameJoin[{Directory[], "config"}];
-$flexiblesusyMetaDir     = FileNameJoin[{Directory[], "meta"}];
-$flexiblesusyTemplateDir = FileNameJoin[{Directory[], "templates"}];
-AppendTo[$Path, $flexiblesusyMetaDir];
+AppendTo[$Path, FileNameJoin[{Directory[], "meta"}]];
 
 Needs["SARAH`"];
-Needs["FlexibleSUSY`", FileNameJoin[{$flexiblesusyMetaDir, "FlexibleSUSY.m"}]];
+Needs["FlexibleSUSY`", FileNameJoin[{Directory[], "meta", "FlexibleSUSY.m"}]];
 
 workingDirectory = Directory[];
 SARAH`SARAH[OutputDirectory] = FileNameJoin[{workingDirectory, "Output"}];
@@ -21,4 +17,5 @@ Print["Starting model: ", ToString[HoldForm[Start["@ModelName@"@SubModel@]]]];
 Start["@ModelName@"@SubModel@];
 
 MakeFlexibleSUSY[InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}],
+                 OutputDirectory -> "@DIR@",
                  DebugOutput -> @ENABLE_DEBUG_META@];

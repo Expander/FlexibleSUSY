@@ -63,6 +63,9 @@ GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
+GetDependenceNumSymbols::usage="Returns symbols which have a
+DependenceNum";
+
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
 
@@ -78,6 +81,7 @@ expression.";
 FillInputParametersFromTuples::usage="";
 
 DecreaseIndexLiterals::usage="";
+IncreaseIndexLiterals::usage="";
 
 DecreaseSumIdices::usage="";
 
@@ -135,6 +139,10 @@ AddRealParameter[parameter_] :=
 SetRealParameters[parameters_List] :=
     additionalRealParameters = parameters;
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 FindSymbolDef[sym_] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
@@ -155,7 +163,8 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
            allParameters = Join[allModelParameters, allOutputParameters,
-                                allInputParameters, Phases`GetArg /@ allPhases];
+                                allInputParameters, Phases`GetArg /@ allPhases,
+                                GetDependenceNumSymbols[]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -378,23 +387,33 @@ GetParameterDimensions[sym_] :=
                  ]
           ];
 
-CreateIndexReplacementRules[pars_List] :=
-    Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},
-           indexReplacementRules = {};
-           For[p = 1, p <= Length[pars], p++,
-               parameter = pars[[p]];
-               dim = SARAH`getDimParameters[parameter];
-               rule = {};
-               Switch[Length[dim],
-                      1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
-                      2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
-                      3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
-                      4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
-                     ];
-               AppendTo[indexReplacementRules, rule];
-              ];
-           Return[Flatten[indexReplacementRules]]
+CreateIndexReplacementRule[{parameter_, CConversion`ScalarType[_]}] := {};
+
+CreateIndexReplacementRule[{parameter_, CConversion`VectorType[_,_] | CConversion`ArrayType[_,_]}] :=
+    Module[{i},
+           RuleDelayed @@ Rule[parameter[i_], parameter[i-1]]
           ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`MatrixType[_,_,_]}] :=
+    Module[{i,j},
+           RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]]
+          ];
+
+CreateIndexReplacementRule[parameter_] :=
+    Module[{i,j,k,l, dim, rule},
+           dim = SARAH`getDimParameters[parameter];
+           rule = {};
+           Switch[Length[dim],
+                  1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
+                  2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
+                  3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
+                  4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
+                 ];
+           rule
+          ];
+
+CreateIndexReplacementRules[pars_List] :=
+    Flatten[CreateIndexReplacementRule /@ pars];
 
 GetGUTNormalization[coupling_Symbol] :=
     Module[{pos, norm},
@@ -854,7 +873,7 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses, phases},
+            poleMasses, phases, depNum},
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
@@ -866,10 +885,12 @@ CreateLocalConstRefs[expr_] :=
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
+           (result = result <> DefineLocalConstCopy[#,"DERIVEDPARAMETER"])& /@ depNum;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
@@ -937,26 +958,35 @@ FillInputParametersFromTuples[minpar_List, blockName_String] :=
            Return[result];
           ];
 
-DecreaseIndex[ind_Integer] := ind - 1;
-DecreaseIndex[ind_]        := ind;
-DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
-DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
-DecreaseIndices[a_]        := a;
-DecreaseIndices[SARAH`Delta[a_, b_]] :=
-    CConversion`FSKroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
+IncreaseIndex[ind_Integer, num_Integer] := ind + num;
+IncreaseIndex[ind_, _]     := ind;
+IncreaseIndices[a_[{ind__}], num_Integer] := a[IncreaseIndex[#,num]& /@ {ind}];
+IncreaseIndices[a_[ind__], num_Integer] := a[Sequence @@ (IncreaseIndex[#,num]& /@ {ind})];
+IncreaseIndices[a_, _]     := a;
+IncreaseIndices[SARAH`Delta[a_, b_], num_Integer] :=
+    CConversion`FSKroneckerDelta[IncreaseIndex[a,num], IncreaseIndex[b,num]];
 
-DecreaseIndexLiterals[expr_] :=
-    DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,
-                                     allOutputParameters]];
+IncreaseIndexLiterals[expr_] :=
+    IncreaseIndexLiterals[expr, 1];
 
-DecreaseIndexLiterals[expr_, heads_List] :=
+IncreaseIndexLiterals[expr_, num_Integer] :=
+    IncreaseIndexLiterals[expr, num, Join[allInputParameters, allModelParameters,
+                                          allOutputParameters]];
+
+IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
     Module[{indexedSymbols, rules, decrExpr, allHeads},
            allHeads = Join[heads /. FlexibleSUSY`M -> Identity, {SARAH`Delta, SARAH`ThetaStep}];
            indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
-           rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
+           rules = Rule[#, IncreaseIndices[#,num]] & /@ indexedSymbols;
            decrExpr = expr /. rules;
            Return[decrExpr]
           ];
+
+DecreaseIndexLiterals[expr_] :=
+    IncreaseIndexLiterals[expr, -1];
+
+DecreaseIndexLiterals[expr_, heads_List] :=
+    IncreaseIndexLiterals[expr, -1, heads];
 
 DecreaseSumIdices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
@@ -1008,8 +1038,8 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
                              {___, SARAH`Description -> description, ___}} :>
                             particle];
            If[Length[particle] == 0,
-              Print["Error: Particle with description \"", description,
-                    "\" not found."];
+              DebugPrint["Note: Particle with description \"", description,
+                         "\" not found."];
               Return[Null];
              ];
            If[Length[particle] > 1,
@@ -1017,6 +1047,13 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
                     "\" not unique."];
              ];
            particle[[1]]
+          ];
+
+GetParticleFromDescription[multipletName_String, splitNames_List] :=
+    Module[{result},
+           result = GetParticleFromDescription[multipletName];
+           If[result =!= Null, Return[{result}]];
+           GetParticleFromDescription /@ splitNames
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
@@ -1133,6 +1170,15 @@ GetThirdGeneration[par_] :=
           IsMatrix[par], par[2,2],
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
+
+GetDependenceNumSymbols[] :=
+    DeleteDuplicates @ Flatten @
+    Join[{SARAH`Weinberg},
+         Cases[SARAH`ParameterDefinitions,
+               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
+                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
+                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
+        ];
 
 End[];
 

@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "threshold_loop_functions.hpp"
 #include "weinberg_angle.hpp"
 
 #include <cassert>
@@ -40,13 +41,16 @@ namespace flexiblesusy {
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
 #define LowEnergyConstant(p) Electroweak_constants::p
+#define MZPole oneset.displayPoleMZ()
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
+#define SCALE model->get_scale()
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 #define CKM ckm
 #define PMNS pmns
 #define THETAW theta_w
+#define THRESHOLD static_cast<int>(model->get_thresholds())
 #define ALPHA_EM_DRBAR alpha_em_drbar
 #define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 
@@ -79,7 +83,7 @@ namespace flexiblesusy {
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
-   @ModelName@<Two_scale>* model_, const QedQcd& oneset_)
+   @ModelName@<Two_scale>* model_, const softsusy::QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(model_)
    , oneset(oneset_)
@@ -138,12 +142,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::set_model(Two_scale_model* mod
    model = cast_model<@ModelName@<Two_scale>*>(model_);
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)
+void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(
+   const softsusy::QedQcd& oneset_)
 {
    oneset = oneset_;
 }
 
-const QedQcd& @ModelName@_low_scale_constraint<Two_scale>::get_sm_parameters() const
+const softsusy::QedQcd& @ModelName@_low_scale_constraint<Two_scale>::get_sm_parameters() const
 {
    return oneset;
 }
@@ -153,7 +158,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    scale = 0.;
    initial_scale_guess = 0.;
    model = NULL;
-   oneset = QedQcd();
+   oneset = softsusy::QedQcd();
    MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
@@ -204,8 +209,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
           "calculate_threshold_corrections(): model pointer is zero");
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = oneset.displayAlpha(softsusy::ALPHA);
+   const double alpha_s  = oneset.displayAlpha(softsusy::ALPHAS);
    const double mw_pole  = oneset.displayPoleMW();
    const double mz_pole  = oneset.displayPoleMZ();
 
@@ -288,12 +293,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
           "calculate_@UpYukawa@_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
-   topDRbar(0,0)      = oneset.displayMass(mUp);
-   topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = oneset.displayMass(mTop);
+   topDRbar(0,0)      = oneset.displayMass(softsusy::mUp);
+   topDRbar(1,1)      = oneset.displayMass(softsusy::mCharm);
+   topDRbar(2,2)      = oneset.displayMass(softsusy::mTop);
 
-   if (model->get_thresholds())
-      topDRbar(2,2) = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
+   if (model->get_thresholds()) {
+@calculateDRbarMassTop@
+   }
 
 @setDRbarUpQuarkYukawaCouplings@
 }
@@ -304,12 +310,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
           "calculate_@DownYukawa@_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
-   bottomDRbar(0,0)   = oneset.displayMass(mDown);
-   bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = oneset.displayMass(mBottom);
+   bottomDRbar(0,0)   = oneset.displayMass(softsusy::mDown);
+   bottomDRbar(1,1)   = oneset.displayMass(softsusy::mStrange);
+   bottomDRbar(2,2)   = oneset.displayMass(softsusy::mBottom);
 
-   if (model->get_thresholds())
-      bottomDRbar(2,2) = model->calculate_M@BottomQuark@_DRbar(oneset.displayMass(mBottom), 2);
+   if (model->get_thresholds()) {
+@calculateDRbarMassBottom@
+   }
 
 @setDRbarDownQuarkYukawaCouplings@
 }
@@ -320,14 +327,14 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
           "calculate_@ElectronYukawa@_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = oneset.displayMass(mElectron);
-   electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = oneset.displayMass(mTau);
+   electronDRbar(0,0) = oneset.displayMass(softsusy::mElectron);
+   electronDRbar(1,1) = oneset.displayMass(softsusy::mMuon);
+   electronDRbar(2,2) = oneset.displayMass(softsusy::mTau);
 
    if (model->get_thresholds()) {
-      electronDRbar(0,0) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mElectron), 0);
-      electronDRbar(1,1) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mMuon), 1);
-      electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
+@calculateDRbarMassElectron@
+@calculateDRbarMassMuon@
+@calculateDRbarMassTau@
    }
 
 @setDRbarElectronYukawaCouplings@

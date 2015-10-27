@@ -33,6 +33,9 @@
 
 namespace softsusy {
 
+using std::fabs;
+using std::sqrt;
+
 ///< default SUSY breaking boundary condition scale
 const double mxDefault = 1.9e16; 
 

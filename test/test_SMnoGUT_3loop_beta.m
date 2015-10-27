@@ -1,7 +1,7 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["ThreeLoopSM`", "ThreeLoopSM.m"];
 
-$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
+FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
 
 Print["testing BetaSM[] ..."];
 

@@ -29,8 +29,8 @@
  * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
-#ifndef @ModelName@_IMODEL_H
-#define @ModelName@_IMODEL_H
+#ifndef @ModelName@_MASS_EIGENSTATES_H
+#define @ModelName@_MASS_EIGENSTATES_H
 
 #include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"
@@ -79,9 +79,13 @@ public:
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
+   const Two_loop_corrections& get_two_loop_corrections() const;
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
+   std::size_t get_number_of_ewsb_iterations() const;
+   std::size_t get_number_of_mass_iterations() const;
    void set_pole_mass_loop_order(unsigned);
+   unsigned get_pole_mass_loop_order() const;
    void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
@@ -99,6 +103,7 @@ public:
    void run_to(double scale, double eps = -1.0);
    void print(std::ostream&) const;
    void set_precision(double);
+   double get_precision() const;
 
 @lspGetters@
 @massGetters@
@@ -115,6 +120,7 @@ public:
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
+@threeLoopSelfEnergyPrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
 @dependenceNumPrototypes@

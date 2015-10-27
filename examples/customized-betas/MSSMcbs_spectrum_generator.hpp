@@ -71,7 +71,7 @@ public:
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
 
-   void run(const QedQcd& oneset, const CMSSM_input_parameters& input);
+   void run(const softsusy::QedQcd& oneset, const CMSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "CMSSM_spectrum.dat") const;
 
@@ -102,7 +102,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
+void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
 					const CMSSM_input_parameters& input)
 {
    model.clear();

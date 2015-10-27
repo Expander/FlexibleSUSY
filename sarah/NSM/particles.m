@@ -13,7 +13,7 @@ ParticleDefinitions[GaugeES] = {
                LaTeX -> "H^+",
                OutputName -> "Hp" }},
 
-    {S0,  {    PDG -> {0},
+    {s0,  {    PDG -> {0},
                Width -> 0,
                Mass -> Automatic,
                FeynArtsNr -> 3,
@@ -73,7 +73,7 @@ WeylFermionAndIndermediate = {
                Mass -> Automatic,
                LaTeX -> "H",
                OutputName -> "" }},
-    {S,      { PDG -> {0},
+    {s,      { PDG -> {0},
                Width -> 0,
                Mass -> Automatic,
                LaTeX -> "S",

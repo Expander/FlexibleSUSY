@@ -20,6 +20,8 @@
 
 #include <cassert>
 
+using namespace softsusy;
+
 namespace flexiblesusy {
 
 StandardModelCW<Two_scale>::StandardModelCW()

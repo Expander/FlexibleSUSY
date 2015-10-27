@@ -20,6 +20,7 @@
 #define SMCW_TWO_SCALE_H
 
 #include "smcw.hpp"
+#include "linalg.h"
 #include "sm_two_scale.hpp"
 
 #include <iostream>
@@ -40,8 +41,8 @@ public:
    StandardModelCW();
    StandardModelCW(const StandardModelCW<Two_scale>&);
    StandardModelCW(const StandardModel<Two_scale>&, double, double, double);
-   StandardModelCW(const DoubleMatrix& yu, const DoubleMatrix& yd,
-                   const DoubleMatrix& ye, const DoubleVector& g,
+   StandardModelCW(const softsusy::DoubleMatrix& yu, const softsusy::DoubleMatrix& yd,
+                   const softsusy::DoubleMatrix& ye, const softsusy::DoubleVector& g,
                    double lambda, double vs);
 
    virtual ~StandardModelCW();
@@ -56,7 +57,7 @@ public:
    /// Set a single gauge coupling
    virtual void setGaugeCoupling(int, double);
    /// Set all gauge couplings
-   virtual void setAllGauge(const DoubleVector&);
+   virtual void setAllGauge(const softsusy::DoubleVector&);
    /// Set lambda parameter
    void setLambda(double l) { lambda = l; }
    /// Set s VEV
@@ -65,7 +66,7 @@ public:
    /// Returns a single gauge coupling
    virtual double displayGaugeCoupling(int) const;
    /// Returns all gauge couplings
-   virtual DoubleVector displayGauge() const;
+   virtual softsusy::DoubleVector displayGauge() const;
    /// Returns lambda parameter
    double displayLambda() const { return lambda; }
    /// Returns s VEV
@@ -78,11 +79,11 @@ public:
 
 protected:
    /// Sets all RGE parameters to elements of vector
-   virtual void set(const DoubleVector&);
+   virtual void set(const softsusy::DoubleVector&);
    /// Returns all parameters as elements of a vector
-   virtual const DoubleVector display() const;
+   virtual const softsusy::DoubleVector display() const;
    /// Calculate beta functions
-   virtual DoubleVector beta() const;
+   virtual softsusy::DoubleVector beta() const;
 
 private:
    double g4;     ///< g4 gauge coupling

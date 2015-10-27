@@ -6,10 +6,11 @@
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
 FLEXIBLESUSY_MINOR=2
-FLEXIBLESUSY_PATCH=1
+FLEXIBLESUSY_PATCH=4
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
+GM2CALC_VERSION="0.2.16-dev"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -150,9 +151,7 @@ looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2"
-CXXFLAGS_DEP_GEN="-std=c++11"
 CFLAGS="-O2"
-CFLAGS_DEP_GEN=""
 FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
@@ -162,25 +161,23 @@ LDFLAGS=""
 LDLIBS=""
 LIBEXT=".a"
 CXX="g++"
-CXX_DEP_GEN="${CXX}"
 CC="gcc"
-CC_DEP_GEN="${CC}"
 EIGENFLAGS=""
 FC="gfortran"
-FOR_DEP_GEN="${FC}"
 GSLLIBS=""
 INSTALL_DIR=""
 BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
+OPTIONAL_MODULES=""
 tsil_lib_dir=""
 tsil_inc_dir=""
 # available RG algorithms
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
-MODELS="all"
+MODELS=""
 # addons that will be compiled
 ADDONS=""
 
@@ -194,16 +191,8 @@ required_gpp_compiler_version="4.4.7"
 required_clang_compiler_version="3.1.0"
 required_icpc_compiler_version="12.1.0"
 
-# C++ dependency generator type and version
-cxx_dep_gen_type="unknown"
-cxx_dep_gen_version="unknown"
-
-# required C++ dependency generator versions
-# to be added
-
-# C++ compiler and dependency generator versions accepting `-std=c++11'
+# C++ compiler versions accepting `-std=c++11'
 std_cxx11_compiler_version="unknown"
-std_cxx11_dep_gen_version="unknown"
 std_cxx11_gpp_version="4.7.0"
 std_cxx11_clang_version="3.0.0"
 std_cxx11_icpc_version="13.0.0"
@@ -1286,43 +1275,6 @@ check_icpc_features() {
 }
 
 #_____________________________________________________________________
-check_cxx_dep_gen_type() {
-    checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
-
-    get_cxx_compiler_type "$CXX_DEP_GEN" cxx_dep_gen_type || return 1
-
-    case "$cxx_dep_gen_type" in
-    gnu)   result "GNU"
-	   std_cxx11_dep_gen_version="$std_cxx11_gpp_version" ;;
-    clang) result "Clang"
-	   std_cxx11_dep_gen_version="$std_cxx11_clang_version" ;;
-    intel) result "Intel"
-	   std_cxx11_dep_gen_version="$std_cxx11_icpc_version" ;;
-    *)     result "unknown"
-    esac
-
-    logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
-}
-
-#_____________________________________________________________________
-check_cxx_dep_gen_version() {
-    checking_msg "$CXX_DEP_GEN dependency generator version"
-
-    case "$cxx_dep_gen_type" in
-    gnu)   get_gpp_version   "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    clang) get_clang_version "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    intel) get_icpc_version  "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
-    *)     result "unknown"
-	   message "Warning: could not check C++ dependency generator version because"
-           message "   its type is unknown."
-	   return 1 ;;
-    esac
-
-    result "$cxx_dep_gen_version"
-    logmsg "   $CXX_DEP_GEN dependency generator version found: $cxx_dep_gen_version"
-}
-
-#_____________________________________________________________________
 get_cxx_compiler_type() {
     if test $# -ne 2; then
         message "get_cxx_compiler_type(): too few arguments"
@@ -1510,31 +1462,6 @@ check_cxxflags() {
 }
 
 #_____________________________________________________________________
-check_cxx_dep_gen() {
-    checking_msg "C++ file dependency generator $CXX_DEP_GEN"
-    exists_in_path "$CXX_DEP_GEN"
-    if [ -z "$cmd" ] ; then
-        result "not found"
-        message "Error: A C++ file dependency generator must be installed!"
-        message "   Use --with-cxx-dep-gen= to specify the dependency generator"
-        message "   that should be used."
-        exit 1
-    else
-        result "found $cmd"
-    fi
-}
-
-#_____________________________________________________________________
-check_cxxflags_dep_gen() {
-    if version_at_least "$cxx_dep_gen_version" \
-			"$std_cxx11_dep_gen_version"; then
-        CXXFLAGS_DEP_GEN="-std=c++11"
-    else
-        CXXFLAGS_DEP_GEN="-std=c++0x"
-    fi
-}
-
-#_____________________________________________________________________
 check_eigen_incl() {
     eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
                      /usr/local/include/eigen3"
@@ -1653,21 +1580,6 @@ check_fortran_libs() {
         ifort)
             FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
     esac
-}
-
-#_____________________________________________________________________
-check_fortran_dep_gen() {
-    checking_msg "Fortran file dependency generator $FOR_DEP_GEN"
-    exists_in_path "$FOR_DEP_GEN"
-    if [ -z "$cmd" ] ; then
-        result "not found"
-        message "Error: A Fortran file dependency generator must be installed!"
-        message "   Use --with-fortran-dep-gen= to specify the dependency generator"
-        message "   that should be used."
-        exit 1
-    else
-        result "found $cmd"
-    fi
 }
 
 #_____________________________________________________________________
@@ -2125,17 +2037,12 @@ replace_markers() {
 	-e "s|@THREADLIBS@|$THREADLIBS|"   \
 	-e "s|@CPPFLAGS@|$CPPFLAGS|"       \
 	-e "s|@CXXFLAGS@|$CXXFLAGS|"       \
-	-e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
 	-e "s|@CXX@|$CXX|"                 \
-	-e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
 	-e "s|@CFLAGS@|$CFLAGS|"           \
-	-e "s|@CFLAGS_DEP_GEN@|$CFLAGS_DEP_GEN|" \
 	-e "s|@CC@|$CC|"                   \
-	-e "s|@CC_DEP_GEN@|$CC_DEP_GEN|"   \
 	-e "s|@FC@|$FC|"                   \
 	-e "s|@FFLAGS@|$FFLAGS|"           \
 	-e "s|@FLIBS@|$FLIBS|"             \
-	-e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
 	-e "s|@FSCONFIG@|$FSCONFIG|"       \
 	-e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
 	-e "s|@GSLLIBS@|$GSLLIBS|"         \
@@ -2157,6 +2064,7 @@ replace_markers() {
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
@@ -2209,13 +2117,11 @@ Package directories, compilation settings and model selection
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
   --with-cxxflags=          C++ compiler flags (default: $CXXFLAGS)
-  --with-cxx-dep-gen=       C++ file dependency generator (default: $CXX_DEP_GEN)
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
   --with-flibs=             Fortran libraries (default: $FLIBS)
                             If empty, FLIBS will be determined automatically.
-  --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
@@ -2225,7 +2131,9 @@ Package directories, compilation settings and model selection
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
-  --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+  --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
   --with-tsil-libdir=       Path to search for TSIL library
   --with-tsil-incdir=       Path to search for TSIL header
 EOF
@@ -2314,15 +2222,12 @@ if test $# -gt 0 ; then
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cc=*)             CC=$optarg ;;
             --with-cflags=*)         CFLAGS=$optarg ;;
-            --with-cc-dep-gen=*)     CC_DEP_GEN=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
-            --with-cxx-dep-gen=*)    CXX_DEP_GEN=$optarg ;;
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-flibs=*)          FLIBS=$optarg ;;
-            --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
@@ -2335,6 +2240,7 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
+            --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
@@ -2359,14 +2265,9 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_compiler_version
     check_cxx_compiler_features
     check_cxxflags
-    check_cxx_dep_gen
-    check_cxx_dep_gen_type
-    check_cxx_dep_gen_version
-    check_cxxflags_dep_gen
     check_cc
     check_fc
     check_fflags
-    check_fortran_dep_gen
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -2462,6 +2363,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"                 \
+    -e "s|@GM2CALC_VERSION@|$GM2CALC_VERSION|"       \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
     -e "s|@BLASLIBS@|$BLASLIBS|"                     \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \

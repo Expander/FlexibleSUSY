@@ -28,7 +28,7 @@ namespace flexiblesusy {
 class Two_scale;
 
 template<>
-class SoftsusyMSSM<Two_scale>: public Two_scale_model, public MssmSoftsusy {
+class SoftsusyMSSM<Two_scale>: public Two_scale_model, public softsusy::MssmSoftsusy {
 public:
    SoftsusyMSSM();
    virtual ~SoftsusyMSSM();
@@ -36,7 +36,7 @@ public:
    virtual void calculate_spectrum();
    virtual std::string name() const { return "SoftsusyMSSM"; }
    virtual void run_to(double, double eps = -1.0);
-   virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
+   virtual void print(std::ostream& s) const { s << static_cast<softsusy::MssmSoftsusy>(*this); }
    virtual void set_precision(double p) { precision = p; }
 
    void set_scale(double scale) { setMu(scale); }
@@ -46,7 +46,7 @@ public:
 
 private:
    double precision;
-   SoftsusyMSSM(const SoftParsMssm&);
+   SoftsusyMSSM(const softsusy::SoftParsMssm&);
 };
 
 }

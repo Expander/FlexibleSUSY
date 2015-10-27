@@ -68,7 +68,7 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark, conversion = 0},
-           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaEm / (2 Pi);
            conversion = Switch[renormalizationScheme,
                                FlexibleSUSY`DRbar, 1/3,
@@ -88,7 +88,7 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
 
 CalculateDeltaAlphaS[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
-           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateColorCoupling[renormalizationScheme];
@@ -291,8 +291,8 @@ CalculateThetaWFromFermiConstantSUSY[options_List] :=
             gHyp, gLef, gCol,
             localConstRefs = ""
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
-           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
            mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
            mtStr   = GetParameter[mTop];
            mbStr   = GetParameter[mBot];
@@ -419,8 +419,8 @@ CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
             zStr, wStr, ymStr,
             gHyp, gLef, gCol
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
-           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
            mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
            gHyp    = Utils`FSGetOption[options, FlexibleSUSY`FSHyperchargeCoupling];
            gLef    = Utils`FSGetOption[options, FlexibleSUSY`FSLeftCoupling];
