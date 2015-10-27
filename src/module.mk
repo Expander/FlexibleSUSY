@@ -9,6 +9,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/build_info.cpp \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
+		$(DIR)/database.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
@@ -48,6 +49,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/convergence_tester.hpp \
 		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
+		$(DIR)/database.hpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.hpp \
 		$(DIR)/eigen_utils.hpp \
