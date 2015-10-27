@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.4 [not released yet]
+FlexibleSUSY-1.2.4 [October, 27 2015]
 
  * Change (commit 33af37c): The spectrum generator, run_<model>.x,
    will no longer overwrite the user-given input parameters of the
