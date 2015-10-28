@@ -1113,6 +1113,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
+            particleMixingEnum = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
@@ -1129,6 +1130,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[GetMixingMatrixSymbol /@ massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
@@ -1158,6 +1160,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
+                            "@particleMixingEnum@" -> IndentText[WrapLines[particleMixingEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
                             "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
