@@ -134,8 +134,24 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
 {
    using utilities::append;
 
-   std::vector<std::string> names;
-   Eigen::ArrayXd values;
+   std::vector<std::string> names(7,"");
+   Eigen::ArrayXd values(7);
+
+   // fill settings
+   names[0] = "RGE_loop_order";
+   names[1] = "Threshold_loop_order";
+   names[2] = "EWSB_loop_order";
+   names[3] = "Pole_mass_loop_order";
+   names[4] = "BVP_precision_goal";
+   names[5] = "EWSB_precision_goal";
+   names[6] = "Q";
+   values(0) = model.get_loops();
+   values(1) = model.get_thresholds();
+   values(2) = model.get_ewsb_loop_order();
+   values(3) = model.get_pole_mass_loop_order();
+   values(4) = model.get_precision();
+   values(5) = model.get_ewsb_iteration_precision();
+   values(6) = model.get_scale();
 
    // fill DR-bar parameters
    append(names, @ModelName@_parameter_getter().get_parameter_names());
@@ -162,7 +178,7 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    Database db(file_name);
    const Eigen::ArrayXd values(db.extract("Point", entry));
 
-   if (values.rows() != number_of_parameters + number_of_masses + number_of_mixings) {
+   if (values.rows() != 7 + number_of_parameters + number_of_masses + number_of_mixings) {
       ERROR("data set " << entry << " extracted from " << file_name
             << " contains " << values.rows() << " entries."
             " Expected number of entries: "
@@ -170,8 +186,21 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
       return model;
    }
 
-   model.set(values.block(0, 0, number_of_parameters, 1));
-   model.get_physical().set(values.block(number_of_parameters, 0, number_of_masses + number_of_mixings, 1));
+   unsigned offset = 0;
+
+   model.set_loops(values(offset++));
+   model.set_thresholds(values(offset++));
+   model.set_ewsb_loop_order(values(offset++));
+   model.set_pole_mass_loop_order(values(offset++));
+   model.set_precision(values(offset++));
+   model.set_ewsb_iteration_precision(values(offset++));
+   model.set_scale(values(offset++));
+
+   model.set(values.block(offset, 0, number_of_parameters, 1));
+   offset += number_of_parameters;
+
+   model.get_physical().set(values.block(offset, 0, number_of_masses + number_of_mixings, 1));
+   offset += number_of_masses + number_of_mixings;
 
    return model;
 }
