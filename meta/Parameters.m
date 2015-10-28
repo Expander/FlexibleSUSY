@@ -7,6 +7,8 @@ CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
+CreateInputParameterEnum::usage="";
+CreateInputParameterNames::usage="";
 
 CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
@@ -747,6 +749,36 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
                     <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
              ];
            Return[ass];
+          ];
+
+CreateInputParameterEnum[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterEnums[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           If[Length[inputParameters] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_INPUT_PARAMETERS";
+           result = "enum Input_parameters : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateInputParameterNames[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterNamesStr[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           result = "const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {" <>
+                    result <> "};\n";
+           Return[result];
           ];
 
 SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
