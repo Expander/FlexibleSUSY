@@ -60,6 +60,13 @@ public:
       }
       return masses;
    }
+   std::size_t get_number_of_masses() const {
+      using namespace @ModelName@_info;
+      std::size_t number_of_masses = 0;
+      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++)
+         number_of_masses += particle_multiplicities[i];
+      return number_of_masses;
+   }
 };
 
 class @ModelName@_spectrum_plotter {
@@ -101,6 +108,9 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Arr
 
 /// append parameter point to database
 void to_database(const std::string&, const @ModelName@_mass_eigenstates&);
+
+/// fill model from an entry of the database
+@ModelName@_mass_eigenstates from_database(const std::string&, std::size_t);
 
 } // namespace flexiblesusy
 

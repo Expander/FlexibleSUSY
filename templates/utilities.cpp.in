@@ -149,4 +149,28 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    db.insert("Point", names, values);
 }
 
+@ModelName@_mass_eigenstates from_database(const std::string& file_name, std::size_t entry)
+{
+   using utilities::append;
+
+   @ModelName@_mass_eigenstates model;
+   const std::size_t number_of_parameters = model.get_number_of_parameters();
+   const std::size_t number_of_masses = @ModelName@_parameter_getter().get_number_of_masses();
+
+   Database db(file_name);
+   const Eigen::ArrayXd values(db.extract("Point", entry));
+
+   if (values.rows() != number_of_parameters + number_of_masses) {
+      ERROR("data set " << entry << " extracted from " << file_name
+            << " contains " << values.rows() << " entries."
+            "Expected number of entries: " << (number_of_parameters + number_of_masses));
+      return model;
+   }
+
+   model.set(values.block(0, 0, number_of_parameters, 1));
+   model.get_physical().set_masses(values.block(number_of_parameters, 0, number_of_masses, 1));
+
+   return model;
+}
+
 } // namespace flexiblesusy
