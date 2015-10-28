@@ -83,6 +83,10 @@ void test_parameter_equality(const T& a, const P& b)
    TEST_EQUALITY(a.get_loops(), b.get_loops());
    TEST_EQUALITY(a.get_scale(), b.get_scale());
    TEST_EQUALITY(a.get_thresholds(), b.get_thresholds());
+   TEST_EQUALITY(a.get_ewsb_loop_order(), b.get_ewsb_loop_order());
+   TEST_EQUALITY(a.get_pole_mass_loop_order(), b.get_pole_mass_loop_order());
+   TEST_EQUALITY(a.get_precision(), b.get_precision());
+   TEST_EQUALITY(a.get_ewsb_iteration_precision(), b.get_ewsb_iteration_precision());
 
    TEST_EQUALITY(a.get_g1(), b.get_g1());
    TEST_EQUALITY(a.get_g2(), b.get_g2());
