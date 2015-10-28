@@ -21,6 +21,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -40,6 +41,7 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
+   const std::string database_output_file(options.get_database_output_file());
    const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_source(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
@@ -91,6 +93,12 @@ int main(int argc, const char* argv[])
        spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
       slha_io.set_spectrum(model);
       slha_io.set_extra(model, scales);
+   }
+
+   if (!database_output_file.empty() &&
+       (!problems.have_problem() ||
+        spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
+      to_database(database_output_file, model);
    }
 
    if (slha_output_file.empty()) {
