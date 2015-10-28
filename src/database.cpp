@@ -55,7 +55,8 @@ void Database::insert(
    const std::size_t number_of_elements = data.rows();
 
    if (names.size() != number_of_elements) {
-      ERROR("number of names does not match vector size!");
+      ERROR("number of column names (" << names.size() <<
+            ") does not match vector size (" << number_of_elements << ")!");
       return;
    }
 
