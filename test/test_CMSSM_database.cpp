@@ -144,6 +144,23 @@ void test_mass_equality(const T& a, const P& b)
    TEST_EQUALITY(a.MVG, b.MVG);
    TEST_EQUALITY(a.MVWm, b.MVWm);
    TEST_EQUALITY(a.MVZ, b.MVZ);
+
+   TEST_EQUALITY(a.ZH, b.ZH);
+   TEST_EQUALITY(a.ZA, b.ZA);
+   TEST_EQUALITY(a.ZP, b.ZP);
+   TEST_EQUALITY(a.ZN, b.ZN);
+   TEST_EQUALITY(a.UM, b.UM);
+   TEST_EQUALITY(a.UP, b.UP);
+   TEST_EQUALITY(a.ZU, b.ZU);
+   TEST_EQUALITY(a.ZD, b.ZD);
+   TEST_EQUALITY(a.ZE, b.ZE);
+   TEST_EQUALITY(a.ZV, b.ZV);
+   TEST_EQUALITY(a.ZEL, b.ZEL);
+   TEST_EQUALITY(a.ZER, b.ZER);
+   TEST_EQUALITY(a.ZUL, b.ZUL);
+   TEST_EQUALITY(a.ZUR, b.ZUR);
+   TEST_EQUALITY(a.ZDL, b.ZDL);
+   TEST_EQUALITY(a.ZDR, b.ZDR);
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
