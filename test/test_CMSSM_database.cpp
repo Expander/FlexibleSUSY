@@ -72,6 +72,8 @@ void setup_CMSSM(CMSSM_mass_eigenstates& m, const CMSSM_input_parameters& input)
    m.set_vu(vu);
    m.set_vd(vd);
 
+   m.do_force_output(true);
+
    m.calculate_DRbar_masses();
    m.solve_ewsb();
    m.calculate_spectrum();
@@ -121,6 +123,29 @@ void test_parameter_equality(const T& a, const P& b)
    TEST_EQUALITY(a.get_vd(), b.get_vd());
 }
 
+template <class T, class P>
+void test_mass_equality(const T& a, const P& b)
+{
+   TEST_EQUALITY(a.Mhh, b.Mhh);
+   TEST_EQUALITY(a.MAh, b.MAh);
+   TEST_EQUALITY(a.MHpm, b.MHpm);
+   TEST_EQUALITY(a.MCha, b.MCha);
+   TEST_EQUALITY(a.MChi, b.MChi);
+   TEST_EQUALITY(a.MGlu, b.MGlu);
+   TEST_EQUALITY(a.MSu, b.MSu);
+   TEST_EQUALITY(a.MSd, b.MSd);
+   TEST_EQUALITY(a.MSe, b.MSe);
+   TEST_EQUALITY(a.MSv, b.MSv);
+   TEST_EQUALITY(a.MFu, b.MFu);
+   TEST_EQUALITY(a.MFd, b.MFd);
+   TEST_EQUALITY(a.MFe, b.MFe);
+   TEST_EQUALITY(a.MFv, b.MFv);
+   TEST_EQUALITY(a.MVP, b.MVP);
+   TEST_EQUALITY(a.MVG, b.MVG);
+   TEST_EQUALITY(a.MVWm, b.MVWm);
+   TEST_EQUALITY(a.MVZ, b.MVZ);
+}
+
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    CMSSM_input_parameters pp;
@@ -141,5 +166,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    gErrors = 0;
    test_parameter_equality(model, tmp);
+   test_mass_equality(model.get_physical(), tmp.get_physical());
    BOOST_REQUIRE(gErrors == 0);
 }
