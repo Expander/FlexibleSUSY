@@ -82,6 +82,9 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Arr
    return std::valarray<double>(v.data(), v.size());
 }
 
+/// append parameter point to database
+void to_database(const std::string&, const @ModelName@_mass_eigenstates&);
+
 } // namespace flexiblesusy
 
 #endif
