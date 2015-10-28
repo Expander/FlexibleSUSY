@@ -88,6 +88,8 @@ void test_parameter_equality(const T& a, const P& b)
    TEST_EQUALITY(a.get_precision(), b.get_precision());
    TEST_EQUALITY(a.get_ewsb_iteration_precision(), b.get_ewsb_iteration_precision());
 
+   TEST_EQUALITY(a.get_number_of_parameters(), b.get_number_of_parameters());
+
    TEST_EQUALITY(a.get_g1(), b.get_g1());
    TEST_EQUALITY(a.get_g2(), b.get_g2());
    TEST_EQUALITY(a.get_g3(), b.get_g3());
