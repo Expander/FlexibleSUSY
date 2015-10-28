@@ -65,6 +65,11 @@ public:
       return std::vector<std::string>(particle_mixing_names,
                                       particle_mixing_names + NUMBER_OF_MIXINGS);
    }
+   std::vector<std::string> get_input_parameter_names() const {
+      using namespace @ModelName@_info;
+      return std::vector<std::string>(input_parameter_names,
+                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
+   }
    std::size_t get_number_of_masses() const {
       using namespace @ModelName@_info;
       std::size_t number_of_masses = 0;
