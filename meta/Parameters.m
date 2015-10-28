@@ -8,6 +8,9 @@ CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
 
+CreateInputParameterArrayGetter::usage="";
+CreateInputParameterArraySetter::usage="";
+
 SetParameter::usage="set model parameter";
 SetInputParameter::usage="set input parameter";
 AddInputParameters::usage="add an input parameter";
@@ -444,7 +447,7 @@ CreateSetAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = name <> " = pars(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
@@ -523,7 +526,7 @@ CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = "pars(" <> ToString[startIndex] <> ") = "
                  <> name <> ";\n";
@@ -1179,6 +1182,37 @@ GetDependenceNumSymbols[] :=
                 parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
                 {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
         ];
+
+CreateInputParameterArrayGetter[inputParameters_List] :=
+    Module[{get = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               get = get <> assignment;
+               paramCount += nAssignments;
+              ];
+           get = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                 get <> "\n" <>
+                 "return pars;";
+           Return[get];
+          ];
+
+CreateInputParameterArraySetter[inputParameters_List] :=
+    Module[{set = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
 
 End[];
 
