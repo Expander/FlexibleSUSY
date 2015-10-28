@@ -19,6 +19,9 @@
 #include "database.hpp"
 #include "logger.hpp"
 
+#include <limits>
+#include <sstream>
+#include <iomanip>
 #include <sqlite3.h>
 
 namespace flexiblesusy {
@@ -58,7 +61,7 @@ void Database::insert(
    sql += ") VALUES (";
 
    for (std::size_t i = 0; i < number_of_elements; i++) {
-      sql += std::to_string(data[i]);
+      sql += to_string(data[i]);
       if (i + 1 != number_of_elements)
          sql += ',';
    }
@@ -112,6 +115,14 @@ sqlite3* Database::open(const std::string& file_name)
    }
 
    return db;
+}
+
+template <typename T>
+std::string Database::to_string(T number)
+{
+    std::ostringstream out;
+    out << std::setprecision(std::numeric_limits<T>::digits10) << number;
+    return out.str();
 }
 
 } // namespace flexiblesusy
