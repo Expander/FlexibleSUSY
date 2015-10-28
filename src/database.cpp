@@ -26,6 +26,16 @@
 
 namespace flexiblesusy {
 
+namespace database {
+template <typename T>
+std::string to_string(T number)
+{
+   std::ostringstream out;
+   out << std::setprecision(std::numeric_limits<T>::digits10) << number;
+   return out.str();
+}
+} // namespace database
+
 Database::Database(const std::string& file_name)
    : db(open(file_name))
 {
@@ -61,7 +71,7 @@ void Database::insert(
    sql += ") VALUES (";
 
    for (std::size_t i = 0; i < number_of_elements; i++) {
-      sql += to_string(data[i]);
+      sql += database::to_string(data[i]);
       if (i + 1 != number_of_elements)
          sql += ',';
    }
@@ -115,14 +125,6 @@ sqlite3* Database::open(const std::string& file_name)
    }
 
    return db;
-}
-
-template <typename T>
-std::string Database::to_string(T number)
-{
-    std::ostringstream out;
-    out << std::setprecision(std::numeric_limits<T>::digits10) << number;
-    return out.str();
 }
 
 } // namespace flexiblesusy
