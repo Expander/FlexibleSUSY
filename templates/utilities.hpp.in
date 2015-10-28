@@ -60,6 +60,11 @@ public:
       }
       return masses;
    }
+   std::vector<std::string> get_mixing_names() const {
+      using namespace @ModelName@_info;
+      return std::vector<std::string>(particle_mixing_names,
+                                      particle_mixing_names + NUMBER_OF_MIXINGS);
+   }
    std::size_t get_number_of_masses() const {
       using namespace @ModelName@_info;
       std::size_t number_of_masses = 0;
