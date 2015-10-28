@@ -29,13 +29,19 @@ public:
    ~Database();
 
    void insert(const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&);
+   Eigen::ArrayXd extract(const std::string&, std::size_t);
 
 private:
+   typedef int (*TCallback)(void*, int, char**, char**);
+
    sqlite3* db;
 
    sqlite3* open(const std::string&);
    void execute(const std::string&);
+   void execute(const std::string&, TCallback, void*);
    template <typename T> void create_table(const std::string&, const std::vector<std::string>&);
+
+   static int extract_callback(void*, int, char**, char**);
 };
 
 } // namespace flexiblesusy

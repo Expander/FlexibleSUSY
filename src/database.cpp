@@ -22,6 +22,7 @@
 #include <limits>
 #include <sstream>
 #include <iomanip>
+#include <boost/lexical_cast.hpp>
 #include <sqlite3.h>
 
 namespace flexiblesusy {
@@ -81,6 +82,14 @@ void Database::insert(
    execute(sql);
 }
 
+Eigen::ArrayXd Database::extract(const std::string& table_name, std::size_t row)
+{
+   Eigen::ArrayXd values;
+   const std::string sql("SELECT * FROM " + table_name + " LIMIT 1 OFFSET " + std::to_string(row) + ";");
+   execute(sql, extract_callback, static_cast<void*>(&values));
+   return values;
+}
+
 template <typename T>
 void Database::create_table(
    const std::string& table_name, const std::vector<std::string>& names)
@@ -112,6 +121,19 @@ void Database::execute(const std::string& cmd)
    }
 }
 
+void Database::execute(const std::string& cmd, TCallback callback, void* data)
+{
+   char* zErrMsg = 0;
+   const int rc = sqlite3_exec(db, cmd.c_str(), callback, data, &zErrMsg);
+
+   if (rc != SQLITE_OK) {
+      ERROR("SQL error while executing command \"" << cmd << "\": " << zErrMsg);
+      sqlite3_free(zErrMsg);
+   } else {
+      VERBOSE_MSG("SQL command \"" << cmd << "\" executed successfully");
+   }
+}
+
 sqlite3* Database::open(const std::string& file_name)
 {
    sqlite3* db = 0;
@@ -125,6 +147,19 @@ sqlite3* Database::open(const std::string& file_name)
    }
 
    return db;
+}
+
+int Database::extract_callback(void* data, int argc, char** argv, char** col_name)
+{
+   Eigen::ArrayXd* values = static_cast<Eigen::ArrayXd*>(data);
+   values->conservativeResize(argc);
+
+   for (std::size_t i = 0; i < argc; i++) {
+      (*values)(i) = boost::lexical_cast<double>(argv[i]);
+      VERBOSE_MSG(col_name[i] << " = " << argv[i]);
+   }
+
+   return 0;
 }
 
 } // namespace flexiblesusy
