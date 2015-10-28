@@ -86,7 +86,7 @@ void Database::create_table(
    execute(sql);
 }
 
-void Database::execute(std::string& cmd)
+void Database::execute(const std::string& cmd)
 {
    char* zErrMsg = 0;
    const int rc = sqlite3_exec(db, cmd.c_str(), 0, 0, &zErrMsg);
@@ -95,7 +95,7 @@ void Database::execute(std::string& cmd)
       ERROR("SQL error while executing command \"" << cmd << "\": " << zErrMsg);
       sqlite3_free(zErrMsg);
    } else {
-      VERBOSE_MSG("SQL command " << cmd << " executed created successfully");
+      VERBOSE_MSG("SQL command \"" << cmd << "\" executed successfully");
    }
 }
 

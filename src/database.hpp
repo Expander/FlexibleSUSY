@@ -34,7 +34,7 @@ private:
    sqlite3* db;
 
    sqlite3* open(const std::string&);
-   void execute(std::string&);
+   void execute(const std::string&);
    template <typename T> void create_table(const std::string&, const std::vector<std::string>&);
 };
 
