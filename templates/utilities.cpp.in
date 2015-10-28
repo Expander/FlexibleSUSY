@@ -34,6 +34,22 @@
 
 namespace flexiblesusy {
 
+namespace utilities {
+
+void append(std::vector<std::string>& a, const std::vector<std::string>& b)
+{
+   a.insert(a.end(), b.begin(), b.end());
+}
+
+void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)
+{
+   const unsigned a_rows = a.rows();
+   a.conservativeResize(a_rows + b.rows());
+   a.block(a_rows, 0, b.rows(), 1) = b;
+}
+
+} // namespace utilities
+
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
    , scale(0.0)
@@ -116,8 +132,21 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(double v)
 
 void to_database(const std::string& file_name, const @ModelName@_mass_eigenstates& model)
 {
+   using utilities::append;
+
+   std::vector<std::string> names;
+   Eigen::ArrayXd values;
+
+   // fill DR-bar parameters
+   append(names, @ModelName@_parameter_getter().get_parameter_names());
+   append(values, model.get());
+
+   // fill pole masses
+   append(names, @ModelName@_parameter_getter().get_mass_names());
+   append(values, model.get_physical().get_masses());
+
    Database db(file_name);
-   db.insert("DRbar_parameters", @ModelName@_parameter_getter().get_parameter_names(), model.get());
+   db.insert("Point", names, values);
 }
 
 } // namespace flexiblesusy
