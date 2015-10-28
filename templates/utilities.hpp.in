@@ -21,7 +21,7 @@
 #ifndef @ModelName@_UTILITIES_H
 #define @ModelName@_UTILITIES_H
 
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_info.hpp"
 #include "wrappers.hpp"
 
