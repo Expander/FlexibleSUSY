@@ -601,7 +601,7 @@ CreateParticleMixingEnum[mixings_List] :=
     Module[{flatMixings, i, m, mix, name, type, result = ""},
            flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
            For[i = 1, i <= Length[flatMixings], i++,
-               mix  = GetMixingMatrixSymbol[flatMixings[[i]]];
+               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
                type = GetMixingMatrixType[flatMixings[[i]]];
                For[m = 1, m <= Length[mix], m++,
                    name = Parameters`CreateParameterEnums[mix[[m]],type];
@@ -660,7 +660,7 @@ CreateParticleMixingNames[mixings_List] :=
     Module[{flatMixings, i, m, mix, name, type, result = ""},
            flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
            For[i = 1, i <= Length[flatMixings], i++,
-               mix  = GetMixingMatrixSymbol[flatMixings[[i]]];
+               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
                type = GetMixingMatrixType[flatMixings[[i]]];
                For[m = 1, m <= Length[mix], m++,
                    name = Parameters`CreateParameterNamesStr[mix[[m]],type];
