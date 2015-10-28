@@ -838,6 +838,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             callAllLoopMassFunctions = "",
             callAllLoopMassFunctionsInThreads = "",
             printMasses = "", printMixingMatrices = "",
+            getPhysical = "", setPhysical = "",
+            getMasses = "", setMasses = "",
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
@@ -951,6 +953,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
+           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
+           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatrices, "pars"];
+           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
+           setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
@@ -1044,6 +1050,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@callAllLoopMassFunctions@"     -> IndentText[callAllLoopMassFunctions],
                             "@callAllLoopMassFunctionsInThreads@" -> IndentText[callAllLoopMassFunctionsInThreads],
                             "@printMasses@"                  -> IndentText[printMasses],
+                            "@getPhysical@"                  -> IndentText[getPhysical],
+                            "@setPhysical@"                  -> IndentText[setPhysical],
+                            "@getMasses@"                    -> IndentText[getMasses],
+                            "@setMasses@"                    -> IndentText[setMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
                             "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],

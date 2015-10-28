@@ -55,6 +55,11 @@ ClearOutputParameters::usage="clears masses and mixing matrices";
 
 CopyDRBarMassesToPoleMasses::usage="copies DRbar mass to pole mass";
 
+CreateMassArrayGetter::usage="";
+CreateMassArraySetter::usage="";
+CreatePhysicalArrayGetter::usage="";
+CreatePhysicalArraySetter::usage="";
+
 GetParticles::usage="returns list of particles";
 
 GetSusyParticles::usage="returns list of susy particles";
@@ -93,7 +98,9 @@ matrix";
 
 GetMassOfUnmixedParticle::usage="returns mass of unmixed particle";
 
+GetMassType::usage="returns mass array type of particle";
 GetMassMatrixType::usage="returns mass matrix type of particle";
+GetMixingMatrixType::usage="returns mixing matrix type of particle";
 
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
@@ -386,6 +393,16 @@ GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
            numberOfGoldstones = GetDimensionStartSkippingGoldstones[sym] - 1;
            dim = GetDimension[sym] - numberOfGoldstones;
            If[dim <= 0, 0, dim]
+          ];
+
+GetMassType[FlexibleSUSY`M[particle_]] := GetMassType[particle];
+
+GetMassType[particle_] :=
+    Module[{dim = GetDimension[particle]},
+           If[dim == 1,
+              CConversion`ScalarType[CConversion`realScalarCType],
+              CConversion`VectorType[CConversion`realScalarCType, dim]
+             ]
           ];
 
 GetMassMatrixType[particle_] :=
@@ -1564,6 +1581,93 @@ ExpressionToString[expr_, result_String] :=
                   result, type, initalValue];
              ];
            exprStr
+          ];
+
+CountNumberOfMasses[masses_List] :=
+    Plus @@ (CountNumberOfMasses /@ masses);
+
+CountNumberOfMasses[mass_FSMassMatrix] :=
+    CountNumberOfMasses[GetMassEigenstate[mass]];
+
+CountNumberOfMasses[mass_] :=
+    GetDimension[mass];
+
+CreateMixingMatrixArrayGetterSetter[masses_List, offset_Integer, func_] :=
+    Module[{display = "", paramCount = 0, name = "", mass,
+            i, assignment = "", nAssignments = 0, CreateMixingAssignment},
+           CreateMixingAssignment[mix_ /; mix === Null, _, _] := {"", 0};
+           CreateMixingAssignment[{mix1_, mix2_}, paramCount_, type_] :=
+               Module[{assignment, nAssignments, a, n},
+                      {a, n} = CreateMixingAssignment[mix1,paramCount,type];
+                      assignment = a;
+                      nAssignments = n;
+                      {a, n} = CreateMixingAssignment[mix2,paramCount + n,type];
+                      assignment = assignment <> a;
+                      nAssignments += n;
+                      {assignment, nAssignments}
+                     ];
+           CreateMixingAssignment[mix_, paramCount_, type_] :=
+               func[CConversion`ToValidCSymbolString[mix], paramCount, type];
+           CreateMixingAssignment[mix_, paramCount_] :=
+               CreateMixingAssignment[GetMixingMatrixSymbol[mix], paramCount, GetMixingMatrixType[mix]];
+           For[i = 1, i <= Length[masses], i++,
+               mix = masses[[i]];
+               {assignment, nAssignments} = CreateMixingAssignment[mix, paramCount + offset];
+               display = display <> assignment;
+               paramCount += nAssignments;
+              ];
+           {display, paramCount}
+          ];
+
+CreateMassArrayGetter[masses_List] :=
+    Module[{display = "", paramCount = 0, name = "", mass,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[masses], i++,
+               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+               type = GetMassType[mass];
+               name = CConversion`ToValidCSymbolString[mass];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               display = display <> assignment;
+               paramCount += nAssignments;
+              ];
+           display = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                     display <> "\n" <>
+                     "return pars;";
+           Return[display];
+          ];
+
+CreatePhysicalArrayGetter[masses_List] :=
+    Module[{display = "", paramCount, assignment = "", nAssignments = 0},
+           paramCount = CountNumberOfMasses[masses];
+           {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateDisplayAssignment];
+           display = display <> assignment;
+           paramCount += nAssignments;
+           display = "pars.conservativeResize(" <> ToString[paramCount] <> ");\n\n" <>
+                     display;
+           Return[display];
+          ];
+
+CreateMassArraySetter[masses_List, array_String] :=
+    Module[{set = "", paramCount = 0, name = "", mass,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[masses], i++,
+               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+               type = GetMassType[mass];
+               name = CConversion`ToValidCSymbolString[mass];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
+
+CreatePhysicalArraySetter[masses_List, array_String] :=
+    Module[{set = "", paramCount, assignment = "", nAssignments = 0},
+           paramCount = CountNumberOfMasses[masses];
+           {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateSetAssignment];
+           set = set <> assignment;
+           paramCount += nAssignments;
+           Return[set];
           ];
 
 End[];
