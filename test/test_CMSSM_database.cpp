@@ -163,6 +163,16 @@ void test_mass_equality(const T& a, const P& b)
    TEST_EQUALITY(a.ZDR, b.ZDR);
 }
 
+template <class T, class P>
+void test_input_parameter_equality(const T& a, const P& b)
+{
+   TEST_EQUALITY(a.m0, b.m0);
+   TEST_EQUALITY(a.m12, b.m12);
+   TEST_EQUALITY(a.TanBeta, b.TanBeta);
+   TEST_EQUALITY(a.SignMu, b.SignMu);
+   TEST_EQUALITY(a.Azero, b.Azero);
+}
+
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    CMSSM_input_parameters pp;
@@ -170,9 +180,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
    pp.m12 = 500.;
    pp.TanBeta = 10.;
    pp.SignMu = 1;
-   pp.Azero = 0.;
+   pp.Azero = 0.1;
 
-   CMSSM_mass_eigenstates model;
+   CMSSM_mass_eigenstates model(pp);
    setup_CMSSM(model, pp);
 
    const std::string db_file("test/test_CMSSM_database.db");
@@ -184,5 +194,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
    gErrors = 0;
    test_parameter_equality(model, tmp);
    test_mass_equality(model.get_physical(), tmp.get_physical());
+   test_input_parameter_equality(model.get_input(), tmp.get_input());
    BOOST_REQUIRE(gErrors == 0);
 }
