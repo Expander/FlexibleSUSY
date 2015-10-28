@@ -1130,7 +1130,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
-           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[GetMixingMatrixSymbol /@ massMatrices];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];

@@ -596,13 +596,16 @@ CreateParticleEnum[particles_List] :=
           ];
 
 CreateParticleMixingEnum[mixings_List] :=
-    Module[{flatMixings, i, mix, name, result = ""},
-           flatMixings = Cases[Flatten[mixings], m_ /; m =!= Null];
+    Module[{flatMixings, i, m, mix, name, type, result = ""},
+           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
            For[i = 1, i <= Length[flatMixings], i++,
-               mix = flatMixings[[i]];
-               name = CConversion`ToValidCSymbolString[mix];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
+               mix  = GetMixingMatrixSymbol[flatMixings[[i]]];
+               type = GetMixingMatrixType[flatMixings[[i]]];
+               For[m = 1, m <= Length[mix], m++,
+                   name = Parameters`CreateParameterEnums[mix[[m]],type];
+                   If[i > 1 || m > 1, result = result <> ", ";];
+                   result = result <> name;
+                  ];
               ];
            (* append enum state for the number of mixing matrices *)
            If[Length[flatMixings] > 0, result = result <> ", ";];
