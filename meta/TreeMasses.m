@@ -19,6 +19,8 @@ CreateParticleNames::usage="creates a list of the particle's names";
 
 CreateParticleEnum::usage="creates an enum of the particles";
 
+CreateParticleMixingEnum::usage="creates enum with mixing matrices";
+
 CreateParticleMultiplicity::usage="creates array of the particle
 multiplicities";
 
@@ -589,6 +591,26 @@ CreateParticleEnum[particles_List] :=
            If[Length[particles] > 0, result = result <> ", ";];
            result = result <> "NUMBER_OF_PARTICLES";
            result = "enum Particles : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleMixingEnum[mixings_List] :=
+    Module[{flatMixings, i, m, mix, name, type, result = ""},
+           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           For[i = 1, i <= Length[flatMixings], i++,
+               mix  = GetMixingMatrixSymbol[flatMixings[[i]]];
+               type = GetMixingMatrixType[flatMixings[[i]]];
+               For[m = 1, m <= Length[mix], m++,
+                   name = Parameters`CreateParameterEnums[mix[[m]],type];
+                   If[i > 1 || m > 1, result = result <> ", ";];
+                   result = result <> name;
+                  ];
+              ];
+           (* append enum state for the number of mixing matrices *)
+           If[Length[flatMixings] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_MIXINGS";
+           result = "enum Mixings : unsigned {" <>
                     result <> "};\n";
            Return[result];
           ];
