@@ -46,7 +46,7 @@ void setup_CMSSM(CMSSM_mass_eigenstates& m, const CMSSM_input_parameters& input)
 
    m.set_input_parameters(input);
    m.set_scale(scale);
-   m.set_loops(1);
+   m.set_loops(2);
    m.set_thresholds(3);
    m.set_g1(g1);
    m.set_g2(g2);
