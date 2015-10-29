@@ -1672,6 +1672,7 @@ check_sqlite_libs() {
        "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         message "Error: libsqlite3 not found."
+        message "   To disable sqlite3 support, use the --disable-sqlite option."
         exit 1
     else
         local SQLITELIBS_="-lsqlite3"
@@ -1690,6 +1691,7 @@ check_sqlite_incl() {
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
         message "Error: sqlite.h not found in $sqlite_inc_dir $default_inc_paths."
+        message "   To disable sqlite3 support, use the --disable-sqlite option."
         exit 1
     else
         # assume that the compiler will look in the default paths
