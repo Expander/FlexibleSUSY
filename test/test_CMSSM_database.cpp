@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    to_database(db_file, model);
 
-   const CMSSM_mass_eigenstates tmp(from_database(db_file, 0));
+   const CMSSM_mass_eigenstates tmp(from_database(db_file, -1));
 
    gErrors = 0;
    test_parameter_equality(model, tmp);
