@@ -14,7 +14,8 @@ namespace softsusy {
 const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
    "alpha_em_MSbar_at_MZ", "GFermi", "alpha_s_MSbar_at_MZ", "MZ_pole",
    "mb_mb", "MT_pole", "MTau_pole", "Mv3_pole", "MW_pole", "ME_pole",
-   "Mv1_pole", "MM_pole", "Mv2_pole", "MD", "MU", "MS", "MC" };
+   "Mv1_pole", "MM_pole", "Mv2_pole", "MD_2GeV", "MU_2GeV", "MS_2GeV",
+   "MC_2GeV" };
 
 ///  external object temp used to get objects into external routines, however:
 ///  don't use it!
