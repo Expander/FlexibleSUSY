@@ -33,7 +33,7 @@ Command_line_options::Command_line_options()
    , database_output_file()
    , rgflow_file()
    , slha_input_file()
-   , slha_output_file()
+   , slha_output_file("-")
    , spectrum_file()
 {
 }
@@ -46,7 +46,7 @@ Command_line_options::Command_line_options(int argc, const char* argv[])
    , database_output_file()
    , rgflow_file()
    , slha_input_file()
-   , slha_output_file()
+   , slha_output_file("-")
    , spectrum_file()
 {
    parse(argc, argv);
@@ -77,8 +77,6 @@ void Command_line_options::parse(int argc, const char* argv[])
             WARNING("no SLHA input file name given");
       } else if (starts_with(option,"--slha-output-file=")) {
          slha_output_file = option.substr(19);
-         if (slha_output_file.empty())
-            WARNING("no SLHA output file name given");
       } else if (starts_with(option,"--spectrum-output-file=")) {
          spectrum_file = option.substr(23);
       } else if (starts_with(option,"--database-output-file=")) {
@@ -126,7 +124,9 @@ void Command_line_options::print_usage(std::ostream& ostr) const
                                                 " SLHA input\n"
            "                                    is read from stdin.\n"
            "  --slha-output-file=<filename>     SLHA output file\n"
-           "                                    If not given, the output is\n"
+           "                                    If <filename> is the emtpy string, then\n"
+           "                                    no SLHA output is written.\n"
+           "                                    If <filename> is - then the output is\n"
            "                                    printed to stdout.\n"
            "  --spectrum-output-file=<filename> file to write spectrum to\n"
            "  --database-output-file=<filename> SQLite database file to write\n"
@@ -151,7 +151,7 @@ void Command_line_options::reset()
    database_output_file.clear();
    rgflow_file.clear();
    slha_input_file.clear();
-   slha_output_file.clear();
+   slha_output_file = "-";
    spectrum_file.clear();
 }
 
