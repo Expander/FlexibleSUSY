@@ -24,6 +24,7 @@
 #include "database.hpp"
 #include "wrappers.hpp"
 
+#include <cassert>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -179,16 +180,16 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    const std::size_t number_of_masses = @ModelName@_parameter_getter().get_number_of_masses();
    const std::size_t number_of_mixings = @ModelName@_info::NUMBER_OF_MIXINGS;
    const std::size_t number_of_input_parameters = @ModelName@_info::NUMBER_OF_INPUT_PARAMETERS;
+   const std::size_t total_entries = 7 + number_of_input_parameters
+      + number_of_parameters + number_of_masses + number_of_mixings;
 
    Database db(file_name);
    const Eigen::ArrayXd values(db.extract("Point", entry));
 
-   if (values.rows() != (7 + number_of_input_parameters + number_of_parameters
-                         + number_of_masses + number_of_mixings)) {
+   if (values.rows() != total_entries) {
       ERROR("data set " << entry << " extracted from " << file_name
             << " contains " << values.rows() << " entries."
-            " Expected number of entries: "
-            << (number_of_parameters + number_of_masses + number_of_mixings));
+            " Expected number of entries: " << total_entries);
       return model;
    }
 
@@ -204,7 +205,7 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    model.set_scale(values(offset++));
 
    // restore input parameters
-   model.set(values.block(offset, 0, number_of_input_parameters, 1));
+   model.get_input().set(values.block(offset, 0, number_of_input_parameters, 1));
    offset += number_of_input_parameters;
 
    // restore DR-bar parameters
@@ -214,6 +215,8 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    // restore pole masses and mixings
    model.get_physical().set(values.block(offset, 0, number_of_masses + number_of_mixings, 1));
    offset += number_of_masses + number_of_mixings;
+
+   assert(offset == total_entries);
 
    return model;
 }
