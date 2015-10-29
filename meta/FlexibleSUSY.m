@@ -1932,10 +1932,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for calculation of weinberg angle ..."];
            WriteWeinbergAngleClass[
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
+               {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
                }
                                   ];
 
