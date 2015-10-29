@@ -608,7 +608,7 @@ CreateParameterNamesStr[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
 
 CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
@@ -686,7 +686,7 @@ CreateParameterEnums[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     CConversion`ToValidCSymbolString[name];
 
 CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
