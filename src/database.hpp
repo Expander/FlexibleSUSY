@@ -30,7 +30,7 @@ public:
    ~Database();
 
    void insert(const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&);
-   Eigen::ArrayXd extract(const std::string&, std::size_t);
+   Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
    typedef int (*TCallback)(void*, int, char**, char**);

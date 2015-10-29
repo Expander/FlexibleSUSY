@@ -52,6 +52,13 @@ Database::~Database()
       sqlite3_close(db);
 }
 
+/**
+ * Insert a row of doubles into a table.
+ *
+ * @param table_name name of table
+ * @param names vector of column names
+ * @param data vector of doubles
+ */
 void Database::insert(
    const std::string& table_name, const std::vector<std::string>& names,
    const Eigen::ArrayXd& data)
@@ -87,11 +94,25 @@ void Database::insert(
    execute(sql);
 }
 
-Eigen::ArrayXd Database::extract(const std::string& table_name, std::size_t row)
+/**
+ * Extract a row of doubles from a table.
+ *
+ * @param table_name name of table
+ * @param row row index (0 = 1st row, 1 = 2nd row, ..., -1 = last row,
+ * -2 is 2nd to last row, ...)
+ */
+Eigen::ArrayXd Database::extract(const std::string& table_name, long long row)
 {
    Eigen::ArrayXd values;
-   const std::string sql("SELECT * FROM " + table_name + " LIMIT 1 OFFSET " + std::to_string(row) + ";");
+   const std::string sql =
+      (row >= 0 ?
+       "SELECT * FROM " + table_name + " LIMIT 1 OFFSET "
+          + std::to_string(row) + ";" :
+       "SELECT * FROM " + table_name + " WHERE ROWID = (SELECT MAX(ROWID) - "
+          + std::to_string(std::abs(row + 1)) + " FROM " + table_name + ");");
+
    execute(sql, extract_callback, static_cast<void*>(&values));
+
    return values;
 }
 
@@ -188,7 +209,7 @@ void Database::insert(
    throw DisabledSQLiteError("Cannot call insert(), because SQLite support is disabled.");
 }
 
-Eigen::ArrayXd Database::extract(const std::string&, std::size_t)
+Eigen::ArrayXd Database::extract(const std::string&, long long)
 {
    throw DisabledSQLiteError("Cannot call extract(), because SQLite support is disabled.");
 }
