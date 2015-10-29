@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#include "error.hpp"
 #include <string>
 #include <Eigen/Core>
 
@@ -33,6 +34,15 @@ public:
 
 private:
    typedef int (*TCallback)(void*, int, char**, char**);
+
+   class DisabledSQLiteError : Error {
+   public:
+      explicit DisabledSQLiteError(std::string msg_) : msg(msg_) {}
+      virtual ~DisabledSQLiteError() {}
+      virtual std::string what() const { return msg; }
+   private:
+      std::string msg;
+   };
 
    sqlite3* db;
 

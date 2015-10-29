@@ -18,10 +18,14 @@
 
 #include "database.hpp"
 #include "logger.hpp"
+#include "config.h"
 
 #include <limits>
 #include <sstream>
 #include <iomanip>
+
+#ifdef ENABLE_SQLITE
+
 #include <boost/lexical_cast.hpp>
 #include <sqlite3.h>
 
@@ -164,3 +168,50 @@ int Database::extract_callback(void* data, int argc, char** argv, char** col_nam
 }
 
 } // namespace flexiblesusy
+
+#else
+
+namespace flexiblesusy {
+
+Database::Database(const std::string&)
+   : db(NULL)
+{
+}
+
+Database::~Database()
+{
+}
+
+void Database::insert(
+   const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&)
+{
+   throw DisabledSQLiteError("Cannot call insert(), because SQLite support is disabled.");
+}
+
+Eigen::ArrayXd Database::extract(const std::string&, std::size_t)
+{
+   throw DisabledSQLiteError("Cannot call extract(), because SQLite support is disabled.");
+}
+
+template <typename T>
+void Database::create_table(const std::string&, const std::vector<std::string>&)
+{
+}
+
+void Database::execute(const std::string&) {}
+
+void Database::execute(const std::string&, TCallback, void*) {}
+
+sqlite3* Database::open(const std::string&)
+{
+   return NULL;
+}
+
+int Database::extract_callback(void*, int, char**, char**)
+{
+   return 1;
+}
+
+} // namespace flexiblesusy
+
+#endif
