@@ -31,6 +31,10 @@
 #include <valarray>
 #include <utility>
 
+namespace softsusy {
+class QedQcd;
+}
+
 namespace flexiblesusy {
 
 class @ModelName@_parameter_getter {
@@ -117,10 +121,10 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Arr
 }
 
 /// append parameter point to database
-void to_database(const std::string&, const @ModelName@_mass_eigenstates&);
+void to_database(const std::string&, const @ModelName@_mass_eigenstates&, const softsusy::QedQcd* qedqcd = 0);
 
 /// fill model from an entry of the database
-@ModelName@_mass_eigenstates from_database(const std::string&, std::size_t);
+@ModelName@_mass_eigenstates from_database(const std::string&, std::size_t, softsusy::QedQcd* qedqcd = 0);
 
 } // namespace flexiblesusy
 

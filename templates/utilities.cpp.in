@@ -23,6 +23,7 @@
 #include "logger.hpp"
 #include "database.hpp"
 #include "wrappers.hpp"
+#include "lowe.h"
 
 #include <cassert>
 #include <fstream>
@@ -131,7 +132,17 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(double v)
    return std::valarray<double>(&v, 1);
 }
 
-void to_database(const std::string& file_name, const @ModelName@_mass_eigenstates& model)
+/**
+ * write mass eigenstates to database
+ *
+ * @param file_name database file name
+ * @param model mass eigenstates
+ * @param qedqcd pointer to low-enregy data. If zero, the low-enregy
+ *    data will not be written.
+ */
+void to_database(
+   const std::string& file_name, const @ModelName@_mass_eigenstates& model,
+   const softsusy::QedQcd* qedqcd)
 {
    using utilities::append;
 
@@ -171,7 +182,18 @@ void to_database(const std::string& file_name, const @ModelName@_mass_eigenstate
    db.insert("Point", names, values);
 }
 
-@ModelName@_mass_eigenstates from_database(const std::string& file_name, std::size_t entry)
+/**
+ * read mass eigenstates from database
+ *
+ * @param file_name database file name
+ * @param entry entry number (0 = first entry)
+ * @param qedqcd pointer to low-energy data.  If zero, the low-energy
+ *    data structur will not be filled
+ *
+ * @return mass eigenstates
+ */
+@ModelName@_mass_eigenstates from_database(
+   const std::string& file_name, std::size_t entry, softsusy::QedQcd* qedqcd)
 {
    using utilities::append;
 
