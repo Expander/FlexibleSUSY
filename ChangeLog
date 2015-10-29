@@ -1,3 +1,9 @@
+FlexibleSUSY-1.2.5 [October, 29 2015]
+
+ * Change (commit d553af8): No SLHA output is written if the option
+   --slha-output-file= is set to the empty string.  To write the SLHA
+   output to stdout, set --slha-output-file=- (this is the default).
+
 FlexibleSUSY-1.2.4 [October, 27 2015]
 
  * Change (commit 33af37c): The spectrum generator, run_<model>.x,
