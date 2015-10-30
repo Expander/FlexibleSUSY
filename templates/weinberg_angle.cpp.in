@@ -108,7 +108,6 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  * The function throws an exception of type NoRhoConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
  *
- * @param rhohat_start initial guess for the rho-hat-parameter
  * @param sinThetaW_start initial guess for the sine of the weak mixing angle
  *
  * @return sine of the DR-bar weak mixing angle
@@ -183,7 +182,6 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
  * Calculates the \f$\Delta\hat{\rho}\f$ corrections as defined in
  * Eqs. (C.4), (C.6) from hep-ph/9606211.
  *
- * @param rhohat rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.4) and (C.6) from hep-ph/9606211
