@@ -113,7 +113,7 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  *
  * @return sine of the DR-bar weak mixing angle
  */
-double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThetaW_start)
+double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
 {
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
@@ -130,18 +130,19 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
 
    unsigned iteration = 0;
    bool not_converged = true;
-   double rhohat_old = rhohat_start, sinThetaW_old = sinThetaW_start;
-   double rhohat_new = rhohat_start, sinThetaW_new = sinThetaW_start;
+   double sinThetaW_old = sinThetaW_start;
+   double sinThetaW_new = sinThetaW_start;
 
    while (not_converged && iteration < number_of_iterations) {
       const double deltaRhoHat = calculate_delta_rho_hat(sinThetaW_old);
 
+      double rhohat;
       if (Abs(deltaRhoHat) < 1.0)
-         rhohat_new = 1.0 / (1.0 - deltaRhoHat);
+         rhohat = 1.0 / (1.0 - deltaRhoHat);
       else
-         rhohat_new = 1.0;
+         rhohat = 1.0;
 
-      const double deltaRHat = calculate_delta_r_hat(rhohat_new, sinThetaW_old);
+      const double deltaRHat = calculate_delta_r_hat(rhohat, sinThetaW_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat));
@@ -157,25 +158,23 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
 
       sinThetaW_new = Sin(theta);
 
-      const double precision
-         = Abs(rhohat_old / rhohat_new - 1.0) + Abs(sinThetaW_old / sinThetaW_new - 1.0);
+      const double precision = Abs(sinThetaW_old / sinThetaW_new - 1.0);
 
       VERBOSE_MSG("Iteration step " << iteration
                   << ": prec=" << precision
-                  << " dRHat=" << deltaRHat
                   << " dRhoHat=" << deltaRhoHat
-                  << " rhohat_new=" << rhohat_new
+                  << " rhohat=" << rhohat
+                  << " dRHat=" << deltaRHat
                   << " sinThetaW_new=" << sinThetaW_new);
 
       not_converged = precision >= precision_goal;
 
-      rhohat_old = rhohat_new;
       sinThetaW_old = sinThetaW_new;
       iteration++;
    }
 
    if (not_converged)
-      throw NoRhoConvergenceError(number_of_iterations, sinThetaW_new, rhohat_new);
+      throw NoRhoConvergenceError(number_of_iterations, sinThetaW_new, 0.);
 
    return sinThetaW_new;
 }

@@ -56,7 +56,7 @@ public:
    void set_sm_parameters(const Sm_parameters&);  ///< set sm_parameters member variable
 
    /// calculates and returns the sine of the Weinberg angle
-   double calculate(double rhohat_start = 1.0, double sinThetaW_start = 0.48);
+   double calculate(double sinThetaW_start = 0.48);
 
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
