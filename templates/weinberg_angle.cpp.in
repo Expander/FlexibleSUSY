@@ -197,13 +197,13 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
    const double mtDRbar     = model->get_M@TopQuark@(2);
    const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
    const double piwwtMW     = Re(model->self_energy_@VectorW@(mw));
-   double pizztMZ_corrected = pizztMZ;
-   double piwwtMW_corrected = piwwtMW;
+   double pizztMZcorrected = pizztMZ;
+   double piwwtMWcorrected = piwwtMW;
    if (model->get_thresholds() > 1) {
-      pizztMZ_corrected =
+      pizztMZcorrected =
          pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
                  + calculate_self_energy_@VectorZ@_top(mz, mt);
-      piwwtMW_corrected =
+      piwwtMWcorrected =
          piwwtMW - calculate_self_energy_@VectorW@_top(mw, mtDRbar)
                  + calculate_self_energy_@VectorW@_top(mw, mt);
    }
@@ -211,7 +211,7 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
    double deltaRhoHat1Loop = 0.;
    if (number_of_loops > 0)
       deltaRhoHat1Loop = 1 -
-         (1 + piwwtMW_corrected / Sqr(mw)) / (1 + pizztMZ_corrected / Sqr(mz));
+         (1 + piwwtMWcorrected / Sqr(mw)) / (1 + pizztMZcorrected / Sqr(mz));
 
    const double gfermi = sm_parameters.fermi_constant;
 
@@ -241,13 +241,13 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double s
    const double mtDRbar     = model->get_M@TopQuark@(2);
    const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
    const double piwwt0      = Re(model->self_energy_@VectorW@(0.));
-   double pizztMZ_corrected = pizztMZ;
-   double piwwt0_corrected  = piwwt0;
+   double pizztMZcorrected = pizztMZ;
+   double piwwt0corrected  = piwwt0;
    if (model->get_thresholds() > 1) {
-      pizztMZ_corrected =
+      pizztMZcorrected =
          pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
                  + calculate_self_energy_@VectorZ@_top(mz, mt);
-      piwwt0_corrected =
+      piwwt0corrected =
          piwwt0  - calculate_self_energy_@VectorW@_top(0., mtDRbar)
                  + calculate_self_energy_@VectorW@_top(0., mt);
    }
@@ -258,8 +258,8 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double s
 
    double deltaRHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRHat1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
-         pizztMZ_corrected / Sqr(mz) + dvb;
+      deltaRHat1Loop = rhohat * piwwt0corrected / Sqr(mw) -
+         pizztMZcorrected / Sqr(mz) + dvb;
 
    const double gfermi = sm_parameters.fermi_constant;
 
