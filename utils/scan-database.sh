@@ -158,7 +158,7 @@ EOF
     } | $spectrum_generator \
         --slha-input-file=- \
         --slha-output-file= \
-        --database-output-file="$database_output_file" 2>/dev/null)
+        --database-output-file="$database_output_file")
 
     echo "running ${spectrum_generator} with ${block}[${entry}] = ${value}"
 done
