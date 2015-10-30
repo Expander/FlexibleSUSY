@@ -319,7 +319,6 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    const int maxTries = 20;
    const double rho_start = 1.0, sin_start = 0.48;
 
-   BOOST_MESSAGE("running calculation with Weinberg_angle ...");
    stopwatch.start();
    Weinberg_angle::Data data;
    setup_data(model, data);
@@ -332,10 +331,8 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    stopwatch.stop();
    double time_1 = stopwatch.get_time_in_seconds();
    BOOST_REQUIRE(error == 0);
-   BOOST_MESSAGE("calculation with Weinberg_angle finished!");
-   BOOST_MESSAGE("it took " << time_1 << " seconds");
+   BOOST_MESSAGE("calculation with Weinberg_angle       took " << time_1 << " seconds" << '\n');
 
-   BOOST_MESSAGE("running calculation with CMSSM_weinberg_angle ...");
    stopwatch.start();
    CMSSM_weinberg_angle::Sm_parameters sm_parameters;
    sm_parameters.fermi_constant = Electroweak_constants::gfermi;
@@ -349,8 +346,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(rho_start, sin_start));
    stopwatch.stop();
    double time_2 = stopwatch.get_time_in_seconds();
-   BOOST_MESSAGE("calculation with CMSSM_weinberg_angle finished!");
-   BOOST_MESSAGE("it took " << time_2 << " seconds");
+   BOOST_MESSAGE("calculation with CMSSM_weinberg_angle took " << time_2 << " seconds");
 
    BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 1.0e-10);
 }

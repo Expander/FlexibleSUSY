@@ -123,7 +123,7 @@ int main()
    CMSSM_weinberg_angle wein(&model, sm_parameters);
 
    const std::vector<double> range(float_range_log(100., exp((20*log(10000)-log(100))/19), 20));
-   ofstream outf("/home/bachi/Programme/FlexibleSUSY/markus_tests/sinThetaW_variation.dat");
+   std::ofstream outf("/home/bachi/Programme/FlexibleSUSY/markus_tests/sinThetaW_variation.dat");
 
    std::cout << "Start writing to file" << '\n';
    outf << "# "
