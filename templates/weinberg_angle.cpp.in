@@ -134,7 +134,14 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
    double rhohat_new = rhohat_start, sinThetaW_new = sinThetaW_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaRHat = calculate_delta_r_hat(rhohat_old, sinThetaW_old);
+      const double deltaRhoHat = calculate_delta_rho_hat(rhohat_old, sinThetaW_old);
+
+      if (Abs(deltaRhoHat) < 1.0)
+         rhohat_new = 1.0 / (1.0 - deltaRhoHat);
+      else
+         rhohat_new = 1.0;
+
+      const double deltaRHat = calculate_delta_r_hat(rhohat_new, sinThetaW_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat));
@@ -149,13 +156,6 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
       const double theta = 0.5 * ArcSin(sin2theta);
 
       sinThetaW_new = Sin(theta);
-
-      const double deltaRhoHat = calculate_delta_rho_hat(rhohat_old, sinThetaW_new);
-
-      if (Abs(deltaRhoHat) < 1.0)
-         rhohat_new = 1.0 / (1.0 - deltaRhoHat);
-      else
-         rhohat_new = 1.0;
 
       const double precision
          = Abs(rhohat_old / rhohat_new - 1.0) + Abs(sinThetaW_old / sinThetaW_new - 1.0);
