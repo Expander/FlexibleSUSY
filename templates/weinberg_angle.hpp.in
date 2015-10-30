@@ -66,7 +66,7 @@ private:
    const @ModelName@_mass_eigenstates* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
 
-   double calculate_delta_rho_hat(double, double);
+   double calculate_delta_rho_hat(double);
    double calculate_delta_r_hat(double, double);
    double calculate_delta_vb(double, double);
    double calculate_delta_vb_sm(double, double);

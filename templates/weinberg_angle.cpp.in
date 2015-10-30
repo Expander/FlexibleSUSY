@@ -134,7 +134,7 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
    double rhohat_new = rhohat_start, sinThetaW_new = sinThetaW_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaRhoHat = calculate_delta_rho_hat(rhohat_old, sinThetaW_old);
+      const double deltaRhoHat = calculate_delta_rho_hat(sinThetaW_old);
 
       if (Abs(deltaRhoHat) < 1.0)
          rhohat_new = 1.0 / (1.0 - deltaRhoHat);
@@ -189,7 +189,7 @@ double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThet
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.4) and (C.6) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double rhohat, double sinThetaW)
+double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
 {
    const double mz = sm_parameters.mz_pole;
    const double mw = sm_parameters.mw_pole;
@@ -210,8 +210,8 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double rhohat, double
 
    double deltaRhoHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRhoHat1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
-         piwwtMW_corrected / Sqr(mw);
+      deltaRhoHat1Loop = 1 -
+         (1 + piwwtMW_corrected / Sqr(mw)) / (1 + pizztMZ_corrected / Sqr(mz));
 
    const double gfermi = sm_parameters.fermi_constant;
 
