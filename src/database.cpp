@@ -136,6 +136,9 @@ void Database::create_table(
 
 void Database::execute(const std::string& cmd)
 {
+   if (!db)
+      return;
+
    char* zErrMsg = 0;
    const int rc = sqlite3_exec(db, cmd.c_str(), 0, 0, &zErrMsg);
 
@@ -149,6 +152,9 @@ void Database::execute(const std::string& cmd)
 
 void Database::execute(const std::string& cmd, TCallback callback, void* data)
 {
+   if (!db)
+      return;
+
    char* zErrMsg = 0;
    const int rc = sqlite3_exec(db, cmd.c_str(), callback, data, &zErrMsg);
 
