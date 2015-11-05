@@ -32,6 +32,8 @@
 namespace flexiblesusy {
 
 namespace database {
+
+/// convert number to string with maximum numeric precision
 template <typename T>
 std::string to_string(T number)
 {
@@ -39,6 +41,7 @@ std::string to_string(T number)
    out << std::setprecision(std::numeric_limits<T>::digits10) << number;
    return out.str();
 }
+
 } // namespace database
 
 Database::Database(const std::string& file_name)
@@ -117,6 +120,13 @@ Eigen::ArrayXd Database::extract(const std::string& table_name, long long row)
    return values;
 }
 
+/**
+ * Create a table in the database.  If the table already exists, this
+ * function does nothing.
+ *
+ * @param table_name name of table
+ * @param names names of table columns
+ */
 template <typename T>
 void Database::create_table(
    const std::string& table_name, const std::vector<std::string>& names)
@@ -135,6 +145,11 @@ void Database::create_table(
    execute(sql);
 }
 
+/**
+ * Execute a SQL command without a callback.
+ *
+ * @param cmd command
+ */
 void Database::execute(const std::string& cmd)
 {
    if (!db)
@@ -151,6 +166,13 @@ void Database::execute(const std::string& cmd)
    }
 }
 
+/**
+ * Execute a SQL command using a callback function.
+ *
+ * @param cmd command
+ * @param callback pointer to callback function
+ * @param data pointer to data passed to callback function
+ */
 void Database::execute(const std::string& cmd, TCallback callback, void* data)
 {
    if (!db)
@@ -167,6 +189,13 @@ void Database::execute(const std::string& cmd, TCallback callback, void* data)
    }
 }
 
+/**
+ * Open database
+ *
+ * @param file_name file name
+ *
+ * @return pointer to database, or 0 if database cannot be opened.
+ */
 sqlite3* Database::open(const std::string& file_name)
 {
    sqlite3* db = 0;
@@ -182,6 +211,17 @@ sqlite3* Database::open(const std::string& file_name)
    return db;
 }
 
+/**
+ * Callback function which fills an Eigen::ArrayXd with the data in
+ * the given row.
+ *
+ * @param data pointer to Eigen::ArrayXd
+ * @param argc number of columns
+ * @param argv array of column entries
+ * @param col_name array of column names
+ *
+ * @return 0
+ */
 int Database::extract_callback(void* data, int argc, char** argv, char** col_name)
 {
    Eigen::ArrayXd* values = static_cast<Eigen::ArrayXd*>(data);

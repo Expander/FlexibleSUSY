@@ -29,7 +29,10 @@ public:
    Database(const std::string& file_name);
    ~Database();
 
+   /// insert a row of doubles into a table
    void insert(const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&);
+
+   /// extract a row of doubles from a table
    Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
