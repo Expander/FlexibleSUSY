@@ -82,6 +82,7 @@ void Database::insert(
 
    sql += ");";
 
+   execute("PRAGMA synchronous = OFF;");
    execute(sql);
 }
 
