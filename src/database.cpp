@@ -122,7 +122,7 @@ void Database::create_table(
    std::string sql("CREATE TABLE IF NOT EXISTS " + table_name + " (");
 
    for (std::size_t i = 0; i < number_of_elements; i++) {
-      sql += '"' + names[i] + '"' + " REAL";
+      sql += '"' + names[i] + "\" REAL";
       if (i + 1 != number_of_elements)
          sql += ',';
    }
