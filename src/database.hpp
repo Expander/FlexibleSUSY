@@ -47,7 +47,7 @@ private:
       std::string msg;
    };
 
-   sqlite3* db;
+   sqlite3* db; ///< pointer to database object
 
    sqlite3* open(const std::string&);
    void execute(const std::string&);
