@@ -134,18 +134,20 @@ void check_equality(const softsusy::DoubleMatrix& b,
    }
 }
 
-void check_equality(const Eigen::Matrix<double,3,3>& a,
-                    const Eigen::Matrix<double,3,3>& b,
+template <typename Scalar, int M, int N>
+void check_equality(const Eigen::Matrix<Scalar,M,N>& a,
+                    const Eigen::Matrix<Scalar,M,N>& b,
                     const std::string& testMsg, double max_dev)
 {
-   for (int i = 0; i < 3; ++i) {
-      for (int l = 0; l < 3; ++l) {
+   for (int i = 0; i < M; ++i) {
+      for (int l = 0; l < N; ++l) {
          std::ostringstream element;
          element << testMsg << " [element " << i << "," << l << "]";
          check_equality(a(i,l), b(i,l), element.str(), max_dev);
       }
    }
 }
+
 
 template <int NRows, int NCols>
 void check_equality(const Eigen::Array<double,NRows,NCols>& a,

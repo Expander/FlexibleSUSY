@@ -17,6 +17,8 @@ LaTeX names";
 
 CreateParticleNames::usage="creates a list of the particle's names";
 
+CreateParticleMixingNames::usage="creates a list of the mixing matrix element names";
+
 CreateParticleEnum::usage="creates an enum of the particles";
 
 CreateParticleMixingEnum::usage="creates enum with mixing matrices";
@@ -603,7 +605,7 @@ CreateParticleMixingEnum[mixings_List] :=
                type = GetMixingMatrixType[flatMixings[[i]]];
                For[m = 1, m <= Length[mix], m++,
                    name = Parameters`CreateParameterEnums[mix[[m]],type];
-                   If[i > 1 || m > 1, result = result <> ", ";];
+                   If[result != "", result = result <> ", ";];
                    result = result <> name;
                   ];
               ];
@@ -650,6 +652,23 @@ CreateParticleLaTeXNames[particles_List] :=
                result = result <> "\"" <> latexName <> "\"";
               ];
            result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {" <>
+                    IndentText[result] <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleMixingNames[mixings_List] :=
+    Module[{flatMixings, i, m, mix, name, type, result = ""},
+           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           For[i = 1, i <= Length[flatMixings], i++,
+               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
+               type = GetMixingMatrixType[flatMixings[[i]]];
+               For[m = 1, m <= Length[mix], m++,
+                   name = Parameters`CreateParameterNamesStr[mix[[m]],type];
+                   If[result != "", result = result <> ", ";];
+                   result = result <> name;
+                  ];
+              ];
+           result = "const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {" <>
                     IndentText[result] <> "};\n";
            Return[result];
           ];

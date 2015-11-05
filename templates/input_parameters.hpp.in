@@ -31,6 +31,9 @@ struct @ModelName@_input_parameters {
    @ModelName@_input_parameters()
       @defaultInputParametersInit@
    {}
+
+   Eigen::ArrayXd get() const;
+   void set(const Eigen::ArrayXd&);
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@_input_parameters&);

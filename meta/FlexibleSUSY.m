@@ -549,14 +549,18 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters},
+   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set},
           defineInputParameters = Constraint`DefineInputParameters[inputParameters];
           defaultInputParametersInit = Constraint`InitializeInputParameters[inputParameters];
           printInputParameters = WriteOut`PrintInputParameters[inputParameters,"ostr"];
+          get = Parameters`CreateInputParameterArrayGetter[inputParameters];
+          set = Parameters`CreateInputParameterArraySetter[inputParameters];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            "@printInputParameters@"       -> IndentText[printInputParameters],
+                           "@get@"                        -> IndentText[get],
+                           "@set@"                        -> IndentText[set],
                            Sequence @@ GeneralReplacementRules[]
                          } ];
           ];
@@ -1106,6 +1110,7 @@ WriteMakefileModule[rgeFile_List, files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
+                    inputParameters_List,
                     lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
                     files_List] :=
     Module[{k, particles, susyParticles, smParticles,
@@ -1113,8 +1118,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
-            particleMixingEnum = "",
+            particleMixingEnum = "", particleMixingNames = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
+            inputParameterEnum = "", inputParameterNames = "",
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
@@ -1134,6 +1140,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
+           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
+           inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
+           inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
            fillSpectrumVectorWithSMParticles   = TreeMasses`FillSpectrumVector[smParticles];
            numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
@@ -1166,6 +1175,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
+                            "@particleMixingNames@"-> IndentText[WrapLines[particleMixingNames]],
+                            "@inputParameterEnum@" -> IndentText[WrapLines[inputParameterEnum]],
+                            "@inputParameterNames@"-> IndentText[WrapLines[inputParameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
                             "@isSupersymmetricModel@" -> isSupersymmetricModel,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
@@ -1936,7 +1948,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR,
+                               MINPAR, EXTPAR, inputParameters,
                                lesHouchesInputParameters, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},

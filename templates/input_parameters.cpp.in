@@ -24,6 +24,16 @@
 
 namespace flexiblesusy {
 
+Eigen::ArrayXd @ModelName@_input_parameters::get() const
+{
+@get@
+}
+
+void @ModelName@_input_parameters::set(const Eigen::ArrayXd& pars)
+{
+@set@
+}
+
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_input_parameters& input)
 {
 @printInputParameters@

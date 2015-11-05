@@ -99,6 +99,7 @@ options="                    \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
+   enable_sqlite             \
    enable_threads            \
    enable_tsil               \
    enable_verbose            \
@@ -122,6 +123,7 @@ enable_meta="no"
 enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
 enable_silent="no"
+enable_sqlite="yes"
 enable_static_libs="yes"
 enable_threads="yes"
 enable_tsil="no"
@@ -135,6 +137,7 @@ DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
+DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
@@ -171,6 +174,8 @@ LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 OPTIONAL_MODULES=""
+sqlite_lib_dir=""
+sqlite_inc_dir=""
 tsil_lib_dir=""
 tsil_inc_dir=""
 # available RG algorithms
@@ -1662,6 +1667,41 @@ check_looptools_incl() {
 }
 
 #_____________________________________________________________________
+check_sqlite_libs() {
+    check_library "libsqlite3" "$sqlite_lib_dir" \
+       "$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Error: libsqlite3 not found."
+        message "   To disable sqlite3 support, use the --disable-sqlite option."
+        exit 1
+    else
+        local SQLITELIBS_="-lsqlite3"
+        if [ -z "$sqlite_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            SQLITELIBS="$SQLITELIBS_"
+        else
+            SQLITELIBS="-L$sqlite_lib_dir $SQLITELIBS_"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
+check_sqlite_incl() {
+    check_header "sqlite3.h" "$sqlite_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Error: sqlite.h not found in $sqlite_inc_dir $default_inc_paths."
+        message "   To disable sqlite3 support, use the --disable-sqlite option."
+        exit 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$sqlite_inc_dir" ]; then
+            SQLITEFLAGS="-I$sqlite_inc_dir"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_tsil_libs() {
     check_library "libtsil" "$tsil_lib_dir" \
        "$default_lib_paths"
@@ -2000,6 +2040,16 @@ enable_defines() {
         fi
     fi
 
+    if test "x${enable_sqlite}" = "xyes" ; then
+        DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
+        logmsg "Enabling sqlite"
+        logmsg "   ${DEFINE_ENABLE_SQLITE}"
+    else
+        DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
+        message "Disabling sqlite"
+        logmsg "   ${DEFINE_ENABLE_SQLITE}"
+    fi
+
     if test "x${enable_threads}" = "xyes" ; then
         DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
         logmsg "Enabling multi-threading"
@@ -2060,11 +2110,14 @@ replace_markers() {
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
+	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
+	-e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"        \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
@@ -2134,6 +2187,8 @@ Package directories, compilation settings and model selection
   --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
+  --with-sqlite-libdir=     Path to search for SQLite library
+  --with-sqlite-incdir=     Path to search for SQLite header
   --with-tsil-libdir=       Path to search for TSIL library
   --with-tsil-incdir=       Path to search for TSIL header
 EOF
@@ -2241,6 +2296,8 @@ if test $# -gt 0 ; then
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
+            --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
+            --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
@@ -2285,6 +2342,10 @@ if test "x${enable_compile}" = "xyes"; then
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
+    fi
+    if test "x$enable_sqlite" = "xyes"; then
+        check_sqlite_incl
+        check_sqlite_libs
     fi
     if test "x$enable_tsil" = "xyes"; then
         check_tsil_incl
@@ -2349,6 +2410,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LDFLAGS@|$LDFLAGS|"         \
     -e "s|@LDLIBS@|$LDLIBS|"           \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
+    -e "s|@SQLITELIBS@|$SQLITELIBS|"   \
+    -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
     -e "s|@MAKELIB@|$MAKELIB|"         \
@@ -2396,6 +2459,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
+    -e "s|@DEFINE_ENABLE_SQLITE@|$DEFINE_ENABLE_SQLITE|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \

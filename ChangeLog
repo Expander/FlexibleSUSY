@@ -1,5 +1,16 @@
 FlexibleSUSY-1.2.5 [October, 29 2015]
 
+ * Feature: The output of the spectrum generator can be written into
+   an SQLite database using the --database-output-file= option.  At
+   the C++ level, a to_database() and from_database() function is
+   provided for each model, which write/read a model object (including
+   the DR-bar parameters and the pole mass spectrum) to/from a
+   database file.
+   Example:
+   $ models/CMSSM/run_CMSSM.x \
+     --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+     --slha-output-file= --database-output-file=point.db
+
  * Change (commit d553af8): No SLHA output is written if the option
    --slha-output-file= is set to the empty string.  To write the SLHA
    output to stdout, set --slha-output-file=- (this is the default).
