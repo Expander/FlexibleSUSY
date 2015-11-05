@@ -31,19 +31,6 @@
 
 namespace flexiblesusy {
 
-namespace database {
-
-/// convert number to string with maximum numeric precision
-template <typename T>
-std::string to_string(T number)
-{
-   std::ostringstream out;
-   out << std::setprecision(std::numeric_limits<T>::digits10) << number;
-   return out.str();
-}
-
-} // namespace database
-
 Database::Database(const std::string& file_name)
    : db(open(file_name))
 {
@@ -88,7 +75,7 @@ void Database::insert(
    sql += ") VALUES (";
 
    for (std::size_t i = 0; i < number_of_elements; i++) {
-      sql += database::to_string(data[i]);
+      sql += boost::lexical_cast<std::string>(data[i]);
       if (i + 1 != number_of_elements)
          sql += ',';
    }
