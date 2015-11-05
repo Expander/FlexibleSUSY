@@ -53,7 +53,8 @@ Database::~Database()
 }
 
 /**
- * Insert a row of doubles into a table.
+ * Insert a row of doubles into a table.  If the table does not exist,
+ * it is created.
  *
  * @param table_name name of table
  * @param names vector of column names
