@@ -4,6 +4,7 @@
 
 #include "linalg.h"
 #include "numerics2.hpp"
+#include <cmath>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -34,27 +35,61 @@ bool is_equal(const softsusy::DoubleMatrix& a, const softsusy::DoubleMatrix& b, 
    return true;
 }
 
-bool is_equal(const Eigen::Matrix<double,3,3>& a,
-              const Eigen::Matrix<double,3,3>& b, double max_dev)
+template <class DerivedA, class DerivedB>
+bool is_equal(const Eigen::MatrixBase<DerivedA>& a,
+              const Eigen::MatrixBase<DerivedB>& b, double max_dev)
 {
    return (a - b).cwiseAbs().maxCoeff() <= max_dev;
 }
 
-bool is_equal(const Eigen::Matrix<std::complex<double>,3,3>& a,
-              const Eigen::Matrix<std::complex<double>,3,3>& b,
-              double max_dev)
+template <int M, int N>
+double max_diff(const Eigen::Matrix<double,M,N>& a,
+                const Eigen::Matrix<double,M,N>& b)
 {
-   return (a - b).cwiseAbs().maxCoeff() <= max_dev;
+   return (a - b).maxCoeff();
+}
+
+template <int M, int N>
+double max_diff(const Eigen::Matrix<std::complex<double>,M,N>& a,
+                const Eigen::Matrix<std::complex<double>,M,N>& b)
+{
+   return (a.cwiseAbs() - b.cwiseAbs()).maxCoeff();
 }
 
 template <typename T>
-void check_equality(T a, T b, const std::string& testMsg, T max_dev)
+double max_diff(T a, T b)
+{
+   return a - b;
+}
+
+template <int M, int N>
+double max_rel_diff(const Eigen::Matrix<double,M,N>& a,
+                    const Eigen::Matrix<double,M,N>& b)
+{
+   return (a - b).maxCoeff() / a.maxCoeff();
+}
+
+template <int M, int N>
+double max_rel_diff(const Eigen::Matrix<std::complex<double>,M,N>& a,
+                    const Eigen::Matrix<std::complex<double>,M,N>& b)
+{
+   return (a.cwiseAbs() - b.cwiseAbs()).maxCoeff() / a.cwiseAbs().maxCoeff();
+}
+
+template <typename T>
+double max_rel_diff(T a, T b)
+{
+   return (a - b) / a;
+}
+
+template <typename T>
+void check_equality(T a, T b, const std::string& testMsg, double max_dev)
 {
    if (!is_equal(a, b, max_dev)) {
       std::cout << "test failed: " << testMsg << ": "
                 << a << " != " << b
-                << " (diff.: " << (a-b) << ", rel. diff.: "
-                << 100. * (a-b)/a << "%)\n";
+                << " (diff.: " << max_diff(a,b) << ", rel. diff.: "
+                << 100. * max_rel_diff(a,b) << "%)\n";
       gErrors++;
    }
 }
