@@ -23,6 +23,7 @@
 struct sqlite3;
 
 namespace flexiblesusy {
+namespace database {
 
 class Database {
 public:
@@ -57,4 +58,5 @@ private:
    static int extract_callback(void*, int, char**, char**);
 };
 
+} // namespace database
 } // namespace flexiblesusy

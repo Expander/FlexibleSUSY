@@ -30,6 +30,7 @@
 #include <sqlite3.h>
 
 namespace flexiblesusy {
+namespace database {
 
 Database::Database(const std::string& file_name)
    : db(open(file_name))
@@ -224,10 +225,12 @@ int Database::extract_callback(void* data, int argc, char** argv, char** col_nam
 }
 
 } // namespace flexiblesusy
+} // namespace database
 
 #else
 
 namespace flexiblesusy {
+namespace database {
 
 Database::Database(const std::string&)
    : db(NULL)
@@ -268,6 +271,7 @@ int Database::extract_callback(void*, int, char**, char**)
    return 1;
 }
 
+} // namespace database
 } // namespace flexiblesusy
 
 #endif

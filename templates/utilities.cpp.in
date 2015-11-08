@@ -132,6 +132,8 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(double v)
    return std::valarray<double>(&v, 1);
 }
 
+namespace @ModelName@_database {
+
 /**
  * write mass eigenstates to database
  *
@@ -188,7 +190,7 @@ void to_database(
       append(values, qedqcd->display_input());
    }
 
-   Database db(file_name);
+   database::Database db(file_name);
    db.insert("Point", names, values);
 }
 
@@ -218,7 +220,7 @@ void to_database(
       + number_of_parameters + number_of_masses + number_of_mixings
       + number_of_low_energy_input_parameters;
 
-   Database db(file_name);
+   database::Database db(file_name);
    const Eigen::ArrayXd values(db.extract("Point", entry));
 
    if (values.rows() < total_entries) {
@@ -263,5 +265,7 @@ void to_database(
 
    return model;
 }
+
+} // namespace @ModelName@_database
 
 } // namespace flexiblesusy

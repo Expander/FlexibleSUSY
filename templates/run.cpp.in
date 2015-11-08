@@ -106,7 +106,7 @@ int main(int argc, const char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      to_database(database_output_file, model, &oneset);
+      @ModelName@_database::to_database(database_output_file, model, &oneset);
    }
 
    if (!spectrum_file.empty())
