@@ -30,6 +30,8 @@ namespace @ModelName@_info {
 @particleNames@
 @particleLaTeXNames@
 @parameterNames@
+@particleMixingNames@
+@inputParameterNames@
    const char* model_name = "@ModelName@";
    const bool is_low_energy_model = @isLowEnergyModel@;
    const bool is_supersymmetric_model = @isSupersymmetricModel@;

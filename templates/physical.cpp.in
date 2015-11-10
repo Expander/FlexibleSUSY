@@ -59,6 +59,32 @@ void @ModelName@_physical::convert_to_slha()
 @convertMixingsToSLHAConvention@
 }
 
+Eigen::ArrayXd @ModelName@_physical::get() const
+{
+   Eigen::ArrayXd pars(get_masses());
+
+@getPhysical@
+
+   return pars;
+}
+
+void @ModelName@_physical::set(const Eigen::ArrayXd& pars)
+{
+   set_masses(pars);
+
+@setPhysical@
+}
+
+Eigen::ArrayXd @ModelName@_physical::get_masses() const
+{
+@getMasses@
+}
+
+void @ModelName@_physical::set_masses(const Eigen::ArrayXd& pars)
+{
+@setMasses@
+}
+
 void @ModelName@_physical::print(std::ostream& ostr) const
 {
    ostr << "----------------------------------------\n"

@@ -230,6 +230,17 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
            True
           ];
 
+CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
+             constraintName_String] :=
+    Module[{unknownParameters = Complement[parameters, Parameters`GetModelParameters[]]},
+           If[unknownParameters =!= {},
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt],
+                    "   Unknown parameters: ", unknownParameters];
+              Return[False];
+             ];
+           True
+          ];
+
 CheckSetting[patt:{parameter_[idx_Integer], value_}, constraintName_String] :=
     Module[{modelParameters, dim},
            modelParameters = Parameters`GetModelParameters[];

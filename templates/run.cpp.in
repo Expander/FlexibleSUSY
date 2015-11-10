@@ -21,6 +21,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -40,6 +41,7 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
+   const std::string database_output_file(options.get_database_output_file());
    const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_source(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
@@ -83,20 +85,28 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   // output
-   slha_io.set_spinfo(problems);
-   slha_io.set_minpar(input);
-   slha_io.set_extpar(input);
-   if (!problems.have_problem() ||
-       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
-      slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+   // SLHA output
+   if (!slha_output_file.empty()) {
+      slha_io.set_spinfo(problems);
+      slha_io.set_minpar(input);
+      slha_io.set_extpar(input);
+      if (!problems.have_problem() ||
+          spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
+         slha_io.set_spectrum(model);
+         slha_io.set_extra(model, scales);
+      }
+
+      if (slha_output_file == "-") {
+         slha_io.write_to_stream(std::cout);
+      } else {
+         slha_io.write_to_file(slha_output_file);
+      }
    }
 
-   if (slha_output_file.empty()) {
-      slha_io.write_to_stream(std::cout);
-   } else {
-      slha_io.write_to_file(slha_output_file);
+   if (!database_output_file.empty() &&
+       (!problems.have_problem() ||
+        spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
+      @ModelName@_database::to_database(database_output_file, model, &oneset);
    }
 
    if (!spectrum_file.empty())
