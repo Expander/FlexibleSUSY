@@ -38,7 +38,7 @@ namespace flexiblesusy {
 #define MT mt
 #define RHO2 rho_2
 #define DELTARHAT1LOOP deltaRHat1Loop
-#define PIZZTMZCOR pizztMZ_corrected
+#define PIZZTMZ pizzt_MZ
 const double ROOT2 = Sqrt(2.0);
 
 @ModelName@_weinberg_angle::Sm_parameters::Sm_parameters()
@@ -66,6 +66,9 @@ const double ROOT2 = Sqrt(2.0);
    , include_dvbsusy(true)
    , model(model_)
    , sm_parameters(sm_parameters_)
+   , pizzt_MZ(0.)
+   , piwwt_MW(0.)
+   , piwwt_0(0.)
 {
 }
 
@@ -127,8 +130,13 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
    const double scale      = model->get_scale();
+   const double mw         = sm_parameters.mw_pole;
    const double mz         = sm_parameters.mz_pole;
    const double gfermi     = sm_parameters.fermi_constant;
+
+   pizzt_MZ = calculate_self_energy_@VectorZ@(mz);
+   piwwt_MW = calculate_self_energy_@VectorW@(mw);
+   piwwt_0  = calculate_self_energy_@VectorW@(0.);
 
    if (!is_equal(scale, mz)) {
       WARNING("@ModelName@_weinberg_angle::calculate() called at scale "
@@ -196,29 +204,14 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
  */
 double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
 {
-   const double mz = sm_parameters.mz_pole;
+   const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
+   const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mtDRbar     = model->get_M@TopQuark@(2);
-   const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
-   const double piwwtMW     = Re(model->self_energy_@VectorW@(mw));
-   double pizztMZ_corrected = pizztMZ;
-   double piwwtMW_corrected = piwwtMW;
-   if (model->get_thresholds() > 1) {
-      pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
-                 + calculate_self_energy_@VectorZ@_top(mz, mt);
-      piwwtMW_corrected =
-         piwwtMW - calculate_self_energy_@VectorW@_top(mw, mtDRbar)
-                 + calculate_self_energy_@VectorW@_top(mw, mt);
-   }
 
    double deltaRhoHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRhoHat1Loop = 1 -
-         (1 + piwwtMW_corrected / Sqr(mw)) / (1 + pizztMZ_corrected / Sqr(mz));
-
-   const double gfermi = sm_parameters.fermi_constant;
+      deltaRhoHat1Loop = 1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz));
 
    double deltaRhoHat2LoopSM = 0.;
    if (number_of_loops > 1) {
@@ -240,22 +233,10 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
  */
 double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double sinThetaW)
 {
-   const double mz = sm_parameters.mz_pole;
+   const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
+   const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mtDRbar     = model->get_M@TopQuark@(2);
-   const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
-   const double piwwt0      = Re(model->self_energy_@VectorW@(0.));
-   double pizztMZ_corrected = pizztMZ;
-   double piwwt0_corrected  = piwwt0;
-   if (model->get_thresholds() > 1) {
-      pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
-                 + calculate_self_energy_@VectorZ@_top(mz, mt);
-      piwwt0_corrected =
-         piwwt0  - calculate_self_energy_@VectorW@_top(0., mtDRbar)
-                 + calculate_self_energy_@VectorW@_top(0., mt);
-   }
 
    double dvb = 0.;
    if (number_of_loops > 0)
@@ -263,10 +244,7 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double s
 
    double deltaRHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRHat1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
-         pizztMZ_corrected / Sqr(mz) + dvb;
-
-   const double gfermi = sm_parameters.fermi_constant;
+      deltaRHat1Loop = rhohat * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
 
    double deltaRHat2LoopSM = 0.;
    if (number_of_loops > 1) {
@@ -554,6 +532,54 @@ double @ModelName@_weinberg_angle::rho_2(double r)
          49.0 / 4.0 + 2.0 / 3.0 * rm1 + 1613.0 / 48.0 * rm2 + 87.57 * rm3 +
          341959.0 / 1200.0 * rm4 + 9737663.0 / 9800.0 * rm5;
    }
+}
+
+/**
+ * Calculates 1-loop transverse Z boson self-energy
+ * including the correction from usage of pole instead of DRbar top-quark mass.
+ *
+ * @param p momentum
+ *
+ * @return 1-loop transverse Z boson self-energy
+ */
+double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@(double p)
+{
+   const double mt      = sm_parameters.mt_pole;
+   const double mtDRbar = model->get_M@TopQuark@(2);
+   const double pizzt   = Re(model->self_energy_@VectorZ@(p));
+
+   double pizzt_corrected = pizzt;
+   if (model->get_thresholds() > 1) {
+      pizzt_corrected =
+         pizzt - calculate_self_energy_@VectorZ@_top(p, mtDRbar)
+               + calculate_self_energy_@VectorZ@_top(p, mt);
+   }
+
+   return pizzt_corrected;
+}
+
+/**
+ * Calculates 1-loop transverse W boson self-energy
+ * including the correction from usage of pole instead of DRbar top-quark mass.
+ *
+ * @param p momentum
+ *
+ * @return 1-loop transverse W boson self-energy
+ */
+double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@(double p)
+{
+   const double mt      = sm_parameters.mt_pole;
+   const double mtDRbar = model->get_M@TopQuark@(2);
+   const double piwwt   = Re(model->self_energy_@VectorW@(p));
+
+   double piwwt_corrected = piwwt;
+   if (model->get_thresholds() > 1) {
+      piwwt_corrected =
+         piwwt - calculate_self_energy_@VectorW@_top(p, mtDRbar)
+               + calculate_self_energy_@VectorW@_top(p, mt);
+   }
+
+   return piwwt_corrected;
 }
 
 /**

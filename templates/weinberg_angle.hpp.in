@@ -65,6 +65,9 @@ private:
    bool include_dvbsusy;          ///< susy vertex and box corrections are included or not
    const @ModelName@_mass_eigenstates* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
+   double pizzt_MZ;               ///< transverse Z self-energy at p^2 = MZ^2
+   double piwwt_MW;               ///< transverse W self-energy at p^2 = MW^2
+   double piwwt_0;                ///< transverse W self-energy at p^2 = 0
 
    double calculate_delta_rho_hat(double);
    double calculate_delta_r_hat(double, double);
@@ -73,6 +76,8 @@ private:
    double calculate_delta_vb_susy(double);
    static double rho_2(double);
 
+   double calculate_self_energy_@VectorZ@(double);
+   double calculate_self_energy_@VectorW@(double);
    double calculate_self_energy_@VectorZ@_top(double, double);
    double calculate_self_energy_@VectorW@_top(double, double);
 };
