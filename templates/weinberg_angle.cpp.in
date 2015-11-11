@@ -105,7 +105,7 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as input.
  *
- * The function throws an exception of type NoRhoConvergenceError if the
+ * The function throws an exception of type NoSinThetaWConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
  *
  * @param sinThetaW_start initial guess for the sine of the weak mixing angle
@@ -173,7 +173,7 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    }
 
    if (not_converged)
-      throw NoRhoConvergenceError(number_of_iterations, sinThetaW_new, 0.);
+      throw NoSinThetaWConvergenceError(number_of_iterations, sinThetaW_new);
 
    return sinThetaW_new;
 }

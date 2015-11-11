@@ -49,7 +49,7 @@ public:
    void flag_no_perturbative() { non_perturbative = true; }
    void flag_no_pole_mass_convergence(unsigned);
    void flag_non_perturbative_parameter(const std::string&, double, double, double);
-   void flag_no_rho_convergence() { failed_rho_convergence = true; }
+   void flag_no_sinThetaW_convergence() { failed_sinThetaW_convergence = true; }
 
    void unflag_bad_mass(unsigned);
    void unflag_tachyon(unsigned);
@@ -60,7 +60,7 @@ public:
    void unflag_no_perturbative() { non_perturbative = false; }
    void unflag_no_pole_mass_convergence(unsigned);
    void unflag_non_perturbative_parameter(const std::string&);
-   void unflag_no_rho_convergence() { failed_rho_convergence = false; }
+   void unflag_no_sinThetaW_convergence() { failed_sinThetaW_convergence = false; }
 
    bool is_bad_mass(unsigned) const;
    bool is_tachyon(unsigned) const;
@@ -72,7 +72,7 @@ public:
    bool no_ewsb() const         { return failed_ewsb; }
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
-   bool no_rho_convergence() const { return failed_rho_convergence; }
+   bool no_sinThetaW_convergence() const { return failed_sinThetaW_convergence; }
 
    void clear();                      ///< clear all problems
    bool have_problem() const;         ///< problems which yield invalid spectrum
@@ -97,7 +97,7 @@ private:
    bool failed_ewsb;                   ///< no EWSB
    bool failed_convergence;            ///< no convergence
    bool non_perturbative;              ///< non-perturbative running
-   bool failed_rho_convergence;        ///< rho-parameter not converged
+   bool failed_sinThetaW_convergence;  ///< sinThetaW-parameter not converged
    std::string exception_msg;          ///< exception message
    std::map<std::string, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
 };
@@ -112,7 +112,7 @@ Problems<Number_of_particles>::Problems(const char** particle_names_)
    , failed_ewsb(false)
    , failed_convergence(false)
    , non_perturbative(false)
-   , failed_rho_convergence(false)
+   , failed_sinThetaW_convergence(false)
    , exception_msg("")
    , non_pert_pars()
 {
@@ -226,7 +226,7 @@ void Problems<Number_of_particles>::clear()
    failed_ewsb = false;
    failed_convergence = false;
    non_perturbative = false;
-   failed_rho_convergence = false;
+   failed_sinThetaW_convergence = false;
    thrown = false;
    exception_msg = "";
    non_pert_pars.clear();
@@ -236,7 +236,7 @@ template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_problem() const
 {
    return have_tachyon() || failed_ewsb || failed_convergence
-      || non_perturbative || failed_rho_convergence || thrown
+      || non_perturbative || failed_sinThetaW_convergence || thrown
       || have_failed_pole_mass_convergence()
       || have_non_perturbative_parameter();
 }
@@ -292,8 +292,8 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
       ostr << "no convergence, ";
    if (non_perturbative)
       ostr << "non-perturbative, ";
-   if (failed_rho_convergence)
-      ostr << "no rho convergence, ";
+   if (failed_sinThetaW_convergence)
+      ostr << "no sinThetaW convergence, ";
    if (thrown)
       ostr << "exception thrown(" << exception_msg << ")";
    for (unsigned i = 0; i < Number_of_particles; ++i) {
