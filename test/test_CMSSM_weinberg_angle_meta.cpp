@@ -268,6 +268,10 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = Electroweak_constants::PMTOP;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
+   // initialize self-energies
+   wein.pizzt_MZ = wein.calculate_self_energy_VZ(Electroweak_constants::MZ);
+   wein.piwwt_MW = wein.calculate_self_energy_VWm(Electroweak_constants::MW);
+   wein.piwwt_0  = wein.calculate_self_energy_VWm(0.);
    double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
