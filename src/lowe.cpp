@@ -377,15 +377,17 @@ void QedQcd::toMt() {
 
   const double tol = 1.0e-5;
 
+  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
+  calcPoleMb();
+
   double alphasMZ = displayAlpha(ALPHAS);
   double alphaMZ = displayAlpha(ALPHA);
 
-  double mz = displayMu();
+  double mz = displayPoleMZ();
 
   runGauge(mz, 1.0);
   //Run whole lot up to pole top mass
   double mt = this->displayPoleMt();
-
   run(1.0, mz, tol);
 
   // Reset alphas to erase numerical integration errors.
@@ -411,7 +413,6 @@ void QedQcd::toMz() {
   setAlpha(ALPHAS, alphasMZ);
   setAlpha(ALPHA, alphaMZ);
 }
-
 
 // This will calculate the three gauge couplings of the Standard Model at the
 // scale m2.
