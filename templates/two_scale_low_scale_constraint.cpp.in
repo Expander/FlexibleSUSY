@@ -106,6 +106,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
 
    model->calculate_DRbar_masses();
    update_scale();
+   oneset.runto(scale, 1.0e-5);
    calculate_DRbar_gauge_couplings();
 
 @applyConstraint@
