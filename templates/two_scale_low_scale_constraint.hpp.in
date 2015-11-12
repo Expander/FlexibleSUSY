@@ -57,7 +57,7 @@ private:
    double scale;
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
    Eigen::Matrix<double,3,3> neutrinoDRbar;

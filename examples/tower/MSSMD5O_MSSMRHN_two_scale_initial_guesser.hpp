@@ -56,7 +56,7 @@ private:
    MSSMD5O<Two_scale>* model_1;
    MSSMRHN<Two_scale>* model_2;
    MSSMD5O_input_parameters input_pars;
-   const softsusy::QedQcd oneset;
+   const softsusy::QedQcd qedqcd;
    MSSMD5O_low_scale_constraint<Two_scale> low_constraint_1;
    MSSMD5O_susy_scale_constraint<Two_scale> susy_constraint_1;
    MSSMRHN_high_scale_constraint<Two_scale> high_constraint_2;

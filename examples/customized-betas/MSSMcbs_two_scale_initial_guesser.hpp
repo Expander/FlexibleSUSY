@@ -49,7 +49,7 @@ public:
 
 private:
    MSSMcbs<Two_scale>* model;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    double mu_guess;
    double mc_guess;
    double mt_guess;

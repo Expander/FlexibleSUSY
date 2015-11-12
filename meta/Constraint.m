@@ -349,7 +349,7 @@ GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], qedqcd_Strin
     qedqcd <> ".displayPoleMZ()";
 
 CalculateScale[s:FlexibleSUSY`LowEnergyConstant[_], scaleName_String] :=
-    scaleName <> " = " <> GetSMMatchingScale[s, "oneset"] <> ";\n";
+    scaleName <> " = " <> GetSMMatchingScale[s, "qedqcd"] <> ";\n";
 
 (* Don't expand LowEnergyConstant[MZ] to the hard-coded value
    LowEnergyConstant(MZ), because the pole MZ is an input parameter

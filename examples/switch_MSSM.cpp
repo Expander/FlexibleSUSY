@@ -312,7 +312,7 @@ public:
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
-   void run(const QedQcd& oneset, const MSSM_input_parameters& input);
+   void run(const QedQcd& qedqcd, const MSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "MSSM_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "MSSM_spectrum.dat") const;
 
@@ -336,11 +336,11 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template<class T>
-void MSSM_runner<T>::run(const QedQcd& oneset,
+void MSSM_runner<T>::run(const QedQcd& qedqcd,
 			 const MSSM_input_parameters& input)
 {
    high_scale_constraint.reset();
@@ -366,7 +366,7 @@ void MSSM_runner<T>::run(const QedQcd& oneset,
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   MSSM_initial_guesser<T> initial_guesser(&model, input, oneset,
+   MSSM_initial_guesser<T> initial_guesser(&model, input, qedqcd,
 					 low_scale_constraint,
 					 susy_scale_constraint,
 					 high_scale_constraint);
@@ -473,16 +473,16 @@ int main_(int argc, const char* argv[])
    const std::string slha_output_file(options.get_slha_output_file());
    MSSM_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
-   QedQcd oneset;
+   QedQcd qedqcd;
    MSSM_input_parameters input;
 
    if (!slha_input_file.empty()) {
       slha_io.read_from_file(slha_input_file);
-      slha_io.fill(oneset);
+      slha_io.fill(qedqcd);
       slha_io.fill(input);
       slha_io.fill(spectrum_generator_settings);
    }
-   oneset.toMz(); // run SM fermion masses to MZ
+   qedqcd.toMz(); // run SM fermion masses to MZ
 
    MSSM_runner<algorithm_type> runner;
    runner.set_precision_goal(
@@ -492,7 +492,7 @@ int main_(int argc, const char* argv[])
    runner.set_calculate_sm_masses(
       spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
 
-   runner.run(oneset, input);
+   runner.run(qedqcd, input);
 
    if (runner.get_problems().have_problem()) {
       runner.get_problems().print();

@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
    const std::string spectrum_file(options.get_spectrum_file());
    @ModelName@_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    @ModelName@_input_parameters input;
 
    if (slha_input_source.empty()) {
@@ -59,7 +59,7 @@ int main(int argc, const char* argv[])
 
    try {
       slha_io.read_from_source(slha_input_source);
-      slha_io.fill(oneset);
+      slha_io.fill(qedqcd);
       slha_io.fill(input);
       slha_io.fill(spectrum_generator_settings);
    } catch (const Error& error) {
@@ -67,14 +67,14 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   oneset.toMz(); // run SM fermion masses to MZ
+   qedqcd.toMz(); // run SM fermion masses to MZ
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());
 
-   spectrum_generator.run(oneset, input);
+   spectrum_generator.run(qedqcd, input);
 
    const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
@@ -106,7 +106,7 @@ int main(int argc, const char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      @ModelName@_database::to_database(database_output_file, model, &oneset);
+      @ModelName@_database::to_database(database_output_file, model, &qedqcd);
    }
 
    if (!spectrum_file.empty())
