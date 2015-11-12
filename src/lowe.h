@@ -170,6 +170,8 @@ public:
   void toMt();
   /// Evolves object to MZ
   void toMz();
+  /// Evolves object to given scale
+  void to(double);
   /// This will calculate the three gauge couplings of the Standard Model at
   /// the scale m2.
   /// It's a simple one-loop calculation only and no

@@ -414,6 +414,13 @@ void QedQcd::toMz() {
   setAlpha(ALPHA, alphaMZ);
 }
 
+// Takes QedQcd created at MZ and runs it to given scale
+void QedQcd::to(double q)
+{
+   toMz();
+   runto(q, 1.0e-5);
+}
+
 // This will calculate the three gauge couplings of the Standard Model at the
 // scale m2.
 // It's a simple one-loop calculation only and no
