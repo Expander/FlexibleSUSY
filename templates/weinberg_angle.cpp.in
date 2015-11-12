@@ -129,7 +129,6 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
-   const double scale      = model->get_scale();
    const double mw         = sm_parameters.mw_pole;
    const double mz         = sm_parameters.mz_pole;
    const double gfermi     = sm_parameters.fermi_constant;
@@ -137,11 +136,6 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    pizzt_MZ = calculate_self_energy_@VectorZ@(mz);
    piwwt_MW = calculate_self_energy_@VectorW@(mw);
    piwwt_0  = calculate_self_energy_@VectorW@(0.);
-
-   if (!is_equal(scale, mz)) {
-      WARNING("@ModelName@_weinberg_angle::calculate() called at scale "
-              << scale << " != MZ_pole(" << mz << ")");
-   }
 
    unsigned iteration = 0;
    bool not_converged = true;
@@ -298,6 +292,7 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
    const double sw2 = 1.0 - cw2;
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
+   const double q   = model->get_scale();
 
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
@@ -306,7 +301,8 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
 
    const double deltaVbSM = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
-       (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2)));
+       (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2))
+       - 4. * Log(Sqr(mz/q)));
 
    return deltaVbSM;
 }

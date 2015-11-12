@@ -57,7 +57,7 @@ void setup_CMSSM_const(CMSSM_mass_eigenstates& model, const CMSSM_input_paramete
    const double vd       = vev * cosBeta;
    const double susyMu   = input.SignMu * 120.0;
    const double BMu      = Sqr(2.0 * susyMu);
-   const double scale    = Electroweak_constants::MZ;
+   const double scale    = Electroweak_constants::PMTOP;
 
    Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero()),
       Yd(Eigen::Matrix<double,3,3>::Zero()),
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    setup_CMSSM_const_non_3rd_gen(model, input);
 
    Stopwatch stopwatch;
-   const double tol = 1.0e-8;
+   const double tol = 1.0e-10;
    const int maxTries = 20;
    const double rho_start = 1.0, sin_start = 0.48;
 
