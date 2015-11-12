@@ -84,6 +84,7 @@ FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
 MZ;
+MT;
 MZDRbar;
 MWDRbar;
 EDRbar;
@@ -354,14 +355,6 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := LowEnergyConstant[MZ];
-              ,
-              If[FlexibleSUSY`LowScale =!= LowEnergyConstant[MZ],
-                 Print["Error: The low-scale was set differently from MZ!"];
-                 Print["   LowScale = ", FlexibleSUSY`LowScale];
-                 Print["   This is currently not supported."];
-                 Print["   Please set: LowScale = ", LowEnergyConstant[MZ], ";"];
-                 Quit[1];
-                ];
              ];
            If[!ValueQ[FlexibleSUSY`LowScaleFirstGuess],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
@@ -477,6 +470,7 @@ GeneralReplacementRules[] :=
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[Parameters`GetInputParameters[][[ToExpression[num]]]],
+      "@SMMatchingScale@"     -> Constraint`GetSMMatchingScale[FlexibleSUSY`LowScale, "oneset"],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,

@@ -67,7 +67,7 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   oneset.toMz(); // run SM fermion masses to MZ
+   oneset.to(@SMMatchingScale@); // run SM fermion masses to SM matching scale
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
