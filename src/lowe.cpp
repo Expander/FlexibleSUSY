@@ -588,4 +588,32 @@ std::vector<std::string> QedQcd::display_input_parameter_names()
                                    + NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
 }
 
+bool operator ==(const QedQcd& a, const QedQcd& b)
+{
+   return
+      a.displayMu() == b.displayMu() &&
+      a.displayLoops() == b.displayLoops() &&
+      a.displayThresholds() == b.displayThresholds() &&
+      a.displayAlpha(ALPHA) == b.displayAlpha(ALPHA) &&
+      a.displayAlpha(ALPHAS) == b.displayAlpha(ALPHAS) &&
+      a.displayMass(mUp) == b.displayMass(mUp) &&
+      a.displayMass(mCharm) == b.displayMass(mCharm) &&
+      a.displayMass(mTop) == b.displayMass(mTop) &&
+      a.displayMass(mDown) == b.displayMass(mDown) &&
+      a.displayMass(mStrange) == b.displayMass(mStrange) &&
+      a.displayMass(mBottom) == b.displayMass(mBottom) &&
+      a.displayMass(mElectron) == b.displayMass(mElectron) &&
+      a.displayMass(mMuon) == b.displayMass(mMuon) &&
+      a.displayMass(mTau) == b.displayMass(mTau) &&
+      a.displayNeutrinoPoleMass(1) == b.displayNeutrinoPoleMass(1) &&
+      a.displayNeutrinoPoleMass(2) == b.displayNeutrinoPoleMass(2) &&
+      a.displayNeutrinoPoleMass(3) == b.displayNeutrinoPoleMass(3) &&
+      a.displayPoleMt() == b.displayPoleMt() &&
+      a.displayPoleMb() == b.displayPoleMb() &&
+      a.displayPoleMtau() == b.displayPoleMtau() &&
+      a.displayPoleMW() == b.displayPoleMW() &&
+      a.displayPoleMZ() == b.displayPoleMZ() &&
+      a.displayFermiConstant() == b.displayFermiConstant();
+}
+
 } // namespace softsusy

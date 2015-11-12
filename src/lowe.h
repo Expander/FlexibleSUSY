@@ -213,6 +213,8 @@ inline QedQcd::QedQcd(const QedQcd &m)
 void massFermions(const QedQcd & r, DoubleMatrix & mDon, 
 		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
 
+bool operator ==(const QedQcd&, const QedQcd&);
+
 } // namespace softsusy
 
 #endif
