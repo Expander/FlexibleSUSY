@@ -377,15 +377,17 @@ void QedQcd::toMt() {
 
   const double tol = 1.0e-5;
 
+  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
+  calcPoleMb();
+
   double alphasMZ = displayAlpha(ALPHAS);
   double alphaMZ = displayAlpha(ALPHA);
 
-  double mz = displayMu();
+  double mz = displayPoleMZ();
 
   runGauge(mz, 1.0);
   //Run whole lot up to pole top mass
   double mt = this->displayPoleMt();
-
   run(1.0, mz, tol);
 
   // Reset alphas to erase numerical integration errors.
@@ -412,6 +414,12 @@ void QedQcd::toMz() {
   setAlpha(ALPHA, alphaMZ);
 }
 
+// Takes QedQcd created at MZ and runs it to given scale
+void QedQcd::to(double q)
+{
+   toMz();
+   runto(q, 1.0e-5);
+}
 
 // This will calculate the three gauge couplings of the Standard Model at the
 // scale m2.
@@ -586,6 +594,34 @@ std::vector<std::string> QedQcd::display_input_parameter_names()
    return std::vector<std::string>(QedQcd_input_parmeter_names,
                                    QedQcd_input_parmeter_names
                                    + NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
+}
+
+bool operator ==(const QedQcd& a, const QedQcd& b)
+{
+   return
+      a.displayMu() == b.displayMu() &&
+      a.displayLoops() == b.displayLoops() &&
+      a.displayThresholds() == b.displayThresholds() &&
+      a.displayAlpha(ALPHA) == b.displayAlpha(ALPHA) &&
+      a.displayAlpha(ALPHAS) == b.displayAlpha(ALPHAS) &&
+      a.displayMass(mUp) == b.displayMass(mUp) &&
+      a.displayMass(mCharm) == b.displayMass(mCharm) &&
+      a.displayMass(mTop) == b.displayMass(mTop) &&
+      a.displayMass(mDown) == b.displayMass(mDown) &&
+      a.displayMass(mStrange) == b.displayMass(mStrange) &&
+      a.displayMass(mBottom) == b.displayMass(mBottom) &&
+      a.displayMass(mElectron) == b.displayMass(mElectron) &&
+      a.displayMass(mMuon) == b.displayMass(mMuon) &&
+      a.displayMass(mTau) == b.displayMass(mTau) &&
+      a.displayNeutrinoPoleMass(1) == b.displayNeutrinoPoleMass(1) &&
+      a.displayNeutrinoPoleMass(2) == b.displayNeutrinoPoleMass(2) &&
+      a.displayNeutrinoPoleMass(3) == b.displayNeutrinoPoleMass(3) &&
+      a.displayPoleMt() == b.displayPoleMt() &&
+      a.displayPoleMb() == b.displayPoleMb() &&
+      a.displayPoleMtau() == b.displayPoleMtau() &&
+      a.displayPoleMW() == b.displayPoleMW() &&
+      a.displayPoleMZ() == b.displayPoleMZ() &&
+      a.displayFermiConstant() == b.displayFermiConstant();
 }
 
 } // namespace softsusy

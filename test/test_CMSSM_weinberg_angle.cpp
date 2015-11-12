@@ -49,6 +49,8 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    input.Azero = 0.;
 
    setup_CMSSM_const_non_3rd_gen(fs, ss, input);
+   fs.set_scale(173.34);
+   ss.setMu(173.34);
 
    const double scale = ss.displayMu();
    const double mw_pole = ss.displayMw();
@@ -56,7 +58,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
-   BOOST_CHECK_EQUAL(scale, mz_pole);
 
    double outrho = 1.0, outsin = 0.48;
    const double alphaMsbar = ss.displayDataSet().displayAlpha(ALPHA);

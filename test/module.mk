@@ -18,6 +18,7 @@ TEST_SRC := \
 		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
+		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_eigen_utils.cpp \
 		$(DIR)/test_ewsb_solver.cpp \
@@ -396,6 +397,8 @@ $(DIR)/test_ckm.x: $(DIR)/test_ckm.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_lowe.x: $(DIR)/test_lowe.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)

@@ -170,6 +170,8 @@ public:
   void toMt();
   /// Evolves object to MZ
   void toMz();
+  /// Evolves object to given scale
+  void to(double);
   /// This will calculate the three gauge couplings of the Standard Model at
   /// the scale m2.
   /// It's a simple one-loop calculation only and no
@@ -212,6 +214,8 @@ inline QedQcd::QedQcd(const QedQcd &m)
 /// Returns diagonal fermion mass matrices given input object r
 void massFermions(const QedQcd & r, DoubleMatrix & mDon, 
 		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
+
+bool operator ==(const QedQcd&, const QedQcd&);
 
 } // namespace softsusy
 
