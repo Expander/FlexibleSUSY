@@ -1,0 +1,514 @@
+/**
+\page model_file_options FlexibleSUSY model file options
+\tableofcontents
+
+\section input_parameters Input parameters
+
+_____________________________________________________________________
+
+__Symbol__: `MINPAR`
+
+__Default value__: `{}`
+
+__Description__:
+
+In the `MINPAR` variable a list of input parameters for the spectrum
+generator can be given, which is read of the `MINPAR` block of the
+SLHA input file.
+
+`MINPAR` is supposed to contain a list.  The list elements are
+two-component lists, where the first in element is an integer number
+representing the index inside the `MINPAR` block.  The second element
+is the input parameter.  The input parameter must be either a symbol
+or a sign of the form `Sign[p]`, where `p` is the name of a model
+parameter.
+
+__Example__: In the CMSSM the `MINPAR` block has the form
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+MINPAR = {
+    {1, m0},
+    {2, m12},
+    {3, TanBeta},
+    {4, Sign[\[Mu]]},
+    {5, Azero}
+};
+~~~~~~~~~~~~~~~~~~~~
+
+In this case the input parameters can be given in the SLHA input file
+as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block MINPAR                 # Input parameters
+    1   125                  # m0
+    2   500                  # m12
+    3   10                   # TanBeta
+    4   1                    # SignMu
+    5   0                    # Azero
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
+__Symbol__: `EXTPAR`
+
+__Default value__: `{}`
+
+__Description__:
+
+The `EXTPAR` variable is a list of input parameters for the spectrum
+generator, which is read of the `EXTPAR` block of the SLHA input file.
+The list assigned to the `EXTPAR` variable must have the same form as
+`MINPAR` variable.
+
+__Example__: In the NUTNMSSM the `EXTPAR` block has the form
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+EXTPAR = {
+    {61, LambdaInput},
+    {62, KappaInput},
+    {63, ALambdaInput},
+    {64, AKappaInput},
+    {65, MuEff}
+};
+~~~~~~~~~~~~~~~~~~~~
+
+In this case the input parameters can be given in the SLHA input file
+as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block EXTPAR                 # Input parameters
+   61   0.650                # LambdaInput
+   62   0.164                # KappaInput
+   63   763.8                # ALambdaInput
+   64   1268.2               # AKappaInput
+   65   265.2                # MuEff
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
+__Symbol__: `FSExtraInputParameters`
+
+__Default value__: `{}`
+
+__Description__:
+
+In the `FSExtraInputParameters` variable vector- or matrix-like input
+parameters can be given.  `FSExtraInputParameters` is contains a list,
+whose elements are three-component lists.  The first element of this
+list is a symbol, which represents the input parameter.  The second
+element is the name of the block, from which the input parameter is
+read.  The third element is a list specifying the vector- or
+matrix-type of the input parameter.
+
+__Example__: In the MSSM the `FSExtraInputParameters` block has the
+form
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+FSExtraInputParameters = {
+    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
+    {Adij, AdijIN, {3,3}}, (* 3x3 matrix *)
+    {Auij, AuijIN, {3,3}}  (* 3x3 matrix *)
+};
+~~~~~~~~~~~~~~~~~~~~
+
+Here, three 3x3 matrix-valued input parameters are specified: `Aeij`,
+`Adij` and `Auij`.  These matrices are read from the blocks `AeijIN`,
+`AdijIN` and `AuijIN`, respectively.
+
+These input parameters can be given in the SLHA input file as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block AeijIN
+    1   1   100
+    1   2   100
+    1   3   100
+    2   1   100
+    2   2   100
+    2   3   100
+    3   1   100
+    3   2   100
+    3   3   100
+Block AdijIN
+    1   1   200
+    1   2   200
+    1   3   200
+    2   1   200
+    2   2   200
+    2   3   200
+    3   1   200
+    3   2   200
+    3   3   200
+Block AuijIN
+    1   1   300
+    1   2   300
+    1   3   300
+    2   1   300
+    2   2   300
+    2   3   300
+    3   1   300
+    3   2   300
+    3   3   300
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: Unspecified parameters are assumed to be zero.
+
+\section boundary_conditions Boundary conditions
+
+_____________________________________________________________________
+
+__Symbol__: `LowScale`
+
+__Default value__: _unset_
+
+__Description__:
+
+The low-energy scale, at which the model is matched to the Standard
+Model.
+
+Example: In the CMSSM the low-energy scale should be set to the Z or
+top pole mass.  This choice is achieved by the following expression:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LowScale = LowEnergyConstant[MZ];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `LowScaleFirstGuess`
+
+__Default value__: _unset_
+
+__Description__:
+
+First guess of the low-energy scale.
+
+Example: In the CMSSM the first guess for the low-energy scale should
+be set to the Z or top pole mass:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `LowScaleInput`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `LowScaleInput` variable boundary conditions at the
+low-energy scale can be specified.  `LowScaleInput` is a list.  Please
+refer to \ref input_format for details about the list format.
+
+At the low-energy scale, FlexibleSUSY automatically determines the
+three gauge couplings from the SLHA input parameters
+\f$\alpha_{em}\f$, \f$M_Z\f$ and \f$G_F\f$ or \f$M_W\f$.
+
+_TODO_: Add note about how the the user can chose between \f$G_F\f$ or
+\f$M_W\f$ as input.
+
+Example: In the CMSSM `LowScaleInput` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `SUSYScale`
+
+__Default value__: _unset_
+
+__Description__:
+
+The scale between the low-scale and the high-scale.  This is usually
+the scale at which the electroweak symmetry breaking conditions are
+imposed.
+
+Example: In the CMSSM the SUSY scale should be set to the geometric
+average of the two stop masses.  This choice is achieved by the
+following expression:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `SUSYScaleFirstGuess`
+
+__Default value__: _unset_
+
+__Description__:
+
+First guess of the SUSY scale.
+
+Example: In the CMSSM a reasonable first guess for the SUSY scale can
+be given by the following combination of the mSUGRA parameters:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `SUSYScaleInput`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `SUSYScaleInput` variable boundary conditions at the SUSY
+scale can be specified.  `SUSYScaleInput` is a list.  Please refer to
+\ref input_format for details about the list format.
+
+Example: In the NUTNMSSM `SUSYScaleInput` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScaleInput = {
+   {\[Lambda], LambdaInput},
+   {\[Kappa], KappaInput},
+   {vS, Sqrt[2] MuEff / LambdaInput}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `HighScale`
+
+__Default value__: _unset_
+
+__Description__:
+
+This is the high-energy scale.
+
+Example: In the CMSSM the high-energy scale, \f$M_X\f$, is given by
+the equality of the gauge couplings \f$g_1(M_X)\f$ and \f$g_2(M_X)\f$:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScale = g1 == g2;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `HighScaleFirstGuess`
+
+__Default value__: _unset_
+
+__Description__:
+
+First guess of the high-energy scale.
+
+Example: In the CMSSM a reasonable initial guess for the high-energy
+scale is:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScaleFirstGuess = 2.0 10^16;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `HighScaleMinimum`
+
+__Default value__: _unset_
+
+__Description__:
+
+Minimum value of the high-energy scale during the iteration.
+
+Example: In the E6SSM the high-energy scale can vary a lot between the
+iteration steps.  For this reason, it makes sense to use a minimum
+high-energy scale in intermediate steps as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScaleMinimum = 1.0 10^4;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `HighScaleMaximum`
+
+__Default value__: _unset_
+
+__Description__:
+
+Maximum value of the high-energy scale during the iteration.
+
+Example: In the E6SSM the high-energy scale can vary a lot between the
+iteration steps.  For this reason, it makes sense to use a maximum
+high-energy scale in intermediate steps as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScaleMaximum = 5.0 10^17;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `HighScaleInput`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `HighScaleInput` variable boundary conditions at the
+high-energy scale can be specified.  `HighScaleInput` is a list.
+Please refer to \ref input_format for details about the list format.
+
+Example: In the CMSSM `HighScaleInput` is set to the mSUGRA boundary
+conditions:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScaleInput = {
+   {T[Ye], Azero Ye},
+   {T[Yd], Azero Yd},
+   {T[Yu], Azero Yu},
+   {mHd2, m0^2},
+   {mHu2, m0^2},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {MassB, m12},
+   {MassWB,m12},
+   {MassG, m12}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `InitialGuessAtLowScale`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `InitialGuessAtLowScale` variable initial values for the
+model MS-bar parameters can be given at the low-energy scale
+`LowScale`.
+
+Example: In the CMSSM `InitialGuessAtLowScale` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InitialGuessAtLowScale = {
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `InitialGuessAtHighScale`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `InitialGuessAtHighScale` variable initial values for the
+model MS-bar parameters can be given at the high-energy scale
+`HighScale`.
+
+Example: In the CMSSM `InitialGuessAtHighScale` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InitialGuessAtHighScale = {
+   {\[Mu]   , 1.0},
+   {B[\[Mu]], 0.0}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `EWSBOutputParameters`
+
+__Default value__: `{}`
+
+__Description__:
+
+With the `EWSBOutputParameters` variable the model parameters must be
+specified, which are fixed by the electroweak symmetry breaking (EWSB)
+conditions.  The length of `EWSBOutputParameters` must be equal to the
+number of EWSB conditions.
+
+Example: In the CMSSM `EWSBOutputParameters` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWSBOutputParameters = { B[\[Mu]], \[Mu] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example: In the CMSSMCPV, which uses complex parameters,
+`EWSBOutputParameters` is given as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\subsection input_format Boundary condition format
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HighScaleInput = {
+   {T[Ye], Azero Ye},
+   {mHd2, m0^2},
+   {mHu2, m0^2},
+   {Phase[\[Mu]], Exp[I ArcCos[CosPhi]]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Real and complex unit and zero matrices and vectors:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UNITMATRIX[rows]
+ZEROMATRIX[rows,cols]
+ZEROVECTOR[rows]
+ZEROARRAY[rows]
+UNITMATRIXCOMPLEX[rows]
+ZEROMATRIXCOMPLEX[rows,cols]
+ZEROVECTORCOMPLEX[rows]
+ZEROARRAYCOMPLEX[rows]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Specify scale at which electroweak symmetry breaking conditions are imposed:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScaleInput = {
+   FSSolveEWSBFor[EWSBOutputParameters]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sub-iteration to fix model parameters such that a function is minimized:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScaleInput = {
+   FSMinimize[{vd,vu}, (LowEnergyConstant[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2
+                     + (LowEnergyConstant[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sub-iteration to fix model parameters such that a function is zero:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUSYScaleInput = {
+   FSFindRoot[{vd,vu}, {LowEnergyConstant[MZ] - Pole[M[VZ]], LowEnergyConstant[MH] - Pole[M[hh[1]]]}]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+\section pole_masses Pole masses
+
+\section output_blocks Output blocks
+
+*/
