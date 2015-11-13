@@ -63,7 +63,7 @@ public:
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    MssmSoftsusy get_model() const { return softSusy; }
-   void test(const CMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
+   void test(const CMSSM_input_parameters& pp, double mxGuess, const QedQcd& qedqcd = QedQcd()) {
       // run softsusy
       softsusy::numRewsbLoops = 1;
       softsusy::numHiggsMassLoops = 1;
@@ -77,7 +77,7 @@ public:
       pars(3) = pp.Azero;
       softSusy.setAlternativeMs(false);
       softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta,
-                      oneset, gaugeUnification);
+                      qedqcd, gaugeUnification);
       mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
@@ -121,16 +121,16 @@ public:
    void set_low_scale_constraint(CMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(CMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(CMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
-   void setup_default_constaints(const CMSSM_input_parameters&, const QedQcd& oneset) {
+   void setup_default_constaints(const CMSSM_input_parameters&, const QedQcd& qedqcd) {
       if (!high_constraint)
          high_constraint = new CMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
          susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm);
       if (!low_constraint)
-         low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, oneset);
+         low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }
-   void test(const CMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
-      setup_default_constaints(pp, oneset);
+   void test(const CMSSM_input_parameters& pp, const QedQcd& qedqcd = QedQcd()) {
+      setup_default_constaints(pp, qedqcd);
 
       const double precision_goal = softsusy::TOLERANCE;
 
@@ -148,13 +148,13 @@ public:
       high_constraint->set_model(&mssm);
       susy_constraint->set_model(&mssm);
       low_constraint ->set_model(&mssm);
-      low_constraint ->set_sm_parameters(oneset);
+      low_constraint ->set_sm_parameters(qedqcd);
       high_constraint->initialize();
       susy_constraint->initialize();
       low_constraint ->initialize();
 
       CMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, precision_goal);
-      CMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
+      CMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, qedqcd,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);
@@ -454,8 +454,8 @@ class CMSSM_iterative_low_scale_constraint
 public:
    CMSSM_iterative_low_scale_constraint()
       : CMSSM_low_scale_constraint<Two_scale>() {}
-   CMSSM_iterative_low_scale_constraint(CMSSM<Two_scale>* model_, const QedQcd& oneset_)
-      : CMSSM_low_scale_constraint<Two_scale>(model_,oneset_) {}
+   CMSSM_iterative_low_scale_constraint(CMSSM<Two_scale>* model_, const QedQcd& qedqcd_)
+      : CMSSM_low_scale_constraint<Two_scale>(model_,qedqcd_) {}
    virtual ~CMSSM_iterative_low_scale_constraint() {}
 
    virtual void apply();
@@ -526,11 +526,11 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_higgs_iteration )
    pp.Azero = 1000.;
    pp.SignMu = 1;
    pp.TanBeta = 30.;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
 
    CMSSM<Two_scale> _model;
    CMSSM_tester mssm_tester;
-   mssm_tester.set_low_scale_constraint(new CMSSM_iterative_low_scale_constraint(&_model, oneset));
+   mssm_tester.set_low_scale_constraint(new CMSSM_iterative_low_scale_constraint(&_model, qedqcd));
    // BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    try {

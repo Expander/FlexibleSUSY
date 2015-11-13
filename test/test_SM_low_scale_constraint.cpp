@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    SM<Two_scale> m;
    SM_input_parameters input;
    input.LambdaIN = 0.1;
-   QedQcd oneset;
+   QedQcd qedqcd;
 
    const double vev = 246.;
 
@@ -36,10 +36,10 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 
    m.calculate_DRbar_masses();
 
-   SM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   SM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = qedqcd.displayAlpha(ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_delta_spectrum )
    SM<Two_scale> m;
    SM_input_parameters input;
    input.LambdaIN = 0.1;
-   QedQcd oneset;
+   QedQcd qedqcd;
 
    const double vev = 246.;
    const double g1 = 0.2;

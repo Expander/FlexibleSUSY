@@ -14,7 +14,7 @@ using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
 {
-   const QedQcd oneset;
+   const QedQcd qedqcd;
    CMSSMNoFV_input_parameters input;
    input.TanBeta = 10.;
    input.m0 = 125.;
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
    m.do_calculate_sm_pole_masses(true);
    setup_CMSSM_const(m, input);
 
-   const double mt_pole_input = oneset.displayPoleMt();
+   const double mt_pole_input = qedqcd.displayPoleMt();
    const double vu = m.get_vu();
 
    BOOST_MESSAGE("mt_pole(input) = " << mt_pole_input);

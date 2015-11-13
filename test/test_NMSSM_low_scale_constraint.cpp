@@ -24,17 +24,17 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    input.Azero = -500.;
    input.LambdaInput = 0.1;
    input.SignvS = 1;
-   QedQcd oneset;
+   QedQcd qedqcd;
    setup_NMSSM_const(m, s, input);
-   s.setData(oneset);
+   s.setData(qedqcd);
 
    m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
-   NMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   NMSSM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = qedqcd.displayAlpha(ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
@@ -59,16 +59,16 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    input.Azero = -500.;
    input.LambdaInput = 0.1;
    input.SignvS = 1;
-   QedQcd oneset;
-   oneset.setPoleMt(175.);       // non-default
-   oneset.setMass(mBottom, 4.3); // non-default
+   QedQcd qedqcd;
+   qedqcd.setPoleMt(175.);       // non-default
+   qedqcd.setMass(mBottom, 4.3); // non-default
    setup_NMSSM_const(m, s, input);
-   s.setData(oneset);
+   s.setData(qedqcd);
 
    m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
-   NMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   NMSSM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();
@@ -82,9 +82,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
    const double ss_new_vev = s.getVev();
 
-   const double fs_mt = m.calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
-   const double fs_mb = m.calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
-   const double fs_me = m.calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+   const double fs_mt = m.calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
+   const double fs_mb = m.calculate_MFd_DRbar(qedqcd.displayMass(mBottom), 2);
+   const double fs_me = m.calculate_MFe_DRbar(qedqcd.displayMass(mTau), 2);
    const double fs_MZ = m.calculate_MVZ_DRbar(Electroweak_constants::MZ);
    const double fs_old_vd = m.get_vd();
    const double fs_old_vu = m.get_vu();
