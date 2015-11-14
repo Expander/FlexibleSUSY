@@ -161,6 +161,18 @@ _Note_: Unspecified parameters are assumed to be zero.
 
 \section boundary_conditions Boundary conditions
 
+In FlexibleSUSY, spectrum generators with two or three boundary
+conditions can be generated.  (Future versions will support more than
+three boundary conditions.)  By default, a spectrum generator with
+three boundary conditions is generated.  These boundary conditions are
+named "high-scale", "susy-scale" and "low-scale" boundary condition
+and are described in the following.  In order to generate a spectrum
+generator with only two boundary conditions, set
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+OnlyLowEnergyFlexibleSUSY = True;  (* only 2 BCs, default: False *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 _____________________________________________________________________
 
 __Symbol__: `LowScale`
@@ -169,8 +181,8 @@ __Default value__: _unset_
 
 __Description__:
 
-The low-energy scale, at which the model is matched to the Standard
-Model.
+The scale of the low-scale boundary condition, at which the model is
+matched to the Standard Model.
 
 Example: In the CMSSM the low-energy scale should be set to the Z or
 top pole mass.  This choice is achieved by the following expression:
@@ -235,9 +247,10 @@ __Default value__: _unset_
 
 __Description__:
 
-The scale between the low-scale and the high-scale.  This is usually
-the scale at which the electroweak symmetry breaking conditions are
-imposed.
+The scale of the susy-scale boundary condition, which is defined to be
+between the low-scale and the high-scale.  This is the scale at which
+the electroweak symmetry breaking conditions are imposed by default,
+see \ref input_format.
 
 Example: In the CMSSM the SUSY scale should be set to the geometric
 average of the two stop masses.  This choice is achieved by the
@@ -294,7 +307,7 @@ __Default value__: _unset_
 
 __Description__:
 
-This is the high-energy scale.
+This is the scale of the high-scale boundary condition.
 
 Example: In the CMSSM the high-energy scale, \f$M_X\f$, is given by
 the equality of the gauge couplings \f$g_1(M_X)\f$ and \f$g_2(M_X)\f$:
