@@ -102,7 +102,10 @@ whose elements are three-component lists.  The first element of this
 list is a symbol, which represents the input parameter.  The second
 element is the name of the block, from which the input parameter is
 read.  The third element is a list specifying the vector- or
-matrix-type of the input parameter.
+matrix-type of the input parameter.  A list of the form `{N,M}` with
+`N` and `M` being integer numbers defines a NxM matrix.  A list of the
+form `{N}`, with `N` > 1 defines a vector with `N` rows.  A list of
+the form `{1}` or `{}` defines a scalar.
 
 __Example__: In the MSSM the `FSExtraInputParameters` block has the
 form
@@ -461,46 +464,142 @@ EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
 
 \subsection input_format Boundary condition format
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The variables `LowScaleInput`, `SUSYScaleInput` and `HighScaleInput`
+are lists which specify the boundary conditions for the running model
+parameters at the corresponding scale.  The boundary conditions can be
+expressed as follows.
+
+### Setting a running model parameter to a value or expression ###
+
+A running model parameter can be assigned at the corresponding scale
+to a fixed numerical value or a value which is the result of the
+evaluation of an expression.  Such an assignment is made by a
+two-component list, `{p, v}`, where the first list element must be the
+model parameter (`p` in this case) and the second list element is a
+numerical value or an expression.
+
+Example: An example is the mSUGRA boundary condition in the CMSSM at
+the GUT scale:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 HighScaleInput = {
-   {T[Ye], Azero Ye},
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
    {mHd2, m0^2},
    {mHu2, m0^2},
-   {Phase[\[Mu]], Exp[I ArcCos[CosPhi]]}
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {MassB, m12},
+   {MassWB,m12},
+   {MassG, m12}
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Real and complex unit and zero matrices and vectors:
+The model parameters in the expression in the second list element are
+running parameters at the corresponding scale.  I.e. the setting
+`{T[Ye], Azero*Ye}` means \f$T_{y_e}(Q) := A_0 y_e(Q)\f$, where
+\f$Q\f$ is the scale.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-UNITMATRIX[rows]
-ZEROMATRIX[rows,cols]
-ZEROVECTOR[rows]
-ZEROARRAY[rows]
-UNITMATRIXCOMPLEX[rows]
-ZEROMATRIXCOMPLEX[rows,cols]
-ZEROVECTORCOMPLEX[rows]
-ZEROARRAYCOMPLEX[rows]
+For matrix- or vector-valued assignments, the following convenient
+symbols can be used in the second list element:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UNITMATRIX[rows]              (* quadratic unit matrix with `rows' rows *)
+UNITMATRIXCOMPLEX[rows]       (* complex quadratic unit matrix with `rows' rows *)
+ZEROMATRIX[rows,cols]         (* zero matrix with `rows' rows and `cols' columns *)
+ZEROMATRIXCOMPLEX[rows,cols]  (* complex zero matrix with `rows' rows and `cols' columns *)
+ZEROVECTOR[rows]              (* zero vector with `rows' rows *)
+ZEROVECTORCOMPLEX[rows]       (* complex zero vector with `rows' rows *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Specify scale at which electroweak symmetry breaking conditions are imposed:
+On the r.h.s. of the assignment it is possible to refer to a model
+parameter, which is read from an SLHA input block.  These model
+parameter input blocks are named after the model parameter output
+blocks concatenated with an additionan "IN" (see the SLHA-2 standard,
+arXiv:0801.0045, Section 4.1.3).  To refer to such an input model
+parameter on the r.h.s. of an assignment one can either add an entry
+in `FSExtraInputParameters` or use the `LHInput[p]` symbol, where `p`
+is the name of the model parameter.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+SUSYScaleFirstGuess = Sqrt[Sqrt[LHInput[mq2[3,3]] * LHInput[mu2[3,3]]]];
+
 SUSYScaleInput = {
+   {mq2, 2 g2^2 LHInput[mq2]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Imposing the electroweak symmetry breaking conditions ###
+
+The scale, at which the electroweak symmetry breaking (EWSB)
+conditions are imposed can be specified by adding
+`FSSolveEWSBFor[parameters]` to the corresponding boundary condition.
+The argument `parameters` must be the list of model parameters which
+are fixed by the electroweak symmetry breaking conditions.
+
+Example: Impose the EWSB conditions at the low-energy scale:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LowScaleInput = {
    FSSolveEWSBFor[EWSBOutputParameters]
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Sub-iteration to fix model parameters such that a function is minimized:
+If `FSSolveEWSBFor[EWSBOutputParameters]` is not given in any boundary
+condition, then it is added to `SUSYScaleInput`.  This implies, that
+by default, the EWSB conditions are imposed at the scale `SUSYScale`.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Automatic input of unspecified model parameters ###
+
+In low-energy models (models where `OnlyLowEnergyFlexibleSUSY ===
+True`) parameters, which are _not_ set in any boundary condition are
+automatically input at the `SUSYScale`.  The values of these
+parameters are automatically read from the corresponding SLHA input
+blocks.
+
+To disable the automatic input of unspecified parameters, set
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+AutomaticInputAtMSUSY = False;   (* default: True *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Sub-iterations ###
+
+It is possible to fix model parameters at a scale by performing an
+iteration.  Two kinds of iterations are supported:
+
+#### Minimization ####
+
+Model parameters can be fixed by requiring that a function is minimal.
+The parameters to be fixed and the function to be minimized must be
+specified by the symbol `FSMinimize[parameters, f]`, where
+`parameters` is the list of parameters to be fixed and `f` is the
+scalar function to be minimized.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 SUSYScaleInput = {
    FSMinimize[{vd,vu}, (LowEnergyConstant[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2
                      + (LowEnergyConstant[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Sub-iteration to fix model parameters such that a function is zero:
+#### Root finding ####
+
+Model parameters can be fixed by requiring that a function is zero.
+The parameters to be fixed and the function whose zero should be found
+must be specified by the symbol `FSFindRoot[parameters, f]`, where
+`parameters` is the list of parameters to be fixed and `f` is the
+vector-valued function to be zero.
+
+Example:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SUSYScaleInput = {
