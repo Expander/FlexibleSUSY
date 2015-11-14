@@ -439,10 +439,11 @@ __Default value__: `{}`
 
 __Description__:
 
-With the `EWSBOutputParameters` variable the model parameters must be
+In the `EWSBOutputParameters` variable the model parameters must be
 specified, which are fixed by the electroweak symmetry breaking (EWSB)
-conditions.  The length of `EWSBOutputParameters` must be equal to the
-number of EWSB conditions.
+conditions, \f$\partial V_\text{Higgs}/\partial v_i = 0\f$.  The
+length of the `EWSBOutputParameters` list must be equal to the number
+of EWSB conditions.
 
 Example: In the CMSSM `EWSBOutputParameters` is given as follows:
 
@@ -450,8 +451,9 @@ Example: In the CMSSM `EWSBOutputParameters` is given as follows:
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example: In the CMSSMCPV, which uses complex parameters,
-`EWSBOutputParameters` is given as:
+The elements of the `EWSBOutputParameters` must be _real_ parameters.
+In a model with complex parameters, as in the CMSSMCPV for example,
+`EWSBOutputParameters` is set to be:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
