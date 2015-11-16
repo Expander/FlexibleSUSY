@@ -37,18 +37,18 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    input_mssmnofv.SignMu = 1;
    input_mssmnofv.Azero = 0.;
 
-   QedQcd oneset;
+   QedQcd qedqcd;
    setup_CMSSM_models(mssm, mssmnofv, input_mssmnofv);
 
    mssm.calculate_DRbar_masses();
    mssmnofv.calculate_DRbar_masses();
 
-   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, qedqcd);
 
-   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,oneset);
+   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,qedqcd);
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = qedqcd.displayAlpha(ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(ALPHAS);
    const double scale = mssm.get_scale();
 
    const double delta_alpha_em_mssm = constraint_mssm.calculate_delta_alpha_em(alpha_em);
@@ -82,15 +82,15 @@ BOOST_AUTO_TEST_CASE( test_delta_Yf )
    input_mssmnofv.SignMu = 1;
    input_mssmnofv.Azero = 0.;
 
-   QedQcd oneset;
+   QedQcd qedqcd;
    setup_CMSSM_models(mssm, mssmnofv, input_mssmnofv);
 
    mssm.calculate_DRbar_masses();
    mssmnofv.calculate_DRbar_masses();
 
-   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, qedqcd);
 
-   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,oneset);
+   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,qedqcd);
 
    constraint_mssmnofv.calculate_DRbar_yukawa_couplings();
    constraint_mssm.calculate_DRbar_yukawa_couplings();

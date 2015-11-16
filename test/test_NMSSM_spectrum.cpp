@@ -59,7 +59,7 @@ public:
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
    void set_loops(unsigned l) { loops = l; }
-   void test(const NMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
+   void test(const NMSSM_input_parameters& pp, double mxGuess, const QedQcd& qedqcd = QedQcd()) {
       // run softsusy
       softsusy::numRewsbLoops = loops;
       softsusy::numHiggsMassLoops = loops;
@@ -82,7 +82,7 @@ public:
 
       softSusy.setAlternativeMs(false);
       softSusy.lowOrg(NmssmMsugraBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
-                      oneset, gaugeUnification);
+                      qedqcd, gaugeUnification);
       mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
@@ -125,16 +125,16 @@ public:
    void set_low_scale_constraint(NMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(NMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(NMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
-   void setup_default_constaints(const NMSSM_input_parameters&, const QedQcd& oneset) {
+   void setup_default_constaints(const NMSSM_input_parameters&, const QedQcd& qedqcd) {
       if (!high_constraint)
          high_constraint = new NMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
          susy_constraint = new NMSSM_susy_scale_constraint<Two_scale>(&mssm);
       if (!low_constraint)
-         low_constraint = new NMSSM_low_scale_constraint<Two_scale>(&mssm, oneset);
+         low_constraint = new NMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }
-   void test(const NMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
-      setup_default_constaints(pp, oneset);
+   void test(const NMSSM_input_parameters& pp, const QedQcd& qedqcd = QedQcd()) {
+      setup_default_constaints(pp, qedqcd);
 
       mssm.clear();
       mssm.set_loops(2);
@@ -150,13 +150,13 @@ public:
       high_constraint->set_model(&mssm);
       susy_constraint->set_model(&mssm);
       low_constraint ->set_model(&mssm);
-      low_constraint ->set_sm_parameters(oneset);
+      low_constraint ->set_sm_parameters(qedqcd);
       high_constraint->initialize();
       susy_constraint->initialize();
       low_constraint ->initialize();
 
       NMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
-      NMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
+      NMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, qedqcd,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);

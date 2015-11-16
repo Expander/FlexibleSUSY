@@ -214,7 +214,7 @@ public:
     }
 
 private:
-    // const QedQcd oneset;       ///< low-energy parameters
+    // const QedQcd qedqcd;       ///< low-energy parameters
     double mxGuess;            ///< guessed GUT scale
     Real mu;
     Real b;

@@ -11,6 +11,14 @@ FlexibleSUSY-1.2.5 [October, 29 2015]
      --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
      --slha-output-file= --database-output-file=point.db
 
+ * Feature: Models can now be matched to the Standard Model at Q =
+   MZ_pole, Q = MT_pole or any other dynamically calculated scale, as
+   MT_DRbar for example.
+   To match at MZ_pole set in the model file: LowScale = LowEnergyConstant[MZ]
+   To match at MT_pole set in the model file: LowScale = LowEnergyConstant[MT]
+   To match at MT_DRbar set in the model file: LowScale = M[Fu[3]],
+   depending on your chosen name for the top quark.
+
  * Change (commit d553af8): No SLHA output is written if the option
    --slha-output-file= is set to the empty string.  To write the SLHA
    output to stdout, set --slha-output-file=- (this is the default).

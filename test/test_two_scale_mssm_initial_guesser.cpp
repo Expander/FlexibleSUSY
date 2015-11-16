@@ -22,9 +22,9 @@ using namespace softsusy;
  *
  * @param mssm model class
  * @param pp parameter point
- * @param oneset low-energy data set
+ * @param qedqcd low-energy data set
  */
-double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset)
+double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_point& pp, const QedQcd& qedqcd)
 {
    double mx = 0.0;
    const double mxGuess = pp.mxGuess;
@@ -48,7 +48,7 @@ double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_p
    /// These are things that are re-written by the new initialisation
    mssm.setSetTbAtMX(setTbAtMXflag);
    if (altFlag) mssm.useAlternativeEwsb();
-   mssm.setData(oneset);
+   mssm.setData(qedqcd);
    mssm.setMw(MW);
    mssm.setM32(m32);
    mssm.setMuCond(muCondFirst);
@@ -65,12 +65,12 @@ double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_p
       throw ii;
    }
 
-   if (oneset.displayMu() != mz) {
-      cout << "WARNING: lowOrg in softsusy.cpp called with oneset at scale\n"
-	   << oneset.displayMu() << "\ninstead of " << mz << endl;
+   if (qedqcd.displayMu() != mz) {
+      cout << "WARNING: lowOrg in softsusy.cpp called with qedqcd at scale\n"
+	   << qedqcd.displayMu() << "\ninstead of " << mz << endl;
    }
 
-   MssmSusy t(mssm.guessAtSusyMt(tanb, oneset));
+   MssmSusy t(mssm.guessAtSusyMt(tanb, qedqcd));
 
    t.setLoops(2); /// 2 loops should protect against ht Landau pole
    t.runto(mx);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
 {
    SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = 45.1;
-   QedQcd oneset;
+   QedQcd qedqcd;
    SoftsusyMSSM<Two_scale> mssm;
    SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
    SoftsusyMSSM_low_scale_constraint mssm_mz_constraint(pp);
@@ -157,12 +157,12 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
    SoftsusyMSSM_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
                                         mssm_msusy_constraint,
                                         mssm_sugra_constraint);
-   initial_guesser.set_QedQcd(oneset);
+   initial_guesser.set_QedQcd(qedqcd);
 
    initial_guesser.guess();
 
    MssmSoftsusy softsusy;
-   softsusy_initial_guess(softsusy, pp, oneset);
+   softsusy_initial_guess(softsusy, pp, qedqcd);
 
    test_equality(mssm, softsusy);
 }

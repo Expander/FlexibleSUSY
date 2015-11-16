@@ -19,6 +19,8 @@ RestrictScale::usage="";
 
 CheckPerturbativityForParameters::usage="";
 
+GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
+
 Begin["`Private`"];
 
 allBetaFunctions = {};
@@ -339,6 +341,15 @@ CalculateScale[False, _] :=
 
 CalculateScale[True, _] :=
     "WARNING(\"scale condition is allways true!\");\n";
+
+GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MT], qedqcd_String] :=
+    qedqcd <> ".displayPoleMt()";
+
+GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], qedqcd_String] :=
+    qedqcd <> ".displayPoleMZ()";
+
+CalculateScale[s:FlexibleSUSY`LowEnergyConstant[_], scaleName_String] :=
+    scaleName <> " = " <> GetSMMatchingScale[s, "qedqcd"] <> ";\n";
 
 (* Don't expand LowEnergyConstant[MZ] to the hard-coded value
    LowEnergyConstant(MZ), because the pole MZ is an input parameter

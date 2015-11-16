@@ -84,6 +84,7 @@ FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
 MZ;
+MT;
 MZDRbar;
 MWDRbar;
 EDRbar;
@@ -354,14 +355,6 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := LowEnergyConstant[MZ];
-              ,
-              If[FlexibleSUSY`LowScale =!= LowEnergyConstant[MZ],
-                 Print["Error: The low-scale was set differently from MZ!"];
-                 Print["   LowScale = ", FlexibleSUSY`LowScale];
-                 Print["   This is currently not supported."];
-                 Print["   Please set: LowScale = ", LowEnergyConstant[MZ], ";"];
-                 Quit[1];
-                ];
              ];
            If[!ValueQ[FlexibleSUSY`LowScaleFirstGuess],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
@@ -593,18 +586,18 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
               ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
           };
           calculateDRbarMasses = {
-              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "topDRbar"     , "oneset.displayMass(softsusy::mUp)"      ],
-              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "topDRbar"     , "oneset.displayMass(softsusy::mCharm)"   ],
-              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "topDRbar"     , "oneset.displayPoleMt()"                 ],
-              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "bottomDRbar"  , "oneset.displayMass(softsusy::mDown)"    ],
-              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "bottomDRbar"  , "oneset.displayMass(softsusy::mStrange)" ],
-              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "bottomDRbar"  , "oneset.displayMass(softsusy::mBottom)"  ],
-              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "electronDRbar", "oneset.displayMass(softsusy::mElectron)"],
-              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "electronDRbar", "oneset.displayMass(softsusy::mMuon)"    ],
-              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "electronDRbar", "oneset.displayMass(softsusy::mTau)"     ],
-              LoopMasses`CallCalculateDRbarMass["Electron Neutrino", "Neutrinos"  , 1, "neutrinoDRbar", "oneset.displayNeutrinoPoleMass(1)"      ],
-              LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "oneset.displayNeutrinoPoleMass(2)"      ],
-              LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "oneset.displayNeutrinoPoleMass(3)"      ]
+              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "topDRbar"     , "qedqcd.displayMass(softsusy::mUp)"      ],
+              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "topDRbar"     , "qedqcd.displayMass(softsusy::mCharm)"   ],
+              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "topDRbar"     , "qedqcd.displayPoleMt()"                 ],
+              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mDown)"    ],
+              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mStrange)" ],
+              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mBottom)"  ],
+              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "electronDRbar", "qedqcd.displayMass(softsusy::mElectron)"],
+              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "electronDRbar", "qedqcd.displayMass(softsusy::mMuon)"    ],
+              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "electronDRbar", "qedqcd.displayMass(softsusy::mTau)"     ],
+              LoopMasses`CallCalculateDRbarMass["Electron Neutrino", "Neutrinos"  , 1, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(1)"      ],
+              LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(2)"      ],
+              LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(3)"      ]
           };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];

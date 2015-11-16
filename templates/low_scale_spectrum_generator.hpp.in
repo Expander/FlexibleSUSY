@@ -74,11 +74,11 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -97,7 +97,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
 
-   low_scale_constraint .set_sm_parameters(oneset);
+   low_scale_constraint .set_sm_parameters(qedqcd);
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
@@ -114,7 +114,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    if (this->max_iterations > 0)
       convergence_tester.set_max_iterations(this->max_iterations);
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
+   @ModelName@_initial_guesser<T> initial_guesser(&model, qedqcd,
                                                   low_scale_constraint,
                                                   susy_scale_constraint);
    Two_scale_increasing_precision precision(10.0, this->precision_goal);
