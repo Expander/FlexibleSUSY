@@ -163,6 +163,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          case 0: model.run_to(susy_scale);
                  matching.match_high_to_low_scale_model();
                  eft.run_to(low_scale);
+                 low_scale_constraint.apply();
                  eft.calculate_DRbar_masses();
                  eft.solve_ewsb();
                  eft.calculate_spectrum();
