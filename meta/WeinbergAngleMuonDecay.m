@@ -1,11 +1,24 @@
 (* ::Package:: *)
 
-BeginPackage["WeinbergAngleMuonDecay`", {"SARAH`", "CConversion`", "Parameters`", "TextFormatting`"}];
+BeginPackage["WeinbergAngleMuonDecay`", {"SARAH`", "CConversion`", "Parameters`", "TextFormatting`", "TreeMasses`", "WeinbergAngle`"}];
 
 deltaRhoHat2LoopSM::usage="";
 deltaRHat2LoopSM::usage="";
+RhoHatTree::usage="";
 
 Begin["`Private`"];
+
+(*function taken from WeinbergAngle.m*)
+FindMass[massMatrices_List, particle_] :=
+    Module[{massExpr},
+           massExpr = Cases[massMatrices, TreeMasses`FSMassMatrix[{mass_}, particle, ___] :> mass];
+           If[Head[massExpr] =!= List || massExpr === {},
+              Print["Error: Could not find mass of ", particle,
+                    " in masses list."];
+              Return[0];
+             ];
+           Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
+          ];
 
 extPars={SINTHETAW, RHOHAT, GFERMI, MW, MZ, MT, RHO2, DELTARHAT1LOOP, PIZZTMZ};
 Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Length[extPars]}];
@@ -35,6 +48,17 @@ deltaRHat2LoopSM[]:=Module[{gY, alphaDRbar, xt, hmix, expr, result},
                            result = result <> CConversion`RValueToCFormString[expr] <> ";";
                            Return[result];
                            ];
+
+(**)
+RhoHatTree[massMatrices_List]:=Module[{Ztreemass, Wtreemass, expr, result},
+                                       Ztreemass = FindMass[massMatrices,SARAH`VectorZ];
+                                       Wtreemass = FindMass[massMatrices,SARAH`VectorW];
+                                       expr = Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->WeinbergAngle`ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]];
+                                       result = Parameters`CreateLocalConstRefs[expr] <> "\n";
+                                       result = result <> "rhohat_tree = ";
+                                       result = result <> CConversion`RValueToCFormString[expr] <> ";";
+                                       Return[result];
+                                       ];
 
 End[];
 

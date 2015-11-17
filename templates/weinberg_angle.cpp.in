@@ -137,6 +137,10 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    piwwt_MW = calculate_self_energy_@VectorW@(mw);
    piwwt_0  = calculate_self_energy_@VectorW@(0.);
 
+   double rhohat_tree = 1.;
+   {
+@RhoHatTree@   }
+
    unsigned iteration = 0;
    bool not_converged = true;
    double sinThetaW_old = sinThetaW_start;
@@ -154,7 +158,7 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
       const double deltaRHat = calculate_delta_r_hat(rhohat, sinThetaW_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
-         (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat));
+         (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat) * rhohat_tree);
 
       if (sin2thetasqO4 >= 0.25)
          sin2thetasqO4 = 0.25;
