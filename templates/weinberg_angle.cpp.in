@@ -31,7 +31,7 @@ namespace flexiblesusy {
 
 #define MODELPARAMETER(p) model->get_##p()
 #define SINTHETAW sinThetaW
-#define RHOHAT rhohat
+#define RHOHATRATIO rhohat_ratio
 #define GFERMI gfermi
 #define MW mw
 #define MZ mz
@@ -149,13 +149,13 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    while (not_converged && iteration < number_of_iterations) {
       const double deltaRhoHat = calculate_delta_rho_hat(sinThetaW_old);
 
-      double rhohat;
+      double rhohat_ratio;  // = rhohat / rhohat_tree
       if (Abs(deltaRhoHat) < 1.0)
-         rhohat = 1.0 / (1.0 - deltaRhoHat);
+         rhohat_ratio = 1.0 / (1.0 - deltaRhoHat);
       else
-         rhohat = 1.0;
+         rhohat_ratio = 1.0;
 
-      const double deltaRHat = calculate_delta_r_hat(rhohat, sinThetaW_old);
+      const double deltaRHat = calculate_delta_r_hat(rhohat_ratio, sinThetaW_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat) * rhohat_tree);
@@ -176,7 +176,7 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
       VERBOSE_MSG("Iteration step " << iteration
                   << ": prec=" << precision
                   << " dRhoHat=" << deltaRhoHat
-                  << " rhohat=" << rhohat
+                  << " rhohat_ratio=" << rhohat_ratio
                   << " dRHat=" << deltaRHat
                   << " sinThetaW_new=" << sinThetaW_new);
 
@@ -229,7 +229,7 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.3) and (C.5) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double sinThetaW)
+double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
 {
    const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
@@ -238,11 +238,11 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double s
 
    double dvb = 0.;
    if (number_of_loops > 0)
-      dvb = calculate_delta_vb(rhohat, sinThetaW);
+      dvb = calculate_delta_vb(rhohat_ratio, sinThetaW);
 
    double deltaRHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRHat1Loop = rhohat * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
+      deltaRHat1Loop = rhohat_ratio * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
 
    double deltaRHat2LoopSM = 0.;
    if (number_of_loops > 1) {
@@ -263,9 +263,9 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double s
  *
  * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat, double sinThetaW)
+double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
 {
-   const double deltaVbSM = calculate_delta_vb_sm(rhohat, sinThetaW);
+   const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
 
    double deltaVbSusy = 0.;
    if (include_dvbsusy)
@@ -288,7 +288,7 @@ double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat, double sinT
  * from hep-ph/9606211
  */
 double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
-   double rhohat, double sinThetaW)
+   double rhohat_ratio, double sinThetaW)
 {
    const double mz  = sm_parameters.mz_pole;
    const double mw  = sm_parameters.mw_pole;
@@ -303,7 +303,7 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
-   const double deltaVbSM = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
+   const double deltaVbSM = rhohat_ratio * alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
        (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2))
        - 4. * Log(Sqr(mz/q)));
