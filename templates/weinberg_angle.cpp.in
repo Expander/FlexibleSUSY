@@ -114,7 +114,8 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
 /**
  * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
- * the Z-boson pole mass and the DR-bar electromagnetic coupling as input.
+ * the Z-boson pole mass and the DR-bar electromagnetic coupling as input
+ * and taking the tree-level value of the rhohat parameter into account.
  *
  * The function throws an exception of type NoSinThetaWConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
@@ -149,7 +150,7 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
    while (not_converged && iteration < number_of_iterations) {
       const double deltaRhoHat = calculate_delta_rho_hat(sinThetaW_old);
 
-      double rhohat_ratio;  // = rhohat / rhohat_tree
+      double rhohat_ratio;
       if (Abs(deltaRhoHat) < 1.0)
          rhohat_ratio = 1.0 / (1.0 - deltaRhoHat);
       else
@@ -194,7 +195,8 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
 
 /**
  * Calculates the \f$\Delta\hat{\rho}\f$ corrections as defined in
- * Eqs. (C.4), (C.6) from hep-ph/9606211.
+ * Eqs. (C.4), (C.6) from hep-ph/9606211 but with the dependency on 
+ * rhohat eliminated.
  *
  * @param sinThetaW sin(theta_W)
  *
@@ -222,9 +224,10 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
 
 /**
  * Calculates the \f$\Delta\hat{r}\f$ corrections as defined in
- * Eqs. (C.3), (C.5) from hep-ph/9606211.
+ * Eqs. (C.3), (C.5) from hep-ph/9606211 taking the tree-level
+ * value of the rhohat parameter into account.
  *
- * @param rhohat rho-hat-parameter
+ * @param rhohat_ratio = rhohat / rhohat_tree
  * @param sinThetaW sin(theta_W)
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.3) and (C.5) from hep-ph/9606211
@@ -258,7 +261,7 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, do
  * renormalizations \f$\delta_{\text{VB}}\f$ as given in
  * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211.
  *
- * @param rhohat rho-hat-parameter
+ * @param rhohat_ratio = rhohat / rhohat_tree
  * @param sinThetaW sin(theta_W)
  *
  * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
@@ -279,9 +282,10 @@ double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat_ratio, doubl
 /**
  * Calculates the Standard Model vertex and box corrections
  * \f$\delta_{\text{VB}}^{\text{SM}}\f$ as given in Eq. (C.12) from
- * hep-ph/9606211 .
+ * hep-ph/9606211 taking the tree-level value of the rhohat parameter
+ * into account.
  *
- * @param rhohat rho-hat-parameter
+ * @param rhohat_ratio = rhohat / rhohat_tree
  * @param sinThetaW sin(theta_W)
  *
  * @return \f$\delta_{\text{VB}}^{\text{SM}}\f$ as defined in (C.12)
