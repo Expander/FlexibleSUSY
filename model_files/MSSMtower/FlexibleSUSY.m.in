@@ -1,5 +1,5 @@
 
-FSModelName = "MSSM";
+FSModelName = "MSSMtower";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
 
@@ -49,7 +49,7 @@ SUSYScaleInput = {
 {ml2[3,3], Sqr[Ms]},
 {me2[3,3], Sqr[Ms]},
 {\[Mu], Ms},
-{B[\[Mu]], 1/4 Sqr[Ms]},
+{B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
 {T[Yu], \[Mu]/TanBeta Yu},
 {T[Yd], \[Mu] TanBeta Yd},
 {T[Ye], \[Mu] TanBeta Ye},
@@ -81,7 +81,7 @@ InitialGuessAtSUSYScale = {
 {ml2[3,3], Sqr[Ms]},
 {me2[3,3], Sqr[Ms]},
 {\[Mu], Ms},
-{B[\[Mu]], 1/4 Sqr[Ms]},
+{B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
 {T[Yu], \[Mu]/TanBeta Yu},
 {T[Yd], \[Mu] TanBeta Yd},
 {T[Ye], \[Mu] TanBeta Ye},

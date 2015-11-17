@@ -111,6 +111,11 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    eft.set_loops(this->beta_loop_order);
    eft.set_thresholds(this->threshold_corrections_loop_order);
    eft.set_zero_threshold(this->beta_zero_threshold);
+   eft.set_pole_mass_loop_order(this->model.get_pole_mass_loop_order());
+   eft.set_ewsb_loop_order(this->model.get_ewsb_loop_order());
+   eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
+   eft.set_number_of_ewsb_iterations(this->model.get_number_of_ewsb_iterations());
+   eft.set_number_of_mass_iterations(this->model.get_number_of_mass_iterations());
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -178,7 +183,15 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                  low_scale_constraint.apply();
                  eft.calculate_DRbar_masses();
                  eft.solve_ewsb();
-                 eft.calculate_spectrum();
+                 // eft.calculate_spectrum();  
+                 // does not work properly, find out why!
+                 eft.calculate_Mhh_pole();
+                 eft.calculate_MVWp_pole();
+                 eft.calculate_MVZ_pole();
+                 eft.calculate_MFu_pole();
+                 eft.calculate_MFd_pole();
+                 eft.calculate_MFe_pole();
+                 
                  this->@GetHiggsMass@ = eft.get_physical().Mhh;
                  this->@GetZMass@ = eft.get_physical().MVZ;
                  this->@GetWMass@ = eft.get_physical().MVWp;
