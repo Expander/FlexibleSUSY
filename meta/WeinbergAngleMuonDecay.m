@@ -53,7 +53,7 @@ deltaRHat2LoopSM[]:=Module[{gY, alphaDRbar, xt, hmix, expr, result},
 RhoHatTree[massMatrices_List]:=Module[{Ztreemass, Wtreemass, expr, result},
                                        Ztreemass = FindMass[massMatrices,SARAH`VectorZ];
                                        Wtreemass = FindMass[massMatrices,SARAH`VectorW];
-                                       expr = Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->WeinbergAngle`ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]];
+                                       expr = Apart[Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->WeinbergAngle`ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]]];
                                        result = Parameters`CreateLocalConstRefs[expr] <> "\n";
                                        result = result <> "rhohat_tree = ";
                                        result = result <> CConversion`RValueToCFormString[expr] <> ";";
