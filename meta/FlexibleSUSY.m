@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "WeinbergAngleMuonDecay`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "WeinbergAngle`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -673,9 +673,9 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 WriteWeinbergAngleClass[massMatrices_List, files_List] :=
    Module[{},
           WriteOut`ReplaceInFiles[files,
-                 { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaRhoHat2LoopSM[]]]],
-                   "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaRHat2LoopSM[]]]],
-                   "@RhoHatTree@"         -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`RhoHatTree[massMatrices]]]],
+                 { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRhoHat2LoopSM[]]]],
+                   "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRHat2LoopSM[]]]],
+                   "@RhoHatTree@"         -> IndentText[IndentText[WrapLines[WeinbergAngle`RhoHatTree[massMatrices]]]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
