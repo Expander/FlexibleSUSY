@@ -1,3 +1,13 @@
+FlexibleSUSY-1.2.6 [not released yet]
+
+ * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
+   of alpha_em in the SM with 5 active quark flavours.
+   Imported from SoftSUSY (commit 0139daa).
+
+ * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
+   input parameters in the UMSSM.  This fixes a compilation error with
+   SARAH 4.6.0.
+
 FlexibleSUSY-1.2.5 [October, 29 2015]
 
  * Feature: The output of the spectrum generator can be written into
