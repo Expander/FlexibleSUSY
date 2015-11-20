@@ -169,6 +169,9 @@ IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex;
 
 @GMuonMinus2_Particles@
 
+template<class P> struct remove_anti { typedef P type; };
+template<class P> struct remove_anti<anti<P>> { typedef P type; };
+
 /**
  * @class EvaluationContext
  * @brief Represents an evaluation context.
@@ -574,6 +577,19 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
 
+         // skip Standard Model particles
+         if ((PhotonEmitter::numberOfGenerations == 1 &&
+              remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
+             (PhotonEmitter::numberOfGenerations > 1 &&
+              remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]]))
+               continue;
+
+         if ((ExchangeParticle::numberOfGenerations == 1 &&
+              remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
+             (ExchangeParticle::numberOfGenerations > 1 &&
+              remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]]))
+               continue;
+
          const std::complex<double> zL = muonVertex.left();
          const std::complex<double> zR = muonVertex.right();
 
@@ -658,6 +674,19 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
             continue;
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
+
+         // skip Standard Model particles
+         if ((PhotonEmitter::numberOfGenerations == 1 &&
+              remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
+             (PhotonEmitter::numberOfGenerations > 1 &&
+              remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]]))
+               continue;
+
+         if ((ExchangeParticle::numberOfGenerations == 1 &&
+              remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
+             (ExchangeParticle::numberOfGenerations > 1 &&
+              remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]]))
+               continue;
 
          const std::complex<double> zL = muonVertex.left();
          const std::complex<double> zR = muonVertex.right();

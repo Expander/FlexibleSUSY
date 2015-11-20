@@ -34,6 +34,23 @@ Begin["`Private`"];
 GetVariableName[] := "GMuonMinus2";
 CreateVariableDefinition[] := "double " <> GMuonMinus2`GetVariableName[] <> ";";
 
+IsSMParticle[particle_] :=
+    SARAH`SMQ[particle] || TreeMasses`IsSMGoldstone[particle];
+
+CreateGoldstoneBosonFlags[particle_] :=
+    Module[{result = "", i,
+            numberOfGenerations = TreeMasses`GetDimension[particle]},
+           For[i = 1, i <= numberOfGenerations, i++,
+               If[i > 1, result = result <> ", ";];
+               If[IsSMParticle[particle[i]] === True ||
+                  IsSMParticle[particle] === True,
+                  result = result <> "true";,
+                  result = result <> "false";
+                 ];
+              ];
+           "{ " <> result <> " }"
+          ];
+
 (* Create c++ classes for all particles *)
 CreateParticles[] := Module[{particles, code},
                             (* Get a list of all particles *)
@@ -43,10 +60,16 @@ CreateParticles[] := Module[{particles, code},
                                     "struct Particle {};\n\n" <>
                                     
                                     StringJoin @ Riffle[("struct " <> ParticleToCXXName[#] <>
-                                                         ": public Particle { " <>
-                                                         "static const unsigned numberOfGenerations = " <>
-                                                         ToString @ TreeMasses`GetDimension[#] <>
-                                                         "; };" &) /@ particles, "\n"] <> "\n\n" <>
+                                                         ": public Particle {\n" <>
+                                                         TextFormatting`IndentText[
+                                                             "static const unsigned numberOfGenerations = " <>
+                                                             ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
+                                                             "static const bool is_sm_particle[numberOfGenerations];"
+                                                         ] <> "\n};\n" <>
+                                                         "const bool " <> ParticleToCXXName[#] <> "::is_sm_particle[" <>
+                                                         ParticleToCXXName[#] <> "::numberOfGenerations] = " <>
+                                                         CreateGoldstoneBosonFlags[#] <> ";\n"
+                                                         &) /@ particles, "\n"] <> "\n\n" <>
                                     "// Special particle families\n" <>
                                     "typedef " <> ParticleToCXXName @ GetPhoton[] <> " Photon;\n" <>
                                     "typedef " <> ParticleToCXXName @ GetMuonFamily[] <> " MuonFamily;\n\n" <>
