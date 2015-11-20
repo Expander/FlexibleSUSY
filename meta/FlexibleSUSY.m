@@ -2104,10 +2104,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
            Print["Creating class GMuonMinus2"];
            WriteGMuonMinus2Class[vertexRules,
-                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
-                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.hpp"}]},
-                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.cpp.in"}],
-                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.cpp"}]}}];
+                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "g_muon_minus_2.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
