@@ -130,6 +130,7 @@ IsFermion::usage="";
 IsVector::usage="";
 IsGhost::usage="";
 IsGoldstone::usage="";
+IsSMGoldstone::usage="";
 IsAuxiliary::usage="";
 IsVEV::usage="";
 IsMajoranaFermion::usage="";
@@ -154,6 +155,7 @@ GetSMLeptons::usage="";
 GetSMUpQuarks::usage="";
 GetSMDownQuarks::usage="";
 GetSMQuarks::usage="";
+GetSMGoldstoneBosons::usage="";
 
 GetUpQuark::usage="";
 GetDownQuark::usage="";
@@ -229,6 +231,12 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+
+GetSMGoldstones[] :=
+    Cases[SARAH`GoldstoneGhost /. a_[{idx__}] :> a[idx], {v_?SARAH`SMQ, goldstone_} :> goldstone];
+
+IsSMGoldstone[sym_] :=
+    MemberQ[GetSMGoldstones[], sym];
 
 IsChargino[p_] :=
     p === Parameters`GetParticleFromDescription["Charginos"];
