@@ -51,7 +51,7 @@ private:
    double scale;
    double initial_scale_guess;
    MSSMcbs<Two_scale>* model;
-   softsusy::QedQcd oneset;
+   softsusy::QedQcd qedqcd;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order

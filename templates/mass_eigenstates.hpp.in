@@ -120,6 +120,7 @@ public:
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
+@threeLoopSelfEnergyPrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
 @dependenceNumPrototypes@

@@ -68,7 +68,7 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark, conversion = 0},
-           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaEm / (2 Pi);
            conversion = Switch[renormalizationScheme,
                                FlexibleSUSY`DRbar, 1/3,
@@ -88,7 +88,7 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
 
 CalculateDeltaAlphaS[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
-           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateColorCoupling[renormalizationScheme];
@@ -291,8 +291,8 @@ CalculateThetaWFromFermiConstantSUSY[options_List] :=
             gHyp, gLef, gCol,
             localConstRefs = ""
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
-           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
            mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
            mtStr   = GetParameter[mTop];
            mbStr   = GetParameter[mBot];
@@ -328,9 +328,9 @@ using namespace weinberg_angle;
 
 " <> localConstRefs <> "
 const double scale         = MODEL->get_scale();
-const double mw_pole       = oneset.displayPoleMW();
-const double mz_pole       = oneset.displayPoleMZ();
-const double mt_pole       = oneset.displayPoleMt();
+const double mw_pole       = qedqcd.displayPoleMW();
+const double mz_pole       = qedqcd.displayPoleMZ();
+const double mt_pole       = qedqcd.displayPoleMt();
 const double mt_drbar      = " <> mtStr <> ";
 const double mb_drbar      = " <> mbStr <> ";
 const double mh_drbar      = " <> mhStr <> ";
@@ -372,7 +372,7 @@ if (model->get_thresholds() > 1) {
 Weinberg_angle::Data data;
 data.scale               = scale;
 data.alpha_em_drbar      = ALPHA_EM_DRBAR;
-data.fermi_contant       = oneset.displayFermiConstant();
+data.fermi_contant       = qedqcd.displayFermiConstant();
 data.self_energy_z_at_mz = pizztMZ_corrected;
 data.self_energy_w_at_mw = piwwtMW_corrected;
 data.self_energy_w_at_0  = piwwt0_corrected;
@@ -419,8 +419,8 @@ CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
             zStr, wStr, ymStr,
             gHyp, gLef, gCol
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
-           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
            mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
            gHyp    = Utils`FSGetOption[options, FlexibleSUSY`FSHyperchargeCoupling];
            gLef    = Utils`FSGetOption[options, FlexibleSUSY`FSLeftCoupling];
@@ -439,9 +439,9 @@ CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
 using namespace weinberg_angle;
 
 const double scale         = MODEL->get_scale();
-const double mw_pole       = oneset.displayPoleMW();
-const double mz_pole       = oneset.displayPoleMZ();
-const double mt_pole       = oneset.displayPoleMt();
+const double mw_pole       = qedqcd.displayPoleMW();
+const double mz_pole       = qedqcd.displayPoleMZ();
+const double mt_pole       = qedqcd.displayPoleMt();
 const double mt_drbar      = " <> mtStr <> ";
 const double mb_drbar      = " <> mbStr <> ";
 const double mh_drbar      = " <> mhStr <> ";
@@ -477,7 +477,7 @@ if (model->get_thresholds() > 1) {
 Weinberg_angle::Data data;
 data.scale               = scale;
 data.alpha_em_drbar      = ALPHA_EM_DRBAR;
-data.fermi_contant       = oneset.displayFermiConstant();
+data.fermi_contant       = qedqcd.displayFermiConstant();
 data.self_energy_z_at_mz = pizztMZ_corrected;
 data.self_energy_w_at_mw = piwwtMW_corrected;
 data.self_energy_w_at_0  = piwwt0_corrected;
@@ -552,7 +552,7 @@ if (mw_pole_sqr < 0.)
 
 const double mw_pole = AbsSqrt(mw_pole_sqr);
 
-oneset.setPoleMW(mw_pole);"
+qedqcd.setPoleMW(mw_pole);"
           ];
 
 RecalculateMWPole[_,_] := "";

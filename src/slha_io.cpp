@@ -104,13 +104,13 @@ void SLHA_io::read_modsel()
    read_block("MODSEL", modsel_processor);
 }
 
-void SLHA_io::fill(softsusy::QedQcd& oneset) const
+void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
 {
    CKM_wolfenstein ckm_wolfenstein;
    PMNS_parameters pmns_parameters;
 
    SLHA_io::Tuple_processor sminputs_processor
-      = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
+      = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(qedqcd), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
 
@@ -128,17 +128,17 @@ void SLHA_io::fill(softsusy::QedQcd& oneset) const
       read_block("UPMNSIN", upmnsin_processor);
    }
 
-   // fill CKM parameters in oneset
+   // fill CKM parameters in qedqcd
    CKM_parameters ckm_parameters;
    ckm_parameters.set_from_wolfenstein(
       ckm_wolfenstein.lambdaW,
       ckm_wolfenstein.aCkm,
       ckm_wolfenstein.rhobar,
       ckm_wolfenstein.etabar);
-   oneset.setCKM(ckm_parameters);
+   qedqcd.setCKM(ckm_parameters);
 
-   // fill PMNS parameters in oneset
-   oneset.setPMNS(pmns_parameters);
+   // fill PMNS parameters in qedqcd
+   qedqcd.setPMNS(pmns_parameters);
 }
 
 /**
@@ -439,70 +439,70 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
 }
 
 /**
- * fill oneset from given key - value pair
+ * fill qedqcd from given key - value pair
  *
- * @param oneset low-energy data set
+ * @param qedqcd low-energy data set
  * @param key SLHA key in SMINPUTS
  * @param value value corresponding to key
  */
-void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& oneset, int key, double value)
+void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double value)
 {
    using namespace softsusy;
 
    switch (key) {
    case 1:
-      oneset.setAlpha(ALPHA, 1.0 / value);
+      qedqcd.setAlpha(ALPHA, 1.0 / value);
       break;
    case 2:
-      oneset.setFermiConstant(value);
+      qedqcd.setFermiConstant(value);
       break;
    case 3:
-      oneset.setAlpha(ALPHAS, value);
+      qedqcd.setAlpha(ALPHAS, value);
       break;
    case 4:
-      oneset.setPoleMZ(value);
+      qedqcd.setPoleMZ(value);
       softsusy::MZ = value;
       break;
    case 5:
-      oneset.setMass(mBottom, value);
-      oneset.setMbMb(value);
+      qedqcd.setMass(mBottom, value);
+      qedqcd.setMbMb(value);
       break;
    case 6:
-      oneset.setPoleMt(value);
+      qedqcd.setPoleMt(value);
       break;
    case 7:
-      oneset.setMass(mTau, value);
-      oneset.setPoleMtau(value);
+      qedqcd.setMass(mTau, value);
+      qedqcd.setPoleMtau(value);
       break;
    case 8:
-      oneset.setNeutrinoPoleMass(3, value);
+      qedqcd.setNeutrinoPoleMass(3, value);
       break;
    case 9:
-      oneset.setPoleMW(value);
+      qedqcd.setPoleMW(value);
       break;
    case 11:
-      oneset.setMass(mElectron, value);
+      qedqcd.setMass(mElectron, value);
       break;
    case 12:
-      oneset.setNeutrinoPoleMass(1, value);
+      qedqcd.setNeutrinoPoleMass(1, value);
       break;
    case 13:
-      oneset.setMass(mMuon, value);
+      qedqcd.setMass(mMuon, value);
       break;
    case 14:
-      oneset.setNeutrinoPoleMass(2, value);
+      qedqcd.setNeutrinoPoleMass(2, value);
       break;
    case 21:
-      oneset.setMass(mDown, value);
+      qedqcd.setMass(mDown, value);
       break;
    case 22:
-      oneset.setMass(mUp, value);
+      qedqcd.setMass(mUp, value);
       break;
    case 23:
-      oneset.setMass(mStrange, value);
+      qedqcd.setMass(mStrange, value);
       break;
    case 24:
-      oneset.setMass(mCharm, value);
+      qedqcd.setMass(mCharm, value);
       break;
    default:
       WARNING("Unrecognized entry in block SMINPUTS: " << key);

@@ -53,17 +53,35 @@ struct MSSMNoFV_onshell_physical;
 #define FORMAT_SPINFO(n,str)                                            \
    boost::format(spinfo_formatter) % n % str
 
+/**
+ * @class Config_options
+ * @brief configuration for the calculation of \f$a_\mu\f$
+ */
 struct Config_options {
    enum E_output_format : unsigned {
-      Minimal = 0, Detailed = 1, NMSSMTools = 2, SPheno = 3 };
+      Minimal = 0, Detailed = 1, NMSSMTools = 2, SPheno = 3, GM2Calc = 4 };
 
-   E_output_format output_format = Minimal;
-   unsigned loop_order = 2;
-   bool tanb_resummation = true;
-   bool force_output = false;
-   bool verbose_output = false;
+   Config_options()
+     : output_format(Minimal)
+     , loop_order(2)
+     , tanb_resummation(true)
+     , force_output(false)
+     , verbose_output(false)
+     , calculate_uncertainty(false)
+  {}
+
+   E_output_format output_format; ///< output format
+   unsigned loop_order;      ///< loop order
+   bool tanb_resummation;    ///< tan(beta) resummation
+   bool force_output;        ///< print output even if error occured
+   bool verbose_output;      ///< print additional information
+   bool calculate_uncertainty;    ///< calculate uncertainty
 };
 
+/**
+ * @class GM2_slha_io
+ * @brief class for reading input files and writing SLHA output files
+ */
 class GM2_slha_io {
 public:
    typedef std::function<void(int, double)> Tuple_processor;
@@ -77,10 +95,10 @@ public:
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
-   double read_block(const std::string&, const Tuple_processor&) const;
+   void read_block(const std::string&, const Tuple_processor&, double scale = 0) const;
    template <class Derived>
-   double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
-   double read_entry(const std::string&, int) const;
+   void read_block(const std::string&, Eigen::MatrixBase<Derived>&, double scale = 0) const;
+   double read_entry(const std::string&, int, double scale = 0) const;
    double read_scale(const std::string&) const;
 
    // writing functions
@@ -91,17 +109,12 @@ public:
    void fill_block_entry(const std::string&, unsigned, double, const std::string&);
    void fill_block_entry(const std::string&, unsigned, const std::string&);
 
-   static void process_gm2calcconfig_tuple(Config_options&, int, double);
-   static void process_gm2calcinput_tuple(MSSMNoFV_onshell&, int, double);
-   static void process_fermion_sminputs_tuple(MSSMNoFV_onshell_physical&, int, double);
-   static void process_mass_tuple(MSSMNoFV_onshell_physical&, int, double);
-   static void process_msoft_tuple(MSSMNoFV_onshell&, int, double);
-
 private:
    SLHAea::Coll data;          ///< SHLA data
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
    static std::string to_lower(const std::string&); ///< string to lower case
+   static bool at_scale(const SLHAea::Block&, double, double eps = 0.01); ///< check block scale
 };
 
 template <class Scalar>
@@ -113,7 +126,7 @@ Scalar GM2_slha_io::convert_to(const std::string& str)
    }  catch (const boost::bad_lexical_cast& error) {
       const std::string msg("cannot convert string \"" + str + "\" to "
                             + typeid(Scalar).name());
-      throw ReadError(msg);
+      throw EReadError(msg);
    }
    return value;
 }
@@ -123,46 +136,43 @@ Scalar GM2_slha_io::convert_to(const std::string& str)
  *
  * @param block_name block name
  * @param matrix matrix to be filled
- *
- * @return scale (or 0 if no scale is defined)
+ * @param scale (or 0 if scale should be ignored)
  */
 template <class Derived>
-double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+void GM2_slha_io::read_block(const std::string& block_name,
+                             Eigen::MatrixBase<Derived>& matrix,
+                             double scale) const
 {
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
-   double scale = 0.;
 
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
-            // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
-            continue;
-         }
+      if (at_scale(*block, scale)) {
+         for (SLHAea::Block::const_iterator line = block->cbegin(),
+                 end = block->cend(); line != end; ++line) {
+            if (!line->is_data_line())
+               continue;
 
-         if (cols == 1) {
-            // vector
-            if (line->size() >= 2) {
-               const int i = convert_to<int>((*line)[0]) - 1;
-               if (0 <= i && i < rows) {
-                  const double value = convert_to<double>((*line)[1]);
-                  matrix(i,0) = value;
+            if (cols == 1) {
+               // vector
+               if (line->size() >= 2) {
+                  const int i = convert_to<int>((*line)[0]) - 1;
+                  if (0 <= i && i < rows) {
+                     const double value = convert_to<double>((*line)[1]);
+                     matrix(i,0) = value;
+                  }
                }
-            }
-         } else {
-            // martix
-            if (line->size() >= 3) {
-               const int i = convert_to<int>((*line)[0]) - 1;
-               const int k = convert_to<int>((*line)[1]) - 1;
-               if (0 <= i && i < rows && 0 <= k && k < cols) {
-                  const double value = convert_to<double>((*line)[2]);
-                  matrix(i,k) = value;
+            } else {
+               // martix
+               if (line->size() >= 3) {
+                  const int i = convert_to<int>((*line)[0]) - 1;
+                  const int k = convert_to<int>((*line)[1]) - 1;
+                  if (0 <= i && i < rows && 0 <= k && k < cols) {
+                     const double value = convert_to<double>((*line)[2]);
+                     matrix(i,k) = value;
+                  }
                }
             }
          }
@@ -171,8 +181,6 @@ double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<
       ++block;
       block = data.find(block, data.cend(), block_name);
    }
-
-   return scale;
 }
 
 /// read model parameters (GM2Calc input format)

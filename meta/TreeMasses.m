@@ -17,7 +17,11 @@ LaTeX names";
 
 CreateParticleNames::usage="creates a list of the particle's names";
 
+CreateParticleMixingNames::usage="creates a list of the mixing matrix element names";
+
 CreateParticleEnum::usage="creates an enum of the particles";
+
+CreateParticleMixingEnum::usage="creates enum with mixing matrices";
 
 CreateParticleMultiplicity::usage="creates array of the particle
 multiplicities";
@@ -54,6 +58,11 @@ initialization of the given mixing matrix";
 ClearOutputParameters::usage="clears masses and mixing matrices";
 
 CopyDRBarMassesToPoleMasses::usage="copies DRbar mass to pole mass";
+
+CreateMassArrayGetter::usage="";
+CreateMassArraySetter::usage="";
+CreatePhysicalArrayGetter::usage="";
+CreatePhysicalArraySetter::usage="";
 
 GetParticles::usage="returns list of particles";
 
@@ -93,7 +102,9 @@ matrix";
 
 GetMassOfUnmixedParticle::usage="returns mass of unmixed particle";
 
+GetMassType::usage="returns mass array type of particle";
 GetMassMatrixType::usage="returns mass matrix type of particle";
+GetMixingMatrixType::usage="returns mixing matrix type of particle";
 
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
@@ -127,7 +138,29 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
+IsQuark::usage="";
+IsLepton::usage="";
+IsSMChargedLepton::usage="";
+IsSMNeutralLepton::usage="";
+IsSMLepton::usage="";
+IsSMUpQuark::usage="";
+IsSMDownQuark::usage="";
+IsSMQuark::usage="";
 ContainsGoldstone::usage="";
+
+GetSMChargedLeptons::usage="";
+GetSMNeutralLeptons::usage="";
+GetSMLeptons::usage="";
+GetSMUpQuarks::usage="";
+GetSMDownQuarks::usage="";
+GetSMQuarks::usage="";
+
+GetUpQuark::usage="";
+GetDownQuark::usage="";
+GetUpLepton::usage="";
+GetDownLepton::usage="";
+
+GetMass::usage="wraps M[] head around particle";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -223,6 +256,91 @@ IsRealScalar[sym_Symbol] :=
 IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
 
+GetColoredParticles[] :=
+    Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
+
+IsQuark[sym_[___]] := IsQuark[sym];
+IsQuark[sym_Symbol] := MemberQ[GetColoredParticles[], sym];
+
+IsLepton[sym_[___]] := IsLepton[sym];
+IsLepton[sym_Symbol] :=
+    MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
+
+IsSMChargedLepton[sym_[__]] := IsSMChargedLepton[sym];
+IsSMChargedLepton[sym_]     := MemberQ[GetSMChargedLeptons[], sym];
+
+IsSMNeutralLepton[sym_[__]] := IsSMNeutralLepton[sym];
+IsSMNeutralLepton[sym_]     := MemberQ[GetSMNeutralLeptons[], sym];
+
+IsSMLepton[sym_[__]]        := IsSMLepton[sym];
+IsSMLepton[sym_]            := MemberQ[GetSMLeptons[], sym];
+
+IsSMUpQuark[sym_[__]]       := IsSMUpQuark[sym];
+IsSMUpQuark[sym_]           := MemberQ[GetSMUpQuarks[], sym];
+
+IsSMDownQuark[sym_[__]]     := IsSMDownQuark[sym];
+IsSMDownQuark[sym_]         := MemberQ[GetSMDownQuarks[], sym];
+
+IsSMQuark[sym_[__]]         := IsSMQuark[sym];
+IsSMQuark[sym_]             := MemberQ[GetSMQuarks[], sym];
+
+GetSMChargedLeptons[] :=
+    Parameters`GetParticleFromDescription["Leptons", {"Electron","Muon","Tau"}];
+
+GetSMNeutralLeptons[] :=
+    Parameters`GetParticleFromDescription["Neutrinos", {"Electron Neutrino","Muon Neutrino","Tau Neutrino"}];
+
+GetSMLeptons[] :=
+    Join[GetSMNeutralLeptons[], GetSMChargedLeptons[]];
+
+GetSMUpQuarks[] :=
+    Parameters`GetParticleFromDescription["Up-Quarks", {"Up Quark","Charmed Quark","Top Quark"}];
+
+GetSMDownQuarks[] :=
+    Parameters`GetParticleFromDescription["Down-Quarks", {"Down Quark","Strange Quark","Bottom Quark"}];
+
+GetSMQuarks[] :=
+    Join[GetSMDownQuarks[], GetSMUpQuarks[]];
+
+GetUpQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMUpQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMDownQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetUpLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMNeutralLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMChargedLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetMass[particle_[idx__]] := GetMass[particle][idx];
+GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
+
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.
 
@@ -279,6 +397,16 @@ GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
            numberOfGoldstones = GetDimensionStartSkippingGoldstones[sym] - 1;
            dim = GetDimension[sym] - numberOfGoldstones;
            If[dim <= 0, 0, dim]
+          ];
+
+GetMassType[FlexibleSUSY`M[particle_]] := GetMassType[particle];
+
+GetMassType[particle_] :=
+    Module[{dim = GetDimension[particle]},
+           If[dim == 1,
+              CConversion`ScalarType[CConversion`realScalarCType],
+              CConversion`VectorType[CConversion`realScalarCType, dim]
+             ]
           ];
 
 GetMassMatrixType[particle_] :=
@@ -469,6 +597,26 @@ CreateParticleEnum[particles_List] :=
            Return[result];
           ];
 
+CreateParticleMixingEnum[mixings_List] :=
+    Module[{flatMixings, i, m, mix, name, type, result = ""},
+           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           For[i = 1, i <= Length[flatMixings], i++,
+               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
+               type = GetMixingMatrixType[flatMixings[[i]]];
+               For[m = 1, m <= Length[mix], m++,
+                   name = Parameters`CreateParameterEnums[mix[[m]],type];
+                   If[result != "", result = result <> ", ";];
+                   result = result <> name;
+                  ];
+              ];
+           (* append enum state for the number of mixing matrices *)
+           If[Length[flatMixings] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_MIXINGS";
+           result = "enum Mixings : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
 CreateParticleNames[particles_List] :=
     Module[{i, par, name, result = ""},
            For[i = 1, i <= Length[particles], i++,
@@ -504,6 +652,23 @@ CreateParticleLaTeXNames[particles_List] :=
                result = result <> "\"" <> latexName <> "\"";
               ];
            result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {" <>
+                    IndentText[result] <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleMixingNames[mixings_List] :=
+    Module[{flatMixings, i, m, mix, name, type, result = ""},
+           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           For[i = 1, i <= Length[flatMixings], i++,
+               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
+               type = GetMixingMatrixType[flatMixings[[i]]];
+               For[m = 1, m <= Length[mix], m++,
+                   name = Parameters`CreateParameterNamesStr[mix[[m]],type];
+                   If[result != "", result = result <> ", ";];
+                   result = result <> name;
+                  ];
+              ];
+           result = "const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {" <>
                     IndentText[result] <> "};\n";
            Return[result];
           ];
@@ -1457,6 +1622,93 @@ ExpressionToString[expr_, result_String] :=
                   result, type, initalValue];
              ];
            exprStr
+          ];
+
+CountNumberOfMasses[masses_List] :=
+    Plus @@ (CountNumberOfMasses /@ masses);
+
+CountNumberOfMasses[mass_FSMassMatrix] :=
+    CountNumberOfMasses[GetMassEigenstate[mass]];
+
+CountNumberOfMasses[mass_] :=
+    GetDimension[mass];
+
+CreateMixingMatrixArrayGetterSetter[masses_List, offset_Integer, func_] :=
+    Module[{display = "", paramCount = 0, name = "", mass,
+            i, assignment = "", nAssignments = 0, CreateMixingAssignment},
+           CreateMixingAssignment[mix_ /; mix === Null, _, _] := {"", 0};
+           CreateMixingAssignment[{mix1_, mix2_}, paramCount_, type_] :=
+               Module[{assignment, nAssignments, a, n},
+                      {a, n} = CreateMixingAssignment[mix1,paramCount,type];
+                      assignment = a;
+                      nAssignments = n;
+                      {a, n} = CreateMixingAssignment[mix2,paramCount + n,type];
+                      assignment = assignment <> a;
+                      nAssignments += n;
+                      {assignment, nAssignments}
+                     ];
+           CreateMixingAssignment[mix_, paramCount_, type_] :=
+               func[CConversion`ToValidCSymbolString[mix], paramCount, type];
+           CreateMixingAssignment[mix_, paramCount_] :=
+               CreateMixingAssignment[GetMixingMatrixSymbol[mix], paramCount, GetMixingMatrixType[mix]];
+           For[i = 1, i <= Length[masses], i++,
+               mix = masses[[i]];
+               {assignment, nAssignments} = CreateMixingAssignment[mix, paramCount + offset];
+               display = display <> assignment;
+               paramCount += nAssignments;
+              ];
+           {display, paramCount}
+          ];
+
+CreateMassArrayGetter[masses_List] :=
+    Module[{display = "", paramCount = 0, name = "", mass,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[masses], i++,
+               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+               type = GetMassType[mass];
+               name = CConversion`ToValidCSymbolString[mass];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               display = display <> assignment;
+               paramCount += nAssignments;
+              ];
+           display = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                     display <> "\n" <>
+                     "return pars;";
+           Return[display];
+          ];
+
+CreatePhysicalArrayGetter[masses_List] :=
+    Module[{display = "", paramCount, assignment = "", nAssignments = 0},
+           paramCount = CountNumberOfMasses[masses];
+           {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateDisplayAssignment];
+           display = display <> assignment;
+           paramCount += nAssignments;
+           display = "pars.conservativeResize(" <> ToString[paramCount] <> ");\n\n" <>
+                     display;
+           Return[display];
+          ];
+
+CreateMassArraySetter[masses_List, array_String] :=
+    Module[{set = "", paramCount = 0, name = "", mass,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[masses], i++,
+               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+               type = GetMassType[mass];
+               name = CConversion`ToValidCSymbolString[mass];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
+
+CreatePhysicalArraySetter[masses_List, array_String] :=
+    Module[{set = "", paramCount, assignment = "", nAssignments = 0},
+           paramCount = CountNumberOfMasses[masses];
+           {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateSetAssignment];
+           set = set <> assignment;
+           paramCount += nAssignments;
+           Return[set];
           ];
 
 End[];

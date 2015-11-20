@@ -27,6 +27,8 @@
 #include "spectrum_generator_settings.hpp"
 #include "coupling_monitor.hpp"
 #include "two_loop_corrections.hpp"
+#include "error.hpp"
+#include "logger.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -134,7 +136,13 @@ void @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
    double start, double stop) const
 {
    @ModelName@_mass_eigenstates tmp_model(model);
-   tmp_model.run_to(start);
+   try {
+      tmp_model.run_to(start);
+   } catch (const Error& error) {
+      ERROR("write_running_couplings: running to scale "
+            << start << " failed: " << error.what());
+      return;
+   }
 
    @ModelName@_parameter_getter parameter_getter;
    Coupling_monitor<@ModelName@_mass_eigenstates, @ModelName@_parameter_getter>

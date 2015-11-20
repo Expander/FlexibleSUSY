@@ -1,22 +1,51 @@
 BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "GMuonMinus2`"}];
 
-FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
-FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
-FS`Authors = {"P. Athron", "Jae-hyeon Park", "D. Stöckinger", "A. Voigt"};
-FS`Years   = "2013-2015";
-FS`References = Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"references"}]];
+$flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
+$flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
+$flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "templates"}];
 
-Print["*****************************************************************"];
-Print["FlexibleSUSY ", FS`Version];
-Print["by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
+FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
+FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
+FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
+FS`Years   = "2013-2015";
+FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
+
+Print["==================================================================="];
+Print[Style["FlexibleSUSY " <> FS`Version, Larger, Bold, Blue]];
+Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
 Print[""];
-Print["References:"];
+Print[Style["References:", Blue]];
 Print["  " <> #]& /@ FS`References;
-Print["*****************************************************************"];
+Print[""];
+Print[Style["Download and Documentation:", Blue]];
+Print["  https://flexiblesusy.hepforge.org"];
+Print["==================================================================="];
 Print[""];
 
-MakeFlexibleSUSY::usage="";
+Print["meta code directory: ", $flexiblesusyMetaDir];
+Print["config directory   : ", $flexiblesusyConfigDir];
+Print["templates directory: ", $flexiblesusyTemplateDir];
+
+MakeFlexibleSUSY::usage="Creates a spectrum generator given a
+ FlexibleSUSY model file (FlexibleSUSY.m).
+
+Example:
+
+  MakeFlexibleSUSY[
+      InputFile -> \"models/<model>/FlexibleSUSY.m\",
+      OutputDirectory -> \"models/<model>/\",
+      DebugOutput -> False];
+
+Options:
+
+  InputFile: The name of the model file.
+
+  OutputDirectory: The output directory for the generated code.
+
+  DebugOutput (True|False): Enable/Disable debug output while running
+    the Mathematica meta code.
+";
 
 LowPrecision::usage="";
 MediumPrecision::usage="";
@@ -24,6 +53,7 @@ HighPrecision::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 FSModelName;
+FSOutputDir = ""; (* directory for generated code *)
 FSLesHouchesList;
 FSUnfixedParameters;
 EWSBOutputParameters = {};
@@ -53,6 +83,7 @@ FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
 MZ;
+MT;
 MZDRbar;
 MWDRbar;
 EDRbar;
@@ -64,6 +95,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseHiggs2LoopSM;
+UseHiggs3LoopSplit;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -116,7 +148,7 @@ FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 FSFermiConstant;
 FSMassW;
 
-{FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+{FSHiggs, FSHyperchargeCoupling,
  FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
  FSChargino, FSNeutralinoMM, FSCharginoMinusMM, FSCharginoPlusMM,
  FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL, FSSmuonL,
@@ -124,8 +156,6 @@ FSMassW;
 
 FSWeakMixingAngleOptions = {
     FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
-    FlexibleSUSY`FSTopQuark             -> SARAH`TopQuark,
-    FlexibleSUSY`FSBottomQuark          -> SARAH`BottomQuark,
     FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
     FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
     FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
@@ -186,7 +216,7 @@ ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
 CheckSARAHVersion[] :=
     Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
            Print["Checking SARAH version ..."];
-           minimRequiredVersionFile = FileNameJoin[{Global`$flexiblesusyConfigDir,
+           minimRequiredVersionFile = FileNameJoin[{$flexiblesusyConfigDir,
                                                     "required_sarah_version.m"}];
            (* reading minimum required SARAH version from config file *)
            minimRequired = Get[minimRequiredVersionFile];
@@ -231,7 +261,7 @@ CheckFermiConstantInputRequirements[requiredSymbols_List, printout_:True] :=
 
 CheckFermiConstantInputRequirementsForSUSYModel[] :=
     CheckFermiConstantInputRequirements[
-        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+        {FSHiggs, FSHyperchargeCoupling,
          FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2,
          FSNeutralino, FSChargino, FSNeutralinoMM, FSCharginoMinusMM,
          FSCharginoPlusMM, FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL,
@@ -241,7 +271,7 @@ CheckFermiConstantInputRequirementsForSUSYModel[] :=
 
 CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
     CheckFermiConstantInputRequirements[
-        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+        {FSHiggs, FSHyperchargeCoupling,
          FSLeftCoupling, FSStrongCoupling, FSVectorW, FSVectorZ,
          FSElectronYukawa}
     ];
@@ -324,14 +354,6 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := LowEnergyConstant[MZ];
-              ,
-              If[FlexibleSUSY`LowScale =!= LowEnergyConstant[MZ],
-                 Print["Error: The low-scale was set differently from MZ!"];
-                 Print["   LowScale = ", FlexibleSUSY`LowScale];
-                 Print["   This is currently not supported."];
-                 Print["   Please set: LowScale = ", LowEnergyConstant[MZ], ";"];
-                 Quit[1];
-                ];
              ];
            If[!ValueQ[FlexibleSUSY`LowScaleFirstGuess],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
@@ -519,14 +541,18 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters},
+   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set},
           defineInputParameters = Constraint`DefineInputParameters[inputParameters];
           defaultInputParametersInit = Constraint`InitializeInputParameters[inputParameters];
           printInputParameters = WriteOut`PrintInputParameters[inputParameters,"ostr"];
+          get = Parameters`CreateInputParameterArrayGetter[inputParameters];
+          set = Parameters`CreateInputParameterArraySetter[inputParameters];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            "@printInputParameters@"       -> IndentText[printInputParameters],
+                           "@get@"                        -> IndentText[get],
+                           "@set@"                        -> IndentText[set],
                            Sequence @@ GeneralReplacementRules[]
                          } ];
           ];
@@ -536,6 +562,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
            setDRbarYukawaCouplings,
+           calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
            calculateThetaW,
@@ -557,6 +584,20 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
           };
+          calculateDRbarMasses = {
+              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "topDRbar"     , "qedqcd.displayMass(softsusy::mUp)"      ],
+              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "topDRbar"     , "qedqcd.displayMass(softsusy::mCharm)"   ],
+              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "topDRbar"     , "qedqcd.displayPoleMt()"                 ],
+              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mDown)"    ],
+              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mStrange)" ],
+              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mBottom)"  ],
+              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "electronDRbar", "qedqcd.displayMass(softsusy::mElectron)"],
+              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "electronDRbar", "qedqcd.displayMass(softsusy::mMuon)"    ],
+              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "electronDRbar", "qedqcd.displayMass(softsusy::mTau)"     ],
+              LoopMasses`CallCalculateDRbarMass["Electron Neutrino", "Neutrinos"  , 1, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(1)"      ],
+              LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(2)"      ],
+              LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(3)"      ]
+          };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
           If[FSCheckPerturbativityOfDimensionlessParameters,
@@ -576,6 +617,18 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
                    "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
+                   "@calculateDRbarMassUp@"      -> IndentText[IndentText[calculateDRbarMasses[[1]]]],
+                   "@calculateDRbarMassCharm@"   -> IndentText[IndentText[calculateDRbarMasses[[2]]]],
+                   "@calculateDRbarMassTop@"     -> IndentText[IndentText[calculateDRbarMasses[[3]]]],
+                   "@calculateDRbarMassDown@"    -> IndentText[IndentText[calculateDRbarMasses[[4]]]],
+                   "@calculateDRbarMassStrange@" -> IndentText[IndentText[calculateDRbarMasses[[5]]]],
+                   "@calculateDRbarMassBottom@"  -> IndentText[IndentText[calculateDRbarMasses[[6]]]],
+                   "@calculateDRbarMassElectron@"-> IndentText[IndentText[calculateDRbarMasses[[7]]]],
+                   "@calculateDRbarMassMuon@"    -> IndentText[IndentText[calculateDRbarMasses[[8]]]],
+                   "@calculateDRbarMassTau@"     -> IndentText[IndentText[calculateDRbarMasses[[9]]]],
+                   "@calculateDRbarMassElectronNeutrino@"-> IndentText[IndentText[calculateDRbarMasses[[10]]]],
+                   "@calculateDRbarMassMuonNeutrino@"    -> IndentText[IndentText[calculateDRbarMasses[[11]]]],
+                   "@calculateDRbarMassTauNeutrino@"     -> IndentText[IndentText[calculateDRbarMasses[[12]]]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
@@ -649,6 +702,13 @@ ExpandGaugeIndices[gauge_List] :=
    Example: MRSSM
    In[] := CreateHiggsToEWSBEqAssociation[]
    Out[] = {{hh, 1, Re}, {hh, 2, Re}, {hh, 4, Re}, {hh, 3, Re}}
+
+   This result means:
+
+   EWSB eq. 1 corresponds to hh[1], the 1L tadpole[1] is real
+   EWSB eq. 2 corresponds to hh[2], the 1L tadpole[2] is real
+   EWSB eq. 3 corresponds to hh[4], the 1L tadpole[3] is real
+   EWSB eq. 4 corresponds to hh[3], the 1L tadpole[4] is real
  *)
 CreateHiggsToEWSBEqAssociation[] :=
     Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
@@ -765,6 +825,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
+            threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
             phasesInit = "",
@@ -773,6 +834,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             callAllLoopMassFunctions = "",
             callAllLoopMassFunctionsInThreads = "",
             printMasses = "", printMixingMatrices = "",
+            getPhysical = "", setPhysical = "",
+            getMasses = "", setMasses = "",
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
@@ -786,7 +849,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             reorderDRbarMasses = "", reorderPoleMasses = "",
             checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
-            twoLoopHiggsHeaders = "",
+            twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
             EWSBSolvers = "",
             setEWSBSolution = "",
@@ -846,9 +909,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
-           If[SARAH`UseHiggs2LoopSM === True,
+           If[FlexibleSUSY`UseHiggs2LoopSM === True,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
               twoLoopHiggsHeaders = "#include \"sm_twoloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseHiggs3LoopSplit === True,
+              {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSplit[{SARAH`HiggsBoson}];
+              threeLoopHiggsHeaders = "#include \"split_threeloophiggs.hpp\"\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -882,6 +949,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
+           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
+           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatrices, "pars"];
+           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
+           setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
@@ -960,6 +1031,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
+                            "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
+                            "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
+                            "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
@@ -972,6 +1046,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@callAllLoopMassFunctions@"     -> IndentText[callAllLoopMassFunctions],
                             "@callAllLoopMassFunctionsInThreads@" -> IndentText[callAllLoopMassFunctionsInThreads],
                             "@printMasses@"                  -> IndentText[printMasses],
+                            "@getPhysical@"                  -> IndentText[getPhysical],
+                            "@setPhysical@"                  -> IndentText[setPhysical],
+                            "@getMasses@"                    -> IndentText[getMasses],
+                            "@setMasses@"                    -> IndentText[setMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
                             "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
@@ -1046,6 +1124,7 @@ WriteMakefileModule[rgeFile_List, files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
+                    inputParameters_List,
                     lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
                     files_List] :=
     Module[{k, particles, susyParticles, smParticles,
@@ -1053,7 +1132,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
+            particleMixingEnum = "", particleMixingNames = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
+            inputParameterEnum = "", inputParameterNames = "",
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
@@ -1070,9 +1151,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
+           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
+           inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
+           inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
            fillSpectrumVectorWithSMParticles   = TreeMasses`FillSpectrumVector[smParticles];
            numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
@@ -1099,11 +1184,15 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
+                            "@particleMixingEnum@" -> IndentText[WrapLines[particleMixingEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
                             "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
+                            "@particleMixingNames@"-> IndentText[WrapLines[particleMixingNames]],
+                            "@inputParameterEnum@" -> IndentText[WrapLines[inputParameterEnum]],
+                            "@inputParameterNames@"-> IndentText[WrapLines[inputParameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
                             "@isSupersymmetricModel@" -> isSupersymmetricModel,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
@@ -1445,6 +1534,7 @@ SelectRenormalizationScheme[renormalizationScheme_] :=
 Options[MakeFlexibleSUSY] :=
     {
         InputFile -> "FlexibleSUSY.m",
+        OutputDirectory -> "",
         DebugOutput -> False
     };
 
@@ -1473,13 +1563,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
            FSDebugOutput = OptionValue[DebugOutput];
+           FSOutputDir = OptionValue[OutputDirectory];
+           If[!DirectoryQ[FSOutputDir],
+              Print["Error: OutputDirectory ", FSOutputDir, " does not exist."];
+              Print["   Please run ./createmodel first."];
+              Quit[1]];
            CheckSARAHVersion[];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
            Print["  Model: ", FlexibleSUSY`FSModelName];
            Print["  Model file: ", OptionValue[InputFile]];
-           Print["  Model output directory: ", Global`$flexiblesusyOutputDir];
+           Print["  Model output directory: ", FSOutputDir];
 
            PrintHeadline["Reading SARAH output files"];
            (* get RGEs *)
@@ -1702,24 +1797,24 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
-                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
                          "two_scale_susy_beta_.cpp.in",
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_susy.mk"}]}}
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{FSOutputDir, "two_scale_susy.mk"}]}}
                         ];
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {},
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_soft_parameters.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.hpp"}]},
-                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_soft_parameters.hpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.hpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
                          "two_scale_soft_beta_.cpp.in",
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{FSOutputDir, "two_scale_soft.mk"}]}},
                          If[Head[SARAH`TraceAbbr] === List, SARAH`TraceAbbr, {}],
                          numberOfSusyParameters];
 
@@ -1745,9 +1840,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               (* adding tadpoles to the EWSB eqs. *)
               ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
-              treeLevelEwsbSolutionOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+              treeLevelEwsbSolutionOutputFile = FileNameJoin[{FSOutputDir,
                                                               FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
-              treeLevelEwsbEqsOutputFile      = FileNameJoin[{Global`$flexiblesusyOutputDir,
+              treeLevelEwsbEqsOutputFile      = FileNameJoin[{FSOutputDir,
                                                               FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
               Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
               Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
@@ -1822,10 +1917,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[inputParameters,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
-                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.cpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.cpp"}]}
+                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, "input_parameters.cpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.cpp"}]}
                                     }
                                    ];
 
@@ -1864,39 +1959,39 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[FlexibleSUSY`FSConvergenceCheck,
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_convergence_tester.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_convergence_tester.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_convergence_tester.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_convergence_tester.cpp"}]}
+               {{FileNameJoin[{$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_convergence_tester.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_convergence_tester.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_convergence_tester.cpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_convergence_tester.cpp"}]}
                }
                                       ];
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR,
+                               MINPAR, EXTPAR, inputParameters,
                                lesHouchesInputParameters, extraSLHAOutputBlocks,
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.cpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "slha_io.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "slha_io.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.cpp"}]}
+               {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.cpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "utilities.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "utilities.cpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "slha_io.hpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.hpp"}]},
+                {FileNameJoin[{$flexiblesusyTemplateDir, "slha_io.cpp.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.cpp"}]}
                }
                               ];
 
            Print["Creating plot scripts ..."];
-           WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rgflow.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
+           WritePlotScripts[{{FileNameJoin[{$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "plot_rgflow.gnuplot.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
                            ];
 
            PrintHeadline["Creating constraints"];
@@ -1905,12 +2000,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`HighScaleInput,
                                 FlexibleSUSY`HighScaleFirstGuess,
                                 {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.cpp"}]}
+                                {{FileNameJoin[{$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.cpp"}]}
                                 }
                                ];
 
@@ -1919,12 +2014,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`SUSYScaleInput,
                                 FlexibleSUSY`SUSYScaleFirstGuess,
                                 {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.cpp"}]}
+                                {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.cpp"}]}
                                 }
                                ];
 
@@ -1933,12 +2028,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`LowScaleInput,
                                 FlexibleSUSY`LowScaleFirstGuess,
                                 {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.cpp"}]}
+                                {{FileNameJoin[{$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.cpp"}]}
                                 }
                                ];
 
@@ -1949,12 +2044,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
                                     FlexibleSUSY`InitialGuessAtHighScale,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}
+                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}
                                     }
                                    ];
 
@@ -1977,12 +2072,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating SLHA model"];
            Print["Creating class for SLHA model ..."];
            WriteModelSLHAClass[massMatrices,
-                               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
-                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
-                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
-                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
-                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
-                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]}
+                               {{FileNameJoin[{$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
+                                {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
+                                {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]}
                                }];
 
            PrintHeadline["Creating model"];
@@ -1990,20 +2085,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteModelClass[massMatrices, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
                            nPointFunctions, vertexRules, Parameters`GetPhases[],
-                           {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "model.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.cpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "physical.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "physical.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
            
@@ -2019,16 +2114,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
            WriteUserExample[inputParameters,
-                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_cmd_line_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "scan.cpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
+                            {{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, "run_cmd_line_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "scan.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
                             }];
 
            PrintHeadline["FlexibleSUSY has finished"];

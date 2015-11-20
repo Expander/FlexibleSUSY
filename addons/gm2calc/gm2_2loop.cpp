@@ -49,6 +49,7 @@ double calculate_amu_2loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
    MSSMNoFV_onshell model_ytree(model);
    model_ytree.convert_yukawa_couplings_treelevel();
    model_ytree.calculate_DRbar_masses();
+   model_ytree.check_problems();
 
    return amu2LFSfapprox_non_tan_beta_resummed(model_ytree)
       + amuChipmPhotonic(model_ytree)
@@ -88,6 +89,9 @@ double LogNorm(const MSSMNoFV_onshell& model) {
 
 /**
  * Calculates \f$\Delta_{g_1}\f$, Eq (6.6a) arxiv:1311.1775.
+ *
+ * Contributions from 1st and 2nd generation sleptons have been
+ * included in addition.
  */
 double Delta_g1(const MSSMNoFV_onshell& model) {
    const double gY = model.get_gY();
@@ -108,7 +112,11 @@ double Delta_g1(const MSSMNoFV_onshell& model) {
              + 1. / 6. * log(sqrt(mq2(0, 0)) / LogScale)
              + 1. / 6. * log(sqrt(mq2(1, 1)) / LogScale)
              + 1. / 6. * log(sqrt(mq2(2, 2)) / LogScale)
+             + log(sqrt(me2(0, 0)) / LogScale)
+             + log(sqrt(me2(1, 1)) / LogScale)
              + log(sqrt(me2(2, 2)) / LogScale)
+             + 0.5 * log(sqrt(ml2(0, 0)) / LogScale)
+             + 0.5 * log(sqrt(ml2(1, 1)) / LogScale)
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
@@ -150,6 +158,9 @@ double Delta_YukBinoHiggsino(const MSSMNoFV_onshell& model) {
 
 /**
  * Calculates \f$\Delta_{g_2}\f$, Eq (6.6b) arxiv:1311.1775.
+ *
+ * Contributions from 1st and 2nd generation sleptons have been
+ * included in addition.
  */
 double Delta_g2(const MSSMNoFV_onshell& model) {
    const double g2 = model.get_g2();
@@ -161,6 +172,8 @@ double Delta_g2(const MSSMNoFV_onshell& model) {
             * (1.5 * log(sqrt(mq2(0, 0)) / LogScale)
              + 1.5 * log(sqrt(mq2(1, 1)) / LogScale)
              + 1.5 * log(sqrt(mq2(2, 2)) / LogScale)
+             + 0.5 * log(sqrt(ml2(0, 0)) / LogScale)
+             + 0.5 * log(sqrt(ml2(1, 1)) / LogScale)
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
@@ -173,7 +186,7 @@ double Delta_YukWinoHiggsino(const MSSMNoFV_onshell& model) {
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    const double LogScale = LogNorm(model);
 
-   return oneOver16PiSqr * - 6. * sqr(ytop) * log(sqrt(mq2(2, 2)) / LogScale);
+   return oneOver16PiSqr * (-6.) * sqr(ytop) * log(sqrt(mq2(2, 2)) / LogScale);
 }
 
 /**

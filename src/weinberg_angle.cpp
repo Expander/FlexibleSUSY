@@ -157,13 +157,7 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
 {
    const double alphaDRbar = data.alpha_em_drbar;
    const double mz_pole    = data.mz_pole;
-   const double scale      = data.scale;
    const double gfermi     = data.fermi_contant;
-
-   if (!is_equal(scale, mz_pole)) {
-      WARNING("Weinberg_angle::calculate() called at scale "
-              << scale << " != MZ_pole(" << mz_pole << ")");
-   }
 
    unsigned iteration = 0;
    bool not_converged = true;
@@ -431,6 +425,7 @@ double Weinberg_angle::calculate_delta_vb_sm(
   const double sinThetaW2 = Sqr(sinThetaW);
   const double outcos  = Sqrt(1.0 - sinThetaW2);
   const double alphaDRbar = data.alpha_em_drbar;
+  const double scale   = data.scale;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(rho, calculate_delta_vb_sm)
@@ -443,7 +438,8 @@ double Weinberg_angle::calculate_delta_vb_sm(
   const double deltaVbSm =
      rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
      (6.0 + log(cw2) / sw2 *
-      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos))));
+      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos)))
+      - 4. * Log(Sqr(mz/scale)));
 
   return deltaVbSm;
 }

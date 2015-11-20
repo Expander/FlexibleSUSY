@@ -7,6 +7,11 @@ CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
+CreateInputParameterEnum::usage="";
+CreateInputParameterNames::usage="";
+
+CreateInputParameterArrayGetter::usage="";
+CreateInputParameterArraySetter::usage="";
 
 SetParameter::usage="set model parameter";
 SetInputParameter::usage="set input parameter";
@@ -444,7 +449,7 @@ CreateSetAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = name <> " = pars(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
@@ -523,7 +528,7 @@ CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = "pars(" <> ToString[startIndex] <> ") = "
                  <> name <> ";\n";
@@ -603,7 +608,7 @@ CreateParameterNamesStr[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
 
 CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
@@ -681,7 +686,7 @@ CreateParameterEnums[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     CConversion`ToValidCSymbolString[name];
 
 CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
@@ -744,6 +749,36 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
                     <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
              ];
            Return[ass];
+          ];
+
+CreateInputParameterEnum[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterEnums[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           If[Length[inputParameters] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_INPUT_PARAMETERS";
+           result = "enum Input_parameters : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateInputParameterNames[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterNamesStr[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           result = "const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {" <>
+                    result <> "};\n";
+           Return[result];
           ];
 
 SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
@@ -1049,6 +1084,13 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
            particle[[1]]
           ];
 
+GetParticleFromDescription[multipletName_String, splitNames_List] :=
+    Module[{result},
+           result = GetParticleFromDescription[multipletName];
+           If[result =!= Null, Return[{result}]];
+           GetParticleFromDescription /@ splitNames
+          ];
+
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 AppendGenerationIndices[expr_List] :=
@@ -1172,6 +1214,37 @@ GetDependenceNumSymbols[] :=
                 parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
                 {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
         ];
+
+CreateInputParameterArrayGetter[inputParameters_List] :=
+    Module[{get = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               get = get <> assignment;
+               paramCount += nAssignments;
+              ];
+           get = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                 get <> "\n" <>
+                 "return pars;";
+           Return[get];
+          ];
+
+CreateInputParameterArraySetter[inputParameters_List] :=
+    Module[{set = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
 
 End[];
 

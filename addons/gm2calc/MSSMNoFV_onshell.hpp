@@ -25,6 +25,19 @@
 
 namespace gm2calc {
 
+/**
+ * @class MSSMNoFV_onshell
+ * @brief contains the MSSMNoFV parameters in the on-shell scheme
+ *
+ * In addition, the class stores parameters necessary for the
+ * calculation of \f$a_\mu\f$: The electromagnetic coupling at MZ w/o
+ * hadronic corrections, \f$\alpha_{\text{em}}(M_Z)\f$, and the
+ * electromagnetic coupling in the Thomson limit,
+ * \f$\alpha_{\text{em}}(0)\f$.
+ *
+ * The class also contains helper functions to convert DR-bar
+ * parameters to the on-shell scheme.
+ */
 class MSSMNoFV_onshell : public MSSMNoFV_onshell_mass_eigenstates {
 public:
    MSSMNoFV_onshell();
@@ -34,9 +47,9 @@ public:
    void set_verbose_output(bool flag) { verbose_output = flag; }
    bool do_verbose_output() const { return verbose_output; }
 
-   /// set alpha(MZ)
+   /// set alpha(MZ) w/o hadronic corrections
    void set_alpha_MZ(double);
-   /// set alpha in the Thompson limit
+   /// set alpha in the Thomson limit
    void set_alpha_thompson(double);
 
    void set_Ae(const Eigen::Matrix<double,3,3>& A) { Ae = A; }
@@ -45,14 +58,23 @@ public:
    void set_Ae(unsigned i, unsigned k, double a) { Ae(i,k) = a; }
    void set_Au(unsigned i, unsigned k, double a) { Au(i,k) = a; }
    void set_Ad(unsigned i, unsigned k, double a) { Ad(i,k) = a; }
+   /// set CP-odd Higgs pole mass
    void set_MA0(double m) { get_physical().MAh(1) = m; }
+   /// set tan(beta)
    void set_TB(double);
 
-   double get_MUDIM() const {return get_scale();}
-   double get_EL0() const {return EL0;}
-   double get_gY() const {return sqrt(0.6) * get_g1();}
-   double get_EL() const;
-   double get_TB() const {return get_vu() / get_vd();}
+   /// electromagnetic gauge coupling at MZ w/o hadronic corrections
+   double get_EL() const { return EL; }
+   /// electromagnetic gauge coupling in Thomson limit
+   double get_EL0() const { return EL0; }
+   /// Hypercharge gauge coupling
+   double get_gY() const { return sqrt(0.6) * get_g1(); }
+   /// renormalization scale
+   double get_MUDIM() const { return get_scale(); }
+   /// tan(beta)
+   double get_TB() const { return get_vu() / get_vd(); }
+   /// Vacuum expectation value v
+   double get_vev() const;
    const Eigen::Matrix<double,3,3>& get_Ae() const { return Ae; }
    const Eigen::Matrix<double,3,3>& get_Au() const { return Au; }
    const Eigen::Matrix<double,3,3>& get_Ad() const { return Ad; }
@@ -71,7 +93,10 @@ public:
    double get_MT() const { return get_physical().MFt; }
    double get_MD() const { return get_physical().MFd; }
    double get_MS() const { return get_physical().MFs; }
-   double get_MB() const { return get_physical().MFb; }
+   /// returns mb(mb) MS-bar
+   double get_MBMB() const { return get_physical().MFb; }
+   /// returns mb(MZ) DR-bar
+   double get_MB() const;
    double get_MA0() const { return get_physical().MAh(1); }
    const Eigen::Array<double,2,1>&  get_MSmu() const { return get_MSm(); }
    const Eigen::Matrix<double,2,2>& get_USmu() const { return get_ZM(); }
@@ -84,14 +109,13 @@ public:
    void convert_to_onshell(double precision = 1e-8,
                            unsigned max_iterations = 1000);
    void calculate_masses();
+   void check_problems() const;
    void convert_yukawa_couplings_treelevel();
-
-   friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);
 
 private:
    bool verbose_output; ///< verbose output
    double EL;  ///< electromagnetic gauge coupling at MZ w/o hadronic corrections
-   double EL0; ///< electromagnetic gauge coupling in the Thompson limit
+   double EL0; ///< electromagnetic gauge coupling in the Thomson limit
    Eigen::Matrix<double,3,3> Ae, Au, Ad; ///< trilinear couplings
 
    static bool is_equal(double, double, double);
@@ -109,19 +133,20 @@ private:
    template <class Derived>
    static unsigned find_right_like_smuon(const Eigen::MatrixBase<Derived>&);
 
-   void check_input();
-   void check_problems();
+   void check_input() const;
    void convert_gauge_couplings();
    void convert_BMu();
    void convert_ml2();
    void convert_me2(double, unsigned);
-   void convert_me2_fpi(double, unsigned);
-   void convert_me2_root(double, unsigned);
+   double convert_me2_fpi(double, unsigned);
+   double convert_me2_root(double, unsigned);
    void convert_Mu_M1_M2(double, unsigned);
    void convert_vev();
    void convert_yukawa_couplings();
    void copy_susy_masses_to_pole();
 };
+
+std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);
 
 } // namespace gm2calc
 

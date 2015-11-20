@@ -11,6 +11,12 @@
 
 namespace softsusy {
 
+const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
+   "alpha_em_MSbar_at_MZ", "GFermi", "alpha_s_MSbar_at_MZ", "MZ_pole",
+   "mb_mb", "MT_pole", "MTau_pole", "Mv3_pole", "MW_pole", "ME_pole",
+   "Mv1_pole", "MM_pole", "Mv2_pole", "MD_2GeV", "MU_2GeV", "MS_2GeV",
+   "MC_2GeV" };
+
 ///  external object temp used to get objects into external routines, however:
 ///  don't use it!
 static QedQcd *tempLe;
@@ -76,7 +82,7 @@ const DoubleVector QedQcd::display() const {
 //  Active flavours at energy mu
 int QedQcd::flavours(double mu) const {
   int k = 0;
-  if (mu > mf.display(mTop)) k++;
+  // if (mu > mf.display(mTop)) k++;
   if (mu > mf.display(mCharm)) k++;
   if (mu > mf.display(mUp)) k++;
   if (mu > mf.display(mDown)) k++;
@@ -165,10 +171,10 @@ double QedQcd::qedBeta() const {
   double x;
   x = 24.0 / 9.0;
   if (displayMu() > mf.display(mCharm)) x += 8.0 / 9.0;
-  if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
+  // if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
   if (displayMu() > mf.display(mBottom)) x += 2.0 / 9.0;
   if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
-  if (displayMu() > MW) x += 1.0 / 6.0;
+  if (displayMu() > MW) x += -7.0 / 2.0;
   if (displayMu() > (mtPole + TOLERANCE))  {
     ostringstream ii;
     
@@ -371,15 +377,17 @@ void QedQcd::toMt() {
 
   const double tol = 1.0e-5;
 
+  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
+  calcPoleMb();
+
   double alphasMZ = displayAlpha(ALPHAS);
   double alphaMZ = displayAlpha(ALPHA);
 
-  double mz = displayMu();
+  double mz = displayPoleMZ();
 
   runGauge(mz, 1.0);
   //Run whole lot up to pole top mass
   double mt = this->displayPoleMt();
-
   run(1.0, mz, tol);
 
   // Reset alphas to erase numerical integration errors.
@@ -406,6 +414,12 @@ void QedQcd::toMz() {
   setAlpha(ALPHA, alphaMZ);
 }
 
+// Takes QedQcd created at MZ and runs it to given scale
+void QedQcd::to(double q)
+{
+   toMz();
+   runto(q, 1.0e-5);
+}
 
 // This will calculate the three gauge couplings of the Standard Model at the
 // scale m2.
@@ -527,6 +541,87 @@ void massFermions(const QedQcd & r, DoubleMatrix & mDon,
   mUpq(2, 2) = r.displayMass(mCharm);    
   mEle(1, 1) = r.displayMass(mElectron);    
   mEle(2, 2) = r.displayMass(mMuon);    
+}
+
+void QedQcd::set_input(const Eigen::ArrayXd& pars)
+{
+   a(1)     = pars(0);
+   gfermi   = pars(1);
+   a(2)     = pars(2);
+   mzPole   = pars(3);
+   mbMb     = pars(4);
+   mtPole   = pars(5);
+   mtauPole = pars(6);
+   mnu(3)   = pars(7);
+   mwPole   = pars(8);
+   mf(7)    = pars(9); // ME_pole
+   mnu(1)   = pars(10);
+   mf(8)    = pars(11); // MM_pole
+   mnu(2)   = pars(12);
+   mf(4)    = pars(13); // MD
+   mf(1)    = pars(14); // MU
+   mf(5)    = pars(15); // MS
+   mf(2)    = pars(16); // MC
+}
+
+Eigen::ArrayXd QedQcd::display_input() const
+{
+   Eigen::ArrayXd pars(17);
+
+   pars(0)  = a(1);
+   pars(1)  = gfermi;
+   pars(2)  = a(2);
+   pars(3)  = mzPole;
+   pars(4)  = mbMb;
+   pars(5)  = mtPole;
+   pars(6)  = mtauPole;
+   pars(7)  = mnu(3);
+   pars(8)  = mwPole;
+   pars(9)  = mf(7); // ME_pole
+   pars(10) = mnu(1);
+   pars(11) = mf(8); // MM_pole
+   pars(12) = mnu(2);
+   pars(13) = mf(4); // MD
+   pars(14) = mf(1); // MU
+   pars(15) = mf(5); // MS
+   pars(16) = mf(2); // MC
+
+   return pars;
+}
+
+std::vector<std::string> QedQcd::display_input_parameter_names()
+{
+   return std::vector<std::string>(QedQcd_input_parmeter_names,
+                                   QedQcd_input_parmeter_names
+                                   + NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
+}
+
+bool operator ==(const QedQcd& a, const QedQcd& b)
+{
+   return
+      a.displayMu() == b.displayMu() &&
+      a.displayLoops() == b.displayLoops() &&
+      a.displayThresholds() == b.displayThresholds() &&
+      a.displayAlpha(ALPHA) == b.displayAlpha(ALPHA) &&
+      a.displayAlpha(ALPHAS) == b.displayAlpha(ALPHAS) &&
+      a.displayMass(mUp) == b.displayMass(mUp) &&
+      a.displayMass(mCharm) == b.displayMass(mCharm) &&
+      a.displayMass(mTop) == b.displayMass(mTop) &&
+      a.displayMass(mDown) == b.displayMass(mDown) &&
+      a.displayMass(mStrange) == b.displayMass(mStrange) &&
+      a.displayMass(mBottom) == b.displayMass(mBottom) &&
+      a.displayMass(mElectron) == b.displayMass(mElectron) &&
+      a.displayMass(mMuon) == b.displayMass(mMuon) &&
+      a.displayMass(mTau) == b.displayMass(mTau) &&
+      a.displayNeutrinoPoleMass(1) == b.displayNeutrinoPoleMass(1) &&
+      a.displayNeutrinoPoleMass(2) == b.displayNeutrinoPoleMass(2) &&
+      a.displayNeutrinoPoleMass(3) == b.displayNeutrinoPoleMass(3) &&
+      a.displayPoleMt() == b.displayPoleMt() &&
+      a.displayPoleMb() == b.displayPoleMb() &&
+      a.displayPoleMtau() == b.displayPoleMtau() &&
+      a.displayPoleMW() == b.displayPoleMW() &&
+      a.displayPoleMZ() == b.displayPoleMZ() &&
+      a.displayFermiConstant() == b.displayFermiConstant();
 }
 
 } // namespace softsusy

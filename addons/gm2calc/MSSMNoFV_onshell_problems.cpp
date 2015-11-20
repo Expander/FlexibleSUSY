@@ -21,14 +21,14 @@
 
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 namespace gm2calc {
 
 MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems()
    : have_no_convergence_Mu_MassB_MassWB(false)
    , have_no_convergence_me2(false)
-   , have_tachyon(false)
-   , tachyonic_particle("")
+   , tachyons()
    , convergence_problem_Mu_MassB_MassWB()
    , convergence_problem_me2()
 {
@@ -36,8 +36,7 @@ MSSMNoFV_onshell_problems::MSSMNoFV_onshell_problems()
 
 void MSSMNoFV_onshell_problems::clear_problems()
 {
-   have_tachyon = false;
-   tachyonic_particle.clear();
+   tachyons.clear();
 }
 
 void MSSMNoFV_onshell_problems::clear_warnings()
@@ -56,8 +55,9 @@ void MSSMNoFV_onshell_problems::clear()
 
 void MSSMNoFV_onshell_problems::flag_tachyon(const std::string& particle_name)
 {
-   have_tachyon = true;
-   tachyonic_particle = particle_name;
+   tachyons.push_back(particle_name);
+   std::sort(tachyons.begin(), tachyons.end());
+   tachyons.erase(std::unique(tachyons.begin(), tachyons.end()), tachyons.end());
 }
 
 void MSSMNoFV_onshell_problems::flag_no_convergence_Mu_MassB_MassWB(
@@ -88,9 +88,14 @@ void MSSMNoFV_onshell_problems::unflag_no_convergence_me2()
    convergence_problem_me2.clear();
 }
 
+bool MSSMNoFV_onshell_problems::have_tachyon() const
+{
+   return !tachyons.empty();
+}
+
 bool MSSMNoFV_onshell_problems::have_problem() const
 {
-   return have_tachyon;
+   return have_tachyon();
 }
 
 bool MSSMNoFV_onshell_problems::have_warning() const
@@ -98,17 +103,33 @@ bool MSSMNoFV_onshell_problems::have_warning() const
    return have_no_convergence_Mu_MassB_MassWB || have_no_convergence_me2;
 }
 
-std::string MSSMNoFV_onshell_problems::get_warning() const
+std::string MSSMNoFV_onshell_problems::get_warnings() const
 {
    std::ostringstream ostr;
    print_warnings(ostr);
    return ostr.str();
 }
 
+std::string MSSMNoFV_onshell_problems::get_problems() const
+{
+   std::ostringstream ostr;
+   print_problems(ostr);
+   return ostr.str();
+}
+
 void MSSMNoFV_onshell_problems::print_problems(std::ostream& ostr) const
 {
-   if (have_tachyon)
-      ostr << "Problem: " << tachyonic_particle << " tachyon";
+   if (have_problem())
+      ostr << "Problem: ";
+
+   if (have_tachyon()) {
+      for (std::vector<std::string>::const_iterator it = tachyons.begin(),
+              end = tachyons.end(); it != end; ++it) {
+         if (it != tachyons.begin())
+            ostr << ", ";
+         ostr << *it << " tachyon";
+      }
+   }
 }
 
 void MSSMNoFV_onshell_problems::print_warnings(std::ostream& ostr) const

@@ -5,7 +5,7 @@ Block FlexibleSUSY
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   1                    # calculate SM pole masses
-    4   2                    # pole mass loop order
+    4   3                    # pole mass loop order
     5   2                    # EWSB loop order
     6   2                    # beta-functions loop order
     7   2                    # threshold corrections loop order
@@ -41,9 +41,8 @@ Block EXTPAR                 # Input parameters
     4   1000                 # Mu(MEWSB)
     5   1000                 # mA(MSUSY)
     6   173.34               # MEWSB
+    7   0                    # At(MSUSY)
    25   10                   # TanBeta(MSUSY)
-Block TUIN
-    3   3     0.0
 Block MSQ2IN
   1  1     1.00000000E+06   # mq2(1,1)
   2  2     1.00000000E+06   # mq2(2,2)

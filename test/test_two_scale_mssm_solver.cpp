@@ -33,25 +33,25 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
    const bool uni = true;
    const double mxGuess = 1.0e16;
 
-   QedQcd oneset;
+   QedQcd qedqcd;
    const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
-   oneset.setAlpha(ALPHAS, alphasMZ);
-   oneset.setPoleMt(mtop);
-   oneset.setMass(mBottom, mbmb);
-   oneset.toMz();
+   qedqcd.setAlpha(ALPHAS, alphasMZ);
+   qedqcd.setPoleMt(mtop);
+   qedqcd.setMass(mBottom, mbmb);
+   qedqcd.toMz();
 
    RGFlow<SoftSusy_t> mssmSolver;
    mssmSolver.setSoftHighScalePars(highScaleSoftPars);
    mssmSolver.setSignMu(signMu);
    mssmSolver.setTanBeta(tanBeta);
-   mssmSolver.setLowScaleBoundaryConditions(oneset);
+   mssmSolver.setLowScaleBoundaryConditions(qedqcd);
    mssmSolver.setGaugeUnification(uni);
    mssmSolver.setMxGuess(mxGuess);
    mssmSolver.setHighScaleBoundaryCondition(sugraBcs);
    mssmSolver.solve();
 
    MssmSoftsusy softSusy;
-   softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
+   softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, qedqcd, uni);
 
    BOOST_CHECK_EQUAL(mssmSolver.displayPhys(), softSusy.displayPhys());
 }
@@ -146,13 +146,13 @@ public:
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
-   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
+   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& qedqcd) {
       // run softsusy
       softsusy::TOLERANCE = 1.0e-4;
 #ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
-      softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, oneset, true);
+      softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, qedqcd, true);
       mx = softSusy.displayMxBC();
       softsusy::PRINTOUT = 0;
 
@@ -182,7 +182,7 @@ public:
    ~Two_scale_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return mssm.displayPhys(); }
-   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
+   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& qedqcd) {
       softsusy::TOLERANCE = 1.0e-4;
       // setup the MSSM with the two scale method
       SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
@@ -192,7 +192,7 @@ public:
       SoftsusyMSSM_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
                                            mssm_msusy_constraint,
                                            mssm_sugra_constraint);
-      initial_guesser.set_QedQcd(oneset);
+      initial_guesser.set_QedQcd(qedqcd);
       Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
       std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
@@ -229,13 +229,13 @@ private:
  */
 void test_point(const SoftsusyMSSM_parameter_point& pp)
 {
-   QedQcd oneset;
+   QedQcd qedqcd;
 
    Two_scale_tester two_scale_tester;
-   BOOST_REQUIRE_NO_THROW(two_scale_tester.test(pp, oneset));
+   BOOST_REQUIRE_NO_THROW(two_scale_tester.test(pp, qedqcd));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, oneset));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, qedqcd));
 
    // check equality of physical parameters
    test_equality(softSusy_tester.get_physical(), two_scale_tester.get_physical(), 0.1);
@@ -268,20 +268,20 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    pp.a0 = 0.0;
    pp.m12 = 337.5;
    pp.m0 = 3400.0;
-   QedQcd oneset;
+   QedQcd qedqcd;
    const double alphasMZ = 0.1187, mtop = 173.5, mbmb = 4.2;
-   oneset.setAlpha(ALPHAS, alphasMZ);
-   oneset.setPoleMt(mtop);
-   oneset.setMass(mBottom, mbmb);
-   oneset.toMz();
+   qedqcd.setAlpha(ALPHAS, alphasMZ);
+   qedqcd.setPoleMt(mtop);
+   qedqcd.setMass(mBottom, mbmb);
+   qedqcd.toMz();
 
    BOOST_MESSAGE("testing slow convergent " << pp);
    Two_scale_tester two_scale_tester;
-   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), NoConvergenceError);
+   BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), NoConvergenceError);
    SoftSusy_tester softSusy_tester;
-   // BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NoConvergence_error);
+   // BOOST_CHECK_THROW(softSusy_tester.test(pp, qedqcd), SoftSusy_NoConvergence_error);
    try {
-      softSusy_tester.test(pp, oneset);
+      softSusy_tester.test(pp, qedqcd);
    } catch (SoftSusy_NoConvergence_error) {
       INFO("SoftSusy_NoConvergence_error thrown");
    } catch (std::string& s) {
@@ -301,13 +301,13 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    pp.a0 = 0.0;
    pp.m12 = 337.5;
    pp.m0 = 3400.0;
-   QedQcd oneset;
-   oneset.setPoleMt(173.5);
+   QedQcd qedqcd;
+   qedqcd.setPoleMt(173.5);
 
    BOOST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
-   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), std::string);
+   BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), std::string);
    SoftSusy_tester softSusy_tester;
-   // BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NonPerturbative_error);
-   BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_error);
+   // BOOST_CHECK_THROW(softSusy_tester.test(pp, qedqcd), SoftSusy_NonPerturbative_error);
+   BOOST_CHECK_THROW(softSusy_tester.test(pp, qedqcd), SoftSusy_error);
 }

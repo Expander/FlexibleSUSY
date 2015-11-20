@@ -20,12 +20,12 @@
 #include "numerics2.hpp"
 #include "gm2_error.hpp"
 #include "gm2_1loop.hpp"
+#include "gm2_mb.hpp"
 #include "ffunctions.hpp"
 
 #include <cmath>
 #include <complex>
 #include <iostream>
-#include <sstream>
 #include <algorithm>
 
 #include <boost/math/tools/roots.hpp>
@@ -61,7 +61,12 @@ MSSMNoFV_onshell::MSSMNoFV_onshell()
    , Au(Eigen::Matrix<double,3,3>::Zero())
    , Ad(Eigen::Matrix<double,3,3>::Zero())
 {
+   set_g3(calculate_e(0.1184));
+   get_physical().MFt = 173.34;
+   get_physical().MFb = 4.18;
+   get_physical().MFe = 0.000510998928;
    get_physical().MFm  = 0.1056583715;
+   get_physical().MFtau = 1.777;
    get_physical().MVWm = 80.385;
    get_physical().MVZ  = 91.1876;
    set_scale(get_physical().MVZ);
@@ -90,18 +95,20 @@ void MSSMNoFV_onshell::set_alpha_thompson(double alpha)
 
 void MSSMNoFV_onshell::set_TB(double tanb)
 {
-   const double vev = std::sqrt(sqr(vu) + sqr(vd));
+   const double vev = get_vev();
    const double sinb = tanb / std::sqrt(1 + tanb*tanb);
    const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
    set_vd(vev * cosb);
    set_vu(vev * sinb);
 }
 
-/**
- * Returns the electromagnetic gauge coupling in the Thompson limit.
- */
-double MSSMNoFV_onshell::get_EL() const {
-   return EL;
+double MSSMNoFV_onshell::get_vev() const
+{
+   const double cW = get_MW() / get_MZ();
+   const double g2 = get_EL() / std::sqrt(1. - cW*cW);
+   const double vev = 2. * get_MW() / g2;
+
+   return vev;
 }
 
 /**
@@ -129,6 +136,8 @@ void MSSMNoFV_onshell::convert_to_onshell(
    convert_Mu_M1_M2(precision, max_iterations);
    convert_yukawa_couplings(); // first guess of resummed yukawas
    convert_ml2();
+   convert_yukawa_couplings();
+   calculate_MSm(); // calculate MSm with new value of ml2(1,1) and ym
    convert_me2(precision, max_iterations);
    convert_yukawa_couplings();
 
@@ -164,7 +173,7 @@ void MSSMNoFV_onshell::calculate_masses() {
    get_physical().Mhh = get_Mhh();
 }
 
-void MSSMNoFV_onshell::check_input()
+void MSSMNoFV_onshell::check_input() const
 {
 #define WARN_OR_THROW_IF_ZERO(mass,msg)         \
    if (is_zero(get_##mass())) {                 \
@@ -183,15 +192,11 @@ void MSSMNoFV_onshell::check_input()
 #undef WARN_OR_THROW_IF_ZERO
 }
 
-void MSSMNoFV_onshell::check_problems()
+void MSSMNoFV_onshell::check_problems() const
 {
    if (get_problems().have_problem()) {
-      std::ostringstream sstr;
-      sstr << get_problems();
-      if (do_force_output())
-         WARNING(sstr.str());
-      else
-         throw EPhysicalProblem(sstr.str());
+      if (!do_force_output())
+         throw EPhysicalProblem(get_problems().get_problems());
    }
 }
 
@@ -262,6 +267,23 @@ void MSSMNoFV_onshell::convert_vev()
 
    set_vu(vev / sqrt(1. + 1. / sqr(TB)));
    set_vd(get_vu() / TB);
+}
+
+/**
+ * Returns mb(MZ) in DR-bar scheme.
+ *
+ * mb(MZ) DR-bar is calculated from mb(mb) MS-bar using the function
+ * \a calculate_mb_SM5_DRbar .
+ *
+ * @return mb(MZ) DR-bar
+ */
+double MSSMNoFV_onshell::get_MB() const
+{
+   const double mb_mb = get_MBMB();
+   const double alpha_s = calculate_alpha(get_g3());
+   const double mb_DRbar = calculate_mb_SM5_DRbar(mb_mb, alpha_s, get_MZ());
+
+   return mb_DRbar;
 }
 
 void MSSMNoFV_onshell::convert_yukawa_couplings_treelevel()
@@ -496,7 +518,15 @@ void MSSMNoFV_onshell::convert_me2(
    double precision_goal,
    unsigned max_iterations)
 {
-   convert_me2_fpi(precision_goal, max_iterations);
+   double precision = convert_me2_fpi(precision_goal, max_iterations);
+
+   if (precision > precision_goal)
+      precision = convert_me2_root(precision_goal, max_iterations);
+
+   if (precision > precision_goal)
+      get_problems().flag_no_convergence_me2(precision, max_iterations);
+   else
+      get_problems().unflag_no_convergence_me2();
 }
 
 /**
@@ -506,8 +536,9 @@ void MSSMNoFV_onshell::convert_me2(
  *
  * @param precision_goal precision goal for the root finding algorithm
  * @param max_iterations maximum number of iterations
+ * @return achieved precision
  */
-void MSSMNoFV_onshell::convert_me2_root(
+double MSSMNoFV_onshell::convert_me2_root(
    double precision_goal,
    unsigned max_iterations)
 {
@@ -537,6 +568,11 @@ void MSSMNoFV_onshell::convert_me2_root(
       return flexiblesusy::is_equal(a,b,precision_goal);
    };
 
+   if (verbose_output) {
+      std::cout << "Converting mse(2,2) to on-shell scheme with "
+         "root finder ...\n";
+   }
+
    // find the root
    const std::pair<double,double> root =
       boost::math::tools::toms748_solve(Difference_MSm(*this), 0., 1e16, Stop_crit, it);
@@ -544,16 +580,21 @@ void MSSMNoFV_onshell::convert_me2_root(
    set_me2(1,1,0.5*(root.first + root.second));
    calculate_MSm();
 
+   const double precision = std::abs(Difference_MSm(*this)(get_me2(1,1)));
+
    if (it >= max_iterations) {
-      const double precision = std::abs(Difference_MSm(*this)(get_me2(1,1)));
-      WARNING("DR-bar to on-shell conversion for me2 did not converge "
-              " (reached accuracy: " << precision <<
+      WARNING("DR-bar to on-shell conversion for mse did not converge with"
+              " root finder (reached accuracy: " << precision <<
               ", accuracy goal: " << precision_goal <<
               ", max. iterations: " << max_iterations << ")");
-      get_problems().flag_no_convergence_me2(precision, it);
-   } else {
-      get_problems().unflag_no_convergence_me2();
    }
+
+   if (verbose_output) {
+      std::cout << "   Achieved absolute accuracy: "
+                << precision << " GeV\n";
+   }
+
+   return precision;
 }
 
 /**
@@ -562,30 +603,36 @@ void MSSMNoFV_onshell::convert_me2_root(
  *
  * @param precision_goal precision goal of iteration
  * @param max_iterations maximum number of iterations
+ * @return achieved precision
  */
-void MSSMNoFV_onshell::convert_me2_fpi(
+double MSSMNoFV_onshell::convert_me2_fpi(
    double precision_goal,
    unsigned max_iterations)
 {
-   Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
-   // pole masses should be mass ordered for this to work
-   std::sort(MSm_pole.data(), MSm_pole.data() + MSm_pole.size());
-   const Eigen::Array<double,2,1> MSm(get_MSm());
+   // sorted pole masses
+   Eigen::Array<double,2,1> MSm_pole_sorted(get_physical().MSm);
+   std::sort(MSm_pole_sorted.data(),
+             MSm_pole_sorted.data() + MSm_pole_sorted.size());
+
+   Eigen::Array<double,2,1> MSm_goal(MSm_pole_sorted);
+
+   int right_index = find_right_like_smuon(get_ZM());
 
    if (verbose_output) {
-      const int right_index = find_right_like_smuon(get_ZM());
-      std::cout << "Converting mse(2,2) to on-shell scheme ...\n"
+      std::cout << "Converting mse(2,2) to on-shell scheme with FPI ...\n"
                    "   Goal: MSm(" << right_index << ") = "
-                << MSm_pole(right_index) << '\n';
+                << MSm_goal(right_index) << '\n';
    }
 
    bool accuracy_goal_reached =
-      MSSMNoFV_onshell::is_equal(MSm, MSm_pole, precision_goal);
+      MSSMNoFV_onshell::is_equal(get_MSm(right_index), MSm_goal(right_index),
+                                 precision_goal);
    unsigned it = 0;
 
    while (!accuracy_goal_reached && it < max_iterations) {
       const Eigen::Matrix<double,2,2> ZM(get_ZM()); // smuon mixing matrix
-      const Eigen::Matrix<double,2,2> M(ZM.adjoint() * MSm_pole.square().matrix().asDiagonal() * ZM);
+      const Eigen::Matrix<double,2,2> M(
+         ZM.adjoint() * MSm_goal.square().matrix().asDiagonal() * ZM);
 
       const double vd2 = sqr(get_vd());
       const double vu2 = sqr(get_vu());
@@ -598,10 +645,10 @@ void MSSMNoFV_onshell::convert_me2_fpi(
       set_me2(1,1,me211);
       calculate_MSm();
 
-      const int right_index = find_right_like_smuon(ZM);
+      right_index = find_right_like_smuon(get_ZM());
 
-      MSm_pole = get_MSm();
-      MSm_pole(right_index) = get_physical().MSm(right_index);
+      MSm_goal = get_MSm();
+      MSm_goal(right_index) = MSm_pole_sorted(right_index);
 
       if (verbose_output) {
          std::cout << "   Iteration " << it << ": mse(2,2) = "
@@ -610,31 +657,28 @@ void MSSMNoFV_onshell::convert_me2_fpi(
       }
 
       accuracy_goal_reached =
-         MSSMNoFV_onshell::is_equal(get_MSm(right_index), MSm_pole(right_index),
+         MSSMNoFV_onshell::is_equal(get_MSm(right_index), MSm_goal(right_index),
                                     precision_goal);
 
       it++;
    }
 
+   const double precision =
+      std::abs(get_MSm(right_index) - MSm_goal(right_index));
+
    if (it == max_iterations) {
-      const int right_index = find_right_like_smuon(get_ZM());
-      const double precision =
-         std::abs(get_MSm(right_index) - MSm_pole(right_index));
-      WARNING("DR-bar to on-shell conversion for me2 did not converge."
-              " (reached accuracy: " << precision <<
+      WARNING("DR-bar to on-shell conversion for mse did not converge with"
+              " FPI (reached accuracy: " << precision <<
               ", accuracy goal: " << precision_goal <<
               ", max. iterations: " << max_iterations << ")");
-      get_problems().flag_no_convergence_me2(precision, it);
-   } else {
-      get_problems().unflag_no_convergence_me2();
    }
 
    if (verbose_output) {
-      const int right_index = find_right_like_smuon(get_ZM());
       std::cout << "   Achieved absolute accuracy: "
-                << std::abs(get_MSm(right_index) - MSm_pole(right_index))
-                << " GeV\n";
+                << precision << " GeV\n";
    }
+
+   return precision;
 }
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
@@ -652,7 +696,8 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "--------------------------------------\n"
       "MM          = " << model.get_MM() << '\n' <<
       "MT          = " << model.get_MT() << '\n' <<
-      "MB          = " << model.get_MB() << '\n' <<
+      "mb(mb)      = " << model.get_MBMB() << '\n' <<
+      "mb(MZ)      = " << model.get_MB() << '\n' <<
       "MTau        = " << model.get_ML() << '\n' <<
       "MW          = " << model.get_MW() << '\n' <<
       "MZ          = " << model.get_MZ() << '\n' <<
@@ -670,13 +715,27 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "UStau       = " << model.get_UStau().row(0) << ' '
                        << model.get_UStau().row(1) << '\n' <<
       "MCha        = " << model.get_MCha().transpose() << '\n' <<
+      "UM          = " << model.get_UM().row(0) << ' '
+                       << model.get_UM().row(1) << '\n' <<
+      "UP          = " << model.get_UP().row(0) << ' '
+                       << model.get_UP().row(1) << '\n' <<
       "MChi        = " << model.get_MChi().transpose() << '\n' <<
+      "ZN          = " << model.get_ZN().row(0) << '\n' <<
+      "              " << model.get_ZN().row(1) << '\n' <<
+      "              " << model.get_ZN().row(2) << '\n' <<
+      "              " << model.get_ZN().row(3) << '\n' <<
       "MA0         = " << model.get_MA0() << '\n' <<
       "MH          = " << model.get_Mhh().transpose() << '\n' <<
       "tan(beta)   = " << model.get_TB() << '\n' <<
       "yu          = " << model.get_Yu().diagonal().transpose() << '\n' <<
-      "yd          = " << model.get_Yd().diagonal().transpose() << '\n' <<
-      "ye          = " << model.get_Ye().diagonal().transpose() << '\n' <<
+      "yd resummed = " << model.get_Yd().diagonal().transpose() << '\n' <<
+      "ye resummed = " << model.get_Ye().diagonal().transpose() << '\n' <<
+      "yd non res. = " << (sqrt(2.) * model.get_MD() / model.get_vd()) <<
+                   " " << (sqrt(2.) * model.get_MS() / model.get_vd()) <<
+                   " " << (sqrt(2.) * model.get_MB() / model.get_vd()) << '\n' <<
+      "ye non res. = " << (sqrt(2.) * model.get_ME() / model.get_vd()) <<
+                   " " << (sqrt(2.) * model.get_MM() / model.get_vd()) <<
+                   " " << (sqrt(2.) * model.get_ML() / model.get_vd()) << '\n' <<
       "Mu          = " << model.get_Mu() << '\n' <<
       "M1          = " << model.get_MassB() << '\n' <<
       "M2          = " << model.get_MassWB() << '\n' <<
@@ -688,7 +747,8 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "msd         = " << model.get_md2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
       "Au          = " << model.get_Au().diagonal().transpose() << '\n' <<
       "Ad          = " << model.get_Ad().diagonal().transpose() << '\n' <<
-      "Ae          = " << model.get_Ae().diagonal().transpose() << '\n'
+      "Ae          = " << model.get_Ae().diagonal().transpose() << '\n' <<
+      "ren. scale  = " << model.get_scale() << '\n'
       ;
 
    return os;

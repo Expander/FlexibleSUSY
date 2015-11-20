@@ -24,9 +24,17 @@
 
 namespace gm2calc {
 
+/**
+ * @class MSSMNoFV_onshell_susy_parameters
+ * @brief contains SUSY parameters of the MSSMNoFV model
+ *
+ * SUSY parameters are: Gauge couplings, Yukawa couplings, the Mu
+ * parameter and the VEVs.  In addition, this class stores the current
+ * renormalization scale.
+ */
 class MSSMNoFV_onshell_susy_parameters {
 public:
-   explicit MSSMNoFV_onshell_susy_parameters();
+   MSSMNoFV_onshell_susy_parameters();
    MSSMNoFV_onshell_susy_parameters(double scale_,
       const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_,
       const Eigen::Matrix<double,3,3>& Yu_, double Mu_, double g1_, double g2_,
@@ -76,9 +84,6 @@ protected:
    double g3;
    double vd;
    double vu;
-
-private:
-   static const int numberOfParameters = 33;
 };
 
 std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell_susy_parameters&);

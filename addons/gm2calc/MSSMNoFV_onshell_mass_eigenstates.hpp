@@ -19,8 +19,7 @@
 /**
  * @file MSSMNoFV_onshell_mass_eigenstates.hpp
  *
- * @brief contains class for model with routines needed to solve boundary
- *        value problem using the two_scale solver by solving EWSB
+ * @brief contains class for MSSMNoFV with routines needed to solve EWSB
  *        and determine the pole masses and mixings
  *
  * This file was generated at Wed 22 Jul 2015 18:14:31 with FlexibleSUSY
@@ -47,11 +46,8 @@ namespace gm2calc {
  */
 class MSSMNoFV_onshell_mass_eigenstates : public MSSMNoFV_onshell_soft_parameters {
 public:
-   explicit MSSMNoFV_onshell_mass_eigenstates();
+   MSSMNoFV_onshell_mass_eigenstates();
    virtual ~MSSMNoFV_onshell_mass_eigenstates();
-
-   /// number of EWSB equations
-   static const std::size_t number_of_ewsb_equations = 2;
 
    void calculate_DRbar_masses();
    virtual void clear();

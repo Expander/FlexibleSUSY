@@ -33,6 +33,16 @@ using namespace flexiblesusy;
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
 #define WARNING(message) std::cerr << "Warning: " << message << '\n';
 
+namespace {
+
+   void process_gm2calcconfig_tuple(Config_options&, int, double);
+   void process_gm2calcinput_tuple(MSSMNoFV_onshell&, int, double);
+   void process_fermion_sminputs_tuple(MSSMNoFV_onshell_physical&, int, double);
+   void process_mass_tuple(MSSMNoFV_onshell_physical&, int, double);
+   void process_msoft_tuple(MSSMNoFV_onshell&, int, double);
+
+} // anonymous namespace
+
 /**
  * @brief reads from source
  *
@@ -62,7 +72,7 @@ void GM2_slha_io::read_from_file(const std::string& file_name)
    } else {
       std::ostringstream msg;
       msg << "cannot read SLHA file: \"" << file_name << "\"";
-      throw ReadError(msg.str());
+      throw EReadError(msg.str());
    }
 }
 
@@ -75,7 +85,8 @@ void GM2_slha_io::read_from_stream(std::istream& istr)
    data.read(istr);
 }
 
-double GM2_slha_io::read_entry(const std::string& block_name, int key) const
+double GM2_slha_io::read_entry(const std::string& block_name, int key,
+                               double scale) const
 {
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
@@ -85,10 +96,12 @@ double GM2_slha_io::read_entry(const std::string& block_name, int key) const
    SLHAea::Block::const_iterator line;
 
    while (block != data.cend()) {
-      line = block->find(keys);
+      if (at_scale(*block, scale)) {
+         line = block->find(keys);
 
-      if (line != block->end() && line->is_data_line() && line->size() > 1)
-         entry = convert_to<double>(line->at(1));
+         if (line != block->end() && line->is_data_line() && line->size() > 1)
+            entry = convert_to<double>(line->at(1));
+      }
 
       ++block;
       block = data.find(block, data.cend(), block_name);
@@ -129,6 +142,33 @@ bool GM2_slha_io::block_exists(const std::string& block_name) const
    return data.find(block_name) != data.cend();
 }
 
+/**
+ * Returns true if the block scale after Q= matches \a scale, false
+ * otherwise.  If scale == 0, the functions returns true.
+ *
+ * @param block SLHA block
+ * @param scale scale
+ * @param eps absolute tolerance to treat two scales being the same
+ */
+bool GM2_slha_io::at_scale(const SLHAea::Block& block, double scale, double eps)
+{
+   if (flexiblesusy::is_zero(scale))
+      return true;
+
+   for (SLHAea::Block::const_iterator line = block.cbegin(),
+           end = block.cend(); line != end; ++line) {
+      // check scale from block definition matches argument
+      if (!line->is_data_line() && line->size() > 3 &&
+          to_lower((*line)[0]) == "block" && (*line)[2] == "Q=") {
+         const double block_scale = convert_to<double>((*line)[3]);
+         if (flexiblesusy::is_equal(scale, block_scale, eps))
+            return true;
+      }
+   }
+
+   return false;
+}
+
 std::string GM2_slha_io::to_lower(const std::string& str)
 {
    std::string lower(str.size(), ' ');
@@ -142,39 +182,33 @@ std::string GM2_slha_io::to_lower(const std::string& str)
  *
  * @param block_name block name
  * @param processor tuple processor to be applied
- *
- * @return scale (or 0 if no scale is defined)
+ * @param scale (or 0 if scale should be ignored)
  */
-double GM2_slha_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
+void GM2_slha_io::read_block(const std::string& block_name,
+                             const Tuple_processor& processor,
+                             double scale) const
 {
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
 
-   double scale = 0.;
-
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
-            // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
-            continue;
-         }
+      if (at_scale(*block, scale)) {
+         for (SLHAea::Block::const_iterator line = block->cbegin(),
+                 end = block->cend(); line != end; ++line) {
+            if (!line->is_data_line())
+               continue;
 
-         if (line->size() >= 2) {
-            const int key = convert_to<int>((*line)[0]);
-            const double value = convert_to<double>((*line)[1]);
-            processor(key, value);
+            if (line->size() >= 2) {
+               const int key = convert_to<int>((*line)[0]);
+               const double value = convert_to<double>((*line)[1]);
+               processor(key, value);
+            }
          }
       }
 
       ++block;
       block = data.find(block, data.cend(), block_name);
    }
-
-   return scale;
 }
 
 void GM2_slha_io::set_block(const std::ostringstream& lines, Position position)
@@ -261,112 +295,62 @@ void GM2_slha_io::fill_block_entry(const std::string& block_name,
    }
 }
 
-double read_scale(const GM2_slha_io& slha_io)
-{
-   char const * const drbar_blocks[] =
-      { "Yu", "Yd", "Ye", "Ae", "Ad", "Au", "HMIX", "MSOFT" };
-
-   double scale = 0.;
-
-   for (unsigned i = 0; i < sizeof(drbar_blocks)/sizeof(*drbar_blocks); i++) {
-      const double block_scale = slha_io.read_scale(drbar_blocks[i]);
-      if (!is_zero(block_scale)) {
-         scale = block_scale;
-         break;
-      }
-   }
-
-   if (is_zero(scale)) {
-      std::cerr << "could not find renormalization scale in any"
-         " SLHA block.\n";
-   }
-
-   return scale;
-}
-
 void fill_alpha_s(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    const double alpha_S = slha_io.read_entry("SMINPUTS", 3);
-   model.set_g3(std::sqrt(4*M_PI*alpha_S));
+
+   if (!is_zero(alpha_S))
+      model.set_g3(std::sqrt(4*M_PI*alpha_S));
 }
 
-void fill_soft_parameters_from_msoft(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+void fill_soft_parameters_from_msoft(const GM2_slha_io& slha_io,
+                                     MSSMNoFV_onshell& model, double scale)
 {
    using namespace std::placeholders;
 
    GM2_slha_io::Tuple_processor processor
-      = std::bind(GM2_slha_io::process_msoft_tuple, std::ref(model), _1, _2);
+      = std::bind(process_msoft_tuple, std::ref(model), _1, _2);
 
-   slha_io.read_block("MSOFT", processor);
-}
-
-void GM2_slha_io::process_msoft_tuple(
-   MSSMNoFV_onshell& model, int key, double value)
-{
-   switch (key) {
-   case 21: model.set_mHd2(                value) ; break;
-   case 22: model.set_mHu2(                value) ; break;
-   case 31: model.set_ml2(0, 0, signed_sqr(value)); break;
-   case 32: model.set_ml2(1, 1, signed_sqr(value)); break;
-   case 33: model.set_ml2(2, 2, signed_sqr(value)); break;
-   case 34: model.set_me2(0, 0, signed_sqr(value)); break;
-   case 35: model.set_me2(1, 1, signed_sqr(value)); break;
-   case 36: model.set_me2(2, 2, signed_sqr(value)); break;
-   case 41: model.set_mq2(0, 0, signed_sqr(value)); break;
-   case 42: model.set_mq2(1, 1, signed_sqr(value)); break;
-   case 43: model.set_mq2(2, 2, signed_sqr(value)); break;
-   case 44: model.set_mu2(0, 0, signed_sqr(value)); break;
-   case 45: model.set_mu2(1, 1, signed_sqr(value)); break;
-   case 46: model.set_mu2(2, 2, signed_sqr(value)); break;
-   case 47: model.set_md2(0, 0, signed_sqr(value)); break;
-   case 48: model.set_md2(1, 1, signed_sqr(value)); break;
-   case 49: model.set_md2(2, 2, signed_sqr(value)); break;
-   case  1: model.set_MassB(               value) ; break;
-   case  2: model.set_MassWB(              value) ; break;
-   case  3: model.set_MassG(               value) ; break;
-   default:
-      WARNING("Unrecognized entry in block MSOFT: " << key);
-      break;
-   }
+   slha_io.read_block("MSOFT", processor, scale);
 }
 
 void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
+   const double scale = slha_io.read_scale("HMIX");
+
+   if (flexiblesusy::is_zero(scale)) {
+      throw EInvalidInput("Could not determine renormalization scale"
+                          " from HMIX block");
+   }
+
    {
       Eigen::Matrix<double,3,3> Ae(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("AE", Ae);
+      slha_io.read_block("AE", Ae, scale);
       model.set_Ae(Ae);
    }
    {
       Eigen::Matrix<double,3,3> Au(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("AU", Au);
+      slha_io.read_block("AU", Au, scale);
       model.set_Au(Au);
    }
    {
       Eigen::Matrix<double,3,3> Ad(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("AD", Ad);
+      slha_io.read_block("AD", Ad, scale);
       model.set_Ad(Ad);
    }
 
-   fill_soft_parameters_from_msoft(slha_io, model);
+   fill_soft_parameters_from_msoft(slha_io, model, scale);
 
-   model.set_Mu(slha_io.read_entry("HMIX", 1));
+   model.set_Mu(slha_io.read_entry("HMIX", 1, scale));
 
-   const double tanb = slha_io.read_entry("HMIX", 2);
-   const double MA2_drbar = slha_io.read_entry("HMIX", 4);
-   const double MW = model.get_MW();
-   const double MZ = model.get_MZ();
-   const double cW = MW/MZ;
-   const double sW = std::sqrt(1. - cW*cW);
-   const double vev = 2. * model.get_MW() * sW / model.get_EL();
+   const double tanb = slha_io.read_entry("HMIX", 2, scale);
+   const double MA2_drbar = slha_io.read_entry("HMIX", 4, scale);
    const double sinb = tanb / std::sqrt(1 + tanb*tanb);
    const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
 
-   model.set_vd(vev * cosb);
-   model.set_vu(vev * sinb);
+   model.set_TB(tanb);
    model.set_BMu(MA2_drbar * sinb * cosb);
-
-   model.set_scale(read_scale(slha_io));
+   model.set_scale(scale);
 }
 
 void fill_pole_masses_from_sminputs(
@@ -375,36 +359,9 @@ void fill_pole_masses_from_sminputs(
    using namespace std::placeholders;
 
    GM2_slha_io::Tuple_processor processor
-      = std::bind(GM2_slha_io::process_fermion_sminputs_tuple, std::ref(physical), _1, _2);
+      = std::bind(process_fermion_sminputs_tuple, std::ref(physical), _1, _2);
 
    slha_io.read_block("SMINPUTS", processor);
-}
-
-void GM2_slha_io::process_fermion_sminputs_tuple(
-   MSSMNoFV_onshell_physical& physical, int key, double value)
-{
-   switch (key) {
-   case  1: /* alpha_em(MZ) */      break;
-   case  2: /* G_F */               break;
-   case  3: /* alpha_s(MZ) */       break;
-   case  4: physical.MVZ = value;   break;
-   case  5: physical.MFb = value;   break;
-   case  6: physical.MFt = value;   break;
-   case  7: physical.MFtau = value; break;
-   case  8: /* nu_3 */              break;
-   case  9: physical.MVWm = value;  break;
-   case 11: physical.MFe = value;   break;
-   case 12: /* nu_1 */              break;
-   case 13: physical.MFm = value;   break;
-   case 14: /* nu_2 */              break;
-   case 21: physical.MFd = value;   break;
-   case 23: physical.MFs = value;   break;
-   case 22: physical.MFu = value;   break;
-   case 24: physical.MFc = value;   break;
-   default:
-      WARNING("Unrecognized entry in block SMINPUTS: " << key);
-      break;
-   }
 }
 
 void fill_susy_masses_from_mass(
@@ -413,52 +370,9 @@ void fill_susy_masses_from_mass(
    using namespace std::placeholders;
 
    GM2_slha_io::Tuple_processor processor
-      = std::bind(GM2_slha_io::process_mass_tuple, std::ref(physical), _1, _2);
+      = std::bind(process_mass_tuple, std::ref(physical), _1, _2);
 
    slha_io.read_block("MASS", processor);
-}
-
-void GM2_slha_io::process_mass_tuple(
-   MSSMNoFV_onshell_physical& physical, int key, double value)
-{
-   switch (key) {
-   case 1000012: physical.MSveL = value;    break;
-   case 1000014: physical.MSvmL = value;    break;
-   case 1000016: physical.MSvtL = value;    break;
-   case 1000001: physical.MSd(0) = value;   break;
-   case 2000001: physical.MSd(1) = value;   break;
-   case 1000002: physical.MSu(0) = value;   break;
-   case 2000002: physical.MSu(1) = value;   break;
-   case 1000011: physical.MSe(0) = value;   break;
-   case 2000011: physical.MSe(1) = value;   break;
-   case 1000013: physical.MSm(0) = value;   break;
-   case 2000013: physical.MSm(1) = value;   break;
-   case 1000015: physical.MStau(0) = value; break;
-   case 2000015: physical.MStau(1) = value; break;
-   case 1000003: physical.MSs(0) = value;   break;
-   case 2000003: physical.MSs(1) = value;   break;
-   case 1000004: physical.MSc(0) = value;   break;
-   case 2000004: physical.MSc(1) = value;   break;
-   case 1000005: physical.MSb(0) = value;   break;
-   case 2000005: physical.MSb(1) = value;   break;
-   case 1000006: physical.MSt(0) = value;   break;
-   case 2000006: physical.MSt(1) = value;   break;
-   case 24     : /* MW */                   break;
-   case 25     : physical.Mhh(0) = value;   break;
-   case 35     : physical.Mhh(1) = value;   break;
-   case 36     : physical.MAh(1) = value;   break;
-   case 37     : physical.MHpm(1) = value;  break;
-   case 1000021: /* gluino */               break;
-   case 1000022: physical.MChi(0) = value;  break;
-   case 1000023: physical.MChi(1) = value;  break;
-   case 1000025: physical.MChi(2) = value;  break;
-   case 1000035: physical.MChi(3) = value;  break;
-   case 1000024: physical.MCha(0) = value;  break;
-   case 1000037: physical.MCha(1) = value;  break;
-   default:
-      WARNING("Unrecognized entry in block MASS: " << key);
-      break;
-   }
 }
 
 void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
@@ -505,64 +419,9 @@ void fill_gm2_specific_onshell_parameters(const GM2_slha_io& slha_io, MSSMNoFV_o
    using namespace std::placeholders;
 
    GM2_slha_io::Tuple_processor processor
-      = std::bind(GM2_slha_io::process_gm2calcinput_tuple, std::ref(model), _1, _2);
+      = std::bind(process_gm2calcinput_tuple, std::ref(model), _1, _2);
 
    slha_io.read_block("GM2CalcInput", processor);
-}
-
-void GM2_slha_io::process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
-                                             int key, double value)
-{
-   switch (key) {
-   case 0: model.set_scale(value);          break;
-   case 1: model.set_alpha_MZ(value);       break;
-   case 2: model.set_alpha_thompson(value); break;
-   case 3: {
-      const double tanb = value;
-      const double MW = model.get_MW();
-      const double MZ = model.get_MZ();
-      const double cW = MW/MZ;
-      const double sW = std::sqrt(1. - cW*cW);
-      const double vev = 2. * MW * sW / model.get_EL();
-      const double sinb = tanb / std::sqrt(1 + tanb*tanb);
-      const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
-      model.set_vd(vev * cosb);
-      model.set_vu(vev * sinb);
-      }
-      break;
-   case  4: model.set_Mu(    value); break;
-   case  5: model.set_MassB( value); break;
-   case  6: model.set_MassWB(value); break;
-   case  7: model.set_MassG( value); break;
-   case  8: model.set_MA0(   value); break;
-   case  9: model.set_ml2(0, 0, signed_sqr(value)); break;
-   case 10: model.set_ml2(1, 1, signed_sqr(value)); break;
-   case 11: model.set_ml2(2, 2, signed_sqr(value)); break;
-   case 12: model.set_me2(0, 0, signed_sqr(value)); break;
-   case 13: model.set_me2(1, 1, signed_sqr(value)); break;
-   case 14: model.set_me2(2, 2, signed_sqr(value)); break;
-   case 15: model.set_mq2(0, 0, signed_sqr(value)); break;
-   case 16: model.set_mq2(1, 1, signed_sqr(value)); break;
-   case 17: model.set_mq2(2, 2, signed_sqr(value)); break;
-   case 18: model.set_mu2(0, 0, signed_sqr(value)); break;
-   case 19: model.set_mu2(1, 1, signed_sqr(value)); break;
-   case 20: model.set_mu2(2, 2, signed_sqr(value)); break;
-   case 21: model.set_md2(0, 0, signed_sqr(value)); break;
-   case 22: model.set_md2(1, 1, signed_sqr(value)); break;
-   case 23: model.set_md2(2, 2, signed_sqr(value)); break;
-   case 24: model.set_Ae( 0, 0, value); break;
-   case 25: model.set_Ae( 1, 1, value); break;
-   case 26: model.set_Ae( 2, 2, value); break;
-   case 27: model.set_Ad( 0, 0, value); break;
-   case 28: model.set_Ad( 1, 1, value); break;
-   case 29: model.set_Ad( 2, 2, value); break;
-   case 30: model.set_Au( 0, 0, value); break;
-   case 31: model.set_Au( 1, 1, value); break;
-   case 32: model.set_Au( 2, 2, value); break;
-   default:
-      WARNING("Unrecognized entry in block GM2CalcInput: " << key);
-      break;
-   }
 }
 
 /**
@@ -605,13 +464,14 @@ void fill(const GM2_slha_io& slha_io, Config_options& config_options)
    using namespace std::placeholders;
 
    GM2_slha_io::Tuple_processor processor
-      = std::bind(GM2_slha_io::process_gm2calcconfig_tuple, std::ref(config_options), _1, _2);
+      = std::bind(process_gm2calcconfig_tuple, std::ref(config_options), _1, _2);
 
    slha_io.read_block("GM2CalcConfig", processor);
 }
 
-void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
-                                              int key, double value)
+namespace {
+void process_gm2calcconfig_tuple(Config_options& config_options,
+                                 int key, double value)
 {
    switch (key) {
    case 0:
@@ -630,10 +490,156 @@ void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
    case 4:
       config_options.verbose_output = value;
       break;
+   case 5:
+      config_options.calculate_uncertainty = value;
+      break;
    default:
       WARNING("Unrecognized entry in block GM2CalcConfig: " << key);
       break;
    }
 }
+
+void process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
+                                             int key, double value)
+{
+   switch (key) {
+   case 0: model.set_scale(value);          break;
+   case 1: model.set_alpha_MZ(value);       break;
+   case 2: model.set_alpha_thompson(value); break;
+   case  3: model.set_TB(    value); break;
+   case  4: model.set_Mu(    value); break;
+   case  5: model.set_MassB( value); break;
+   case  6: model.set_MassWB(value); break;
+   case  7: model.set_MassG( value); break;
+   case  8: model.set_MA0(   value); break;
+   case  9: model.set_ml2(0, 0, signed_sqr(value)); break;
+   case 10: model.set_ml2(1, 1, signed_sqr(value)); break;
+   case 11: model.set_ml2(2, 2, signed_sqr(value)); break;
+   case 12: model.set_me2(0, 0, signed_sqr(value)); break;
+   case 13: model.set_me2(1, 1, signed_sqr(value)); break;
+   case 14: model.set_me2(2, 2, signed_sqr(value)); break;
+   case 15: model.set_mq2(0, 0, signed_sqr(value)); break;
+   case 16: model.set_mq2(1, 1, signed_sqr(value)); break;
+   case 17: model.set_mq2(2, 2, signed_sqr(value)); break;
+   case 18: model.set_mu2(0, 0, signed_sqr(value)); break;
+   case 19: model.set_mu2(1, 1, signed_sqr(value)); break;
+   case 20: model.set_mu2(2, 2, signed_sqr(value)); break;
+   case 21: model.set_md2(0, 0, signed_sqr(value)); break;
+   case 22: model.set_md2(1, 1, signed_sqr(value)); break;
+   case 23: model.set_md2(2, 2, signed_sqr(value)); break;
+   case 24: model.set_Ae( 0, 0, value); break;
+   case 25: model.set_Ae( 1, 1, value); break;
+   case 26: model.set_Ae( 2, 2, value); break;
+   case 27: model.set_Ad( 0, 0, value); break;
+   case 28: model.set_Ad( 1, 1, value); break;
+   case 29: model.set_Ad( 2, 2, value); break;
+   case 30: model.set_Au( 0, 0, value); break;
+   case 31: model.set_Au( 1, 1, value); break;
+   case 32: model.set_Au( 2, 2, value); break;
+   default:
+      WARNING("Unrecognized entry in block GM2CalcInput: " << key);
+      break;
+   }
+}
+
+void process_fermion_sminputs_tuple(
+   MSSMNoFV_onshell_physical& physical, int key, double value)
+{
+   switch (key) {
+   case  1: /* alpha_em(MZ) */      break;
+   case  2: /* G_F */               break;
+   case  3: /* alpha_s(MZ) */       break;
+   case  4: physical.MVZ = value;   break;
+   case  5: physical.MFb = value;   break;
+   case  6: physical.MFt = value;   break;
+   case  7: physical.MFtau = value; break;
+   case  8: /* nu_3 */              break;
+   case  9: physical.MVWm = value;  break;
+   case 11: physical.MFe = value;   break;
+   case 12: /* nu_1 */              break;
+   case 13: physical.MFm = value;   break;
+   case 14: /* nu_2 */              break;
+   case 21: physical.MFd = value;   break;
+   case 23: physical.MFs = value;   break;
+   case 22: physical.MFu = value;   break;
+   case 24: physical.MFc = value;   break;
+   default:
+      WARNING("Unrecognized entry in block SMINPUTS: " << key);
+      break;
+   }
+}
+
+void process_msoft_tuple(
+   MSSMNoFV_onshell& model, int key, double value)
+{
+   switch (key) {
+   case 21: /* mHd2 */                            ; break;
+   case 22: /* mHu2 */                            ; break;
+   case 31: model.set_ml2(0, 0, signed_sqr(value)); break;
+   case 32: model.set_ml2(1, 1, signed_sqr(value)); break;
+   case 33: model.set_ml2(2, 2, signed_sqr(value)); break;
+   case 34: model.set_me2(0, 0, signed_sqr(value)); break;
+   case 35: model.set_me2(1, 1, signed_sqr(value)); break;
+   case 36: model.set_me2(2, 2, signed_sqr(value)); break;
+   case 41: model.set_mq2(0, 0, signed_sqr(value)); break;
+   case 42: model.set_mq2(1, 1, signed_sqr(value)); break;
+   case 43: model.set_mq2(2, 2, signed_sqr(value)); break;
+   case 44: model.set_mu2(0, 0, signed_sqr(value)); break;
+   case 45: model.set_mu2(1, 1, signed_sqr(value)); break;
+   case 46: model.set_mu2(2, 2, signed_sqr(value)); break;
+   case 47: model.set_md2(0, 0, signed_sqr(value)); break;
+   case 48: model.set_md2(1, 1, signed_sqr(value)); break;
+   case 49: model.set_md2(2, 2, signed_sqr(value)); break;
+   case  1: model.set_MassB(               value) ; break;
+   case  2: model.set_MassWB(              value) ; break;
+   case  3: model.set_MassG(               value) ; break;
+   default:
+      WARNING("Unrecognized entry in block MSOFT: " << key);
+      break;
+   }
+}
+
+void process_mass_tuple(
+   MSSMNoFV_onshell_physical& physical, int key, double value)
+{
+   switch (key) {
+   case 1000012: physical.MSveL = value;    break;
+   case 1000014: physical.MSvmL = value;    break;
+   case 1000016: physical.MSvtL = value;    break;
+   case 1000001: physical.MSd(0) = value;   break;
+   case 2000001: physical.MSd(1) = value;   break;
+   case 1000002: physical.MSu(0) = value;   break;
+   case 2000002: physical.MSu(1) = value;   break;
+   case 1000011: physical.MSe(0) = value;   break;
+   case 2000011: physical.MSe(1) = value;   break;
+   case 1000013: physical.MSm(0) = value;   break;
+   case 2000013: physical.MSm(1) = value;   break;
+   case 1000015: physical.MStau(0) = value; break;
+   case 2000015: physical.MStau(1) = value; break;
+   case 1000003: physical.MSs(0) = value;   break;
+   case 2000003: physical.MSs(1) = value;   break;
+   case 1000004: physical.MSc(0) = value;   break;
+   case 2000004: physical.MSc(1) = value;   break;
+   case 1000005: physical.MSb(0) = value;   break;
+   case 2000005: physical.MSb(1) = value;   break;
+   case 1000006: physical.MSt(0) = value;   break;
+   case 2000006: physical.MSt(1) = value;   break;
+   case 24     : /* MW */                   break;
+   case 25     : physical.Mhh(0) = value;   break;
+   case 35     : physical.Mhh(1) = value;   break;
+   case 36     : physical.MAh(1) = value;   break;
+   case 37     : physical.MHpm(1) = value;  break;
+   case 1000021: /* gluino */               break;
+   case 1000022: physical.MChi(0) = value;  break;
+   case 1000023: physical.MChi(1) = value;  break;
+   case 1000025: physical.MChi(2) = value;  break;
+   case 1000035: physical.MChi(3) = value;  break;
+   case 1000024: physical.MCha(0) = value;  break;
+   case 1000037: physical.MCha(1) = value;  break;
+   default:
+      break;
+   }
+}
+} // anonymous namespace
 
 } // namespace gm2calc

@@ -19,7 +19,8 @@ EXTPAR = { {61, LambdaInput},
            {204, Qd},
            {205, Qu},
            {206, Qe},
-           {207, Qs}
+           {207, Qs},
+           {208, Qv}
          };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };

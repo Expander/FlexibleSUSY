@@ -50,6 +50,13 @@ typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
 /// order of gauge couplings stored in QedQcd
 typedef enum {ALPHA=1, ALPHAS} leGauge;
 
+enum QedQcd_input_parmeters : unsigned { alpha_em_MSbar_at_MZ, GFermi,
+      alpha_s_MSbar_at_MZ, MZ_pole, mb_mb, MT_pole, MTau_pole, Mv3_pole,
+      MW_pole, ME_pole, Mv1_pole, MM_pole, Mv2_pole, MD, MU, MS, MC,
+      NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS};
+
+extern const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS];
+
 /// Returns beta functions of alpha, alpha_s only
 DoubleVector gaugeDerivs(double, const DoubleVector &);
 
@@ -95,6 +102,8 @@ public:
   void setFermiConstant(double gf) { gfermi = gf; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
+  /// sets all input parameters
+  void set_input(const Eigen::ArrayXd&);
   
   /// Display pole top mass
   double displayPoleMt() const { return mtPole; };
@@ -118,6 +127,10 @@ public:
   double displayFermiConstant() const { return gfermi; }
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
+  /// returns vector of all input parameters
+  Eigen::ArrayXd display_input() const;
+  /// returns vector of all parameter names
+  static std::vector<std::string> display_input_parameter_names();
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return mbMb; }
   /// returns CKM parameters
@@ -157,6 +170,8 @@ public:
   void toMt();
   /// Evolves object to MZ
   void toMz();
+  /// Evolves object to given scale
+  void to(double);
   /// This will calculate the three gauge couplings of the Standard Model at
   /// the scale m2.
   /// It's a simple one-loop calculation only and no
@@ -199,6 +214,8 @@ inline QedQcd::QedQcd(const QedQcd &m)
 /// Returns diagonal fermion mass matrices given input object r
 void massFermions(const QedQcd & r, DoubleMatrix & mDon, 
 		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
+
+bool operator ==(const QedQcd&, const QedQcd&);
 
 } // namespace softsusy
 

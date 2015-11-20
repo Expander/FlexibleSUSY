@@ -154,7 +154,7 @@ void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, sof
 #endif
    for (int i = w.displayStart(); i <= w.displayEnd(); ++i) {
       for (int j = i + 1; j <= w.displayEnd(); ++j) {
-         if (abs(w.display(i)) > abs(w.display(j))) {
+         if (std::fabs(w.display(i)) > std::fabs(w.display(j))) {
             w.swap(i, j);
             v.swapcols(i, j);
             u.swapcols(i, j);

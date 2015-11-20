@@ -45,6 +45,7 @@
 #include "functors.hpp"
 
 @twoLoopHiggsHeaders@
+@threeLoopHiggsHeaders@
 
 #include <cmath>
 #include <iostream>
@@ -72,6 +73,7 @@ using namespace @ModelName@_info;
 #define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
+#define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
@@ -678,6 +680,8 @@ void CLASSNAME::run_to(double scale, double eps)
 @twoLoopSelfEnergyFunctions@
 
 @twoLoopTadpoleFunctions@
+
+@threeLoopSelfEnergyFunctions@
 
 @loopMassesFunctions@
 

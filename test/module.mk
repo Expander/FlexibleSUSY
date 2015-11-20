@@ -18,6 +18,7 @@ TEST_SRC := \
 		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
+		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_eigen_utils.cpp \
 		$(DIR)/test_ewsb_solver.cpp \
@@ -35,6 +36,12 @@ TEST_SRC := \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_wrappers.cpp
+
+TEST_SH := \
+		$(DIR)/test_depgen.sh \
+		$(DIR)/test_run_examples.sh \
+		$(DIR)/test_run_all_spectrum_generators.sh \
+		$(DIR)/test_space_dir.sh
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 TEST_SRC +=
@@ -78,6 +85,8 @@ ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-CMSSMCKM),yes yes yes)
@@ -150,11 +159,6 @@ TEST_SRC += \
 		$(DIR)/test_cCMSSM.sh
 endif
 
-TEST_SH := \
-		$(DIR)/test_run_examples.sh \
-		$(DIR)/test_run_all_spectrum_generators.sh \
-		$(DIR)/test_space_dir.sh
-
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_SH +=	$(DIR)/test_pv_crosschecks.sh
 
@@ -181,6 +185,7 @@ TEST_SH += \
 		$(DIR)/test_CMSSM_memory_leaks.sh \
 		$(DIR)/test_CMSSM_profile.sh
 TEST_SRC += \
+		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_slha.cpp \
 		$(DIR)/test_CMSSM_slha_input.cpp \
 		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
@@ -259,6 +264,11 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM --with-SoftsusyNMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-HSSUSY),yes)
+TEST_SH += \
+		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
 TEST_META := \
@@ -386,6 +396,8 @@ $(DIR)/test_ckm.x: $(DIR)/test_ckm.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
+$(DIR)/test_lowe.x: $(DIR)/test_lowe.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
@@ -469,6 +481,9 @@ $(DIR)/test_compare_ewsb_solvers.x: $(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $
 $(DIR)/test_loopfunctions.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSM_database.x: $(DIR)/test_CMSSM_database.o $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(THREADLIBS)
 
 $(DIR)/test_CMSSM_model.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

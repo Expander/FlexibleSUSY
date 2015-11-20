@@ -21,26 +21,38 @@
 
 #include <iosfwd>
 #include <string>
+#include <vector>
 
 namespace gm2calc {
 
+/**
+ * @class MSSMNoFV_onshell_problems
+ * @brief contains problem and warning flags
+ *
+ * If a problem has occurred, the physical particle spectrum cannot be
+ * trusted (for example tachyons are present).  A warning means an
+ * imprecision has occurred and care must be taken when interpreting
+ * the particle spectrum.
+ */
 class MSSMNoFV_onshell_problems {
 public:
    MSSMNoFV_onshell_problems();
-   void clear();
-   void clear_problems();
-   void clear_warnings();
+   void clear();              ///< delete all problems and warnings
+   void clear_problems();     ///< delete all problems
+   void clear_warnings();     ///< delete all warnings
    void flag_no_convergence_Mu_MassB_MassWB(double, unsigned);
    void flag_no_convergence_me2(double, unsigned);
    void flag_tachyon(const std::string&);
    void unflag_no_convergence_Mu_MassB_MassWB();
    void unflag_no_convergence_me2();
-   bool have_problem() const;
-   bool have_warning() const;
-   std::string get_warning() const;
-   void print(std::ostream&) const;
-   void print_problems(std::ostream&) const;
-   void print_warnings(std::ostream&) const;
+   bool have_tachyon() const; ///< returns true if tachyon exists
+   bool have_problem() const; ///< returns true if problem has occurred
+   bool have_warning() const; ///< returns true if there is a warning
+   std::string get_warnings() const; ///< get warnings as string
+   std::string get_problems() const; ///< get problems as string
+   void print(std::ostream&) const; ///< print problems and warnings to stream
+   void print_problems(std::ostream&) const; ///< print problems to stream
+   void print_warnings(std::ostream&) const; ///< print warnings to stream
 
 private:
    struct Convergence_problem {
@@ -55,8 +67,7 @@ private:
 
    bool have_no_convergence_Mu_MassB_MassWB;
    bool have_no_convergence_me2;
-   bool have_tachyon;
-   std::string tachyonic_particle;
+   std::vector<std::string> tachyons;
    Convergence_problem convergence_problem_Mu_MassB_MassWB;
    Convergence_problem convergence_problem_me2;
 };

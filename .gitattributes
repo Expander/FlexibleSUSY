@@ -4,6 +4,7 @@ doc/release                     export-ignore
 doc/FlexibleFuture.txt          export-ignore
 TODO                            export-ignore
 
+addons                          export-ignore
 addons/gm2calc                  export-ignore
 
 examples/lattice_fmssm.cpp                  export-ignore
@@ -38,10 +39,8 @@ model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
 model_files/SMHighPrecision     export-ignore
 model_files/SMnoGUT             export-ignore
-model_files/SplitMSSM           export-ignore
-model_files/SuperSplitMSSM      export-ignore
 model_files/cSM                 export-ignore
-model_files/cMSSM               export-ignore
+model_files/complexMSSM         export-ignore
 model_files/cCMSSM              export-ignore
 model_files/CMSSMCPV            export-ignore
 model_files/NMSSMCPV            export-ignore
@@ -58,7 +57,6 @@ sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
 sarah/SMnoGUT                   export-ignore
-sarah/SplitMSSM                 export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore

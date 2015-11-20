@@ -31,14 +31,14 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    input.Azero = -500.;
    input.LambdaInput = 0.1;
    input.SignvS = 1;
-   QedQcd oneset;
+   QedQcd qedqcd;
 
    m.set_input_parameters(input);
-   NMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, oneset);
+   NMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, qedqcd);
    NMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m);
    NMSSM_high_scale_constraint<Two_scale> high_constraint(&m);
 
-   NMSSM_initial_guesser<Two_scale> guesser(&m, oneset, low_constraint,
+   NMSSM_initial_guesser<Two_scale> guesser(&m, qedqcd, low_constraint,
                                             susy_constraint, high_constraint);
 
    // create SoftsusyNMSSM initial guesser
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    SoftsusyNMSSM_initial_guesser initial_guesser(&snmssm, pp, mssm_mz_constraint,
                                           mssm_msusy_constraint,
                                           mssm_sugra_constraint);
-   initial_guesser.set_QedQcd(oneset);
+   initial_guesser.set_QedQcd(qedqcd);
 
    // guess both models
    guesser.guess();

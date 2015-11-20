@@ -1,5 +1,5 @@
 
-BeginPackage["CConversion`", {"SARAH`", "TextFormatting`"}];
+BeginPackage["CConversion`", {"SARAH`", "TextFormatting`", "Utils`"}];
 
 MatrixType::usage="";
 ArrayType::usage="";
@@ -569,6 +569,13 @@ Format[If[c_,a_,b_],CForm] :=
            ToString[CForm[Evaluate[b]]] <> ")", OutputForm];
 Protect[If];
 
+Unprotect[Which];
+Format[Which[cond_,args__],CForm] :=
+    Format["Which(" <>
+           Utils`StringJoinWithSeparator[CForm[Evaluate[#]]& /@ {cond,args}, ", "] <>
+           ")", OutputForm];
+Protect[Which];
+
 Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
     Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
@@ -674,10 +681,18 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
 RValueToCFormString[expr_String] := expr;
 
 RValueToCFormString[expr_] :=
-    Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
+    Module[{times, result, symbols, greekSymbols, greekSymbolsRules,
+            conjSimplification = {}},
            symbols = Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True];
            greekSymbols = DeleteDuplicates @ Select[symbols, GreekQ];
            greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
+           (* create complicated conj simplification rules only when needed *)
+           If[!FreeQ[expr, Susyno`LieGroups`conj] || !FreeQ[expr, SARAH`Conj],
+              conjSimplification = {
+                  Times[x___, SARAH`Conj[a_], y___, a_, z___] :> AbsSqr[a] x y z,
+                  Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z
+              };
+             ];
            result = expr /.
                     greekSymbolsRules /.
                     SARAH`Mass -> FlexibleSUSY`M //. {
@@ -704,9 +719,8 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
-                    Susyno`LieGroups`conj    -> SARAH`Conj //. {
-                    Times[x___, SARAH`Conj[a_], y___, a_, z___] :> AbsSqr[a] x y z,
-                    Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z } /.
+                    Susyno`LieGroups`conj    -> SARAH`Conj //.
+                    conjSimplification /.
                     a_[Susyno`LieGroups`i1] :> a /.
                     a_[Susyno`LieGroups`i1, SARAH`i2] :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.

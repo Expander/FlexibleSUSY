@@ -72,8 +72,8 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
                type = GetType[betaFun[[b]]];
                paraStr = CConversion`ToValidCSymbolString[para];
                typeStr = CConversion`CreateCType[type];
-               inputFile  = FileNameJoin[{Global`$flexiblesusyTemplateDir, templateFile}];
-               outputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+               inputFile  = FileNameJoin[{FlexibleSUSY`$flexiblesusyTemplateDir, templateFile}];
+               outputFile = FileNameJoin[{FlexibleSUSY`FSOutputDir,
                                           FlexibleSUSY`FSModelName <> "_" <>
                                           StringReplace[templateFile,
                                                         {".cpp.in" -> paraStr <> ".cpp"}]}];

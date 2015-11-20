@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( test_gm2_standard_point )
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yu(2,2) , 1.01762     , 3e-6);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(0,0) , 0.000279538 , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(1,1) , 0.00612041  , 5e-7);
-   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(2,2) , 0.230714    , 5e-7);
+   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(2,2) , 0.156703263 , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_BMu()   , 49493.5     , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Mu()    , 619.858     , 6e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MassB() , 211.722     , 3e-6);
