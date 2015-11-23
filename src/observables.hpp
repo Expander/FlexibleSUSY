@@ -39,7 +39,7 @@ struct Observables {
    void clear(); ///< sets all observables to zero
    void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
 
-   double amu;   ///< a_mu = (g-2)/2 of the muon
+   double a_muon; ///< a_muon = (g-2)/2 of the muon
 };
 
 } // namespace flexiblesusy

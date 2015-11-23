@@ -93,5 +93,5 @@ LowPoleMassPrecision     = {};
 
 ExtraSLHAOutputBlocks = {
    {FlexibleSUSYLowEnergy,
-       {{21, FlexibleSUSYObservable`amu}} }
+       {{21, FlexibleSUSYObservable`aMuon}} }
 };

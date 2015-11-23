@@ -24,11 +24,11 @@
 #include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_physical.hpp"
-#include "@ModelName@_g_muon_minus_2.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
 #include "lowe.h"
+#include "observables.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -40,6 +40,7 @@
 #define LOCALPHYSICAL(p) physical.p
 #define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
+#define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -72,7 +73,7 @@ public:
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
    void set_extpar(const @ModelName@_input_parameters&);
-   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&);
+   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const Observables&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
@@ -85,13 +86,16 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
 
    template <class T>
    static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&);
 
    template <class T>
    static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -122,7 +126,8 @@ void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 template <class T>
 void @ModelName@_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model,
-   const softsusy::QedQcd& qedqcd, const @ModelName@_scales& scales)
+   const softsusy::QedQcd& qedqcd, const @ModelName@_scales& scales,
+   const Observables& observables)
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
@@ -136,7 +141,7 @@ void @ModelName@_slha_io::fill_slhaea(
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales);
+      slha_io.set_extra(model, scales, observables);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
@@ -156,8 +161,18 @@ SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
    const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
    const @ModelName@_scales& scales)
 {
+   Observables observables;
+
+   return fill_slhaea(model, qedqcd, scales, observables);
+}
+
+template <class T>
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
+   const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
+   const @ModelName@_scales& scales, const Observables& observables)
+{
    SLHAea::Coll slhaea;
-   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
+   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
 
    return slhaea;
 }
@@ -180,7 +195,8 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
  */
 template <class T>
 void @ModelName@_slha_io::set_extra(
-   const @ModelName@_slha<T>& model, const @ModelName@_scales& scales)
+   const @ModelName@_slha<T>& model, const @ModelName@_scales& scales,
+   const Observables& observables)
 {
    const @ModelName@_physical physical(model.get_physical_slha());
 
@@ -231,6 +247,7 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 #undef LOCALPHYSICAL
 #undef MODEL
 #undef MODELPARAMETER
+#undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES
 

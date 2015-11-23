@@ -86,6 +86,10 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
+   Observables observables;
+   if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
+      observables = calculate_observables(model);
+
    // SLHA output
    if (!slha_output_file.empty()) {
       slha_io.set_spinfo(problems);
@@ -94,7 +98,7 @@ int main(int argc, const char* argv[])
       if (!problems.have_problem() ||
           spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
          slha_io.set_spectrum(model);
-         slha_io.set_extra(model, scales);
+         slha_io.set_extra(model, scales, observables);
       }
 
       if (slha_output_file == "-") {
@@ -107,7 +111,6 @@ int main(int argc, const char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      const Observables observables(calculate_observables(model));
       @ModelName@_database::to_database(database_output_file, model, &qedqcd, &observables);
    }
 

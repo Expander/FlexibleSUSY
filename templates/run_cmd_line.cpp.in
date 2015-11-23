@@ -19,6 +19,7 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_slha_io.hpp"
 
@@ -93,8 +94,10 @@ int main(int argc, char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
+   const Observables observables(calculate_observables(model));
+
    // SLHA output
-   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales));
+   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales, observables));
 
    std::cout << slhaea;
 

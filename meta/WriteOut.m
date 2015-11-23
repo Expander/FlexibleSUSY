@@ -349,9 +349,8 @@ ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], idx___}, comment_String:""] :=
     Module[{parStr, commentStr},
            {parStr, commentStr} = Switch[par,
-                                         FlexibleSUSYObservable`amu,
-                                             {FlexibleSUSY`FSModelName <> "_GMuonMinus2::calculate_amuon(MODEL)",
-                                              "Delta(g-2)_muon/2"},
+                                         FlexibleSUSYObservable`aMuon,
+                                             {"OBSERVABLES.a_muon", "Delta(g-2)_muon/2"},
                                          _,
                                              {"", ""}
                                         ];
