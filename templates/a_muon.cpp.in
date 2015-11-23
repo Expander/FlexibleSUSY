@@ -585,7 +585,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
              ((ExchangeParticle::numberOfGenerations == 1 &&
                remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
               (ExchangeParticle::numberOfGenerations > 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]])))
+               remove_anti<ExchangeParticle>::type::is_sm_particle[exchangeIndices[0]])))
                continue;
 
          const std::complex<double> zL = muonVertex.left();
@@ -681,7 +681,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
              ((ExchangeParticle::numberOfGenerations == 1 &&
                remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
               (ExchangeParticle::numberOfGenerations > 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]])))
+               remove_anti<ExchangeParticle>::type::is_sm_particle[exchangeIndices[0]])))
                continue;
 
          const std::complex<double> zL = muonVertex.left();
