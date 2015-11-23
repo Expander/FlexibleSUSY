@@ -45,6 +45,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
+class Observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
@@ -71,6 +72,7 @@ public:
    void set_extpar(const @ModelName@_input_parameters&);
    template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&);
    void set_minpar(const @ModelName@_input_parameters&);
+   void set_observables(const Observables&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
