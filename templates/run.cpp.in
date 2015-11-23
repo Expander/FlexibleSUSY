@@ -19,6 +19,7 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_utilities.hpp"
@@ -106,7 +107,8 @@ int main(int argc, const char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      @ModelName@_database::to_database(database_output_file, model, &qedqcd);
+      const Observables observables(calculate_observables(model));
+      @ModelName@_database::to_database(database_output_file, model, &qedqcd, &observables);
    }
 
    if (!spectrum_file.empty())
