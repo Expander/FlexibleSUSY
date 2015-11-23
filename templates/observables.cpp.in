@@ -23,7 +23,7 @@
 #include "@ModelName@_g_muon_minus_2.hpp"
 
 #define MODEL model
-#define AMU amu
+#define AMU a_muon
 
 namespace flexiblesusy {
 
