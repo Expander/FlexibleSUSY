@@ -10,6 +10,7 @@ META_SRC     := \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopMasses.m \
+		$(DIR)/Observables.m \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
 		$(DIR)/SelfEnergies.m \

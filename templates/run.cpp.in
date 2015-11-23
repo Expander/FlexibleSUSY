@@ -19,14 +19,12 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
-#include "observables.hpp"
 #include "command_line_options.hpp"
 
 #include <iostream>
@@ -96,7 +94,6 @@ int main(int argc, const char* argv[])
           spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
          slha_io.set_spectrum(model);
          slha_io.set_extra(model, scales);
-         slha_io.set_observables(calculate_observables(model));
       }
 
       if (slha_output_file == "-") {
