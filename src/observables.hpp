@@ -24,11 +24,20 @@
 #ifndef OBSERVABLES_H
 #define OBSERVABLES_H
 
+#include <string>
+#include <vector>
+#include <Eigen/Core>
+
 namespace flexiblesusy {
 
 struct Observables {
+   static const unsigned NUMBER_OF_OBSERVABLES = 1;
+
    Observables();
+   Eigen::ArrayXd get() const; ///< returns vector of all observables
+   static std::vector<std::string> get_names(); ///< returns vector of all observable names
    void clear(); ///< sets all observables to zero
+   void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
 
    double amu;   ///< a_mu = (g-2)/2 of the muon
 };
