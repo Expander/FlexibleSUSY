@@ -577,17 +577,15 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
 
-         // skip Standard Model particles
-         if ((PhotonEmitter::numberOfGenerations == 1 &&
-              remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
-             (PhotonEmitter::numberOfGenerations > 1 &&
-              remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]]))
-               continue;
-
-         if ((ExchangeParticle::numberOfGenerations == 1 &&
-              remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
-             (ExchangeParticle::numberOfGenerations > 1 &&
-              remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]]))
+         // skip diagrams with only Standard Model particles in the loop
+         if (((PhotonEmitter::numberOfGenerations == 1 &&
+               remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
+              (PhotonEmitter::numberOfGenerations > 1 &&
+               remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]])) &&
+             ((ExchangeParticle::numberOfGenerations == 1 &&
+               remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
+              (ExchangeParticle::numberOfGenerations > 1 &&
+               remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]])))
                continue;
 
          const std::complex<double> zL = muonVertex.left();
@@ -675,17 +673,15 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
 
-         // skip Standard Model particles
-         if ((PhotonEmitter::numberOfGenerations == 1 &&
-              remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
-             (PhotonEmitter::numberOfGenerations > 1 &&
-              remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]]))
-               continue;
-
-         if ((ExchangeParticle::numberOfGenerations == 1 &&
-              remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
-             (ExchangeParticle::numberOfGenerations > 1 &&
-              remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]]))
+         // skip diagrams with only Standard Model particles in the loop
+         if (((PhotonEmitter::numberOfGenerations == 1 &&
+               remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
+              (PhotonEmitter::numberOfGenerations > 1 &&
+               remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]])) &&
+             ((ExchangeParticle::numberOfGenerations == 1 &&
+               remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
+              (ExchangeParticle::numberOfGenerations > 1 &&
+               remove_anti<ExchangeParticle>::type::is_sm_particle[photonEmitterIndices[0]])))
                continue;
 
          const std::complex<double> zL = muonVertex.left();
