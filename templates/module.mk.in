@@ -38,6 +38,7 @@ LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_g_muon_minus_2.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_input_parameters.cpp \
+		$(DIR)/@CLASSNAME@_observables.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
@@ -65,6 +66,7 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_low_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_model.hpp \
 		$(DIR)/@CLASSNAME@_model_slha.hpp \
+		$(DIR)/@CLASSNAME@_observables.hpp \
 		$(DIR)/@CLASSNAME@_physical.hpp \
 		$(DIR)/@CLASSNAME@_slha_io.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator_interface.hpp \

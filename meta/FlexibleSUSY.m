@@ -1074,6 +1074,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+(* Write the observables files *)
+WriteObservables[files_List] :=
+    Module[{},
+           WriteOut`ReplaceInFiles[files,
+                                   {   Sequence @@ GeneralReplacementRules[]
+                                   } ];
+           ];
+
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
@@ -2101,7 +2109,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
-           
+
+           Print["Creating observables"];
+           WriteObservables[{{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
+
            Print["Creating class GMuonMinus2"];
            WriteGMuonMinus2Class[vertexRules,
                                  {{FileNameJoin[{$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
