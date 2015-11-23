@@ -86,7 +86,10 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales& scales = @ModelName@_scales(), const Observables& = Observables());
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
 
    template <class T>
    static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
@@ -139,6 +142,16 @@ void @ModelName@_slha_io::fill_slhaea(
    }
 
    slhaea = slha_io.get_slha_io().get_data();
+}
+
+template <class T>
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
+   const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
+   const @ModelName@_scales& scales, const Observables& observables)
+{
+   Observables observables;
+
+   return fill_slhaea(model, qedqcd, scales, observables);
 }
 
 template <class T>
