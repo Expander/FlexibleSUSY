@@ -20,6 +20,7 @@ Block FlexibleSUSY
    12   0                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1.000000000e-11      # beta-function zero threshold
+   15   0                    # calculate observables (a_muon, ...)
 Block SMINPUTS
      1     1.27934000E+02   # alpha^(-1) SM MSbar(MZ)
      2     1.16637000E-05   # G_Fermi
