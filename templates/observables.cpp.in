@@ -22,13 +22,18 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_g_muon_minus_2.hpp"
 
+#define MODEL model
+#define AMU amu
+
 namespace flexiblesusy {
 
 Observables calculate_observables(const @ModelName@_mass_eigenstates& model)
 {
+   using namespace @ModelName@_GMuonMinus2;
+
    Observables observables;
 
-   observables.amu = @ModelName@_GMuonMinus2::calculate_amuon(model);
+@calculateObservables@
 
    return observables;
 }

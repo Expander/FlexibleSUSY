@@ -1,5 +1,4 @@
-
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -1079,10 +1078,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 (* Write the observables files *)
-WriteObservables[files_List] :=
-    Module[{},
+WriteObservables[extraSLHAOutputBlocks_, files_List] :=
+    Module[{calculateObservables},
+           calculateObservables = Observables`CalculateObservables[extraSLHAOutputBlocks, "observables"];
            WriteOut`ReplaceInFiles[files,
-                                   {   Sequence @@ GeneralReplacementRules[]
+                                   {   "@calculateObservables@" -> IndentText[calculateObservables],
+                                       Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
 
@@ -2128,7 +2129,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating observables"];
-           WriteObservables[{{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
+           WriteObservables[extraSLHAOutputBlocks,
+                            {{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];

@@ -340,6 +340,18 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
 
 ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
+WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], idx___}, comment_String:""] :=
+    Module[{parStr, commentStr},
+           {parStr, commentStr} = Switch[par,
+                                         FlexibleSUSYObservable`amu,
+                                             {FlexibleSUSY`FSModelName <> "_GMuonMinus2::calculate_amuon(MODEL)",
+                                              "Delta(g-2)_muon/2"},
+                                         _,
+                                             {"", ""}
+                                        ];
+           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+          ];
+
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
@@ -394,24 +406,27 @@ WriteSLHABlockEntry[tuple___] :=
           ""
          ];
 
-WriteSLHABlock[{blockName_, tuples_List}] :=
-    Module[{result = "", blockNameStr, scale},
+WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
+    Module[{result = "", blockNameStr},
            blockNameStr = ToString[blockName];
-           scale = "model.get_scale()";
            result = "std::ostringstream block;\n" <>
-                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_SCALE(" <>
-                    scale <> ") << '\\n'\n";
+                    "block << \"Block " <> blockNameStr <>
+                    If[scale != "",
+                       " Q= \" << FORMAT_SCALE(" <> scale <> ")",
+                       "\""
+                      ] <>
+                    " << '\\n'\n";
            (result = result <> WriteSLHABlockEntry[#])& /@ tuples;
            result = result <> ";\n" <> "slha_io.set_block(block);\n";
            result = "{\n" <> TextFormatting`IndentText[result] <> "}\n";
            Return[result];
           ];
 
-WriteSLHABlock[{blockName_, parameter_}] :=
-    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", "model.get_scale()"];
+WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
+    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale];
 
-WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}] :=
-    WriteSLHABlock[{blockName, parameter}];
+WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_String:"model.get_scale()"] :=
+    WriteSLHABlock[{blockName, parameter}, scale];
 
 WriteSLHAModelParametersBlocks[] :=
     Module[{result = "", modelParameters, blocks},

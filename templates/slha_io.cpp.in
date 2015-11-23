@@ -22,7 +22,6 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_info.hpp"
 #include "logger.hpp"
-#include "observables.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
 #include "config.h"
@@ -77,16 +76,6 @@ void @ModelName@_slha_io::set_extpar(const @ModelName@_input_parameters& input)
 void @ModelName@_slha_io::set_minpar(const @ModelName@_input_parameters& input)
 {
 @writeSLHAMinparBlock@
-}
-
-/**
- * Stores calculated observables in the SLHA object.
- *
- * @param observables struct of observables
- */
-void @ModelName@_slha_io::set_observables(const Observables& observables)
-{
-   //
 }
 
 /**

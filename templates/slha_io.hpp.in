@@ -24,6 +24,7 @@
 #include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_physical.hpp"
+#include "@ModelName@_g_muon_minus_2.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
@@ -37,6 +38,7 @@
 #define PHYSICAL(p) model.get_physical().p
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
+#define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
@@ -72,7 +74,6 @@ public:
    void set_extpar(const @ModelName@_input_parameters&);
    template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&);
    void set_minpar(const @ModelName@_input_parameters&);
-   void set_observables(const Observables&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
@@ -228,6 +229,7 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 #undef PHYSICAL
 #undef PHYSICAL_SLHA
 #undef LOCALPHYSICAL
+#undef MODEL
 #undef MODELPARAMETER
 #undef LowEnergyConstant
 #undef SCALES
