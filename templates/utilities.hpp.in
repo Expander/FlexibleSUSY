@@ -127,7 +127,7 @@ namespace @ModelName@_database {
 void to_database(const std::string&, const @ModelName@_mass_eigenstates&, const softsusy::QedQcd* qedqcd = 0, const Observables* observables = 0);
 
 /// fill model from an entry of the database
-@ModelName@_mass_eigenstates from_database(const std::string&, std::size_t, softsusy::QedQcd* qedqcd = 0, const Observables* observables = 0);
+@ModelName@_mass_eigenstates from_database(const std::string&, std::size_t, softsusy::QedQcd* qedqcd = 0, Observables* observables = 0);
 
 } // namespace @ModelName@_database
 
