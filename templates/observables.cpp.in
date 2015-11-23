@@ -20,7 +20,7 @@
 
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-#include "@ModelName@_g_muon_minus_2.hpp"
+#include "@ModelName@_a_muon.hpp"
 
 #define MODEL model
 #define AMU a_muon

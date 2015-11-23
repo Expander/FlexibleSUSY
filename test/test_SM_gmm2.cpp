@@ -24,7 +24,7 @@
 #include "test_SM.hpp"
 
 #include "SM_two_scale_model.hpp"
-#include "SM_g_muon_minus_2.hpp"
+#include "SM_a_muon.hpp"
 
 using namespace flexiblesusy;
 

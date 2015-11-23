@@ -3,8 +3,8 @@ MODNAME      := templates
 
 TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
-		$(DIR)/g_muon_minus_2.hpp.in \
-		$(DIR)/g_muon_minus_2.cpp.in \
+		$(DIR)/a_muon.hpp.in \
+		$(DIR)/a_muon.cpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/mass_eigenstates.hpp.in \
 		$(DIR)/mass_eigenstates.cpp.in \

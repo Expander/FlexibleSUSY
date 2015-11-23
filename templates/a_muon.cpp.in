@@ -19,13 +19,13 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_g_muon_minus_2.cpp
+ * @file @ModelName@_a_muon.cpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
-#include "@ModelName@_g_muon_minus_2.hpp"
+#include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
 #include "numerics2.hpp"
