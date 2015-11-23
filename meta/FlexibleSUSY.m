@@ -1078,6 +1078,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+(* Write the observables files *)
+WriteObservables[files_List] :=
+    Module[{},
+           WriteOut`ReplaceInFiles[files,
+                                   {   Sequence @@ GeneralReplacementRules[]
+                                   } ];
+           ];
+
 WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
@@ -2118,6 +2126,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
+
+           Print["Creating observables"];
+           WriteObservables[{{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
