@@ -86,5 +86,7 @@ ExtraSLHAOutputBlocks = {
    {FlexibleSUSYOutput,
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
-            {2, Hold[LowScale]} } }
+            {2, Hold[LowScale]} } },
+   {FlexibleSUSYLowEnergy,
+       {{21, FlexibleSUSYObservable`amu}} }
 };
