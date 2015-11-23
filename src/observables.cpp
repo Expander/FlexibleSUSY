@@ -25,9 +25,29 @@ Observables::Observables()
 {
 }
 
+Eigen::ArrayXd Observables::get() const
+{
+   Eigen::ArrayXd vec(NUMBER_OF_OBSERVABLES);
+   vec(0) = amu;
+   return vec;
+}
+
+std::vector<std::string> Observables::get_names()
+{
+   std::vector<std::string> names(Observables::NUMBER_OF_OBSERVABLES);
+   names[0] = "a_muon";
+   return names;
+}
+
 void Observables::clear()
 {
    amu = 0.;
+}
+
+void Observables::set(const Eigen::ArrayXd& vec)
+{
+   assert(vec.rows() == NUMBER_OF_OBSERVABLES);
+   amu = vec(0);
 }
 
 } // namespace flexiblesusy
