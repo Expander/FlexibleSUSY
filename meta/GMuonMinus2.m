@@ -116,15 +116,15 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                                 "if(m_muon_pole == 0.0) {\n" <>
                                                                 IndentText @
                                                                 ("m_muon_pole = context.model.get_physical().M" <>
-                                                                 ParticleToCXXName[muonFamily] <> "(" <>
-                                                                 If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n\n" <>
+                                                                 ParticleToCXXName[muonFamily] <>
+                                                                 If[muonIndex =!= Null, "(" <> ToString[muonIndex-1] <> ")", ""] <> ";\n\n" <>
                                                                  
                                                                  "if(m_muon_pole == 0.0) {\n" <>
                                                                  IndentText @
                                                                  ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
                                                                   "m_muon_pole = context.model.get_physical().M" <>
-                                                                  ParticleToCXXName[muonFamily] <> "(" <>
-                                                                  If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n") <>
+                                                                  ParticleToCXXName[muonFamily] <>
+                                                                  If[muonIndex =!= Null, "(" <> ToString[muonIndex-1] <> ")", ""] <> ";\n") <>
                                                                  "}\n") <>
                                                                 "}\n\n" <>
                                                                 
