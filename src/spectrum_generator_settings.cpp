@@ -65,6 +65,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | top_2loop_corrections_qcd        | 0, 1                         | 1 (= enabled)   |
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
+ * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -83,6 +84,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[top_2loop_corrections_qcd]        = 1.;
    values[beta_zero_threshold]              = 1.0e-11;
+   values[calculate_observables]            = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
