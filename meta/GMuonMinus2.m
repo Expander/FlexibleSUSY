@@ -94,6 +94,24 @@ CreateParticles[] := Module[{particles, code},
                             Return[code];
                             ];
 
+CreateMuonChargeGetter[] :=
+    Module[{muonPhotonVertexParticles,
+            muonDim = TreeMasses`GetDimension[GetMuonFamily[]]},
+           muonPhotonVertexParticles = {GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]};
+           "double muonCharge(EvaluationContext& context)\n{\n" <>
+           IndentText[
+               "typedef VertexFunction<" <>
+               StringJoin @ Riffle[ParticleToCXXName /@ muonPhotonVertexParticles, ", "] <>
+               "> VF;\n" <>
+               If[muonDim === 1,
+                  "const std::array<unsigned, 0> indices;\n",
+                  "const std::array<unsigned, 2> indices{" <>
+                  ToString[GetMuonIndex[]-1] <> ", " <> ToString[GetMuonIndex[]-1] <> "};\n"
+                 ] <>
+               "return VF::vertex(indices, context).left().real();"
+           ] <> "\n}"
+          ];
+
 muonFunctions = Null;
 CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototypes, definitions},
                                                 If[muonFunctions =!= Null, Return[muonFunctions]];
@@ -130,8 +148,7 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                                 
                                                                 "return m_muon_pole;\n") <>
                                                                "}\n\n" <>
-                                                               "double muonCharge(EvaluationContext&)\n" <>
-                                                               "{ return 1.0; }");
+                                                               CreateMuonChargeGetter[]);
                                                 
                                                 muonFunctions = {prototypes, definitions};
                                                 Return[muonFunctions];
