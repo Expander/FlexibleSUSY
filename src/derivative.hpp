@@ -24,9 +24,9 @@
 #ifndef DERIVATIVE_H
 #define DERIVATIVE_H
 
-#include <functional>
 #include <cmath>
 #include <limits>
+#include <vector>
 
 namespace flexiblesusy {
 
