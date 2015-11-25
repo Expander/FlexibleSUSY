@@ -70,7 +70,7 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
 template <int Order, class F, class A>
 auto derivative_forward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   static_assert(Order <= 5, "1st derivative with order > 3 not implemented");
+   static_assert(Order <= 5, "1st forward derivative with order > 5 not implemented");
 
    typedef decltype(f(x)) return_type;
 
@@ -136,7 +136,7 @@ auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_
 template <int Order, class F, class A>
 auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   static_assert(Order <= 5, "1st derivative with order > 3 not implemented");
+   static_assert(Order <= 5, "1st backward derivative with order > 5 not implemented");
 
    typedef decltype(f(x)) return_type;
 
@@ -178,7 +178,7 @@ template <int Order, class F, class A>
 auto derivative_central(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
    -> decltype(f(x))
 {
-   static_assert(Order <= 3, "1st derivative with order > 3 not implemented");
+   static_assert(Order <= 3, "1st central derivative with order > 3 not implemented");
 
    typedef decltype(f(x)) return_type;
 
