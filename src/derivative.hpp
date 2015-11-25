@@ -115,24 +115,27 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
 }
 
 /**
- * Calculates the central derivative of \f$f(x)\f$ as \f[f'(x) =
- * \frac{f(x+h)-f(x-h)}{2h} + O(h^2)\f].  This function calls \f$f\f$
- * twice.
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
+ * the central finite difference.  This function calls \f$f\f$ (Order + 2)
+ * times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
+ * @tparam Order order (0, 1, 2, 3)
  *
  * @return derivative
  */
-template <class F, class A>
-auto derivative_central(F&& f, A x, unsigned order = 0, A eps = std::numeric_limits<A>::epsilon())
+template <int Order, class F, class A>
+auto derivative_central(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
    -> decltype(f(x))
 {
+   static_assert(Order <= 3, "1st derivative with order > 3 not implemented");
+
    typedef decltype(f(x)) return_type;
 
-   assert(order < 4 && "1st derivative with order > 3 not implemented");
-
+   // coefficients from Math. Comp. 51 (1988), 699-706
+   // DOI: http://dx.doi.org/10.1090/S0025-5718-1988-0935077-0
    static const std::vector<std::vector<double> > coeffs = {
       {0.5},
       {2./3., -1./12.},
@@ -143,8 +146,8 @@ auto derivative_central(F&& f, A x, unsigned order = 0, A eps = std::numeric_lim
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
    return_type result = 0;
 
-   for (unsigned i = 0; i < coeffs[order].size(); i++) {
-      const double coeff = coeffs[order][i];
+   for (unsigned i = 0; i < Order + 1; i++) {
+      const double coeff = coeffs[Order][i];
       const A step = (i + 1) * h;
       result += coeff * (f(x + step) - f(x - step));
    }

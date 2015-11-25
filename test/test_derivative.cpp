@@ -19,17 +19,17 @@ BOOST_AUTO_TEST_CASE( test_derivative_x_sqr )
       if (x == 0.) {
          BOOST_CHECK_SMALL(derivative_forward(f,x), 1e-8);
          BOOST_CHECK_SMALL(derivative_backward(f,x), 1e-8);
-         BOOST_CHECK_SMALL(derivative_central(f,x,0), 2e-9);
-         BOOST_CHECK_SMALL(derivative_central(f,x,1), 2e-9);
-         BOOST_CHECK_SMALL(derivative_central(f,x,2), 2e-9);
-         BOOST_CHECK_SMALL(derivative_central(f,x,3), 2e-9);
+         BOOST_CHECK_SMALL(derivative_central<0>(f,x), 2e-9);
+         BOOST_CHECK_SMALL(derivative_central<1>(f,x), 2e-9);
+         BOOST_CHECK_SMALL(derivative_central<2>(f,x), 2e-9);
+         BOOST_CHECK_SMALL(derivative_central<3>(f,x), 2e-9);
       } else {
          BOOST_CHECK_CLOSE_FRACTION(derivative_forward(f,x), df(x), 1e-8);
          BOOST_CHECK_CLOSE_FRACTION(derivative_backward(f,x), df(x), 1e-8);
-         BOOST_CHECK_CLOSE_FRACTION(derivative_central(f,x,0), df(x), 2e-9);
-         BOOST_CHECK_CLOSE_FRACTION(derivative_central(f,x,1), df(x), 2e-9);
-         BOOST_CHECK_CLOSE_FRACTION(derivative_central(f,x,2), df(x), 2e-9);
-         BOOST_CHECK_CLOSE_FRACTION(derivative_central(f,x,3), df(x), 2e-9);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_central<0>(f,x), df(x), 2e-9);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_central<1>(f,x), df(x), 2e-9);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_central<2>(f,x), df(x), 2e-9);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_central<3>(f,x), df(x), 2e-9);
       }
    }
 }
@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE( test_stability )
       const double df_true = df(x);
       const double df_forw = derivative_forward(f,x,eps);
       const double df_back = derivative_backward(f,x,eps);
-      const double df_cent = derivative_central(f,x,0,eps);
-      const double df_five = derivative_central(f,x,1,eps);
+      const double df_cent = derivative_central<0>(f,x,eps);
+      const double df_five = derivative_central<1>(f,x,eps);
 
       BOOST_MESSAGE(std::setprecision(16) << std::scientific
                     << "eps = " << eps << ": true df = " << df_true
