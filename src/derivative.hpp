@@ -56,9 +56,9 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
 }
 
 /**
- * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
- * the forward finite difference.  This function calls \f$f(x)\f$
- * (Order + 2) times.
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order \a Order
+ * using the forward finite difference.  This function calls
+ * \f$f(x)\f$ (Order + 2) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
@@ -122,9 +122,9 @@ auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_
 }
 
 /**
- * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
- * the backward finite difference.  This function calls \f$f(x)\f$
- * (Order + 2) times.
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order \a Order
+ * using the backward finite difference.  This function calls
+ * \f$f(x)\f$ (Order + 2) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
@@ -163,9 +163,9 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
 }
 
 /**
- * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
- * the central finite difference.  This function calls \f$f\f$ (Order + 2)
- * times.
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order \a Order
+ * using the central finite difference.  This function calls \f$f\f$
+ * (Order + 2) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
