@@ -17,15 +17,35 @@ BOOST_AUTO_TEST_CASE( test_derivative_x_sqr )
 
    for (auto x: x_values) {
       if (x == 0.) {
-         BOOST_CHECK_SMALL(derivative_forward(f,x), 1e-8);
-         BOOST_CHECK_SMALL(derivative_backward(f,x), 1e-8);
+         BOOST_CHECK_SMALL(derivative_forward<0>(f,x), 1e-8);
+         BOOST_CHECK_SMALL(derivative_forward<1>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_forward<2>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_forward<3>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_forward<4>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_forward<5>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_backward<0>(f,x), 1e-8);
+         BOOST_CHECK_SMALL(derivative_backward<1>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_backward<2>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_backward<3>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_backward<4>(f,x), 1e-9);
+         BOOST_CHECK_SMALL(derivative_backward<5>(f,x), 1e-9);
          BOOST_CHECK_SMALL(derivative_central<0>(f,x), 2e-9);
          BOOST_CHECK_SMALL(derivative_central<1>(f,x), 2e-9);
          BOOST_CHECK_SMALL(derivative_central<2>(f,x), 2e-9);
          BOOST_CHECK_SMALL(derivative_central<3>(f,x), 2e-9);
       } else {
-         BOOST_CHECK_CLOSE_FRACTION(derivative_forward(f,x), df(x), 1e-8);
-         BOOST_CHECK_CLOSE_FRACTION(derivative_backward(f,x), df(x), 1e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<0>(f,x), df(x), 1e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<1>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<2>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<3>(f,x), df(x), 4e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<4>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_forward<5>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<0>(f,x), df(x), 1e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<1>(f,x), df(x), 1e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<2>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<3>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<4>(f,x), df(x), 3e-8);
+         BOOST_CHECK_CLOSE_FRACTION(derivative_backward<5>(f,x), df(x), 3e-8);
          BOOST_CHECK_CLOSE_FRACTION(derivative_central<0>(f,x), df(x), 2e-9);
          BOOST_CHECK_CLOSE_FRACTION(derivative_central<1>(f,x), df(x), 2e-9);
          BOOST_CHECK_CLOSE_FRACTION(derivative_central<2>(f,x), df(x), 2e-9);
@@ -46,8 +66,8 @@ BOOST_AUTO_TEST_CASE( test_stability )
 
    for (auto eps: eps_values) {
       const double df_true = df(x);
-      const double df_forw = derivative_forward(f,x,eps);
-      const double df_back = derivative_backward(f,x,eps);
+      const double df_forw = derivative_forward<0>(f,x,eps);
+      const double df_back = derivative_backward<0>(f,x,eps);
       const double df_cent = derivative_central<0>(f,x,eps);
       const double df_five = derivative_central<1>(f,x,eps);
 

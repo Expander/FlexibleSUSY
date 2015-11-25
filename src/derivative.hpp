@@ -56,20 +56,44 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
 }
 
 /**
- * Calculates the forward derivative of \f$f(x)\f$ as \f[f'(x) =
- * \frac{f(x+h)-f(x)}{h} + O(h)\f].  This function calculates
- * \f$f(x)\f$ once and calls derivative_forward_fx().
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
+ * the forward finite difference.  This function calls \f$f(x)\f$
+ * (Order + 2) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
+ * @tparam Order order (0, 1, 2, 3, 4, 5)
  *
  * @return derivative
  */
-template <class F, class A>
+template <int Order, class F, class A>
 auto derivative_forward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   return derivative_forward_fx(std::forward<F>(f), x, f(x), eps);
+   static_assert(Order <= 5, "1st derivative with order > 3 not implemented");
+
+   typedef decltype(f(x)) return_type;
+
+   // coefficients from Math. Comp. 51 (1988), 699-706
+   // DOI: http://dx.doi.org/10.1090/S0025-5718-1988-0935077-0
+   static const std::vector<std::vector<double> > coeffs = {
+      {-1., 1.},
+      {-3./2., 2., -1./2.},
+      {-11./6., 3., -3./2., 1./3.},
+      {-25./12., 4., -3., 4./3., -1./4.},
+      {-137./60., 5., -5., 10./3., -5./4., 1./5.},
+      {-49./20., 6., -15./2, 20./3., -15./4., 6./5., -1./6.}
+   };
+
+   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
+   return_type result = 0;
+
+   for (unsigned i = 0; i < Order + 2; i++) {
+      const double coeff = -coeffs[Order][i];
+      result += coeff * f(x - i*h);
+   }
+
+   return result / h;
 }
 
 /**
@@ -98,20 +122,44 @@ auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_
 }
 
 /**
- * Calculates the backward derivative of \f$f(x)\f$ as \f[f'(x) =
- * \frac{f(x)-f(x-h)}{h} + O(h)\f].  This function calculates
- * \f$f(x)\f$ once and calls derivative_backward_fx().
+ * Calculates the 1st derivative of \f$f(x)\f$ up to order Order using
+ * the backward finite difference.  This function calls \f$f(x)\f$
+ * (Order + 2) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
+ * @tparam Order order (0, 1, 2, 3, 4, 5)
  *
  * @return derivative
  */
-template <class F, class A>
+template <int Order, class F, class A>
 auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   return derivative_backward_fx(std::forward<F>(f), x, f(x), eps);
+   static_assert(Order <= 5, "1st derivative with order > 3 not implemented");
+
+   typedef decltype(f(x)) return_type;
+
+   // coefficients from Math. Comp. 51 (1988), 699-706
+   // DOI: http://dx.doi.org/10.1090/S0025-5718-1988-0935077-0
+   static const std::vector<std::vector<double> > coeffs = {
+      {-1., 1.},
+      {-3./2., 2., -1./2.},
+      {-11./6., 3., -3./2., 1./3.},
+      {-25./12., 4., -3., 4./3., -1./4.},
+      {-137./60., 5., -5., 10./3., -5./4., 1./5.},
+      {-49./20., 6., -15./2, 20./3., -15./4., 6./5., -1./6.}
+   };
+
+   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
+   return_type result = 0;
+
+   for (unsigned i = 0; i < Order + 2; i++) {
+      const double coeff = coeffs[Order][i];
+      result += coeff * f(x + i*h);
+   }
+
+   return result / h;
 }
 
 /**
