@@ -126,13 +126,30 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
  * @return derivative
  */
 template <class F, class A>
-auto derivative_central(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
+auto derivative_central(F&& f, A x, unsigned order = 0, A eps = std::numeric_limits<A>::epsilon())
+   -> decltype(f(x))
 {
-   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
-   const A f_x_plus_h = f(x + h);
-   const A f_x_minus_h = f(x - h);
+   typedef decltype(f(x)) return_type;
 
-   return (f_x_plus_h - f_x_minus_h) / (2*h);
+   assert(order < 4 && "1st derivative with order > 3 not implemented");
+
+   static const std::vector<std::vector<double> > coeffs = {
+      {0.5},
+      {2./3., -1./12.},
+      {3./4., -3./20., 1./60.},
+      {4./5., -1./5., 4./105., -1./280.}
+   };
+
+   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
+   return_type result = 0;
+
+   for (unsigned i = 0; i < coeffs[order].size(); i++) {
+      const double coeff = coeffs[order][i];
+      const A step = (i + 1) * h;
+      result += coeff * (f(x + step) - f(x - step));
+   }
+
+   return result / h;
 }
 
 /**
