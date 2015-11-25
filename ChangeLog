@@ -1,14 +1,4 @@
-FlexibleSUSY-1.2.6 [not released yet]
-
- * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
-   of alpha_em in the SM with 5 active quark flavours.
-   Imported from SoftSUSY (commit 0139daa).
-
- * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
-   input parameters in the UMSSM.  This fixes a compilation error with
-   SARAH 4.6.0.
-
-FlexibleSUSY-1.2.5 [October, 29 2015]
+FlexibleSUSY-1.2.5 [not released yet]
 
  * Feature: The output of the spectrum generator can be written into
    an SQLite database using the --database-output-file= option.  At
@@ -36,6 +26,14 @@ FlexibleSUSY-1.2.5 [October, 29 2015]
  * Change (commit ac70fec): In the SM the Higgs pole mass is no longer
    calculated at the scale Qin (= the scale where lambda is input),
    but at the scale Q = M_top.
+
+ * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
+   of alpha_em in the SM with 5 active quark flavours.
+   Imported from SoftSUSY (commit 0139daa).
+
+ * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
+   input parameters in the UMSSM.  This fixes a compilation error with
+   SARAH 4.6.0.
 
 FlexibleSUSY-1.2.4 [October, 27 2015]
 
