@@ -8,6 +8,7 @@
 #include "CMSSM_utilities.hpp"
 #include "ew_input.hpp"
 #include "test.h"
+#include "lowe.h"
 
 using namespace flexiblesusy;
 
@@ -175,6 +176,10 @@ void test_input_parameter_equality(const T& a, const P& b)
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
+   softsusy::QedQcd qedqcd1, qedqcd2;
+   qedqcd1.setAlpha(softsusy::ALPHA, 1./127.);
+   qedqcd1.toMz();
+
    CMSSM_input_parameters pp;
    pp.m0 = 125.;
    pp.m12 = 500.;
@@ -187,13 +192,14 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const std::string db_file("test/test_CMSSM_database.db");
 
-   CMSSM_database::to_database(db_file, model);
+   CMSSM_database::to_database(db_file, model, &qedqcd1);
 
-   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1));
+   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2));
 
    gErrors = 0;
    test_parameter_equality(model, tmp);
    test_mass_equality(model.get_physical(), tmp.get_physical());
    test_input_parameter_equality(model.get_input(), tmp.get_input());
    BOOST_REQUIRE(gErrors == 0);
+   BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).maxCoeff() < 1e-10);
 }
