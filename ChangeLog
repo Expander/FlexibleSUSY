@@ -100,7 +100,7 @@ FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Change (commit f7cd242): The `test' and `examples' modules are no
    longer loaded into the makefile by default.  To load them, run
-   ./configure --with-optional-modules="test examples"
+   ./configure --with-optional-modules="test,examples"
 
  * Change (commit e86d23a): The FlexibleSUSY test suite is no longer
    shipped with the release tarball.  It can be obtained from the
