@@ -51,6 +51,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/database.hpp \
 		$(DIR)/def.h \
+		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
 		$(DIR)/eigen_utils.hpp \
 		$(DIR)/error.hpp \
