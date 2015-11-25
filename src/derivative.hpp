@@ -56,6 +56,31 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
 }
 
 /**
+ * Calculates the backward derivative of \f$f(x)\f$ as \f[f'(x) =
+ * \frac{f(x)-f(x-h)}{h} + O(h)\f].  This function calls \f$f\f$ once
+ * at \f$(x+h)\f$.  The value of \f$f(x)\f$ has to be provided by the
+ * caller.  The step size \f$h\f$ is calculated to be \f$h =
+ * \sqrt{\epsilon} x\f$ for \f$x\neq 0\f$.  For \f$x=0\f$, the step
+ * size is set to \f$h = \epsilon\f$.
+ *
+ * @param f function
+ * @param x point at which derivative is to be calculated
+ * @param fx value of \f$f(x)\f$
+ * @param eps \f$\epsilon\f$
+ *
+ * @return derivative
+ */
+template <class F, class A>
+auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
+   -> decltype(f(x))
+{
+   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
+   volatile const A xph = x - h; // avoid away optimization
+   const A dx = x - xph;
+   return (fx - f(xph)) / dx;
+}
+
+/**
  * Calculates the 1st derivative of \f$f(x)\f$ up to order \a Order
  * using the forward finite difference.  This function calls
  * \f$f(x)\f$ (Order + 2) times.
@@ -94,31 +119,6 @@ auto derivative_forward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -
    }
 
    return result / h;
-}
-
-/**
- * Calculates the backward derivative of \f$f(x)\f$ as \f[f'(x) =
- * \frac{f(x)-f(x-h)}{h} + O(h)\f].  This function calls \f$f\f$ once
- * at \f$(x+h)\f$.  The value of \f$f(x)\f$ has to be provided by the
- * caller.  The step size \f$h\f$ is calculated to be \f$h =
- * \sqrt{\epsilon} x\f$ for \f$x\neq 0\f$.  For \f$x=0\f$, the step
- * size is set to \f$h = \epsilon\f$.
- *
- * @param f function
- * @param x point at which derivative is to be calculated
- * @param fx value of \f$f(x)\f$
- * @param eps \f$\epsilon\f$
- *
- * @return derivative
- */
-template <class F, class A>
-auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
-   -> decltype(f(x))
-{
-   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
-   volatile const A xph = x - h; // avoid away optimization
-   const A dx = x - xph;
-   return (fx - f(xph)) / dx;
 }
 
 /**
