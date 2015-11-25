@@ -155,34 +155,6 @@ auto derivative_central(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
    return result / h;
 }
 
-/**
- * Calculates the derivative of \f$f(x)\f$ using the five-point
- * stencil method as \f[f'(x) = \frac{-f(x+2h) + 8f(x+h) - 8f(x-h) +
- * f(x-2h)}{12h} + O(h^4)\f].
- *
- * This function calls \f$f\f$ four times.  The step size \f$h\f$ is
- * calculated to be \f$h = \sqrt{\epsilon} x\f$ for \f$x\neq 0\f$.
- * For \f$x=0\f$, the step size is set to \f$h = \epsilon\f$.
- *
- * @param f function
- * @param x point at which derivative is to be calculated
- * @param eps measure for step size \f$h\f$
- *
- * @return derivative
- */
-template <class F, class A>
-auto derivative_five_point_stencil(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
-   -> decltype(f(x))
-{
-   const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
-   const A f_x_plus_2h = f(x + 2*h);
-   const A f_x_plus_h = f(x + h);
-   const A f_x_minus_h = f(x - h);
-   const A f_x_minus_2h = f(x - 2*h);
-
-   return (-f_x_plus_2h + 8*f_x_plus_h - 8*f_x_minus_h + f_x_minus_2h) / (12*h);
-}
-
 } // namespace flexiblesusy
 
 #endif
