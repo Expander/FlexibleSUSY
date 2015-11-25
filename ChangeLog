@@ -6,10 +6,18 @@ FlexibleSUSY-1.2.5 [not released yet]
    provided for each model, which write/read a model object (including
    the DR-bar parameters and the pole mass spectrum) to/from a
    database file.
+
    Example:
    $ models/CMSSM/run_CMSSM.x \
      --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
      --slha-output-file= --database-output-file=point.db
+
+   Example using the scan script:
+   $ utils/scan-database.sh \
+     --spectrum-generator=models/CMSSM/run_CMSSM.x \
+     --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+     --scan-range=MINPAR[3]=1~30:21 \
+     --database-output-file=scan.db
 
  * Feature: Models can now be matched to the Standard Model at Q =
    MZ_pole, Q = MT_pole or any other dynamically calculated scale, as
