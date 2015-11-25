@@ -63,7 +63,7 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order (0, 1, 2, 3, 4, 5)
+ * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5)
  *
  * @return derivative
  */
@@ -129,7 +129,7 @@ auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order (0, 1, 2, 3, 4, 5)
+ * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5)
  *
  * @return derivative
  */
@@ -170,7 +170,7 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order (0, 1, 2, 3)
+ * @tparam Order order of accuracy (0, 1, 2, 3)
  *
  * @return derivative
  */
