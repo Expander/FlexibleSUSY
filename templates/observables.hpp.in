@@ -25,7 +25,6 @@
 
 namespace flexiblesusy {
 
-class Observables;
 class @ModelName@_mass_eigenstates;
 
 Observables calculate_observables(const @ModelName@_mass_eigenstates&);
