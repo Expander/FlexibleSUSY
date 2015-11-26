@@ -43,7 +43,7 @@ FlexibleSUSY-1.2.5 [not released yet]
    input parameters in the UMSSM.  This fixes a compilation error with
    SARAH 4.6.0.
 
- * Bugfix (commit 87ccfcc): Correcting the trilinear couplings and the
+ * Bugfix (commit f1752a7): Correcting the trilinear couplings and the
    effective mu parameter in the NMSSMRUN SLHA output block in the
    models: NMSSM, NMSSMCPV, NUTNMSSM, SMSSM and NUTSMSSM.
 
