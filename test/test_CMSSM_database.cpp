@@ -205,5 +205,5 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
    test_input_parameter_equality(model.get_input(), tmp.get_input());
    BOOST_REQUIRE(gErrors == 0);
    BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).cwiseAbs().maxCoeff() < 1e-10);
-   BOOST_REQUIRE((obs1.get() - obs2.get()).cwiseAbs().maxCoeff() < 1e-10);
+   BOOST_REQUIRE((obs1.get() - obs2.get()).cwiseAbs().maxCoeff() < 1e-15);
 }
