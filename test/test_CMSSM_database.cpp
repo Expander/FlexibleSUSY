@@ -7,6 +7,7 @@
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_utilities.hpp"
 #include "ew_input.hpp"
+#include "observables.hpp"
 #include "test.h"
 #include "lowe.h"
 
@@ -176,6 +177,8 @@ void test_input_parameter_equality(const T& a, const P& b)
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
+   Observables obs1, obs2;
+   obs1.a_muon = 1e-9;
    softsusy::QedQcd qedqcd1, qedqcd2;
    qedqcd1.setAlpha(softsusy::ALPHA, 1./127.);
    qedqcd1.toMz();
@@ -192,14 +195,15 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const std::string db_file("test/test_CMSSM_database.db");
 
-   CMSSM_database::to_database(db_file, model, &qedqcd1);
+   CMSSM_database::to_database(db_file, model, &qedqcd1, &obs1);
 
-   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2));
+   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &obs2));
 
    gErrors = 0;
    test_parameter_equality(model, tmp);
    test_mass_equality(model.get_physical(), tmp.get_physical());
    test_input_parameter_equality(model.get_input(), tmp.get_input());
    BOOST_REQUIRE(gErrors == 0);
-   BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).maxCoeff() < 1e-10);
+   BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).cwiseAbs().maxCoeff() < 1e-10);
+   BOOST_REQUIRE((obs1.get() - obs2.get()).cwiseAbs().maxCoeff() < 1e-10);
 }
