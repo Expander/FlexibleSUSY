@@ -98,18 +98,31 @@ private:
  */
 class NonPerturbativeRunningError : public Error {
 public:
-   explicit NonPerturbativeRunningError(double scale_)
+   explicit NonPerturbativeRunningError(double scale_, int max_step_row_, double value_)
       : scale(scale_)
+      , value(value_)
+      , max_step_row(max_step_row_)
       {}
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
       std::stringstream message;
       message << "NonPerturbativeRunningError: non-perturbative running"
-         " to scale " << scale;
+         " of parameter " << max_step_row << " to scale " << scale;
       return message.str();
    }
+   std::string what(const std::string& parameter_name) const {
+      std::stringstream message;
+      message << "NonPerturbativeRunningError: non-perturbative running"
+         " of " << parameter_name << " = " << value << " to scale " << scale;
+      return message.str();
+   }
+   int get_max_step_row() const { return max_step_row; }
+   double get_parameter_value() const { return value; }
+   double get_scale() const { return scale; }
 private:
    double scale;
+   double value;
+   int max_step_row;
 };
 
 /**
