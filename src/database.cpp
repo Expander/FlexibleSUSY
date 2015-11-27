@@ -188,7 +188,6 @@ void Database::execute(const std::string& cmd, TCallback callback, void* data)
 sqlite3* Database::open(const std::string& file_name)
 {
    sqlite3* db = 0;
-   char* zErrMsg = 0;
 
    const int rc = sqlite3_open(file_name.c_str(), &db);
 
@@ -216,7 +215,7 @@ int Database::extract_callback(void* data, int argc, char** argv, char** col_nam
    Eigen::ArrayXd* values = static_cast<Eigen::ArrayXd*>(data);
    values->conservativeResize(argc);
 
-   for (std::size_t i = 0; i < argc; i++) {
+   for (int i = 0; i < argc; i++) {
       (*values)(i) = boost::lexical_cast<double>(argv[i]);
       VERBOSE_MSG(col_name[i] << " = " << argv[i]);
    }

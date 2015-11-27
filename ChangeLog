@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.5 [October, 29 2015]
+FlexibleSUSY-1.2.5 [not released yet]
 
  * Feature: The output of the spectrum generator can be written into
    an SQLite database using the --database-output-file= option.  At
@@ -6,10 +6,18 @@ FlexibleSUSY-1.2.5 [October, 29 2015]
    provided for each model, which write/read a model object (including
    the DR-bar parameters and the pole mass spectrum) to/from a
    database file.
+
    Example:
    $ models/CMSSM/run_CMSSM.x \
      --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
      --slha-output-file= --database-output-file=point.db
+
+   Example using the scan script:
+   $ utils/scan-database.sh \
+     --spectrum-generator=models/CMSSM/run_CMSSM.x \
+     --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+     --scan-range=MINPAR[3]=1~30:21 \
+     --database-output-file=scan.db
 
  * Feature: Models can now be matched to the Standard Model at Q =
    MZ_pole, Q = MT_pole or any other dynamically calculated scale, as
@@ -26,6 +34,14 @@ FlexibleSUSY-1.2.5 [October, 29 2015]
  * Change (commit ac70fec): In the SM the Higgs pole mass is no longer
    calculated at the scale Qin (= the scale where lambda is input),
    but at the scale Q = M_top.
+
+ * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
+   of alpha_em in the SM with 5 active quark flavours.
+   Imported from SoftSUSY (commit 0139daa).
+
+ * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
+   input parameters in the UMSSM.  This fixes a compilation error with
+   SARAH 4.6.0.
 
 FlexibleSUSY-1.2.4 [October, 27 2015]
 
@@ -84,7 +100,7 @@ FlexibleSUSY-1.2.3 [October, 18 2015]
 
  * Change (commit f7cd242): The `test' and `examples' modules are no
    longer loaded into the makefile by default.  To load them, run
-   ./configure --with-optional-modules="test examples"
+   ./configure --with-optional-modules="test,examples"
 
  * Change (commit e86d23a): The FlexibleSUSY test suite is no longer
    shipped with the release tarball.  It can be obtained from the
