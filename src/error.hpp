@@ -98,7 +98,7 @@ private:
  */
 class NonPerturbativeRunningError : public Error {
 public:
-   explicit NonPerturbativeRunningError(double scale_, int max_step_row_, double value_)
+   explicit NonPerturbativeRunningError(double scale_, int max_step_row_ = -1, double value_ = 0)
       : scale(scale_)
       , value(value_)
       , max_step_row(max_step_row_)
