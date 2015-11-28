@@ -885,9 +885,9 @@ CreateRunningDRbarMassPrototypes[] :=
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, renormalizationScheme_] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, alphaS, drbarConversion, gPrime,
-            dimParticle, thirdGenMass},
+            dimParticle, treeLevelMass},
            dimParticle = TreeMasses`GetDimension[particle];
-           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
+           treeLevelMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
@@ -917,7 +917,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, reno
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n";
                 ];
               body = body <>
-              "const double m_tree = " <> RValueToCFormString[thirdGenMass] <> ";\n" <>
+              "const double m_tree = " <> RValueToCFormString[treeLevelMass] <> ";\n" <>
               "const double drbar_conversion = " <> RValueToCFormString[drbarConversion] <> ";\n" <>
               "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n\n" <>
               "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
@@ -972,9 +972,9 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop,
-            dimParticle, thirdGenMass},
+            dimParticle, treeLevelMass},
            dimParticle = TreeMasses`GetDimension[particle];
-           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
+           treeLevelMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
@@ -1003,8 +1003,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
                 ];
               body = body <>
               "const double currentScale = get_scale();\n" <>
-              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";\n" <>
-              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";\n\n" <>
+              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
+              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
               "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
