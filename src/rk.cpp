@@ -36,14 +36,12 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
   const int MAXSTP = 400;
   const double TINY = 1.0e-16;
   int max_step_row;
-  double last_scale;
 
   for (int nstp = 1; nstp <= MAXSTP; nstp++) {
     dydx = derivs(x, y);
     yscal = y.abs() + (dydx * h).abs() + TINY;
     if ((x + h - to) * (x + h - from) > 0.0) h = to - x;
     rkqs(y, dydx, &x, h, eps, yscal, &hdid, &hnext, derivs, max_step_row);
-    last_scale = x;
 
     if ((x - to) * (to - from) >= 0.0) {
       ystart = y;
@@ -65,7 +63,7 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
           ") = " << dydx(i));
 #endif
 
-  throw NonPerturbativeRunningError(std::exp(last_scale), max_step_row, y(max_step_row));
+  throw NonPerturbativeRunningError(std::exp(x), max_step_row, y(max_step_row));
 }
 
 void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
