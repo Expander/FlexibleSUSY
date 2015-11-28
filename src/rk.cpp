@@ -79,8 +79,7 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
   h = htry;
   for (;;) {
     rungeKuttaStep(y, dydx, *x, h, ytemp, yerr, derivs);
-    int max_col;
-    errmax = (yerr / yscal).abs().maxCoeff(&max_step_row, &max_col);
+    errmax = (yerr / yscal).abs().maxCoeff(&max_step_row);
     errmax  /= eps;
     if (!std::isfinite(errmax)) {
 #ifdef ENABLE_VERBOSE
