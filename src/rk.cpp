@@ -85,7 +85,8 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 #ifdef ENABLE_VERBOSE
        ERROR("odeStepper: non-perturbative running at Q = "
              << std::exp(*x) << " GeV of parameter y(" << max_step_row
-             << ") = " << y(max_step_row));
+             << ") = " << y(max_step_row) << ", dy(" << max_step_row
+             << ")/dx = " << dydx(max_step_row));
 #endif
        throw NonPerturbativeRunningError(std::exp(*x), max_step_row, y(max_step_row));
     }
@@ -97,7 +98,8 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 #ifdef ENABLE_VERBOSE
        ERROR("At Q = " << std::exp(*x) << " GeV "
              "stepsize underflow in odeStepper in parameter y("
-             << max_step_row << ") = " << y(max_step_row));
+             << max_step_row << ") = " << y(max_step_row) << ", dy("
+             << max_step_row << ")/dx = " << dydx(max_step_row));
 #endif
        throw NonPerturbativeRunningError(std::exp(*x), max_step_row, y(max_step_row));
     }
