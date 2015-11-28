@@ -162,7 +162,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
       model.get_problems().flag_no_convergence();
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
-      const int parameter_index = error.get_max_step_row();
+      const int parameter_index = error.get_parameter_index();
       const std::string parameter_name =
          parameter_index < 0 ? "Q" : @ModelName@_info::parameter_names[parameter_index];
       const double parameter_value = error.get_parameter_value();

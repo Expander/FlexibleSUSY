@@ -98,16 +98,26 @@ private:
  */
 class NonPerturbativeRunningError : public Error {
 public:
-   explicit NonPerturbativeRunningError(double scale_, int max_step_row_ = -1, double value_ = 0)
+   /**
+    * Constructor.
+    *
+    * @param scale_ target renormalization scale
+    * @param parameter_index_ index of parameter that becomes non-perturbative
+    * @param value_ parameter value at scale_
+    *
+    * The parameter index can be set to -1 (default) to indicate that
+    * something is wrong with the target renormalization scale.
+    */
+   explicit NonPerturbativeRunningError(double scale_, int parameter_index_ = -1, double value_ = 0)
       : scale(scale_)
       , value(value_)
-      , max_step_row(max_step_row_)
+      , parameter_index(parameter_index_)
       {}
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
       std::stringstream message;
       message << "NonPerturbativeRunningError: non-perturbative running"
-         " of parameter " << max_step_row << " to scale " << scale;
+         " of parameter " << parameter_index << " to scale " << scale;
       return message.str();
    }
    std::string what(const std::string& parameter_name) const {
@@ -116,13 +126,13 @@ public:
          " of " << parameter_name << " = " << value << " to scale " << scale;
       return message.str();
    }
-   int get_max_step_row() const { return max_step_row; }
+   int get_parameter_index() const { return parameter_index; }
    double get_parameter_value() const { return value; }
    double get_scale() const { return scale; }
 private:
-   double scale;
-   double value;
-   int max_step_row;
+   double scale; ///< renormalization scale
+   double value; ///< value of parameter that becomes non-perturbative
+   int parameter_index; ///< index of parameter that becomes non-perturbative
 };
 
 /**
