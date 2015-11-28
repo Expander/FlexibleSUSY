@@ -887,7 +887,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, reno
             selfEnergyFunctionPR, name, alphaS, drbarConversion, gPrime,
             dimParticle, thirdGenMass},
            dimParticle = TreeMasses`GetDimension[particle];
-           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
+           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
@@ -974,7 +974,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop,
             dimParticle, thirdGenMass},
            dimParticle = TreeMasses`GetDimension[particle];
-           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
+           thirdGenMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
