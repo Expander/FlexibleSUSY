@@ -39,8 +39,8 @@ betaStr = StringReplace[betaStr,
 (* convert adjoint symbols to SARAH convention *)
 betaStr = StringReplace[betaStr,
    {"Yec" -> "Adj[Ye]",
-    "Yuc" -> "Adj[Yu]",
-    "Ydc" -> "Adj[Yd]"}];
+    "Ytc" -> "Adj[Yt]",
+    "Ybc" -> "Adj[Yb]"}];
 
 ToExpression[betaStr];
 

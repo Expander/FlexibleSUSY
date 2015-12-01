@@ -13,15 +13,15 @@
   g2^4*(3*mh1 + 3*mh2 + 3*trace[ml] + 9*trace[mq]) + 
   g1^4*((9*mh1)/25 + (9*mh2)/25 + (6*trace[mb])/25 + (18*trace[me])/25 + 
     (9*trace[ml])/25 + (3*trace[mq])/25 + (24*trace[mt])/25) + 
-  MatMul[hec, Ye]*(-6*trace[hb, Ybc] - 2*trace[he, Adj[Ye]]) + 
+  MatMul[hec, Ye]*(-6*trace[hb, Adj[Yb]] - 2*trace[he, Adj[Ye]]) + 
   MatMul[Adj[Ye], he]*(-6*trace[hbc, Yb] - 2*trace[hec, Ye]) + 
-  me*Ye*Adj[Ye]*(-6*trace[Ybc, Yb] - 2*trace[Adj[Ye], Ye]) + 
-  MatMul[hec, he]*(-6*trace[Ybc, Yb] - 2*trace[Adj[Ye], Ye]) + 
-  2*ml*MatMul[Adj[Ye], Ye]*(-3*trace[Ybc, Yb] - trace[Adj[Ye], Ye]) + 
+  me*Ye*Adj[Ye]*(-6*trace[Adj[Yb], Yb] - 2*trace[Adj[Ye], Ye]) + 
+  MatMul[hec, he]*(-6*trace[Adj[Yb], Yb] - 2*trace[Adj[Ye], Ye]) + 
+  2*ml*MatMul[Adj[Ye], Ye]*(-3*trace[Adj[Yb], Yb] - trace[Adj[Ye], Ye]) + 
   MatMul[Adj[Ye], Ye]*(-6*trace[hb, hbc] - 2*trace[he, hec] - 
-    12*mh1*trace[Ybc, Yb] - 4*mh1*trace[Adj[Ye], Ye] - 6*trace[Yb, Ybc, mb] - 
-    6*trace[Ybc, Yb, mq] - 2*trace[Ye, Adj[Ye], me] - 
-    2*trace[Adj[Ye], Ye, ml]), 
+    12*mh1*trace[Adj[Yb], Yb] - 4*mh1*trace[Adj[Ye], Ye] - 
+    6*trace[Yb, Adj[Yb], mb] - 2*trace[Ye, Adj[Ye], me] - 
+    6*trace[Adj[Yb], Yb, mq] - 2*trace[Adj[Ye], Ye, ml]), 
  g2^6*(-3*mh1 - 3*mh2 - 3*trace[ml] - 9*trace[mq]) + 
   g1^2*g2^4*((-9*mh1)/5 - (9*mh2)/5 - (9*trace[ml])/5 - (27*trace[mq])/5) + 
   g1^6*((-621*mh1)/125 - (621*mh2)/125 - (414*trace[mb])/125 - 
@@ -29,103 +29,118 @@
     (1656*trace[mt])/125) + g1^4*g2^2*((-27*mh1)/25 - (27*mh2)/25 - 
     (18*trace[mb])/25 - (54*trace[me])/25 - (27*trace[ml])/25 - 
     (9*trace[mq])/25 - (72*trace[mt])/25) + MatMul[hec, Ye, Adj[Ye], Ye]*
-   (12*trace[hb, Ybc] + 4*trace[he, Adj[Ye]]) + 
-  MatMul[Adj[Ye], Ye, hec, Ye]*(12*trace[hb, Ybc] + 4*trace[he, Adj[Ye]]) + 
-  g2^2*MatMul[hec, Ye]*(36*trace[hb, Ybc] + 12*trace[he, Adj[Ye]]) + 
-  g2^2*M2*MatMul[Adj[Ye], Ye]*(-36*trace[hb, Ybc] - 36*trace[hbc, Yb] - 
+   (12*trace[hb, Adj[Yb]] + 4*trace[he, Adj[Ye]]) + 
+  MatMul[Adj[Ye], Ye, hec, Ye]*(12*trace[hb, Adj[Yb]] + 
+    4*trace[he, Adj[Ye]]) + g2^2*MatMul[hec, Ye]*
+   (36*trace[hb, Adj[Yb]] + 12*trace[he, Adj[Ye]]) + 
+  g2^2*M2*MatMul[Adj[Ye], Ye]*(-36*trace[hb, Adj[Yb]] - 36*trace[hbc, Yb] - 
     12*trace[he, Adj[Ye]] - 12*trace[hec, Ye]) + 
   MatMul[Adj[Ye], he, Adj[Ye], Ye]*(12*trace[hbc, Yb] + 4*trace[hec, Ye]) + 
   MatMul[Adj[Ye], Ye, Adj[Ye], he]*(12*trace[hbc, Yb] + 4*trace[hec, Ye]) + 
   g2^2*MatMul[Adj[Ye], he]*(36*trace[hbc, Yb] + 12*trace[hec, Ye]) + 
-  g1^4*M1*((42*trace[hb, Ybc])/5 + (42*trace[hbc, Yb])/5 + 
+  g1^4*M1*((42*trace[hb, Adj[Yb]])/5 + (42*trace[hbc, Yb])/5 + 
     (54*trace[he, Adj[Ye]])/5 + (54*trace[hec, Ye])/5 + 
-    (78*trace[ht, Ytc])/5 + (78*trace[htc, Yt])/5) + 
-  g2^4*M2*(90*trace[hb, Ybc] + 90*trace[hbc, Yb] + 30*trace[he, Adj[Ye]] + 
-    30*trace[hec, Ye] + 90*trace[ht, Ytc] + 90*trace[htc, Yt]) + 
-  g2^4*M2^2*(-270*trace[Ybc, Yb] - 270*trace[Ytc, Yt] - 
-    90*trace[Adj[Ye], Ye]) + g1^4*M1^2*((-126*trace[Ybc, Yb])/5 - 
-    (234*trace[Ytc, Yt])/5 - (162*trace[Adj[Ye], Ye])/5) + 
-  g2^2*M2*MatMul[hec, Ye]*(-36*trace[Ybc, Yb] - 12*trace[Adj[Ye], Ye]) + 
-  g2^2*M2*MatMul[Adj[Ye], he]*(-36*trace[Ybc, Yb] - 12*trace[Adj[Ye], Ye]) + 
-  2*ml*MatMul[Adj[Ye], Ye, Adj[Ye], Ye]*(6*trace[Ybc, Yb] + 
+    (78*trace[ht, Adj[Yt]])/5 + (78*trace[htc, Yt])/5) + 
+  g2^4*M2*(90*trace[hb, Adj[Yb]] + 90*trace[hbc, Yb] + 
+    30*trace[he, Adj[Ye]] + 30*trace[hec, Ye] + 90*trace[ht, Adj[Yt]] + 
+    90*trace[htc, Yt]) + g2^2*M2*MatMul[hec, Ye]*(-36*trace[Adj[Yb], Yb] - 
+    12*trace[Adj[Ye], Ye]) + g2^2*M2*MatMul[Adj[Ye], he]*
+   (-36*trace[Adj[Yb], Yb] - 12*trace[Adj[Ye], Ye]) + 
+  2*ml*MatMul[Adj[Ye], Ye, Adj[Ye], Ye]*(6*trace[Adj[Yb], Yb] + 
     2*trace[Adj[Ye], Ye]) + ml*MatMul[Adj[Ye], Ye]^2*
-   (12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  me*Adj[Ye]*MatMul[Ye, Adj[Ye], Ye]*(12*trace[Ybc, Yb] + 
+   (12*trace[Adj[Yb], Yb] + 4*trace[Adj[Ye], Ye]) + 
+  me*Adj[Ye]*MatMul[Ye, Adj[Ye], Ye]*(12*trace[Adj[Yb], Yb] + 
     4*trace[Adj[Ye], Ye]) + me*Ye*MatMul[Adj[Ye], Ye, Adj[Ye]]*
-   (12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  MatMul[hec, he, Adj[Ye], Ye]*(12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  MatMul[hec, Ye, Adj[Ye], he]*(12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  MatMul[Adj[Ye], he, hec, Ye]*(12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  MatMul[Adj[Ye], Ye, hec, he]*(12*trace[Ybc, Yb] + 4*trace[Adj[Ye], Ye]) + 
-  2*g2^2*ml*MatMul[Adj[Ye], Ye]*(18*trace[Ybc, Yb] + 6*trace[Adj[Ye], Ye]) + 
-  g2^2*me*Ye*Adj[Ye]*(36*trace[Ybc, Yb] + 12*trace[Adj[Ye], Ye]) + 
-  g2^2*MatMul[hec, he]*(36*trace[Ybc, Yb] + 12*trace[Adj[Ye], Ye]) + 
-  g2^2*M2^2*MatMul[Adj[Ye], Ye]*(72*trace[Ybc, Yb] + 24*trace[Adj[Ye], Ye]) + 
-  g2^4*(-54*trace[hb, hbc] - 18*trace[he, hec] - 54*trace[ht, htc] - 
-    54*mh1*trace[Ybc, Yb] - 54*mh2*trace[Ytc, Yt] - 
-    18*mh1*trace[Adj[Ye], Ye] - 54*trace[Yb, Ybc, mb] - 
-    54*trace[Ybc, Yb, mq] - 18*trace[Ye, Adj[Ye], me] - 
-    54*trace[Yt, Ytc, mt] - 54*trace[Ytc, Yt, mq] - 
-    18*trace[Adj[Ye], Ye, ml]) + g1^4*((-126*trace[hb, hbc])/25 - 
-    (162*trace[he, hec])/25 - (234*trace[ht, htc])/25 - 
-    (126*mh1*trace[Ybc, Yb])/25 - (234*mh2*trace[Ytc, Yt])/25 - 
-    (162*mh1*trace[Adj[Ye], Ye])/25 - (126*trace[Yb, Ybc, mb])/25 - 
-    (126*trace[Ybc, Yb, mq])/25 - (162*trace[Ye, Adj[Ye], me])/25 - 
-    (234*trace[Yt, Ytc, mt])/25 - (234*trace[Ytc, Yt, mq])/25 - 
-    (162*trace[Adj[Ye], Ye, ml])/25) + MatMul[Adj[Ye], Ye, Adj[Ye], Ye]*
-   (12*trace[hb, hbc] + 4*trace[he, hec] + 36*mh1*trace[Ybc, Yb] + 
-    12*mh1*trace[Adj[Ye], Ye] + 12*trace[Yb, Ybc, mb] + 
-    12*trace[Ybc, Yb, mq] + 4*trace[Ye, Adj[Ye], me] + 
+   (12*trace[Adj[Yb], Yb] + 4*trace[Adj[Ye], Ye]) + 
+  MatMul[hec, he, Adj[Ye], Ye]*(12*trace[Adj[Yb], Yb] + 
+    4*trace[Adj[Ye], Ye]) + MatMul[hec, Ye, Adj[Ye], he]*
+   (12*trace[Adj[Yb], Yb] + 4*trace[Adj[Ye], Ye]) + 
+  MatMul[Adj[Ye], he, hec, Ye]*(12*trace[Adj[Yb], Yb] + 
+    4*trace[Adj[Ye], Ye]) + MatMul[Adj[Ye], Ye, hec, he]*
+   (12*trace[Adj[Yb], Yb] + 4*trace[Adj[Ye], Ye]) + 
+  2*g2^2*ml*MatMul[Adj[Ye], Ye]*(18*trace[Adj[Yb], Yb] + 
+    6*trace[Adj[Ye], Ye]) + g2^2*me*Ye*Adj[Ye]*(36*trace[Adj[Yb], Yb] + 
+    12*trace[Adj[Ye], Ye]) + g2^2*MatMul[hec, he]*
+   (36*trace[Adj[Yb], Yb] + 12*trace[Adj[Ye], Ye]) + 
+  g2^2*M2^2*MatMul[Adj[Ye], Ye]*(72*trace[Adj[Yb], Yb] + 
+    24*trace[Adj[Ye], Ye]) + g2^4*M2^2*(-270*trace[Adj[Yb], Yb] - 
+    90*trace[Adj[Ye], Ye] - 270*trace[Adj[Yt], Yt]) + 
+  g1^4*M1^2*((-126*trace[Adj[Yb], Yb])/5 - (162*trace[Adj[Ye], Ye])/5 - 
+    (234*trace[Adj[Yt], Yt])/5) + MatMul[Adj[Ye], Ye, Adj[Ye], Ye]*
+   (12*trace[hb, hbc] + 4*trace[he, hec] + 36*mh1*trace[Adj[Yb], Yb] + 
+    12*mh1*trace[Adj[Ye], Ye] + 12*trace[Yb, Adj[Yb], mb] + 
+    4*trace[Ye, Adj[Ye], me] + 12*trace[Adj[Yb], Yb, mq] + 
     4*trace[Adj[Ye], Ye, ml]) + g2^2*MatMul[Adj[Ye], Ye]*
-   (36*trace[hb, hbc] + 12*trace[he, hec] + 72*mh1*trace[Ybc, Yb] + 
-    24*mh1*trace[Adj[Ye], Ye] + 36*trace[Yb, Ybc, mb] + 
-    36*trace[Ybc, Yb, mq] + 12*trace[Ye, Adj[Ye], me] + 
-    12*trace[Adj[Ye], Ye, ml]) + MatMul[hec, Ye]*
-   (-36*trace[hb, Ybc]*trace[Ybc, Yb] - 12*trace[he, Adj[Ye]]*
-     trace[Ybc, Yb] - 12*trace[hb, Ybc]*trace[Adj[Ye], Ye] - 
-    4*trace[he, Adj[Ye]]*trace[Adj[Ye], Ye] + 12*trace[hb, Ytc, Yt, Ybc] + 
-    72*trace[Ybc, hb, Ybc, Yb] + 12*trace[Ytc, ht, Ybc, Yb] + 
-    24*trace[Adj[Ye], he, Adj[Ye], Ye]) + MatMul[Adj[Ye], he]*
-   (-36*trace[hbc, Yb]*trace[Ybc, Yb] - 12*trace[hec, Ye]*trace[Ybc, Yb] - 
-    12*trace[hbc, Yb]*trace[Adj[Ye], Ye] - 4*trace[hec, Ye]*
-     trace[Adj[Ye], Ye] + 12*trace[htc, Yt, Ybc, Yb] + 
-    72*trace[Ybc, Yb, hbc, Yb] + 12*trace[Ytc, Yt, hbc, Yb] + 
-    24*trace[Adj[Ye], Ye, hec, Ye]) + 2*ml*MatMul[Adj[Ye], Ye]*
-   (-9*trace[Ybc, Yb]^2 - 6*trace[Ybc, Yb]*trace[Adj[Ye], Ye] - 
-    trace[Adj[Ye], Ye]^2 + 18*trace[Ybc, Yb, Ybc, Yb] + 
-    6*trace[Ytc, Yt, Ybc, Yb] + 6*trace[Adj[Ye], Ye, Adj[Ye], Ye]) + 
-  me*Ye*Adj[Ye]*(-18*trace[Ybc, Yb]^2 - 12*trace[Ybc, Yb]*
+   (36*trace[hb, hbc] + 12*trace[he, hec] + 72*mh1*trace[Adj[Yb], Yb] + 
+    24*mh1*trace[Adj[Ye], Ye] + 36*trace[Yb, Adj[Yb], mb] + 
+    12*trace[Ye, Adj[Ye], me] + 36*trace[Adj[Yb], Yb, mq] + 
+    12*trace[Adj[Ye], Ye, ml]) + 
+  g2^4*(-54*trace[hb, hbc] - 18*trace[he, hec] - 54*trace[ht, htc] - 
+    54*mh1*trace[Adj[Yb], Yb] - 18*mh1*trace[Adj[Ye], Ye] - 
+    54*mh2*trace[Adj[Yt], Yt] - 54*trace[Yb, Adj[Yb], mb] - 
+    18*trace[Ye, Adj[Ye], me] - 54*trace[Yt, Adj[Yt], mt] - 
+    54*trace[Adj[Yb], Yb, mq] - 18*trace[Adj[Ye], Ye, ml] - 
+    54*trace[Adj[Yt], Yt, mq]) + g1^4*((-126*trace[hb, hbc])/25 - 
+    (162*trace[he, hec])/25 - (234*trace[ht, htc])/25 - 
+    (126*mh1*trace[Adj[Yb], Yb])/25 - (162*mh1*trace[Adj[Ye], Ye])/25 - 
+    (234*mh2*trace[Adj[Yt], Yt])/25 - (126*trace[Yb, Adj[Yb], mb])/25 - 
+    (162*trace[Ye, Adj[Ye], me])/25 - (234*trace[Yt, Adj[Yt], mt])/25 - 
+    (126*trace[Adj[Yb], Yb, mq])/25 - (162*trace[Adj[Ye], Ye, ml])/25 - 
+    (234*trace[Adj[Yt], Yt, mq])/25) + MatMul[hec, Ye]*
+   (-36*trace[hb, Adj[Yb]]*trace[Adj[Yb], Yb] - 12*trace[he, Adj[Ye]]*
+     trace[Adj[Yb], Yb] - 12*trace[hb, Adj[Yb]]*trace[Adj[Ye], Ye] - 
+    4*trace[he, Adj[Ye]]*trace[Adj[Ye], Ye] + 
+    12*trace[hb, Adj[Yt], Yt, Adj[Yb]] + 72*trace[Adj[Yb], hb, Adj[Yb], Yb] + 
+    24*trace[Adj[Ye], he, Adj[Ye], Ye] + 
+    12*trace[Adj[Yt], ht, Adj[Yb], Yb]) + MatMul[Adj[Ye], he]*
+   (-36*trace[hbc, Yb]*trace[Adj[Yb], Yb] - 12*trace[hec, Ye]*
+     trace[Adj[Yb], Yb] - 12*trace[hbc, Yb]*trace[Adj[Ye], Ye] - 
+    4*trace[hec, Ye]*trace[Adj[Ye], Ye] + 12*trace[htc, Yt, Adj[Yb], Yb] + 
+    72*trace[Adj[Yb], Yb, hbc, Yb] + 24*trace[Adj[Ye], Ye, hec, Ye] + 
+    12*trace[Adj[Yt], Yt, hbc, Yb]) + 2*ml*MatMul[Adj[Ye], Ye]*
+   (-9*trace[Adj[Yb], Yb]^2 - 6*trace[Adj[Yb], Yb]*trace[Adj[Ye], Ye] - 
+    trace[Adj[Ye], Ye]^2 + 18*trace[Adj[Yb], Yb, Adj[Yb], Yb] + 
+    6*trace[Adj[Ye], Ye, Adj[Ye], Ye] + 6*trace[Adj[Yt], Yt, Adj[Yb], Yb]) + 
+  me*Ye*Adj[Ye]*(-18*trace[Adj[Yb], Yb]^2 - 12*trace[Adj[Yb], Yb]*
      trace[Adj[Ye], Ye] - 2*trace[Adj[Ye], Ye]^2 + 
-    36*trace[Ybc, Yb, Ybc, Yb] + 12*trace[Ytc, Yt, Ybc, Yb] + 
-    12*trace[Adj[Ye], Ye, Adj[Ye], Ye]) + 
-  MatMul[hec, he]*(-18*trace[Ybc, Yb]^2 - 12*trace[Ybc, Yb]*
+    36*trace[Adj[Yb], Yb, Adj[Yb], Yb] + 12*trace[Adj[Ye], Ye, Adj[Ye], Ye] + 
+    12*trace[Adj[Yt], Yt, Adj[Yb], Yb]) + 
+  MatMul[hec, he]*(-18*trace[Adj[Yb], Yb]^2 - 12*trace[Adj[Yb], Yb]*
      trace[Adj[Ye], Ye] - 2*trace[Adj[Ye], Ye]^2 + 
-    36*trace[Ybc, Yb, Ybc, Yb] + 12*trace[Ytc, Yt, Ybc, Yb] + 
-    12*trace[Adj[Ye], Ye, Adj[Ye], Ye]) + MatMul[Adj[Ye], Ye]*
-   (-36*trace[hb, Ybc]*trace[hbc, Yb] - 12*trace[hbc, Yb]*
-     trace[he, Adj[Ye]] - 12*trace[hb, Ybc]*trace[hec, Ye] - 
-    4*trace[he, Adj[Ye]]*trace[hec, Ye] - 36*trace[hb, hbc]*trace[Ybc, Yb] - 
-    12*trace[he, hec]*trace[Ybc, Yb] - 54*mh1*trace[Ybc, Yb]^2 - 
-    12*trace[hb, hbc]*trace[Adj[Ye], Ye] - 4*trace[he, hec]*
-     trace[Adj[Ye], Ye] - 36*mh1*trace[Ybc, Yb]*trace[Adj[Ye], Ye] - 
-    6*mh1*trace[Adj[Ye], Ye]^2 - 36*trace[Ybc, Yb]*trace[Yb, Ybc, mb] - 
-    12*trace[Adj[Ye], Ye]*trace[Yb, Ybc, mb] - 36*trace[Ybc, Yb]*
-     trace[Ybc, Yb, mq] - 12*trace[Adj[Ye], Ye]*trace[Ybc, Yb, mq] - 
-    12*trace[Ybc, Yb]*trace[Ye, Adj[Ye], me] - 4*trace[Adj[Ye], Ye]*
-     trace[Ye, Adj[Ye], me] - 12*trace[Ybc, Yb]*trace[Adj[Ye], Ye, ml] - 
+    36*trace[Adj[Yb], Yb, Adj[Yb], Yb] + 12*trace[Adj[Ye], Ye, Adj[Ye], Ye] + 
+    12*trace[Adj[Yt], Yt, Adj[Yb], Yb]) + MatMul[Adj[Ye], Ye]*
+   (-36*trace[hb, Adj[Yb]]*trace[hbc, Yb] - 12*trace[hbc, Yb]*
+     trace[he, Adj[Ye]] - 12*trace[hb, Adj[Yb]]*trace[hec, Ye] - 
+    4*trace[he, Adj[Ye]]*trace[hec, Ye] - 36*trace[hb, hbc]*
+     trace[Adj[Yb], Yb] - 12*trace[he, hec]*trace[Adj[Yb], Yb] - 
+    54*mh1*trace[Adj[Yb], Yb]^2 - 12*trace[hb, hbc]*trace[Adj[Ye], Ye] - 
+    4*trace[he, hec]*trace[Adj[Ye], Ye] - 36*mh1*trace[Adj[Yb], Yb]*
+     trace[Adj[Ye], Ye] - 6*mh1*trace[Adj[Ye], Ye]^2 - 
+    36*trace[Adj[Yb], Yb]*trace[Yb, Adj[Yb], mb] - 
+    12*trace[Adj[Ye], Ye]*trace[Yb, Adj[Yb], mb] - 
+    12*trace[Adj[Yb], Yb]*trace[Ye, Adj[Ye], me] - 
+    4*trace[Adj[Ye], Ye]*trace[Ye, Adj[Ye], me] - 
+    36*trace[Adj[Yb], Yb]*trace[Adj[Yb], Yb, mq] - 
+    12*trace[Adj[Ye], Ye]*trace[Adj[Yb], Yb, mq] - 
+    12*trace[Adj[Yb], Yb]*trace[Adj[Ye], Ye, ml] - 
     4*trace[Adj[Ye], Ye]*trace[Adj[Ye], Ye, ml] + 
-    12*trace[hb, htc, Yt, Ybc] + 72*trace[hbc, hb, Ybc, Yb] + 
-    12*trace[hbc, hb, Ytc, Yt] + 24*trace[hec, he, Adj[Ye], Ye] + 
-    12*trace[htc, ht, Ybc, Yb] + 72*trace[Ybc, hb, hbc, Yb] + 
-    108*mh1*trace[Ybc, Yb, Ybc, Yb] + 12*trace[Ytc, ht, hbc, Yb] + 
-    24*mh1*trace[Ytc, Yt, Ybc, Yb] + 12*mh2*trace[Ytc, Yt, Ybc, Yb] + 
+    12*trace[hb, htc, Yt, Adj[Yb]] + 72*trace[hbc, hb, Adj[Yb], Yb] + 
+    12*trace[hbc, hb, Adj[Yt], Yt] + 24*trace[hec, he, Adj[Ye], Ye] + 
+    12*trace[htc, ht, Adj[Yb], Yb] + 72*trace[Adj[Yb], hb, hbc, Yb] + 
+    108*mh1*trace[Adj[Yb], Yb, Adj[Yb], Yb] + 
     24*trace[Adj[Ye], he, hec, Ye] + 36*mh1*trace[Adj[Ye], Ye, Adj[Ye], Ye] + 
-    72*trace[Yb, Ybc, Yb, Ybc, mb] + 12*trace[Yb, Ytc, Yt, Ybc, mb] + 
-    72*trace[Ybc, Yb, Ybc, Yb, mq] + 12*trace[Ybc, Yb, Ytc, Yt, mq] + 
-    24*trace[Ye, Adj[Ye], Ye, Adj[Ye], me] + 12*trace[Yt, Ybc, Yb, Ytc, mt] + 
-    12*trace[Ytc, Yt, Ybc, Yb, mq] + 24*trace[Adj[Ye], Ye, Adj[Ye], Ye, 
-      ml]) + g2^4*g3^2*M2^2*(1080 - 1296*Zeta[3]) + 
-  g2^4*g3^2*M2*M3*(720 - 864*Zeta[3]) + g2^4*g3^2*M3^2*(432 - 432*Zeta[3]) + 
+    12*trace[Adj[Yt], ht, hbc, Yb] + 24*mh1*trace[Adj[Yt], Yt, Adj[Yb], Yb] + 
+    12*mh2*trace[Adj[Yt], Yt, Adj[Yb], Yb] + 
+    72*trace[Yb, Adj[Yb], Yb, Adj[Yb], mb] + 
+    12*trace[Yb, Adj[Yt], Yt, Adj[Yb], mb] + 
+    24*trace[Ye, Adj[Ye], Ye, Adj[Ye], me] + 
+    12*trace[Yt, Adj[Yb], Yb, Adj[Yt], mt] + 
+    72*trace[Adj[Yb], Yb, Adj[Yb], Yb, mq] + 
+    12*trace[Adj[Yb], Yb, Adj[Yt], Yt, mq] + 
+    24*trace[Adj[Ye], Ye, Adj[Ye], Ye, ml] + 
+    12*trace[Adj[Yt], Yt, Adj[Yb], Yb, mq]) + 
+  g2^4*g3^2*M2^2*(1080 - 1296*Zeta[3]) + g2^4*g3^2*M2*M3*
+   (720 - 864*Zeta[3]) + g2^4*g3^2*M3^2*(432 - 432*Zeta[3]) + 
   g2^4*M2^2*MatMul[Adj[Ye], Ye]*(-135 - 378*Zeta[3]) + 
   g1^4*g3^2*M1^2*(792/5 - (4752*Zeta[3])/25) + 
   g1^6*M1^2*(55767/125 - (21492*Zeta[3])/125) + 
@@ -204,35 +219,37 @@
     (12*trace[mq])/25 - (96*trace[mt])/25 + (81*mh1*Zeta[3])/25) + 
   g1^2*g2^2*MatMul[Adj[Ye], Ye]*((-81*mh1)/5 + (162*mh1*Zeta[3])/5) + 
   g2^2*MatMul[Adj[Ye], Ye, Adj[Ye], Ye]*(-12*mh1 + 72*mh1*Zeta[3]) + 
-  g1^2*MatMul[hec, Ye]*(16*trace[hb, Ybc] - 24*trace[hb, Ybc]*Zeta[3]) + 
-  g3^2*MatMul[hec, Ye]*(-64*trace[hb, Ybc] + 96*trace[hb, Ybc]*Zeta[3]) + 
-  g3^2*M3*MatMul[Adj[Ye], Ye]*(64*trace[hb, Ybc] + 64*trace[hbc, Yb] - 
-    96*trace[hb, Ybc]*Zeta[3] - 96*trace[hbc, Yb]*Zeta[3]) + 
-  g1^2*MatMul[Adj[Ye], he]*(16*trace[hbc, Yb] - 24*trace[hbc, Yb]*Zeta[3]) + 
-  g1^2*M1*MatMul[Adj[Ye], Ye]*(-16*trace[hb, Ybc] - 16*trace[hbc, Yb] + 
-    24*trace[hb, Ybc]*Zeta[3] + 24*trace[hbc, Yb]*Zeta[3]) + 
+  g1^2*MatMul[hec, Ye]*(16*trace[hb, Adj[Yb]] - 24*trace[hb, Adj[Yb]]*
+     Zeta[3]) + g3^2*MatMul[hec, Ye]*(-64*trace[hb, Adj[Yb]] + 
+    96*trace[hb, Adj[Yb]]*Zeta[3]) + g3^2*M3*MatMul[Adj[Ye], Ye]*
+   (64*trace[hb, Adj[Yb]] + 64*trace[hbc, Yb] - 96*trace[hb, Adj[Yb]]*
+     Zeta[3] - 96*trace[hbc, Yb]*Zeta[3]) + g1^2*MatMul[Adj[Ye], he]*
+   (16*trace[hbc, Yb] - 24*trace[hbc, Yb]*Zeta[3]) + 
+  g1^2*M1*MatMul[Adj[Ye], Ye]*(-16*trace[hb, Adj[Yb]] - 16*trace[hbc, Yb] + 
+    24*trace[hb, Adj[Yb]]*Zeta[3] + 24*trace[hbc, Yb]*Zeta[3]) + 
   g3^2*MatMul[Adj[Ye], he]*(-64*trace[hbc, Yb] + 96*trace[hbc, Yb]*Zeta[3]) + 
-  g3^2*M3*MatMul[hec, Ye]*(64*trace[Ybc, Yb] - 96*trace[Ybc, Yb]*Zeta[3]) + 
-  g3^2*M3*MatMul[Adj[Ye], he]*(64*trace[Ybc, Yb] - 
-    96*trace[Ybc, Yb]*Zeta[3]) + g1^2*M1^2*MatMul[Adj[Ye], Ye]*
-   (32*trace[Ybc, Yb] - 48*trace[Ybc, Yb]*Zeta[3]) + 
-  g1^2*me*Ye*Adj[Ye]*(16*trace[Ybc, Yb] - 24*trace[Ybc, Yb]*Zeta[3]) + 
-  g1^2*MatMul[hec, he]*(16*trace[Ybc, Yb] - 24*trace[Ybc, Yb]*Zeta[3]) + 
-  2*g1^2*ml*MatMul[Adj[Ye], Ye]*(8*trace[Ybc, Yb] - 
-    12*trace[Ybc, Yb]*Zeta[3]) + g1^2*M1*MatMul[hec, Ye]*
-   (-16*trace[Ybc, Yb] + 24*trace[Ybc, Yb]*Zeta[3]) + 
-  g1^2*M1*MatMul[Adj[Ye], he]*(-16*trace[Ybc, Yb] + 
-    24*trace[Ybc, Yb]*Zeta[3]) + 2*g3^2*ml*MatMul[Adj[Ye], Ye]*
-   (-32*trace[Ybc, Yb] + 48*trace[Ybc, Yb]*Zeta[3]) + 
-  g3^2*me*Ye*Adj[Ye]*(-64*trace[Ybc, Yb] + 96*trace[Ybc, Yb]*Zeta[3]) + 
-  g3^2*MatMul[hec, he]*(-64*trace[Ybc, Yb] + 96*trace[Ybc, Yb]*Zeta[3]) + 
-  g3^2*M3^2*MatMul[Adj[Ye], Ye]*(-128*trace[Ybc, Yb] + 
-    192*trace[Ybc, Yb]*Zeta[3]) + g1^2*MatMul[Adj[Ye], Ye]*
-   (16*trace[hb, hbc] + 32*mh1*trace[Ybc, Yb] + 16*trace[Yb, Ybc, mb] + 
-    16*trace[Ybc, Yb, mq] - 24*trace[hb, hbc]*Zeta[3] - 
-    48*mh1*trace[Ybc, Yb]*Zeta[3] - 24*trace[Yb, Ybc, mb]*Zeta[3] - 
-    24*trace[Ybc, Yb, mq]*Zeta[3]) + g3^2*MatMul[Adj[Ye], Ye]*
-   (-64*trace[hb, hbc] - 128*mh1*trace[Ybc, Yb] - 64*trace[Yb, Ybc, mb] - 
-    64*trace[Ybc, Yb, mq] + 96*trace[hb, hbc]*Zeta[3] + 
-    192*mh1*trace[Ybc, Yb]*Zeta[3] + 96*trace[Yb, Ybc, mb]*Zeta[3] + 
-    96*trace[Ybc, Yb, mq]*Zeta[3])}
+  g3^2*M3*MatMul[hec, Ye]*(64*trace[Adj[Yb], Yb] - 
+    96*trace[Adj[Yb], Yb]*Zeta[3]) + g3^2*M3*MatMul[Adj[Ye], he]*
+   (64*trace[Adj[Yb], Yb] - 96*trace[Adj[Yb], Yb]*Zeta[3]) + 
+  g1^2*M1^2*MatMul[Adj[Ye], Ye]*(32*trace[Adj[Yb], Yb] - 
+    48*trace[Adj[Yb], Yb]*Zeta[3]) + g1^2*me*Ye*Adj[Ye]*
+   (16*trace[Adj[Yb], Yb] - 24*trace[Adj[Yb], Yb]*Zeta[3]) + 
+  g1^2*MatMul[hec, he]*(16*trace[Adj[Yb], Yb] - 24*trace[Adj[Yb], Yb]*
+     Zeta[3]) + 2*g1^2*ml*MatMul[Adj[Ye], Ye]*(8*trace[Adj[Yb], Yb] - 
+    12*trace[Adj[Yb], Yb]*Zeta[3]) + g1^2*M1*MatMul[hec, Ye]*
+   (-16*trace[Adj[Yb], Yb] + 24*trace[Adj[Yb], Yb]*Zeta[3]) + 
+  g1^2*M1*MatMul[Adj[Ye], he]*(-16*trace[Adj[Yb], Yb] + 
+    24*trace[Adj[Yb], Yb]*Zeta[3]) + 2*g3^2*ml*MatMul[Adj[Ye], Ye]*
+   (-32*trace[Adj[Yb], Yb] + 48*trace[Adj[Yb], Yb]*Zeta[3]) + 
+  g3^2*me*Ye*Adj[Ye]*(-64*trace[Adj[Yb], Yb] + 96*trace[Adj[Yb], Yb]*
+     Zeta[3]) + g3^2*MatMul[hec, he]*(-64*trace[Adj[Yb], Yb] + 
+    96*trace[Adj[Yb], Yb]*Zeta[3]) + g3^2*M3^2*MatMul[Adj[Ye], Ye]*
+   (-128*trace[Adj[Yb], Yb] + 192*trace[Adj[Yb], Yb]*Zeta[3]) + 
+  g1^2*MatMul[Adj[Ye], Ye]*(16*trace[hb, hbc] + 32*mh1*trace[Adj[Yb], Yb] + 
+    16*trace[Yb, Adj[Yb], mb] + 16*trace[Adj[Yb], Yb, mq] - 
+    24*trace[hb, hbc]*Zeta[3] - 48*mh1*trace[Adj[Yb], Yb]*Zeta[3] - 
+    24*trace[Yb, Adj[Yb], mb]*Zeta[3] - 24*trace[Adj[Yb], Yb, mq]*Zeta[3]) + 
+  g3^2*MatMul[Adj[Ye], Ye]*(-64*trace[hb, hbc] - 128*mh1*trace[Adj[Yb], Yb] - 
+    64*trace[Yb, Adj[Yb], mb] - 64*trace[Adj[Yb], Yb, mq] + 
+    96*trace[hb, hbc]*Zeta[3] + 192*mh1*trace[Adj[Yb], Yb]*Zeta[3] + 
+    96*trace[Yb, Adj[Yb], mb]*Zeta[3] + 96*trace[Adj[Yb], Yb, mq]*Zeta[3])}
