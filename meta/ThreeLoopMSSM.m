@@ -24,15 +24,22 @@ BetaMSSM[gc_] :=
            SARAH`TrilinearUp        , Get[FileNameJoin[{subDir, "beta_TYu.m"}]],
            SARAH`TrilinearDown      , Get[FileNameJoin[{subDir, "beta_TYd.m"}]],
            SARAH`TrilinearLepton    , Get[FileNameJoin[{subDir, "beta_TYe.m"}]],
+           SARAH`SoftSquark         , Get[FileNameJoin[{subDir, "beta_mq2.m"}]],
+           SARAH`SoftUp             , Get[FileNameJoin[{subDir, "beta_mu2.m"}]],
+           SARAH`SoftDown           , Get[FileNameJoin[{subDir, "beta_md2.m"}]],
+           SARAH`SoftLeftLepton     , Get[FileNameJoin[{subDir, "beta_ml2.m"}]],
+           SARAH`SoftRightLepton    , Get[FileNameJoin[{subDir, "beta_me2.m"}]],
            _, Which[IsDefinedAndEqual["Bino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M1.m"}]],
                     IsDefinedAndEqual["Wino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M2.m"}]],
                     IsDefinedAndEqual["Gluino Mass parameter", gc], Get[FileNameJoin[{subDir, "beta_M3.m"}]],
+                    IsDefinedAndEqual["Softbreaking Down-Higgs Mass", gc], Get[FileNameJoin[{subDir, "beta_mHd2.m"}]],
+                    IsDefinedAndEqual["Softbreaking Up-Higgs Mass"  , gc], Get[FileNameJoin[{subDir, "beta_mHu2.m"}]],
                     True, Print["Error: unknown coupling: ", gc]; {0,0,0}
                     ]
           ] /. ThreeLoopMSSM`ToSARAHNamingConvention[] /. Zeta[s_] :> N[Zeta[s]];
 
 (* Note:
-   g1, g2, g3, Ye, M1, M2, M3 are in SARAH` context
+   g1, g2, g3, Ye, M1, M2, M3, mb are in SARAH` context
  *)
 ToSARAHNamingConvention[] := {
     g1 -> SARAH`hyperchargeCoupling G1GUTNormalization[],
@@ -46,7 +53,14 @@ ToSARAHNamingConvention[] := {
     M3 -> Parameters`GetParameterFromDescription["Gluino Mass parameter"],
     Global`ht -> SARAH`TrilinearUp,
     Global`hb -> SARAH`TrilinearDown,
-    Global`he -> SARAH`TrilinearLepton
+    Global`he -> SARAH`TrilinearLepton,
+    Global`mq -> SARAH`SoftSquark,
+    Global`mt -> SARAH`SoftUp,
+    mb -> SARAH`SoftDown,
+    Global`ml -> SARAH`SoftLeftLepton,
+    Global`me -> SARAH`SoftRightLepton,
+    Global`mh1 -> Parameters`GetParameterFromDescription["Softbreaking Down-Higgs Mass"],
+    Global`mh2 -> Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"]
 };
 
 End[];

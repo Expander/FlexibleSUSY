@@ -1517,12 +1517,14 @@ AddMSSM3LoopRGEs[] := Module[{
               Parameters`GetParameterFromDescription["Wino Mass parameter"],
               Parameters`GetParameterFromDescription["Gluino Mass parameter"] },
     trili = { SARAH`TrilinearUp, SARAH`TrilinearDown, SARAH`TrilinearLepton },
+    mass2 = { SARAH`SoftSquark, SARAH`SoftUp, SARAH`SoftDown,
+              SARAH`SoftLeftLepton, SARAH`SoftRightLepton },
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaMi    = AddMSSM3LoopRGE[SARAH`BetaMi   , gaugi];
     SARAH`BetaTijk  = AddMSSM3LoopRGE[SARAH`BetaTijk , trili];
-    (* SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bilin]; *)
+    SARAH`Betam2ij  = AddMSSM3LoopRGE[SARAH`Betam2ij , mass2];
     ];
 
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
