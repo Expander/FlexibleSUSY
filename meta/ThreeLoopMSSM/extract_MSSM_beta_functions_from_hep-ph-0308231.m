@@ -27,7 +27,12 @@ matrixPattern = (
     (WordBoundary ~~ "Yb" ~~ WordBoundary) | "Ybc" |
     (WordBoundary ~~ "he" ~~ WordBoundary) | "hec" |
     (WordBoundary ~~ "ht" ~~ WordBoundary) | "htc" |
-    (WordBoundary ~~ "hb" ~~ WordBoundary) | "hbc");
+    (WordBoundary ~~ "hb" ~~ WordBoundary) | "hbc" |
+    (WordBoundary ~~ "mq" ~~ WordBoundary) |
+    (WordBoundary ~~ "mt" ~~ WordBoundary) |
+    (WordBoundary ~~ "mb" ~~ WordBoundary) |
+    (WordBoundary ~~ "ml" ~~ WordBoundary) |
+    (WordBoundary ~~ "me" ~~ WordBoundary));
 
 (* convert matrix products to non-commutative products *)
 betaStr = StringReplace[betaStr,
@@ -40,7 +45,10 @@ betaStr = StringReplace[betaStr,
 betaStr = StringReplace[betaStr,
    {"Yec" -> "Adj[Ye]",
     "Ytc" -> "Adj[Yt]",
-    "Ybc" -> "Adj[Yb]"}];
+    "Ybc" -> "Adj[Yb]",
+    "hec" -> "Adj[he]",
+    "htc" -> "Adj[ht]",
+    "hbc" -> "Adj[hb]" }];
 
 ToExpression[betaStr];
 
