@@ -61,9 +61,9 @@ repl = {
     n10 -> 0
 };
 
-{bg11     , bg12     , bg13     } /. repl >> "beta_g1.m";
-{bg21     , bg22     , bg23     } /. repl >> "beta_g2.m";
-{bg31     , bg32     , bg33     } /. repl >> "beta_g3.m";
+{g1 bg11  , g1 bg12  , g1 bg13  } /. repl >> "beta_g1.m";
+{g2 bg21  , g2 bg22  , g2 bg23  } /. repl >> "beta_g2.m";
+{g3 bg31  , g3 bg3   , g3 bg33  } /. repl >> "beta_g3.m";
 {betat1   , betat2   , betat3   } /. repl >> "beta_Yu.m";
 {betab1   , betab2   , betab3   } /. repl >> "beta_Yd.m";
 {betae1   , betae2   , betae3   } /. repl >> "beta_Ye.m";
