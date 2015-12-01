@@ -50,7 +50,9 @@ betaStr = StringReplace[betaStr,
     "htc" -> "Adj[ht]",
     "hbc" -> "Adj[hb]" }];
 
-ToExpression[betaStr];
+ReleaseHold[ToExpression[betaStr, InputForm, Hold] /. Times :> MatMul];
+
+scalarPat = g1 | g2 | g3 | M1 | M2 | M3 | mh1 | mh2 | trace[__];
 
 repl = {
     a1 -> g1^2,
@@ -58,25 +60,33 @@ repl = {
     a3 -> g3^2,
     k -> 6 Zeta[3],
     n5 -> 0,
-    n10 -> 0
+    n10 -> 0,
+    MatMul[] -> 1,
+    MatMul[a___, 0, c___] -> 0,
+    MatMul[a_] :> a,
+    MatMul[a___, f:scalarPat, c___] :> f MatMul[a,c],
+    MatMul[a___, f:Power[scalarPat,_], c___] :> f MatMul[a,c],
+    MatMul[a___, b_?NumberQ, c___] :> b MatMul[a,c],
+    MatMul[a___, Plus[b1_,b2_], c___] :> MatMul[a,b1,c] + MatMul[a,b2,c],
+    MatMul[a___, HoldPattern[Times[b__]], c___] :> MatMul[a,b,c]
 };
 
-{g1 bg11  , g1 bg12  , g1 bg13  } /. repl >> "beta_g1.m";
-{g2 bg21  , g2 bg22  , g2 bg23  } /. repl >> "beta_g2.m";
-{g3 bg31  , g3 bg32  , g3 bg33  } /. repl >> "beta_g3.m";
-{betat1   , betat2   , betat3   } /. repl >> "beta_Yu.m";
-{betab1   , betab2   , betab3   } /. repl >> "beta_Yd.m";
-{betae1   , betae2   , betae3   } /. repl >> "beta_Ye.m";
-{betamq1  , betamq2  , betamq3  } /. repl >> "beta_mq2.m";
-{betamt1  , betamt2  , betamt3  } /. repl >> "beta_mu2.m";
-{betamb1  , betamb2  , betamb3  } /. repl >> "beta_md2.m";
-{betamL1  , betamL2  , betamL3  } /. repl >> "beta_ml2.m";
-{betamtau1, betamtau2, betamtau3} /. repl >> "beta_me2.m";
-{betamH21 , betamH22 , betamH23 } /. repl >> "beta_mHu2.m";
-{betamH11 , betamH12 , betamH13 } /. repl >> "beta_mHd2.m";
-{betaht1  , betaht2  , betaht3  } /. repl >> "beta_TYu.m";
-{betahb1  , betahb2  , betahb3  } /. repl >> "beta_TYd.m";
-{betahtau1, betahtau2, betahtau3} /. repl >> "beta_TYe.m";
-{betaM11  , betaM12  , betaM13  } /. repl >> "beta_M1.m";
-{betaM21  , betaM22  , betaM23  } /. repl >> "beta_M2.m";
-{betaM31  , betaM32  , betaM33  } /. repl >> "beta_M3.m";
+{g1 bg11  , g1 bg12  , g1 bg13  } //. repl >> "beta_g1.m";
+{g2 bg21  , g2 bg22  , g2 bg23  } //. repl >> "beta_g2.m";
+{g3 bg31  , g3 bg32  , g3 bg33  } //. repl >> "beta_g3.m";
+{betat1   , betat2   , betat3   } //. repl >> "beta_Yu.m";
+{betab1   , betab2   , betab3   } //. repl >> "beta_Yd.m";
+{betae1   , betae2   , betae3   } //. repl >> "beta_Ye.m";
+{betamq1  , betamq2  , betamq3  } //. repl >> "beta_mq2.m";
+{betamt1  , betamt2  , betamt3  } //. repl >> "beta_mu2.m";
+{betamb1  , betamb2  , betamb3  } //. repl >> "beta_md2.m";
+{betamL1  , betamL2  , betamL3  } //. repl >> "beta_ml2.m";
+{betamtau1, betamtau2, betamtau3} //. repl >> "beta_me2.m";
+{betamH21 , betamH22 , betamH23 } //. repl >> "beta_mHu2.m";
+{betamH11 , betamH12 , betamH13 } //. repl >> "beta_mHd2.m";
+{betaht1  , betaht2  , betaht3  } //. repl >> "beta_TYu.m";
+{betahb1  , betahb2  , betahb3  } //. repl >> "beta_TYd.m";
+{betahtau1, betahtau2, betahtau3} //. repl >> "beta_TYe.m";
+{betaM11  , betaM12  , betaM13  } //. repl >> "beta_M1.m";
+{betaM21  , betaM22  , betaM23  } //. repl >> "beta_M2.m";
+{betaM31  , betaM32  , betaM33  } //. repl >> "beta_M3.m";
