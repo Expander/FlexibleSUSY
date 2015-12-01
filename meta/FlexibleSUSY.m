@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -95,6 +95,7 @@ UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
+UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
 PotentialLSPParticles = {};
@@ -1495,6 +1496,31 @@ AddSM3LoopRGEs[] := Module[{
     SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
     ];
 
+AddMSSM3LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddMSSM3LoopRGEs[] := Module[{
+    gauge = { SARAH`hyperchargeCoupling,
+              SARAH`leftCoupling,
+              SARAH`strongCoupling },
+    (* yuks  = { SARAH`UpYukawa, *)
+    (*           SARAH`DownYukawa, *)
+    (*           SARAH`ElectronYukawa }, *)
+    (* quart = { Parameters`GetParameterFromDescription["MSSM Higgs Selfcouplings"] }, *)
+    (* bilin = { Parameters`GetParameterFromDescription["MSSM Mu Parameter"] } *)
+    },
+    SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
+    (* SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks]; *)
+    (* SARAH`BetaLijkl = AddMSSM3LoopRGE[SARAH`BetaLijkl, quart]; *)
+    (* SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bilin]; *)
+    ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1578,6 +1604,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
                     " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
               AddSM3LoopRGEs[];
+             ];
+
+           If[FlexibleSUSY`UseMSSM3LoopRGEs,
+              Print["Adding MSSM 3-loop beta-functions from ",
+                    "[arxiv:hep-ph/0308231]"];
+              AddMSSM3LoopRGEs[];
              ];
 
            If[SARAH`SupersymmetricModel,
