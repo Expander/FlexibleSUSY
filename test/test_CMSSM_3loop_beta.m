@@ -27,8 +27,24 @@ UniformTraces[] := {
     trace[a_, Adj[b_], x_, Adj[d_]] :> trace[Adj[b], x, Adj[d], a]
 };
 
+Roatations[trace[lst__]] :=
+    Table[trace @@ RotateLeft[{lst},i], {i,1,Length[{lst}]}];
+
+(* calc difference, taking equivalent trace expressions into account *)
+CalcDifference[a_, b_] :=
+    Module[{diff, traces, differences = {}, repls = {}, i},
+           diff = Simplify[Expand[a] - Expand[b]];
+           traces = Cases[diff, trace[__], {0, Infinity}];
+           For[i = 1, i <= Length[traces], i++,
+               AppendTo[repls, (traces[[i]] -> #)& /@ Roatations[traces[[i]]]];
+              ];
+           repls = Outer[List, repls];
+           differences = (Sequence @@ #)& /@ ((Simplify[Expand[a /. #] - Expand[b]])& /@ repls);
+           If[MemberQ[differences, 0], 0, diff]
+          ];
+
 TestBetaEquality[lst_, c_, loop_] :=
-    Module[{sa, sm},
+    Module[{sa, sm, difference},
            sm = ThreeLoopMSSM`BetaMSSM[c][[loop]] /. UniformTraces[];
            sa = FindBetaFunction[lst, c][[loop]] /. {
                Kronecker[_,_] :> 1,
@@ -36,8 +52,8 @@ TestBetaEquality[lst_, c_, loop_] :=
                conj[a_] :> a,
                Tr1[1] -> 0 (* why is this term missing in the JJ result? *)
            } /. UniformTraces[];
-           Print["Difference: ", Expand[sm] - Expand[sa]]
-           TestEquality[Expand[sm], Expand[sa]]
+           difference = CalcDifference[sm, sa];
+           TestEquality[difference, 0];
           ];
 
 For[l = 1, l <= 2, l++,
