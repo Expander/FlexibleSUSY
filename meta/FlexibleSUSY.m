@@ -1513,12 +1513,13 @@ AddMSSM3LoopRGEs[] := Module[{
     yuks  = { SARAH`UpYukawa,
               SARAH`DownYukawa,
               SARAH`ElectronYukawa },
-    (* quart = { Parameters`GetParameterFromDescription["MSSM Higgs Selfcouplings"] }, *)
-    (* bilin = { Parameters`GetParameterFromDescription["MSSM Mu Parameter"] } *)
+    gaugi = { Parameters`GetParameterFromDescription["Bino Mass parameter"],
+              Parameters`GetParameterFromDescription["Wino Mass parameter"],
+              Parameters`GetParameterFromDescription["Gluino Mass parameter"] },
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
-    (* SARAH`BetaLijkl = AddMSSM3LoopRGE[SARAH`BetaLijkl, quart]; *)
+    SARAH`BetaMi    = AddMSSM3LoopRGE[SARAH`BetaMi   , gaugi];
     (* SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bilin]; *)
     ];
 

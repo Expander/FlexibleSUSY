@@ -21,18 +21,15 @@ BetaMSSM[gc_] :=
            SARAH`UpYukawa           , Get[FileNameJoin[{subDir, "beta_Yu.m"}]],
            SARAH`DownYukawa         , Get[FileNameJoin[{subDir, "beta_Yd.m"}]],
            SARAH`ElectronYukawa     , Get[FileNameJoin[{subDir, "beta_Ye.m"}]],
-           (* \[Lambda]                , Get[FileNameJoin[{subDir, "beta_lambda.m"}]], *)
-           (* m2                       , Get[FileNameJoin[{subDir, "beta_m2.m"}]], *)
-           _, Which[IsDefinedAndEqual["MSSM Mu Parameter", gc],
-                    Get[FileNameJoin[{subDir, "beta_m2.m"}]],
-                    IsDefinedAndEqual["MSSM Higgs Selfcouplings", gc],
-                    Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
+           _, Which[IsDefinedAndEqual["Bino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M1.m"}]],
+                    IsDefinedAndEqual["Wino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M2.m"}]],
+                    IsDefinedAndEqual["Gluino Mass parameter", gc], Get[FileNameJoin[{subDir, "beta_M3.m"}]],
                     True, Print["Error: unknown coupling: ", gc]; {0,0,0}
                     ]
           ] /. ThreeLoopMSSM`ToSARAHNamingConvention[] /. Zeta[s_] :> N[Zeta[s]];
 
 (* Note:
-   g1, g2, g3, Ye are global variables in SARAH
+   g1, g2, g3, Ye, M1, M2, M3 are in SARAH` context
  *)
 ToSARAHNamingConvention[] := {
     g1 -> SARAH`hyperchargeCoupling G1GUTNormalization[],
@@ -40,10 +37,13 @@ ToSARAHNamingConvention[] := {
     g3 -> SARAH`strongCoupling,
     Global`Yt -> SARAH`UpYukawa,
     Global`Yb -> SARAH`DownYukawa,
-    Ye -> SARAH`ElectronYukawa
-    (* , *)
-    (* \[Lambda] -> Parameters`GetParameterFromDescription["MSSM Higgs Selfcouplings"], *)
-    (* m2        -> Parameters`GetParameterFromDescription["MSSM Mu Parameter"] *)
+    Ye -> SARAH`ElectronYukawa,
+    M1 -> Parameters`GetParameterFromDescription["Bino Mass parameter"],
+    M2 -> Parameters`GetParameterFromDescription["Wino Mass parameter"],
+    M3 -> Parameters`GetParameterFromDescription["Gluino Mass parameter"],
+    Global`ht -> SARAH`TrilinearUp,
+    Global`hb -> SARAH`TrilinearDown,
+    Global`he -> SARAH`TrilinearLepton
 };
 
 End[];
