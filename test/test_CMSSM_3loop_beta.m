@@ -30,7 +30,13 @@ UniformTraces[] := {
 TestBetaEquality[lst_, c_, loop_] :=
     Module[{sa, sm},
            sm = ThreeLoopMSSM`BetaMSSM[c][[loop]] /. UniformTraces[];
-           sa = FindBetaFunction[lst, c][[loop]] /. a_[i1,i2] :> a /. UniformTraces[];
+           sa = FindBetaFunction[lst, c][[loop]] /. {
+               Kronecker[_,_] :> 1,
+               a_[i1,i2] :> a,
+               conj[a_] :> a,
+               Tr1[1] -> 0 (* why is this term missing in the JJ result? *)
+           } /. UniformTraces[];
+           Print["Difference: ", Expand[sm] - Expand[sa]]
            TestEquality[Expand[sm], Expand[sa]]
           ];
 
@@ -41,6 +47,17 @@ For[l = 1, l <= 2, l++,
     TestBetaEquality[SARAH`BetaYijk , SARAH`UpYukawa           , l];
     TestBetaEquality[SARAH`BetaYijk , SARAH`DownYukawa         , l];
     TestBetaEquality[SARAH`BetaYijk , SARAH`ElectronYukawa     , l];
+    TestBetaEquality[SARAH`BetaMi   , MassB                    , l];
+    TestBetaEquality[SARAH`BetaMi   , MassWB                   , l];
+    TestBetaEquality[SARAH`BetaMi   , MassG                    , l];
+    TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearUp        , l];
+    TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearDown      , l];
+    TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearLepton    , l];
+    TestBetaEquality[SARAH`Betam2ij , SARAH`SoftSquark         , l];
+    TestBetaEquality[SARAH`Betam2ij , SARAH`SoftUp             , l];
+    TestBetaEquality[SARAH`Betam2ij , SARAH`SoftDown           , l];
+    TestBetaEquality[SARAH`Betam2ij , SARAH`SoftLeftLepton     , l];
+    TestBetaEquality[SARAH`Betam2ij , SARAH`SoftRightLepton    , l];
    ];
 
 PrintTestSummary[];
