@@ -1516,10 +1516,12 @@ AddMSSM3LoopRGEs[] := Module[{
     gaugi = { Parameters`GetParameterFromDescription["Bino Mass parameter"],
               Parameters`GetParameterFromDescription["Wino Mass parameter"],
               Parameters`GetParameterFromDescription["Gluino Mass parameter"] },
+    trili = { SARAH`TrilinearUp, SARAH`TrilinearDown, SARAH`TrilinearLepton },
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaMi    = AddMSSM3LoopRGE[SARAH`BetaMi   , gaugi];
+    SARAH`BetaTijk  = AddMSSM3LoopRGE[SARAH`BetaTijk , trili];
     (* SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bilin]; *)
     ];
 
