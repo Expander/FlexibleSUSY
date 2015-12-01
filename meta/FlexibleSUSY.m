@@ -1499,7 +1499,8 @@ AddSM3LoopRGEs[] := Module[{
 AddMSSM3LoopRGE[beta_List, couplings_List] :=
     Module[{rules, MakeRule},
            MakeRule[coupling_] := {
-               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}]
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}]
            };
            rules = Flatten[MakeRule /@ couplings];
            beta /. rules
@@ -1509,14 +1510,14 @@ AddMSSM3LoopRGEs[] := Module[{
     gauge = { SARAH`hyperchargeCoupling,
               SARAH`leftCoupling,
               SARAH`strongCoupling },
-    (* yuks  = { SARAH`UpYukawa, *)
-    (*           SARAH`DownYukawa, *)
-    (*           SARAH`ElectronYukawa }, *)
+    yuks  = { SARAH`UpYukawa,
+              SARAH`DownYukawa,
+              SARAH`ElectronYukawa },
     (* quart = { Parameters`GetParameterFromDescription["MSSM Higgs Selfcouplings"] }, *)
     (* bilin = { Parameters`GetParameterFromDescription["MSSM Mu Parameter"] } *)
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
-    (* SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks]; *)
+    SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
     (* SARAH`BetaLijkl = AddMSSM3LoopRGE[SARAH`BetaLijkl, quart]; *)
     (* SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bilin]; *)
     ];
