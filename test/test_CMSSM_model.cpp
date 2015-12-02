@@ -1600,9 +1600,12 @@ void compare_models(int loopLevel)
    std::cout << "comparing beta functions ... ";
    test_beta_function_equality(softSusy, m);
    std::cout << "done\n";
-   std::cout << "comparing anomalous dimensions ... ";
-   compare_anomalous_dimensions(softSusy, m);
-   std::cout << "done\n";
+
+   if (loopLevel < 3) {
+      std::cout << "comparing anomalous dimensions ... ";
+      compare_anomalous_dimensions(softSusy, m);
+      std::cout << "done\n";
+   }
 
    if (loopLevel == 1) {
       std::cout << "test tree-level ewsb ... ";
@@ -1676,6 +1679,11 @@ int main()
    std::cout << "compare 2-loop level\n";
    std::cout << "====================\n";
    compare_models(2);
+
+   std::cout << "====================\n";
+   std::cout << "compare 3-loop level\n";
+   std::cout << "====================\n";
+   compare_models(3);
 
    return gErrors;
 }
