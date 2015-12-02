@@ -1520,7 +1520,7 @@ AddMSSM3LoopRGEs[] := Module[{
     mass2 = { SARAH`SoftSquark, SARAH`SoftUp, SARAH`SoftDown,
               SARAH`SoftLeftLepton, SARAH`SoftRightLepton,
               Parameters`GetParameterFromDescription["Softbreaking Down-Higgs Mass"],
-              Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"] },
+              Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"] }
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
