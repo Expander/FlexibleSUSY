@@ -65,6 +65,7 @@ For[l = 1, l <= 2, l++,
     TestBetaEquality[SARAH`BetaMi   , MassB                    , l];
     TestBetaEquality[SARAH`BetaMi   , MassWB                   , l];
     TestBetaEquality[SARAH`BetaMi   , MassG                    , l];
+    TestBetaEquality[SARAH`BetaMuij , \[Mu]                    , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearUp        , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearDown      , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearLepton    , l];
