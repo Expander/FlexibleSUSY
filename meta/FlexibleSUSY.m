@@ -122,7 +122,7 @@ FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
 FSCheckPerturbativityOfDimensionlessParameters = True;
 FSPerturbativityThreshold = N[Sqrt[4 Pi]];
-FSMaximumExpressionSize = 30;
+FSMaximumExpressionSize = 100;
 
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
