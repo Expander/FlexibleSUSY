@@ -36,6 +36,7 @@ OnlyLowEnergyFlexibleSUSY = True;
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
+UseMSSM3LoopRGEs = True;
 
 ExtraSLHAOutputBlocks = {
    {FlexibleSUSYOutput,
