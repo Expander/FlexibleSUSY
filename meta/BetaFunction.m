@@ -106,9 +106,20 @@ ToList[expr_, head_] :=
              ]
           ];
 
+FactorOutLoopFactor[expr_] :=
+    Module[{i, prefactors = {CConversion`oneOver16PiSqr, CConversion`twoLoop,
+                             CConversion`threeLoop, CConversion`oneOver16PiSqr^4}},
+           For[i = 1, i <= Length[prefactors], i++,
+               If[Coefficient[expr, prefactors[[i]]] =!= 0,
+                  Return[Simplify[prefactors[[i]] Expand[expr / prefactors[[i]]]]];
+                 ];
+              ];
+           expr
+          ];
+
 (* split expression into sub-expressions of given maximum size *)
 SplitExpression[expr_, size_Integer] :=
-    Factor /@ (Plus @@@ Utils`SplitList[ToList[expr, Plus], size]);
+    FactorOutLoopFactor /@ (Plus @@@ Utils`SplitList[ToList[expr, Plus], size]);
 
 NeedToSplitExpression[expr_, threshold_Integer] :=
     Length[ToList[expr, Plus]] > threshold;
