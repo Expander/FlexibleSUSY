@@ -36,7 +36,7 @@ BetaMSSM[gc_] :=
                     IsDefinedAndEqual["Softbreaking Up-Higgs Mass"  , gc], Get[FileNameJoin[{subDir, "beta_mHu2.m"}]],
                     True, Print["Error: unknown coupling: ", gc]; {0,0,0}
                     ]
-          ] /. ThreeLoopMSSM`ToSARAHNamingConvention[] /. Zeta[s_] :> N[Zeta[s]];
+          ] /. ThreeLoopMSSM`Private`ToSARAHNamingConvention[] /. Zeta[s_] :> N[Zeta[s]];
 
 (* Note:
    g1, g2, g3, Ye, M1, M2, M3, mb are in SARAH` context
