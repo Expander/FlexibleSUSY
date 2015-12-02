@@ -24,6 +24,7 @@
 #include "SM_two_scale_model.hpp"
 #include "@ModelName@_SM_matching.hpp"
 #include "error.hpp"
+#include "two_scale_constraint.hpp"
 
 namespace flexiblesusy {
 
@@ -37,15 +38,25 @@ template<>
 class @ModelName@_SM_Matching<Two_scale>: public Matching<Two_scale>
 {
 public:
-   @ModelName@_SM_Matching(): scale(0), eft(0), model(0) {}
+   @ModelName@_SM_Matching(): constraint(0), eft(0), model(0) {}
 
-   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_):scale(0), eft(low_), model(high_) {}
+   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_)
+      :constraint(constraint_), eft(low_), model(high_) {}
 
    virtual ~@ModelName@_SM_Matching() {}
 
-   virtual double get_scale() const {return scale;}
-
-   void set_scale(double scale_) { if(scale_ >= 0.) scale = scale_;}
+   virtual double get_scale() const 
+   {
+   
+      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
+      
+      return constraint.get_scale();
+   }
+   
+   void set_constraint(Constraint<Two_scale>* constraint_)
+   {
+      constraint = constraint_;
+   }
 
    virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
       eft = (SM<Two_scale>*) low;
@@ -55,8 +66,8 @@ public:
    virtual void match_high_to_low_scale_model()
    {
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
+      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
-      scale = model->get_scale();
       model->calculate_DRbar_masses();
       model->solve_ewsb_one_loop();
       
@@ -69,8 +80,7 @@ public:
    virtual void match_low_to_high_scale_model()
    {
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-
-      scale = eft->get_scale();
+      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
       if(!model->get_thresholds())
          @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
@@ -81,8 +91,8 @@ public:
    void match_high_to_low_scale_model_tree_level()
    {
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
+      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
-      scale = model->get_scale();
       model->calculate_DRbar_masses();
 
       @ModelName@_SM_matching::matchingTL(*eft, *model);
@@ -91,8 +101,7 @@ public:
    void match_low_to_high_scale_model_tree_level()
    {
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-
-      scale = eft->get_scale();
+      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
       @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
    }
@@ -100,7 +109,7 @@ public:
 private:
    @ModelName@<Two_scale>* model;
    SM<Two_scale>* eft;
-   double scale;
+   Constraint<Two_scale>* constraint;
 };
 
 } // namespace flexiblesusy
