@@ -71,6 +71,10 @@ repl = {
     MatMul[a___, HoldPattern[Times[b__]], c___] :> MatMul[a,b,c]
 };
 
+betaMu1 = Mu * (gammaH11 + gammaH21);
+betaMu2 = Mu * (gammaH12 + gammaH22);
+betaMu3 = Mu * (gammaH13 + gammaH23);
+
 {g1 bg11  , g1 bg12  , g1 bg13  } //. repl >> "beta_g1.m";
 {g2 bg21  , g2 bg22  , g2 bg23  } //. repl >> "beta_g2.m";
 {g3 bg31  , g3 bg32  , g3 bg33  } //. repl >> "beta_g3.m";
@@ -90,3 +94,4 @@ repl = {
 {betaM11  , betaM12  , betaM13  } //. repl >> "beta_M1.m";
 {betaM21  , betaM22  , betaM23  } //. repl >> "beta_M2.m";
 {betaM31  , betaM32  , betaM33  } //. repl >> "beta_M3.m";
+{betaMu1  , betaMu2  , betaMu3  } //. repl >> "beta_Mu.m";
