@@ -50,7 +50,7 @@ public:
    
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
       
-      return constraint.get_scale();
+      return constraint->get_scale();
    }
    
    void set_constraint(Constraint<Two_scale>* constraint_)
