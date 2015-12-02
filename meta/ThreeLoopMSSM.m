@@ -32,6 +32,7 @@ BetaMSSM[gc_] :=
            _, Which[IsDefinedAndEqual["Bino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M1.m"}]],
                     IsDefinedAndEqual["Wino Mass parameter", gc]  , Get[FileNameJoin[{subDir, "beta_M2.m"}]],
                     IsDefinedAndEqual["Gluino Mass parameter", gc], Get[FileNameJoin[{subDir, "beta_M3.m"}]],
+                    IsDefinedAndEqual["Mu-parameter"         , gc], Get[FileNameJoin[{subDir, "beta_Mu.m"}]],
                     IsDefinedAndEqual["Softbreaking Down-Higgs Mass", gc], Get[FileNameJoin[{subDir, "beta_mHd2.m"}]],
                     IsDefinedAndEqual["Softbreaking Up-Higgs Mass"  , gc], Get[FileNameJoin[{subDir, "beta_mHu2.m"}]],
                     True, Print["Error: unknown coupling: ", gc]; {0,0,0}
@@ -51,6 +52,7 @@ ToSARAHNamingConvention[] := {
     M1 -> Parameters`GetParameterFromDescription["Bino Mass parameter"],
     M2 -> Parameters`GetParameterFromDescription["Wino Mass parameter"],
     M3 -> Parameters`GetParameterFromDescription["Gluino Mass parameter"],
+    Global`Mu -> Parameters`GetParameterFromDescription["Mu-parameter"],
     Global`ht -> SARAH`TrilinearUp,
     Global`hb -> SARAH`TrilinearDown,
     Global`he -> SARAH`TrilinearLepton,

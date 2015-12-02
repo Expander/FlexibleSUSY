@@ -1521,11 +1521,13 @@ AddMSSM3LoopRGEs[] := Module[{
     mass2 = { SARAH`SoftSquark, SARAH`SoftUp, SARAH`SoftDown,
               SARAH`SoftLeftLepton, SARAH`SoftRightLepton,
               Parameters`GetParameterFromDescription["Softbreaking Down-Higgs Mass"],
-              Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"] }
+              Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"] },
+    mu    = { Parameters`GetParameterFromDescription["Mu-parameter"] }
     },
     SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaMi    = AddMSSM3LoopRGE[SARAH`BetaMi   , gaugi];
+    SARAH`BetaMuij  = AddMSSM3LoopRGE[SARAH`BetaMuij , mu   ];
     SARAH`BetaTijk  = AddMSSM3LoopRGE[SARAH`BetaTijk , trili];
     SARAH`Betam2ij  = AddMSSM3LoopRGE[SARAH`Betam2ij , mass2];
     ];
