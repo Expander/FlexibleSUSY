@@ -2295,7 +2295,7 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
-            --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
+            --with-optional-modules=*) OPTIONAL_MODULES=$(echo $optarg | tr ',' ' ') ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;

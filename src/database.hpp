@@ -18,6 +18,7 @@
 
 #include "error.hpp"
 #include <string>
+#include <vector>
 #include <Eigen/Core>
 
 struct sqlite3;
