@@ -8,6 +8,7 @@
 */
 
 #include "susy.h"
+#include "tensor.h"
 
 namespace softsusy {
 
@@ -335,6 +336,49 @@ void setBetas(DoubleMatrix & babBeta, DoubleVector &cuBeta, DoubleVector
   ceBeta(1) = 18.0 / 5.0; ceBeta(2) = 2.0; ceBeta(3) = 0.0;
 }
 
+void setBetasThreeLoop(Tensor & teBeta, DoubleMatrix & duBeta,
+                       DoubleMatrix & ddBeta, DoubleMatrix & deBeta, DoubleVector &euBeta, 
+                       DoubleVector & edBeta, DoubleVector & eeBeta,
+                       DoubleVector & fuBeta, DoubleVector & fdBeta, 
+                       DoubleVector & feBeta, DoubleVector & gudBeta, DoubleVector & gdeBeta) {
+  
+  teBeta(1,1,1) = -32117.0/375.0; teBeta(1,1,2) = -69.0/25.0; 
+  teBeta(1,1,3) = -1096.0/75.0;   teBeta(1,2,2) = -81.0/5.0;
+  teBeta(1,2,3) = -24.0/5.0;      teBeta(1,3,3) = 484.0/15.0;
+  
+  teBeta(2,1,1) = -457.0/25.0;    teBeta(2,1,2) = 9.0/5.0;
+  teBeta(2,1,3) = -8.0/5.0;       teBeta(2,2,2) = 35.0;
+  teBeta(2,2,3) = 24.0;           teBeta(2,3,3) = 44.0;
+  
+  teBeta(3,1,1) = -1702.0/75.0;   teBeta(3,1,2) = -3.0/5.0;
+  teBeta(3,1,3) = 22.0/15.0;      teBeta(3,2,2) = -27.0;
+  teBeta(3,2,3) = 6.0;            teBeta(3,3,3) = 347.0/3.0;
+  
+  duBeta(1,1) = -169.0/75.0; duBeta(1,2) = -87.0/5.0; duBeta(1,3) = -352.0/15.0;
+  ddBeta(1,1) = -49.0/75.0;  ddBeta(1,2) = -33.0/5.0; ddBeta(1,3) = -256.0/15.0;
+  deBeta(1,1) = -81.0/25.0;  deBeta(1,2) = -63.0/5.0;
+  
+  duBeta(2,1) = -29.0/5.0; duBeta(2,2) = -33.0; duBeta(2,3) = -32.0;
+  ddBeta(2,1) = -11.0/5.0; ddBeta(2,2) = -33.0; ddBeta(2,3) = -32.0;
+  deBeta(2,1) = -21.0/5.0; deBeta(2,2) = -11.0;
+  
+  duBeta(3,1) = -44.0/15.0; duBeta(3,2) = -12.0; duBeta(3,3) = -104.0/3.0;
+  ddBeta(3,1) = -32.0/15.0; ddBeta(3,2) = -12.0; ddBeta(3,3) = -104.0/3.0;
+  
+  euBeta(1) = 18.0;     euBeta(2) = 18.0; euBeta(3) = 18.0;
+  edBeta(1) = 36.0/5.0; edBeta(2) = 18.0; edBeta(3) = 18.0;
+  eeBeta(1) = 24.0/5.0; eeBeta(2) = 2.0;
+  
+  fuBeta(1) = 84.0/5.0; fuBeta(2) = 24.0; fuBeta(3) = 12.0;
+  fdBeta(1) = 54.0/5.0; fdBeta(2) = 24.0; fdBeta(3) = 12.0;
+  feBeta(1) = 54.0/5.0; feBeta(2) = 8.0;
+  
+  gudBeta(1) = 58.0/5.0; gudBeta(2) = 12.0; gudBeta(3) = 8.0;
+  gdeBeta(1) = 84.0/5.0; gdeBeta(2) = 12.0; gdeBeta(3) = 6.0;
+  
+  
+}
+
 // outputs one-loop anomlous dimensions gii given matrix inputs
 // Note that we use the convention (for matrices in terms of gamma's)
 // gamma^Li_Lj = M_ij for LH fields and
@@ -463,6 +507,47 @@ void MssmSusy::anomalousDimension(DoubleMatrix & gEE, DoubleMatrix & gLL,
     dg = dg + g3 * (babBeta * gsq - cuBeta * uuT - cdBeta *
 		    ddT - ceBeta * eeT) * twolp;  
   }
+
+  /// 3 loop contributions:
+  if (displayLoops() > 2) {
+    //DoubleVector & g4 = a.g4;
+    DoubleMatrix &u2t = a.u2t, &d2t = a.d2t, &e2t = a.e2t;
+    double uuTsq = uuT * uuT, ddTsq = ddT * ddT, eeTsq = eeT * eeT;
+    const static double threelp = 2.53945672191370e-7;
+    /// from http://www.liv.ac.uk/~dij/betas/allgennb.log
+    /// only strong coupling constant + third family yukawa corrections are added
+    /// Comments: rruiz
+    getThreeLpAnom(gEE, gLL, gQQ, gDD, gUU, gH1H1, gH2H2, a); 
+    
+    Tensor teBeta; 
+    DoubleMatrix duBeta(3, 3), ddBeta(3, 3), deBeta(3, 3); 
+    DoubleVector euBeta(3), edBeta(3), eeBeta(3), fuBeta(3), fdBeta(3), 
+      feBeta(3), gudBeta(3), gdeBeta(3);
+    
+    setBetasThreeLoop(teBeta, duBeta, ddBeta, deBeta, euBeta, 
+                      edBeta, eeBeta, fuBeta, fdBeta, feBeta, gudBeta, gdeBeta);
+    
+    /*
+      dg(3) = dg(3) +  g3(3) * ( 347.0/3.0 * g4(3) 
+      - 104.0/3.0 * gsq(3) * (uuT + ddT)
+      + 18.0 * (uuT * uuT + ddT * ddT) 
+      + 6.0 * (ddT * eeT)
+      + 12.0 * ( (u2t*u2t).trace() + 
+      (d2t*d2t).trace() ) 
+      + 8.0 * (u2t*d2t).trace())*threelp; 
+    */
+    
+    dg = dg + g3 * (teBeta.dotProd(gsq, 3) * gsq  
+                    + (duBeta * gsq) * uuT + (ddBeta * gsq) * ddT 
+                    + (deBeta * gsq) * eeT + euBeta * uuTsq 
+                    + edBeta * ddTsq + eeBeta * eeTsq  
+                    + euBeta * (u2t*u2t).trace() 
+                    + edBeta * (d2t*d2t).trace()
+                    + eeBeta * (e2t*e2t).trace()
+                    + gudBeta * (u2t*d2t).trace()
+                    + gdeBeta * ddT * eeT) * threelp;
+    
+  }
 }
 
 // Outputs derivatives vector y[n] for SUSY parameters: interfaces to
@@ -572,4 +657,507 @@ void MssmSusy::diagQuarkBasis(DoubleMatrix & vdl, DoubleMatrix & vdr,
   vdl = u.transpose(); vdr = v.transpose();
 }
 
+/// By Bednyakov, see arXiv:1009.5455
+void MssmSusy::getThreeLpAnom(DoubleMatrix & gEE, DoubleMatrix & gLL,
+                              DoubleMatrix & gQQ, DoubleMatrix & gDD,
+                              DoubleMatrix & gUU, double & gH1H1, double &
+                              gH2H2, sBrevity & a) const {
+  DoubleVector &gsq=a.gsq;
+  
+  /// powers of gauge couplings
+  double a1 = gsq(1),  a2 = gsq(2),   a3 = gsq(3);   
+  double a12 = a1*gsq(1),  a22 = a2*gsq(2),   a32 = a3*gsq(3);   
+  double a13 = a12*gsq(1), a23 = a22*gsq(2),   a33 = a32*gsq(3);   
+  
+  const static double threelp = 2.53945672191370e-7; ///< 1/(16 pi^2)^3
+  const static double kz = 7.21234141895757; ///< 6 Zeta(3)
+  
+  /// full three family 
+  if (MIXING > 0 ) {
+    /// For calculational brevity
+    /// NB!!! Change notations to that of J&J  hep-ph/0408128 (Y->Y^T , etc)
+    DoubleMatrix &d1=a.dt, 
+      &u1=a.ut, 
+      &e1=a.et, 
+      &u2t=a.u2, 
+      &d2t=a.d2, 
+      &e2t=a.e2, 
+      &u2=a.u2t, 
+      &d2=a.d2t, 
+      &e2=a.e2t, 
+      &ut=a.u1, 
+      &dt=a.d1, 
+      &et=a.e1;      
+    double &uuT = a.uuT, &ddT = a.ddT, &eeT = a.eeT; /// Tr(Y Y^T) = Tr (Y^T Y)
+    
+    DoubleMatrix u2tu2t = u2t*u2t; double u2tu2tT = u2tu2t.trace(); 
+    double u2tu2tu2tT = (u2tu2t*u2t).trace(); 
+    double u2tu2td2tT = (u2tu2t*u2t).trace(); 
+    
+    DoubleMatrix d2td2t = d2t*d2t; double d2td2tT = d2td2t.trace(); 
+    double d2td2td2tT = (d2td2t*d2t).trace();
+    double d2tu2td2tT = (d2td2t*u2t).trace();  //cyclic property
+    
+    DoubleMatrix e2te2t = e2t*e2t; double e2te2tT = e2te2t.trace(); 
+    double e2te2te2tT = (e2te2t*e2t).trace();
+    
+    double u2td2tT = (u2t*d2t).trace();
+    /// Everything gets the (1/16pi^2)^3 factor at the bottom
+    DoubleMatrix ee(3, 3), ll(3, 3), qq(3, 3), dd(3, 3), uu(3, 3); 
+    
+    /// aij = ai^j, ai = gi^2 
+    
+    ll =  + a13 * ( 1839.0/100.0   - 597.0/500.0*kz      )
+      + a12*a2 * ( 27.0/100.0   - 81.0/100.0*kz  )
+      + a12*a3 * ( 66.0/5.0   - 66.0/25.0*kz   )
+      + a12 * (  - 39.0/10.0*uuT - 21.0/10.0*ddT - 27.0/10.0*eeT )
+      + a1*a22 * ( 9.0/4.0   - 27.0/20.0*kz   )
+      + a23 * ( 345.0/4.0   + 105.0/4.0*kz      )
+      + a22*a3 * ( 90.0  - 18.0*kz  )
+      + a22 * (  - 45.0/2.0*uuT - 45.0/2.0*ddT - 15.0/2.0*eeT )
+      + e2t*a12 * (  - 549.0/20.0 + 27.0/100.0*kz   )
+      + e2t*a1*a2 * (  - 81.0/10.0 + 27.0/10.0*kz )
+      + e2t*a1 * ( 8.0*ddT - 2.0*ddT*kz )
+      + e2t*a22 * (  - 45.0/4.0 - 21.0/4.0*kz   )
+      + e2t*a2 * ( 18.0*ddT + 6.0*eeT )
+      + e2t*a3 * (  - 32.0*ddT + 8.0*ddT*kz )
+      + e2te2t*a1 * ( 9.0 - 9.0/5.0*kz )
+      + e2te2t*a2 * (  - 3.0 + 3.0*kz )
+      + e2te2t*e2t * ( kz )
+      + e2te2t * ( 6.0*ddT + 2.0*eeT )
+      + e2t * ( 6.0*u2td2tT - 9.0*ddT*ddT - 6.0*ddT*eeT + 
+      	  18.0*d2td2tT - eeT*eeT + 6.0*e2te2tT );
+    
+    ee = + a13 * ( 7899.0/125.0   - 597.0/125.0*kz     )
+      + a12*a2 * ( 81.0/5.0   - 81.0/25.0*kz   )
+      + a12*a3 * ( 264.0/5.0   - 264.0/25.0*kz   )
+      + a12 * (  - 78.0/5.0*uuT - 42.0/5.0*ddT - 54.0/5.0*eeT )
+      + e2*a12 * (  - 1503.0/50.0 - 27.0/10.0*kz   )
+      + e2*a1*a2 * (  - 27.0 + 27.0/5.0*kz )
+      + e2*a1 * ( 107.0/5.0*ddT + 7.0/5.0*ddT*kz + 9.0/5.0*eeT + 
+      	    9.0/5.0*eeT*kz )
+      + e2*a22 * (  - 87.0/2.0 - 3.0/2.0*kz   )
+      + e2*a2 * ( 27.0*ddT - 9.0*ddT*kz + 9.0*eeT - 3.0*eeT*kz )
+      + e2*a3 * (  - 64.0*ddT + 16.0*ddT*kz )
+      + e1*e2t*et*a1 * ( 9.0/5.0 + 9.0/5.0*kz )
+      + e1*e2t*et*a2 * ( 9.0 - 3.0*kz )
+      + e1*e2te2t*et * ( 6.0 + 2.0*kz )
+      + e1*e2t*et * ( 6.0*ddT + 2.0*eeT )
+      + e2 * ( 12.0*u2td2tT - 18.0*ddT*ddT - 12.0*ddT*eeT + 
+      	 36.0*d2td2tT - 2.0*eeT*eeT + 12.0*e2te2tT );
+    
+    qq = + a13 * ( 28457.0/13500.0   - 199.0/1500.0*kz      )
+      + a12*a2 * ( 11.0/100.0   - 9.0/100.0*kz   )
+      + a12*a3 * ( 194.0/225.0   - 22.0/75.0*kz   )
+      + a12 * (  - 13.0/30.0*uuT - 7.0/30.0*ddT - 3.0/10.0*eeT )
+      + a1*a22 * ( 25.0/4.0   - 27.0/20.0*kz   )
+      + a1*a2*a3 * (  - 8.0/5.0 )
+      + a1*a32 * ( 608.0/45.0   - 44.0/15.0*kz   )
+      + a23 * ( 345.0/4.0   + 105.0/4.0*kz      )
+      + a22*a3 * ( 50.0  - 18.0*kz   )
+      + a22 * (  - 45.0/2.0*uuT - 45.0/2.0*ddT - 15.0/2.0*eeT )
+      + a2*a32 * ( 8.0  - 12.0*kz   )
+      + a33 * ( 2720.0/27.0   + 160.0/3.0*kz      )
+      + a32 * (  - 80.0/3.0*uuT - 80.0/3.0*ddT )
+      + u2t*a12 * (  - 3767.0/300.0 + 143.0/900.0*kz   )
+      + u2t*a1*a2 * (  - 59.0/10.0 + 3.0/2.0*kz )
+      + u2t*a1*a3 * (  - 68.0/5.0 + 64.0/45.0*kz )
+      + u2t*a1 * ( 2.0*uuT - 4.0/5.0*uuT*kz )
+      + u2t*a22 * (  - 45.0/4.0 - 21.0/4.0*kz   )
+      + u2t*a2*a3 * (  - 4.0 )
+      + u2t*a2 * ( 18.0*uuT )
+      + u2t*a32 * ( 8.0/3.0 - 136.0/9.0*kz   )
+      + u2t*a3 * (  - 8.0*uuT + 8.0*uuT*kz )
+      + u2tu2t*a1 * ( 11.0/3.0 - kz )
+      + u2tu2t*a2 * (  - 3.0 + 3.0*kz )
+      + u2tu2t*a3 * ( 64.0/3.0 )
+      + u2tu2t*u2t * ( kz )
+      + u2tu2t * ( 6.0*uuT )
+      + u2t*d2t*u2t * ( 4.0 )
+      + u2t * (  - 9.0*uuT*uuT + 18.0*u2tu2tT + 6.0*u2td2tT )
+      + d2t*a12 * (  - 633.0/100.0 + 7.0/180.0*kz   )
+      + d2t*a1*a2 * (  - 41.0/10.0 + 3.0/10.0*kz )
+      + d2t*a1*a3 * (  - 76.0/15.0 + 64.0/45.0*kz )
+      + d2t*a1 * ( 16.0/5.0*ddT - 4.0/5.0*ddT*kz - 8.0/5.0*eeT + 
+      	     2.0/5.0*eeT*kz )
+      + d2t*a22 * (  - 45.0/4.0 - 21.0/4.0*kz   )
+      + d2t*a2*a3 * (  - 4.0 )
+      + d2t*a2 * ( 18.0*ddT + 6.0*eeT )
+      + d2t*a32 * ( 8.0/3.0 - 136.0/9.0*kz   )
+      + d2t*a3 * (  - 8.0*ddT + 8.0*ddT*kz + 8.0*eeT )
+      + d2t*u2t*d2t * ( 4.0 )
+      + d2td2t*a1 * ( 7.0/15.0 - 1.0/5.0*kz )
+      + d2td2t*a2 * (  - 3.0 + 3.0*kz )
+      + d2td2t*a3 * ( 64.0/3.0 )
+      + d2td2t*d2t * ( kz )
+      + d2td2t * ( 6.0*ddT + 2.0*eeT )
+      + d2t * ( 6.0*u2td2tT - 9.0*ddT*ddT - 6.0*ddT*eeT + 
+      	  18.0*d2td2tT - eeT*eeT + 6.0*e2te2tT );
+    
+    dd = + a13 * ( 5629.0/675.0   - 199.0/375.0*kz      )
+      + a12*a2 * ( 9.0/5.0   - 9.0/25.0*kz   )
+      + a12*a3 * ( 728.0/225.0   - 88.0/75.0*kz  )
+      + a12 * (  - 26.0/15.0*uuT - 14.0/15.0*ddT - 6.0/5.0*eeT )
+      + a1*a32 * ( 452.0/45.0   - 44.0/15.0*kz   )
+      + a2*a32 * ( 60.0  - 12.0*kz  )
+      + a33 * ( 2720.0/27.0   + 160.0/3.0*kz      )
+      + a32 * (  - 80.0/3.0*uuT - 80.0/3.0*ddT )
+      + d1*u2tu2t*dt * ( 6.0 )
+      + d1*u2t*dt*a1 * (  - 29.0/15.0 + 3.0/5.0*kz )
+      + d1*u2t*dt*a2 * ( 9.0 - 3.0*kz )
+      + d1*u2t*dt*a3 * ( 64.0/3.0 )
+      + d1*u2t*d2t*dt * (  - 2.0 )
+      + d1*u2t*dt * ( 12.0*uuT - 6.0*ddT - 2.0*eeT )
+      + d2*a12 * (  - 337.0/30.0 - 7.0/450.0*kz   )
+      + d2*a1*a2 * (  - 43.0/5.0 + 7.0/5.0*kz )
+      + d2*a1*a3 * (  - 24.0/5.0 + 16.0/9.0*kz )
+      + d2*a1 * ( 7.0*ddT - ddT*kz - 3.0*eeT + eeT
+      	    *kz )
+      + d2*a22 * (  - 87.0/2.0 - 3.0/2.0*kz   )
+      + d2*a2*a3 * (  - 88.0 + 16.0*kz )
+      + d2*a2 * ( 27.0*ddT - 9.0*ddT*kz + 9.0*eeT - 3.0*eeT*kz )
+      + d2*a32 * ( 16.0/3.0 - 272.0/9.0*kz   )
+      + d2*a3 * (  - 16.0*ddT + 16.0*ddT*kz + 16.0*eeT )
+      + d1*d2t*u2t*dt * (  - 2.0 )
+      + d1*d2t*dt*a1 * (  - 1.0/3.0 + 1.0/5.0*kz )
+      + d1*d2t*dt*a2 * ( 9.0 - 3.0*kz )
+      + d1*d2t*dt*a3 * ( 64.0/3.0 )
+      + d1*d2td2t*dt * ( 6.0 + 2.0*kz )
+      + d1*d2t*dt * ( 6.0*ddT + 2.0*eeT )
+      + d2 * ( 12.0*u2td2tT - 18.0*ddT*ddT - 12.0*ddT*eeT + 
+      	 36.0*d2td2tT - 2.0*eeT*eeT + 12.0*e2te2tT );
+    
+    uu = + a13 * ( 106868.0/3375.0   - 796.0/375.0*kz      )
+      + a12*a2 * ( 36.0/5.0   - 36.0/25.0*kz   )
+      + a12*a3 * ( 2144.0/225.0   - 352.0/75.0*kz   )
+      + a12 * (  - 104.0/15.0*uuT - 56.0/15.0*ddT - 24.0/5.0*eeT )
+      + a1*a32 * (  - 172.0/45.0   - 44.0/15.0*kz  )
+      + a2*a32 * ( 60.0  - 12.0*kz  )
+      + a33 * ( 2720.0/27.0   + 160.0/3.0*kz      )
+      + a32 * (  - 80.0/3.0*uuT - 80.0/3.0*ddT )
+      + u2*a12 * (  - 799.0/50.0 - 247.0/450.0*kz   )
+      + u2*a1*a2 * (  - 67.0/5.0 + 13.0/5.0*kz )
+      + u2*a1*a3 * (  - 8.0/15.0 - 112.0/45.0*kz )
+      + u2*a1 * ( 7.0*uuT + 7.0/5.0*uuT*kz )
+      + u2*a22 * (  - 87.0/2.0 - 3.0/2.0*kz   )
+      + u2*a2*a3 * (  - 88.0 + 16.0*kz )
+      + u2*a2 * ( 27.0*uuT - 9.0*uuT*kz )
+      + u2*a32 * ( 16.0/3.0 - 272.0/9.0*kz   )
+      + u2*a3 * (  - 16.0*uuT + 16.0*uuT*kz )
+      + u1*u2t*ut*a1 * (  - 1.0/3.0 + kz )
+      + u1*u2t*ut*a2 * ( 9.0 - 3.0*kz )
+      + u1*u2t*ut*a3 * ( 64.0/3.0 )
+      + u1*u2tu2t*ut * ( 6.0 + 2.0*kz )
+      + u1*u2t*ut * ( 6.0*uuT )
+      + u1*u2t*d2t*ut * (  - 2.0 )
+      + u2 * (  - 18.0*uuT*uuT + 36.0*u2tu2tT + 12.0*u2td2tT )
+      + u1*d2t*ut*a1 * ( 19.0/15.0 + 3.0/5.0*kz )
+      + u1*d2t*ut*a2 * ( 9.0 - 3.0*kz )
+      + u1*d2t*ut*a3 * ( 64.0/3.0 )
+      + u1*d2t*u2t*ut * (  - 2.0 )
+      + u1*d2t*ut * (  - 6.0*uuT + 12.0*ddT + 4.0*eeT )
+      + u1*d2td2t*ut * ( 6.0 );
+    
+    double h1h1 = + a13 * ( 1839.0/100.0   - 597.0/500.0*kz      )
+      + a12*a2 * ( 27.0/100.0   - 81.0/100.0*kz  )
+      + a12*a3 * ( 66.0/5.0   - 66.0/25.0*kz   )
+      + a12 * (  - 39.0/10.0*uuT - 175.0/12.0*ddT - 77.0/300.0*ddT*kz  
+      	   - 603.0/20.0*eeT + 27.0/100.0*eeT*kz   )
+      + a1*a22 * ( 9.0/4.0   - 27.0/20.0*kz   )
+      + a1*a2 * (  - 3.0/10.0*ddT - 3.0/2.0*ddT*kz - 81.0/10.0*eeT + 
+      	     27.0/10.0*eeT*kz )
+      + a1*a3 * (  - 284.0/15.0*ddT + 56.0/15.0*ddT*kz )
+      + a1 * (  - 12.0/5.0*u2td2tT + 7.0/5.0*u2td2tT*kz + 3.0*d2td2tT + 
+      	  9.0/5.0*d2td2tT*kz + 9.0*e2te2tT - 9.0/5.0*e2te2tT*kz )
+      + a23 * ( 345.0/4.0   + 105.0/4.0*kz      )
+      + a22*a3 * ( 90.0  - 18.0*kz  )
+      + a22 * (  - 45.0/2.0*uuT - 225.0/4.0*ddT - 63.0/4.0*ddT*kz   - 
+      	   75.0/4.0*eeT - 21.0/4.0*eeT*kz   )
+      + a2*a3 * (  - 132.0*ddT + 24.0*ddT*kz )
+      + a2 * ( 18.0*u2td2tT + 9.0*d2td2tT + 9.0*d2td2tT*kz + 3.0*e2te2tT + 
+      	 3.0*e2te2tT*kz )
+      + a32 * (  - 160.0/3.0*ddT - 8.0/3.0*ddT*kz  )
+      + a3 * ( 24.0*u2td2tT - 8.0*u2td2tT*kz + 72.0*d2td2tT - 24.0*d2td2tT*kz )
+      + 18.0*uuT*u2td2tT + 9.0*u2tu2td2tT + 54.0*ddT*d2td2tT + 
+      18.0*ddT*e2te2tT + 3.0*d2td2td2tT + 3.0*d2td2td2tT*kz + 
+      18.0*eeT*d2td2tT + 6.0*eeT*e2te2tT + e2te2te2tT + e2te2te2tT*kz;
+    
+    double h2h2 = + a13 * ( 1839.0/100.0   - 597.0/500.0*kz      )
+      + a12*a2 * ( 27.0/100.0   - 81.0/100.0*kz  )
+      + a12*a3 * ( 66.0/5.0   - 66.0/25.0*kz   )
+      + a12 * (  - 2123.0/60.0*uuT - 13.0/60.0*uuT*kz   - 
+      	   21.0/10.0*ddT - 27.0/10.0*eeT )
+      + a1*a22 * ( 9.0/4.0   - 27.0/20.0*kz   )
+      + a1*a2 * (  - 57.0/10.0*uuT + 21.0/10.0*uuT*kz )
+      + a1*a3 * (  - 124.0/3.0*uuT + 104.0/15.0*uuT*kz )
+      + a1 * ( 57.0/5.0*u2tu2tT - 3.0/5.0*u2tu2tT*kz + 6.0/5.0*u2td2tT + 
+      	 1.0/5.0*u2td2tT*kz )
+      + a23 * ( 345.0/4.0   + 105.0/4.0*kz      )
+      + a22*a3 * ( 90.0  - 18.0*kz  )
+      + a22 * (  - 225.0/4.0*uuT - 63.0/4.0*uuT*kz   - 45.0/2.0*ddT - 
+      	   15.0/2.0*eeT )
+      + a2*a3 * (  - 132.0*uuT + 24.0*uuT*kz )
+      + a2 * ( 9.0*u2tu2tT + 9.0*u2tu2tT*kz + 18.0*u2td2tT )
+      + a32 * (  - 160.0/3.0*uuT - 8.0/3.0*uuT*kz  )
+      + a3 * ( 72.0*u2tu2tT - 24.0*u2tu2tT*kz + 24.0*u2td2tT - 8.0*u2td2tT*kz )
+      + 54.0*uuT*u2tu2tT + 3.0*u2tu2tu2tT + 3.0*u2tu2tu2tT*kz + 
+      18.0*ddT*u2td2tT + 9.0*d2tu2td2tT + 6.0*eeT*u2td2tT;
+    
+    gLL = gLL + threelp * ll;
+    gEE = gEE + threelp * ee;
+    gQQ = gQQ + threelp * qq;
+    gDD = gDD + threelp * dd;
+    gUU = gUU + threelp * uu;
+    gH1H1 = gH1H1 + threelp * h1h1;
+    gH2H2 = gH2H2 + threelp * h2h2;
+    
+  } else { /// third family approximation 
+    /// For calculational brevity
+    /// NB Change notation to that of J&J  hep-ph/0408128 (Y->Y^T , etc)
+    DoubleMatrix &u2t=a.u2, &d2t=a.d2, &e2t=a.e2;
+    
+    DoubleMatrix u2tu2t = u2t*u2t; 
+    DoubleMatrix d2td2t = d2t*d2t; 
+    DoubleMatrix e2te2t = e2t*e2t; 
+    
+    /// Everything gets the (1/16pi^2)^3 factor at the bottom
+    DoubleMatrix ee(3, 3), ll(3, 3), qq(3, 3), dd(3, 3), uu(3, 3); 
+    
+    double ht = displayYukawaElement(YU, 3, 3), ht2 = sqr(ht), 
+      ht4 = sqr(ht2), ht6 = ht2*ht4;
+    double htau = displayYukawaElement(YE, 3, 3), htau2 = sqr(htau), 
+      htau4 = sqr(htau2), htau6 = htau2*htau4;
+    double hb = displayYukawaElement(YD, 3, 3), hb2 = sqr(hb), 
+      hb4 = sqr(hb2), hb6 = hb2*hb4;
+    
+    const static double O45= .02222222222222222222 ;
+    const static double O27= .03703703703703703703 ;
+    const static double O6= .16666666666666666666 ;
+    const static double O3375= .00029629629629629629 ;
+    const static double O375= .00266666666666666666 ;
+    const static double O1500= .00066666666666666666 ;
+    const static double O75= .01333333333333333333 ;
+    const static double O300= .00333333333333333333 ;
+    const static double O9= .11111111111111111111 ;
+    const static double O675= .00148148148148148148 ;
+    const static double O150= .00666666666666666666 ;
+    const static double O12= .08333333333333333333 ;
+    const static double O450= .00222222222222222222 ;
+    const static double O225= .00444444444444444444 ;
+    const static double O180= .00555555555555555555 ;
+    const static double O900= .00111111111111111111 ;
+    const static double O60= .01666666666666666666 ;
+    const static double O13500= .00007407407407407407 ;
+    const static double O15= .06666666666666666666 ;
+    const static double O3= .33333333333333333333 ;
+    
+    double dll3 = htau6 * (7. + kz) + hb2*ht2*htau2 * (+ 6) 
+      + hb4*htau2 * (+ 9)
+      + a3*hb2*htau2 * (- 32+ 8*kz)
+      + a2*htau4 * (+ 3+ 3*kz)
+      + a2*hb2*htau2 * (+ 18)
+      + a22*htau2 * (- 18.75- 5.25*kz)
+      + a22*ht2 * (- 22.5)
+      + a22*hb2 * (- 22.5)
+      + a22*a3 * (+ 90- 18*kz)
+      + a23 * (+ 86.25+ 26.25*kz)
+      + a1*htau4 * (+ 9- 1.8*kz)
+      + a1*hb2*htau2 * (+ 8- 2*kz)
+      + a1*a2*htau2 * (- 8.1+ 2.7*kz)
+      + a1*a22 * (+ 2.25- 1.35*kz)
+      + a12*htau2 * (- 30.15+ 0.27*kz)
+      + a12*ht2 * (- 3.9)
+      + a12*hb2 * (- 2.1)
+      + a12*a3 * (+ 13.2- 2.64*kz)
+      + a12*a2 * (+ 0.27- 0.81*kz)
+      + a13 * (+ 18.39- 1.194*kz);
+    
+    double dtautau = 
+      + htau6 * (+ 18+ 2*kz)
+      + hb2*htau4 * (- 6)
+      + hb2*ht2*htau2 * (+ 12)
+      + hb4*htau2 * (+ 18)
+      + a3*hb2*htau2 * (- 64+ 16*kz)
+      + a2*htau4 * (+ 18- 6*kz)
+      + a2*hb2*htau2 * (+ 27- 9*kz)
+      + a22*htau2 * (- 43.5- 1.5*kz)
+      + a1*htau4 * (+ 3.6+ 3.6*kz)
+      + a1*hb2*htau2 * (+ 21.4+ 1.4*kz)
+      + a1*a2*htau2 * (- 27+ 5.4*kz)
+      + a12*htau2 * (- 40.86- 2.7*kz)
+      + a12*ht2 * (- 15.6)
+      + a12*hb2 * (- 8.4)
+      + a12*a3 * (+ 52.8- 10.56*kz)
+      + a12*a2 * (+ 16.2- 3.24*kz)
+      + a13 * (+ 63.192- 4.776*kz);
+    
+    double dbb = 
+      + hb2*htau4 * (+ 10)
+      + hb2*ht2*htau2 * (- 2)
+      + hb2*ht4 * (+ 18)
+      + hb4*htau2 * (- 10)
+      + hb4*ht2 * (+ 2)
+      + hb6 * (+ 30+ 2*kz)
+      + a3*hb2*htau2 * (+ 16)
+      + a3*hb2*ht2 * (+ 64*O3)
+      + a3*hb4 * (+ 16*O3+ 16*kz)
+      + a32*ht2 * (- 80*O3)
+      + a32*hb2 * (- 64*O3- 272*O9*kz)
+      + a33 * (+ 2720*O27+ 160*O3*kz)
+      + a2*hb2*htau2 * (+ 9- 3*kz)
+      + a2*hb2*ht2 * (+ 9- 3*kz)
+      + a2*hb4 * (+ 36- 12*kz)
+      + a2*a3*hb2 * (- 88+ 16*kz)
+      + a2*a32 * (+ 60- 12*kz)
+      + a22*hb2 * (- 43.5- 1.5*kz)
+      + a1*hb2*htau2 * (- 3+ kz)
+      + a1*hb2*ht2 * (- 29*O15+ 0.6*kz)
+      + a1*hb4 * (+ 20*O3- 0.8*kz)
+      + a1*a3*hb2 * (- 4.8+ 16*O9*kz)
+      + a1*a32 * (+ 452*O45- 44*O15*kz)
+      + a1*a2*hb2 * (- 8.6+ 1.4*kz)
+      + a12*htau2 * (- 1.2)
+      + a12*ht2 * (- 26*O15)
+      + a12*hb2 * (- 73*O6- 7*O450*kz)
+      + a12*a3 * (+ 728*O225- 88*O75*kz)
+      + a12*a2 * (+ 1.8- 0.36*kz)
+      + a13 * (+ 5629*O675- 199*O375*kz);
+    
+    double dtt = 
+      + ht6 * (+ 30+ 2*kz)
+      + hb2*ht2*htau2 * (+ 4)
+      + hb2*ht4 * (+ 2)
+      + hb4*ht2 * (+ 18)
+      + a3*ht4 * (+ 16*O3+ 16*kz)
+      + a3*hb2*ht2 * (+ 64*O3)
+      + a32*ht2 * (- 64*O3- 272*O9*kz)
+      + a32*hb2 * (- 80*O3)
+      + a33 * (+ 2720*O27+ 160*O3*kz)
+      + a2*ht4 * (+ 36- 12*kz)
+      + a2*hb2*ht2 * (+ 9- 3*kz)
+      + a2*a3*ht2 * (- 88+ 16*kz)
+      + a2*a32 * (+ 60- 12*kz)
+      + a22*ht2 * (- 43.5- 1.5*kz)
+      + a1*ht4 * (+ 20*O3+ 2.4*kz)
+      + a1*hb2*ht2 * (+ 19*O15+ 0.6*kz)
+      + a1*a3*ht2 * (- 8*O15- 112*O45*kz)
+      + a1*a32 * (- 172*O45- 44*O15*kz)
+      + a1*a2*ht2 * (- 13.4+ 2.6*kz)
+      + a12*htau2 * (- 4.8)
+      + a12*ht2 * (- 3437*O150- 247*O450*kz)
+      + a12*hb2 * (- 56*O15)
+      + a12*a3 * (+ 2144*O225- 352*O75*kz)
+      + a12*a2 * (+ 7.2- 1.44*kz)
+      + a13 * (+ 106868*O3375- 796*O375*kz);
+    
+    double dqq3 = 
+      + ht6 * (+ 15+ kz)
+      + hb2*htau4 * (+ 5)
+      + hb2*ht4 * (+ 10)
+      + hb4*htau2 * (- 4)
+      + hb4*ht2 * (+ 10)
+      + hb6 * (+ 15+ kz)
+      + a3*ht4 * (+ 40*O3+ 8*kz)
+      + a3*hb2*htau2 * (+ 8)
+      + a3*hb4 * (+ 40*O3+ 8*kz)
+      + a32*ht2 * (- 24- 136*O9*kz)
+      + a32*hb2 * (- 24- 136*O9*kz)
+      + a33 * (+ 2720*O27+ 160*O3*kz)
+      + a2*ht4 * (+ 15+ 3*kz)
+      + a2*hb2*htau2 * (+ 6)
+      + a2*hb4 * (+ 15+ 3*kz)
+      + a2*a3*ht2 * (- 4)
+      + a2*a3*hb2 * (- 4)
+      + a2*a32 * (+ 8- 12*kz)
+      + a22*htau2 * (- 7.5)
+      + a22*ht2 * (- 33.75- 5.25*kz)
+      + a22*hb2 * (- 33.75- 5.25*kz)
+      + a22*a3 * (+ 50- 18*kz)
+      + a23 * (+ 86.25+ 26.25*kz)
+      + a1*ht4 * (+ 17*O3- 1.8*kz)
+      + a1*hb2*htau2 * (- 1.6+ 0.4*kz)
+      + a1*hb4 * (+ 11*O3- kz)
+      + a1*a3*ht2 * (- 13.6+ 64*O45*kz)
+      + a1*a3*hb2 * (- 76*O15+ 64*O45*kz)
+      + a1*a32 * (+ 608*O45- 44*O15*kz)
+      + a1*a2*ht2 * (- 5.9+ 1.5*kz)
+      + a1*a2*hb2 * (- 4.1+ 0.3*kz)
+      + a1*a2*a3 * (- 1.6)
+      + a1*a22 * (+ 6.25- 1.35*kz)
+      + a12*htau2 * (- 0.3)
+      + a12*ht2 * (- 12.99+ 143*O900*kz)
+      + a12*hb2 * (- 1969*O300+ 7*O180*kz)
+      + a12*a3 * (+ 194*O225- 22*O75*kz)
+      + a12*a2 * (+ 0.11- 0.09*kz)
+      + a13 * (+ 28457*O13500- 199*O1500*kz);
+    
+    double h2h2 = 
+      + ht6 * (+ 57+ 3*kz)
+      + hb2*ht2*htau2 * (+ 6)
+      + hb4*ht2 * (+ 27)
+      + a3*ht4 * (+ 72- 24*kz)
+      + a3*hb2*ht2 * (+ 24- 8*kz)
+      + a32*ht2 * (- 160*O3- 8*O3*kz)
+      + a2*ht4 * (+ 9+ 9*kz)
+      + a2*hb2*ht2 * (+ 18)
+      + a2*a3*ht2 * (- 132+ 24*kz)
+      + a22*htau2 * (- 7.5)
+      + a22*ht2 * (- 56.25- 15.75*kz)
+      + a22*hb2 * (- 22.5)
+      + a22*a3 * (+ 90- 18*kz)
+      + a23 * (+ 86.25+ 26.25*kz)
+      + a1*ht4 * (+ 11.4- 0.6*kz)
+      + a1*hb2*ht2 * (+ 1.2+ 0.2*kz)
+      + a1*a3*ht2 * (- 124*O3+ 104*O15*kz)
+      + a1*a2*ht2 * (- 5.7+ 2.1*kz)
+      + a1*a22 * (+ 2.25- 1.35*kz)
+      + a12*htau2 * (- 2.7)
+      + a12*ht2 * (- 2123*O60- 13*O60*kz)
+      + a12*hb2 * (- 2.1)
+      + a12*a3 * (+ 13.2- 2.64*kz)
+      + a12*a2 * (+ 0.27- 0.81*kz)
+      + a13 * (+ 18.39- 1.194*kz);
+    
+    double h1h1 = 
+      + htau6 * (+ 7+ kz)
+      + hb2*htau4 * (+ 18)
+      + hb2*ht4 * (+ 27)
+      + hb4*htau2 * (+ 18)
+      + hb6 * (+ 57+ 3*kz)
+      + a3*hb2*ht2 * (+ 24- 8*kz)
+      + a3*hb4 * (+ 72- 24*kz)
+      + a32*hb2 * (- 160*O3- 8*O3*kz)
+      + a2*htau4 * (+ 3+ 3*kz)
+      + a2*hb2*ht2 * (+ 18)
+      + a2*hb4 * (+ 9+ 9*kz)
+      + a2*a3*hb2 * (- 132+ 24*kz)
+      + a22*htau2 * (- 18.75- 5.25*kz)
+      + a22*ht2 * (- 22.5)
+      + a22*hb2 * (- 56.25- 15.75*kz)
+      + a22*a3 * (+ 90- 18*kz)
+      + a23 * (+ 86.25+ 26.25*kz)
+      + a1*htau4 * (+ 9- 1.8*kz)
+      + a1*hb2*ht2 * (- 2.4+ 1.4*kz)
+      + a1*hb4 * (+ 3+ 1.8*kz)
+      + a1*a3*hb2 * (- 284*O15+ 56*O15*kz)
+      + a1*a2*htau2 * (- 8.1+ 2.7*kz)
+      + a1*a2*hb2 * (- 0.3- 1.5*kz)
+      + a1*a22 * (+ 2.25- 1.35*kz)
+      + a12*htau2 * (- 30.15+ 0.27*kz)
+      + a12*ht2 * (- 3.9)
+      + a12*hb2 * (- 175*O12- 77*O300*kz)
+      + a12*a3 * (+ 13.2- 2.64*kz)
+      + a12*a2 * (+ 0.27- 0.81*kz)
+      + a13 * (+ 18.39- 1.194*kz);
+    
+    gLL(3,3) = gLL(3,3) + threelp * dll3;
+    gEE(3,3) = gEE(3,3) + threelp * dtautau;
+    gQQ(3,3) = gQQ(3,3) + threelp * dqq3;
+    gDD(3,3) = gDD(3,3) + threelp * dbb;
+    gUU(3,3) = gUU(3,3) + threelp * dtt;
+    gH1H1 = gH1H1 + threelp * h1h1;
+    gH2H2 = gH2H2 + threelp * h2h2;
+    
+  } /// third family approximation 
+}
 } // namespace softsusy
