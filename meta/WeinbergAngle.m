@@ -60,8 +60,10 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
            smValue = Simplify[
                ArcTan[SARAH`hyperchargeCoupling / SARAH`leftCoupling] /.
                Parameters`ApplyGUTNormalization[]];
+           Export["smValue.m", smValue];
            (* search weinberg angle definition *)
            weinbergDef = FindWeinbergAngleDef[] /. Parameters`ApplyGUTNormalization[];
+           Export["weinbergDef.m", weinbergDef];
            If[weinbergDef === 0,
               Print["Warning: Weinberg angle is defined to be zero."];
               Return[weinbergDef];
@@ -76,11 +78,13 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                  };
            DebugPrint["The 3 equations to determine the Weinberg angle are: ",
                       eqs];
+           Export["eqs.m", eqs];
            reducedEq = Eliminate[eqs, {SARAH`Mass[SARAH`VectorW],
                                        SARAH`Mass[SARAH`VectorZ]}];
            DebugPrint["Elimination of ",
                       {SARAH`Mass[SARAH`VectorW], SARAH`Mass[SARAH`VectorZ]},
                       " yields: ", reducedEq];
+           Export["reducedEq.m", reducedEq];
            (* Try Standard Model definition first *)
            If[SolvesWeinbergEq[reducedEq, smValue],
               Return[smValue];,
