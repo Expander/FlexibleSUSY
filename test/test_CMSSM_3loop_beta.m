@@ -32,7 +32,10 @@ UniformTraces[] := {
     trace[mq2, Adj[Yd], Yd] -> trace[Adj[Yd], Yd, mq2],
     trace[mq2, Adj[Yu], Yu] -> trace[Adj[Yu], Yu, mq2],
     trace[mu2, Yu, Adj[Yu]] -> trace[Yu, Adj[Yu], mu2],
-    trace[ml2, Adj[Ye], Ye] -> trace[Adj[Ye], Ye, ml2]
+    trace[ml2, Adj[Ye], Ye] -> trace[Adj[Ye], Ye, ml2],
+    trace[Adj[Yd], Yd, Adj[Yd], T[Yd]] -> trace[Adj[Yd], T[Yd], Adj[Yd], Yd],
+    trace[Adj[Ye], Ye, Adj[Ye], T[Ye]] -> trace[Adj[Ye], T[Ye], Adj[Ye], Ye],
+    trace[Adj[Yu], Yu, Adj[Yu], T[Yu]] -> trace[Adj[Yu], T[Yu], Adj[Yu], Yu]
 };
 
 CalcDifference[a_, b_] := Simplify[Expand[a] - Expand[b]];
@@ -66,6 +69,7 @@ For[l = 1, l <= 2, l++,
     TestBetaEquality[SARAH`BetaMi   , MassWB                   , l];
     TestBetaEquality[SARAH`BetaMi   , MassG                    , l];
     TestBetaEquality[SARAH`BetaMuij , \[Mu]                    , l];
+    TestBetaEquality[SARAH`BetaBij  , B[\[Mu]]                 , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearUp        , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearDown      , l];
     TestBetaEquality[SARAH`BetaTijk , SARAH`TrilinearLepton    , l];
