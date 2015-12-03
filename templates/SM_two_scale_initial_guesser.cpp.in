@@ -224,6 +224,7 @@ void @ModelName@_SM_initial_guesser<Two_scale>::guess_model_parameters()
    //get gauge and Yukawa couplings from effective theory
    @ModelName@_SM_Matching<Two_scale> matching;
    matching.set_models(eft, model);
+   matching.set_constraint(&susy_constraint);
    matching.match_low_to_high_scale_model_tree_level();
 
 
