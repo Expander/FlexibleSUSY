@@ -75,6 +75,61 @@ betaMu1 = Mu * (gammaH11 + gammaH21);
 betaMu2 = Mu * (gammaH12 + gammaH22);
 betaMu3 = Mu * (gammaH13 + gammaH23);
 
+(* calculates gamma_1, Eq. (2.4b) arxiv:hep-ph/0408128 *)
+Gamma1[gamma_] :=
+    Module[{gp = gamma //. repl},
+           DYuk[yuk_, tri_] := {
+               Derivative[1, 0][trace][yuk, p_] :> trace[tri, p],
+               Derivative[0, 1][trace][p_, yuk] :> trace[p, tri],
+               Derivative[1, 0][trace][Adj[yuk], p_] -> 0,
+               Derivative[0, 1][trace][p_, Adj[yuk]] -> 0,
+               Derivative[1, 0, 0, 0][trace][yuk, p__    ] :> trace[tri, p],
+               Derivative[0, 1, 0, 0][trace][p_, yuk, q__] :> trace[p, tri, q],
+               Derivative[0, 0, 1, 0][trace][p__, yuk, q_] :> trace[p, tri, q],
+               Derivative[0, 0, 0, 1][trace][p__, yuk    ] :> trace[p, tri],
+               Derivative[1, 0, 0, 0][trace][Adj[yuk], p__    ] -> 0,
+               Derivative[0, 1, 0, 0][trace][p_, Adj[yuk], q__] -> 0,
+               Derivative[0, 0, 1, 0][trace][p__, Adj[yuk], q_] -> 0,
+               Derivative[0, 0, 0, 1][trace][p__, Adj[yuk]    ] -> 0,
+               Derivative[1, 0, 0, 0, 0, 0][trace][yuk, p__        ] :> trace[tri, p],
+               Derivative[0, 1, 0, 0, 0, 0][trace][p_, yuk, q__    ] :> trace[p, tri, q],
+               Derivative[0, 0, 1, 0, 0, 0][trace][p_, q_, yuk, r__] :> trace[p, q, tri, r],
+               Derivative[0, 0, 0, 1, 0, 0][trace][p__, yuk, q_, r_] :> trace[p, tri, q, r],
+               Derivative[0, 0, 0, 0, 1, 0][trace][p__, yuk, q_    ] :> trace[p, tri, q],
+               Derivative[0, 0, 0, 0, 0, 1][trace][p__, yuk        ] :> trace[p, tri],
+               Derivative[1, 0, 0, 0, 0, 0][trace][Adj[yuk], p__        ] -> 0,
+               Derivative[0, 1, 0, 0, 0, 0][trace][p_, Adj[yuk], q__    ] -> 0,
+               Derivative[0, 0, 1, 0, 0, 0][trace][p_, q_, Adj[yuk], r__] -> 0,
+               Derivative[0, 0, 0, 1, 0, 0][trace][p__, Adj[yuk], q_, r_] -> 0,
+               Derivative[0, 0, 0, 0, 1, 0][trace][p__, Adj[yuk], q_    ] -> 0,
+               Derivative[0, 0, 0, 0, 0, 1][trace][p__, Adj[yuk]        ] -> 0
+           };
+           (
+               + M1 g1/2 D[gp, g1]
+               + M2 g2/2 D[gp, g2]
+               + M3 g3/2 D[gp, g3]
+               - (D[gp, Yt] /. DYuk[Yt, ht])
+               - (D[gp, Yb] /. DYuk[Yb, hb])
+               - (D[gp, Ye] /. DYuk[Ye, he])
+           )
+          ];
+
+gamma1H11 = Gamma1[gammaH11];
+gamma1H21 = Gamma1[gammaH21];
+gamma1H12 = Gamma1[gammaH12];
+gamma1H22 = Gamma1[gammaH22];
+gamma1H13 = Gamma1[gammaH13];
+gamma1H23 = Gamma1[gammaH23];
+
+On[Assert];
+Assert[FreeQ[gamma1H13, Derivative[__][__][__]]];
+Assert[FreeQ[gamma1H23, Derivative[__][__][__]]];
+
+(* calculate beta-functions of BMu, Eq. (2.3), arxiv:hep-ph/0408128 *)
+betaBMu1 = Simplify[BMu (gammaH11 + gammaH21) - 2 Mu (gamma1H11 + gamma1H21)];
+betaBMu2 = Simplify[BMu (gammaH12 + gammaH22) - 2 Mu (gamma1H12 + gamma1H22)];
+betaBMu3 = Simplify[BMu (gammaH13 + gammaH23) - 2 Mu (gamma1H13 + gamma1H23)];
+
 {g1 bg11  , g1 bg12  , g1 bg13  } //. repl >> "beta_g1.m";
 {g2 bg21  , g2 bg22  , g2 bg23  } //. repl >> "beta_g2.m";
 {g3 bg31  , g3 bg32  , g3 bg33  } //. repl >> "beta_g3.m";
@@ -95,6 +150,7 @@ betaMu3 = Mu * (gammaH13 + gammaH23);
 {betaM21  , betaM22  , betaM23  } //. repl >> "beta_M2.m";
 {betaM31  , betaM32  , betaM33  } //. repl >> "beta_M3.m";
 {betaMu1  , betaMu2  , betaMu3  } //. repl >> "beta_Mu.m";
+{betaBMu1 , betaBMu2 , betaBMu3 } //. repl >> "beta_BMu.m";
 
 {gammaQ1  , gammaQ2  , gammaQ3  } //. repl >> "gamma_SqL.m";
 {gammat1  , gammat2  , gammat3  } //. repl >> "gamma_SuR.m";
