@@ -12,7 +12,7 @@ TestEquality[Length[ThreeLoopMSSM`BetaMSSM[SARAH`UpYukawa           ]], 3];
 TestEquality[Length[ThreeLoopMSSM`BetaMSSM[SARAH`DownYukawa         ]], 3];
 TestEquality[Length[ThreeLoopMSSM`BetaMSSM[SARAH`ElectronYukawa     ]], 3];
 
-Print["checking BetaMSSM[] and MSSM[] ..."];
+Print["comparing 1L and 2L MSSM beta functions from hep-ph/0308231 with SARAH/MSSM ..."];
 
 SARAH`SARAH[OutputDirectory] = FileNameJoin[{Directory[], "Output"}];
 SARAH`Start["MSSM"];
@@ -40,10 +40,10 @@ UniformTraces[] := {
 
 CalcDifference[a_, b_] := Simplify[Expand[a] - Expand[b]];
 
-TestBetaEquality[lst_, c_, loop_] :=
+TestBetaEquality[lst_, coupl_, loop_] :=
     Module[{sa, sm},
-           sm = ThreeLoopMSSM`BetaMSSM[c][[loop]] /. UniformTraces[];
-           sa = FindBetaFunction[lst, c][[loop]] /. {
+           sm = ThreeLoopMSSM`BetaMSSM[coupl][[loop]] /. UniformTraces[];
+           sa = FindBetaFunction[lst, coupl][[loop]] /. {
                Kronecker[_,_] :> 1,
                a_[i1,i2] :> a,
                conj[a_] :> a, (* JJ assumes real parameters *)
