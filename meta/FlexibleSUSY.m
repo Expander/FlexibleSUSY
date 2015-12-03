@@ -1619,7 +1619,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
               Print["Adding MSSM 3-loop beta-functions from ",
-                    "[arxiv:hep-ph/0308231]"];
+                    "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
               AddMSSM3LoopRGEs[];
              ];
 
