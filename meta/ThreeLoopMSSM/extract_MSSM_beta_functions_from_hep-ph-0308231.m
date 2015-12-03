@@ -95,3 +95,11 @@ betaMu3 = Mu * (gammaH13 + gammaH23);
 {betaM21  , betaM22  , betaM23  } //. repl >> "beta_M2.m";
 {betaM31  , betaM32  , betaM33  } //. repl >> "beta_M3.m";
 {betaMu1  , betaMu2  , betaMu3  } //. repl >> "beta_Mu.m";
+
+{gammaQ1  , gammaQ2  , gammaQ3  } //. repl >> "gamma_SqL.m";
+{gammat1  , gammat2  , gammat3  } //. repl >> "gamma_SuR.m";
+{gammab1  , gammab2  , gammab3  } //. repl >> "gamma_SdR.m";
+{gammaL1  , gammaL2  , gammaL3  } //. repl >> "gamma_SlL.m";
+{gammatau1, gammatau2, gammatau3} //. repl >> "gamma_SeR.m";
+{gammaH11 , gammaH12 , gammaH13 } //. repl >> "gamma_SHd.m";
+{gammaH21 , gammaH22 , gammaH23 } //. repl >> "gamma_SHu.m";
