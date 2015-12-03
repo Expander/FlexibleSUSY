@@ -46,12 +46,12 @@ TestBetaEquality[lst_, c_, loop_] :=
            sa = FindBetaFunction[lst, c][[loop]] /. {
                Kronecker[_,_] :> 1,
                a_[i1,i2] :> a,
-               conj[a_] :> a,
-               Conj[a_] :> a,
-               Tr1[1] -> 0, (* why is this term missing in the JJ result? *)
+               conj[a_] :> a, (* JJ assumes real parameters *)
+               Conj[a_] :> a, (* JJ assumes real parameters *)
+               Tr1[1] -> 0, (* tadpole term missing in the JJ result *)
                Tr2[2] -> (mHd2 + mHu2 + trace[ml2] + 3*trace[mq2])/2,
                Tr2[3] -> (trace[md2] + 2*trace[mq2] + trace[mu2])/2,
-               Tr3[1] -> 0, (* why is this term missing in the JJ result? *)
+               Tr3[1] -> 0, (* tadpole term missing in the JJ result *)
                Tr2U1[1,1] -> (g1^2*(3*mHd2 + 3*mHu2 + 2*trace[md2] + 6*trace[me2] +
                                     3*trace[ml2] + trace[mq2] + 8*trace[mu2]))/10
            } /. UniformTraces[] /. SARAH`Tp -> SARAH`Adj /. UniformTraces[];
