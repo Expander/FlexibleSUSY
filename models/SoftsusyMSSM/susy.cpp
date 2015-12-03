@@ -692,7 +692,7 @@ void MssmSusy::getThreeLpAnom(DoubleMatrix & gEE, DoubleMatrix & gLL,
     
     DoubleMatrix u2tu2t = u2t*u2t; double u2tu2tT = u2tu2t.trace(); 
     double u2tu2tu2tT = (u2tu2t*u2t).trace(); 
-    double u2tu2td2tT = (u2tu2t*u2t).trace(); 
+    double u2tu2td2tT = (u2tu2t*d2t).trace();
     
     DoubleMatrix d2td2t = d2t*d2t; double d2td2tT = d2td2t.trace(); 
     double d2td2td2tT = (d2td2t*d2t).trace();
@@ -881,7 +881,7 @@ void MssmSusy::getThreeLpAnom(DoubleMatrix & gEE, DoubleMatrix & gLL,
       + 18.0*uuT*u2td2tT + 9.0*u2tu2td2tT + 54.0*ddT*d2td2tT + 
       18.0*ddT*e2te2tT + 3.0*d2td2td2tT + 3.0*d2td2td2tT*kz + 
       18.0*eeT*d2td2tT + 6.0*eeT*e2te2tT + e2te2te2tT + e2te2te2tT*kz;
-    
+
     double h2h2 = + a13 * ( 1839.0/100.0   - 597.0/500.0*kz      )
       + a12*a2 * ( 27.0/100.0   - 81.0/100.0*kz  )
       + a12*a3 * ( 66.0/5.0   - 66.0/25.0*kz   )
