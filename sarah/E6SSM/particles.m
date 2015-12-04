@@ -298,10 +298,6 @@ ParticleDefinitions[GaugeES] = {
     		   FeynArtsNr -> 666,
     		   LaTeX -> "x",
     		   OutputName -> "FDX"}},
-      (* {FSI,    { Description -> "Inert-Singlino",
-                  FeynArtsNr -> 806,
-                  LaTeX -> "\\tilde{S}^{Inert}", 
-                  OutputName -> "FSI"}}, *)
       {Glu,  { Description -> "Gluino" }},
       {Chi,  { Description -> "Neutralinos",
                PDG -> {1000022,1000023,1000025,1000035,1000045,1000055},
