@@ -33,8 +33,12 @@ FlexibleSUSY-1.2.5 [not released yet]
    that are shipped with FlexibleSUSY).  The expressions have been
    obtained from http://www.liv.ac.uk/~dij/betas/allgennb.log and
    include family mixing.
+
    Note: The 3-loop beta-functions for the vacuum expectation values
-   vu and vd are not available so far.
+   vu and vd are not available so far.  Furthermore, the 3-loop MSSM
+   beta-functions miss the "tadpole" contributions corresponding to
+   the renormalisation of the Fayet-Iliopoulos D-term, see the note in
+   Section 2, page 4 of arxiv:hep-ph/0308231 .
 
  * Change (commit d553af8): No SLHA output is written if the option
    --slha-output-file= is set to the empty string.  To write the SLHA
