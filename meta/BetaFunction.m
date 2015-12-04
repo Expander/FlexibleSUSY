@@ -1,5 +1,5 @@
 
-BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`"}];
+BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`", "Utils`"}];
 
 BetaFunction[];
 
@@ -97,11 +97,63 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
            Return[files];
           ];
 
+(* expand expression and replace given head (usually Plus) by List *)
+ToList[expr_, head_] :=
+    Module[{exp = Expand[expr]},
+           If[Head[exp] === head,
+              List @@ exp,
+              {expr}
+             ]
+          ];
+
+FactorOutLoopFactor[expr_] :=
+    Module[{i, prefactors = {CConversion`oneOver16PiSqr, CConversion`twoLoop,
+                             CConversion`threeLoop, CConversion`oneOver16PiSqr^4}},
+           For[i = 1, i <= Length[prefactors], i++,
+               If[Coefficient[expr, prefactors[[i]]] =!= 0,
+                  Return[Simplify[prefactors[[i]] Expand[expr / prefactors[[i]]]]];
+                 ];
+              ];
+           expr
+          ];
+
+(* split expression into sub-expressions of given maximum size *)
+SplitExpression[expr_, size_Integer] :=
+    FactorOutLoopFactor /@ (Plus @@@ Utils`SplitList[ToList[expr, Plus], size]);
+
+NeedToSplitExpression[expr_, threshold_Integer] :=
+    Length[ToList[expr, Plus]] > threshold;
+
+ConvertSingleExprToC[expr_, type_, target_String] :=
+    "const " <> CConversion`CreateCType[type] <> " " <> target <>
+    " = " <> CastTo[RValueToCFormString[expr], type] <> ";\n"
+
+ConvertExprToC[expr_, type_, target_String] :=
+    Module[{result, splitExpr},
+           If[NeedToSplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize],
+              splitExpr = SplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize];
+              result = MapIndexed[
+                  ConvertSingleExprToC[
+                      #1 * CConversion`CreateUnitMatrix[type] /. CConversion`UNITMATRIX[r_]^_ :> CConversion`UNITMATRIX[r],
+                      type, target <> "_" <> ToString[#2[[1]]]
+                  ]&,
+                  splitExpr
+              ];
+              result = StringJoin[result] <> "\n" <>
+                       target <> " = " <>
+                       StringJoin[Riffle[MapIndexed[(target <> "_" <> ToString[#2[[1]]])&, splitExpr], " + "]] <>
+                       ";\n";
+              ,
+              result = target <> " = " <> CastTo[RValueToCFormString[expr], type] <> ";\n";
+             ];
+           result
+          ];
+
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
  *)
 CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_List] :=
-     Module[{beta, betaName, name, betaStr, dataType,
+     Module[{beta, betaName, name, betaStr,
              type = ErrorType, localDecl, traceRules, expr, loopFactor},
             Switch[loopOrder,
                    1, loopFactor = CConversion`oneOver16PiSqr;,
@@ -118,7 +170,6 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
                        RValueToCFormString[CConversion`CreateZero[type]] <> ";\n"}];
               ];
             expr       = expr[[loopOrder]];
-            dataType   = CConversion`CreateCType[type];
             (* convert beta function expressions to C form *)
             beta       = (loopFactor * expr) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] :> CreateUnitMatrix[type],
@@ -136,9 +187,8 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             If[beta === 0,
                beta = CConversion`CreateZero[type];
               ];
-            betaStr    = RValueToCFormString[Parameters`DecreaseIndexLiterals[beta]];
-            betaStr    = CastTo[betaStr, type];
-            betaStr    = betaName <> " = " <> betaStr <> ";\n";
+            beta       = Parameters`DecreaseIndexLiterals[beta];
+            betaStr    = ConvertExprToC[beta, type, betaName];
             localDecl  = Parameters`CreateLocalConstRefsForInputParameters[expr] <>
                          localDecl;
             Return[{localDecl, betaStr}];

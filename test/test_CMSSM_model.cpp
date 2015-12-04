@@ -99,13 +99,16 @@ void test_beta_function_equality(const SoftParsMssm& a, const CMSSM_soft_paramet
    TEST_EQUALITY(beta_a.displayGaugino(2), beta_b.get_MassWB());
    TEST_EQUALITY(beta_a.displayGaugino(3), beta_b.get_MassG());
 
-   TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
-   TEST_EQUALITY(beta_a.displayMh2Squared(), beta_b.get_mHu2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
+   // 3L soft-squared mass beta functions are buggy in SOFTSUSY <= 3.6.2
+   if (a.displayLoops() <= 2) {
+      TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
+      TEST_EQUALITY(beta_a.displayMh2Squared(), beta_b.get_mHu2());
+      TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
+      TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
+      TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
+      TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
+      TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
+   }
 
    TEST_EQUALITY(beta_a.displayTrilinear(UA), beta_b.get_TYu());
    TEST_EQUALITY(beta_a.displayTrilinear(DA), beta_b.get_TYd());
@@ -1487,15 +1490,9 @@ void compare_self_energy_CP_odd_higgs(CMSSM<Two_scale> model,
    TEST_CLOSE(Ah_ss(1), Ah_fs(1), 4.0e-3);
 }
 
-void compare_models(int loopLevel)
+void setup_models(CMSSM<Two_scale>& m, MssmSoftsusy& softSusy,
+                  CMSSM_input_parameters input, int loopLevel)
 {
-   CMSSM_input_parameters input;
-   input.m0 = 125.;
-   input.m12 = 500.;
-   input.TanBeta = 10.;
-   input.SignMu = 1;
-   input.Azero = 0.;
-
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -1533,7 +1530,6 @@ void compare_models(int loopLevel)
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   CMSSM<Two_scale> m(input);
    m.set_scale(91);
    m.set_loops(loopLevel);
    m.set_g1(g1);
@@ -1560,7 +1556,6 @@ void compare_models(int loopLevel)
    m.set_vu(vu);
    m.set_vd(vd);
 
-   MssmSoftsusy softSusy;
    softSusy.setMu(91);
    softSusy.setLoops(loopLevel);
    softSusy.setGaugeCoupling(1, g1);
@@ -1586,6 +1581,21 @@ void compare_models(int loopLevel)
    softSusy.setM3Squared(BMu);
    softSusy.setHvev(vev);
    softSusy.setTanb(tanBeta);
+}
+
+void compare_models(int loopLevel)
+{
+   CMSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   CMSSM<Two_scale> m(input);
+   MssmSoftsusy softSusy;
+
+   setup_models(m, softSusy, input, loopLevel);
 
    std::cout << "comparing parameters ... ";
    test_parameter_equality(softSusy, m);
@@ -1593,9 +1603,12 @@ void compare_models(int loopLevel)
    std::cout << "comparing beta functions ... ";
    test_beta_function_equality(softSusy, m);
    std::cout << "done\n";
-   std::cout << "comparing anomalous dimensions ... ";
-   compare_anomalous_dimensions(softSusy, m);
-   std::cout << "done\n";
+
+   if (loopLevel < 3) {
+      std::cout << "comparing anomalous dimensions ... ";
+      compare_anomalous_dimensions(softSusy, m);
+      std::cout << "done\n";
+   }
 
    if (loopLevel == 1) {
       std::cout << "test tree-level ewsb ... ";
@@ -1669,6 +1682,11 @@ int main()
    std::cout << "compare 2-loop level\n";
    std::cout << "====================\n";
    compare_models(2);
+
+   std::cout << "====================\n";
+   std::cout << "compare 3-loop level\n";
+   std::cout << "====================\n";
+   compare_models(3);
 
    return gErrors;
 }
