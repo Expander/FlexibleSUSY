@@ -27,6 +27,15 @@ FlexibleSUSY-1.2.5 [not released yet]
    To match at MT_DRbar set in the model file: LowScale = M[Fu[3]],
    depending on your chosen name for the top quark.
 
+ * Feature: 3-loop beta-functions can now be used in the real MSSM.
+   To enable the 3-loop MSSM beta-functions, set UseMSSM3LoopRGEs =
+   True; in the model file (enabled by default in all real MSSM models
+   that are shipped with FlexibleSUSY).  The expressions have been
+   obtained from http://www.liv.ac.uk/~dij/betas/allgennb.log and
+   include family mixing.
+   Note: The 3-loop beta-functions for the vacuum expectation values
+   vu and vd are not available so far.
+
  * Change (commit d553af8): No SLHA output is written if the option
    --slha-output-file= is set to the empty string.  To write the SLHA
    output to stdout, set --slha-output-file=- (this is the default).
