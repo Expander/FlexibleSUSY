@@ -2585,10 +2585,10 @@ SoftPars<Susy, Brevity> SoftPars<Susy, Brevity>::beta2(Brevity& a) const {
 	  umuut(u1*mu*ut),  //Yu mu Yu^+
 	  dmddt(d1*md*dt),  //Yd md Yd^+
 	  emeet(e1*me*et),  //Ye me Ye^+
-	  utmqu(ut*mq*u1),  //Yu^+ mq Yu
-	  dtmqd(d1*mq*d1),  //Yd^+ mq Yd
-	  utmqd(ut*mq*d1),  //Yu^+ mq Yd
-	  dtmqu(d1*mq*u1),  //Yd^+ mq Yu
+	  utmqu(ut*mq*u1),  //Yu^+ mq Yu * checked * 
+	  dtmqd(dt*mq*d1),  //Yd^+ mq Yd * found BUG <- was d1*mq*d1
+	  utmqd(ut*mq*d1),  //Yu^+ mq Yd * checked * 
+	  dtmqu(dt*mq*u1),  //Yd^+ mq Yu * found BUG <- was d1*mq*u1
 	  etmle(et*me*e1),  //Ye^+ ml Ye 
 	  uhut(huut.transpose()), // Yu hu^+
 	  uthu(ut*hu),  // Yu^+ hu
