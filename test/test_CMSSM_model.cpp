@@ -99,16 +99,16 @@ void test_beta_function_equality(const SoftParsMssm& a, const CMSSM_soft_paramet
    TEST_EQUALITY(beta_a.displayGaugino(2), beta_b.get_MassWB());
    TEST_EQUALITY(beta_a.displayGaugino(3), beta_b.get_MassG());
 
+   TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
+   TEST_EQUALITY(beta_a.displayMh2Squared(), beta_b.get_mHu2());
+   TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
    // 3L soft-squared mass beta functions are buggy in SOFTSUSY <= 3.6.2
    if (a.displayLoops() <= 2) {
-      TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
-      TEST_EQUALITY(beta_a.displayMh2Squared(), beta_b.get_mHu2());
-      TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
       TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
       TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
-      TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
-      TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
    }
+   TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
+   TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
 
    TEST_EQUALITY(beta_a.displayTrilinear(UA), beta_b.get_TYu());
    TEST_EQUALITY(beta_a.displayTrilinear(DA), beta_b.get_TYd());
@@ -1673,15 +1673,15 @@ void compare_models(int loopLevel)
 
 int main()
 {
-   std::cout << "====================\n";
-   std::cout << "compare 1-loop level\n";
-   std::cout << "====================\n";
-   compare_models(1);
+   // std::cout << "====================\n";
+   // std::cout << "compare 1-loop level\n";
+   // std::cout << "====================\n";
+   // compare_models(1);
 
-   std::cout << "====================\n";
-   std::cout << "compare 2-loop level\n";
-   std::cout << "====================\n";
-   compare_models(2);
+   // std::cout << "====================\n";
+   // std::cout << "compare 2-loop level\n";
+   // std::cout << "====================\n";
+   // compare_models(2);
 
    std::cout << "====================\n";
    std::cout << "compare 3-loop level\n";
