@@ -1670,15 +1670,15 @@ void compare_models(int loopLevel)
 
 int main()
 {
-   // std::cout << "====================\n";
-   // std::cout << "compare 1-loop level\n";
-   // std::cout << "====================\n";
-   // compare_models(1);
+   std::cout << "====================\n";
+   std::cout << "compare 1-loop level\n";
+   std::cout << "====================\n";
+   compare_models(1);
 
-   // std::cout << "====================\n";
-   // std::cout << "compare 2-loop level\n";
-   // std::cout << "====================\n";
-   // compare_models(2);
+   std::cout << "====================\n";
+   std::cout << "compare 2-loop level\n";
+   std::cout << "====================\n";
+   compare_models(2);
 
    std::cout << "====================\n";
    std::cout << "compare 3-loop level\n";
