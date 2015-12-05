@@ -134,7 +134,10 @@ ConvertExprToC[expr_, type_, target_String] :=
               splitExpr = SplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize];
               result = MapIndexed[
                   ConvertSingleExprToC[
-                      #1 * CConversion`CreateUnitMatrix[type] /. CConversion`UNITMATRIX[r_]^_ :> CConversion`UNITMATRIX[r],
+                      #1 * CConversion`CreateUnitMatrix[type] /. {
+                          CConversion`UNITMATRIX[r_]^_        :> CConversion`UNITMATRIX[r],
+                          CConversion`UNITMATRIXCOMPLEX[r_]^_ :> CConversion`UNITMATRIXCOMPLEX[r]
+                      },
                       type, target <> "_" <> ToString[#2[[1]]]
                   ]&,
                   splitExpr
