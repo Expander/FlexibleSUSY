@@ -102,11 +102,8 @@ void test_beta_function_equality(const SoftParsMssm& a, const CMSSM_soft_paramet
    TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
    TEST_EQUALITY(beta_a.displayMh2Squared(), beta_b.get_mHu2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
-   // 3L soft-squared mass beta functions are buggy in SOFTSUSY <= 3.6.2
-   if (a.displayLoops() <= 2) {
-      TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
-      TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
-   }
+   TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
+   TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
 
