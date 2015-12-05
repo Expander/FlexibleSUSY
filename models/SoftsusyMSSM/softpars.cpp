@@ -2622,7 +2622,7 @@ SoftPars<Susy, Brevity> SoftPars<Susy, Brevity>::beta2(Brevity& a) const {
 	  u2d2mq(u2d2*mq), // Yu Yu^+ Yd Yd^+ mq
 	  d2u2mq(d2u2*mq), // Yd Yd^+ Yu Yu^+ mq
 	  e4ml(e4*ml), // Ye Ye^+ Ye Ye^+ ml 
-	  u4tmt(u4t*mu), // Yu^+ Yu Yu^+ Yu mt 
+	  u4tmu(u4t*mu), // Yu^+ Yu Yu^+ Yu mt 
 	  d2umuut(d2*umuut), // Yd Yd ^+ Yu mu Yu^+
 	  u2dmddt(u2*dmddt), // Yu Yu^+ Yd md Yd^+ 
 	  d2dmddt(d2*dmddt), //  Yd Yd^+ Yd md Yd^+ 
@@ -2723,7 +2723,7 @@ SoftPars<Susy, Brevity> SoftPars<Susy, Brevity>::beta2(Brevity& a) const {
 	  u2d2mqT = (u2d2mq).trace(), // Tr ( Yu Yu^+ Yd Yd^+ mq)
 	  d2u2mqT = (d2u2mq).trace(), // Tr ( Yd Yd^+ Yu Yu^+ mq)
 	  e2e2mlT = (e4ml).trace(), // Tr (Ye Ye^+ Ye Ye^+ ml )
-	  u2umuutT = (u4tmt).trace(), // Tr ( Yu Yu^+ Yu mu Yu^+ ) = Tr (Yu^+ Yu Yu^+ Yu mu) 
+	  u2umuutT = (u4tmu).trace(), // Tr ( Yu Yu^+ Yu mu Yu^+ ) = Tr (Yu^+ Yu Yu^+ Yu mu) 
 	  d2umuutT = (d2umuut).trace(), // Tr ( Yd Yd ^+ Yu mu Yu^+)
 	  u2dmddtT = (u2dmddt).trace(), // Tr (Yu Yu^+ Yd md Yd^+ )
 	  d2dmddtT = (d2dmddt).trace(), //  Tr (Yd Yd^+ Yd md Yd^+ )
