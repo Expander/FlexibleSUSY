@@ -23,6 +23,7 @@ CreateParameterEnum::usage="";
 CreateParameterNames::usage="";
 
 GetName::usage="returns parameter name from beta function";
+GetBeta::usage="returns beta function expression";
 
 CreateSingleBetaFunctionDecl::usage="";
 CreateSingleBetaFunctionDefs::usage="";
@@ -33,9 +34,10 @@ GetName[BetaFunction[name_, type_, beta_List]] := name;
 
 GetType[BetaFunction[name_, type_, beta_List]] := type;
 
-GetBeta1Loop[BetaFunction[name_, type_, beta_List]] := beta[[1]];
+GetBeta[BetaFunction[name_, type_, beta_List]] := beta;
 
-GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
+GetBeta[BetaFunction[name_, type_, beta_List], loopOrder_Integer] :=
+    If[Length[beta] < loopOrder, 0, beta[[loopOrder]]];
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
