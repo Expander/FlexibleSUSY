@@ -512,9 +512,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
           traceDefs            = Traces`CreateTraceDefs[betaFun];
           traceDefs            = traceDefs <> Traces`CreateSARAHTraceDefs[sarahTraces];
-          calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
-          calcTraces           = calcTraces <> "\n" <>
-                                 Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
+          calcTraces           = {Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"],
+                                  Sequence @@ Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"] };
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -534,7 +533,9 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@printParameters@"      -> IndentText[printParameters],
                    "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
                    "@traceDefs@"            -> IndentText[IndentText[traceDefs]],
-                   "@calcTraces@"           -> IndentText[WrapLines[calcTraces]],
+                   "@calc1LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[1]] <> "\n" <> calcTraces[[2]]]],
+                   "@calc2LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[3]]]],
+                   "@calc3LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[4]]]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile, sarahTraces];
