@@ -37,11 +37,3 @@ BOOST_AUTO_TEST_CASE( test_bIntegral )
       BOOST_CHECK_EQUAL(b_ss, b_fs);
    }
 }
-
-BOOST_AUTO_TEST_CASE( test_b0 )
-{
-   const double p = 100.;
-   const double b0_p_0_0_p = b0(p, 0, 0, p);
-
-   BOOST_CHECK_EQUAL(b0_p_0_0_p, 2);
-}
