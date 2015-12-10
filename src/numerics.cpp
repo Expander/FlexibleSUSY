@@ -393,7 +393,7 @@ double b1(double p, double m1, double m2, double q) {
   double ans = 0.;
 
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
-  const double pTest = p2 / maximum(m12, sqr(m2));
+  const double pTest = p2 / maximum(m12, m22);
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4; 
