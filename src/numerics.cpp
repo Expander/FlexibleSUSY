@@ -279,7 +279,7 @@ double b0(double p, double m1, double m2, double q) {
   const double dmSq = mMaxSq - mMinSq;
   const double s = pSq + dmSq;
 
-  const double pTest = divide_finite(sqr(p), sqr(mMax));
+  const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6; 
 
