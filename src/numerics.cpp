@@ -174,6 +174,19 @@ DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
   return dydx;
 }
 
+namespace {
+
+/// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
+template <typename T>
+T divide_finite(T a, T b) {
+   T result = a / b;
+   if (!std::isfinite(result))
+      result = std::numeric_limits<T>::max();
+   return result;
+}
+
+} // anonymous namespace
+
 /*
 double dilog(double x) {
   // Set global variables so that integration function can access them
@@ -266,7 +279,7 @@ double b0(double p, double m1, double m2, double q) {
   const double dmSq = mMaxSq - mMinSq;
   const double s = pSq + dmSq;
 
-  const double pTest = sqr(p) / sqr(mMax);
+  const double pTest = divide_finite(sqr(p), sqr(mMax));
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6; 
 
@@ -338,7 +351,7 @@ double b0_fast(double p, double m1, double m2, double q) {
   const double dmSq = mMaxSq - mMinSq;
   const double s = pSq + dmSq, s2 = sqr(s);
 
-  const double pTest = pSq / mMaxSq;
+  const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6;
 
@@ -393,7 +406,7 @@ double b1(double p, double m1, double m2, double q) {
   double ans = 0.;
 
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
-  const double pTest = p2 / maximum(m12, m22);
+  const double pTest = divide_finite(p2, maximum(m12, m22));
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4; 
