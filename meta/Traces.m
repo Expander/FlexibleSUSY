@@ -1,5 +1,5 @@
 
-BeginPackage["Traces`", {"SARAH`", "CConversion`", "Parameters`"}];
+BeginPackage["Traces`", {"SARAH`", "BetaFunction`", "CConversion`", "Parameters`"}];
 
 CreateTraceRules::usage="takes a list of traces and returns a list of
 rules to replace the traces by their C/C++ variables.";
@@ -69,6 +69,18 @@ FindMultipleTraces[list_List] :=
 FindAllTraces[list_List] :=
     DeleteDuplicates[Flatten[Cases[list, trace[__], Infinity]]];
 
+(* returns all traces appearing at a given loop level *)
+FindAllTracesAt[list_List, loopOrder_Integer] :=
+    DeleteDuplicates[Flatten[Cases[BetaFunction`GetBeta[#,loopOrder]& /@ list, trace[__], {0,Infinity}]]];
+
+(* returns traces appearing at a given loop level, but not below *)
+FindAllTracesOnlyAt[list_List, loopOrder_Integer] :=
+    Module[{tracesAtThisLevel, tracesBelow, loopsBelow = Table[i,{i,1,loopOrder-1}]},
+           tracesBelow = DeleteDuplicates @ Flatten[FindAllTracesAt[list,#]& /@ loopsBelow];
+           tracesAtThisLevel = FindAllTracesAt[list, loopOrder];
+           Complement[tracesAtThisLevel, tracesBelow]
+          ];
+
 CreateTraceRules[traces_List] :=
     (Rule[#, ToValidCSymbol[#]])& /@ FindAllTraces[traces];
 
@@ -111,11 +123,11 @@ CreateCastedTraceExprStr[expr_] :=
     CConversion`CastTo[RValueToCFormString[expr], GetTraceType[expr]];
 
 CreateTraceCalculation[list_List, structName_String] :=
-    Module[{defs = "", traces},
-           traces = FindAllTraces[list];
-           (defs = defs <> structName <> "." <> ToValidCSymbolString[#] <>
-            " = " <> CreateCastedTraceExprStr[#] <> ";\n")& /@ traces;
-           Return[defs];
+    Module[{traces, Def},
+           traces = {FindAllTracesOnlyAt[list,1], FindAllTracesOnlyAt[list,2], FindAllTracesOnlyAt[list,3]};
+           Def[expr_] := (structName <> "." <> ToValidCSymbolString[expr] <>
+                          " = " <> CreateCastedTraceExprStr[expr] <> ";\n");
+           StringJoin /@ Map[Def, traces, {2}]
           ];
 
 CreateSARAHTraceCalculation[list_List, structName_String] :=

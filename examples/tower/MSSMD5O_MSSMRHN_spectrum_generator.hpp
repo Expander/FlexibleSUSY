@@ -123,9 +123,11 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    model_1.clear();
    model_1.set_input_parameters(input_1);
    model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model_1.set_loops(2);
 
    model_2.clear();
    model_2.set_input_parameters(input_2);
+   model_2.set_loops(2);
 
    // needed for constraint::initialize()
    high_scale_constraint_2.set_model(&model_2);

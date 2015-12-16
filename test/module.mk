@@ -296,6 +296,11 @@ TEST_META += \
 		$(DIR)/test_SMnoGUT_3loop_beta.m
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
+TEST_META += \
+		$(DIR)/test_CMSSM_3loop_beta.m
+endif
+
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
 
