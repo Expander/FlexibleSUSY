@@ -55,6 +55,7 @@ gm2calc::MSSMNoFV_onshell setup()
    Au.setZero();
    Ad.setZero();
    Ae.setZero();
+   mq2.setZero();
 
    mq2.diagonal().setConstant(500 * 500);
    ml2 = md2 = mu2 = me2 = mq2;
