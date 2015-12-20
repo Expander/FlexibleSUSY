@@ -40,6 +40,23 @@ FlexibleSUSY-1.2.5 [not released yet]
    the renormalisation of the Fayet-Iliopoulos D-term, see the note in
    Section 2, page 4 of arxiv:hep-ph/0308231 .
 
+ * Feature: The anomalous magnetic moment of the muon, (g-2)/2, can be
+   calculated in all MSSM models without sfermion flavour violation
+   (e.g. the MSSMNoFV and CMSSMNoFV).  The calculation is performed
+   with GM2Calc 1.1.0 [arXiv:1510.08071] up to the 2-loop level
+   including tan(beta) resummation.
+
+   In order to enable the calculation of (g-2)/2, the symbols
+
+      FlexibleSUSYObservable`aMuonGM2Calc
+      FlexibleSUSYObservable`aMuonGM2CalcUncertainty
+
+   have to be added to ExtraSLHAOutputBlocks variable in the
+   FlexibleSUSY model file (they are already added in the MSSMNoFV and
+   CMSSMNoFV example models).  In addition, the SLHA input file entry
+   FlexibleSUSY[15] has to be set to 1 to perform the calculation.  If
+   FlexibleSUSY[15] is set to 0, (g-2)/2 is not calculated.
+
  * Change (commit d553af8): No SLHA output is written if the option
    --slha-output-file= is set to the empty string.  To write the SLHA
    output to stdout, set --slha-output-file=- (this is the default).
