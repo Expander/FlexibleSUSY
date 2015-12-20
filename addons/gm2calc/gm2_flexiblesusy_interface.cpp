@@ -16,24 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-#include "@ModelName@_observables.hpp"
-#include "@ModelName@_mass_eigenstates.hpp"
 #include "gm2_flexiblesusy_interface.hpp"
 
-#define MODEL model
-#define AMUGM2CALC a_muon_gm2calc
+namespace gm2calc {
 
-namespace flexiblesusy {
-
-Observables calculate_observables(const @ModelName@_mass_eigenstates& model)
+double fs_calculate_amu()
 {
-   Observables observables;
-
-@calculateObservables@
-
-   return observables;
 }
 
-} // namespace flexiblesusy
+} // namespace gm2calc
