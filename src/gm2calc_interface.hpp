@@ -21,11 +21,20 @@
 
 #include <Eigen/Core>
 
+/**
+ * @file gm2calc_interface.hpp
+ * @brief contains declarations of GM2Calc interface functions
+ */
+
 namespace flexiblesusy {
 
+/**
+ * @class GM2Calc_data
+ * @brief data to be passed to GM2Calc
+ */
 struct GM2Calc_data {
-   GM2Calc_data();
-   void initialize();
+   GM2Calc_data();                ///< initializes members to GM2Calc default values
+   void initialize();             ///< initializes members to GM2Calc default values
 
    double alpha_em_MZ;            ///< alpha_em(MZ)
    double alpha_em_0;             ///< alpha_em(0)

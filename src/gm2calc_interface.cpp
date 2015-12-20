@@ -19,6 +19,11 @@
 #include "gm2calc_interface.hpp"
 #include "config.h"
 
+/**
+ * @file gm2calc_interface.cpp
+ * @brief contains definitions of GM2Calc interface functions
+ */
+
 #ifdef ENABLE_GM2Calc
 
 #include "gm2_1loop.hpp"
@@ -92,6 +97,9 @@ GM2Calc_data::GM2Calc_data()
    initialize();
 }
 
+/**
+ * Initializes data members to the GM2Calc default values
+ */
 void GM2Calc_data::initialize()
 {
    const gm2calc::MSSMNoFV_onshell model;
@@ -128,6 +136,16 @@ void GM2Calc_data::initialize()
    Ae    = model.get_Ae();
 }
 
+/**
+ * This function calculates \f$a_\mu\f$ up to the 2-loop level
+ * including tan(beta) resummation by calling GM2Calc.
+ *
+ * If the calculation fails, 0 is returned.
+ *
+ * @param data data necessary for GM2Calc
+ *
+ * @return \f$a_\mu\f$ up to the 2-loop level w/ tan(beta) resummation
+ */
 double gm2calc_calculate_amu(const GM2Calc_data& data)
 {
    double amu = 0.;
@@ -145,6 +163,17 @@ double gm2calc_calculate_amu(const GM2Calc_data& data)
    return amu;
 }
 
+/**
+ * This function calculates the uncertainty \f$\delta a_\mu\f$ of
+ * \f$a_\mu\f$ at the 2-loop level by calling GM2Calc's uncertainty
+ * estimation function.
+ *
+ * If the calculation fails, 0 is returned.
+ *
+ * @param data data necessary for GM2Calc
+ *
+ * @return \f$\delta a_\mu\f$ at the 2-loop level
+ */
 double gm2calc_calculate_amu_uncertainty(const GM2Calc_data& data)
 {
    double uncertainty = 0.;
