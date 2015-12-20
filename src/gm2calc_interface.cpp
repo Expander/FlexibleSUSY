@@ -165,6 +165,9 @@ double gm2calc_calculate_amu_uncertainty(const GM2Calc_data& data)
 
 namespace flexiblesusy {
 
+GM2Calc_data::GM2Calc_data() {}
+void GM2Calc_data::initialize() {}
+
 double gm2calc_calculate_amu(const GM2Calc_data&)
 {
    return 0.;
