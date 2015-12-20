@@ -148,6 +148,11 @@ TEST_SRC += \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-GM2Calc --with-CMSSMNoFV),yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
