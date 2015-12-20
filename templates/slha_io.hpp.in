@@ -48,7 +48,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
-class Observables;
+struct Observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
@@ -87,9 +87,6 @@ public:
 
    template <class T>
    static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
-
-   template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
 
    template <class T>
    static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
@@ -142,16 +139,6 @@ void @ModelName@_slha_io::fill_slhaea(
    }
 
    slhaea = slha_io.get_slha_io().get_data();
-}
-
-template <class T>
-SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
-   const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const @ModelName@_scales& scales, const Observables& observables)
-{
-   Observables observables;
-
-   return fill_slhaea(model, qedqcd, scales, observables);
 }
 
 template <class T>
