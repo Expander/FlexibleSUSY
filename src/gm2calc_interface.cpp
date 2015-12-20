@@ -75,9 +75,9 @@ gm2calc::MSSMNoFV_onshell setup(const GM2Calc_data& data)
    model.set_md2(data.md2);     // 2L
    model.set_mu2(data.mu2);     // 2L
    model.set_me2(data.me2);     // 2L
-   model.set_TYu(data.TYu);     // 2L
-   model.set_TYd(data.TYd);     // 2L
-   model.set_TYe(data.TYe);     // 2L
+   model.set_Au(data.Au);       // 2L
+   model.set_Ad(data.Ad);       // 2L
+   model.set_Ae(data.Ae);       // 2L
 
    // convert DR-bar parameters to on-shell
    model.convert_to_onshell();
@@ -123,9 +123,9 @@ void GM2Calc_data::initialize()
    md2   = model.get_md2();
    ml2   = model.get_ml2();
    me2   = model.get_me2();
-   TYu   = model.get_TYu();
-   TYd   = model.get_TYd();
-   TYe   = model.get_TYe();
+   Au    = model.get_Au();
+   Ad    = model.get_Ad();
+   Ae    = model.get_Ae();
 }
 
 double gm2calc_calculate_amu(const GM2Calc_data& data)

@@ -1,4 +1,4 @@
-BeginPackage["Observables`", {"FlexibleSUSY`", "Utils`"}];
+BeginPackage["Observables`", {"FlexibleSUSY`", "Utils`", "TextFormatting`"}];
 
 (* observables *)
 Begin["FlexibleSUSYObservable`"];
@@ -16,9 +16,10 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertain
     structName <> ".AMUGM2CALCUNCERTAINTY = gm2calc_calculate_amu_uncertainty(gm2calc_data);";
 
 FillGM2CalcInterfaceData[struct_String] :=
-    Module[{filling,
-            pseudoscalar, smuon, muonsneutrino, chargino, neutralino,
-            mu, m1, m2, m3, mq2, mu2, md2, ml2, me2, tu, td, te},
+    Module[{filling, mwStr,
+            w, pseudoscalar, smuon, muonsneutrino, chargino, neutralino,
+            mu, m1, m2, m3, mq2, mu2, md2, ml2, me2, tu, td, te, yu, yd, ye},
+           w             = Parameters`GetParticleFromDescription["W-Boson"];
            pseudoscalar  = Parameters`GetParticleFromDescription["Pseudo-Scalar Higgs"];
            smuon         = Parameters`GetParticleFromDescription["Smuon"];
            muonsneutrino = Parameters`GetParticleFromDescription["Muon Sneutrino"];
@@ -36,7 +37,13 @@ FillGM2CalcInterfaceData[struct_String] :=
            tu            = Parameters`GetParameterFromDescription["Trilinear-Up-Coupling"];
            td            = Parameters`GetParameterFromDescription["Trilinear-Down-Coupling"];
            te            = Parameters`GetParameterFromDescription["Trilinear-Lepton-Coupling"];
+           yu            = Parameters`GetParameterFromDescription["Up-Yukawa-Coupling"];
+           yd            = Parameters`GetParameterFromDescription["Down-Yukawa-Coupling"];
+           ye            = Parameters`GetParameterFromDescription["Lepton-Yukawa-Coupling"];
+           mwStr         = "MODEL.get_physical()." <> CConversion`RValueToCFormString[FlexibleSUSY`M[w]];
            filling = \
+           "if (!is_zero(" <> mwStr <> "))\n" <>
+           TextFormatting`IndentText[struct <> ".MW = " <> mwStr <> ";"] <> "\n" <>
            struct <> ".MA0   = MODEL.get_physical()." <>
            CConversion`RValueToCFormString[FlexibleSUSY`M[pseudoscalar][1]] <> ";\n" <>
            struct <> ".MSvm  = MODEL.get_physical()." <>
@@ -59,9 +66,12 @@ FillGM2CalcInterfaceData[struct_String] :=
            struct <> ".md2   = MODEL.get_" <> CConversion`RValueToCFormString[md2] <> "();\n" <>
            struct <> ".ml2   = MODEL.get_" <> CConversion`RValueToCFormString[ml2] <> "();\n" <>
            struct <> ".me2   = MODEL.get_" <> CConversion`RValueToCFormString[me2] <> "();\n" <>
-           struct <> ".TYu   = MODEL.get_" <> CConversion`RValueToCFormString[tu] <> "();\n" <>
-           struct <> ".TYd   = MODEL.get_" <> CConversion`RValueToCFormString[td] <> "();\n" <>
-           struct <> ".TYe   = MODEL.get_" <> CConversion`RValueToCFormString[te] <> "();\n";
+           struct <> ".Au    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[tu] <>
+                               "(), MODEL.get_" <> CConversion`RValueToCFormString[yu] <> "());\n" <>
+           struct <> ".Ad    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[td] <>
+                               "(), MODEL.get_" <> CConversion`RValueToCFormString[yd] <> "());\n" <>
+           struct <> ".Ae    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[te] <>
+                               "(), MODEL.get_" <> CConversion`RValueToCFormString[ye] <> "());\n";
            "GM2Calc_data " <> struct <> ";\n" <> filling
           ];
 
