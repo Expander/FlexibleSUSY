@@ -31,7 +31,7 @@
 namespace flexiblesusy {
 
 struct Observables {
-   static const unsigned NUMBER_OF_OBSERVABLES = 1;
+   static const unsigned NUMBER_OF_OBSERVABLES = 2;
 
    Observables();
    Eigen::ArrayXd get() const; ///< returns vector of all observables
@@ -40,6 +40,7 @@ struct Observables {
    void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
 
    double a_muon_gm2calc; ///< a_muon = (g-2)/2 of the muon (calculated with GM2Calc)
+   double a_muon_gm2calc_uncertainty; ///< uncertainty of (g-2)/2 of the muon (calculated with GM2Calc)
 };
 
 } // namespace flexiblesusy

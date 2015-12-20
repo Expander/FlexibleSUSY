@@ -24,6 +24,7 @@
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "gm2_error.hpp"
+#include "gm2_uncertainty.hpp"
 #include "MSSMNoFV_onshell.hpp"
 #include "logger.hpp"
 #include <cmath>
@@ -144,13 +145,32 @@ double gm2calc_calculate_amu(const GM2Calc_data& data)
    return amu;
 }
 
+double gm2calc_calculate_amu_uncertainty(const GM2Calc_data& data)
+{
+   double uncertainty = 0.;
+
+   try {
+      const gm2calc::MSSMNoFV_onshell model(setup(data));
+      uncertainty = gm2calc::calculate_uncertainty_amu_2loop(model);
+   } catch (const gm2calc::Error& e) {
+      ERROR("GM2Calc: uncertainty estimation: " << e.what());
+   }
+
+   return uncertainty;
+}
+
 } // namespace flexiblesusy
 
 #else
 
 namespace flexiblesusy {
 
-double gm2calc_calculate_amu()
+double gm2calc_calculate_amu(const GM2Calc_data&)
+{
+   return 0.;
+}
+
+double gm2calc_calculate_amu_uncertainty(const GM2Calc_data&)
 {
    return 0.;
 }

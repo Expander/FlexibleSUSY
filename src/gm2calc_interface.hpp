@@ -57,7 +57,11 @@ struct GM2Calc_data {
    Eigen::Matrix<double,3,3> Ae;  ///< down-type slepton trilinear coupling
 };
 
+/// calculates amu using GM2Calc
 double gm2calc_calculate_amu(const GM2Calc_data&);
+
+/// calculates uncertainty of amu using GM2Calc
+double gm2calc_calculate_amu_uncertainty(const GM2Calc_data&);
 
 } // namespace flexiblesusy
 

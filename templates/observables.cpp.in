@@ -24,6 +24,7 @@
 
 #define MODEL model
 #define AMUGM2CALC a_muon_gm2calc
+#define AMUGM2CALCUNCERTAINTY a_muon_gm2calc_uncertainty
 
 namespace flexiblesusy {
 
