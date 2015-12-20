@@ -51,7 +51,7 @@ typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
 typedef enum {ALPHA=1, ALPHAS} leGauge;
 
 enum QedQcd_input_parmeters : unsigned { alpha_em_MSbar_at_MZ, GFermi,
-      alpha_s_MSbar_at_MZ, MZ_pole, mb_mb, MT_pole, MTau_pole, Mv3_pole,
+      alpha_s_MSbar_at_MZ, MZ_pole, mb_mb, MT_pole, MTau_pole, MMuon_pole, Mv3_pole,
       MW_pole, ME_pole, Mv1_pole, MM_pole, Mv2_pole, MD, MU, MS, MC,
       NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS};
 
@@ -70,6 +70,7 @@ private:
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
+  double mmuonPole; ///< muon pole mass
   double mwPole; ///< W boson pole mass
   double mzPole; ///< Z boson pole mass
   double gfermi; ///< Fermi constant
@@ -85,6 +86,7 @@ public:
   void setPoleMt(double mt) { mtPole = mt; }; ///< set pole top mass
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
   void setPoleMtau(double mtau) { mtauPole = mtau; }; ///< set pole tau mass
+  void setPoleMmuon(double m) { mmuonPole = m; }; ///< set pole tau mass
   void setMbMb(double mb)   { mbMb = mb;   }; ///< set mb(mb)
   void setPoleMW(double mw) { mwPole = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { mzPole = mz; } ///< set Z boson pole mass
@@ -109,6 +111,8 @@ public:
   double displayPoleMt() const { return mtPole; };
   /// Display pole tau mass
   double displayPoleMtau() const { return mtauPole; };
+  /// Display pole muon mass
+  double displayPoleMmuon() const { return mmuonPole; };
   /// Returns bottom "pole" mass
   double displayPoleMb() const { return mbPole; };
   /// Returns W boson pole mass
@@ -202,7 +206,7 @@ double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
+   mtauPole(m.mtauPole), mmuonPole(m.mmuonPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
    ckm(m.ckm), pmns(m.pmns)
 {
   setPars(11); 
