@@ -20,7 +20,7 @@
 
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-#include "gm2_flexiblesusy_interface.hpp"
+#include "gm2calc_interface.hpp"
 
 #define MODEL model
 #define AMUGM2CALC a_muon_gm2calc

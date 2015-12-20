@@ -16,12 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "gm2_flexiblesusy_interface.hpp"
+#include "gm2calc_interface.hpp"
+#include "config.h"
 
 namespace gm2calc {
 
+#ifdef ENABLE_GM2Calc
 double fs_calculate_amu()
 {
+   return 0.;
 }
+#else
+double fs_calculate_amu()
+{
+   return 0.;
+}
+#endif
 
 } // namespace gm2calc

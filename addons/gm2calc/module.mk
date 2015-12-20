@@ -6,7 +6,6 @@ LIBgm2calc_SRC := \
 		$(DIR)/ffunctions.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
-		$(DIR)/gm2_flexiblesusy_interface.cpp \
 		$(DIR)/gm2_mb.cpp \
 		$(DIR)/gm2_slha_io.cpp \
 		$(DIR)/gm2_uncertainty.cpp \
@@ -27,7 +26,6 @@ LIBgm2calc_HDR := \
 		$(DIR)/ffunctions.hpp \
 		$(DIR)/gm2_1loop.hpp \
 		$(DIR)/gm2_2loop.hpp \
-		$(DIR)/gm2_flexiblesusy_interface.hpp \
 		$(DIR)/gm2_error.hpp \
 		$(DIR)/gm2_mb.hpp \
 		$(DIR)/gm2_slha_io.hpp \

@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef GM2CALC_FLEXIBLESUSY_INTERFACE_H
-#define GM2CALC_FLEXIBLESUSY_INTERFACE_H
+#ifndef GM2CALC_INTERFACE_H
+#define GM2CALC_INTERFACE_H
 
 namespace gm2calc {
 
