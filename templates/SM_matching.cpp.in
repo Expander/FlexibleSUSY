@@ -54,51 +54,26 @@ void @ModelName@_SM_matching::matchingTL(SM_mass_eigenstates& SM_, const @ModelN
 /**
  * matches Standardmodel from @ModelName@-Model at one-loop-level
  */
-void @ModelName@_SM_matching::matching(SM_mass_eigenstates& SM_, const @ModelName@_mass_eigenstates& model)
+void @ModelName@_SM_matching::matching(SM_mass_eigenstates& SM_, @ModelName@_mass_eigenstates& model)
 {
-  const double currentScale = model.get_scale();
-  double MWMSbar2, MZMSbar2, MHMSbar2;
-  Eigen::Array<double, 3, 1> MuMSbar, MdMSbar, MeMSbar;
+   const auto model_pole_mass_order = model.get_pole_mass_loop_order();
+   const auto model_momentum_iterations = model.get_number_of_mass_iterations();
 
-  //match with tree-level as initial guess
-  matchingTL(SM_, model);
-  double g1drbar = SM_.get_g1();
-  double g2drbar = SM_.get_g2();
-@calcAlphaEM@
-  double alpha_s  = Sqr(SM_.get_g3())/(4.*Pi);
-@gauge1Linit@
-@alphaEM1Lmatching@
-@alphaS1Lmatching@
+   model.set_pole_mass_loop_order(1);
+   model.set_number_of_mass_iterations(0);
 
-   //calculate 1-loop corrected masses
-   SM_.solve_ewsb_one_loop();
-   MHMSbar2 = Mhh2matching1L(model);
-   MWMSbar2 = MVWp2matching1L(model);
-   MZMSbar2 = MVZ2matching1L(model);
+   model.calculate_DRbar_masses();
+   model.solve_ewsb_one_loop();
+   model.calculate_Mhh_pole();
 
-   //assuming no flavor mixing: yukawa matrices and self energies are diagonal
-   for(unsigned i = 0; i < 3; i++)
-   {
-      MeMSbar(i) = Sqrt(MFe2matching1L(model, i));
-      MuMSbar(i) = Sqrt(MFu2matching1L(model, i));
-      MdMSbar(i) = Sqrt(MFd2matching1L(model, i));
-   }
-
-   //copy SM-class for TL - template
-   const SM_mass_eigenstates SM_TL = SM_;
-
-   //calculate 1L-parameters from 1L-masses
-   SM_.set_g1(Sqrt(4.*Pi*alpha_em *(1. - delta_alpha_em + MZMSbar2/Sqr(SM_TL.get_MVZ()) - MWMSbar2/Sqr(SM_TL.get_MVWp()) )*Sqr(SM_TL.get_MVZ()/SM_TL.get_MVWp()))/Sqrt(.6));
-   SM_.set_g2(Sqrt(4.*Pi*alpha_em/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ()))*
-               (1. - delta_alpha_em + Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())*(-MZMSbar2/Sqr(SM_TL.get_MVZ()) + MWMSbar2/Sqr(SM_TL.get_MVWp()))/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())))));
-   SM_.set_g3(Sqrt(4.*Pi*alpha_s *(1. - delta_alpha_s)));
-   SM_.set_v(2.*SM_TL.get_MVWp()/SM_TL.get_g2()*Sqrt(1. + MWMSbar2/Sqr(SM_TL.get_MVWp()) - Sqr(SM_.get_g2()/SM_TL.get_g2())));
-   SM_.set_Ye((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFe())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MeMSbar) ).sqrt().matrix().asDiagonal());
-   SM_.set_Yu((-(2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFu())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MuMSbar) ).sqrt()).matrix().asDiagonal());
-   SM_.set_Yd((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFd())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MdMSbar) ).sqrt().matrix().asDiagonal());
-   SM_.set_Lambdax(Sqr(SM_TL.get_Mhh()/SM_TL.get_v())*(1. + MHMSbar2/Sqr(SM_TL.get_Mhh()) - Sqr(SM_.get_v()/SM_TL.get_v())));
-   SM_.set_mu2( 1.5*SM_TL.get_Lambdax()*Sqr(SM_TL.get_v())*(-1. + SM_.get_Lambdax()/SM_TL.get_Lambdax() +  Sqr(SM_.get_v()/SM_TL.get_v())) - MHMSbar2);
    SM_.calculate_DRbar_masses();
+   SM_.solve_ewsb_one_loop();
+
+   const double p = model.get_M@HiggsBoson@()@LightestHiggsExtension@;
+   SM_.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson@@LightestHiggsExtension@) + Re(SM_.self_energy_hh(p) - SM_.get_mass_matrix_hh() + Sqr(SM_.get_Mhh())))/Sqr(SM_.get_v()));
+
+   model.set_pole_mass_loop_order(model_pole_mass_order);
+   model.set_number_of_mass_iterations(model_momentum_iterations);
 
 }
 
@@ -139,10 +114,15 @@ void @ModelName@_SM_matching::matchingReverseTL(@ModelName@_mass_eigenstates& mo
  */
 void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& SM_)
 {
-   // match parameter at tree-level first
-   matchingReverseTL(model, SM_);
-   model.solve_ewsb_one_loop();
-   SM_.solve_ewsb_one_loop();
+   const auto model_pole_mass_order = model.get_pole_mass_loop_order();
+   const auto model_momentum_iterations = model.get_number_of_mass_iterations();
+   const auto sm_pole_mass_order = SM_.get_pole_mass_loop_order();
+   const auto sm_momentum_iterations = SM_.get_number_of_mass_iterations();
+
+   model.set_pole_mass_loop_order(1);
+   model.set_number_of_mass_iterations(0);
+   SM_.set_pole_mass_loop_order(1);
+   SM_.set_number_of_mass_iterations(0);
 
    const double alpha_em = .6 * Sqr(SM_.get_g1() * SM_.get_g2())/(4. * Pi * (.6*Sqr(SM_.get_g1()) + Sqr(SM_.get_g2())));
    const double alpha_s  = Sqr(SM_.get_g3())/(4. * Pi);
@@ -151,9 +131,26 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
 @alphaEM1Lmatching@
 @alphaS1Lmatching@
 
+
+   model.calculate_DRbar_masses();
+   model.solve_ewsb_one_loop();
+   model.calculate_M@TopQuark@_pole();
+   model.calculate_M@BottomQuark@_pole();
+   model.calculate_M@Electron@_pole();
+   model.calculate_M@VectorW@_pole();
+   model.calculate_M@VectorZ@_pole();
+
+   SM_.calculate_DRbar_masses();
+   SM_.solve_ewsb_one_loop();
+   SM_.calculate_MFu_pole();
+   SM_.calculate_MFd_pole();
+   SM_.calculate_MFe_pole();
+   SM_.calculate_MVWp_pole();
+   SM_.calculate_MVZ_pole();
+
    // one-loop matched masses
-   const double MW2_1L = MVWp2matching1Lreverted(SM_, model);
-   const double MZ2_1L = MVZ2matching1Lreverted(SM_, model);
+   const double MW2_1L = Sqr(SM_.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW@) + Sqr(model.get_M@VectorW@());
+   const double MZ2_1L = Sqr(SM_.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ@) + Sqr(model.get_M@VectorZ@());
 
 
    Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
@@ -162,9 +159,9 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
 
    for( unsigned gen = 0; gen < 3; gen++)
    {
-      topDRbar(gen, gen)      = Sqrt(MFu2matching1Lreverted(SM_, model, gen));
-      bottomDRbar(gen, gen)   = Sqrt(MFd2matching1Lreverted(SM_, model, gen));
-      electronDRbar(gen, gen) = Sqrt(MFe2matching1Lreverted(SM_, model, gen));
+      topDRbar(gen, gen)      = SM_.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
+      bottomDRbar(gen, gen)   = SM_.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
+      electronDRbar(gen, gen) = SM_.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
    }
 
    // define and apply 1L-matched gauge parameters
@@ -177,12 +174,16 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
    model.set_@strongCoupling@(g3_1L);
 
    // 'vev' is a keyword for user-defined matching
-   const double vev = 2. * Sqrt(MW2_1L) / g2_1L;
+   const double vev = 2. * Sqrt(MZ2_1L/(.6*Sqr(g1_1L) + Sqr(g2_1L)));
 
 @applyUserMatching@
 @setYukawas@
 
-   model.calculate_DRbar_masses();
+   model.set_pole_mass_loop_order(model_pole_mass_order);
+   model.set_number_of_mass_iterations(model_momentum_iterations);
+   SM_.set_pole_mass_loop_order(sm_pole_mass_order);
+   SM_.set_number_of_mass_iterations(sm_momentum_iterations);
+
 }
 
 
