@@ -91,6 +91,8 @@ ALLLIB   :=
 ALLEXE   :=
 # the modules add test executables to this variable
 ALLTST   :=
+# the addons add libraries to this variable to be linked against executables
+ADDONLIBS:=
 
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
