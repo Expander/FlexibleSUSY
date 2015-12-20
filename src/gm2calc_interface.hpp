@@ -19,10 +19,10 @@
 #ifndef GM2CALC_INTERFACE_H
 #define GM2CALC_INTERFACE_H
 
-namespace gm2calc {
+namespace flexiblesusy {
 
-double fs_calculate_amu();
+double gm2calc_calculate_amu();
 
-} // namespace gm2calc
+} // namespace flexiblesusy
 
 #endif
