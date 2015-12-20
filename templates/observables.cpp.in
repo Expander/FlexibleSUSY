@@ -35,7 +35,7 @@
 #define MTPole qedqcd.displayPoleMt()
 #define MBMB qedqcd.displayMbMb()
 #define MTauPole qedqcd.displayPoleMtau()
-#define MMPole qedqcd.displayMass(softsusy::mMuon)
+#define MMPole qedqcd.displayPoleMmuon()
 
 namespace flexiblesusy {
 
