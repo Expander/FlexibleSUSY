@@ -23,51 +23,60 @@
 
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
+#include "gm2_error.hpp"
 #include "MSSMNoFV_onshell.hpp"
+#include "logger.hpp"
+#include <cmath>
 
 namespace flexiblesusy {
 
 namespace {
 
-gm2calc::MSSMNoFV_onshell setup()
+double calculate_e(double alpha) {
+   return std::sqrt(4. * M_PI * alpha);
+}
+
+double calculate_alpha(double e) {
+   return e * e / (4. * M_PI);
+}
+
+gm2calc::MSSMNoFV_onshell setup(const GM2Calc_data& data)
 {
    gm2calc::MSSMNoFV_onshell model;
 
-   const Eigen::Matrix<double,3,3> UnitMatrix
-      = Eigen::Matrix<double,3,3>::Identity();
+   // fill couplings
+   model.set_alpha_MZ(data.alpha_em_MZ);
+   model.set_alpha_thompson(data.alpha_em_0);
+   model.set_g3(calculate_e(data.alpha_s_MZ));
 
    // fill pole masses
-   model.get_physical().MSvmL   =  5.18860573e+02; // 1L
-   model.get_physical().MSm(0)  =  5.05095249e+02; // 1L
-   model.get_physical().MSm(1)  =  5.25187016e+02; // 1L
-   model.get_physical().MChi(0) =  2.01611468e+02; // 1L
-   model.get_physical().MChi(1) =  4.10040273e+02; // 1L
-   model.get_physical().MChi(2) = -5.16529941e+02; // 1L
-   model.get_physical().MChi(3) =  5.45628749e+02; // 1L
-   model.get_physical().MCha(0) =  4.09989890e+02; // 1L
-   model.get_physical().MCha(1) =  5.46057190e+02; // 1L
-   model.get_physical().MAh(1)  =  1.50000000e+03; // 2L
+   model.get_physical().MVZ     = data.MZ;    // 1L
+   model.get_physical().MVWm    = data.MW;    // 1L
+   model.get_physical().MFb     = data.mb_mb; // 1L
+   model.get_physical().MFt     = data.MT;    // 1L
+   model.get_physical().MFtau   = data.MTau;  // 1L
+   model.get_physical().MFm     = data.MM;    // 1L
+   model.get_physical().MAh(1)  = data.MA0;   // 2L
+   model.get_physical().MSvmL   = data.MSvm;  // 1L
+   model.get_physical().MSm     = data.MSm;   // 1L
+   model.get_physical().MCha    = data.MCha;  // 1L
+   model.get_physical().MChi    = data.MChi;  // 1L
 
    // fill DR-bar parameters
-   model.set_TB(40);                        // 1L
-   model.set_Mu(500);                       // initial guess
-   model.set_MassB(200);                    // initial guess
-   model.set_MassWB(400);                   // initial guess
-   model.set_MassG(2000);                   // 2L
-   model.set_mq2(7000 * 7000 * UnitMatrix); // 2L
-   model.set_ml2(0, 0, 500 * 500);          // 2L
-   model.set_ml2(1, 1, 500 * 500);          // irrelevant
-   model.set_ml2(2, 2, 500 * 500);          // 2L
-   model.set_md2(7000 * 7000 * UnitMatrix); // 2L
-   model.set_mu2(7000 * 7000 * UnitMatrix); // 2L
-   model.set_me2(0, 0, 500 * 500);          // 2L
-   model.set_me2(1, 1, 500 * 500);          // initial guess
-   model.set_me2(2, 2, 500 * 500);          // 2L
-   model.set_Au(2, 2, 0);                   // 2L
-   model.set_Ad(2, 2, 0);                   // 2L
-   model.set_Ae(1, 1, 0);                   // 1L
-   model.set_Ae(2, 2, 0);                   // 2L
-   model.set_scale(1000);                   // 2L
+   model.set_scale(data.scale); // 2L
+   model.set_TB(data.TB);       // 1L
+   model.set_Mu(data.Mu);       // initial guess
+   model.set_MassB(data.M1);    // initial guess
+   model.set_MassWB(data.M2);   // initial guess
+   model.set_MassG(data.M3);    // 2L
+   model.set_mq2(data.mq2);     // 2L
+   model.set_ml2(data.ml2);     // 1L
+   model.set_md2(data.md2);     // 2L
+   model.set_mu2(data.mu2);     // 2L
+   model.set_me2(data.me2);     // 2L
+   model.set_Au(data.Au);       // 2L
+   model.set_Ad(data.Ad);       // 2L
+   model.set_Ae(data.Ae);       // 2L
 
    // convert DR-bar parameters to on-shell
    model.convert_to_onshell();
@@ -77,13 +86,60 @@ gm2calc::MSSMNoFV_onshell setup()
 
 } // anonymous namespace
 
-double gm2calc_calculate_amu()
+GM2Calc_data::GM2Calc_data()
 {
-   const gm2calc::MSSMNoFV_onshell model(setup());
+   initialize();
+}
 
-   const double amu =
-      + gm2calc::calculate_amu_1loop(model)
-      + gm2calc::calculate_amu_2loop(model);
+void GM2Calc_data::initialize()
+{
+   const gm2calc::MSSMNoFV_onshell model;
+
+   alpha_em_MZ = calculate_alpha(model.get_EL());
+   alpha_em_0  = calculate_alpha(model.get_EL0());
+   alpha_s_MZ  = calculate_alpha(model.get_g3());
+
+   MZ    = model.get_MZ();
+   MW    = model.get_MW();
+   mb_mb = model.get_MBMB();
+   MT    = model.get_MT();
+   MTau  = model.get_ML();
+   MM    = model.get_MM();
+   MA0   = model.get_MA0();
+   MSvm  = model.get_MSvmL();
+   MSm   = model.get_MSm();
+   MCha  = model.get_MCha();
+   MChi  = model.get_MChi();
+
+   scale = model.get_scale();
+   TB    = model.get_TB();
+   Mu    = model.get_Mu();
+   M1    = model.get_MassB();
+   M2    = model.get_MassWB();
+   M3    = model.get_MassG();
+   mq2   = model.get_mq2();
+   mu2   = model.get_mu2();
+   md2   = model.get_md2();
+   ml2   = model.get_ml2();
+   me2   = model.get_me2();
+   Au    = model.get_Au();
+   Ad    = model.get_Ad();
+   Ae    = model.get_Ae();
+}
+
+double gm2calc_calculate_amu(const GM2Calc_data& data)
+{
+   double amu = 0.;
+
+   try {
+      const gm2calc::MSSMNoFV_onshell model(setup(data));
+
+      amu =
+         + gm2calc::calculate_amu_1loop(model)
+         + gm2calc::calculate_amu_2loop(model);
+   } catch (const gm2calc::Error& e) {
+      ERROR("GM2Calc: " << e.what());
+   }
 
    return amu;
 }

@@ -19,9 +19,45 @@
 #ifndef GM2CALC_INTERFACE_H
 #define GM2CALC_INTERFACE_H
 
+#include <Eigen/Core>
+
 namespace flexiblesusy {
 
-double gm2calc_calculate_amu();
+struct GM2Calc_data {
+   GM2Calc_data();
+   void initialize();
+
+   double alpha_em_MZ;            ///< alpha_em(MZ)
+   double alpha_em_0;             ///< alpha_em(0)
+   double alpha_s_MZ;             ///< alpha_s(MZ) SM MS-bar
+   double MZ;                     ///< Z pole mass
+   double MW;                     ///< W pole mass
+   double mb_mb;                  ///< mb(mb) SM MS-bar
+   double MT;                     ///< top quark pole mass
+   double MTau;                   ///< tau lepton pole mass
+   double MM;                     ///< muon pole mass
+   double MA0;                    ///< CP-odd Higgs pole mass
+   double MSvm;                   ///< muon sneutrino pole mass
+   Eigen::Array<double,2,1> MSm;  ///< smuon pole masses
+   Eigen::Array<double,2,1> MCha; ///< chargino pole masses
+   Eigen::Array<double,4,1> MChi; ///< neutralino pole masses
+   double scale;                  ///< renormalization scale
+   double TB;                     ///< tan(beta) DR-bar
+   double Mu;                     ///< mu parameter (initial guess)
+   double M1;                     ///< bino mass parameter (initial guess)
+   double M2;                     ///< wino mass parameter (initial guess)
+   double M3;                     ///< gluino mass parameter
+   Eigen::Matrix<double,3,3> mq2; ///< left-handed squark mass parameters squared
+   Eigen::Matrix<double,3,3> mu2; ///< right-handed up-type squark mass parameters squared
+   Eigen::Matrix<double,3,3> md2; ///< right-handed down-type squark mass parameters squared
+   Eigen::Matrix<double,3,3> ml2; ///< left-handed slepton mass parameters squared
+   Eigen::Matrix<double,3,3> me2; ///< right-handed down-type slepton mass parameters squared
+   Eigen::Matrix<double,3,3> Au;  ///< up-type squark trilinear coupling
+   Eigen::Matrix<double,3,3> Ad;  ///< down-type squark trilinear coupling
+   Eigen::Matrix<double,3,3> Ae;  ///< down-type slepton trilinear coupling
+};
+
+double gm2calc_calculate_amu(const GM2Calc_data&);
 
 } // namespace flexiblesusy
 
