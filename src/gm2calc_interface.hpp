@@ -52,9 +52,9 @@ struct GM2Calc_data {
    Eigen::Matrix<double,3,3> md2; ///< right-handed down-type squark mass parameters squared
    Eigen::Matrix<double,3,3> ml2; ///< left-handed slepton mass parameters squared
    Eigen::Matrix<double,3,3> me2; ///< right-handed down-type slepton mass parameters squared
-   Eigen::Matrix<double,3,3> Au;  ///< up-type squark trilinear coupling
-   Eigen::Matrix<double,3,3> Ad;  ///< down-type squark trilinear coupling
-   Eigen::Matrix<double,3,3> Ae;  ///< down-type slepton trilinear coupling
+   Eigen::Matrix<double,3,3> TYu; ///< up-type squark trilinear coupling
+   Eigen::Matrix<double,3,3> TYd; ///< down-type squark trilinear coupling
+   Eigen::Matrix<double,3,3> TYe; ///< down-type slepton trilinear coupling
 };
 
 /// calculates amu using GM2Calc
