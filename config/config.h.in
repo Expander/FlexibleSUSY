@@ -73,3 +73,6 @@
 
 /* Enable <random> header */
 @DEFINE_ENABLE_RANDOM@
+
+/* Enable statements for addons */
+@DEFINE_ENABLE_ADDONS@
