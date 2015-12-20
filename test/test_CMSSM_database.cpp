@@ -179,6 +179,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    Observables obs1, obs2;
    obs1.a_muon_gm2calc = 1e-9;
+   obs1.a_muon_gm2calc_uncertainty = 1e-10;
    softsusy::QedQcd qedqcd1, qedqcd2;
    qedqcd1.setAlpha(softsusy::ALPHA, 1./127.);
    qedqcd1.toMz();
