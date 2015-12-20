@@ -1,8 +1,8 @@
-DIR          := addons/gm2calc
-MODNAME      := gm2calc
+DIR          := addons/GM2Calc
+MODNAME      := GM2Calc
 
 # source files
-LIBgm2calc_SRC := \
+LIBGM2Calc_SRC := \
 		$(DIR)/ffunctions.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
@@ -17,12 +17,12 @@ LIBgm2calc_SRC := \
 		$(DIR)/MSSMNoFV_onshell_susy_parameters.cpp
 
 # main()
-EXEgm2calc_SRC := \
+EXEGM2Calc_SRC := \
 		$(DIR)/gm2calc.cpp \
 		$(DIR)/gm2scan.cpp
 
 # header files
-LIBgm2calc_HDR := \
+LIBGM2Calc_HDR := \
 		$(DIR)/ffunctions.hpp \
 		$(DIR)/gm2_1loop.hpp \
 		$(DIR)/gm2_2loop.hpp \
@@ -37,47 +37,47 @@ LIBgm2calc_HDR := \
 		$(DIR)/MSSMNoFV_onshell_soft_parameters.hpp \
 		$(DIR)/MSSMNoFV_onshell_susy_parameters.hpp
 
-LIBgm2calc_SLHA_INPUT := \
+LIBGM2Calc_SLHA_INPUT := \
 		$(DIR)/example.slha \
 		$(DIR)/example.gm2
 
-LIBgm2calc_INFO := \
+LIBGM2Calc_INFO := \
 		$(DIR)/AUTHORS \
 		$(DIR)/COPYING \
 		$(DIR)/README
 
-LIBgm2calc_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBgm2calc_SRC)))
+LIBGM2Calc_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBGM2Calc_SRC)))
 
-EXEgm2calc_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXEgm2calc_SRC)))
+EXEGM2Calc_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXEGM2Calc_SRC)))
 
-LIBgm2calc_DEP := \
-		$(LIBgm2calc_OBJ:.o=.d)
+LIBGM2Calc_DEP := \
+		$(LIBGM2Calc_OBJ:.o=.d)
 
-EXEgm2calc_DEP := \
-		$(EXEgm2calc_OBJ:.o=.d)
+EXEGM2Calc_DEP := \
+		$(EXEGM2Calc_OBJ:.o=.d)
 
-EXEgm2calc_EXE := \
-		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEgm2calc_SRC)))
+EXEGM2Calc_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEGM2Calc_SRC)))
 
-LIBgm2calc     := \
+LIBGM2Calc     := \
 		$(DIR)/lib$(MODNAME)$(LIBEXT)
 
 .PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME)
 
 clean-$(MODNAME)-dep:
-		-rm -f $(LIBgm2calc_DEP)
-		-rm -f $(EXEgm2calc_DEP)
+		-rm -f $(LIBGM2Calc_DEP)
+		-rm -f $(EXEGM2Calc_DEP)
 
 clean-$(MODNAME)-obj:
-		-rm -f $(LIBgm2calc_OBJ)
-		-rm -f $(EXEgm2calc_OBJ)
+		-rm -f $(LIBGM2Calc_OBJ)
+		-rm -f $(EXEGM2Calc_OBJ)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBgm2calc)
-		-rm -f $(EXEgm2calc_EXE)
+		-rm -f $(LIBGM2Calc)
+		-rm -f $(EXEGM2Calc_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -85,16 +85,16 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBgm2calc_DEP) $(EXEgm2calc_DEP) $(LIBgm2calc_OBJ) $(EXEgm2calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
-$(LIBgm2calc): $(LIBgm2calc_OBJ)
+$(LIBGM2Calc): $(LIBGM2Calc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBgm2calc) $(LIBFLEXI)
+$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI)
 		$(CXX) -o $@ $(call abspathx,$^)
 
-ALLDEP += $(LIBgm2calc_DEP) $(EXEgm2calc_DEP)
-ALLSRC += $(LIBgm2calc_SRC) $(EXEgm2calc_SRC)
-ALLLIB += $(LIBgm2calc)
-ALLEXE += $(EXEgm2calc_EXE)
-ADDONLIBS += $(LIBgm2calc)
+ALLDEP += $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP)
+ALLSRC += $(LIBGM2Calc_SRC) $(EXEGM2Calc_SRC)
+ALLLIB += $(LIBGM2Calc)
+ALLEXE += $(EXEGM2Calc_EXE)
+ADDONLIBS += $(LIBGM2Calc)
