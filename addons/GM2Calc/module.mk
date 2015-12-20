@@ -1,6 +1,8 @@
 DIR          := addons/GM2Calc
 MODNAME      := GM2Calc
 
+LIBGM2Calc_MK  := $(DIR)/module.mk
+
 # source files
 LIBGM2Calc_SRC := \
 		$(DIR)/ffunctions.cpp \
@@ -64,6 +66,8 @@ EXEGM2Calc_EXE := \
 LIBGM2Calc     := \
 		$(DIR)/lib$(MODNAME)$(LIBEXT)
 
+LIBGM2Calc_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+
 .PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		distclean-$(MODNAME)
 
@@ -84,6 +88,15 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(LIBGM2Calc_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBGM2Calc_SRC) $(LIBGM2Calc_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBGM2Calc_HDR) $(LIBGM2Calc_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(EXEGM2Calc_SRC) $(LIBGM2Calc_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBGM2Calc_MK) $(LIBGM2Calc_INSTALL_DIR)
+endif
 
 $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
