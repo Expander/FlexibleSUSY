@@ -42,8 +42,16 @@ FillGM2CalcInterfaceData[struct_String] :=
            ye            = Parameters`GetParameterFromDescription["Lepton-Yukawa-Coupling"];
            mwStr         = "MODEL.get_physical()." <> CConversion`RValueToCFormString[FlexibleSUSY`M[w]];
            filling = \
+           struct <> ".alpha_s_MZ = ALPHA_S_MZ;\n" <>
+           struct <> ".MZ    = MZPole;\n" <>
            "if (!is_zero(" <> mwStr <> "))\n" <>
-           TextFormatting`IndentText[struct <> ".MW = " <> mwStr <> ";"] <> "\n" <>
+              TextFormatting`IndentText[struct <> ".MW = " <> mwStr <> ";"] <> "\n" <>
+           "else if (!is_zero(MWPole))\n" <>
+              TextFormatting`IndentText[struct <> ".MW = MWPole;"] <> "\n" <>
+           struct <> ".mb_mb = MBMB;\n" <>
+           struct <> ".MT    = MTPole;\n" <>
+           struct <> ".MTau  = MTauPole;\n" <>
+           struct <> ".MM    = MMPole;\n" <>
            struct <> ".MA0   = MODEL.get_physical()." <>
            CConversion`RValueToCFormString[FlexibleSUSY`M[pseudoscalar][1]] <> ";\n" <>
            struct <> ".MSvm  = MODEL.get_physical()." <>

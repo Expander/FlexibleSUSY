@@ -23,14 +23,24 @@
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
 #include "numerics2.hpp"
+#include "lowe.h"
 
 #define MODEL model
 #define AMUGM2CALC a_muon_gm2calc
 #define AMUGM2CALCUNCERTAINTY a_muon_gm2calc_uncertainty
 
+#define ALPHA_S_MZ qedqcd.displayAlpha(softsusy::ALPHAS)
+#define MWPole qedqcd.displayPoleMW()
+#define MZPole qedqcd.displayPoleMZ()
+#define MTPole qedqcd.displayPoleMt()
+#define MBMB qedqcd.displayMbMb()
+#define MTauPole qedqcd.displayPoleMtau()
+#define MMPole qedqcd.displayMass(softsusy::mMuon)
+
 namespace flexiblesusy {
 
-Observables calculate_observables(const @ModelName@_mass_eigenstates& model)
+Observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+                                  const softsusy::QedQcd& qedqcd)
 {
    Observables observables;
 
