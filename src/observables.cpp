@@ -21,33 +21,33 @@
 namespace flexiblesusy {
 
 Observables::Observables()
-   : a_muon(0.)
+   : a_muon_gm2calc(0.)
 {
 }
 
 Eigen::ArrayXd Observables::get() const
 {
    Eigen::ArrayXd vec(NUMBER_OF_OBSERVABLES);
-   vec(0) = a_muon;
+   vec(0) = a_muon_gm2calc;
    return vec;
 }
 
 std::vector<std::string> Observables::get_names()
 {
    std::vector<std::string> names(Observables::NUMBER_OF_OBSERVABLES);
-   names[0] = "a_muon";
+   names[0] = "a_muon_gm2calc";
    return names;
 }
 
 void Observables::clear()
 {
-   a_muon = 0.;
+   a_muon_gm2calc = 0.;
 }
 
 void Observables::set(const Eigen::ArrayXd& vec)
 {
    assert(vec.rows() == NUMBER_OF_OBSERVABLES);
-   a_muon = vec(0);
+   a_muon_gm2calc = vec(0);
 }
 
 } // namespace flexiblesusy

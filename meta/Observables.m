@@ -2,14 +2,14 @@ BeginPackage["Observables`", {"FlexibleSUSY`", "Utils`"}];
 
 (* observables *)
 Begin["FlexibleSUSYObservable`"];
-FSObservables = { aMuon };
+FSObservables = { aMuonGM2Calc };
 End[];
 
 CalculateObservables::usage="";
 
 Begin["`Private`"];
 
-CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuon, structName_String] :=
+CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc, structName_String] :=
     structName <> ".AMU = calculate_amuon(MODEL);\n";
 
 CalculateObservables[something_, structName_String] :=

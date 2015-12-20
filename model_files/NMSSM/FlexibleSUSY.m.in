@@ -95,5 +95,5 @@ ExtraSLHAOutputBlocks = {
             {5, \[Lambda] vS / Sqrt[2]},
             {10, ms2} } },
    {FlexibleSUSYLowEnergy,
-           {{21, FlexibleSUSYObservable`aMuon} } }
+           {{21, FlexibleSUSYObservable`aMuonGM2Calc} } }
 };
