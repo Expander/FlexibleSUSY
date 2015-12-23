@@ -10,7 +10,7 @@ CalculateObservables::usage="";
 Begin["`Private`"];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuon, structName_String] :=
-    structName <> ".AMU = calculate_amuon(MODEL);\n";
+    structName <> ".AMU = " <> FlexibleSUSY`FSModelName <> "_GMuonMinus2::calculate_amuon(MODEL);";
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc, structName_String] :=
     structName <> ".AMUGM2CALC = gm2calc_calculate_amu(gm2calc_data);";

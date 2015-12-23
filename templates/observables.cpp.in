@@ -39,11 +39,11 @@
 #define MTauPole qedqcd.displayPoleMtau()
 #define MMPole qedqcd.displayPoleMmuon()
 
+namespace flexiblesusy {
+
 Observables calculate_observables(const @ModelName@_mass_eigenstates& model,
                                   const softsusy::QedQcd& qedqcd)
 {
-   using namespace @ModelName@_GMuonMinus2;
-
    Observables observables;
 
 @calculateObservables@
