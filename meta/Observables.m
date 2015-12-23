@@ -89,12 +89,11 @@ FillGM2CalcInterfaceData[struct_String] :=
 FillInterfaceData[{}] := "";
 
 FillInterfaceData[obs_List] :=
-    Module[{},
-           If[MemberQ[obs,FlexibleSUSYObservable`aMuonGM2Calc] ||
-              MemberQ[obs,FlexibleSUSYObservable`aMuonGM2CalcUncertainty],
-              FillGM2CalcInterfaceData["gm2calc_data"]
-             ]
-          ];
+    If[MemberQ[obs,FlexibleSUSYObservable`aMuonGM2Calc] ||
+       MemberQ[obs,FlexibleSUSYObservable`aMuonGM2CalcUncertainty],
+       FillGM2CalcInterfaceData["gm2calc_data"],
+       ""
+      ];
 
 CalculateObservables[something_, structName_String] :=
     Module[{observables},
