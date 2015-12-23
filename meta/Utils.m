@@ -27,6 +27,9 @@ In[]:= StringZipWithSeparator[{\"a\",\"b\"},{\"d\",\"e\"}, \"_\"]
 Out[]= {\"a_d\", \"b_e\"}}
 ";
 
+SplitList::usage = "split list into list of sub-lists of given maximum
+ size";
+
 ForceJoin::usage = "Joins the given arguments if they are lists.";
 
 FSGetOption::usage = "Returns the value of an option from a list of
@@ -86,6 +89,18 @@ StringZip[lists___List] :=
 
 StringZipWithSeparator[lists___List, separator_String] :=
     MapThread[StringJoinWithSeparator[{##},separator]&, {lists}];
+
+SplitList[lst_List, 0] := {lst};
+
+SplitList[lst_List, size_Integer] :=
+    Module[{result = {}, list = lst, drops},
+           While[list =!= {},
+                 drops = Min[size,Length[list]];
+                 AppendTo[result, Take[list, drops]];
+                 list = Drop[list, drops];
+                ];
+           result
+          ];
 
 FSGetOption[opts_List, opt_] :=
     Module[{values},

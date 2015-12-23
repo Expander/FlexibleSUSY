@@ -101,12 +101,12 @@ ExtraSLHAOutputBlocks = {
    {NMSSMRUN,
            {{1  , Re[\[Lambda]]   },
             {2  , Re[\[Kappa]]    },
-            {3  , Re[T[\[Lambda]]]},
-            {4  , Re[T[\[Kappa]]] },
-            {5  , vS              },
+            {3  , Re[T[\[Lambda]] / \[Lambda]]},
+            {4  , Re[T[\[Kappa]] / \[Kappa]]},
+            {5  , \[Lambda] vS / Sqrt[2] },
             {10 , ms2             },
             {11 , Im[\[Lambda]]   },
             {12 , Im[\[Kappa]]    },
-            {13 , Im[T[\[Lambda]]]},
-            {14 , Im[T[\[Kappa]]] } } }
+            {13 , Im[T[\[Lambda]] / \[Lambda]]},
+            {14 , Im[T[\[Kappa]] / \[Kappa]] } } }
 };

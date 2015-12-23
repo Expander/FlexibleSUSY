@@ -488,6 +488,7 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 13:
       qedqcd.setMass(mMuon, value);
+      qedqcd.setPoleMmuon(value);
       break;
    case 14:
       qedqcd.setNeutrinoPoleMass(2, value);

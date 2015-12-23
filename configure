@@ -10,7 +10,7 @@ FLEXIBLESUSY_PATCH=4
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
-GM2CALC_VERSION="0.2.16-dev"
+GM2CALC_VERSION="1.1.0"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -141,6 +141,7 @@ DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
+DEFINE_ENABLE_ADDONS=""
 
 boost_lib_dir=""
 boost_inc_dir=""
@@ -2065,6 +2066,11 @@ enable_defines() {
         message "Enabling tsil"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     fi
+
+    for a in ${ADDONS}; do
+        local addon_name=$(basename ${a})
+        DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
+    done
 }
 
 #_____________________________________________________________________
@@ -2463,6 +2469,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
+    -e "s|@DEFINE_ENABLE_ADDONS@|$DEFINE_ENABLE_ADDONS|"       \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

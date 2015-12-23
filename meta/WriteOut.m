@@ -351,6 +351,10 @@ WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], 
            {parStr, commentStr} = Switch[par,
                                          FlexibleSUSYObservable`aMuon,
                                              {"OBSERVABLES.a_muon", "Delta(g-2)_muon/2"},
+                                         FlexibleSUSYObservable`aMuonGM2Calc,
+                                             {"OBSERVABLES.a_muon_gm2calc", "Delta(g-2)_muon/2 GM2Calc"},
+                                         FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
+                                             {"OBSERVABLES.a_muon_gm2calc_uncertainty", "Delta(g-2)_muon/2 GM2Calc uncertainty"},
                                          _,
                                              {"", ""}
                                         ];

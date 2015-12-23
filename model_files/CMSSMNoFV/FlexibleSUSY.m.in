@@ -68,6 +68,7 @@ InitialGuessAtHighScale = {
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
+UseMSSM3LoopRGEs = True;
 
 (* low-energy input to determine weak mixing angle
  * Possible values: FSFermiConstant (default), FSMassW
@@ -94,7 +95,9 @@ ExtraSLHAOutputBlocks = {
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
    {FlexibleSUSYLowEnergy,
-           {{21, FlexibleSUSYObservable`aMuon} } },
+           {{0, FlexibleSUSYObservable`aMuon},
+            {1, FlexibleSUSYObservable`aMuonGM2Calc},
+            {2, FlexibleSUSYObservable`aMuonGM2CalcUncertainty} } },
    {ALPHA, {{ArcSin[Pole[ZH[2,2]]]}}},
    {HMIX , {{1, \[Mu]},
             {2, vu / vd},
@@ -131,52 +134,7 @@ ExtraSLHAOutputBlocks = {
             {46, SignedAbsSqrt[mu2[3,3]]},
             {47, SignedAbsSqrt[md2[1,1]]},
             {48, SignedAbsSqrt[md2[2,2]]},
-            {49, SignedAbsSqrt[md2[3,3]]} } },
-   {MASS,  {{      6, Pole[M[Ft]]     },
-            {     24, Pole[M[VWm]]    },
-            {1000021, Pole[M[Glu]]    },
-            {1000012, Pole[M[SveL]]   },
-            {1000014, Pole[M[SvmL]]   },
-            {1000016, Pole[M[SvtL]]   },
-            {1000024, Pole[M[Cha[1]]] },
-            {1000037, Pole[M[Cha[2]]] },
-            {     25, Pole[M[hh[1]]]  },
-            {     35, Pole[M[hh[2]]]  },
-            {     37, Pole[M[Hpm[2]]] },
-            {     36, Pole[M[Ah[2]]]  },
-            {1000001, Sum[conj[Pole[ZD[i,1]]] Pole[ZD[i,1]] Pole[M[Sd[i]]], {i,1,2}] }, (* ~d_L *)
-            {2000001, Sum[conj[Pole[ZD[i,2]]] Pole[ZD[i,2]] Pole[M[Sd[i]]], {i,1,2}] }, (* ~d_R *)
-            {1000003, Sum[conj[Pole[ZS[i,1]]] Pole[ZS[i,1]] Pole[M[Ss[i]]], {i,1,2}] }, (* ~s_L *)
-            {2000003, Sum[conj[Pole[ZS[i,2]]] Pole[ZS[i,2]] Pole[M[Ss[i]]], {i,1,2}] }, (* ~s_R *)
-            {1000005, Pole[M[Sb[1]]]  },
-            {2000005, Pole[M[Sb[2]]]  },
-            {1000011, Sum[conj[Pole[ZE[i,1]]] Pole[ZE[i,1]] Pole[M[Se[i]]], {i,1,2}] }, (* ~e_L *)
-            {2000011, Sum[conj[Pole[ZE[i,2]]] Pole[ZE[i,2]] Pole[M[Se[i]]], {i,1,2}] }, (* ~e_R *)
-            {1000013, Sum[conj[Pole[ZM[i,1]]] Pole[ZM[i,1]] Pole[M[Sm[i]]], {i,1,2}] }, (* ~m_L *)
-            {2000013, Sum[conj[Pole[ZM[i,2]]] Pole[ZM[i,2]] Pole[M[Sm[i]]], {i,1,2}] }, (* ~m_R *)
-            {1000015, Pole[M[Stau[1]]]},
-            {2000015, Pole[M[Stau[2]]]},
-            {1000002, Sum[conj[Pole[ZU[i,1]]] Pole[ZU[i,1]] Pole[M[Su[i]]], {i,1,2}] }, (* ~u_L *)
-            {2000002, Sum[conj[Pole[ZU[i,2]]] Pole[ZU[i,2]] Pole[M[Su[i]]], {i,1,2}] }, (* ~u_R *)
-            {1000004, Sum[conj[Pole[ZC[i,1]]] Pole[ZC[i,1]] Pole[M[Sc[i]]], {i,1,2}] }, (* ~c_L *)
-            {2000004, Sum[conj[Pole[ZC[i,2]]] Pole[ZC[i,2]] Pole[M[Sc[i]]], {i,1,2}] }, (* ~c_R *)
-            {1000006, Pole[M[St[1]]]  },
-            {2000006, Pole[M[St[2]]]  },
-            {1000022, Pole[M[Chi[1]]] },
-            {1000023, Pole[M[Chi[2]]] },
-            {1000025, Pole[M[Chi[3]]] },
-            {1000035, Pole[M[Chi[4]]] },
-            {     24, Pole[M[VWm]]    },
-            {     23, Pole[M[VZ]]     },
-            {      1, Pole[M[Fd]]     },
-            {      2, Pole[M[Fu]]     },
-            {      3, Pole[M[Fs]]     },
-            {      4, Pole[M[Fc]]     },
-            {      5, Pole[M[Fb]]     },
-            {      6, Pole[M[Ft]]     },
-            {     11, Pole[M[Fe]]     },
-            {     13, Pole[M[Fm]]     },
-            {     15, Pole[M[Ftau]]   } } }
+            {49, SignedAbsSqrt[md2[3,3]]} } }
 };
 
 TopQuark    = Ft;

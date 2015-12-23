@@ -142,10 +142,15 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-gm2calc),yes)
+ifeq ($(shell $(FSCONFIG) --with-GM2Calc),yes)
 TEST_SRC += \
 		$(DIR)/test_gm2calc.cpp \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-GM2Calc --with-CMSSMNoFV),yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-CMSSMNoFV),yes yes)
@@ -292,6 +297,11 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SMnoGUT),yes)
 TEST_META += \
 		$(DIR)/test_SMnoGUT_3loop_beta.m
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
+TEST_META += \
+		$(DIR)/test_CMSSM_3loop_beta.m
 endif
 
 TEST_OBJ := \
@@ -576,9 +586,9 @@ $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGA
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2calc) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2calc) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

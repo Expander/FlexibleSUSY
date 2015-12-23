@@ -23,11 +23,15 @@
 
 #include "observables.hpp"
 
+namespace softsusy {
+class QedQcd;
+}
+
 namespace flexiblesusy {
 
 class @ModelName@_mass_eigenstates;
 
-Observables calculate_observables(const @ModelName@_mass_eigenstates&);
+Observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
 
 } // namespace flexiblesusy
 

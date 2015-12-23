@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "Observables`", "GMuonMinus2`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "GMuonMinus2`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -94,6 +94,7 @@ UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
+UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
 PotentialLSPParticles = {};
@@ -120,6 +121,7 @@ FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
 FSCheckPerturbativityOfDimensionlessParameters = True;
 FSPerturbativityThreshold = N[Sqrt[4 Pi]];
+FSMaximumExpressionSize = 100;
 
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
@@ -509,9 +511,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
           traceDefs            = Traces`CreateTraceDefs[betaFun];
           traceDefs            = traceDefs <> Traces`CreateSARAHTraceDefs[sarahTraces];
-          calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
-          calcTraces           = calcTraces <> "\n" <>
-                                 Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
+          calcTraces           = {Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"],
+                                  Sequence @@ Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"] };
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -531,7 +532,9 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@printParameters@"      -> IndentText[printParameters],
                    "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
                    "@traceDefs@"            -> IndentText[IndentText[traceDefs]],
-                   "@calcTraces@"           -> IndentText[WrapLines[calcTraces]],
+                   "@calc1LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[1]] <> "\n" <> calcTraces[[2]]]],
+                   "@calc2LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[3]]]],
+                   "@calc3LTraces@"         -> IndentText @ IndentText[WrapLines[calcTraces[[4]]]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile, sarahTraces];
@@ -1530,6 +1533,43 @@ AddSM3LoopRGEs[] := Module[{
     SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
     ];
 
+AddMSSM3LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopMSSM`BetaMSSM[coupling]]}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddMSSM3LoopRGEs[] := Module[{
+    gauge = { SARAH`hyperchargeCoupling,
+              SARAH`leftCoupling,
+              SARAH`strongCoupling },
+    yuks  = { SARAH`UpYukawa,
+              SARAH`DownYukawa,
+              SARAH`ElectronYukawa },
+    gaugi = { Parameters`GetParameterFromDescription["Bino Mass parameter"],
+              Parameters`GetParameterFromDescription["Wino Mass parameter"],
+              Parameters`GetParameterFromDescription["Gluino Mass parameter"] },
+    trili = { SARAH`TrilinearUp, SARAH`TrilinearDown, SARAH`TrilinearLepton },
+    mass2 = { SARAH`SoftSquark, SARAH`SoftUp, SARAH`SoftDown,
+              SARAH`SoftLeftLepton, SARAH`SoftRightLepton,
+              Parameters`GetParameterFromDescription["Softbreaking Down-Higgs Mass"],
+              Parameters`GetParameterFromDescription["Softbreaking Up-Higgs Mass"] },
+    mu    = { Parameters`GetParameterFromDescription["Mu-parameter"] },
+    bmu   = { Parameters`GetParameterFromDescription["Bmu-parameter"] }
+    },
+    SARAH`BetaGauge = AddMSSM3LoopRGE[SARAH`BetaGauge, gauge];
+    SARAH`BetaYijk  = AddMSSM3LoopRGE[SARAH`BetaYijk , yuks];
+    SARAH`BetaMi    = AddMSSM3LoopRGE[SARAH`BetaMi   , gaugi];
+    SARAH`BetaMuij  = AddMSSM3LoopRGE[SARAH`BetaMuij , mu   ];
+    SARAH`BetaBij   = AddMSSM3LoopRGE[SARAH`BetaBij  , bmu  ];
+    SARAH`BetaTijk  = AddMSSM3LoopRGE[SARAH`BetaTijk , trili];
+    SARAH`Betam2ij  = AddMSSM3LoopRGE[SARAH`Betam2ij , mass2];
+    ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1617,6 +1657,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
                     " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
               AddSM3LoopRGEs[];
+             ];
+
+           If[FlexibleSUSY`UseMSSM3LoopRGEs,
+              Print["Adding MSSM 3-loop beta-functions from ",
+                    "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
+              AddMSSM3LoopRGEs[];
              ];
 
            If[SARAH`SupersymmetricModel,

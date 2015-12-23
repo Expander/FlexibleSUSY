@@ -48,7 +48,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
-class Observables;
+struct Observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}

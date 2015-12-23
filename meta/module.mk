@@ -17,6 +17,7 @@ META_SRC     := \
 		$(DIR)/EWSB.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
+		$(DIR)/ThreeLoopMSSM.m \
 		$(DIR)/ThreeLoopSM.m \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \

@@ -88,5 +88,12 @@ ExtraSLHAOutputBlocks = {
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
    {FlexibleSUSYLowEnergy,
-       {{21, FlexibleSUSYObservable`aMuon}} }
+           {{0, FlexibleSUSYObservable`aMuon} } },
+   {NMSSMRUN,
+           {{1, \[Lambda]},
+            {2, \[Kappa]},
+            {3, T[\[Lambda]] / \[Lambda]},
+            {4, T[\[Kappa]] / \[Kappa]},
+            {5, \[Lambda] vS / Sqrt[2]},
+            {10, ms2} } }
 };
