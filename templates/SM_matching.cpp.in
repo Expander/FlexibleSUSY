@@ -66,6 +66,7 @@ void @ModelName@_SM_matching::matching(SM_mass_eigenstates& SM_, @ModelName@_mas
    model.solve_ewsb_one_loop();
    model.calculate_Mhh_pole();
 
+   SM_.run_to(model.get_scale());
    SM_.calculate_DRbar_masses();
    SM_.solve_ewsb_one_loop();
 
@@ -74,6 +75,11 @@ void @ModelName@_SM_matching::matching(SM_mass_eigenstates& SM_, @ModelName@_mas
 
    model.set_pole_mass_loop_order(model_pole_mass_order);
    model.set_number_of_mass_iterations(model_momentum_iterations);
+
+   model.calculate_DRbar_masses();
+   model.solve_ewsb();
+   SM_.calculate_DRbar_masses();
+   SM_.solve_ewsb();
 
 }
 
@@ -123,6 +129,13 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
    model.set_number_of_mass_iterations(0);
    SM_.set_pole_mass_loop_order(1);
    SM_.set_number_of_mass_iterations(0);
+
+   model.run_to(SM_.get_scale());
+   model.calculate_DRbar_masses();
+   model.solve_ewsb_one_loop();
+
+   SM_.calculate_DRbar_masses();
+   SM_.solve_ewsb_one_loop();
 
    const double alpha_em = .6 * Sqr(SM_.get_g1() * SM_.get_g2())/(4. * Pi * (.6*Sqr(SM_.get_g1()) + Sqr(SM_.get_g2())));
    const double alpha_s  = Sqr(SM_.get_g3())/(4. * Pi);
@@ -183,6 +196,11 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
    model.set_number_of_mass_iterations(model_momentum_iterations);
    SM_.set_pole_mass_loop_order(sm_pole_mass_order);
    SM_.set_number_of_mass_iterations(sm_momentum_iterations);
+
+   model.calculate_DRbar_masses();
+   model.solve_ewsb();
+   SM_.calculate_DRbar_masses();
+   SM_.solve_ewsb();
 
 }
 
