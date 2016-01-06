@@ -904,6 +904,10 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
                                     {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            dim = Length[matrix];
            dimStr = ToString[dim];
+           (* convert 1-dimensional matrix to scalar *)
+           If[dim == 1 && MatrixQ[matrix],
+              matrix = matrix[[1]];
+             ];
            matrixType = GetMassMatrixType[massESSymbol];
            matrixElementType = CConversion`GetElementType[matrixType];
            matrixType = CreateCType[matrixType];
