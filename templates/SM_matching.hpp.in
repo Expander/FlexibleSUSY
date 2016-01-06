@@ -39,8 +39,6 @@ class @ModelName@_SM_matching
    static void matchingReverseTL(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
    static void matchingReverse(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
 
-@smMediumDiagDecl@
-@reverseDiagDecl@
 };
 
 } //namespace flexiblesusy

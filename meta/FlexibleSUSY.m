@@ -759,38 +759,8 @@ CreateVEVToTadpoleAssociation[] :=
           ];
 
 WriteMatchingClass[files_List] :=
-    Module[ {subst, eDRbar, g2Def, g1Def, subE, scheme, drbarparam,higgsMediumDiag, smMediumDiagDeclaration, reverseMatchingDiag,  reverseMatchingDiagDeclaration, userMatching},
+    Module[ {scheme, userMatching},
 		scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
-		drbarparam = If[SARAH`SupersymmetricModel, 1, 0];
-        subst = {SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`mwdrbar, SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`mzdrbar,
-                 SARAH`hyperchargeCoupling -> FlexibleSUSY`g1drbar,
-                 SARAH`leftCoupling -> FlexibleSUSY`g2drbar,
-                 SARAH`Weinberg ->  FlexibleSUSY`weinbergdrbar, SARAH`electricCharge -> eDRbar};
-        g1Def = Parameters`FindSymbolDef[SARAH`hyperchargeCoupling] //. subst;
-        g2Def = Parameters`FindSymbolDef[SARAH`leftCoupling] //. subst;
-        If[!FreeQ[ g2Def, eDRbar],
-           subE = Solve[g2Def == SARAH`leftCoupling //. subst, eDRbar];,
-           If[!FreeQ[ g1Def, eDRbar],
-              subE = Solve[g1Def == SARAH`hyperchargeCoupling //. subst, eDRbar];,
-              Print["ERROR: Cannot resolve relation between e, g1 and g2"];
-              Quit[1];
-             ];
-          ];
-        (* If you want to add tadpoles, call the following routine like this:
-           higgsMediumDiag[{...}, {...}, oneLoopTadpoles, vevs];
-        *)
-        smMediumDiag = LoopMasses`DiagonalizeForMatchingClass[
-        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
-        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"},{},{}];
-        smMediumDiagDeclaration = LoopMasses`DiagonalizeForMatchingClassDeclaration[
-        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
-        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"}];
-        reverseMatchingDiag = LoopMasses`DiagonalizeForReverseMatchingClass[
-        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
-        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"},{},{}];
-        reverseMatchingDiagDeclaration = LoopMasses`DiagonalizeForReverseMatchingClassDeclaration[
-        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
-        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"}];
         userMatching="";
         If[SMTower,
            If[Length[SUSYScaleUserMatching] > 0,
@@ -810,13 +780,6 @@ WriteMatchingClass[files_List] :=
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
           "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
-          "@calcAlphaEM@"       -> IndentText[WrapLines[
-                                            "double weinbergdrbar = model." <> CConversion`RValueToCFormString[SARAH`Weinberg[]] <> "; \n"<>
-                                            "double alpha_em = Sqr(" <> CConversion`RValueToCFormString[(eDRbar /. subE[[1,1]])] <> ")/(4.*Pi);\n"]],
-          "@smMediumDiag@" -> IndentText[WrapLines[smMediumDiag]],
-          "@smMediumDiagDecl@" -> IndentText[smMediumDiagDeclaration],
-          "@reverseDiag@" -> IndentText[reverseMatchingDiag],
-          "@reverseDiagDecl@" -> IndentText[reverseMatchingDiagDeclaration],
           "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
           "@applyUserMatching@" -> IndentText[WrapLines[userMatching]],
           Sequence @@ GeneralReplacementRules[]}
@@ -1079,46 +1042,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, GetHiggsMass, GetZMass, GetWMass, DiagonalizeEFT, scheme, spectrumGen},
+    Module[{parseCmdLineOptions, printCommandLineOptions, spectrumGen},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
-           (* If you want to add tadpoles, call the following routine like this:
-              CreateHiggsLogDiagonalization[ oneLoopTadpoles, vevs];
-            *)
-           DiagonalizeEFT = LoopMasses`CreateHiggsLogDiagonalization[{},{}];
            spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_SM",
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
-           scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
-           GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson],
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]  <> "(0)"];
-           GetZMass = If[GetDimension[SARAH`VectorZ] == 1,
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorZ],
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorZ]  <> "(0)"];
-           GetWMass = If[GetDimension[SARAH`VectorW] == 1,
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorW],
-                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorW]  <> "(0)"];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
-                            "@DiagonalizeEFT@" -> IndentText[WrapLines[DiagonalizeEFT]],
-                            "@GetHiggsMass@" -> GetHiggsMass,
-                            "@GetZMass@" -> GetZMass,
-                            "@GetWMass@" ->GetWMass,
-                            "@alphaEMdef@" -> "Sqr(" <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling] Parameters`GetGUTNormalization[SARAH`leftCoupling]]
-                               <> " * model.get_"
-                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "() * model.get_" <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())/(4. * Pi * (Sqr("
-                               <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]] <> " * model.get_"
-                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "()) + Sqr("
-                               <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]] <> " * model.get_"
-                               <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())))",
-                            "@em1Linit@" -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
-                                                                    ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
-                                                                    ]]],
-                            "@alphaEM1Lmatching@" -> IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
-                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
                             "@SpectrumGenerator@" -> spectrumGen,
                             Sequence @@ GeneralReplacementRules[]
                           } ];

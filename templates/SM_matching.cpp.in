@@ -176,8 +176,4 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
 
 }
 
-/*
-@smMediumDiag@
-@reverseDiag@
-*/
 } //namespace flexiblesusy
