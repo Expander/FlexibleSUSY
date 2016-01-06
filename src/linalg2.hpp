@@ -297,6 +297,16 @@ void svd_internal
     svd_eigen(m, s, u, vh);
 }
 
+template<class Scalar>
+void svd_internal
+(const Eigen::Matrix<Scalar, 1, 1>& m,
+ Eigen::Array<double, 1, 1>& s,
+ Eigen::Matrix<Scalar, 1, 1> *u,
+ Eigen::Matrix<Scalar, 1, 1> *vh)
+{
+    svd_eigen(m, s, u, vh);
+}
+
 template<class Real, class Scalar, int M, int N>
 void svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
