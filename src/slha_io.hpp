@@ -381,11 +381,6 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 
 {
 }
 
-void SLHA_io::convert_symmetric_fermion_mixings_to_slha(double&,
-                                                        Eigen::Matrix<double, 1, 1>&)
-{
-}
-
 /**
  * Converts the given vector of masses and the corresponding (complex)
  * mixing matrix to SLHA convention: Matrix rows with non-zero
@@ -420,35 +415,9 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 
    }
 }
 
-/**
- * @param m mass
- * @param z 1x1 mixing matrix
- */
-void SLHA_io::convert_symmetric_fermion_mixings_to_slha(double& m,
-                                                        Eigen::Matrix<std::complex<double>, 1, 1>& z)
-{
-   // check if 1st row contains non-zero imaginary parts
-   if (!is_zero(Abs(Im(z(0,0))))) {
-      z(0,0) *= std::complex<double>(0.0,1.0);
-      m *= -1;
-#ifdef ENABLE_DEBUG
-      if (!is_zero(Abs(Im(z(0,0))))) {
-         WARNING("Element (0,0) of the following fermion mixing matrix"
-                 " contains entries which have non-zero real and imaginary"
-                 " parts:\nZ = " << z);
-      }
-#endif
-   }
-}
-
 template<int N>
 void SLHA_io::convert_symmetric_fermion_mixings_to_hk(Eigen::Array<double, N, 1>&,
                                                       Eigen::Matrix<double, N, N>&)
-{
-}
-
-void SLHA_io::convert_symmetric_fermion_mixings_to_hk(double&,
-                                                      Eigen::Matrix<double, 1, 1>&)
 {
 }
 
@@ -469,15 +438,6 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_hk(Eigen::Array<double, N, 1>
          z.row(i) *= std::complex<double>(0.0,1.0);
          m(i) *= -1;
       }
-   }
-}
-
-void SLHA_io::convert_symmetric_fermion_mixings_to_hk(double& m,
-                                                      Eigen::Matrix<std::complex<double>, 1, 1>& z)
-{
-   if (m < 0.) {
-      z(0,0) *= std::complex<double>(0.0,1.0);
-      m *= -1;
    }
 }
 
