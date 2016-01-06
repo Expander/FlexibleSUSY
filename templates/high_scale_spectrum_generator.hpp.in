@@ -67,8 +67,8 @@ public:
    double get_low_scale()  const { return low_scale;  }
    virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
-   void do2LoopLogCalc();
-   void calcHiggsPoleEFT();
+   //void do2LoopLogCalc();
+   //void calcHiggsPoleEFT();
 
 private:
    RGFlow<T> solver;
@@ -165,8 +165,8 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       switch (model.get_Two_loop_corrections().higgs_log)
       {
          case 0: break;
-         case 1: do2LoopLogCalc(); break;
-         case 2: calcHiggsPoleEFT(); break;
+ //        case 1: do2LoopLogCalc(); break;
+ //        case 2: calcHiggsPoleEFT(); break;
       }
 
       // run to output scale (if scale > 0)
@@ -203,6 +203,7 @@ void @ModelName@_spectrum_generator<T>::write_running_couplings(
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
 }
 
+#if 0
 /**
  * Calculates logarithmic contributions to Higgs mass of 2-loop order and higher
  */
@@ -384,7 +385,7 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
   this->@GetHiggsMass@ = EFT.get_physical().Mhh;
 
 }
-
+#endif
 } // namespace flexiblesusy
 
 #endif

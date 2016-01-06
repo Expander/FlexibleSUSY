@@ -419,8 +419,12 @@ GUTNormalization[coupling_] :=
 
 GeneralReplacementRules[] :=
     { "@VectorZ@"     -> ToValidCSymbolString[SARAH`VectorZ],
+      "@VectorZ_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`VectorZ] <> If[TreeMasses`GetDimension[SARAH`VectorZ] > 1, "(" <> num <> ")", ""],
+      "@VectorZ()_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`VectorZ] <> "()" <> If[TreeMasses`GetDimension[SARAH`VectorZ] > 1, "(" <> num <> ")", ""],
       "@VectorP@"     -> ToValidCSymbolString[SARAH`VectorP],
       "@VectorW@"     -> ToValidCSymbolString[SARAH`VectorW],
+      "@VectorW_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`VectorW] <> If[TreeMasses`GetDimension[SARAH`VectorW] > 1, "(" <> num <> ")", ""],
+      "@VectorW()_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`VectorW] <> "()" <> If[TreeMasses`GetDimension[SARAH`VectorW] > 1, "(" <> num <> ")", ""],
       "@VectorG@"     -> ToValidCSymbolString[SARAH`VectorG],
       "@TopQuark@"    -> ToValidCSymbolString[SARAH`TopQuark],
       "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
@@ -428,6 +432,7 @@ GeneralReplacementRules[] :=
       "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino],
       "@HiggsBoson@"  -> ToValidCSymbolString[SARAH`HiggsBoson],
       "@HiggsBoson_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`HiggsBoson] <> If[TreeMasses`GetDimension[SARAH`HiggsBoson] > 1, "(" <> num <> ")", ""],
+      "@HiggsBoson()_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`HiggsBoson] <> "()"<> If[TreeMasses`GetDimension[SARAH`HiggsBoson] > 1, "(" <> num <> ")", ""],
       "@PseudoScalarBoson@" -> ToValidCSymbolString[SARAH`PseudoScalarBoson],
       "@ChargedHiggs@"   -> ToValidCSymbolString[SARAH`ChargedHiggs],
       "@TopSquark@"      -> ToValidCSymbolString[SARAH`TopSquark],
@@ -459,7 +464,6 @@ GeneralReplacementRules[] :=
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
       "@HiggsGen@" -> ToValidCSymbolString[GetDimension[SARAH`HiggsBoson]],
-      "@LightestHiggsExtension@" -> If[GetDimension[SARAH`HiggsBoson] === 1, "", ".minCoeff()"],
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
     }
 

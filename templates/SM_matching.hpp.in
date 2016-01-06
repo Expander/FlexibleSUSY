@@ -34,7 +34,7 @@ namespace flexiblesusy
 class @ModelName@_SM_matching
 {
   public:
-   static void matchingTL(SM_mass_eigenstates&, const @ModelName@_mass_eigenstates&);
+   static void matchingTL(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
    static void matching(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
    static void matchingReverseTL(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
    static void matchingReverse(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
