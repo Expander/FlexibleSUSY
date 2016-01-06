@@ -7,6 +7,11 @@ CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
+CreateInputParameterEnum::usage="";
+CreateInputParameterNames::usage="";
+
+CreateInputParameterArrayGetter::usage="";
+CreateInputParameterArraySetter::usage="";
 
 SetParameter::usage="set model parameter";
 SetInputParameter::usage="set input parameter";
@@ -62,6 +67,9 @@ GetModelParameters::usage="";
 GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
+
+GetDependenceNumSymbols::usage="Returns symbols which have a
+DependenceNum";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -136,6 +144,10 @@ AddRealParameter[parameter_] :=
 SetRealParameters[parameters_List] :=
     additionalRealParameters = parameters;
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 FindSymbolDef[sym_] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
@@ -156,7 +168,8 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
            allParameters = Join[allModelParameters, allOutputParameters,
-                                allInputParameters, Phases`GetArg /@ allPhases];
+                                allInputParameters, Phases`GetArg /@ allPhases,
+                                GetDependenceNumSymbols[]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -436,7 +449,7 @@ CreateSetAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = name <> " = pars(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
@@ -515,7 +528,7 @@ CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     Module[{ass = ""},
            ass = "pars(" <> ToString[startIndex] <> ") = "
                  <> name <> ";\n";
@@ -595,7 +608,7 @@ CreateParameterNamesStr[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
 
 CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
@@ -673,7 +686,7 @@ CreateParameterEnums[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
+CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
     CConversion`ToValidCSymbolString[name];
 
 CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
@@ -736,6 +749,36 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
                     <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
              ];
            Return[ass];
+          ];
+
+CreateInputParameterEnum[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterEnums[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           If[Length[inputParameters] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_INPUT_PARAMETERS";
+           result = "enum Input_parameters : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateInputParameterNames[inputParameters_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = Parameters`CreateParameterNamesStr[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           result = "const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {" <>
+                    result <> "};\n";
+           Return[result];
           ];
 
 SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
@@ -865,7 +908,7 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses, phases},
+            poleMasses, phases, depNum},
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
@@ -877,10 +920,12 @@ CreateLocalConstRefs[expr_] :=
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
+           (result = result <> DefineLocalConstCopy[#,"DERIVEDPARAMETER"])& /@ depNum;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
@@ -1028,8 +1073,8 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
                              {___, SARAH`Description -> description, ___}} :>
                             particle];
            If[Length[particle] == 0,
-              Print["Error: Particle with description \"", description,
-                    "\" not found."];
+              DebugPrint["Note: Particle with description \"", description,
+                         "\" not found."];
               Return[Null];
              ];
            If[Length[particle] > 1,
@@ -1037,6 +1082,13 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
                     "\" not unique."];
              ];
            particle[[1]]
+          ];
+
+GetParticleFromDescription[multipletName_String, splitNames_List] :=
+    Module[{result},
+           result = GetParticleFromDescription[multipletName];
+           If[result =!= Null, Return[{result}]];
+           GetParticleFromDescription /@ splitNames
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
@@ -1153,6 +1205,46 @@ GetThirdGeneration[par_] :=
           IsMatrix[par], par[2,2],
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
+
+GetDependenceNumSymbols[] :=
+    DeleteDuplicates @ Flatten @
+    Join[{SARAH`Weinberg},
+         Cases[SARAH`ParameterDefinitions,
+               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
+                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
+                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
+        ];
+
+CreateInputParameterArrayGetter[inputParameters_List] :=
+    Module[{get = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               get = get <> assignment;
+               paramCount += nAssignments;
+              ];
+           get = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                 get <> "\n" <>
+                 "return pars;";
+           Return[get];
+          ];
+
+CreateInputParameterArraySetter[inputParameters_List] :=
+    Module[{set = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[inputParameters], i++,
+               par  = inputParameters[[i,1]];
+               type = inputParameters[[i,2]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
 
 End[];
 

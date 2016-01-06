@@ -20,6 +20,8 @@
 
 namespace softsusy {
 
+class Tensor;
+
 const static int numSusyPars = 33;
 
 /// For accessing up, down and charged lepton Yukawa matrices respectively
@@ -170,6 +172,12 @@ public:
 		    DoubleMatrix & gQQ, DoubleMatrix & gDD,
 		    DoubleMatrix & gUU, double & gH1H1, double &
 		    gH2H2, sBrevity & a) const; 
+  /// Calculates three-loop anomalous dimensions in the dominant third family
+  /// approximation and adds them
+  void getThreeLpAnom(DoubleMatrix & gEE, DoubleMatrix & gLL,
+                      DoubleMatrix & gQQ, DoubleMatrix & gDD,
+                      DoubleMatrix & gUU, double & gH1H1, double &
+                      gH2H2, sBrevity & a) const;
   /// Outputs wave function renormalisation for SUSY parameters and gauge beta
   /// functions up to 2 loops. Also calculates and outputs a.
   /// IO parameters: RH leptons, LH leptons, LH quarks, RH downs, RH ups, H1
@@ -196,6 +204,11 @@ istream & operator >>(istream &left, MssmSusy &s);
 /// arguments. 
 void setBetas(DoubleMatrix &, DoubleVector  &, DoubleVector  &, DoubleVector
 	       &, DoubleVector  &);
+
+void setBetasThreeLoop(Tensor &, DoubleMatrix &, DoubleMatrix &, 
+                       DoubleMatrix &, DoubleVector &, DoubleVector &, DoubleVector &,
+                       DoubleVector &, DoubleVector &, DoubleVector &, DoubleVector &,  
+                       DoubleVector &); 
 
 inline const MssmSusy & MssmSusy::displaySusy() const { return *this; }
 

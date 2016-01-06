@@ -37,6 +37,7 @@ static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static const bool True = true;
 
 inline double Abs(double z)
 {
@@ -174,10 +175,28 @@ inline int Delta(int i, int j)
 template <typename T>
 T If(bool c, T a, T b) { return c ? a : b; }
 
+template <typename T>
+T If(bool c, int a, T b) { return c ? T(a) : b; }
+
+template <typename T>
+T If(bool c, T a, int b) { return c ? a : T(b); }
+
 inline bool IsClose(double a, double b,
                     double eps = std::numeric_limits<double>::epsilon())
 {
    return std::abs(a - b) < eps;
+}
+
+inline bool IsCloseRel(double a, double b,
+                       double eps = std::numeric_limits<double>::epsilon())
+{
+   if (IsClose(a, b, std::numeric_limits<double>::epsilon()))
+      return true;
+
+   if (std::abs(a) < std::numeric_limits<double>::epsilon())
+      return IsClose(a, b, eps);
+
+   return std::abs((a - b)/a) < eps;
 }
 
 inline bool IsFinite(double x)
@@ -484,6 +503,18 @@ template <typename T>
 unsigned UnitStep(T x)
 {
    return x < T() ? 0 : 1;
+}
+
+template <typename T>
+T Which(bool cond, T value)
+{
+   return cond ? value : T(0);
+}
+
+template<typename T, typename ... Trest>
+T Which(bool cond, T value, Trest... rest)
+{
+   return cond ? value : Which(rest...);
 }
 
 inline double ZeroSqrt(double x)

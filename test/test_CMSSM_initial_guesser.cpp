@@ -22,18 +22,18 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    input.TanBeta = 10.;
    input.SignMu = 1;
    input.Azero = 0.;
-   QedQcd oneset;
+   QedQcd qedqcd;
    softsusy::TOLERANCE = 1.0e-3;
    CMSSM<Two_scale> m(input);
    m.set_loops(2);
    SoftsusyMSSM<Two_scale> smssm;
 
    // create CMSSM initial guesser
-   CMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, oneset);
+   CMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, qedqcd);
    CMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m);
    CMSSM_high_scale_constraint<Two_scale> high_constraint(&m);
 
-   CMSSM_initial_guesser<Two_scale> guesser(&m, oneset, low_constraint,
+   CMSSM_initial_guesser<Two_scale> guesser(&m, qedqcd, low_constraint,
                                            susy_constraint, high_constraint);
 
    // create Mssm initial guesser
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    SoftsusyMSSM_initial_guesser initial_guesser(&smssm, pp, mssm_mz_constraint,
                                         mssm_msusy_constraint,
                                         mssm_sugra_constraint);
-   initial_guesser.set_QedQcd(oneset);
+   initial_guesser.set_QedQcd(qedqcd);
 
    // guess both models
    guesser.guess();

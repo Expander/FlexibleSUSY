@@ -1,0 +1,71 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = SSM;
+
+(* SSM input parameters *)
+
+MINPAR = {};
+
+EXTPAR = {
+    {0, Qin},
+    {1, QEWSB},
+    {2, Lambdainput},
+    {3, LambdaSinput},
+    {4, MSinput},
+    {5, K1input},
+    {6, K2input}
+};
+
+EWSBOutputParameters = { mu2 };
+
+HighScale = Qin;
+
+HighScaleFirstGuess = Qin;
+
+HighScaleInput = {
+    {\[Lambda], Lambdainput},
+    {LambdaS, LambdaSinput},
+    {K1, K1input},
+    {K2, K2input},
+    {MS, MSinput}
+};
+
+SUSYScale = QEWSB;
+
+SUSYScaleFirstGuess = QEWSB;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+   {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   {v, LowEnergyConstant[vev]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+SMParticles = {
+    Electron, TopQuark, BottomQuark,
+    VectorP, VectorZ, VectorG, VectorW, Neutrino,
+    Hp, Ah, (* goldstones *)
+    hh (* Higgs *)
+};
+
+OnlyLowEnergyFlexibleSUSY = False;
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+

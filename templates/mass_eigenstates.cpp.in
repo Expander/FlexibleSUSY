@@ -45,6 +45,7 @@
 #include "functors.hpp"
 
 @twoLoopHiggsHeaders@
+@threeLoopHiggsHeaders@
 
 #include <cmath>
 #include <iostream>
@@ -72,6 +73,7 @@ using namespace @ModelName@_info;
 #define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
+#define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
@@ -138,14 +140,29 @@ void CLASSNAME::set_two_loop_corrections(const Two_loop_corrections& two_loop_co
    two_loop_corrections = two_loop_corrections_;
 }
 
+const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
+{
+   return two_loop_corrections;
+}
+
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
 {
    number_of_ewsb_iterations = iterations;
 }
 
+std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
+{
+   return number_of_ewsb_iterations;
+}
+
 void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
+}
+
+std::size_t CLASSNAME::get_number_of_mass_iterations() const
+{
+   return number_of_mass_iterations;
 }
 
 void CLASSNAME::set_precision(double precision_)
@@ -159,6 +176,11 @@ void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
    pole_mass_loop_order = loop_order;
 }
 
+unsigned CLASSNAME::get_pole_mass_loop_order() const
+{
+   return pole_mass_loop_order;
+}
+
 void CLASSNAME::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
@@ -167,6 +189,11 @@ void CLASSNAME::set_ewsb_iteration_precision(double precision)
 double CLASSNAME::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
+}
+
+double CLASSNAME::get_precision() const
+{
+   return precision;
 }
 
 double CLASSNAME::get_ewsb_loop_order() const
@@ -653,6 +680,8 @@ void CLASSNAME::run_to(double scale, double eps)
 @twoLoopSelfEnergyFunctions@
 
 @twoLoopTadpoleFunctions@
+
+@threeLoopSelfEnergyFunctions@
 
 @loopMassesFunctions@
 

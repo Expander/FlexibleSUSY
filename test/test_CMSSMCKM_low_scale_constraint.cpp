@@ -62,7 +62,7 @@ void ensure_tree_level_ewsb(FlavourMssmSoftsusy& softSusy)
 }
 
 void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
-                    CMSSMCKM_input_parameters& input, QedQcd& oneset)
+                    CMSSMCKM_input_parameters& input, QedQcd& qedqcd)
 {
    input.TanBeta = 10.;
 
@@ -90,17 +90,17 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
 
    Eigen::Matrix<std::complex<double>,3,3> Yu, Yd, Ye;
 
-   Yu << oneset.displayMass(mUp), 0, 0,
-         0, oneset.displayMass(mCharm), 0,
-         0, 0, oneset.displayMass(mTop);
+   Yu << qedqcd.displayMass(mUp), 0, 0,
+         0, qedqcd.displayMass(mCharm), 0,
+         0, 0, qedqcd.displayMass(mTop);
 
-   Yd << oneset.displayMass(mDown), 0, 0,
-         0, oneset.displayMass(mStrange), 0,
-         0, 0, oneset.displayMass(mBottom);
+   Yd << qedqcd.displayMass(mDown), 0, 0,
+         0, qedqcd.displayMass(mStrange), 0,
+         0, 0, qedqcd.displayMass(mBottom);
 
-   Ye << oneset.displayMass(mElectron), 0, 0,
-         0, oneset.displayMass(mMuon), 0,
-         0, 0, oneset.displayMass(mTau);
+   Ye << qedqcd.displayMass(mElectron), 0, 0,
+         0, qedqcd.displayMass(mMuon), 0,
+         0, 0, qedqcd.displayMass(mTau);
 
    Yu *= root2 / vu;
    Yd *= root2 / vd;
@@ -180,9 +180,9 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    // set non-diagonal CKM matrix
    CKM_parameters ckm_parameters;
    ckm_parameters.reset_to_observation();
-   oneset.setCKM(ckm_parameters);
+   qedqcd.setCKM(ckm_parameters);
 
-   s.setData(oneset);
+   s.setData(qedqcd);
    s.setTheta12(ckm_parameters.theta_12);
    s.setTheta13(ckm_parameters.theta_13);
    s.setTheta23(ckm_parameters.theta_23);
@@ -199,14 +199,14 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
    CMSSMCKM<Two_scale> m; FlavourMssmSoftsusy s;
    CMSSMCKM_input_parameters input;
-   QedQcd oneset;
-   setup_CMSSMCKM(m, s, input, oneset);
-   s.setData(oneset);
+   QedQcd qedqcd;
+   setup_CMSSMCKM(m, s, input, qedqcd);
+   s.setData(qedqcd);
 
-   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = qedqcd.displayAlpha(ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
@@ -222,16 +222,16 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 {
    CMSSMCKM_input_parameters input;
-   QedQcd oneset;
-   oneset.setPoleMt(175.);       // non-default
-   oneset.setMass(mBottom, 4.3); // non-default
+   QedQcd qedqcd;
+   qedqcd.setPoleMt(175.);       // non-default
+   qedqcd.setMass(mBottom, 4.3); // non-default
    CMSSMCKM<Two_scale> m; FlavourMssmSoftsusy s;
 
-   setup_CMSSMCKM(m, s, input, oneset);
+   setup_CMSSMCKM(m, s, input, qedqcd);
 
    softsusy::MIXING = 3; // up-type mixing with only one CKM factor
 
-   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
    {
       // compare CKM matrices
@@ -253,9 +253,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
    const double ss_new_vev = s.getVev();
 
-   const double fs_mt = m.calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
-   const double fs_mb = m.calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
-   const double fs_me = m.calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+   const double fs_mt = m.calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
+   const double fs_mb = m.calculate_MFd_DRbar(qedqcd.displayMass(mBottom), 2);
+   const double fs_me = m.calculate_MFe_DRbar(qedqcd.displayMass(mTau), 2);
    const double fs_MZ = m.calculate_MVZ_DRbar(Electroweak_constants::MZ);
    const double fs_old_vd = m.get_vd();
    const double fs_old_vu = m.get_vu();
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
       const double root2 = sqrt(2.0);
       DoubleMatrix mUq(3, 3), mDq(3, 3), mLep(3, 3);
 
-      softsusy::massFermions(oneset, mDq, mUq, mLep);
+      softsusy::massFermions(qedqcd, mDq, mUq, mLep);
       mDq(3, 3)  = s.calcRunningMb();
       mUq(3, 3)  = s.calcRunningMt();
       mLep(3, 3) = s.calcRunningMtau();

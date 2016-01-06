@@ -47,14 +47,14 @@ int main(int argc, const char* argv[])
    MSSMD5O_slha_io slha_io_1;
    MSSMRHN_slha_io slha_io_2;
    Spectrum_generator_settings spectrum_generator_settings;
-   QedQcd oneset;
+   QedQcd qedqcd;
    MSSMD5O_input_parameters input_1;
    MSSMRHN_input_parameters input_2;
 
    if (!slha_input_file.empty()) {
       try {
          slha_io_1.read_from_file(slha_input_file);
-         slha_io_1.fill(oneset);
+         slha_io_1.fill(qedqcd);
          slha_io_1.fill(input_1);
          slha_io_1.fill(spectrum_generator_settings);
          slha_io_2.read_from_file(slha_input_file);
@@ -64,7 +64,7 @@ int main(int argc, const char* argv[])
          return EXIT_FAILURE;
       }
    }
-   oneset.toMz(); // run SM fermion masses to MZ
+   qedqcd.toMz(); // run SM fermion masses to MZ
 
    MSSMD5O_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
@@ -80,7 +80,7 @@ int main(int argc, const char* argv[])
    spectrum_generator.set_ewsb_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order));
 
-   spectrum_generator.run(oneset, input_1, input_2);
+   spectrum_generator.run(qedqcd, input_1, input_2);
 
    const MSSMD5O<algorithm_type>& model_1
       = spectrum_generator.get_model_1();
@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
 
    // output
    slha_io_1.set_spinfo(problems);
-   slha_io_1.set_sminputs(oneset);
+   slha_io_1.set_sminputs(qedqcd);
    slha_io_1.set_minpar(input_1);
    slha_io_1.set_extpar(input_1);
    if (!problems.have_problem())

@@ -14,6 +14,7 @@ EXTPAR = {
     {4, MuInput},
     {5, mAInput},
     {6, MEWSB},
+    {7, AtInput},
     {25, TanBeta}
 };
 
@@ -22,8 +23,7 @@ FSExtraInputParameters = {
     {msu2, MSU2IN, {3,3}}, (* 3x3 matrix *)
     {msd2, MSD2IN, {3,3}}, (* 3x3 matrix *)
     {msl2, MSL2IN, {3,3}}, (* 3x3 matrix *)
-    {mse2, MSE2IN, {3,3}}, (* 3x3 matrix *)
-    {TYu , TUIN  , {3,3}}  (* 3x3 matrix *)
+    {mse2, MSE2IN, {3,3}}  (* 3x3 matrix *)
 };
 
 EWSBOutputParameters = { mu2 };
@@ -36,10 +36,9 @@ HighScaleFirstGuess = MSUSY;
 HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi)
-                + UnitStep[THRESHOLD-2]
-                  If[IsClose[SCALE^2,msq2[3,3]] &&
-                     IsClose[SCALE^2,msu2[3,3]],
-                     lambda2LPhiDegenerate, lambda2LPhiFull]},
+                + UnitStep[THRESHOLD-2] (
+                  If[IsCloseRel[msq2[3,3],msu2[3,3],0.01],
+                     lambda2LPhiMSqMSuDegenerate, lambda2LPhiFull])},
     {gYu      , gYuTree + UnitStep[THRESHOLD-1] gYu1L},
     {gYd      , gYdTree + UnitStep[THRESHOLD-1] gYd1L},
     {g2u      , g2uTree + UnitStep[THRESHOLD-1] g2u1L},
@@ -94,6 +93,7 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
+UseHiggs3LoopSplit = True;
 
 SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],
@@ -105,7 +105,7 @@ SARAH`ParameterDefinitions = Append[
 
 (* abbreviations *)
 xQU = Sqrt[Abs[msq2[3,3]/msu2[3,3]]];
-At = TYu[3,3]/Yu[3,3];
+At = AtInput;
 xt = At - \[Mu]/TanBeta;
 xtt = xt^2/Sqrt[Abs[msq2[3,3] msu2[3,3]]];
 
@@ -162,6 +162,14 @@ lambda1LPhi = 1/(4 Pi)^2 (
    Valid in the limit MSUSY = MQ[3,3] = MU[3,3] *)
 lambda2LPhiDegenerate = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
     3 - 2 xtt + xtt^2 / 6
+);
+
+(* arXiv:1407.4081, Eq. (34) in the limit MSUSY != MQ[3,3] = MU[3,3]
+   Limit[lambda2LPhiFull, xQU -> 1] *)
+lambda2LPhiMSqMSuDegenerate = (
+    (g3^2*(-18 + 12*xtt - xtt^2 + 6*(4 - 12*xtt + xtt^2)*
+           Log[msq2[3, 3]/SCALE^2] - 36*Log[msq2[3, 3]/SCALE^2]^2)*
+     Yu[3, 3]^4)/(192*Pi^4)
 );
 
 (* arXiv:1407.4081, Eq. (34) *)

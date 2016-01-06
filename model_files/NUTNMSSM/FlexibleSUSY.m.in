@@ -90,3 +90,17 @@ DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{0, Hold[HighScale]},
+            {1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {NMSSMRUN,
+           {{1, \[Lambda]},
+            {2, \[Kappa]},
+            {3, T[\[Lambda]] / \[Lambda]},
+            {4, T[\[Kappa]] / \[Kappa]},
+            {5, \[Lambda] vS / Sqrt[2]},
+            {10, ms2} } }
+};

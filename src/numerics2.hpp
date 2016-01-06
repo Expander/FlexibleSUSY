@@ -22,6 +22,7 @@
 #include <cmath>
 #include <limits>
 #include <cstddef>
+#include <cstdlib>
 
 namespace flexiblesusy {
 
@@ -32,7 +33,19 @@ bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
 }
 
 template <typename T>
+bool is_zero(long a, T prec = std::numeric_limits<T>::epsilon())
+{
+   return std::abs(a) < prec;
+}
+
+template <typename T>
 bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+{
+   return is_zero(a - b, prec);
+}
+
+template <typename T>
+bool is_equal(long a, long b, T prec = std::numeric_limits<T>::epsilon())
 {
    return is_zero(a - b, prec);
 }

@@ -12,8 +12,8 @@
 
 #include "run_softpoint.h"
 
-extern template class Softsusy<SoftParsNmssm>;
-extern template class Softsusy<SoftParsMssm>;
+extern template class softsusy::Softsusy<SoftParsNmssm>;
+extern template class softsusy::Softsusy<SoftParsMssm>;
 
 // Returns a string with all characters in upper case: very handy
 string ToUpper(const string & s) {

@@ -70,8 +70,8 @@ int main(int argc, char* argv[])
    @ModelName@_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
-   softsusy::QedQcd oneset;
-   oneset.toMz();
+   softsusy::QedQcd qedqcd;
+   qedqcd.toMz();
 
    @SpectrumGenerator@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
            end = range.end(); it != end; ++it) {
       input.@InputParameter_1@ = *it;
 
-      spectrum_generator.run(oneset, input);
+      spectrum_generator.run(qedqcd, input);
 
       const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
       const @ModelName@_physical& pole_masses = model.get_physical_slha();

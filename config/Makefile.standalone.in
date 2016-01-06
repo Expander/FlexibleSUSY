@@ -33,12 +33,12 @@ CXX             := @CXX@
 CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
                    $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
-CXX_DEP_GEN     := @CXX_DEP_GEN@
-CXXFLAGS_DEP_GEN:= @CXXFLAGS_DEP_GEN@
+CXX_DEP_GEN     := $(CXX)
+CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
 FC              := @FC@
 FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
-FOR_DEP_GEN     := @FOR_DEP_GEN@
+FOR_DEP_GEN     := $(FC)
 BLASLIBS        := @BLASLIBS@
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
@@ -49,6 +49,8 @@ GSLFLAGS        := @GSLFLAGS@
 LAPACKLIBS      := @LAPACKLIBS@
 LOOPTOOLSFLAGS  := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS   := @LOOPTOOLSLIBS@
+SQLITEFLAGS     := @SQLITEFLAGS@
+SQLITELIBS      := @SQLITELIBS@
 THREADLIBS      := @THREADLIBS@
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
@@ -101,7 +103,7 @@ $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -116,11 +118,9 @@ endif
 endif
 
 %.d: %.cpp
-# -MT '$*.o' ensures that the target contains the full path
 	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
-# the sed script ensures that the target contains the full path
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
@@ -160,6 +160,8 @@ showbuild:
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "SQLITELIBS         = $(SQLITELIBS)"
+	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"

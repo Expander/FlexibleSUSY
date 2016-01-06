@@ -35,10 +35,10 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 {
    CMSSM<Two_scale> m; MssmSoftsusy s;
    CMSSM_input_parameters input;
-   QedQcd oneset;
+   QedQcd qedqcd;
    setup_CMSSM(m, s, input);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -73,14 +73,14 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
    CMSSM<Two_scale> m; MssmSoftsusy s;
    CMSSM_input_parameters input;
-   QedQcd oneset;
+   QedQcd qedqcd;
    setup_CMSSM(m, s, input);
-   s.setData(oneset);
+   s.setData(qedqcd);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = qedqcd.displayAlpha(ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
@@ -96,14 +96,14 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    CMSSM_input_parameters input;
-   QedQcd oneset;
-   oneset.setPoleMt(175.);       // non-default
-   oneset.setMass(mBottom, 4.3); // non-default
+   QedQcd qedqcd;
+   qedqcd.setPoleMt(175.);       // non-default
+   qedqcd.setMass(mBottom, 4.3); // non-default
    CMSSM<Two_scale> m; MssmSoftsusy s;
-   s.setData(oneset);
+   s.setData(qedqcd);
    setup_CMSSM(m, s, input);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, qedqcd);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();
@@ -117,9 +117,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
    const double ss_new_vev = s.getVev();
 
-   const double fs_mt = m.calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
-   const double fs_mb = m.calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
-   const double fs_me = m.calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+   const double fs_mt = m.calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
+   const double fs_mb = m.calculate_MFd_DRbar(qedqcd.displayMass(mBottom), 2);
+   const double fs_me = m.calculate_MFe_DRbar(qedqcd.displayMass(mTau), 2);
    const double fs_MZ = m.calculate_MVZ_DRbar(Electroweak_constants::MZ);
    const double fs_old_vd = m.get_vd();
    const double fs_old_vu = m.get_vu();

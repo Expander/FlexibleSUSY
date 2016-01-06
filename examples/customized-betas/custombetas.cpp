@@ -46,7 +46,7 @@ int main(int argc, const char* argv[])
    const std::string spectrum_file(options.get_spectrum_file());
    CMSSM_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
-   QedQcd oneset;
+   QedQcd qedqcd;
    CMSSM_input_parameters input;
 
    if (slha_input_file.empty()) {
@@ -57,7 +57,7 @@ int main(int argc, const char* argv[])
 
    try {
       slha_io.read_from_file(slha_input_file);
-      slha_io.fill(oneset);
+      slha_io.fill(qedqcd);
       slha_io.fill(input);
       slha_io.fill(spectrum_generator_settings);
    } catch (const Error& error) {
@@ -65,7 +65,7 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   oneset.toMz(); // run SM fermion masses to MZ
+   qedqcd.toMz(); // run SM fermion masses to MZ
 
    MSSMcbs_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
@@ -85,7 +85,7 @@ int main(int argc, const char* argv[])
    spectrum_generator.set_threshold_corrections_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
 
-   spectrum_generator.run(oneset, input);
+   spectrum_generator.run(qedqcd, input);
 
    const MSSMcbs<algorithm_type>& model
       = spectrum_generator.get_model();
@@ -94,7 +94,7 @@ int main(int argc, const char* argv[])
 
    // output
    slha_io.set_spinfo(problems);
-   slha_io.set_sminputs(oneset);
+   slha_io.set_sminputs(qedqcd);
    slha_io.set_minpar(input);
    slha_io.set_extpar(input);
    if (!problems.have_problem())

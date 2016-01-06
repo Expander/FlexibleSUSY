@@ -176,7 +176,7 @@ std::string ToString_sprintf(T a)
 {
    static const unsigned buf_length = 20;
    char buf[buf_length];
-   snprintf(buf, buf_length, "%i");
+   snprintf(buf, buf_length, "%i", a);
    return std::string(buf);
 }
 
@@ -241,4 +241,30 @@ BOOST_AUTO_TEST_CASE(test_calculate_singlet_mass)
    BOOST_CHECK_EQUAL(mass, sqrt(2.));
    BOOST_CHECK_EQUAL(std::abs(phase), 1.);
    BOOST_CHECK_CLOSE(std::arg(phase), 0.5 * Pi/4., 1e-13);
+}
+
+BOOST_AUTO_TEST_CASE(test_If)
+{
+   BOOST_CHECK_EQUAL(If(true , 1., 2.), 1.);
+   BOOST_CHECK_EQUAL(If(false, 1., 2.), 2.);
+   BOOST_CHECK_EQUAL(If(true , 1 , 2.), 1 );
+   BOOST_CHECK_EQUAL(If(false, 1., 2 ), 2 );
+
+   BOOST_CHECK_EQUAL(std::real(If(true , std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 1.);
+   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 2.);
+
+   BOOST_CHECK_EQUAL(std::real(If(true , 1, std::complex<double>(2.,2.))), 1);
+   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), 2)), 2);
+}
+
+BOOST_AUTO_TEST_CASE(test_Which)
+{
+   // BOOST_CHECK_EQUAL(Which(true), 1.); // must not compile
+   BOOST_CHECK_EQUAL(Which(true , 2.), 2.);
+   BOOST_CHECK_EQUAL(Which(false, 2., true, 3.), 3.);
+   BOOST_CHECK_EQUAL(Which(false, 2., false, 3., true, 4.), 4.);
+
+   BOOST_CHECK_EQUAL(std::real(Which(true , std::complex<double>(2.,2.))), 2.);
+   BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
+   BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
 }

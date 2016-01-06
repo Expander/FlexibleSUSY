@@ -71,7 +71,7 @@ public:
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
 
-   void run(const softsusy::QedQcd& oneset, const CMSSM_input_parameters& input);
+   void run(const softsusy::QedQcd& qedqcd, const CMSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "CMSSM_spectrum.dat") const;
 
@@ -98,11 +98,11 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>
-void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
 					const CMSSM_input_parameters& input)
 {
    model.clear();
@@ -117,7 +117,7 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    high_scale_constraint.set_model(&model);
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
-   low_scale_constraint .set_sm_parameters(oneset);
+   low_scale_constraint .set_sm_parameters(qedqcd);
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
@@ -137,7 +137,7 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   MSSMcbs_initial_guesser<T> initial_guesser(&model, oneset,
+   MSSMcbs_initial_guesser<T> initial_guesser(&model, qedqcd,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);

@@ -42,15 +42,15 @@ DEFINITION[GaugeES][LagrangianInput] = {
 };
 
 LagZ2 = \
-    - mH2 conj[H].H \
-    - mS2 s.s \
-    + \[Lambda]1 conj[H].H.conj[H].H \
-    + \[Lambda]2 s.s.s.s \
-    + \[Lambda]3 s.s.conj[H].H;
+    + mH2 conj[H].H \
+    + mS2 s.s \
+    - \[Lambda]1 conj[H].H.conj[H].H \
+    - \[Lambda]2 s.s.s.s \
+    - \[Lambda]3 s.s.conj[H].H;
 
 LagZ2v = \
-    + \[Lambda]4 s.conj[H].H \
-    + \[Lambda]5 s.s.s;
+    - \[Lambda]4 s.conj[H].H \
+    - \[Lambda]5 s.s.s;
 
 LagNoHC = LagZ2 + LagZ2v;
 

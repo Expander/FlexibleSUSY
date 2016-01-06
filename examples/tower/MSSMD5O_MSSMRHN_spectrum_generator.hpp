@@ -78,7 +78,7 @@ public:
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
-   void run(const softsusy::QedQcd& oneset, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
+   void run(const softsusy::QedQcd& qedqcd, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
    void write_running_couplings_1(const std::string& filename = "MSSMD5O_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "MSSMD5O_spectrum.dat") const;
 
@@ -106,12 +106,12 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>
 void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
-(const softsusy::QedQcd& oneset,
+(const softsusy::QedQcd& qedqcd,
  const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
 {
    high_scale_constraint_2.clear();
@@ -123,16 +123,18 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    model_1.clear();
    model_1.set_input_parameters(input_1);
    model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model_1.set_loops(2);
 
    model_2.clear();
    model_2.set_input_parameters(input_2);
+   model_2.set_loops(2);
 
    // needed for constraint::initialize()
    high_scale_constraint_2.set_model(&model_2);
    susy_scale_constraint_1.set_model(&model_1);
    low_scale_constraint_1 .set_model(&model_1);
 
-   low_scale_constraint_1.set_sm_parameters(oneset);
+   low_scale_constraint_1.set_sm_parameters(qedqcd);
    matching.set_lower_input_parameters(input_1);
    high_scale_constraint_2.initialize();
    susy_scale_constraint_1.initialize();
@@ -162,7 +164,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 
    MSSMD5O_MSSMRHN_initial_guesser<T> initial_guesser
-       (&model_1, &model_2, input_1, oneset,
+       (&model_1, &model_2, input_1, qedqcd,
 	low_scale_constraint_1,
 	susy_scale_constraint_1,
 	high_scale_constraint_2,

@@ -50,6 +50,7 @@ public:
       top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
       higgs_log_resum,       ///< [14] Higgs pole mass logarithmic resummation
       beta_zero_threshold,   ///< [15] beta function zero threshold
+      calculate_observables, ///< [16] calculate observables (a_muon, ...)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

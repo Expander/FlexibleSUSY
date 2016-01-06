@@ -132,7 +132,7 @@ double self_energy_higgs_1loop_at_sm(
  * @param yt MS-bar Yukawa coupling
  * @param g3 MS-bar strong gauge coupling
  *
- * @return real part of 1-loop self-energy O(alpha_t)
+ * @return real part of 2-loop self-energy \f$O(\alpha_t \alpha_s)\f$
  */
 double self_energy_higgs_2loop_at_as_sm(
    double scale, double mt, double yt, double g3)
@@ -164,7 +164,7 @@ double self_energy_higgs_2loop_at_as_sm(
  * @param mt MS-bar top mass
  * @param yt MS-bar Yukawa coupling
  *
- * @return real part of 1-loop self-energy O(alpha_t)
+ * @return real part of 2-loop self-energy \f$O(\alpha_t^2) \f$
  */
 double self_energy_higgs_2loop_at_at_sm(
    double scale, double mt, double yt)

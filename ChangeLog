@@ -1,8 +1,155 @@
-FlexibleSUSY-1.2.3 [not released yet]
+FlexibleSUSY-1.2.5 [not released yet]
 
- * Feature: Adding support for If[] statements at the r.h.s. of
-   contraints.  In addition, the IsClose[a,b,eps] function has been
-   added to allow for a comparison of parameters.
+ * Feature: The output of the spectrum generator can be written into
+   an SQLite database using the --database-output-file= option.  At
+   the C++ level, a to_database() and from_database() function is
+   provided for each model, which write/read a model object (including
+   the DR-bar parameters and the pole mass spectrum) to/from a
+   database file.
+
+   Example:
+   $ models/CMSSM/run_CMSSM.x \
+     --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+     --slha-output-file= --database-output-file=point.db
+
+   Example using the scan script:
+   $ utils/scan-database.sh \
+     --spectrum-generator=models/CMSSM/run_CMSSM.x \
+     --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+     --scan-range=MINPAR[3]=1~30:21 \
+     --database-output-file=scan.db
+
+ * Feature: Models can now be matched to the Standard Model at Q =
+   MZ_pole, Q = MT_pole or any other dynamically calculated scale, as
+   MT_DRbar for example.
+   To match at MZ_pole set in the model file: LowScale = LowEnergyConstant[MZ]
+   To match at MT_pole set in the model file: LowScale = LowEnergyConstant[MT]
+   To match at MT_DRbar set in the model file: LowScale = M[Fu[3]],
+   depending on your chosen name for the top quark.
+
+ * Feature: 3-loop beta-functions can now be used in the real MSSM.
+   To enable the 3-loop MSSM beta-functions, set UseMSSM3LoopRGEs =
+   True; in the model file (enabled by default in all real MSSM models
+   that are shipped with FlexibleSUSY).  The expressions have been
+   obtained from http://www.liv.ac.uk/~dij/betas/allgennb.log and
+   include family mixing.
+
+   Note: The 3-loop beta-functions for the vacuum expectation values
+   vu and vd are not available so far.  Furthermore, the 3-loop MSSM
+   beta-functions miss the "tadpole" contributions corresponding to
+   the renormalisation of the Fayet-Iliopoulos D-term, see the note in
+   Section 2, page 4 of arxiv:hep-ph/0308231 .
+
+ * Feature: The anomalous magnetic moment of the muon, (g-2)/2, can be
+   calculated in all MSSM models without sfermion flavour violation
+   (e.g. the MSSMNoFV and CMSSMNoFV).  The calculation is performed
+   with GM2Calc 1.1.0 [arXiv:1510.08071] up to the 2-loop level
+   including tan(beta) resummation.
+
+   In order to enable the calculation of (g-2)/2, the symbols
+
+      FlexibleSUSYObservable`aMuonGM2Calc
+      FlexibleSUSYObservable`aMuonGM2CalcUncertainty
+
+   have to be added to ExtraSLHAOutputBlocks variable in the
+   FlexibleSUSY model file (they are already added in the MSSMNoFV and
+   CMSSMNoFV example models).  In addition, the SLHA input file entry
+   FlexibleSUSY[15] has to be set to 1 to perform the calculation.  If
+   FlexibleSUSY[15] is set to 0, (g-2)/2 is not calculated.
+
+ * Change (commit d553af8): No SLHA output is written if the option
+   --slha-output-file= is set to the empty string.  To write the SLHA
+   output to stdout, set --slha-output-file=- (this is the default).
+
+ * Change (commit ac70fec): In the SM the Higgs pole mass is no longer
+   calculated at the scale Qin (= the scale where lambda is input),
+   but at the scale Q = M_top.
+
+ * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
+   of alpha_em in the SM with 5 active quark flavours.
+   Imported from SoftSUSY (commit 0139daa).
+
+ * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
+   input parameters in the UMSSM.  This fixes a compilation error with
+   SARAH 4.6.0.
+
+ * Bugfix (commit f1752a7): Correcting the trilinear couplings and the
+   effective mu parameter in the NMSSMRUN SLHA output block in the
+   models: NMSSM, NMSSMCPV, NUTNMSSM, SMSSM and NUTSMSSM.
+
+FlexibleSUSY-1.2.4 [October, 27 2015]
+
+ * Change (commit 33af37c): The spectrum generator, run_<model>.x,
+   will no longer overwrite the user-given input parameters of the
+   SMINPUTS block.
+
+ * Bugfix (commit 9067f3a): There was an internal programming error in
+   the meta code concerning the assignment of tadpole diagrams to the
+   Higgs fields, which resulted in a compilation error in the SSM.
+   Thanks to John McDowall.
+
+ * Bugfix (commit 77d2a86): Ensure that in the calculation of the pole
+   mass of a fermion singlet the prefactor of the self-energies is the
+   positive tree-level mass.  Before commit ce1ef83, the prefactor of
+   the gluino self-energies in MSSM for example was the soft-breaking
+   parameter M3.  If M3 < 0 the gluino pole mass was not calculated
+   correctly.
+   Thanks to Dylan Harries and Roman Nevzorov.
+
+FlexibleSUSY-1.2.3 [October, 18 2015]
+
+ * Feature: Adding support for If[] and Which[] statements at the
+   r.h.s. of contraints.  In addition, the IsClose[a,b,eps] and
+   IsCloseRel[a,b,eps] functions have been added to allow for a
+   comparison of parameters.
+
+ * Feature: New model SplitMSSM, which implements low-energy EFT of
+   the MSSM where the sfermions and one Higgs doublet have been
+   integrated out.  The model implements the 1- and 2-loop matching
+   conditions from arxiv:1407.4081.  The Higgs pole mass is calculated
+   at complete 1-loop order plus 2-loop contributions O(alpha_t^2) and
+   O(alpha_t alpha_s) from arxiv:1205.6497 plus 3-loop leading-log
+   contribution from the gluino O(alpha_t alpha_s^2)
+   (arxiv:1312.5220).
+
+ * Feature: New model HSSUSY, which implements a high-scale SUSY
+   scenario, where the sfermions, the gauginos, the Higgsinos and one
+   Higgs doublet have been integrated out, leaving the Standard Model
+   as low-energy EFT.  The model uses the 3-loop Standard Model RGEs
+   (arxiv:1303.4364, arXiv:1307.3536) and implements the 1- and 2-loop
+   matching conditions to lambda(MSUSY) from arxiv:1407.4081.
+   Furthermore, the 1-loop matching conditions O(alpha_b) and
+   O(alpha_tau) as well as the 2-loop matching condition O(alpha_t^2)
+   from SUSYHD (arxiv:1504.05200) are implemented.  The Higgs pole
+   mass is calculated at complete 1-loop order plus 2-loop
+   contributions O(alpha_t^2) and O(alpha_t alpha_s) from
+   arxiv:1205.6497.  The calculation of the Higgs pole mass in the
+   HSSUSY model coincides with the one obtained with SUSYHD 1.0.2 with
+   a relative deviation of < 0.15%.
+
+ * Feature: Allow adding 3-loop gluino contribution to Higgs
+   self-energy in split-SUSY models with a physical singlet Higgs.
+   The 3-loop gluino contribution is enabled by default in the
+   SplitMSSM.
+
+ * Change (commit f7cd242): The `test' and `examples' modules are no
+   longer loaded into the makefile by default.  To load them, run
+   ./configure --with-optional-modules="test,examples"
+
+ * Change (commit e86d23a): The FlexibleSUSY test suite is no longer
+   shipped with the release tarball.  It can be obtained from the
+   official git repository at
+   https://github.com/FlexibleSUSY/FlexibleSUSY .
+
+ * Change (commit 372bb96): Use FlexibleSUSY's own dependency file
+   generator instead of using the corresponding compiler capabilities.
+
+ * Bugfix (commit 20e88db): Use correct self-energy for 1st and 2nd
+   generation charged leptons in *NoFV models.  Before commit 20e88db,
+   the (heavy) tau self-energy was used to convert the running MS-bar
+   electron and muon masses to DR-bar masses in *NoFV models.
+   Corresponding test case:
+   test_CMSSMNoFV_low_scale_constraint::test_delta_Yf()
 
 FlexibleSUSY-1.2.2 [September, 08 2015]
 

@@ -4,7 +4,7 @@ BetaSM::usage = "beta functions of the SM from SUSYHD v1.0";
 
 Begin["`Private`"];
 
-subDir = FileNameJoin[{Global`$flexiblesusyMetaDir, "ThreeLoopSM"}];
+subDir = FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "ThreeLoopSM"}];
 
 IsDefinedAndEqual[descr_String, c_] :=
     Parameters`GetParameterFromDescription[descr] =!= Null &&
@@ -29,7 +29,7 @@ BetaSM[gc_] :=
                     Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
                     True, Print["Error: unknown coupling: ", gc]; {0,0,0}
                     ]
-          ] /. ThreeLoopSM`ToSARAHNamingConvention[];
+          ] /. ThreeLoopSM`Private`ToSARAHNamingConvention[];
 
 (* Note:
    g1, g2, g3, gb are global variables in SARAH

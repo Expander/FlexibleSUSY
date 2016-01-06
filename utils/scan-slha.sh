@@ -94,8 +94,9 @@ Usage: ./`basename $0` [options]
 Options:
 
   --output=             Comma separated list of output values
-                        Syntax: <block>[<entry>]
+                        Syntax: <block>[<entry>] | ?<block>[<entry>]
                         Example: MINPAR[1],MASS[25],Yu[3:3]
+                                 ?SPINFO[3]   # 1 if SPINFO[3] is present
   --scan-range=         Scan range
                         Syntax: <block>[<entry>]=<start>~<stop>:<steps-1>
                         Example: MINPAR[1]=100~1000:10
@@ -172,9 +173,10 @@ if test -z "$scan_range"; then
     exit 1
 fi
 
-start=$(echo "$scan_range" | awk -F '[=:~]' '{ print $2 }')
-stop=$(echo "$scan_range"  | awk -F '[=:~]' '{ print $3 }')
-steps=$(echo "$scan_range" | awk -F : '{ print $NF }')
+# transform scientific notation into bc syntax
+start=$(echo "$scan_range" | awk -F '[=:~]' '{ print $2 }' | sed -e 's/[eE]+*/*10^/')
+stop=$(echo "$scan_range"  | awk -F '[=:~]' '{ print $3 }' | sed -e 's/[eE]+*/*10^/')
+steps=$(echo "$scan_range" | awk -F : '{ print $NF }'      | sed -e 's/[eE]+*/*10^/')
 block=$(echo "$scan_range" | awk -F [ '{ print $1 }')
 entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
 
@@ -227,11 +229,24 @@ EOF
     # get the output
     for f in $output_fields; do
         output_block=$(echo "$f" | awk -F [ '{ print $1 }')
+
+        # do we need to check only whether the entry exists?
+        echo "$f" | grep -v '?' > /dev/null
+        check_present=$?
+
+        output_block=$(echo "$output_block" | sed -e 's/?//')
         full_block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
         block_entries=$(echo "$f" | awk -F '[][]' '{ print $2 }')
 
         # get data value
         value=$(echo "$full_block" | awk -v keys="$block_entries" "$print_block_entry_awk")
+
+        if test "$check_present" -eq 1 ; then
+            # check if entry exists
+            # if entry exists, set value=1, otherwise set value=0
+            test -z "$value" > /dev/null
+            value=$?
+        fi
 
         if test -z "$value"; then
             value="-"

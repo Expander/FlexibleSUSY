@@ -16,6 +16,7 @@ ENABLE_FFLITE      := @ENABLE_FFLITE@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_SQLITE      := @ENABLE_SQLITE@
 ENABLE_THREADS     := @ENABLE_THREADS@
 ENABLE_TSIL        := @ENABLE_TSIL@
 
@@ -35,7 +36,7 @@ MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
 MODULES            += $(MODELS) $(ADDONS)
 # BEGIN: NOT EXPORTED ##########################################
-MODULES            += test examples
+MODULES            += @OPTIONAL_MODULES@
 # END:   NOT EXPORTED ##########################################
 
 # Variables for Mathematica meta code
@@ -46,16 +47,11 @@ ALGORITHMS         := @ALGORITHMS@
 CXX                := @CXX@
 CPPFLAGS           := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS           := @CXXFLAGS@
-CXX_DEP_GEN        := @CXX_DEP_GEN@
-CXXFLAGS_DEP_GEN   := @CXXFLAGS_DEP_GEN@
 CC                 := @CC@
 CFLAGS             := @CFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
-CC_DEP_GEN         := @CC_DEP_GEN@
-CFLAGS_DEP_GEN     := @CFLAGS_DEP_GEN@
 FC                 := @FC@
 FFLAGS             := @FFLAGS@
 FLIBS              := @FLIBS@
-FOR_DEP_GEN        := @FOR_DEP_GEN@
 MAKELIB            := @MAKELIB@
 LDFLAGS            := @LDFLAGS@
 LDLIBS             := @LDLIBS@
@@ -70,6 +66,8 @@ GSLFLAGS           := @GSLFLAGS@
 LAPACKLIBS         := @LAPACKLIBS@
 LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
+SQLITEFLAGS        := @SQLITEFLAGS@
+SQLITELIBS         := @SQLITELIBS@
 THREADLIBS         := @THREADLIBS@
 TSILFLAGS          := @TSILFLAGS@
 TSILLIBS           := @TSILLIBS@
@@ -93,12 +91,17 @@ ALLLIB   :=
 ALLEXE   :=
 # the modules add test executables to this variable
 ALLTST   :=
+# the addons add libraries to this variable to be linked against executables
+ADDONLIBS:=
 
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
 # configure script
 CONFIGURE_SCRIPT := $(ABSBASEDIR)/configure
+
+# dependency generator
+DEPGEN = $(DEPGEN_EXE)
 
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
@@ -185,23 +188,17 @@ clean-dep:
 depend:  clean-dep
 depend:  $(ALLDEP)
 
-%.d: %.cpp
-# -MT '$*.o' ensures that the target contains the full path
-	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+%.d: %.cpp | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.c
-# -MT '$*.o' ensures that the target contains the full path
-	$(CC_DEP_GEN) $(CFLAGS) $(CFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+%.d: %.c | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.f
-# the sed script ensures that the target contains the full path
-	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-	sed 's|.*\.o:|$*.o:|' > $@
+%.d: %.f | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.F
-# the sed script ensures that the target contains the full path
-	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-	sed 's|.*\.o:|$*.o:|' > $@
+%.d: %.F | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
 clean-executables:
 	-rm -f $(ALLEXE)
@@ -226,12 +223,9 @@ showbuild:
 	@echo "CXX                = $(CXX)"
 	@echo "CPPFLAGS           = $(CPPFLAGS)"
 	@echo "CXXFLAGS           = $(CXXFLAGS)"
-	@echo "CXX_DEP_GEN        = $(CXX_DEP_GEN)"
-	@echo "CXXFLAGS_DEP_GEN   = $(CXXFLAGS_DEP_GEN)"
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
-	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "MAKELIB            = $(MAKELIB)"
 	@echo "LDFLAGS            = $(LDFLAGS)"
 	@echo "LDLIBS             = $(LDLIBS)"
@@ -246,6 +240,8 @@ showbuild:
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "SQLITELIBS         = $(SQLITELIBS)"
+	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo "TSILLIBS           = $(TSILLIBS)"
 	@echo "TSILFLAGS          = $(TSILFLAGS)"
@@ -258,6 +254,7 @@ showbuild:
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_SILENT      = $(ENABLE_SILENT)"
+	@echo "ENABLE_SQLITE      = $(ENABLE_SQLITE)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
 	@echo "ENABLE_TSIL        = $(ENABLE_TSIL)"

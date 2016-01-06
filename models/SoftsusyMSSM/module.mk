@@ -4,7 +4,8 @@ MODNAME      := SoftsusyMSSM
 LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/mssmUtils.cpp \
 		$(DIR)/physpars.cpp \
-		$(DIR)/susy.cpp
+		$(DIR)/susy.cpp \
+		$(DIR)/tensor.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSoftsusyMSSM_SRC  += \

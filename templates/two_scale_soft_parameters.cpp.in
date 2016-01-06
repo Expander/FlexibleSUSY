@@ -96,7 +96,17 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& pars)
 
 void @ModelName@_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) const
 {
-@calcTraces@
+   if (get_loops() > 0) {
+@calc1LTraces@
+   }
+
+   if (get_loops() > 1) {
+@calc2LTraces@
+   }
+
+   if (get_loops() > 2) {
+@calc3LTraces@
+   }
 }
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_soft_parameters& soft_pars)
