@@ -2149,7 +2149,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
                                      {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]},
                                      {FileNameJoin[{$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_initial_guesser.hpp"}]},
                                      {FileNameJoin[{$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],

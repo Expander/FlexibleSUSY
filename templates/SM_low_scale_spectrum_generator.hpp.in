@@ -163,7 +163,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       model.calculate_spectrum();
 
       // start logarithmic resummation
-      if (model.get_Two_loop_corrections().higgs_log)
+      if (model.get_two_loop_corrections().higgs_log)
       {
          model.run_to(susy_scale);
          matching.match_high_to_low_scale_model();

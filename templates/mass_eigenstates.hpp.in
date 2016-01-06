@@ -103,11 +103,7 @@ public:
    void run_to(double scale, double eps = -1.0);
    void print(std::ostream&) const;
    void set_precision(double);
-<<<<<<< HEAD
-   const double get_precision() const { return precision; }
-=======
    double get_precision() const;
->>>>>>> main/development
 
 @lspGetters@
 @massGetters@
