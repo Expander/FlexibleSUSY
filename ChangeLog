@@ -125,7 +125,7 @@ FlexibleSUSY-1.2.3 [October, 18 2015]
    contributions O(alpha_t^2) and O(alpha_t alpha_s) from
    arxiv:1205.6497.  The calculation of the Higgs pole mass in the
    HSSUSY model coincides with the one obtained with SUSYHD 1.0.2 with
-   a relative deviation of < 0.15%.
+   a relative deviation of < 0.06%.
 
  * Feature: Allow adding 3-loop gluino contribution to Higgs
    self-energy in split-SUSY models with a physical singlet Higgs.
