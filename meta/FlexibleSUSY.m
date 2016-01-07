@@ -1612,6 +1612,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
 
+           DebugPrint["particles (mass eigenstates): ", GetParticles[]];
+
            FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
                                                      FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
