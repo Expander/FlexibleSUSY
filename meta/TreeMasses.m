@@ -201,7 +201,8 @@ GetVectorBosons[states_:FlexibleSUSY`FSEigenstates] :=
 (* Create list of mass eigenstate particles *)
 GetParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles = {}},
-           particles = Cases[SARAH`Masses[states], HoldPattern[SARAH`Mass[p_] -> _] :> GetHead[p]];
+           particles = Cases[SARAH`Masses[states],
+                             HoldPattern[SARAH`Mass[p_] -> _] | HoldPattern[_ -> SARAH`MassGiven[p_]] :> GetHead[p]];
            particles = particles /.
                        SARAH`diracSubBack1[SARAH`ALL] /.
                        SARAH`diracSubBack2[SARAH`ALL];
