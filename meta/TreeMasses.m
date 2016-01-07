@@ -1107,7 +1107,8 @@ CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_Str
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k,
-            diagFunctionStr},
+            diagFunctionStr, matrixType, matrixElementType, vectorType,
+            OneDimMappingPre = "", OneDimMappingPost = ""},
            dim = Length[matrix];
            dimStr = ToString[dim];
            particle = ToValidCSymbolString[GetHead[eigenVector]];
@@ -1115,17 +1116,38 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            body = IndentText["const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n"];
+           (* map scalar matrix and eigenvector to matrix and array types *)
+           If[dim == 1,
+              matrixElementType = CConversion`GetElementType[GetMassMatrixType[GetHead[eigenvector]]];
+              matrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType,1,1]];
+              vectorType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType,1]];
+              OneDimMappingPre = IndentText[
+                  matrixType <> " " <> matrixSymbol <> "_map;\n" <>
+                  matrixSymbol <> "_map(0,0) = " <> matrixSymbol <> ";\n" <>
+                  vectorType <> " " <> ev <> "_map;\n" <>
+                  ev <> "_map(0) = " <> ev <> ";"] <> "\n";
+              OneDimMappingPost = IndentText[
+                  ev <> " = " <> ev <> "_map(0);"] <> "\n";
+              matrixSymbol = matrixSymbol <> "_map";
+              ev = ev <> "_map";
+             ];
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              body = body <> "\n" <> CallSVDFunction[particle, matrixSymbol, ev, U, V];
+              body = body <> "\n" <> OneDimMappingPre <> "\n" <>
+                     CallSVDFunction[particle, matrixSymbol, ev, U, V] <> "\n" <>
+                     OneDimMappingPost;
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 body = body <> "\n" <> CallDiagonalizeSymmetricFunction[particle, matrixSymbol, ev, U];,
-                 body = body <> "\n" <> CallDiagonalizeHermitianFunction[particle, matrixSymbol, ev, U];
+                 body = body <> "\n" <> OneDimMappingPre <> "\n" <>
+                        CallDiagonalizeSymmetricFunction[particle, matrixSymbol, ev, U] <> "\n" <>
+                        OneDimMappingPost;,
+                 body = body <> "\n" <> OneDimMappingPre <> "\n" <>
+                        CallDiagonalizeHermitianFunction[particle, matrixSymbol, ev, U] <> "\n" <>
+                        OneDimMappingPost;
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
