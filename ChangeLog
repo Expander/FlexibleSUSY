@@ -77,6 +77,12 @@ FlexibleSUSY-1.2.5 [not released yet]
    effective mu parameter in the NMSSMRUN SLHA output block in the
    models: NMSSM, NMSSMCPV, NUTNMSSM, SMSSM and NUTSMSSM.
 
+ * Bugfix (commit 9ccdb4d): Workaround a SARAH issue where the list
+   SARAH`Masses[EWSB] contains replacement rules of the form `0 ->
+   MassGiven[X]', instead of `Mass[X] -> MassGiven[X]'.  Due to this
+   issue some massless particles have been missing in FlexibleSUSY
+   before commit 9ccdb4d.
+
 FlexibleSUSY-1.2.4 [October, 27 2015]
 
  * Change (commit 33af37c): The spectrum generator, run_<model>.x,
