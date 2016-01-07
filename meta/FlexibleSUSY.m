@@ -215,6 +215,10 @@ DecomposeVersionString[version_String] :=
 ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
     ToString[major] <> "." <> ToString[minor] <> "." <> ToString[patch];
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<FlexibleSUSY>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 CheckSARAHVersion[] :=
     Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
            Print["Checking SARAH version ..."];
@@ -1424,6 +1428,7 @@ PrepareUnrotatedParticles[eigenstates_] :=
              ];
            Print["Reading unrotated particles from file ", nonMixedParticlesFile, " ..."];
            nonMixedParticles = Get[nonMixedParticlesFile];
+           DebugPrint["unrotated particles: ", nonMixedParticles];
            TreeMasses`SetUnrotatedParticles[nonMixedParticles];
           ];
 
