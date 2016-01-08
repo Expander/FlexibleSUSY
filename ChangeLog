@@ -1,4 +1,4 @@
-FlexibleSUSY-1.3.1 [not released yet]
+FlexibleSUSY-1.3.1 [January, 08 2016]
 
  * Bugfix (commit aa8dc76): Re-enable the output of gauge eigenstate
    masses of 1st and 2nd generation sfermions in the CMSSMNoFV for
