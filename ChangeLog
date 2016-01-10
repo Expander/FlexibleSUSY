@@ -1,3 +1,8 @@
+FlexibleSUSY-1.3.2 [January, 10 2016]
+
+ * Bugfix (commit d76ca79): Fix compilation error with Eigen
+   3.3-beta1.
+
 FlexibleSUSY-1.3.1 [January, 08 2016]
 
  * Bugfix (commit aa8dc76): Re-enable the output of gauge eigenstate
