@@ -28,6 +28,7 @@ model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
+model_files/MDM                 export-ignore
 model_files/minMSSM             export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
@@ -50,6 +51,7 @@ models/smcw                     export-ignore
 release                         export-ignore
 
 sarah/InertMSSM                 export-ignore
+sarah/MDM                       export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
