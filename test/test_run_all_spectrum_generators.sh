@@ -48,6 +48,7 @@ lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP3
 lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP4,0
 lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP5,0
 lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP6,0
+MDM,_DEFAULT_,0
 minMSSM,${DEFAULT_CMSSM_INPUT},1
 MRSSM,_DEFAULT_,0
 MSSM,_DEFAULT_,0
