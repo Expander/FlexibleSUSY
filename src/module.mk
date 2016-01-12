@@ -14,9 +14,11 @@ LIBFLEXI_SRC := \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
 		$(DIR)/error.cpp \
+		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
+		$(DIR)/observables.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
@@ -60,6 +62,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
+		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
 		$(DIR)/two_loop_corrections.hpp \
@@ -76,6 +79,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
+		$(DIR)/observables.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \

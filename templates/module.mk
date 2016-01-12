@@ -14,6 +14,8 @@ TEMPLATES    := \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model_slha.hpp.in \
+		$(DIR)/observables.hpp.in \
+		$(DIR)/observables.cpp.in \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \

@@ -51,9 +51,6 @@ list with EWSB output parameters";
 
 Begin["`Private`"];
 
-InputFormOfNonStrings[a_String] := a;
-InputFormOfNonStrings[a_] := InputForm[a];
-
 DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<EWSB>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];

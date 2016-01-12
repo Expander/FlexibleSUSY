@@ -4,6 +4,8 @@ BeginPackage["Utils`"];
 ApplyAndConcatenate::usage = "Applies a function to a list and
 concatenates the resulting list.";
 
+InputFormOfNonStrings::usage = "apply InputForm to non-strings";
+
 StringJoinWithSeparator::usage = "Joins a list of strings with a given separator string";
 
 Zip::usage = "Combines two lists to a list of touples.
@@ -136,6 +138,9 @@ FSImportString[fileName_String] :=
 
 ForceJoin[elem___] :=
     Join[Sequence @@ Select[{elem}, (Head[#] === List)&]];
+
+InputFormOfNonStrings[a_String] := a;
+InputFormOfNonStrings[a_] := InputForm[a];
 
 End[];
 

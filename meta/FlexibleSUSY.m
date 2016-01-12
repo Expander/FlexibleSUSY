@@ -1,5 +1,4 @@
-
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "WeinbergAngle`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "WeinbergAngle`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -215,6 +214,10 @@ DecomposeVersionString[version_String] :=
 
 ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
     ToString[major] <> "." <> ToString[minor] <> "." <> ToString[patch];
+
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<FlexibleSUSY>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
 CheckSARAHVersion[] :=
     Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
@@ -1088,6 +1091,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+(* Write the observables files *)
+WriteObservables[extraSLHAOutputBlocks_, files_List] :=
+    Module[{calculateObservables},
+           calculateObservables = Observables`CalculateObservables[extraSLHAOutputBlocks, "observables"];
+           WriteOut`ReplaceInFiles[files,
+                                   {   "@calculateObservables@" -> IndentText[calculateObservables],
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+           ];
+
 WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
@@ -1425,6 +1438,7 @@ PrepareUnrotatedParticles[eigenstates_] :=
              ];
            Print["Reading unrotated particles from file ", nonMixedParticlesFile, " ..."];
            nonMixedParticles = Get[nonMixedParticlesFile];
+           DebugPrint["unrotated particles: ", nonMixedParticles];
            TreeMasses`SetUnrotatedParticles[nonMixedParticles];
           ];
 
@@ -1607,6 +1621,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
+
+           DebugPrint["particles (mass eigenstates): ", GetParticles[]];
 
            FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
                                                      FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
@@ -2137,6 +2153,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
+
+           Print["Creating observables"];
+           WriteObservables[extraSLHAOutputBlocks,
+                            {{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";

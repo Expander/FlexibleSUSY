@@ -197,17 +197,29 @@ public:
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
                                                          Eigen::Matrix<double, N, N>&);
 
+   static void convert_symmetric_fermion_mixings_to_slha(double&,
+                                                         Eigen::Matrix<double, 1, 1>&);
+
    template<int N>
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
                                                          Eigen::Matrix<std::complex<double>, N, N>&);
+
+   static void convert_symmetric_fermion_mixings_to_slha(double&,
+                                                         Eigen::Matrix<std::complex<double>, 1, 1>&);
 
    template<int N>
    static void convert_symmetric_fermion_mixings_to_hk(Eigen::Array<double, N, 1>&,
                                                        Eigen::Matrix<double, N, N>&);
 
+   static void convert_symmetric_fermion_mixings_to_hk(double&,
+                                                       Eigen::Matrix<double, 1, 1>&);
+
    template<int N>
    static void convert_symmetric_fermion_mixings_to_hk(Eigen::Array<double, N, 1>&,
                                                        Eigen::Matrix<std::complex<double>, N, N>&);
+
+   static void convert_symmetric_fermion_mixings_to_hk(double&,
+                                                       Eigen::Matrix<std::complex<double>, 1, 1>&);
 
 private:
    SLHAea::Coll data;          ///< SHLA data

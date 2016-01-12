@@ -49,6 +49,7 @@ public:
       force_output,          ///< [12] force output
       top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
       beta_zero_threshold,   ///< [14] beta function zero threshold
+      calculate_observables, ///< [15] calculate observables (a_muon, ...)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
