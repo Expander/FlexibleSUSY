@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "CMSSM_two_scale_model.hpp"
+#include "models/CMSSM/CMSSM_two_scale_model.hpp"
 #include "weinberg_angle_pointer.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"

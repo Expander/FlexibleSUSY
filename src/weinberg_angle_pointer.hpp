@@ -19,7 +19,7 @@
 #ifndef WEINBERG_ANGLE_POINTER_H
 #define WEINBERG_ANGLE_POINTER_H
 
-#include "CMSSM_two_scale_model.hpp"
+#include "models/CMSSM/CMSSM_two_scale_model.hpp"
 
 namespace flexiblesusy {
 
