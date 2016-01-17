@@ -50,10 +50,10 @@ SUSYScaleInput = {
 {me2[3,3], Sqr[Ms]},
 {\[Mu], Ms},
 {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
-{T[Yu], \[Mu]/TanBeta Yu},
-{T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye},
-{T[Yu][3,3], (\[Mu]/TanBeta + Xtt) Yu[3,3]}
+{T[Yu], Ms/TanBeta Yu},
+{T[Yd], Ms TanBeta Yd},
+{T[Ye], Ms TanBeta Ye},
+{T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
 };
 
 InitialGuessAtSUSYScale = {
@@ -82,10 +82,10 @@ InitialGuessAtSUSYScale = {
 {me2[3,3], Sqr[Ms]},
 {\[Mu], Ms},
 {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
-{T[Yu], \[Mu]/TanBeta Yu},
-{T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye},
-{T[Yu][3,3], (\[Mu]/TanBeta + Xtt) Yu[3,3]}
+{T[Yu], Ms/TanBeta Yu},
+{T[Yd], Ms TanBeta Yd},
+{T[Ye], Ms TanBeta Ye},
+{T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
 };
 
 (* InitialGuessAtLowScale is ignored if SMTower is true *)
