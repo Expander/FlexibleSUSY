@@ -185,6 +185,11 @@ tadpole::usage="symbolic expression for a tadpole contribution in the
 EWSB eqs.  The index corresponds to the ordering of the tadpole
 equations in SARAH`TadpoleEquations[] .";
 
+NoScale::usage="placeholder indicating an SLHA block should not
+have a scale associated with it.";
+CurrentScale::usage="placeholder indicating the current renormalization
+scale of the model.";
+
 FSDebugOutput = False;
 
 Begin["`Private`"];
