@@ -81,6 +81,7 @@ Block EXTPAR                 # Input parameters
     6   173.34               # MEWSB
     7   ${At}                # At(MSUSY)
    25   ${TB}                # TanBeta(MSUSY)
+  100   2                    # LambdaLoopOrder
 Block MSQ2IN
   1  1     ${MS2}            # mq2(1,1)
   2  2     ${MS2}            # mq2(2,2)
