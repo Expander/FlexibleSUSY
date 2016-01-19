@@ -97,6 +97,7 @@ GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
 GetParticleFromDescription::usage="Returns particle symbol from a
 given description string.";
+GetPDGCodesForParticle::usage="Returns the PDG codes for a particle."
 
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
@@ -1089,6 +1090,15 @@ GetParticleFromDescription[multipletName_String, splitNames_List] :=
            result = GetParticleFromDescription[multipletName];
            If[result =!= Null, Return[{result}]];
            GetParticleFromDescription /@ splitNames
+          ];
+
+GetPDGCodesForParticle[particle_] :=
+    Module[{pdgList},
+            pdgList = SARAH`getPDGList[particle];
+            If[pdgList === None,
+               pdgList = {};
+              ];
+           pdgList
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
