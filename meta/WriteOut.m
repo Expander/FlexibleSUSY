@@ -437,14 +437,32 @@ WriteSLHAModelParametersBlocks[] :=
            Return[result];
           ];
 
+GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`NoScale] := "";
+
+GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`CurrentScale] := "model.get_scale()";
+
+GetExtraSLHAOutputBlockScale[scale_?NumericQ] := ToString[scale];
+
+GetExtraSLHAOutputBlockScale[scale_] :=
+    Module[{result},
+           scaleStr = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[Parameters`DecreaseIndexLiterals[scale],
+                                           Join[Parameters`GetModelParameters[],
+                                                Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           StringReplace[scaleStr, "CurrentScale" -> "model.get_scale()"]
+          ];
+
 WriteExtraSLHAOutputBlock[outputBlocks_List] :=
     Module[{result = "", reformed},
-           ReformeBlocks[{block_, tuples_List}] := {block, ReformeBlocks /@ tuples};
+           ReformeBlocks[{block_, tuples_List}] := {{block, ReformeBlocks /@ tuples}, "model.get_scale()"};
+           ReformeBlocks[{block_, scale_, tuples_List}] := {{block, ReformeBlocks /@ tuples},
+                                                            GetExtraSLHAOutputBlockScale[scale]};
            ReformeBlocks[{expr_}]               := {expr};
            ReformeBlocks[{idx_, expr_}]         := {expr, idx};
            ReformeBlocks[{idx1_, idx2_, expr_}] := {expr, idx1, idx2};
            reformed = ReformeBlocks /@ outputBlocks;
-           (result = result <> WriteSLHABlock[#])& /@ reformed;
+           (result = result <> WriteSLHABlock[#[[1]], #[[2]]])& /@ reformed;
            Return[result];
           ];
 
