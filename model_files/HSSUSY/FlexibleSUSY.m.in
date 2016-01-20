@@ -82,7 +82,7 @@ InitialGuessAtLowScale = {
    {Ye, Automatic}
 };
 
-DefaultPoleMassPrecision = MediumPrecision;
+DefaultPoleMassPrecision = HighPrecision;
 HighPoleMassPrecision    = {hh};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
