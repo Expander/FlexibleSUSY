@@ -28,7 +28,6 @@
 #include "ckm.hpp"
 #include "ew_input.hpp"
 #include "lowe.h"
-#include "observables.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -48,7 +47,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
-struct Observables;
+struct @ModelName@_observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
@@ -73,7 +72,7 @@ public:
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
    void set_extpar(const @ModelName@_input_parameters&);
-   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const Observables&);
+   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const @ModelName@_observables&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
@@ -86,10 +85,10 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -121,7 +120,7 @@ template <class T>
 void @ModelName@_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model,
    const softsusy::QedQcd& qedqcd, const @ModelName@_scales& scales,
-   const Observables& observables)
+   const @ModelName@_observables& observables)
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
@@ -144,7 +143,7 @@ void @ModelName@_slha_io::fill_slhaea(
 template <class T>
 SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
    const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const @ModelName@_scales& scales, const Observables& observables)
+   const @ModelName@_scales& scales, const @ModelName@_observables& observables)
 {
    SLHAea::Coll slhaea;
    @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
@@ -171,7 +170,7 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
 template <class T>
 void @ModelName@_slha_io::set_extra(
    const @ModelName@_slha<T>& model, const @ModelName@_scales& scales,
-   const Observables& observables)
+   const @ModelName@_observables& observables)
 {
    const @ModelName@_physical physical(model.get_physical_slha());
 

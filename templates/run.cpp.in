@@ -86,7 +86,7 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   Observables observables;
+   @ModelName@_observables observables;
    if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
       observables = calculate_observables(model, qedqcd);
 

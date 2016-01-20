@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   const Observables observables(calculate_observables(model, qedqcd));
+   const @ModelName@_observables observables(calculate_observables(model, qedqcd));
 
    // SLHA output
    SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales, observables));

@@ -1088,10 +1088,26 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 
 (* Write the observables files *)
 WriteObservables[extraSLHAOutputBlocks_, files_List] :=
-    Module[{calculateObservables},
-           calculateObservables = Observables`CalculateObservables[extraSLHAOutputBlocks, "observables"];
+    Module[{requestedObservables, numberOfObservables, observablesDef,
+            observablesInit, getObservables, getObservablesNames,
+            clearObservables, setObservables, calculateObservables},
+           requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
+           numberOfObservables = Observables`GetNumberOfObservables[requestedObservables];
+           observablesDef = Observables`CreateObservablesDefinitions[requestedObservables];
+           observablesInit = Observables`CreateObservablesInitialization[requestedObservables];
+           {getObservables, getObservablesNames, setObservables} =
+               Observables`CreateSetAndDisplayObservablesFunctions[requestedObservables];
+           clearObservables = Observables`CreateClearObservablesFunction[requestedObservables];
+           calculateObservables = Observables`CalculateObservables[requestedObservables, "observables"];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@calculateObservables@" -> IndentText[calculateObservables],
+                                   {   "@numberOfObservables@" -> numberOfObservables,
+                                       "@observablesDef@" -> IndentText[observablesDef],
+                                       "@observablesInit@" -> IndentText[WrapLines[observablesInit]],
+                                       "@getObservables@" -> IndentText[getObservables],
+                                       "@getObservablesNames@" -> IndentText[getObservablesNames],
+                                       "@clearObservables@" -> IndentText[clearObservables],
+                                       "@setObservables@" -> IndentText[setObservables],
+                                       "@calculateObservables@" -> IndentText[calculateObservables],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];

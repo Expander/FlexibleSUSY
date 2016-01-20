@@ -21,7 +21,9 @@
 #ifndef @ModelName@_OBSERVABLES_H
 #define @ModelName@_OBSERVABLES_H
 
-#include "observables.hpp"
+#include <string>
+#include <vector>
+#include <Eigen/Core>
 
 namespace softsusy {
 class QedQcd;
@@ -30,6 +32,18 @@ class QedQcd;
 namespace flexiblesusy {
 
 class @ModelName@_mass_eigenstates;
+
+class @ModelName@_observables {
+   static const unsigned NUMBER_OF_OBSERVABLES = @numberOfObservables@;
+
+   @ModelName@_observables();
+   Eigen::ArrayXd get() const; ///< returns vector of all observables
+   static std::vector<std::string> get_names(); ///< returns vector of all observable names
+   void clear(); ///< sets all observables to zero
+   void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
+
+   @observablesDef@
+};
 
 Observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
 

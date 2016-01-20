@@ -20,8 +20,8 @@
 
 #include "@ModelName@_utilities.hpp"
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_observables.hpp"
 #include "logger.hpp"
-#include "observables.hpp"
 #include "database.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
@@ -147,7 +147,7 @@ namespace @ModelName@_database {
  */
 void to_database(
    const std::string& file_name, const @ModelName@_mass_eigenstates& model,
-   const softsusy::QedQcd* qedqcd, const Observables* observables)
+   const softsusy::QedQcd* qedqcd, const @ModelName@_observables* observables)
 {
    using utilities::append;
 
@@ -195,7 +195,7 @@ void to_database(
 
    // fill observables (optional)
    if (observables) {
-      append(names, Observables::get_names());
+      append(names, @ModelName@_observables::get_names());
       append(values, observables->get());
    }
 
@@ -217,7 +217,7 @@ void to_database(
  */
 @ModelName@_mass_eigenstates from_database(
    const std::string& file_name, std::size_t entry, softsusy::QedQcd* qedqcd,
-   Observables* observables)
+   @ModelName@_observables* observables)
 {
    using utilities::append;
 
@@ -229,7 +229,7 @@ void to_database(
    const std::size_t number_of_low_energy_input_parameters =
       (qedqcd ? softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS : 0);
    const std::size_t number_of_observables =
-      (observables ? Observables::NUMBER_OF_OBSERVABLES : 0);
+      (observables ? @ModelName@_observables::NUMBER_OF_OBSERVABLES : 0);
    const std::size_t total_entries = 9 + number_of_input_parameters
       + number_of_parameters + number_of_masses + number_of_mixings
       + number_of_low_energy_input_parameters + number_of_observables;

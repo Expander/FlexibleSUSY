@@ -340,17 +340,80 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
 
 ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
+WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
+    Module[{i, dim, start, particlePDG, vectorPDG,
+            struct, comment, result = ""},
+           vectorPDG = Parameters`GetPDGCodesForParticle[vectorBoson][[1]];
+           particlePDG = Parameters`GetPDGCodesForParticle[particle];
+           dim = TreeMasses`GetDimension[particle];
+           If[Length[particlePDG] != dim,
+              Print["Warning: length of PDG number list != dimension of particle ", particle];
+              Print["       PDG number list = ", particlePDG];
+              Print["       dimension of particle ", particle, " = ", dim];
+             ];
+           start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+           Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorP,
+                 struct = "OBSERVABLES.eff_cp_higgs_photon_photon";
+                 comment = "effective H-Photon-Photon coupling";,
+                 particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
+                 struct = "OBSERVABLES.eff_cp_higgs_gluon_gluon";
+                 comment = "effective H-Gluon-Gluon coupling";,
+                 particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
+                 struct = "OBSERVABLES.eff_cp_pseudoscalar_photon_photon";
+                 comment = "effective A-Photon-Photon coupling";,
+                 particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
+                 struct = "OBSERVABLES.eff_cp_pseudoscalar_gluon_gluon";
+                 comment = "effective A-Gluon-Gluon coupling";,
+                 True,
+                 Print["Error: unsupported effective coupling ",
+                       particle, "-", vectorBoson, "-", vectorBoson,
+                       "requested!"];
+                 Quit[1]
+                ];
+           For[i = start, i <= Length[particlePDG], i++,
+               result = result
+                        <> WriteSLHABlockEntry[{struct <> "(" <> ToString[i] <> ")",
+                                                particlePDG[[i]], vectorPDG, vectorPDG},
+                                                comment];
+              ];
+           result
+          ];
+
 WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], idx___}, comment_String:""] :=
-    Module[{parStr, commentStr},
-           {parStr, commentStr} = Switch[par,
-                                         FlexibleSUSYObservable`aMuonGM2Calc,
-                                             {"OBSERVABLES.a_muon_gm2calc", "Delta(g-2)_muon/2 GM2Calc"},
-                                         FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                                             {"OBSERVABLES.a_muon_gm2calc_uncertainty", "Delta(g-2)_muon/2 GM2Calc uncertainty"},
-                                         _,
-                                             {"", ""}
-                                        ];
-           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+    Module[{i, dim, scalarPDG, vectorPDG, result = ""},
+           Switch[par,
+                  FlexibleSUSYObservable`aMuonGM2Calc,
+                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc", idx}, "Delta(g-2)_muon/2 GM2Calc"],
+                  FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
+                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc_uncertainty", idx}, "Delta(g-2)_muon/2 GM2Calc uncertainty"],
+                  FlexibleSUSYObservable`CpHiggsPhotonPhoton,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorP],
+                  FlexibleSUSYObservable`CpHiggsGluonGluon,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorG],
+                  FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorP],
+                  FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorG],
+                  _,
+                     result = WriteSLHABlockEntry[{"", idx}, ""]
+                 ];
+           result
+          ];
+
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, idx1Str, idx2Str, idx3Str, commentStr},
+           parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
+           parVal = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           idx1Str = ToString[idx1];
+           idx2Str = ToString[idx2];
+           idx3Str = ToString[idx3];
+           commentStr = If[comment == "", parStr, comment];
+           (* result *)
+           "      << FORMAT_RANK_THREE_TENSOR(" <> idx1Str <> ", " <> idx2Str <> ", "
+           <> idx3Str <> ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
