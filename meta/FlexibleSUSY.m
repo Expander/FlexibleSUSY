@@ -1092,7 +1092,7 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
             observablesInit, getObservables, getObservablesNames,
             clearObservables, setObservables, calculateObservables},
            requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
-           numberOfObservables = Observables`GetNumberOfObservables[requestedObservables];
+           numberOfObservables = Observables`CountNumberOfObservables[requestedObservables];
            observablesDef = Observables`CreateObservablesDefinitions[requestedObservables];
            observablesInit = Observables`CreateObservablesInitialization[requestedObservables];
            {getObservables, getObservablesNames, setObservables} =
@@ -1100,7 +1100,7 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            clearObservables = Observables`CreateClearObservablesFunction[requestedObservables];
            calculateObservables = Observables`CalculateObservables[requestedObservables, "observables"];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@numberOfObservables@" -> numberOfObservables,
+                                   {   "@numberOfObservables@" -> ToString[numberOfObservables],
                                        "@observablesDef@" -> IndentText[observablesDef],
                                        "@observablesInit@" -> IndentText[WrapLines[observablesInit]],
                                        "@getObservables@" -> IndentText[getObservables],

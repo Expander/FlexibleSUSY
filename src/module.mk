@@ -18,7 +18,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
-		$(DIR)/observables.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
@@ -78,7 +77,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
-		$(DIR)/observables.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \

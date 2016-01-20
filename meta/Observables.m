@@ -1,4 +1,4 @@
-BeginPackage["Observables`", {"FlexibleSUSY`", "SARAH`", "TreeMasses`", "Utils`", "CConversion`", "TextFormatting`"}];
+BeginPackage["Observables`", {"FlexibleSUSY`", "SARAH`", "BetaFunction`", "Parameters`", "TreeMasses`", "Utils`", "CConversion`", "TextFormatting`"}];
 
 (* observables *)
 Begin["FlexibleSUSYObservable`"];
@@ -8,7 +8,7 @@ FSObservables = { aMuonGM2Calc, aMuonGM2CalcUncertainty,
 End[];
 
 GetRequestedObservables::usage="";
-GetNumberOfObservables::usage="";
+CountNumberOfObservables::usage="";
 CreateObservablesDefinitions::usage="";
 CreateObservablesInitialization::usage="";
 CreateSetAndDisplayObservablesFunctions::usage="";
@@ -18,7 +18,6 @@ CalculateObservables::usage="";
 Begin["`Private`"];
 
 (* @todo proper error handling, e.g. when no Higgs or pseudo-scalar defined *)
-(* @todo properly count complex parameters *)
 
 GetRequestedObservables[blocks_] :=
     DeleteDuplicates[Cases[blocks, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}]];
@@ -80,27 +79,19 @@ GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluo
            type
           ];
 
-GetNumberOfObservables[observables_List] :=
+CountNumberOfObservables[observables_List] :=
     Module[{i, number = 0},
            For[i = 1, i <= Length[observables], i++,
-               Which[observables[[i]] === FlexibleSUSYObservable`aMuonGM2Calc ||
-                     observables[[i]] === FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                     number = number + 1,
-                     observables[[i]] === FlexibleSUSYObservable`CpHiggsPhotonPhoton ||
-                     observables[[i]] === FlexibleSUSYObservable`CpHiggsGluonGluon,
-                     number = number + TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson],
-                     observables[[i]] === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ||
-                     observables[[i]] === FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
-                     number = number + TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar],
-                     True,
-                     Print["Warning: ignoring invalid observable ", observables[[i]]];
-                    ];
+               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+                  number += BetaFunction`CountNumberOfParameters[GetObservableType[observables[[i]]]];,
+                  Print["Warning: ignoring invalid observable ", observables[[i]]];
+                 ];
               ];
            number
           ];
 
 CreateObservablesDefinitions[observables_List] :=
-    Module[{i, type, name, description, dim, definitions = ""},
+    Module[{i, type, name, description, definitions = ""},
            For[i = 1, i <= Length[observables], i++,
                If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
                   name = GetObservableName[observables[[i]]];
@@ -108,59 +99,41 @@ CreateObservablesDefinitions[observables_List] :=
                   type = CConversion`CreateCType[GetObservableType[observables[[i]]]];
                   definitions = definitions <> type <> " " <> name <> "; ///< " <> description <> "\n";,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
+                 ];
               ];
            definitions
           ];
 
 CreateObservablesInitialization[observables_List] :=
-    Module[{i, name, value, init = ": "},
-           For[i = 1, i <= Length[observables], i}},
-               name = GetObservableName[observables[[i]]];
-               Which[observables[[i]] === FlexibleSUSYObservable`aMuonGM2Calc ||
-                     observables[[i]] === FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                     value = "(0)",
-                     observables[[i]] === FlexibleSUSYObservable`CpHiggsPhotonPhoton ||
-                     observables[[i]] === FlexibleSUSYObservable`CpHiggsGluonGluon,
-                     dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
-                     If[dim == 1,
-                        value = "(0,0)";,
-                        value = "(" <> CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                <> "::Zero())";
-                       ];,
-                     observables[[i]] === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ||
-                     observables[[i]] === FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
-                     dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar];
-                     If[dim == 1,
-                        value = "(0,0)";,
-                        value = "(" <> CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                <> "::Zero())";
-                       ];,
-                     True,
-                     Print["Warning: ignoring invalid observable ", observables[[i]]];
-                     ];
-               If[init == ": ", init = init <> name <> value <> "\n", init = init <> ", " <> name <> value <> "\n"];
+    Module[{i, name, type, init = ": "},
+           For[i = 1, i <= Length[observables], i++,
+               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+                  name = GetObservableName[observables[[i]]];
+                  type = GetObservableType[observables[[i]]];
+                  If[init == ": ",
+                     init = init <> CConversion`CreateDefaultConstructor[name, type] <> "\n";,
+                     init = init <> ", " <> CConversion`CreateDefaultConstructor[name, type] <> "\n";
+                    ];,
+                  Print["Warning: ignoring invalid observable ", observables[[i]]];
+                 ];
               ];
            init
           ];
 
 CreateSetAndDisplayObservablesFunctions[observables_List] :=
-    Module[{i, name, dim, display = "", displayNames = "", set = ""},
+    Module[{i, name, type, paramCount = 0, nAssignments, assignment,
+            display = "", displayNames = "", set = ""},
            For[i = 1, i <= Length[observables], i++,
                If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
                   name = GetObservableName[observables[[i]]];
-                  Which[observables[[i]] === FlexibleSUSYObservable`aMuonGM2Calc ||
-                        observables[[i]] === FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                        display = display <> "vec(" <> ToString[i-1] <> ") = " <> name <> ";\n";
-                        displayNames = displayNames <> "names[" <> ToString[i-1] <> "] = \""
-                                       <> name <> "\";\n";
-                        set = set <> name <> " = vec(" <> ToString[i-1] <> ");\n";,
-                        observables[[i]] === FlexibleSUSYObservable`CpHiggsPhotonPhoton ||
-                        observables[[i]] === FlexibleSUSYObservable`CpHiggsGluonGluon,
-                        dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
-                        If[dim == 1,
-                           (* continue here *)
-                       ];
-                  ,
+                  type = GetObservableType[observables[[i]]];
+                  {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type, "vec"];
+                  set = set <> assignment;
+                  {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type, "vec"];
+                  display = display <> assignment;
+                  {assignment, nAssignments} = Parameters`CreateStdVectorNamesAssignment[name, paramCount, type];
+                  displayNames = displayNames <> assignment;
+                  paramCount += nAssignments;,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
                  ];
               ];
@@ -168,46 +141,16 @@ CreateSetAndDisplayObservablesFunctions[observables_List] :=
           ];
 
 CreateClearObservablesFunction[observables_List] :=
-    Module[{i, name, value, dim, result = ""},
+    Module[{i, name, type, result = ""},
            For[i = 1, i <= Length[observables], i++,
                If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
                   name = GetObservableName[observables[[i]]];
-                  Switch[observables[[i]],
-                         FlexibleSUSYObservable`aMuonGM2Calc, value = "0.",
-                         FlexibleSUSYObservable`aMuonGM2CalcUncertainty, value = "0.",
-                         FlexibleSUSYObservable`CpHiggsPhotonPhoton,
-                         dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
-                         If[dim == 1,
-                            value = "(0.,0.)",
-                            value = CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                    <> "::Zero()"
-                           ];,
-                         FlexibleSUSYObservable`CpHiggsGluonGluon,
-                         dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
-                         If[dim == 1,
-                            value = "(0.,0.)",
-                            value = CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                    <> "::Zero()"
-                           ];,
-                         FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
-                         dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar];
-                         If[dim == 1,
-                            value = "(0.,0.)",
-                            value = CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                    <> "::Zero()"
-                           ];,
-                         FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
-                         dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar];
-                         If[dim == 1,
-                            value = "(0.,0.)",
-                            value = CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]]
-                                    <> "::Zero()"
-                           ];
-                        ];
-                  result = result <> name <> " = " <> value <> ";\n" ,
+                  type = GetObservableType[observables[[i]]];
+                  result = result <> CConversion`SetToDefault[name, type];,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
                  ];
               ];
+           result
           ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc, structName_String] :=

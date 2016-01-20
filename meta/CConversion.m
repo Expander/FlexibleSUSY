@@ -10,7 +10,7 @@ integerScalarCType::usage="represents an integer C type";
 realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
-ToRealType::usage="convers a given type to a type with real elements";
+ToRealType::usage="converts a given type to a type with real elements";
 
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
