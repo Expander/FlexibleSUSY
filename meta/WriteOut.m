@@ -341,41 +341,51 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
 ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
 WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
-    Module[{i, dim, start, particlePDG, vectorPDG,
-            struct, comment, result = ""},
+    Module[{i, dim, dimWithoutGoldstones, start, particlePDG, vectorPDG,
+            struct, comment, value, result = ""},
            vectorPDG = Parameters`GetPDGCodesForParticle[vectorBoson][[1]];
            particlePDG = Parameters`GetPDGCodesForParticle[particle];
            dim = TreeMasses`GetDimension[particle];
+           dimWithoutGoldstones = TreeMasses`GetDimensionWithoutGoldstones[particle];
            If[Length[particlePDG] != dim,
               Print["Warning: length of PDG number list != dimension of particle ", particle];
               Print["       PDG number list = ", particlePDG];
               Print["       dimension of particle ", particle, " = ", dim];
              ];
+           If[Length[particlePDG] < dim,
+              Return[""];
+             ];
            start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
            Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorP,
                  struct = "OBSERVABLES.eff_cp_higgs_photon_photon";
-                 comment = "effective H-Photon-Photon coupling";,
+                 comment = "Abs(effective H-Photon-Photon coupling)";,
                  particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
                  struct = "OBSERVABLES.eff_cp_higgs_gluon_gluon";
-                 comment = "effective H-Gluon-Gluon coupling";,
+                 comment = "Abs(effective H-Gluon-Gluon coupling)";,
                  particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
                  struct = "OBSERVABLES.eff_cp_pseudoscalar_photon_photon";
-                 comment = "effective A-Photon-Photon coupling";,
+                 comment = "Abs(effective A-Photon-Photon coupling)";,
                  particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
                  struct = "OBSERVABLES.eff_cp_pseudoscalar_gluon_gluon";
-                 comment = "effective A-Gluon-Gluon coupling";,
+                 comment = "Abs(effective A-Gluon-Gluon coupling)";,
                  True,
                  Print["Error: unsupported effective coupling ",
                        particle, "-", vectorBoson, "-", vectorBoson,
                        "requested!"];
                  Quit[1]
                 ];
-           For[i = start, i <= Length[particlePDG], i++,
-               result = result
-                        <> WriteSLHABlockEntry[{struct <> "(" <> ToString[i] <> ")",
-                                                particlePDG[[i]], vectorPDG, vectorPDG},
-                                                comment];
-              ];
+           If[dimWithoutGoldstones == 1 || start == dim,
+              value = "Abs(" <> struct <> ")";
+              result = result
+                        <> WriteSLHABlockEntry[{value, particlePDG[[start]], vectorPDG, vectorPDG},
+                                                comment];,
+              For[i = start, i <= Length[particlePDG], i++,
+                  value = "Abs(" <> struct <> "(" <> ToString[i] <> "))";
+                  result = result
+                           <> WriteSLHABlockEntry[{value, particlePDG[[i]], vectorPDG, vectorPDG},
+                                                  comment];
+                 ];
+             ];
            result
           ];
 
