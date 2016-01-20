@@ -42,7 +42,7 @@ class @ModelName@_observables {
    void clear(); ///< sets all observables to zero
    void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
 
-   @observablesDef@
+@observablesDef@
 };
 
 Observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
