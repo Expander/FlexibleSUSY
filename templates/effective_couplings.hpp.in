@@ -41,7 +41,6 @@ public:
    void set_low_energy_data(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
 
 @loopCouplingsPrototypes@
-
 private:
    @ModelName@_mass_eigenstates model;
    softsusy::QedQcd qedcd;
