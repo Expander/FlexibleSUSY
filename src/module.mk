@@ -13,6 +13,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
+		$(DIR)/effective_couplings.cpp \
 		$(DIR)/error.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
@@ -54,6 +55,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
+		$(DIR)/effective_couplings.hpp \
 		$(DIR)/eigen_utils.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \

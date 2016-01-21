@@ -21,6 +21,7 @@ TEST_SRC := \
 		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_derivative.cpp \
+		$(DIR)/test_effective_couplings.cpp \
 		$(DIR)/test_eigen_utils.cpp \
 		$(DIR)/test_ewsb_solver.cpp \
 		$(DIR)/test_fixed_point_iterator.cpp \
@@ -410,6 +411,9 @@ $(DIR)/test_lowe.x: $(DIR)/test_lowe.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,
 
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_effective_couplings.x: $(DIR)/test_effective_couplings.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_ewsb_solver.x: $(DIR)/test_ewsb_solver.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
