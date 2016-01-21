@@ -20,7 +20,7 @@
 
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-#include "@ModelName@_effective_couplings.hpp"
+//#include "@ModelName@_effective_couplings.hpp"
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
 #include "numerics2.hpp"
@@ -51,14 +51,12 @@ namespace flexiblesusy {
 
 Eigen::ArrayXd @ModelName@_observables::get() const
 {
-   Eigen::ArrayXd vec(@ModelName@_observables::NUMBER_OF_OBSERVABLES);
 @getObservables@
    return vec;
 }
 
-std::vector<std::string> @ModelName@_observables::get_names() const
+std::vector<std::string> @ModelName@_observables::get_names()
 {
-   std::vector<std::string> names(@ModelName@_observables::NUMBER_OF_OBSERVABLES);
 @getObservablesNames@
    return names;
 }
@@ -70,12 +68,11 @@ void @ModelName@_observables::clear()
 
 void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
 {
-   assert(vec.rows() == @ModelName@_observables::NUMBER_OF_OBSERVABLES);
 @setObservables@
 }
 
 @ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
-                                  const softsusy::QedQcd& qedqcd)
+                                              const softsusy::QedQcd& qedqcd)
 {
    @ModelName@_observables observables;
 

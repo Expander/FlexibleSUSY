@@ -46,8 +46,8 @@ GetRequestedObservables[blocks_] :=
            observables
           ];
 
-GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon_gm2_calc";
-GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "a_muon_gm2_calc_uncertainty";
+GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon_gm2calc";
+GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "a_muon_gm2calc_uncertainty";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] := "eff_cp_higgs_photon_photon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "eff_cp_higgs_gluon_gluon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "eff_cp_pseudoscalar_photon_photon";
@@ -129,13 +129,13 @@ CreateObservablesDefinitions[observables_List] :=
           ];
 
 CreateObservablesInitialization[observables_List] :=
-    Module[{i, name, type, init = ": "},
+    Module[{i, name, type, init = ""},
            For[i = 1, i <= Length[observables], i++,
                If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   type = GetObservableType[observables[[i]]];
-                  If[init == ": ",
-                     init = init <> CConversion`CreateDefaultConstructor[name, type] <> "\n";,
+                  If[init == "",
+                     init = ": " <> CConversion`CreateDefaultConstructor[name, type] <> "\n";,
                      init = init <> ", " <> CConversion`CreateDefaultConstructor[name, type] <> "\n";
                     ];,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
@@ -145,22 +145,36 @@ CreateObservablesInitialization[observables_List] :=
           ];
 
 CreateSetAndDisplayObservablesFunctions[observables_List] :=
-    Module[{i, name, type, paramCount = 0, nAssignments, assignment,
+    Module[{numObservables, i, name, type, paramCount = 0, nAssignments, assignment,
             display = "", displayNames = "", set = ""},
-           For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
-                  name = GetObservableName[observables[[i]]];
-                  type = GetObservableType[observables[[i]]];
-                  {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type, "vec"];
-                  set = set <> assignment;
-                  {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type, "vec"];
-                  display = display <> assignment;
-                  {assignment, nAssignments} = Parameters`CreateStdVectorNamesAssignment[name, paramCount, type];
-                  displayNames = displayNames <> assignment;
-                  paramCount += nAssignments;,
-                  Print["Warning: ignoring invalid observable ", observables[[i]]];
-                 ];
-              ];
+           numObservables = CountNumberOfObservables[observables];
+           If[numObservables != 0,
+              display = "Eigen::ArrayXd vec(" <> FlexibleSUSY`FSModelName
+                        <> "_observables::NUMBER_OF_OBSERVABLES);\n\n";
+              displayNames = "std::vector<std::string> names("
+                             <> FlexibleSUSY`FSModelName
+                             <> "_observables::NUMBER_OF_OBSERVABLES);\n\n";
+              set = "assert(vec.rows() == " <> FlexibleSUSY`FSModelName
+                    <> "_observables::NUMBER_OF_OBSERVABLES);\n\n";
+              For[i = 1, i <= Length[observables], i++,
+                  If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+                     name = GetObservableName[observables[[i]]];
+                     type = GetObservableType[observables[[i]]];
+                     {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type, "vec"];
+                     set = set <> assignment;
+                     {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type, "vec"];
+                     display = display <> assignment;
+                     {assignment, nAssignments} = Parameters`CreateStdVectorNamesAssignment[name, paramCount, type];
+                     displayNames = displayNames <> assignment;
+                     paramCount += nAssignments;,
+                     Print["Warning: ignoring invalid observable ", observables[[i]]];
+                    ];
+                 ];,
+               display = "Eigen::ArrayXd vec(1);\n\nvec(0) = 0.;\n";
+               set = "";
+               displayNames = "std::vector<std::string> names(1);\n\n"
+                              <> "names[0] = \"no observables defined\";\n";
+             ];
            {display, displayNames, set}
           ];
 
@@ -184,16 +198,92 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertain
     structName <> ".AMUGM2CALCUNCERTAINTY = gm2calc_calculate_amu_uncertainty(gm2calc_data);";
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton, structName_String] :=
-    structName <> ".EFFCPHIGGSPHOTONPHOTON = 0.;";
+    Module[{i, type, dim, result = ""},
+           type = GetObservableType[obs];
+           If[MatchQ[type, CConversion`ArrayType[_,_]],
+              dim = type /. CConversion`ArrayType[_, d_] -> d;
+              For[i = 1, i <= dim, i++,
+                  result = result <> structName <> ".EFFCPHIGGSPHOTONPHOTON("
+                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
+                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                 ];,
+              dim == 1;
+              result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
+               <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();"
+             ];
+           result
+          ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon, structName_String] :=
-    structName <> ".EFFCPHIGGSGLUONGLUON = 0.;";
+    Module[{i, type, dim, result = ""},
+           type = GetObservableType[obs];
+           If[MatchQ[type, CConversion`ArrayType[_,_]],
+              dim = type /. CConversion`ArrayType[_, d_] -> d;
+              For[i = 1, i <= dim, i++,
+                  result = result <> structName <> ".EFFCPHIGGSGLUONGLUON("
+                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
+                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                 ];,
+              dim == 1;
+              result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
+               <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();"
+             ];
+           result
+          ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton, structName_String] :=
-    structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = 0.;";
+    Module[{i, type, dim, result = ""},
+           type = GetObservableType[obs];
+           If[MatchQ[type, CConversion`ArrayType[_,_]],
+              dim = type /. CConversion`ArrayType[_, d_] -> d;
+              For[i = 1, i <= dim, i++,
+                  result = result <> structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON("
+                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
+                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                 ];,
+              dim == 1;
+              result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
+               <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();"
+             ];
+           result
+          ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon, structName_String] :=
-    structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = 0.;";
+    Module[{i, type, dim, result = ""},
+           type = GetObservableType[obs];
+           If[MatchQ[type, CConversion`ArrayType[_,_]],
+              dim = type /. CConversion`ArrayType[_, d_] -> d;
+              For[i = 1, i <= dim, i++,
+                  result = result <> structName <> ".EFFCPPSEUDOSCALARGLUONGLUON("
+                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
+                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                 ];,
+              dim == 1;
+              result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
+               <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+               <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();"
+             ];
+           result
+          ];
 
 FillGM2CalcInterfaceData[struct_String] :=
     Module[{filling, mwStr,
@@ -264,7 +354,7 @@ FillGM2CalcInterfaceData[struct_String] :=
           ];
 
 FillEffectiveCouplingsInterfaceData[struct_String] :=
-    FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(MODEL);\n";
+    FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(model, qedqcd);\n";
 
 FillInterfaceData[{}] := "";
 

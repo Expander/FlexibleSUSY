@@ -194,7 +194,7 @@ void to_database(
    }
 
    // fill observables (optional)
-   if (observables) {
+   if (@ModelName@_observables::NUMBER_OF_OBSERVABLES > 0 && observables) {
       append(names, @ModelName@_observables::get_names());
       append(values, observables->get());
    }
@@ -209,9 +209,9 @@ void to_database(
  * @param file_name database file name
  * @param entry entry number (0 = first entry)
  * @param qedqcd pointer to low-energy data.  If zero, the low-energy
- *    data structur will not be filled
+ *    data structure will not be filled
  * @param observables pointer to observables.  If zero, the observables
- *    data structur will not be filled
+ *    data structure will not be filled
  *
  * @return mass eigenstates
  */
@@ -276,7 +276,7 @@ void to_database(
    }
 
    // fill observables (optional)
-   if (observables) {
+   if (number_of_observables > 0 && observables) {
       observables->set(values.block(offset, 0, number_of_observables, 1));
       offset += number_of_observables;
    }

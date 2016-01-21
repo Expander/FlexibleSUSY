@@ -33,7 +33,7 @@ namespace flexiblesusy {
 
 class @ModelName@_mass_eigenstates;
 
-class @ModelName@_observables {
+struct @ModelName@_observables {
    static const unsigned NUMBER_OF_OBSERVABLES = @numberOfObservables@;
 
    @ModelName@_observables();
@@ -45,7 +45,7 @@ class @ModelName@_observables {
 @observablesDef@
 };
 
-Observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
+@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
 
 } // namespace flexiblesusy
 

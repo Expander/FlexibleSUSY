@@ -23,6 +23,7 @@
 
 #include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_info.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
@@ -47,7 +48,6 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
-struct @ModelName@_observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
