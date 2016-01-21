@@ -17,10 +17,34 @@ CalculateObservables::usage="";
 
 Begin["`Private`"];
 
-(* @todo proper error handling, e.g. when no Higgs or pseudo-scalar defined *)
-
 GetRequestedObservables[blocks_] :=
-    DeleteDuplicates[Cases[blocks, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}]];
+    Module[{observables, dim},
+           observables = DeleteDuplicates[Cases[blocks, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}]];
+           If[MemberQ[observables, FlexibleSUSYObservable`CpHiggsPhotonPhoton] ||
+              MemberQ[observables, FlexibleSUSYObservable`CpHiggsGluonGluon],
+              dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson]
+              If[FreeQ[TreeMasses`GetParticles[], SARAH`HiggsBoson] ||
+                 TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson] == 0,
+                 Print["Warning: no physical Higgs boson found."];
+                 Print["         Effective couplings for Higgs boson will not"];
+                 Print["         be calculated."];
+                 observables = DeleteCases[observables, a_ /; (a === FlexibleSUSYObservable`CpHiggsPhotonPhoton ||
+                                                               a === FlexibleSUSYObservable`CpHiggsGluonGluon)];
+                ];
+             ];
+           If[MemberQ[observables, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] ||
+              MemberQ[observables, FlexibleSUSYObservable`CpPseudoScalarGluonGluon],
+              If[FreeQ[TreeMasses`GetParticles[], SARAH`PseudoScalar] ||
+                 TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar] == 0,
+                 Print["Warning: no physical pseudoscalar boson found."];
+                 Print["         Effective couplings for pseudoscalar boson will not"];
+                 Print["         be calculated."];
+                 observables = DeleteCases[observables, a_ /; (a === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ||
+                                                               a === FlexibleSUSYObservable`CpPseudoScalarGluonGluon)]; 
+                ];
+             ];
+           observables
+          ];
 
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon_gm2_calc";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "a_muon_gm2_calc_uncertainty";
