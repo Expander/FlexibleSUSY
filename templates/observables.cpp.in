@@ -20,10 +20,11 @@
 
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-//#include "@ModelName@_effective_couplings.hpp"
+#include "@ModelName@_effective_couplings.hpp"
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
 #include "numerics2.hpp"
+#include "wrappers.hpp"
 #include "lowe.h"
 
 #define MODEL model

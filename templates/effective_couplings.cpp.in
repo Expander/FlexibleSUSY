@@ -27,6 +27,7 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) model.get_input().parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
+#define PHYSICAL(parameter) model.get_physical().parameter
 
 @ModelName@_effective_couplings::@ModelName@_effective_couplings(
    const @ModelName@_mass_eigenstates& model_,
@@ -40,5 +41,4 @@ namespace flexiblesusy {
 }
 
 @loopCouplingsFunctions@
-
 } // namespace flexiblesusy

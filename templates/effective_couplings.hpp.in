@@ -43,7 +43,7 @@ public:
 @loopCouplingsPrototypes@
 private:
    @ModelName@_mass_eigenstates model;
-   softsusy::QedQcd qedcd;
+   softsusy::QedQcd qedqcd;
    bool rg_improve;
 };
 

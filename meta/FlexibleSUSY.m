@@ -1086,8 +1086,17 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+WriteEffectiveCouplings[files_List] :=
+    Module[{loopCouplingsPrototypes, loopCouplingsFunctions},
+           {loopCouplingsPrototypes, loopCouplingsFunctions} = EffectiveCouplings`CalculateEffectiveCouplings[];
+           WriteOut`ReplaceInFiles[files,
+                                   {   "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                       "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+          ];
+
 (* Write the observables files *)
-(* @todo currently writing effective couplings function in here too, but should it be separated? *)
 WriteObservables[extraSLHAOutputBlocks_, files_List] :=
     Module[{requestedObservables, numberOfObservables, observablesDef,
             observablesInit, getObservables, getObservablesNames,
@@ -1101,8 +1110,6 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                Observables`CreateSetAndDisplayObservablesFunctions[requestedObservables];
            clearObservables = Observables`CreateClearObservablesFunction[requestedObservables];
            calculateObservables = Observables`CalculateObservables[requestedObservables, "observables"];
-           {loopCouplingsPrototypes, loopCouplingsFunctions} =
-               EffectiveCouplings`CalculateEffectiveCouplings[requestedObservables];
            WriteOut`ReplaceInFiles[files,
                                    {   "@numberOfObservables@" -> ToString[numberOfObservables],
                                        "@observablesDef@" -> IndentText[observablesDef],
@@ -1112,8 +1119,6 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                                        "@clearObservables@" -> IndentText[clearObservables],
                                        "@setObservables@" -> IndentText[setObservables],
                                        "@calculateObservables@" -> IndentText[calculateObservables],
-                                       "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
-                                       "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -2163,15 +2168,19 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating observables"];
+           (* @note separating this out for now for simplicity *)
+           (* @todo maybe implement a flag (like for addons) to turn on/off? *)
+           WriteEffectiveCouplings[{{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.cpp"}]}
+                                   }];
+
            WriteObservables[extraSLHAOutputBlocks,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.cpp"}]}}];
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";

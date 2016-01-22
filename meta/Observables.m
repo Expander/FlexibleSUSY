@@ -40,7 +40,7 @@ GetRequestedObservables[blocks_] :=
                  Print["         Effective couplings for pseudoscalar boson will not"];
                  Print["         be calculated."];
                  observables = DeleteCases[observables, a_ /; (a === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ||
-                                                               a === FlexibleSUSYObservable`CpPseudoScalarGluonGluon)]; 
+                                                               a === FlexibleSUSYObservable`CpPseudoScalarGluonGluon)];
                 ];
              ];
            observables
@@ -198,89 +198,125 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertain
     structName <> ".AMUGM2CALCUNCERTAINTY = gm2calc_calculate_amu_uncertainty(gm2calc_data);";
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton, structName_String] :=
-    Module[{i, type, dim, result = ""},
+    Module[{i, type, dim, start, result = ""},
            type = GetObservableType[obs];
-           If[MatchQ[type, CConversion`ArrayType[_,_]],
-              dim = type /. CConversion`ArrayType[_, d_] -> d;
+           dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
+           If[dim != 1,
+              start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPHIGGSPHOTONPHOTON("
                            <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
-                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                           <> ToString[start+i-1] <> If[i != dim, ");\n", ");"];
                  ];,
-              dim == 1;
-              result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
-               <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorP]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();"
+              dim = TreeMasses`GetDimension[SARAH`HiggsBoson];
+              If[dim == 1,
+                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();",
+                 start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
+                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
+                          <> ToString[start] <> ");"
+                ];
              ];
            result
           ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon, structName_String] :=
-    Module[{i, type, dim, result = ""},
+    Module[{i, type, dim, start, result = ""},
            type = GetObservableType[obs];
-           If[MatchQ[type, CConversion`ArrayType[_,_]],
-              dim = type /. CConversion`ArrayType[_, d_] -> d;
+           dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson];
+           If[dim != 1,
+              start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPHIGGSGLUONGLUON("
                            <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
-                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                           <> ToString[start+i-1] <> If[i != dim, ");\n", ");"];
                  ];,
-              dim == 1;
-              result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
-               <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorG]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();"
+              dim = TreeMasses`GetDimension[SARAH`HiggsBoson];
+              If[dim == 1,
+                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();",
+                 start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
+                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
+                          <> ToString[start] <> ");"
+                ];
              ];
            result
           ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton, structName_String] :=
-    Module[{i, type, dim, result = ""},
+    Module[{i, type, dim, start, result = ""},
            type = GetObservableType[obs];
-           If[MatchQ[type, CConversion`ArrayType[_,_]],
-              dim = type /. CConversion`ArrayType[_, d_] -> d;
+           dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar];
+           If[dim != 1,
+              start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON("
                            <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
-                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                           <> ToString[start+i-1] <> If[i != dim, ");\n", ");"];
                  ];,
-              dim == 1;
-              result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
-               <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorP]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();"
+              dim = TreeMasses`GetDimension[SARAH`PseudoScalar];
+              If[dim == 1,
+                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();",
+                 start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
+                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
+                          <> ToString[start] <> ");"
+                ];
              ];
            result
           ];
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon, structName_String] :=
-    Module[{i, type, dim, result = ""},
+    Module[{i, type, dim, start, result = ""},
            type = GetObservableType[obs];
-           If[MatchQ[type, CConversion`ArrayType[_,_]],
-              dim = type /. CConversion`ArrayType[_, d_] -> d;
+           dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`PseudoScalar];
+           If[dim != 1,
+              start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPPSEUDOSCALARGLUONGLUON("
                            <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
-                           <> ToString[i-1] <> If[i != dim, ");\n", ");"];
+                           <> ToString[start+i-1] <> If[i != dim, ");\n", ");"];
                  ];,
-              dim == 1;
-              result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
-               <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorG]
-               <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();"
+              dim = TreeMasses`GetDimension[SARAH`PseudoScalar];
+              If[dim == 1,
+                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();",
+                 start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
+                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
+                          <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG]
+                          <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
+                          <> ToString[start] <> ");"
+                ];
              ];
            result
           ];
