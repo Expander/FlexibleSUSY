@@ -35,6 +35,28 @@ FindMass[masses_List, particle_] :=
            Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
           ];
 
+UnmixedZMass[] :=
+   Module[{ZMassMatrix, matrixDim, extraGaugeCouplings, deletePositions, keepPositions, massEigenvalues},
+          ZMassMatrix = SARAH`MassMatrix[SARAH`VectorZ];
+          matrixDim = Dimensions[ZMassMatrix][[1]];
+          extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
+          deletePositions = Flatten[Position[Diagonal[ZMassMatrix], x_ /; Or @@ (!FreeQ[x, #]& /@ extraGaugeCouplings), {1}]];
+          keepPositions = Complement[Range[matrixDim], deletePositions];
+          massEigenvalues = Eigenvalues[ZMassMatrix[[keepPositions, keepPositions]]];
+          If[Length[massEigenvalues] != 2 || !MemberQ[massEigenvalues, 0], Print["Error: Determination of UnmixedZMass failed"]; Return[0]];
+          Select[massEigenvalues, # =!= 0 &][[1]]];
+
+RhoZero[] :=
+   Module[{hyperchargePos, leftPos, vevlist},
+          hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
+          leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
+          (* what about non Higgs vevs? non scalar vevs possible? *)
+          vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 1;;2]];
+          vevlist = vevlist /. {Sfieldname_Symbol, vevinfo_List} :> {ToExpression[StringReplace[ToString[Sfieldname], StartOfString ~~ "S" -> ""]], vevinfo};
+          (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
+          vevlist = vevlist /. {fieldname_Symbol, vevinfo_List} :> Flatten[{vevinfo, Cases[SARAH`SuperFields, x_ /; !FreeQ[x[[3]], fieldname] :> {(x[[3 + leftPos]] - 1) / 2, -x[[3 + hyperchargePos]]}]}];
+          Apart[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist)]]];
+
 SolvesWeinbergEq[eq_, expr_] :=
     Module[{insertedEq},
            insertedEq = TimeConstrained[
