@@ -25,7 +25,7 @@
 
 namespace flexiblesusy {
 
-#define INPUT(parameter) model.get_input().parameter
+#define INPUTPARAMETER(parameter) model.get_input().parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
 #define PHYSICAL(parameter) model.get_physical().parameter
 

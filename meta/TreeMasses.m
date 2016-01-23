@@ -156,6 +156,7 @@ GetSMUpQuarks::usage="";
 GetSMDownQuarks::usage="";
 GetSMQuarks::usage="";
 GetSMGoldstoneBosons::usage="";
+GetColoredParticles::usage="";
 
 GetUpQuark::usage="";
 GetDownQuark::usage="";
@@ -223,13 +224,13 @@ IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     IsOfType[sym, type, states];
 
-IsScalar[sym_Symbol] := IsOfType[sym, S];
+IsScalar[sym_] := IsOfType[sym, S];
 
-IsFermion[sym_Symbol] := IsOfType[sym, F];
+IsFermion[sym_] := IsOfType[sym, F];
 
-IsVector[sym_Symbol] := IsOfType[sym, V];
+IsVector[sym_] := IsOfType[sym, V];
 
-IsGhost[sym_Symbol] := IsOfType[sym, G];
+IsGhost[sym_] := IsOfType[sym, G];
 
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
 

@@ -4,12 +4,6 @@ CalculateEffectiveCouplings::usage="";
 
 Begin["`Private`"];
 
-GetPhoton[] := SARAH`VectorP;
-GetGluon[] := SARAH`VectorG;
-
-CreateEffectiveCouplingName[pIn_, pOut_] :=
-    "eff_Cp" <> CConversion`ToValidCSymbolString[pIn] <> CConversion`ToValidCSymbolString[pOut] <> CConversion`ToValidCSymbolString[pOut];
-
 GetAllowedCouplings[] :=
     Module[{dim,
             valid = {FlexibleSUSYObservable`CpHiggsPhotonPhoton,
@@ -47,6 +41,157 @@ GetExternalStates[coupling_] :=
            {particle, vectorBoson}
           ];
 
+(* @todo much of this is either identical or very similar to required functions
+   for the GMuonMinus2 branch, and will be required again for decays, it might
+   be a good idea to make them general (e.g. defined in Vertices?).             *)
+AntiParticle[p_] := If[TreeMasses`IsScalar[p] || TreeMasses`IsVector[p],
+                       Susyno`LieGroups`conj[p],
+                       SARAH`bar[p]];
+
+NonZeroVertexQ[vertex_] := MemberQ[vertex[[2 ;;]][[All, 1]], Except[0]];
+
+(* @todo this is very slow because each possible vertex must be calculated,
+   this can be improved by either pre-calculating all vertices or saving
+   previous results (e.g. define along the lines of f[p] := f[p] = ...)    *)
+GetTwoBodyDecays[particle_] :=
+    Module[{i, j, allParticles, combinations, vertex,
+            candidate, found = {}, decays = {}},
+           allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
+           combinations = Table[Sort[{AntiParticle[particle],
+                                      AntiParticle[allParticles[[i]]],
+                                      allParticles[[j]]}],
+                                {i, 1, Length[allParticles]}, {j, 1, Length[allParticles]}];
+           combinations = DeleteDuplicates[Flatten[combinations, 1]];
+           For[i = 1, i <= Length[combinations], i++,
+               vertex = SARAH`Vertex[combinations[[i]], UseDependences -> True];
+               If[NonZeroVertexQ[vertex],
+                  candidate = Append[DeleteCases[vertex[[1]] /. head_[{__}] :> head, p_ /; p === AntiParticle[particle], {0, Infinity}, 1], SARAH`Cp @@ (vertex[[1]] /. head_[{__}] :> head)];
+                  If[FreeQ[found, C[candidate[[1]], candidate[[2]]]] &&
+                     FreeQ[found, C[AntiParticle[candidate[[1]]], AntiParticle[candidate[[2]]]]] ||
+                     AntiParticle[particle] =!= particle,
+                     If[((!TreeMasses`IsMassless[candidate[[1]]] || !TreeMasses`IsVector[candidate[[1]]]) &&
+                        (!TreeMasses`IsMassless[candidate[[2]]] || !TreeMasses`IsVector[candidate[[2]]])) ||
+                        !FreeQ[SARAH`AllowDecaysMasslessVectors, SARAH`RE[particle]],
+                        decays = Append[decays, candidate];
+                        found = Append[found, C[candidate[[1]], candidate[[2]]]];
+                       ];
+                    ];
+                 ];
+              ];
+           decays
+          ];
+
+GetElectricCharge[p_] := SARAH`getElectricCharge[p];
+
+GetParticlesCouplingToVectorBoson[vector_] :=
+    Module[{i, charge, allParticles, particles = {}},
+           If[vector === SARAH`VectorG,
+              particles = Select[TreeMasses`GetColoredParticles[], !TreeMasses`IsGhost[#]&];,
+              allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
+              For[i = 1, i <= Length[allParticles], i++,
+                  charge = GetElectricCharge[allParticles[[i]]];
+                  If[NumericQ[charge],
+                     charge = {charge},
+                     charge = Cases[SARAH`Vertex[{AntiParticle[allParticles[[i]]],
+                                                  allParticles[[i]], SARAH`VectorP},
+                                                 UseDependences -> True][[2,1]], _?NumberQ];
+                    ];
+                  If[charge =!= {} && AntiParticle[allParticles[[i]]] =!= allParticles[[i]] &&
+                     charge =!= {0},
+                     particles = Append[particles, allParticles[[i]]];
+                    ];
+                 ];
+             ];
+           particles
+          ];
+
+GetEffectiveCouplingExpression[coupling_] :=
+    Module[{particle, vectorBoson, twoBodyDecays,
+            vectorBosonInteractions, expr, neededCouplings},
+           Which[couplings[[i]] === FlexibleSUSYObservable`CpHiggsPhotonPhoton,
+                 particle = SARAH`HiggsBoson;
+                 vectorBoson = SARAH`VectorP;,
+                 couplings[[i]] === FlexibleSUSYObservable`CpHiggsGluonGluon,
+                 particle = SARAH`HiggsBoson;
+                 vectorBoson = SARAH`VectorG;,
+                 couplings[[i]] === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
+                 particle = SARAH`PseudoScalar;
+                 vectorBoson = SARAH`VectorP;,
+                 couplings[[i]] === FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
+                 particle = SARAH`PseudoScalar;
+                 vectorBoson = SARAH`VectorG;,
+                 True,
+                 Print["Error: unsupported coupling ", couplings[[i]]];
+                 Quit[1];
+                ];
+
+           twoBodyDecays = GetTwoBodyDecays[particle];
+           vectorBosonInteractions = GetParticlesCouplingToVectorBoson[vectorBoson];
+
+           {{coupling, expr}, neededCouplings}
+          ];
+
+GetEffectiveCouplingsExpressions[couplings_] :=
+    Module[{i, particle, vectorBoson, expr, neededCoups,
+            expressions = {}, neededCouplings = {}},
+           For[i = 1, i <= Length[couplings], i++,
+                {expr, neededCoups} = GetEffectiveCouplingExpression[couplings[[i]]];
+                expressions = Append[expressions, expr];
+                neededCouplings = DeleteDuplicates[Join[neededCouplings, neededCoups]];
+              ];
+           {expressions, neededCouplings}
+          ];
+
+CreateEffectiveCouplingName[pIn_, pOut_] :=
+    "eff_Cp" <> CConversion`ToValidCSymbolString[pIn] <> CConversion`ToValidCSymbolString[pOut] <> CConversion`ToValidCSymbolString[pOut];
+
+(* @todo these are basically identical to those in SelfEnergies,
+   it would be better to reuse the definitions there if possible  *)
+GetParticleIndicesInCoupling[SARAH`Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
+
+GetParticleIndicesInCoupling[SARAH`Cp[a__][_]] := GetParticleIndices[SARAH`Cp[a]];
+
+CreateNeededCouplingSymbol[coupling_] :=
+    Module[{symbol, indices},
+           indices = GetParticleIndicesInCoupling[coupling];
+           symbol = CConversion`ToValidCSymbol[coupling /. a_[List[__]] :> a];
+           symbol[Sequence @@ indices]
+          ];
+
+CreateNeededCouplingName[coupling_] :=
+    CConversion`ToValidCSymbolString[GetHead[CreateNeededCouplingSymbol[coupling]]];
+
+CreateNeededCouplingFunction[coupling_, expr_] :=
+    Module[{i, indices, functionName, initialValue, type, typeStr,
+            body, prototype, definition},
+           indices = GetParticleIndicesInCoupling[coupling];
+           functionName = CreateNeededCouplingName[coupling];
+           functionName = functionName <> "(";
+           For[i = 1, i <= Length[indices], i++,
+               If[i > 1, functionName = functionName <> ", ";];
+               functionName = functionName <> "unsigned ";
+               (* variable names must not be integers *)
+               If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
+                  functionName = functionName <> CConversion`ToValidCSymbolString[indices[[i]]];
+                 ];
+              ];
+           functionName = functionName <> ")";
+           If[Parameters`IsRealExpression[expr],
+              type = CConversion`ScalarType[CConversion`realScalarCType];    initialValue = " = 0.0";,
+              type = CConversion`ScalarType[CConversion`complexScalarCType]; initialValue = "";];
+           typeStr = CConversion`CreateCType[type];
+           prototype = typeStr <> " " <> functionName <> " const;\n";
+           definition = typeStr <> " " <> FlexibleSUSY`FSModelName <> "_effective_couplings::"
+                        <> functionName <> " const\n{\n";
+           body = Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+                  typeStr <> " result" <> initialValue <> ";\n\n";
+           body = body <> TreeMasses`ExpressionToString[expr, "result"];
+           body = body <> "\nreturn result;\n";
+           body = IndentText[WrapLines[body]];
+           definition = definition <> body <> "}\n";
+           {prototype, definition}
+          ];
+
 CreateEffectiveCouplingPrototype[coupling_] :=
     Module[{particle, vectorBoson, dim, type, name, result = ""},
            {particle, vectorBoson} = GetExternalStates[coupling];
@@ -76,7 +221,7 @@ ResetSavedParameters[] :=
            "if (model.get_scale() != scale) {\n" <> TextFormatting`IndentText[body] <> "}\n"
           ];
 
-CreateEffectiveCouplingFunction[coupling_] :=
+CreateEffectiveCouplingFunction[coupling_, expr_] :=
     Module[{particle, vectorBoson, dim, type, name, savedMass, mass, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[coupling];
            If[particle =!= Null && vectorBoson =!= Null,
@@ -94,14 +239,28 @@ CreateEffectiveCouplingFunction[coupling_] :=
                 ];
               body = "const double scale = model.get_scale();\n"
                      <> "const Eigen::ArrayXd saved_parameters(model.get());\n"
-                     <> savedMass <> "\n"
+                     <> savedMass
+                     <> "const double scale_factor = 0.25 * Sqr(" <> mass <> ");\n\n";
                      <> RunToDecayingParticleScale[particle] <> "\n"
                      <> type <> " result;\n\n";
+
+              (* @todo convert expression to code *)
+
               body = body <> ResetSavedParameters[] <> "\n";
               body = body <> "return result;\n";
               result = result <> TextFormatting`IndentText[body] <> "}\n";
              ];
            result
+          ];
+
+CreateNeededCouplingsFunctions[couplings_List] :=
+    Module[{i, proto, func, prototypes = "", functions = ""},
+           For[i = 1, i <= Length[couplings], i++,
+               {proto, func} = CreateNeededCouplingFunction[couplings[[i,1]], couplings[[i,2]]];
+               prototypes = prototypes <> proto;
+               functions = functions <> func <> "\n";
+              ];
+           {prototypes, functions}
           ];
 
 CreateEffectiveCouplingsPrototypes[couplings_List] :=
@@ -112,90 +271,23 @@ CreateEffectiveCouplingsPrototypes[couplings_List] :=
 
 CreateEffectiveCouplingsFunctions[couplings_List] :=
     Module[{result = ""},
-           (result = result <> CreateEffectiveCouplingFunction[#] <> "\n")& /@ couplings;
+           (result = result <> CreateEffectiveCouplingFunction[#[[1]], #[[2]]] <> "\n")& /@ couplings;
            result
           ];
 
 CalculateEffectiveCouplings[] :=
-    Module[{couplings, prototypes = "", functions = ""},
+    Module[{couplings, couplingsAndExprs, neededCouplings,
+            neededPrototypes, neededFunctions,
+            prototypes = "", functions = ""},
            couplings = GetAllowedCouplings[];
-           (* @todo find needed couplings *)
-           prototypes = prototypes <> CreateEffectiveCouplingsPrototypes[couplings];
-           functions = functions <> CreateEffectiveCouplingsFunctions[couplings];
+           {couplingsAndExprs, neededCouplings} = GetEffectiveCouplingsExpressions[couplings];
+           {neededPrototypes, neededFunctions} = CreateNeededCouplingsFunctions[neededCouplings];
+           prototypes = prototypes <> neededPrototypes
+                        <> CreateEffectiveCouplingsPrototypes[couplings];
+           functions = functions <> neededFunctions
+                       <> CreateEffectiveCouplingsFunctions[couplingAndExprs];
            {prototypes, functions}
           ];
-
-(* @todo the following is to be rewritten using a more general approach to getting the vertices *)
-(*
-GetElectricCharge[state_] := SARAH`getElectricCharge[state];
-
-(* @todo this way of getting the particles coupling to photons and gluons is very slow *)
-IsCoupledToPhoton[state_] :=
-    Module[{charge, result},
-           charge = {GetElectricCharge[state]};
-           If[TreeMasses`IsScalar[state] || TreeMasses`IsVector[state],
-              If[!NumericQ[charge],
-                 charge = Cases[SARAH`Vertex[{Susyno`LieGroups`conj[state],
-                                              state, GetPhoton[]}, UseDependences -> True][[2,1]], _?NumberQ];
-                ];
-              result = charge =!= {} && Susyno`LieGroups`conj[state] =!= state && charge =!= {0};,
-              If[!NumericQ[charge],
-                 charge = Cases[SARAH`Vertex[{SARAH`bar[state], state, GetPhoton[]},
-                                             UseDependences -> True][[2,1]], _?NumberQ];
-                ];
-              result = charge =!= {} && SARAH`bar[state] =!= state && charge =!= {0};
-             ];
-           result
-          ];
-
-IsCoupledToGluon[state_] :=
-    Module[{charge, result},
-           If[TreeMasses`IsFermion[state],
-              charge = SARAH`Vertex[{SARAH`bar[state], state, GetGluon[]}][[2,1]];,
-              charge = SARAH`Vertex[{Susyno`LieGroups`conj[state], state, GetGluon[]}][[2,1]];
-             ];
-           charge =!= 0
-          ];
-
-GetParticlesCoupledToPhoton[particles_List] := Select[particles, (IsCoupledToPhoton[#] && !TreeMasses`IsGhost[#])&];
-
-GetParticlesCoupledToGluon[particles_List] := Select[particles, (IsCoupledToGluon[#] && !TreeMasses`IsGhost[#])&];
-
-(* hacked (temporary) solution: get the two-body decays this way *)
-GetTwoBodyDecays[state_, nPointFunctions_, eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{dim, selfEnergy},
-           dim = TreeMasses`GetDimension[state, eigenstates];
-           If[dim === 1,
-              selfEnergy = First[Cases[nPointFunctions, SelfEnergies`FSSelfEnergy[state, _]]];,
-              selfEnergy = First[Cases[nPointFunctions, SelfEnergies`FSSelfEnergy[state[__], _]]];
-             ];
-           twoBodyDecays = DeleteDuplicates[Vertices`GetParticleList /@
-                                            Join[Cases[selfEnergy, SARAH`Cp[p1_, p2_, p3_]
-                                                       :> (SARAH`Cp @@ Vertices`ToRotatedField /@ {p1, p2, p3}), {0, Infinity}],
-                                                 Cases[selfEnergy, SARAH`Cp[p1_, p2_, p3_][PL]
-                                                       :> (SARAH`Cp @@ Vertices`ToRotatedField /@ {p1, p2, p3})[PL], {0, Infinity}],
-                                                 Cases[selfEnergy, SARAH`Cp[p1_, p2_, p3_][PR]
-                                                       :> (SARAH`Cp @@ Vertices`ToRotatedField /@ {p1, p2, p3})[PR], {0,Infinity}]]
-                                            /. p_[{__}] -> p /. SARAH`Cp[p__][PL | PR] -> SARAH`Cp[p]];
-           twoBodyDecays = DeleteCases[twoBodyDecays, SARAH`Cp[p1_, p2_, p3_] /; Or @@ (TreeMasses`IsGhost /@ {p1, p2, p3})];
-           twoBodyDecays /. SARAH`Cp[p1_, p2_, p3_] -> {p2, p3, SARAH`Cp[p1, p2, p3]}
-          ];
-
-GetEffectiveCouplingToPhoton[state_, nPointFunctions_, eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{particles = TreeMasses`GetParticles[eigenstates],
-            chargedParticles, decayParticles, neededCouplings},
-           chargedParticles = GetParticlesCoupledToPhoton[particles];
-           decayParticles = GetTwoBodyDecays[state, nPointFunctions, eigenstates];
-
-          ];
-
-GetEffectiveCouplingToGluon[state_, eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{particles = TreeMasses`GetParticles[eigenstates],
-            coloredParticles, decayParticles, neededCouplings = {}},
-           coloredParticles = Cases[GetParticlesCoupledToGluon[particles], Except[GetGluon[]]];
-          ];
-
-*)
 
 End[];
 
