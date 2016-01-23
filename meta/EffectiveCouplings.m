@@ -85,10 +85,18 @@ GetElectricCharge[p_] := SARAH`getElectricCharge[p];
 
 GetParticlesCouplingToVectorBoson[vector_] :=
     Module[{i, charge, allParticles, particles = {}},
-           If[vector === SARAH`VectorG,
-              particles = Select[TreeMasses`GetColoredParticles[], !TreeMasses`IsGhost[#]&];,
-              allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
-              For[i = 1, i <= Length[allParticles], i++,
+           allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
+           For[i = 1, i <= Length[allParticles], i++,
+               If[vector === SARAH`VectorG,
+                  (* @note could use defined functions in e.g. TreeMasses, plus check
+                     for undefined group factors, but will do it this way for now
+                     to ensure consistency with SARAH                                  *)
+                  charge = SARAH`Vertex[{AntiParticle[allParticles[[i]]],
+                                         allParticles[[i]], SARAH`VectorG},
+                                        UseDependences -> True][[2,1]];
+                  If[charge =!= 0,
+                     particles = Append[particles, allParticles[[i]]];
+                    ];,
                   charge = GetElectricCharge[allParticles[[i]]];
                   If[NumericQ[charge],
                      charge = {charge},
@@ -101,7 +109,7 @@ GetParticlesCouplingToVectorBoson[vector_] :=
                      particles = Append[particles, allParticles[[i]]];
                     ];
                  ];
-             ];
+              ];
            particles
           ];
 
@@ -127,6 +135,9 @@ GetEffectiveCouplingExpression[coupling_] :=
 
            twoBodyDecays = GetTwoBodyDecays[particle];
            vectorBosonInteractions = GetParticlesCouplingToVectorBoson[vectorBoson];
+           neededCouplings = Select[twoBodyDecays,
+                                    (MemberQ[vectorBosonInteractions, #[[1]]] ||
+                                     MemberQ[vectorBosonInteractions, #[[2]]])&];
 
            {{coupling, expr}, neededCouplings}
           ];
