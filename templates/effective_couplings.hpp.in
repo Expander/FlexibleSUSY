@@ -27,6 +27,10 @@
 #include <complex>
 #include <Eigen/Core>
 
+// @todo split effective couplings calculation into two functions,
+// one to do running and one to calculate sum
+// @todo use existing vertexRules to cache vertices for speed
+
 namespace flexiblesusy {
 
 class @ModelName@_effective_couplings {

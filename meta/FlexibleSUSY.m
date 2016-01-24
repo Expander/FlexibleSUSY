@@ -1086,9 +1086,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteEffectiveCouplings[files_List] :=
+WriteEffectiveCouplings[couplings_List, files_List] :=
     Module[{loopCouplingsPrototypes, loopCouplingsFunctions},
-           {loopCouplingsPrototypes, loopCouplingsFunctions} = EffectiveCouplings`CalculateEffectiveCouplings[];
+           {loopCouplingsPrototypes, loopCouplingsFunctions} = EffectiveCouplings`CreateEffectiveCouplings[couplings];
            WriteOut`ReplaceInFiles[files,
                                    {   "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
                                        "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
@@ -1367,10 +1367,15 @@ GetVertexRuleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
 		  "FSVertexRules.m"}];
 
+GetEffectiveCouplingsFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+                  "FSEffectiveCouplings.m"}];
+
 NeedToCalculateVertices[eigenstates_] :=
     NeedToUpdateTarget[
 	"vertex",
-	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+	{ GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates],
+          GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, eigenstates] }];
 
 NeedToUpdateTarget[name_String, targets_List] := Module[{
 	targetsExist = FilesExist[targets],
@@ -1614,8 +1619,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             fixedParameters,
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
-            extraSLHAOutputBlocks,
-	    vertexRules, vertexRuleFileName,
+            extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -2128,11 +2133,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
 	   vertexRuleFileName =
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+           effectiveCouplingsFileName =
+              GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, FSEigenstates];
 	   If[NeedToCalculateVertices[FSEigenstates],
+              (* effectiveCouplings = {{coupling, {needed couplings}}, ...} *)
+              Put[effectiveCouplings =
+                      EffectiveCouplings`InitializeEffectiveCouplings[],
+                  effectiveCouplingsFileName];
+              extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices], Lat$massMatrices],
 		  vertexRuleFileName],
-	      vertexRules = Get[vertexRuleFileName]];
+	      vertexRules = Get[vertexRuleFileName];
+              effectiveCouplings = Get[effectiveCouplingsFileName];
+             ];
 
            PrintHeadline["Creating SLHA model"];
            Print["Creating class for SLHA model ..."];
@@ -2170,7 +2184,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
-           WriteEffectiveCouplings[{{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
+           WriteEffectiveCouplings[effectiveCouplings,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.cpp"}]}
