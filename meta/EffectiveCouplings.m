@@ -141,6 +141,15 @@ GetParticlesCouplingToVectorBoson[vector_] :=
            particles
           ];
 
+IsMasslessOrGoldstone[SARAH`bar[p_]] := IsMasslessOrGoldstone[p];
+IsMasslessOrGoldstone[Susyno`LieGroups`conj[p_]] := IsMasslessOrGoldstone[p];
+IsMasslessOrGoldstone[particle_] :=
+    Module[{result},
+           result = TreeMasses`IsMassless[particle] ||
+                    (TreeMasses`IsGoldstone[particle] && TreeMasses`GetDimension[particle] == 1);
+           result
+          ];
+
 InitializeEffectiveCouplings[] :=
     Module[{i, couplings, particle, vectorBoson,
             allParticles = {}, allVectorBosons = {},
@@ -159,6 +168,9 @@ InitializeEffectiveCouplings[] :=
                 neededCoups = Select[neededTwoBodyDecays[[2]],
                                     (MemberQ[neededVectorBosonInteractions[[2]], #[[1]]] ||
                                      MemberQ[neededVectorBosonInteractions[[2]], #[[2]]])&];
+                (* filter out massless states and Goldstones *)
+                Print["neededCoupgs = ", neededCoups];
+                neededCoups = Select[neededCoups, (!IsMasslessOrGoldstone[#[[1]]] && !IsMasslessOrGoldstone[#[[2]]])&];
                 result = Append[result, {couplings[[i]], #[[3]]& /@ neededCoups}];
               ];
            result
