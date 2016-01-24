@@ -205,7 +205,7 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton, 
               start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPHIGGSPHOTONPHOTON("
-                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> ToString[i-1] <> ") = effective_couplings.get_eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
@@ -213,12 +213,12 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton, 
                  ];,
               dim = TreeMasses`GetDimension[SARAH`HiggsBoson];
               If[dim == 1,
-                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();",
                  start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
-                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPHIGGSPHOTONPHOTON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
@@ -236,7 +236,7 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon, st
               start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPHIGGSGLUONGLUON("
-                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> ToString[i-1] <> ") = effective_couplings.get_eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
@@ -244,12 +244,12 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon, st
                  ];,
               dim = TreeMasses`GetDimension[SARAH`HiggsBoson];
               If[dim == 1,
-                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();",
                  start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`HiggsBoson] - 1;
-                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPHIGGSGLUONGLUON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`HiggsBoson]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
@@ -267,7 +267,7 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonP
               start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON("
-                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> ToString[i-1] <> ") = effective_couplings.get_eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
@@ -275,12 +275,12 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonP
                  ];,
               dim = TreeMasses`GetDimension[SARAH`PseudoScalar];
               If[dim == 1,
-                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "();",
                  start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
-                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPPSEUDOSCALARPHOTONPHOTON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorP] <> "("
@@ -298,7 +298,7 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGl
               start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
               For[i = 1, i <= dim, i++,
                   result = result <> structName <> ".EFFCPPSEUDOSCALARGLUONGLUON("
-                           <> ToString[i-1] <> ") = effective_couplings.eff_Cp"
+                           <> ToString[i-1] <> ") = effective_couplings.get_eff_Cp"
                            <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                            <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
@@ -306,12 +306,12 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGl
                  ];,
               dim = TreeMasses`GetDimension[SARAH`PseudoScalar];
               If[dim == 1,
-                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "();",
                  start = TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar] - 1;
-                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.eff_Cp"
+                 result = structName <> ".EFFCPPSEUDOSCALARGLUONGLUON = effective_couplings.get_eff_Cp"
                           <> CConversion`ToValidCSymbolString[SARAH`PseudoScalar]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG]
                           <> CConversion`ToValidCSymbolString[SARAH`VectorG] <> "("
@@ -390,7 +390,10 @@ FillGM2CalcInterfaceData[struct_String] :=
           ];
 
 FillEffectiveCouplingsInterfaceData[struct_String] :=
-    FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(model, qedqcd);\n";
+    Module[{result},
+           result = FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(model, qedqcd);\n";
+           result = result <> "effective_couplings.calculate_effective_couplings();\n"
+          ];
 
 FillInterfaceData[{}] := "";
 

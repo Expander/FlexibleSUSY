@@ -1,7 +1,11 @@
-BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Vertices`", "Observables`"}];
+BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`"}];
 
 InitializeEffectiveCouplings::usage="";
 GetNeededVerticesList::usage="";
+CreateEffectiveCouplingsGetters::usage="";
+CreateEffectiveCouplingsDefinitions::usage="";
+CreateEffectiveCouplingsInit::usage="";
+CreateEffectiveCouplingsCalculation::usage="";
 CreateEffectiveCouplings::usage="";
 
 Begin["`Private`"];
@@ -24,18 +28,18 @@ GetAllowedCouplingsForModel[] :=
            valid
           ];
 
-GetExternalStates[coupling_] :=
+GetExternalStates[couplingSymbol_] :=
     Module[{particle, vectorBoson},
-           Which[coupling === FlexibleSUSYObservable`CpHiggsPhotonPhoton,
+           Which[couplingSymbol === FlexibleSUSYObservable`CpHiggsPhotonPhoton,
                  particle = SARAH`HiggsBoson;
                  vectorBoson = SARAH`VectorP;,
-                 coupling === FlexibleSUSYObservable`CpHiggsGluonGluon,
+                 couplingSymbol === FlexibleSUSYObservable`CpHiggsGluonGluon,
                  particle = SARAH`HiggsBoson;
                  vectorBoson = SARAH`VectorG;,
-                 coupling === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
+                 couplingSymbol === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
                  particle = SARAH`PseudoScalar;
                  vectorBoson = SARAH`VectorP;,
-                 coupling === FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
+                 couplingSymbol === FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
                  particle = SARAH`PseudoScalar;
                  vectorBoson = SARAH`VectorG;,
                  True, particle = Null; vectorBoson = Null
@@ -172,65 +176,171 @@ GetParticleIndicesInCoupling[SARAH`Cp[a__]] := Flatten[Cases[{a}, List[__], Infi
 
 GetParticleIndicesInCoupling[SARAH`Cp[a__][_]] := GetParticleIndices[SARAH`Cp[a]];
 
-CreateEffectiveCouplingPrototype[coupling_] :=
-    Module[{couplingName = coupling[[1]], particle, vectorBoson,
-            dim, type, name, result = ""},
-           {particle, vectorBoson} = GetExternalStates[couplingName];
-           If[particle =!= Null && vectorBoson =!= Null,
-              dim = TreeMasses`GetDimension[particle];
-              type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
-              name = CreateEffectiveCouplingName[particle, vectorBoson];
-              result = type <> " " <> name <> If[dim == 1, "();\n", "(unsigned gO1);\n"];
-             ];
-           result
+CreateEffectiveCouplingsGetters[couplings_List] :=
+    Module[{i, couplingSymbols, type, particle,
+            vectorBoson, dim, couplingName, getters = ""},
+           couplingSymbols = #[[1]]& /@ couplings;
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           For[i = 1, i <= Length[couplingSymbols], i++,
+               {particle, vectorBoson} = GetExternalStates[couplingSymbols[[i]]];
+               dim = TreeMasses`GetDimension[particle];
+               couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
+               getters = getters <> type <> " get_" <> couplingName;
+               If[dim == 1,
+                  getters = getters <> "() const { return " <> couplingName <> "; }\n";,
+                  getters = getters <> "(unsigned gO1) const { return " <> couplingName <> "(gO1); }\n";
+                 ];
+              ];
+           getters
           ];
 
-RunToDecayingParticleScale[particle_] :=
+CreateEffectiveCouplingsDefinitions[couplings_List] :=
+    Module[{i, couplingSymbols, dim, type, particle, vectorBoson,
+            couplingName, defs = ""},
+           couplingSymbols = #[[1]]& /@ couplings;
+           For[i = 1, i <= Length[couplingSymbols], i++,
+               {particle, vectorBoson} = GetExternalStates[couplingSymbols[[i]]];
+               couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
+               dim = TreeMasses`GetDimension[particle];
+               If[dim == 1,
+                  type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];,
+                  type = CConversion`CreateCType[CConversion`ArrayType[CConversion`complexScalarCType, dim]];
+                 ];
+               defs = defs <> type <> " " <> couplingName <> ";\n";
+              ];
+           defs
+          ];
+
+CreateEffectiveCouplingsInit[couplings_List] :=
+    Module[{i, couplingSymbols, particle,
+            vectorBoson, couplingName, dim, type, init = ""},
+           couplingSymbols = #[[1]]& /@ couplings;
+           For[i = 1, i <= Length[couplingSymbols], i++,
+               {particle, vectorBoson} = GetExternalStates[couplingSymbols[[i]]];
+               couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
+               dim = TreeMasses`GetDimension[particle];
+               If[dim == 1,
+                  type = CConversion`ScalarType[CConversion`complexScalarCType];,
+                  type = CConversion`ArrayType[CConversion`complexScalarCType, dim];
+                 ];
+               init = init <> ", " <> CConversion`CreateDefaultConstructor[couplingName, type];
+              ];
+           init
+          ];
+
+RunToDecayingParticleScale[particle_, idx_:""] :=
     Module[{savedMass, body, result},
            savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
-           If[TreeMasses`GetDimension[particle] != 1,
-              savedMass = savedMass <> "(gO1)";
+           If[idx != "",
+              savedMass = savedMass <> "(" <> idx <> ")";
              ];
            body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
            "if (rg_improve && scale != " <> savedMass <> ") {\n"
            <> TextFormatting`IndentText[body] <> "}\n"
           ];
 
-ResetSavedParameters[] :=
-    Module[{body},
-           body = "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
-           "if (model.get_scale() != scale) {\n" <> TextFormatting`IndentText[body] <> "}\n"
+CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
+    Module[{particle, vectorBoson, couplingName, call = ""},
+           {particle, vectorBoson} = GetExternalStates[couplingSymbol];
+           couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
+           call = "calculate_" <> couplingName;
+           If[idx != "",
+              call = call <> "(" <> idx <> ");";,
+              call = call <> "();";
+             ];
+           call
+          ];
+
+CreateEffectiveCouplingsCalculation[couplings_List] :=
+    Module[{i, couplingSymbols, particle, couplingsForParticles = {},
+            pos, couplingList, mass, savedMass, dim, body, result = ""},
+           couplingSymbols = #[[1]]& /@ couplings;
+           For[i = 1, i <= Length[couplingSymbols], i++,
+               particle = GetExternalStates[couplingSymbols[[i]]][[1]];
+               If[FreeQ[couplingsForParticles, particle],
+                  couplingsForParticles = Append[couplingsForParticles, {particle, {couplingSymbols[[i]]}}];,
+                  pos = Position[couplingsForParticles, {particle, _List}][[1,1]];
+                  couplingList = couplingsForParticles[[pos]] /. {p_, coups_} :> {p, Append[coups, couplingSymbols[[i]]]};
+                  couplingsForParticles = ReplacePart[couplingsForParticles, pos -> couplingList];
+                 ];
+              ];
+           For[i = 1, i <= Length[couplingsForParticles], i++,
+               particle = couplingsForParticles[[i,1]];
+               mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+               savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
+               result = result <> savedMass;
+               dim = TreeMasses`GetDimension[particle];
+               If[dim == 1,
+                  result = result <> RunToDecayingParticleScale[particle];
+                  result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
+                  ,
+                  result = result <> "for (unsigned gO1 = 0; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                  body = RunToDecayingParticleScale[particle, "gO1"];
+                  body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
+                  result = result <> TextFormatting`IndentText[body] <> "}\n\n";
+                 ];
+              ];
+           result
+          ];
+
+CreateEffectiveCouplingPrototype[coupling_] :=
+    Module[{couplingSymbol = coupling[[1]], particle, vectorBoson,
+            dim, name, result = ""},
+           {particle, vectorBoson} = GetExternalStates[couplingSymbol];
+           If[particle =!= Null && vectorBoson =!= Null,
+              dim = TreeMasses`GetDimension[particle];
+              name = CreateEffectiveCouplingName[particle, vectorBoson];
+              result = "void calculate_" <> name <> If[dim == 1, "();\n", "(unsigned gO1);\n"];
+             ];
+           result
+          ];
+
+GetQCDCorrections[particle_, vectorBoson_] :=
+    Module[{scalarQCD, fermionQCD, result = ""},
+           If[particle === SARAH`HiggsBoson,
+              Which[vectorBoson === SARAH`VectorP,
+                    scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
+                    fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
+                    result = Parameters`CreateLocalConstRefs[scalarQCD]
+                             <> "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                             <> ";\nconst double qcd_fermion = " <> CConversion`RValueToCFormString[fermionQCD]
+                             <> ";\n\n";,
+                    vectorBoson === SARAH`VectorG,
+                    scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
+                    result = Parameters`CreateLocalConstRefs[scalarQCD]
+                             <> "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                             <> ";\nconst double qcd_fermion = qcd_scalar;\n\n",
+                    True,
+                    result =""
+                   ];
+             ];
+           result
           ];
 
 CreateEffectiveCouplingFunction[coupling_] :=
-    Module[{couplingName = coupling[[1]], neededCouplings = coupling[[2]],
+    Module[{couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
             particle, vectorBoson, dim, type, name, savedMass, mass, body = "", result = ""},
-           {particle, vectorBoson} = GetExternalStates[couplingName];
+           {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
-              dim = TreeMasses`GetDimension[particle];
-              type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
               name = CreateEffectiveCouplingName[particle, vectorBoson];
-              result = type <> " " <> FlexibleSUSY`FSModelName <> "_effective_couplings::"
-                       <> name;
-              mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-              savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
+              dim = TreeMasses`GetDimension[particle];
+              result = result <> "void " <> FlexibleSUSY`FSModelName
+                       <> "_effective_couplings::calculate_" <> name <> "(";
               If[dim == 1,
-                 result = result <> "()\n";,
-                 result = result <> "(unsigned gO1)\n{\n";
-                 mass = mass <> "(gO1)";
+                 result = result <> ")\n{\n";,
+                 result = result <> "unsigned gO1)\n{\n";
                 ];
-              body = "const double scale = model.get_scale();\n"
-                     <> "const Eigen::ArrayXd saved_parameters(model.get());\n"
-                     <> savedMass
-                     <> "const double scale_factor = 0.25 * Sqr(" <> mass <> ");\n\n"
-                     <> RunToDecayingParticleScale[particle] <> "\n"
-                     <> type <> " result;\n\n";
 
-              (* @todo convert expression to code *)
+              mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+              savedMass = "const auto decay_mass = PHYSICAL(" <> mass <> ")";
+              If[dim == 1,
+                 savedMass = savedMass <> ";\n";,
+                 savedMass = savedMass <> "(gO1);\n";
+                ];
+              body = body <> savedMass <> "\n";
+              body = body <> GetQCDCorrections[particle, vectorBoson];
 
-              body = body <> ResetSavedParameters[] <> "\n";
-              body = body <> "return result;\n";
-              result = result <> TextFormatting`IndentText[body] <> "}\n";
+              result = result <> TextFormatting`IndentText[body] <> "\n}\n";
              ];
            result
           ];

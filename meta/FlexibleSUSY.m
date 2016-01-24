@@ -1087,10 +1087,20 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteEffectiveCouplings[couplings_List, files_List] :=
-    Module[{loopCouplingsPrototypes, loopCouplingsFunctions},
+    Module[{loopCouplingsGetters, loopCouplingsDefs, loopCouplingsInit,
+            calculateLoopCouplings, loopCouplingsPrototypes,
+            loopCouplingsFunctions},
+           loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
+           loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
+           loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
+           calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
            {loopCouplingsPrototypes, loopCouplingsFunctions} = EffectiveCouplings`CreateEffectiveCouplings[couplings];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                   {   "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
+                                       "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                       "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
+                                       "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
+                                       "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
                                        "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];

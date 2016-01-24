@@ -33,11 +33,22 @@ namespace flexiblesusy {
    const @ModelName@_mass_eigenstates& model_,
    const softsusy::QedQcd& qedqcd_)
    : model(model_), qedqcd(qedqcd_), rg_improve(true)
+@loopCouplingsInit@
 {
 }
 
 @ModelName@_effective_couplings::~@ModelName@_effective_couplings()
 {
+}
+
+void @ModelName@_effective_couplings::calculate_effective_couplings()
+{
+   const double scale = model.get_scale();
+   const Eigen::ArrayXd saved_parameters(model.get());
+
+@calculateLoopCouplings@
+   model.set_scale(scale);
+   model.set(saved_parameters);
 }
 
 @loopCouplingsFunctions@
