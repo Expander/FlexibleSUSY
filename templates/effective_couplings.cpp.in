@@ -43,12 +43,7 @@ namespace flexiblesusy {
 
 void @ModelName@_effective_couplings::calculate_effective_couplings()
 {
-   const double scale = model.get_scale();
-   const Eigen::ArrayXd saved_parameters(model.get());
-
 @calculateLoopCouplings@
-   model.set_scale(scale);
-   model.set(saved_parameters);
 }
 
 @loopCouplingsFunctions@

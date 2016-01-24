@@ -229,14 +229,18 @@ CreateEffectiveCouplingsInit[couplings_List] :=
           ];
 
 RunToDecayingParticleScale[particle_, idx_:""] :=
-    Module[{savedMass, body, result},
-           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
-           If[idx != "",
-              savedMass = savedMass <> "(" <> idx <> ")";
-             ];
-           body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
-           "if (rg_improve && scale != " <> savedMass <> ") {\n"
-           <> TextFormatting`IndentText[body] <> "}\n"
+    Module[{savedMass, body, result = ""},
+           (* running is only done in SUSY models *)
+           If[SARAH`SupersymmetricModel,
+              savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
+              If[idx != "",
+                 savedMass = savedMass <> "(" <> idx <> ")";
+                ];
+              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
+              result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
+                       <> TextFormatting`IndentText[body] <> "}\n"
+            ];
+           result
           ];
 
 CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
@@ -264,11 +268,16 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                   couplingsForParticles = ReplacePart[couplingsForParticles, pos -> couplingList];
                  ];
               ];
+           If[SARAH`SupersymmetricModel,
+              result = result <> "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n";
+             ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
-               mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-               savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
-               result = result <> savedMass;
+               If[SARAH`SupersymmetricModel,
+                  mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+                  savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
+                  result = result <> savedMass;
+                 ];
                dim = TreeMasses`GetDimension[particle];
                If[dim == 1,
                   result = result <> RunToDecayingParticleScale[particle];
@@ -280,6 +289,9 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                   result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                  ];
               ];
+           If[SARAH`SupersymmetricModel,
+              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+             ];
            result
           ];
 
