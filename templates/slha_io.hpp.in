@@ -65,6 +65,7 @@ public:
    void fill(@ModelName@_input_parameters&) const;
    void fill(@ModelName@_mass_eigenstates&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
+   void fill(Physical_input&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
