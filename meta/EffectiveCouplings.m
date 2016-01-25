@@ -381,7 +381,7 @@ HasColorCharge[particle_] :=
           ];
 
 CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
-    Module[{i, internal, particleIndex, indices, dim, factor, qcdfactor,
+    Module[{i, internal, particleIndex, indices, dim, start, factor, qcdfactor,
             mass, massStr, couplingSymbol, couplingName,
             scaleFunction, body = "", result = "", parameters = {}},
            internal = DeleteCases[Vertices`GetParticleList[coupling] /. field_[{__}] :> field,
@@ -458,7 +458,8 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
              ];
            If[dim == 1,
               result = body <> "\n";,
-              result = "for (unsigned gI1 = 0; gI1 < " <> ToString[dim - 1] <> "; ++gI1) {\n";
+              start = TreeMasses`GetDimensionStartSkippingGoldstones[internal];
+              result = "for (unsigned gI1 = " <> ToString[start - 1] <> "; gI1 < " <> ToString[dim] <> "; ++gI1) {\n";
               result = result <> TextFormatting`IndentText[body] <> "\n}\n";
              ];
            {result, parameters}
