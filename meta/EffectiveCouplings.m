@@ -168,8 +168,9 @@ InitializeEffectiveCouplings[] :=
                 neededCoups = Select[neededTwoBodyDecays[[2]],
                                     (MemberQ[neededVectorBosonInteractions[[2]], #[[1]]] ||
                                      MemberQ[neededVectorBosonInteractions[[2]], #[[2]]])&];
+                (* only keep vertices of the form pD -> p AntiParticle[p] *)
+                neededCoups = Cases[neededCoups, {p1_, p2_, _} /; p1 === AntiParticle[p2]];
                 (* filter out massless states and Goldstones *)
-                Print["neededCoupgs = ", neededCoups];
                 neededCoups = Select[neededCoups, (!IsMasslessOrGoldstone[#[[1]]] && !IsMasslessOrGoldstone[#[[2]]])&];
                 result = Append[result, {couplings[[i]], #[[3]]& /@ neededCoups}];
               ];
