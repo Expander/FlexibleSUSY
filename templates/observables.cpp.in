@@ -26,6 +26,7 @@
 #include "numerics2.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
+#include "physical_input.hpp"
 
 #define MODEL model
 #define AMUGM2CALC a_muon_gm2calc
@@ -73,7 +74,8 @@ void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
 }
 
 @ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
-                                              const softsusy::QedQcd& qedqcd)
+                                              const softsusy::QedQcd& qedqcd,
+                                              const Physical_input& physical_input)
 {
    @ModelName@_observables observables;
 

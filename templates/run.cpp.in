@@ -91,7 +91,7 @@ int main(int argc, const char* argv[])
 
    @ModelName@_observables observables;
    if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
-      observables = calculate_observables(model, qedqcd);
+      observables = calculate_observables(model, qedqcd, physical_input);
 
    // SLHA output
    if (!slha_output_file.empty()) {

@@ -32,6 +32,7 @@ class QedQcd;
 namespace flexiblesusy {
 
 class @ModelName@_mass_eigenstates;
+class Physical_input;
 
 struct @ModelName@_observables {
    static const unsigned NUMBER_OF_OBSERVABLES = @numberOfObservables@;
@@ -45,7 +46,7 @@ struct @ModelName@_observables {
 @observablesDef@
 };
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&);
+@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&, const Physical_input&);
 
 } // namespace flexiblesusy
 

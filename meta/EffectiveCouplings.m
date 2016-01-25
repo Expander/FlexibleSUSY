@@ -243,7 +243,7 @@ RunToDecayingParticleScale[particle_, idx_:""] :=
               If[idx != "",
                  savedMass = savedMass <> "(" <> idx <> ")";
                 ];
-              body = "run_to(" <> savedMass <> ");\ncalculate_DRbar_masses();\n";
+              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
               result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
                        <> TextFormatting`IndentText[body] <> "}\n"
             ];
@@ -276,7 +276,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                  ];
               ];
            If[SARAH`SupersymmetricModel,
-              result = result <> "const double scale = get_scale();\nconst Eigen::ArrayXd saved_parameters(get());\n";
+              result = result <> "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n";
              ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
@@ -297,7 +297,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                  ];
               ];
            If[SARAH`SupersymmetricModel,
-              result = result <> "set_scale(scale);\nset(saved_parameters);\n";
+              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
              ];
            result
           ];
@@ -371,6 +371,51 @@ CreateCouplingSymbol[coupling_] :=
            indices = GetParticleIndicesInCoupling[coupling];
            symbol = ToValidCSymbol[coupling /. a_[List[__]] :> a];
            symbol[Sequence @@ indices]
+          ];
+
+CreateNeededCouplingFunction[coupling_, expr_] :=
+    Module[{symbol, prototype = "", definition = "",
+            indices = {}, body = "", functionName = "", i,
+            type, typeStr, initialValue},
+           indices = GetParticleIndicesInCoupling[coupling];
+           symbol = CreateCouplingSymbol[coupling];
+           functionName = CConversion`ToValidCSymbolString[CConversion`GetHead[symbol]];
+           functionName = functionName <> "(";
+           For[i = 1, i <= Length[indices], i++,
+               If[i > 1, functionName = functionName <> ", ";];
+               functionName = functionName <> "unsigned ";
+               If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
+                  functionName = functionName <> CConversion`ToValidCSymbolString[indices[[i]]];
+                 ];
+              ];
+           functionName = functionName <> ")";
+           If[Parameters`IsRealExpression[expr],
+              type = CConversion`ScalarType[CConversion`realScalarCType]; initialValue = "0.0";,
+              type = CConversion`ScalarType[CConversion`complexScalarCType]; initialValue = "";];
+           typeStr = CConversion`CreateCType[type];
+           prototype = typeStr <> " " <> functionName <> " const;\n";
+           definition = typeStr <> " " <> FlexibleSUSY`FSModelName
+                        <> "_effective_couplings::" <> functionName <> " const\n{\n";
+           body = Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+                  typeStr <> " result" <> initialValue <> ";\n\n";
+           body = body <> TreeMasses`ExpressionToString[expr, "result"];
+           body = body <> "\nreturn result;\n";
+           body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
+           definition = definition <> body <> "}\n";
+           {prototype, definition}
+          ];
+
+CreateNeededVertexExpressions[vertexRules_List] :=
+    Module[{k, prototypes = "", defs = "", coupling, expr,
+            p, d},
+           For[k = 1, k <= Length[vertexRules], k++,
+               coupling = Vertices`ToCp[vertexRules[[k,1]]];
+               expr = vertexRules[[k,2]];
+               {p, d} = CreateNeededCouplingFunction[coupling, expr];
+               prototypes = prototypes <> p;
+               defs = defs <> d <> "\n";
+              ];
+           {prototypes, defs}
           ];
 
 HasColorCharge[particle_] :=
@@ -508,7 +553,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
               If[vectorBoson === SARAH`VectorP,
                  body = body <> "result *= "
                         <> CConversion`RValueToCFormString[1 / (2^(3/4) Pi)]
-                        <> " * qedqcd.displayAlpha(softsusy::ALPHA) * Sqrt(qedqcd.displayFermiConstant());\n\n";,
+                        <> " * physical_input.get(Physical_input::alpha_em_0) * Sqrt(qedqcd.displayFermiConstant());\n\n";,
                  body = body <> "result *= "
                         <> CConversion`RValueToCFormString[2^(1/4) / (3 Pi)]
                         <> " * qedqcd.displayAlpha(softsusy::ALPHAS) * Sqrt(qedqcd.displayFermiConstant());\n\n";
@@ -533,11 +578,15 @@ CreateEffectiveCouplingsFunctions[couplings_List] :=
            result
           ];
 
-CreateEffectiveCouplings[couplings_List] :=
-    Module[{prototypes = "", functions = ""},
-           prototypes = prototypes
+CreateEffectiveCouplings[couplings_List, vertexRules_List] :=
+    Module[{relevantVertexRules, verticesPrototypes,
+            verticesFunctions,prototypes = "", functions = ""},
+           relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[couplings,a]) :> r];
+           {verticesPrototypes, verticesFunctions} =
+               CreateNeededVertexExpressions[relevantVertexRules];
+           prototypes = prototypes <> verticesPrototypes
                         <> CreateEffectiveCouplingsPrototypes[couplings];
-           functions = functions
+           functions = functions <> verticesFunctions
                        <> CreateEffectiveCouplingsFunctions[couplings];
            {prototypes, functions}
           ];

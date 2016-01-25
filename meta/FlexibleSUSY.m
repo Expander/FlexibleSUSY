@@ -1087,7 +1087,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteEffectiveCouplings[couplings_List, files_List] :=
+WriteEffectiveCouplings[couplings_List, vertexRules_List, files_List] :=
     Module[{loopCouplingsGetters, loopCouplingsDefs, loopCouplingsInit,
             calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
@@ -1095,7 +1095,8 @@ WriteEffectiveCouplings[couplings_List, files_List] :=
            loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
            loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
            calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
-           {loopCouplingsPrototypes, loopCouplingsFunctions} = EffectiveCouplings`CreateEffectiveCouplings[couplings];
+           {loopCouplingsPrototypes, loopCouplingsFunctions} =
+               EffectiveCouplings`CreateEffectiveCouplings[couplings, vertexRules];
            WriteOut`ReplaceInFiles[files,
                                    {   "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
                                        "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
@@ -2195,7 +2196,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
-           WriteEffectiveCouplings[effectiveCouplings,
+           WriteEffectiveCouplings[effectiveCouplings, vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],

@@ -391,7 +391,7 @@ FillGM2CalcInterfaceData[struct_String] :=
 
 FillEffectiveCouplingsInterfaceData[struct_String] :=
     Module[{result},
-           result = FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(model, qedqcd);\n";
+           result = FlexibleSUSY`FSModelName <> "_effective_couplings " <> struct <> "(model, qedqcd, physical_input);\n";
            result = result <> "effective_couplings.calculate_effective_couplings();\n"
           ];
 

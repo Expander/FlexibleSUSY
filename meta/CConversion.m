@@ -28,7 +28,7 @@ AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
 IndexSum::usage="";
-TensorProd::usgae="";
+TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
 dimension";
