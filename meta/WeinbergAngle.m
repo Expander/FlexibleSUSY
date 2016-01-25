@@ -55,7 +55,7 @@ RhoZero[] :=
           vevlist = vevlist /. {Sfieldname_Symbol, vevinfo_List} :> {ToExpression[StringReplace[ToString[Sfieldname], StartOfString ~~ "S" -> ""]], vevinfo};
           (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List} :> Flatten[{vevinfo, Cases[SARAH`SuperFields, x_ /; !FreeQ[x[[3]], fieldname] :> {(x[[3 + leftPos]] - 1) / 2, -x[[3 + hyperchargePos]]}]}];
-          Apart[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist)]]];
+          Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist)]];
 
 SolvesWeinbergEq[eq_, expr_] :=
     Module[{insertedEq},
