@@ -183,12 +183,6 @@ GetNeededVerticesList[couplings_List] :=
 CreateEffectiveCouplingName[pIn_, pOut_] :=
     "eff_Cp" <> CConversion`ToValidCSymbolString[pIn] <> CConversion`ToValidCSymbolString[pOut] <> CConversion`ToValidCSymbolString[pOut];
 
-(* @todo these are basically identical to those in SelfEnergies,
-   it would be better to reuse the definitions there if possible  *)
-GetParticleIndicesInCoupling[SARAH`Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
-
-GetParticleIndicesInCoupling[SARAH`Cp[a__][_]] := GetParticleIndices[SARAH`Cp[a]];
-
 CreateEffectiveCouplingsGetters[couplings_List] :=
     Module[{i, couplingSymbols, type, particle,
             vectorBoson, dim, couplingName, getters = ""},
@@ -249,7 +243,7 @@ RunToDecayingParticleScale[particle_, idx_:""] :=
               If[idx != "",
                  savedMass = savedMass <> "(" <> idx <> ")";
                 ];
-              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
+              body = "run_to(" <> savedMass <> ");\ncalculate_DRbar_masses();\n";
               result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
                        <> TextFormatting`IndentText[body] <> "}\n"
             ];
@@ -282,7 +276,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                  ];
               ];
            If[SARAH`SupersymmetricModel,
-              result = result <> "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n";
+              result = result <> "const double scale = get_scale();\nconst Eigen::ArrayXd saved_parameters(get());\n";
              ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
@@ -303,7 +297,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                  ];
               ];
            If[SARAH`SupersymmetricModel,
-              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+              result = result <> "set_scale(scale);\nset(saved_parameters);\n";
              ];
            result
           ];
@@ -321,30 +315,159 @@ CreateEffectiveCouplingPrototype[coupling_] :=
           ];
 
 GetQCDCorrections[particle_, vectorBoson_] :=
-    Module[{scalarQCD, fermionQCD, result = ""},
+    Module[{scalarQCD, fermionQCD, parameters = {}, result = ""},
            If[particle === SARAH`HiggsBoson,
               Which[vectorBoson === SARAH`VectorP,
                     scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
                     fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
-                    result = Parameters`CreateLocalConstRefs[scalarQCD]
-                             <> "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                    result = "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
                              <> ";\nconst double qcd_fermion = " <> CConversion`RValueToCFormString[fermionQCD]
                              <> ";\n\n";,
                     vectorBoson === SARAH`VectorG,
                     scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
-                    result = Parameters`CreateLocalConstRefs[scalarQCD]
-                             <> "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                    result = "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
                              <> ";\nconst double qcd_fermion = qcd_scalar;\n\n",
                     True,
                     result =""
                    ];
+               parameters = {SARAH`strongCoupling};
+             ];
+           {result, parameters}
+          ];
+
+GetEffectiveVEV[] :=
+    Module[{vev, parameters = {}, result = ""},
+           vev = Simplify[2 Sqrt[-SARAH`Vertex[{SARAH`VectorW, Susyno`LieGroups`conj[SARAH`VectorW]}][[2,1]]
+                        / SARAH`leftCoupling^2] /. SARAH`sum[a_,b_,c_,d_] :> Sum[d,{a,b,c}]];
+           parameters = Parameters`FindAllParameters[vev];
+           result = "const auto vev = " <> CConversion`RValueToCFormString[vev] <> ";\n";
+           {result, parameters}
+          ];
+
+GetMultiplicity[vectorBoson_, internal_] := SARAH`ChargeFactor[vectorBoson, internal, internal];
+
+GetParticleGenerationIndex[particle_, coupling_] :=
+    Module[{dim, indexList, result = {}},
+           dim = TreeMasses`GetDimension[particle];
+           If[dim != 1,
+              indexList = Flatten[Cases[Vertices`GetParticleList[coupling],
+                                  p_[a_List] /; p === particle :> a, {0, Infinity}]];
+              result = Select[indexList, StringMatchQ[ToString[#], "gt" ~~ __] &];
+              If[Length[result] > 1,
+                 result = {result[[1]]};
+                ];
              ];
            result
           ];
 
+(* @todo these are basically identical to those in SelfEnergies,
+   it would be better to reuse the definitions there if possible  *)
+GetParticleIndicesInCoupling[SARAH`Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
+
+GetParticleIndicesInCoupling[SARAH`Cp[a__][_]] := GetParticleIndicesInCoupling[SARAH`Cp[a]];
+
+CreateCouplingSymbol[coupling_] :=
+    Module[{symbol, indices},
+           indices = GetParticleIndicesInCoupling[coupling];
+           symbol = ToValidCSymbol[coupling /. a_[List[__]] :> a];
+           symbol[Sequence @@ indices]
+          ];
+
+HasColorCharge[particle_] :=
+    Module[{dynkin},
+           dynkin = SA`Dynkin[particle,Position[SARAH`Gauge, SARAH`strongCoupling][[1,1]]];
+           If[!NumericQ[dynkin], dynkin = 0];
+           dynkin == 1/2
+          ];
+
+CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
+    Module[{i, internal, particleIndex, indices, dim, factor, qcdfactor,
+            mass, massStr, couplingSymbol, couplingName,
+            scaleFunction, body = "", result = "", parameters = {}},
+           internal = DeleteCases[Vertices`GetParticleList[coupling] /. field_[{__}] :> field,
+                                  p_ /; p === particle, 1];
+           internal = First[internal /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p}];
+           dim = TreeMasses`GetDimension[internal];
+           mass = FlexibleSUSY`M[internal];
+           massStr = CConversion`ToValidCSymbolString[mass];
+           If[dim != 1,
+              massStr = massStr <> "(gI1)";
+             ];
+           parameters = Append[parameters, mass];
+           Which[TreeMasses`IsScalar[internal],
+                 factor = 1/2;
+                 If[particle === SARAH`HiggsBoson,
+                    scaleFunction = "AS0";
+                    If[HasColorCharge[internal],
+                       qcdfactor = "qcd_scalar";,
+                       qcdfactor = "";
+                      ];,
+                    Return[{"",{}}];
+                   ];,
+                 TreeMasses`IsVector[internal],
+                 factor = -1/2;
+                 If[particle === SARAH`HiggsBoson,
+                    scaleFunction = "AS1";
+                    qcdfactor = "";,
+                    Return[{"",{}}];
+                   ];,
+                 TreeMasses`IsFermion[internal],
+                 factor = 1;
+                 If[particle === SARAH`HiggsBoson,
+                    scaleFunction = "AS12";
+                    If[HasColorCharge[internal],
+                       qcdfactor = "qcd_fermion";,
+                       qcdfactor = "";
+                      ];,
+                    scaleFunction = "AP12";
+                    qcdfactor = "";
+                   ];
+                ];
+           If[vectorBoson === SARAH`VectorP,
+              factor = factor * GetElectricCharge[internal]^2 GetMultiplicity[vectorBoson, internal];
+             ];
+           indices = GetParticleIndicesInCoupling[coupling];
+           particleIndex = GetParticleGenerationIndex[particle, coupling];
+           indices = Replace[indices, p_ /; !MemberQ[particleIndex, p] -> SARAH`gI1, 1];
+           indices = Replace[indices, p_ /; MemberQ[particleIndex, p] -> SARAH`gO1, 1];
+           couplingSymbol = CConversion`ToValidCSymbol[coupling /. a_[List[__]] :> a];
+           couplingSymbol = couplingSymbol[Sequence @@ indices];
+           couplingName = CConversion`ToValidCSymbolString[CConversion`GetHead[couplingSymbol]];
+           couplingName = couplingName <> "(";
+           For[i = 1, i <= Length[indices], i++,
+               If[i > 1, couplingName = couplingName <> ", ";];
+               If[!IntegerQ[indices[[i]]],
+                  couplingName = couplingName <> CConversion`ToValidCSymbolString[indices[[i]]];
+                 ];
+              ];
+           couplingName = couplingName <> ")";
+           body = "result += " <> If[factor != 1, CConversion`RValueToCFormString[factor] <> " * ", ""]
+                    <> If[qcdfactor != "", qcdfactor <> " * ", ""] <> couplingName
+                    <> " * vev * " <> scaleFunction <> "(decay_scale / Sqr(" <> massStr <> ")) / "
+                    <> massStr <> ";";
+           If[particle == SARAH`HiggsBoson && vectorBoson =!= SARAH`VectorG &&
+              TreeMasses`IsFermion[internal] && HasColorCharge[internal],
+              body = "if (" <> massStr <> " > decay_mass) {\n"
+                     <> TextFormatting`IndentText[body] <> "\n} else {\n";
+              body = body
+                     <> TextFormatting`IndentText["result += "
+                                                  <> If[factor != 1, CConversion`RValueToCFormString[factor] <> " * ", ""]
+                                                  <> couplingName <> "* vev * " <> scaleFunction
+                                                  <> "(decay_scale / Sqr(" <> massStr <> ")) / " <> massStr <> ";"];
+              body = body <> "\n}";
+             ];
+           If[dim == 1,
+              result = body <> "\n";,
+              result = "for (unsigned gI1 = 0; gI1 < " <> ToString[dim - 1] <> "; ++gI1) {\n";
+              result = result <> TextFormatting`IndentText[body] <> "\n}\n";
+             ];
+           {result, parameters}
+          ];
+
 CreateEffectiveCouplingFunction[coupling_] :=
-    Module[{couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
-            particle, vectorBoson, dim, type, name, savedMass, mass, body = "", result = ""},
+    Module[{i, couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
+            particle, vectorBoson, dim, type, name, savedMass, mass,
+            parameters = {}, currentLine, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
               name = CreateEffectiveCouplingName[particle, vectorBoson];
@@ -364,9 +487,35 @@ CreateEffectiveCouplingFunction[coupling_] :=
                 ];
               body = body <> savedMass;
               body = body <> "const auto decay_scale = 0.25 * Sqr(decay_mass);\n\n";
-              body = body <> GetQCDCorrections[particle, vectorBoson];
+              {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetQCDCorrections[particle, vectorBoson]);
+              body = body <> currentLine;
+              {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetEffectiveVEV[]);
+              body = body <> currentLine <> "\n";
+              body = body <> CConversion`CreateDefaultDefinition["result", CConversion`ScalarType[CConversion`complexScalarCType]] <> ";\n";
 
-              result = result <> TextFormatting`IndentText[body] <> "\n}\n";
+              For[i = 1, i <= Length[neededCouplings], i++,
+                  {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (CreateCouplingContribution[particle, vectorBoson, neededCouplings[[i]]]);
+                  body = body <> currentLine;
+                 ];
+
+              If[vectorBoson === SARAH`VectorG,
+                 body = body <> "result *= std::complex<double>(0.75,0.);\n";
+                ];
+
+              body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";
+
+              If[vectorBoson === SARAH`VectorP,
+                 body = body <> "result *= "
+                        <> CConversion`RValueToCFormString[1 / (2^(3/4) Pi)]
+                        <> " * qedqcd.displayAlpha(softsusy::ALPHA) * Sqrt(qedqcd.displayFermiConstant());\n\n";,
+                 body = body <> "result *= "
+                        <> CConversion`RValueToCFormString[2^(1/4) / (3 Pi)]
+                        <> " * qedqcd.displayAlpha(softsusy::ALPHAS) * Sqrt(qedqcd.displayFermiConstant());\n\n";
+                ];
+
+              body = body <> name <> If[dim != 1, "(gO1) = ", " = "] <> "result;\n";
+
+              result = result <> TextFormatting`IndentText[TextFormatting`WrapLines[body]] <> "\n}\n";
              ];
            result
           ];
