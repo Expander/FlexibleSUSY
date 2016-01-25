@@ -21,6 +21,7 @@
 #include "lowe.h"
 #include "linalg.h"
 #include "ew_input.hpp"
+#include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 
 #include <fstream>
@@ -183,6 +184,20 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
 
    // fill PMNS parameters in qedqcd
    qedqcd.setPMNS(pmns_parameters);
+}
+
+/**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param settings struct of physical input parameters
+ */
+void SLHA_io::fill(Physical_input& input) const
+{
+   SLHA_io::Tuple_processor processor
+      = boost::bind(&SLHA_io::process_flexiblesusyinput_tuple, boost::ref(input), _1, _2);
+
+   read_block("FlexibleSUSYInput", processor);
 }
 
 /**
@@ -562,6 +577,17 @@ void SLHA_io::process_flexiblesusy_tuple(Spectrum_generator_settings& settings,
       settings.set((Spectrum_generator_settings::Settings)key, value);
    } else {
       WARNING("Unrecognized entry in block FlexibleSUSY: " << key);
+   }
+}
+
+void SLHA_io::process_flexiblesusyinput_tuple(
+   Physical_input& input,
+   int key, double value)
+{
+   if (0 <= key && key < static_cast<int>(Physical_input::NUMBER_OF_INPUT_PARAMETERS)) {
+      input.set((Physical_input::Input)key, value);
+   } else {
+      WARNING("Unrecognized entry in block FlexibleSUSYInput: " << key);
    }
 }
 

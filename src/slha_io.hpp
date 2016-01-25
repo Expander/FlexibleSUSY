@@ -41,6 +41,7 @@ namespace softsusy {
 namespace flexiblesusy {
 
    class Spectrum_generator_settings;
+   class Physical_input;
 
    namespace {
       /// SLHA line formatter for the MASS block entries
@@ -164,6 +165,7 @@ public:
    bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
    void fill(Spectrum_generator_settings&) const;
+   void fill(Physical_input&) const;
    const Modsel& get_modsel() const { return modsel; }
    const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
@@ -232,6 +234,7 @@ private:
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
+   static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
 };
 
 template <class Scalar>

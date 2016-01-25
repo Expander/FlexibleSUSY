@@ -25,6 +25,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
@@ -92,6 +93,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
+		$(DIR)/physical_input.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
