@@ -1679,7 +1679,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
                                a_[Susyno`LieGroups`i1] :> a /.
                                a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
-           allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
+           allIndexReplacementRules = Join[
+               Parameters`CreateIndexReplacementRules[allParameters],
+               {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
+                Global`bottomDRbar[i_,j_]   :> Global`bottomDRbar[i-1,j-1],
+                Global`electronDRbar[i_,j_] :> Global`electronDRbar[i-1,j-1]}
+           ];
            Parameters`SetModelParameters[allParameters];
 
            (* collect all phases from SARAH *)
