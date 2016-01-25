@@ -97,6 +97,7 @@ UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
+FSRGELoopOrder = 2; (* RGE loop order (1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -1410,11 +1411,11 @@ NeedToUpdateTarget[name_String, targets_List] := Module[{
 NeedToUpdateTarget[name_String, target_] :=
     NeedToUpdateTarget[name, {target}];
 
-FSPrepareRGEs[] :=
+FSPrepareRGEs[loopOrder_] :=
     Module[{needToCalculateRGEs, betas},
            needToCalculateRGEs = NeedToCalculateRGEs[];
            SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
-                          TwoLoop -> True,
+                          TwoLoop -> If[loopOrder < 2, False, True],
                           NoMatrixMultiplication -> False];
            (* check if the beta functions were calculated correctly *)
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
@@ -1653,7 +1654,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Reading SARAH output files"];
            (* get RGEs *)
-           FSPrepareRGEs[];
+           FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];

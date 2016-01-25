@@ -43,6 +43,7 @@ Block EXTPAR                 # Input parameters
     6   173.34               # MEWSB
     7   200                  # At(MSUSY)
    25   10                   # TanBeta(MSUSY)
+  100   2                    # LambdaLoopOrder
 Block MSQ2IN
   1  1     4e6               # mq2(1,1)
   2  2     4e6               # mq2(2,2)

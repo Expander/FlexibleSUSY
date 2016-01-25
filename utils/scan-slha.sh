@@ -55,6 +55,9 @@ BEGIN {
 # expects block entry keys in the form x or x:y or x:y:z etc.
 print_block_entry_awk='
 {
+  if ($0 ~ /^B/) # skip block head
+     next
+
   split(keys,k,":");
 
   matches = 1;

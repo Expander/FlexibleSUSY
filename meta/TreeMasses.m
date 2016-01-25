@@ -1107,7 +1107,7 @@ CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_Str
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
-    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k,
+    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, evMap, particle, k,
             diagFunctionStr, matrixType, matrixElementType, vectorType,
             OneDimMappingPre = "", OneDimMappingPost = ""},
            dim = Length[matrix];
@@ -1115,6 +1115,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            particle = ToValidCSymbolString[GetHead[eigenVector]];
            matrixSymbol = "mass_matrix_" <> particle;
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
+           evMap = ev;
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            body = IndentText["const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n"];
            (* map scalar matrix and eigenvector to matrix and array types *)
@@ -1125,29 +1126,28 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               OneDimMappingPre = IndentText[
                   matrixType <> " " <> matrixSymbol <> "_map;\n" <>
                   matrixSymbol <> "_map(0,0) = " <> matrixSymbol <> ";\n" <>
-                  vectorType <> " " <> ev <> "_map;\n" <>
-                  ev <> "_map(0) = " <> ev <> ";"] <> "\n";
+                  vectorType <> " " <> ev <> "_map;"] <> "\n";
               OneDimMappingPost = IndentText[
                   ev <> " = " <> ev <> "_map(0);"] <> "\n";
               matrixSymbol = matrixSymbol <> "_map";
-              ev = ev <> "_map";
+              evMap = ev <> "_map";
              ];
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
               body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                     CallSVDFunction[particle, matrixSymbol, ev, U, V] <> "\n" <>
+                     CallSVDFunction[particle, matrixSymbol, evMap, U, V] <> "\n" <>
                      OneDimMappingPost;
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeSymmetricFunction[particle, matrixSymbol, ev, U] <> "\n" <>
+                        CallDiagonalizeSymmetricFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;,
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeHermitianFunction[particle, matrixSymbol, ev, U] <> "\n" <>
+                        CallDiagonalizeHermitianFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;
                 ];
              ];
@@ -1155,7 +1155,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         "if (" <> ev <> ".minCoeff() < 0.)\n" <>
+                         "if (" <> evMap <> ".minCoeff() < 0.)\n" <>
                          IndentText[
                              "problems.flag_tachyon(" <>
                              FlexibleSUSY`FSModelName <> "_info::" <> particle <>
