@@ -362,7 +362,8 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  savedMass = savedMass <> ";\n";,
                  savedMass = savedMass <> "(gO1);\n";
                 ];
-              body = body <> savedMass <> "\n";
+              body = body <> savedMass;
+              body = body <> "const auto decay_scale = 0.25 * Sqr(decay_mass);\n\n";
               body = body <> GetQCDCorrections[particle, vectorBoson];
 
               result = result <> TextFormatting`IndentText[body] <> "\n}\n";
