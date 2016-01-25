@@ -924,7 +924,7 @@ CalculateCKMMatrix[] :=
               MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ] &&
               SARAH`getDimParameters[SARAH`DownMatrixL] === {3,3} &&
-              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3}
+              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3} &&
               SARAH`getDimParameters[SARAH`DownMatrixR] === {3,3} &&
               SARAH`getDimParameters[SARAH`UpMatrixR] === {3,3}
               ,
