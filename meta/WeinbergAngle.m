@@ -94,7 +94,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
               no GUT normalization has been applied so far)*)
            eqs = {SARAH`Weinberg == weinbergDef,
                   SARAH`Mass[SARAH`VectorW]^2 == FindMassW[masses],
-                  SARAH`Mass[SARAH`VectorZ]^2 == FindMassZ[masses]
+                  SARAH`Mass[SARAH`VectorZ]^2 == UnmixedZMass[] /. Parameters`ApplyGUTNormalization[]
                  };
            DebugPrint["The 3 equations to determine the Weinberg angle are: ",
                       eqs];
@@ -104,19 +104,19 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                       {SARAH`Mass[SARAH`VectorW], SARAH`Mass[SARAH`VectorZ]},
                       " yields: ", reducedEq];
            (* Try Standard Model definition first *)
-           If[SolvesWeinbergEq[reducedEq, smValue],
+           (* If[SolvesWeinbergEq[reducedEq, smValue],
               Return[smValue];,
               Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::nonSMDef,
                       InputForm[SARAH`Weinberg == smValue],
                       InputForm[eqs]];
-             ];
+             ]; *)
            DebugPrint["Solving equation for ", SARAH`Weinberg,
                       " using a time constraint of ",
                       FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint];
            Off[Solve::ifun];
-           solution = TimeConstrained[Solve[reducedEq, SARAH`Weinberg, Reals],
-                                      FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
-                                      {}];
+           solution = TimeConstrained[Normal[Solve[(reducedEq /. Cos[SARAH`Weinberg] -> Sqrt[1 - Sin[SARAH`Weinberg]^2]) &&
+                                                   Pi/2 > SARAH`Weinberg > 0 && SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0, SARAH`Weinberg]],
+                                      FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint, {}];
            On[Solve::ifun];
            If[Head[solution] =!= List || solution === {},
               Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution,
@@ -125,12 +125,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                       InputForm[SARAH`Weinberg == smValue]];
               Return[smValue];
              ];
-           solution = Simplify[#[[1,2]],
-                               Assumptions ->
-                               SARAH`Weinberg > 0 && Element[SARAH`Weinberg, Reals] &&
-                               SARAH`hyperchargeCoupling > 0 && Element[SARAH`hyperchargeCoupling, Reals] &&
-                               SARAH`leftCoupling > 0 && Element[SARAH`leftCoupling, Reals]]& /@ solution;
-           solution = Select[solution, !NumericQ[#]&];
+           solution = Simplify[solution, Pi/2 > SARAH`Weinberg > 0 && SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0] [[All, 1, 2]];
            If[solution === {},
               Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution,
                       InputForm[SARAH`Weinberg],
@@ -174,7 +169,7 @@ deltaRHat2LoopSM[]:=Module[{gY, alphaDRbar, xt, hmix, expr, result},
 RhoHatTree[massMatrices_List]:=Module[{Ztreemass, Wtreemass, expr, result},
                                        Ztreemass = FindMassZ[massMatrices];
                                        Wtreemass = FindMassW[massMatrices];
-                                       expr = Apart[Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]]];
+                                       expr = Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]];
                                        result = Parameters`CreateLocalConstRefs[expr] <> "\n";
                                        result = result <> "rhohat_tree = ";
                                        result = result <> CConversion`RValueToCFormString[expr] <> ";";
