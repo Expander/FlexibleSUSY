@@ -1680,6 +1680,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaVEV };
              ];
 
+           (* filter out buggy and duplicate beta functions *)
+           DeleteBuggyBetaFunctions[beta_List] :=
+               DeleteDuplicates[Select[beta, (!NumericQ[#[[1]]])&], (#1[[1]] === #2[[1]])&];
+           susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
+           susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
+
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
                                Parameters`StripSARAHIndicesRules[1] /.
@@ -1961,6 +1967,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
+           DebugPrint["input parameters = ", inputParameters];
            WriteInputParameterClass[inputParameters,
                                     {{FileNameJoin[{$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
