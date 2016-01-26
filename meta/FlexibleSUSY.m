@@ -1677,8 +1677,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
-                               a_[Susyno`LieGroups`i1] :> a /.
-                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
+                               Parameters`StripSARAHIndicesRules[1] /.
+                               Parameters`StripSARAHIndicesRules[2];
            allIndexReplacementRules = Join[
                Parameters`CreateIndexReplacementRules[allParameters],
                {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
@@ -1686,6 +1686,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 Global`electronDRbar[i_,j_] :> Global`electronDRbar[i-1,j-1]}
            ];
            Parameters`SetModelParameters[allParameters];
+           DebugPrint["model parameters: ", allParameters];
 
            (* collect all phases from SARAH *)
            phases = DeleteDuplicates @ Join[
@@ -1740,8 +1741,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* adding the types and their input names to the parameters *)
            FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                           {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
-                                                     a_[Susyno`LieGroups`i1] :> a /.
-                                                     a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                                     Parameters`StripSARAHIndicesRules[1] /.
+                                                     Parameters`StripSARAHIndicesRules[2],
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
@@ -1775,8 +1776,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
                                                Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
                                                   Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
-                                              a_[Susyno`LieGroups`i1] :> a /.
-                                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                              Parameters`StripSARAHIndicesRules[1] /.
+                                              Parameters`StripSARAHIndicesRules[2],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
