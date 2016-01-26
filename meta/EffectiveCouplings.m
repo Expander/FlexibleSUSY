@@ -557,7 +557,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
 
 CreateEffectiveCouplingFunction[coupling_] :=
     Module[{i, couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
-            particle, vectorBoson, dim, type, name, savedMass, mass,
+            particle, vectorBoson, dim, type, name, savedMass, mass, mixingSymbol,
             mixingName, parameters = {}, currentLine, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
@@ -579,9 +579,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
               body = body <> savedMass;
               body = body <> "const auto decay_scale = 0.25 * Sqr(decay_mass);\n";
               (* use physical mixing matrices for decaying particle *)
-              mixingName = CConversion`ToValidCSymbolString[TreeMasses`FindMixingMatrixSymbolFor[particle]];
-              body = body <> "const auto saved_" <> mixingName <> " = " <> mixingName <> ";\n";
-              body = body <> mixingName <> " = PHYSICAL(" <> mixingName <> ");\n\n";
+              mixingSymbol = TreeMasses`FindMixingMatrixSymbolFor[particle];
+              If[mixingSymbol =!= Null,
+                 mixingName = CConversion`ToValidCSymbolString[mixingSymbol];
+                 body = body <> "const auto saved_" <> mixingName <> " = " <> mixingName <> ";\n";
+                 body = body <> mixingName <> " = PHYSICAL(" <> mixingName <> ");\n\n";,
+                 body = body <> "\n";
+                ];
               {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetQCDCorrections[particle, vectorBoson]);
               body = body <> currentLine;
               {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetEffectiveVEV[]);
@@ -616,7 +620,9 @@ CreateEffectiveCouplingFunction[coupling_] :=
                 ];
 
               (* restore saved mixing *)
-              body = body <> mixingName <> " = saved_" <> mixingName <> ";\n";
+              If[mixingSymbol =!= Null,
+                 body = body <> mixingName <> " = saved_" <> mixingName <> ";\n";
+                ];
               body = body <> name <> If[dim != 1, "(gO1) = ", " = "] <> "result;\n";
 
               result = result <> TextFormatting`IndentText[TextFormatting`WrapLines[body]] <> "\n}\n";

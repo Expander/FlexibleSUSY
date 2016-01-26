@@ -97,7 +97,7 @@ UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
-FSRGELoopOrder = 2; (* RGE loop order (1 or 2) *)
+FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
