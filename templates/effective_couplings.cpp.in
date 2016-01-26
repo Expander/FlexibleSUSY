@@ -36,6 +36,7 @@ using namespace effective_couplings;
    const softsusy::QedQcd& qedqcd_,
    const Physical_input& input_)
    : model(model_), qedqcd(qedqcd_), physical_input(input_), rg_improve(true)
+@mixingMatricesInit@
 @loopCouplingsInit@
 {
 }
@@ -47,6 +48,17 @@ using namespace effective_couplings;
 void @ModelName@_effective_couplings::calculate_effective_couplings()
 {
 @calculateLoopCouplings@
+}
+
+void @ModelName@_effective_couplings::set_model(const @ModelName@_mass_eigenstates& model_)
+{
+   model = model_;
+   copy_mixing_matrices_from_model();
+}
+
+void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
+{
+@copyMixingMatrices@
 }
 
 @loopCouplingsFunctions@

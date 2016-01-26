@@ -1,6 +1,8 @@
 BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`"}];
 
 InitializeEffectiveCouplings::usage="";
+InitializeMixingFromModelInput::usage="";
+GetMixingMatrixFromModel::usage="";
 GetNeededVerticesList::usage="";
 CreateEffectiveCouplingsGetters::usage="";
 CreateEffectiveCouplingsDefinitions::usage="";
@@ -9,6 +11,36 @@ CreateEffectiveCouplingsCalculation::usage="";
 CreateEffectiveCouplings::usage="";
 
 Begin["`Private`"];
+
+InitializeMixingFromModelInput[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{i, symbol, result = ""},
+           symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
+           If[symbol === Null,
+              Return[""];
+             ];
+           If[Length[symbol] > 1,
+              (result = result <> ", " <> CConversion`ToValidCSymbolString[#] <> "(model_.get_"
+                        <> CConversion`ToValidCSymbolString[#] <> "())")& /@ symbol;,
+              result = ", " <> CConversion`ToValidCSymbolString[symbol]
+                       <> "(model_.get_" <> CConversion`ToValidCSymbolString[symbol] <> "())";
+             ];
+           result
+          ];
+
+GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{i, symbol, result = ""},
+           symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
+           If[symbol === Null,
+              Return[""];
+             ];
+           If[Length[symbol] > 1,
+              (result = result <> CConversion`ToValidCSymbolString[#] <> " = model.get_"
+                        <> CConversion`ToValidCSymbolString[#] <> "();\n")& /@ symbol;,
+              result = CConversion`ToValidCSymbolString[symbol] <> " = model.get_"
+                       <> CConversion`ToValidCSymbolString[symbol] <> "();\n";
+             ];
+           result
+          ];
 
 GetAllowedCouplingsForModel[] :=
     Module[{dim,
@@ -243,7 +275,8 @@ RunToDecayingParticleScale[particle_, idx_:""] :=
               If[idx != "",
                  savedMass = savedMass <> "(" <> idx <> ")";
                 ];
-              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n";
+              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n"
+                     <> "copy_mixing_matrices_from_model();\n";
               result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
                        <> TextFormatting`IndentText[body] <> "}\n"
             ];
@@ -373,7 +406,19 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
-CreateNeededCouplingFunction[coupling_, expr_] :=
+CreateLocalConstRefsIgnoringMixings[expr_, mixings_List] :=
+    Module[{symbols, poleMasses},
+           symbols = Parameters`FindAllParameters[expr];
+           poleMasses = {
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[Parameters`GetOutputParameters[],FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[Parameters`GetOutputParameters[],FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+                        };
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           symbols = Complement[symbols, mixings];
+           Parameters`CreateLocalConstRefs[symbols]
+          ];
+
+CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", functionName = "", i,
             type, typeStr, initialValue},
@@ -396,7 +441,7 @@ CreateNeededCouplingFunction[coupling_, expr_] :=
            prototype = typeStr <> " " <> functionName <> " const;\n";
            definition = typeStr <> " " <> FlexibleSUSY`FSModelName
                         <> "_effective_couplings::" <> functionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+           body = CreateLocalConstRefsIgnoringMixings[expr, mixings] <> "\n" <>
                   typeStr <> " result" <> initialValue <> ";\n\n";
            body = body <> TreeMasses`ExpressionToString[expr, "result"];
            body = body <> "\nreturn result;\n";
@@ -405,13 +450,13 @@ CreateNeededCouplingFunction[coupling_, expr_] :=
            {prototype, definition}
           ];
 
-CreateNeededVertexExpressions[vertexRules_List] :=
+CreateNeededVertexExpressions[vertexRules_List, mixings_List] :=
     Module[{k, prototypes = "", defs = "", coupling, expr,
             p, d},
            For[k = 1, k <= Length[vertexRules], k++,
                coupling = Vertices`ToCp[vertexRules[[k,1]]];
                expr = vertexRules[[k,2]];
-               {p, d} = CreateNeededCouplingFunction[coupling, expr];
+               {p, d} = CreateNeededCouplingFunction[coupling, expr, mixings];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
               ];
@@ -513,7 +558,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
 CreateEffectiveCouplingFunction[coupling_] :=
     Module[{i, couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
             particle, vectorBoson, dim, type, name, savedMass, mass,
-            parameters = {}, currentLine, body = "", result = ""},
+            mixingName, parameters = {}, currentLine, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
               name = CreateEffectiveCouplingName[particle, vectorBoson];
@@ -532,7 +577,11 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  savedMass = savedMass <> "(gO1);\n";
                 ];
               body = body <> savedMass;
-              body = body <> "const auto decay_scale = 0.25 * Sqr(decay_mass);\n\n";
+              body = body <> "const auto decay_scale = 0.25 * Sqr(decay_mass);\n";
+              (* use physical mixing matrices for decaying particle *)
+              mixingName = CConversion`ToValidCSymbolString[TreeMasses`FindMixingMatrixSymbolFor[particle]];
+              body = body <> "const auto saved_" <> mixingName <> " = " <> mixingName <> ";\n";
+              body = body <> mixingName <> " = PHYSICAL(" <> mixingName <> ");\n\n";
               {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetQCDCorrections[particle, vectorBoson]);
               body = body <> currentLine;
               {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetEffectiveVEV[]);
@@ -559,6 +608,8 @@ CreateEffectiveCouplingFunction[coupling_] :=
                         <> " * qedqcd.displayAlpha(softsusy::ALPHAS) * Sqrt(qedqcd.displayFermiConstant());\n\n";
                 ];
 
+              (* restore saved mixing *)
+              body = body <> mixingName <> " = saved_" <> mixingName <> ";\n";
               body = body <> name <> If[dim != 1, "(gO1) = ", " = "] <> "result;\n";
 
               result = result <> TextFormatting`IndentText[TextFormatting`WrapLines[body]] <> "\n}\n";
@@ -578,12 +629,13 @@ CreateEffectiveCouplingsFunctions[couplings_List] :=
            result
           ];
 
-CreateEffectiveCouplings[couplings_List, vertexRules_List] :=
-    Module[{relevantVertexRules, verticesPrototypes,
+CreateEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List] :=
+    Module[{mixings, relevantVertexRules, verticesPrototypes,
             verticesFunctions,prototypes = "", functions = ""},
+           mixings = Cases[Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices], Except[Null]];
            relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[couplings,a]) :> r];
            {verticesPrototypes, verticesFunctions} =
-               CreateNeededVertexExpressions[relevantVertexRules];
+               CreateNeededVertexExpressions[relevantVertexRules, mixings];
            prototypes = prototypes <> verticesPrototypes
                         <> CreateEffectiveCouplingsPrototypes[couplings];
            functions = functions <> verticesFunctions
