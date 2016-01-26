@@ -241,7 +241,7 @@ SetDRbarYukawaCouplingElectron[settings_] :=
     SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
 
 SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
-    Module[{y, f},
+    Module[{y, f = setting},
            If[setting === Automatic,
               {y, f} = InvertMassRelation[fermion, yukawa];
               f = f /. fermion -> mass;

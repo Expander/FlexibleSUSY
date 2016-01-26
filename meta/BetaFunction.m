@@ -6,7 +6,6 @@ BetaFunction[];
 ConvertSarahRGEs::usage="converts SARAH's beta functions";
 CreateBetaFunction::usage="";
 GetAllBetaFunctions::usage="";
-CreateBetaFunction::usage="";
 CountNumberOfParameters::usage="";
 CreateDisplayFunction::usage="";
 CreateSetFunction::usage="";
@@ -30,7 +29,11 @@ CreateSingleBetaFunctionDefs::usage="";
 
 Begin["`Private`"];
 
-GetName[BetaFunction[name_, type_, beta_List]] := name;
+GetName[BetaFunction[name_, type_, beta_List]] :=
+    name /. Parameters`StripSARAHIndicesRules[1] /.
+            Parameters`StripSARAHIndicesRules[2] /.
+            Parameters`StripSARAHIndicesRules[3] /.
+            Parameters`StripSARAHIndicesRules[4];
 
 GetType[BetaFunction[name_, type_, beta_List]] := type;
 

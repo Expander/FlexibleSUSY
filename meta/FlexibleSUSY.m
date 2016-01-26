@@ -1422,10 +1422,15 @@ NeedToUpdateTarget[name_String, target_] :=
 
 FSPrepareRGEs[loopOrder_] :=
     Module[{needToCalculateRGEs, betas},
-           needToCalculateRGEs = NeedToCalculateRGEs[];
-           SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
-                          TwoLoop -> If[loopOrder < 2, False, True],
-                          NoMatrixMultiplication -> False];
+           If[loopOrder > 0,
+              needToCalculateRGEs = NeedToCalculateRGEs[];
+              SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
+                             TwoLoop -> If[loopOrder < 2, False, True],
+                             NoMatrixMultiplication -> False];
+              ,
+              (* create Beta* symbols with beta functions set to 0 *)
+              SARAH`MakeDummyListRGEs[];
+             ];
            (* check if the beta functions were calculated correctly *)
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
@@ -1731,10 +1736,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaVEV };
              ];
 
+           (* filter out buggy and duplicate beta functions *)
+           DeleteBuggyBetaFunctions[beta_List] :=
+               DeleteDuplicates[Select[beta, (!NumericQ[#[[1]]])&], (#1[[1]] === #2[[1]])&];
+           susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
+           susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
+
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
-                               a_[Susyno`LieGroups`i1] :> a /.
-                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
+                               Parameters`StripSARAHIndicesRules[1] /.
+                               Parameters`StripSARAHIndicesRules[2];
            allIndexReplacementRules = Join[
                Parameters`CreateIndexReplacementRules[allParameters],
                {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
@@ -1742,6 +1753,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 Global`electronDRbar[i_,j_] :> Global`electronDRbar[i-1,j-1]}
            ];
            Parameters`SetModelParameters[allParameters];
+           DebugPrint["model parameters: ", allParameters];
 
            (* collect all phases from SARAH *)
            phases = DeleteDuplicates @ Join[
@@ -1796,8 +1808,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* adding the types and their input names to the parameters *)
            FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                           {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
-                                                     a_[Susyno`LieGroups`i1] :> a /.
-                                                     a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                                     Parameters`StripSARAHIndicesRules[1] /.
+                                                     Parameters`StripSARAHIndicesRules[2],
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
@@ -1831,8 +1843,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
                                                Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
                                                   Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
-                                              a_[Susyno`LieGroups`i1] :> a /.
-                                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                              Parameters`StripSARAHIndicesRules[1] /.
+                                              Parameters`StripSARAHIndicesRules[2],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
@@ -2011,6 +2023,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
+           DebugPrint["input parameters = ", inputParameters];
            WriteInputParameterClass[inputParameters,
                                     {{FileNameJoin[{$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
