@@ -61,5 +61,16 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 @copyMixingMatrices@
 }
 
+double @ModelName@_effective_couplings::number_of_active_flavours(double m) const
+{
+   if (m < qedqcd.displayMbMb()) {
+      return 4.0;
+   } else if (m < qedqcd.displayPoleMt()) {
+      return 5.0;
+   } else {
+      return 6.0;
+   }
+}
+
 @loopCouplingsFunctions@
 } // namespace flexiblesusy

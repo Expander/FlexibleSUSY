@@ -54,6 +54,7 @@ private:
    bool rg_improve;
 
    void copy_mixing_matrices_from_model();
+   double number_of_active_flavours(double) const;
 
 @mixingMatricesDefs@
 @loopCouplingsDefs@

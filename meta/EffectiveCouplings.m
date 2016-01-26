@@ -593,9 +593,16 @@ CreateEffectiveCouplingFunction[coupling_] :=
                   body = body <> currentLine;
                  ];
 
-              If[vectorBoson === SARAH`VectorG,
-                 body = body <> "result *= std::complex<double>(0.75,0.);\n";
-                ];
+              Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
+                    body = body <> "result *= std::complex<double>(0.75,0.);\n\n";
+                    body = body <> "const double Nf = number_of_active_flavours(decay_mass);\n";
+                    body = body <> "result *= "
+                           <> CConversion`RValueToCFormString[Sqrt[1 + (1 / (4 Pi^2)) (95 / 4 - 7 Symbol["Nf"] / 6) SARAH`strongCoupling^2]] <> ";\n";,
+                    particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
+                    body = body <> "result *= std::complex<double>(2.0,0.);\n";,
+                    particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
+                    body = body <> "result *= std::complex<double>(2.0,0.);\n";
+                   ];
 
               body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";
 
