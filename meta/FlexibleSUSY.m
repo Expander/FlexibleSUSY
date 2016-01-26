@@ -1366,10 +1366,15 @@ NeedToUpdateTarget[name_String, target_] :=
 
 FSPrepareRGEs[loopOrder_] :=
     Module[{needToCalculateRGEs, betas},
-           needToCalculateRGEs = NeedToCalculateRGEs[];
-           SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
-                          TwoLoop -> If[loopOrder < 2, False, True],
-                          NoMatrixMultiplication -> False];
+           If[loopOrder > 0,
+              needToCalculateRGEs = NeedToCalculateRGEs[];
+              SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
+                             TwoLoop -> If[loopOrder < 2, False, True],
+                             NoMatrixMultiplication -> False];
+              ,
+              (* create Beta* symbols with beta functions set to 0 *)
+              SARAH`MakeDummyListRGEs[];
+             ];
            (* check if the beta functions were calculated correctly *)
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
