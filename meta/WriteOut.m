@@ -380,7 +380,7 @@ WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
                         <> WriteSLHABlockEntry[{value, particlePDG[[start]], vectorPDG, vectorPDG},
                                                 comment];,
               For[i = start, i <= Length[particlePDG], i++,
-                  value = "Abs(" <> struct <> "(" <> ToString[i-1] <> "))";
+                  value = "Abs(" <> struct <> "(" <> ToString[i-start] <> "))";
                   result = result
                            <> WriteSLHABlockEntry[{value, particlePDG[[i]], vectorPDG, vectorPDG},
                                                   comment];
