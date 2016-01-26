@@ -35,7 +35,7 @@ UnmixedZMass[] :=
           keepPositions = Complement[Range[matrixDim], deletePositions];
           massEigenvalues = Eigenvalues[ZMassMatrix[[keepPositions, keepPositions]]];
           If[Length[massEigenvalues] != 2 || !MemberQ[massEigenvalues, 0], Print["Error: Determination of UnmixedZMass failed"]; Return[0]];
-          Select[massEigenvalues, # =!= 0 &][[1]]];
+          Select[massEigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
 
 (*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
 RhoZero[] :=
@@ -52,7 +52,7 @@ RhoZero[] :=
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{solution},
            Print["Expressing Weinberg angle in terms of model parameters ..."];
-           solution = ArcCos[Sqrt[FindMassW[masses] / (UnmixedZMass[] /. Parameters`ApplyGUTNormalization[]) / RhoZero[]]];
+           solution = ArcCos[Sqrt[FindMassW[masses] / UnmixedZMass[] / RhoZero[]]];
            Simplify[solution]
           ];
 
