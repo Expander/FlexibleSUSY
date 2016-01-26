@@ -106,6 +106,10 @@ AppendGenerationIndices::usage="";
 
 StripIndices::usage="removes indices from model parameter";
 
+StripIndicesRules::usage="removes given indices from a symbol";
+
+StripSARAHIndicesRules::usage="removes SARAH-specific indices from a symbol";
+
 FilterOutLinearDependentEqs::usage="returns linear independent equations";
 
 FilterOutIndependentEqs::usage = "returns equations that depend on the
@@ -1154,6 +1158,12 @@ StripIndices[par_[idx___] /; And @@ (NumberQ /@ {idx})] := par;
 StripIndices[par_[idx___] /; MemberQ[Join[allModelParameters,allOutputParameters],par]] := par;
 
 StripIndices[par_] := par;
+
+StripIndicesRules[indices_List, numberOfIndices_] :=
+    Flatten[{ RuleDelayed[a_[Sequence @@ #], a]& /@ Permutations[indices, {numberOfIndices}] }];
+
+StripSARAHIndicesRules[numberOfIndices_] :=
+    StripIndicesRules[sarahIndices, numberOfIndices];
 
 ExtractParametersFromSARAHBetaLists[beta_List] :=
     StripIndices[#[[1]]]& /@ beta;
