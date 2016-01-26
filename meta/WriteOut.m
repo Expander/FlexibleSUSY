@@ -1001,7 +1001,9 @@ ConvertSoftSquaredMassesToSLHA[] :=
 CalculateCKMMatrix[] :=
     Module[{result = ""},
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL]
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL] &&
+              SARAH`getDimParameters[SARAH`DownMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3}
               ,
               result = result <> "ckm = " <>
               CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> " * " <>
@@ -1011,7 +1013,11 @@ CalculateCKMMatrix[] :=
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL  ] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ]
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ] &&
+              SARAH`getDimParameters[SARAH`DownMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`DownMatrixR] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixR] === {3,3}
               ,
               result = result <> "CKM_parameters::to_pdg_convention(ckm, " <>
               CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> ", " <>

@@ -39,17 +39,17 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           ""
          ];
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
                  value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`DownYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
                  value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
                  value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";

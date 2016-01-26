@@ -240,12 +240,9 @@ SetDRbarYukawaCouplingBottom[settings_] :=
 SetDRbarYukawaCouplingElectron[settings_] :=
     SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
 
-SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
+SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
     Module[{y, f},
-           f = Cases[settings, {yukawa, s_} :> s];
-           If[f === {}, Return[""];];
-           f = f[[1]];
-           If[f === Automatic,
+           If[setting === Automatic,
               {y, f} = InvertMassRelation[fermion, yukawa];
               f = f /. fermion -> mass;
               ,
@@ -253,6 +250,30 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
              ];
            Parameters`CreateLocalConstRefs[f] <>
            Parameters`SetParameter[yukawa, f, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplingFermionElement[{y_, expr_}] :=
+    Parameters`SetParameter[y, expr, "MODEL"];
+
+SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
+    Module[{f, p, i, result = ""},
+           (* check for matrix setting *)
+           f = Cases[settings, {yukawa, s_} :> s];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionMatrix[fermion, yukawa, mass, f[[i]]];
+                 ];
+              Return[result];
+             ];
+           (* check for matrix element setting *)
+           f = Cases[settings, p:{yukawa[__], s_} :> p];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionElement[f[[i]]];
+                 ];
+              Return[Parameters`CreateLocalConstRefs[(#[[2]])& /@ f] <> result];
+             ];
+           ""
           ];
 
 MultiplyBy[factor_ /; factor == 1] := "";
