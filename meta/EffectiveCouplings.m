@@ -390,7 +390,7 @@ CreateNeededCouplingFunction[coupling_, expr_] :=
               ];
            functionName = functionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType]; initialValue = "0.0";,
+              type = CConversion`ScalarType[CConversion`realScalarCType]; initialValue = " = 0.0";,
               type = CConversion`ScalarType[CConversion`complexScalarCType]; initialValue = "";];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> functionName <> " const;\n";
@@ -489,7 +489,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
            body = "result += " <> If[factor != 1, CConversion`RValueToCFormString[factor] <> " * ", ""]
                     <> If[qcdfactor != "", qcdfactor <> " * ", ""] <> couplingName
                     <> " * vev * " <> scaleFunction <> "(decay_scale / Sqr(" <> massStr <> ")) / "
-                    <> massStr <> ";";
+                    <> If[IsFermion[internal], massStr, "Sqr(" <> massStr <> ")"] <> ";";
            If[particle == SARAH`HiggsBoson && vectorBoson =!= SARAH`VectorG &&
               TreeMasses`IsFermion[internal] && HasColorCharge[internal],
               body = "if (" <> massStr <> " > decay_mass) {\n"
