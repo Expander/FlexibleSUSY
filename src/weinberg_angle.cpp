@@ -165,9 +165,14 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
    double rho_new = rho_start, sin_new = sin_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaR
+      double deltaR
          = calculate_delta_r(rho_old, sin_old, data, susy_contributions,
                              number_of_loops);
+
+      if (deltaR > 1.) {
+         WARNING("delta_r > 1");
+         deltaR = 0.;
+      }
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
