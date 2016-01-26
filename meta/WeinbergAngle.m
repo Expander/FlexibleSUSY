@@ -8,16 +8,6 @@ RhoHatTree::usage="";
 
 Begin["`Private`"];
 
-InputFormOfNonStrings[a_String] := a;
-InputFormOfNonStrings[a_] := InputForm[a];
-
-DebugPrint[msg___] :=
-    If[FlexibleSUSY`FSDebugOutput,
-       Print["Debug<WeinbergAngle>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
-
-FindWeinbergAngleDef[] :=
-    Parameters`FindSymbolDef[SARAH`Weinberg];
-
 FindMassW[masses_List] :=
     FindMass[masses, SARAH`VectorW];
 
@@ -35,6 +25,7 @@ FindMass[masses_List, particle_] :=
            Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
           ];
 
+(*extracts tree-level mass of Z boson before mixing with additional Z`*)
 UnmixedZMass[] :=
    Module[{ZMassMatrix, matrixDim, extraGaugeCouplings, deletePositions, keepPositions, massEigenvalues},
           ZMassMatrix = SARAH`MassMatrix[SARAH`VectorZ];
@@ -46,6 +37,7 @@ UnmixedZMass[] :=
           If[Length[massEigenvalues] != 2 || !MemberQ[massEigenvalues, 0], Print["Error: Determination of UnmixedZMass failed"]; Return[0]];
           Select[massEigenvalues, # =!= 0 &][[1]]];
 
+(*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
 RhoZero[] :=
    Module[{hyperchargePos, leftPos, vevlist},
           hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
@@ -56,24 +48,6 @@ RhoZero[] :=
           (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List} :> Flatten[{vevinfo, Cases[SARAH`SuperFields, x_ /; !FreeQ[x[[3]], fieldname] :> {(x[[3 + leftPos]] - 1) / 2, -x[[3 + hyperchargePos]]}]}];
           Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist)]];
-
-SolvesWeinbergEq[eq_, expr_] :=
-    Module[{insertedEq},
-           insertedEq = TimeConstrained[
-               Simplify[eq /. SARAH`Weinberg -> expr],
-               FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
-               False];
-           insertedEq === True
-          ];
-
-ExpressWeinbergAngleInTermsOfGaugeCouplings::nonSMDef = "Warning: The \
-Standard Model definition of the Weinberg angle `1` does not solve the \
-system of equations `2`.";
-
-ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution = "Error: \
-could not express the Weinberg angle `1` in terms of the gauge \
-couplings.  The equation which could not be solved is: `2`.  I'll use \
-the Standard Model definition `3` instead.";
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{solution},
