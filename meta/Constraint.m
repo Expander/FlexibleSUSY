@@ -351,13 +351,6 @@ GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], qedqcd_Strin
 CalculateScale[s:FlexibleSUSY`LowEnergyConstant[_], scaleName_String] :=
     scaleName <> " = " <> GetSMMatchingScale[s, "qedqcd"] <> ";\n";
 
-(* Don't expand LowEnergyConstant[MZ] to the hard-coded value
-   LowEnergyConstant(MZ), because the pole MZ is an input parameter
-   and the user might want to vary it.
- *)
-CalculateScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], scaleName_String] :=
-    scaleName <> " = MZPole;";
-
 CalculateScale[expr_, scaleName_String] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[expr];

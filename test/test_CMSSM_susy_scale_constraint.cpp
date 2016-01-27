@@ -16,11 +16,12 @@
 
 BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 {
+   QedQcd qedqcd;
    CMSSM_input_parameters input;
    CMSSM<Two_scale> m; MssmSoftsusy s;
    setup_CMSSM(m, s, input);
 
-   CMSSM_susy_scale_constraint<Two_scale> constraint(&m);
+   CMSSM_susy_scale_constraint<Two_scale> constraint(&m, qedqcd);
    constraint.apply();
 
    double tadpole[2];
