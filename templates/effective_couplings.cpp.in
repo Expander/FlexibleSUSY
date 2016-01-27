@@ -35,7 +35,8 @@ using namespace effective_couplings;
    const @ModelName@_mass_eigenstates& model_,
    const softsusy::QedQcd& qedqcd_,
    const Physical_input& input_)
-   : model(model_), qedqcd(qedqcd_), physical_input(input_), rg_improve(true)
+   : model(model_), qedqcd(qedqcd_), physical_input(input_)
+   , rg_improve(true), include_qcd_corrections(true)
 @mixingMatricesInit@
 @loopCouplingsInit@
 {
@@ -70,6 +71,16 @@ double @ModelName@_effective_couplings::number_of_active_flavours(double m) cons
    } else {
       return 6.0;
    }
+}
+
+double @ModelName@_effective_couplings::qcd_scaling_factor(double m) const
+{
+   const double Nf = number_of_active_flavours(m);
+   const double mtpole = qedqcd.displayPoleMt();
+   const double l = Log(Sqr(m) / Sqr(mtpole));
+
+@calculateQCDScalingFactor@
+   return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
 }
 
 @loopCouplingsFunctions@

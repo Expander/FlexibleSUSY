@@ -4,6 +4,7 @@ InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
 GetNeededVerticesList::usage="";
+CalculateQCDScalingFactor::usage="";
 CreateEffectiveCouplingsGetters::usage="";
 CreateEffectiveCouplingsDefinitions::usage="";
 CreateEffectiveCouplingsInit::usage="";
@@ -40,6 +41,21 @@ GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
                        <> CConversion`ToValidCSymbolString[symbol] <> "();\n";
              ];
            result
+          ];
+
+CalculateQCDScalingFactor[] :=
+    Module[{nloQCD, nnloQCD, nnnloQCD, result = ""},
+           nloQCD = (95 / 4 - 7 / 6 Symbol["Nf"]) SARAH`strongCoupling^2 / (4 Pi^2);
+           nnloQCD = 149533 / 288 - 363 Zeta[2] / 8 - 495 Zeta[3] / 8 + 19 Symbol["l"] / 8;
+           nnloQCD = nnloQCD + Symbol["Nf"] (-4157 / 72 + 11 Zeta[2] / 2 + 5 Zeta[3] / 4 + 2 Symbol["l"] / 3);
+           nnloQCD = nnloQCD + Symbol["Nf"]^2 (127 / 108 - Zeta[2] / 6);
+           nnloQCD = nnloQCD SARAH`strongCoupling^4 / (16 Pi^4);
+           nnnloQCD = 467.683620788 + 122.440972222 Symbol["l"] + 10.9409722222 Symbol["l"]^2;
+           nnnloQCD = nnnloQCD SARAH`strongCoupling^6 / (64 Pi^6);
+           result = result <> "const double nlo_qcd = " <> CConversion`RValueToCFormString[nloQCD] <> ";\n";
+           result = result <> "const double nnlo_qcd = " <> CConversion`RValueToCFormString[nnloQCD] <> ";\n";
+           result = result <> "const double nnnlo_qcd = " <> CConversion`RValueToCFormString[nnnloQCD] <> ";\n";
+           result = Parameters`CreateLocalConstRefs[nloQCD + nnloQCD + nnnloQCD] <> "\n" <> result
           ];
 
 GetAllowedCouplingsForModel[] :=
@@ -348,21 +364,23 @@ CreateEffectiveCouplingPrototype[coupling_] :=
           ];
 
 GetQCDCorrections[particle_, vectorBoson_] :=
-    Module[{scalarQCD, fermionQCD, parameters = {}, result = ""},
+    Module[{scalarQCD, fermionQCD, parameters = {}, corrections = "", result = ""},
            If[particle === SARAH`HiggsBoson,
               Which[vectorBoson === SARAH`VectorP,
                     scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
                     fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
-                    result = "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
-                             <> ";\nconst double qcd_fermion = " <> CConversion`RValueToCFormString[fermionQCD]
-                             <> ";\n\n";,
+                    corrections = "qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                             <> ";\nqcd_fermion = " <> CConversion`RValueToCFormString[fermionQCD]<> ";";,
                     vectorBoson === SARAH`VectorG,
                     scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
-                    result = "const double qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
-                             <> ";\nconst double qcd_fermion = qcd_scalar;\n\n",
+                    corrections = "qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
+                             <> ";\nqcd_fermion = qcd_scalar;",
                     True,
                     result =""
                    ];
+               result = "double qcd_scalar = 1.0;\ndouble qcd_fermion = 1.0;\n";
+               result = result <> "if (include_qcd_corrections) {\n"
+                        <> TextFormatting`IndentText[corrections] <> "\n}\n\n";
                parameters = {SARAH`strongCoupling};
              ];
            {result, parameters}
@@ -599,9 +617,8 @@ CreateEffectiveCouplingFunction[coupling_] :=
 
               Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
                     body = body <> "result *= std::complex<double>(0.75,0.);\n\n";
-                    body = body <> "const double Nf = number_of_active_flavours(decay_mass);\n";
-                    body = body <> "result *= "
-                           <> CConversion`RValueToCFormString[Sqrt[1 + (1 / (4 Pi^2)) (95 / 4 - 7 Symbol["Nf"] / 6) SARAH`strongCoupling^2]] <> ";\n";,
+                    body = body <> "if (include_qcd_corrections) {\n"
+                           <> TextFormatting`IndentText["result *= qcd_scaling_factor(decay_mass);"] <> "\n}\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
                     body = body <> "result *= std::complex<double>(2.0,0.);\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,

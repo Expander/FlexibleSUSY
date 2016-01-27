@@ -1090,7 +1090,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, files_List] :=
     Module[{i, loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
-            calculateLoopCouplings, loopCouplingsPrototypes, loopCouplingsFunctions},
+            calculateQCDScalingFactor, calculateLoopCouplings, loopCouplingsPrototypes,
+            loopCouplingsFunctions},
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1099,6 +1100,7 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
               ];
            loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
            loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
+           calculateQCDScalingFactor = EffectiveCouplings`CalculateQCDScalingFactor[];
            calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
            {loopCouplingsPrototypes, loopCouplingsFunctions} =
                EffectiveCouplings`CreateEffectiveCouplings[couplings, massMatrices, vertexRules];
@@ -1110,6 +1112,7 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
                                        "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
+                                       "@calculateQCDScalingFactor@" -> IndentText[WrapLines[calculateQCDScalingFactor]],
                                        "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
                                        "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
                                        Sequence @@ GeneralReplacementRules[]
