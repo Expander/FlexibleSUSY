@@ -70,7 +70,7 @@ double Standard_model_tester::qcd_scaling_factor(double m) const
    return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
 }
 
-std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
+std::complex<double> Standard_model_tester::get_eff_CphhVPVP() const
 {
    const Eigen::Array<double,3,1> MFu(model.get_MFu());
    const Eigen::Array<double,3,1> MFd(model.get_MFd());
@@ -86,8 +86,16 @@ std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
    std::complex<double> result = AS1(0.25 * Sqr(Mhh) / Sqr(MVWp));
 
    for (unsigned i = 0; i < 3; ++i) {
-      result += 4.0 * qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFu(i))) / 3.0;
-      result += qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFd(i))) / 3.0;
+      if (MFu(i) > Mhh) {
+         result += 4.0 * qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFu(i))) / 3.0;
+      } else {
+        result += 4.0 * AS12(0.25 * Sqr(Mhh) / Sqr(MFu(i))) / 3.0;
+      }
+      if (MFd(i) > Mhh) {
+         result += qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFd(i))) / 3.0;
+      } else {
+         result += AS12(0.25 * Sqr(Mhh) / Sqr(MFd(i))) / 3.0;
+      }
       result += AS12(0.25 * Sqr(Mhh) / Sqr(MFe(i)));
    }
 
@@ -97,7 +105,7 @@ std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
    return result;
 }
 
-std::complex<double> Standard_model_tester::get_eff_CphhVGVG()
+std::complex<double> Standard_model_tester::get_eff_CphhVGVG() const
 {
    const Eigen::Array<double,3,1> MFu(model.get_MFu());
    const Eigen::Array<double,3,1> MFd(model.get_MFd());
@@ -194,10 +202,10 @@ BOOST_AUTO_TEST_CASE( test_LO_effective_couplings )
    const std::complex<double> obtained_cphhVPVP = eff_cp.get_eff_CphhVPVP();
    const std::complex<double> obtained_cphhVGVG = eff_cp.get_eff_CphhVGVG();
 
-   BOOST_CHECK_CLOSE_FRACTION(Re(expected_cphhVPVP), Re(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Im(expected_cphhVPVP), Im(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Re(expected_cphhVGVG), Re(obtained_cphhVGVG), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Im(expected_cphhVGVG), Im(obtained_cphhVGVG), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVPVP), Re(obtained_cphhVPVP), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVPVP), Im(obtained_cphhVPVP), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVGVG), Re(obtained_cphhVGVG), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVGVG), Im(obtained_cphhVGVG), 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_beyond_LO_effective_couplings )
@@ -223,8 +231,8 @@ BOOST_AUTO_TEST_CASE( test_beyond_LO_effective_couplings )
    const std::complex<double> obtained_cphhVPVP = eff_cp.get_eff_CphhVPVP();
    const std::complex<double> obtained_cphhVGVG = eff_cp.get_eff_CphhVGVG();
 
-   BOOST_CHECK_CLOSE_FRACTION(Re(expected_cphhVPVP), Re(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Im(expected_cphhVPVP), Im(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Re(expected_cphhVGVG), Re(obtained_cphhVGVG), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(Im(expected_cphhVGVG), Im(obtained_cphhVGVG), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVPVP), Re(obtained_cphhVPVP), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVPVP), Im(obtained_cphhVPVP), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVGVG), Re(obtained_cphhVGVG), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVGVG), Im(obtained_cphhVGVG), 1.0e-10);
 }
