@@ -89,16 +89,17 @@ deltaRHat2LoopSM[]:=
            Return[result];
           ];
 
-(*calculates tree-level value of rhohat parameter from Z and W tree-level DRbar masses*)
-RhoHatTree[massMatrices_List]:=Module[{Ztreemass, Wtreemass, expr, result},
-                                       Ztreemass = FindMassZ[massMatrices];
-                                       Wtreemass = FindMassW[massMatrices];
-                                       expr = Simplify[Wtreemass / Ztreemass / Cos[SARAH`Weinberg]^2/.SARAH`Weinberg->ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]];
-                                       result = Parameters`CreateLocalConstRefs[expr] <> "\n";
-                                       result = result <> "rhohat_tree = ";
-                                       result = result <> CConversion`RValueToCFormString[expr] <> ";";
-                                       Return[result];
-                                     ];
+(*calculates tree-level value of rhohat parameter from umixed and mixed Z mass as well as RhoZero*)
+RhoHatTree[massMatrices_List]:=
+    Module[{Zmassunmixed, Zmassmixed, expr, result},
+           Zmassunmixed = UnmixedZMass[];
+           Zmassmixed = FindMassZ[massMatrices];
+           expr = Simplify[RhoZero[] Zmassunmixed / Zmassmixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
+           result = Parameters`CreateLocalConstRefs[expr] <> "\n";
+           result = result <> "rhohat_tree = ";
+           result = result <> CConversion`RValueToCFormString[expr] <> ";";
+           Return[result];
+          ];
 
 End[];
 
