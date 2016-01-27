@@ -397,7 +397,7 @@ public:
    CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint()
       : CMSSMMassWInput_susy_scale_constraint<Two_scale>() {}
    CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters& inputPars_)
-      : CMSSMMassWInput_susy_scale_constraint<Two_scale>(model_) {}
+      : CMSSMMassWInput_susy_scale_constraint<Two_scale>(model_, QedQcd()) {}
    virtual ~CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint() {}
 
    virtual void apply();
@@ -544,7 +544,7 @@ public:
       if (!high_constraint)
          high_constraint = new CMSSMMassWInput_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new CMSSMMassWInput_susy_scale_constraint<Two_scale>(&mssm);
+         susy_constraint = new CMSSMMassWInput_susy_scale_constraint<Two_scale>(&mssm, qedqcd);
       if (!low_constraint)
          low_constraint = new CMSSMMassWInput_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }
