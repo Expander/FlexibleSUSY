@@ -207,6 +207,7 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
+		$(DIR)/test_SM_effective_couplings.cpp \
 		$(DIR)/test_SM_low_scale_constraint.cpp \
 		$(DIR)/test_SM_one_loop_spectrum.cpp \
 		$(DIR)/test_SM_higgs_loop_corrections.cpp \
@@ -594,6 +595,8 @@ $(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY
 $(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_effective_couplings.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_higgs_loop_corrections.x: $(DIR)/test_SM_higgs_loop_corrections.o $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$< $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(THREADLIBS)
