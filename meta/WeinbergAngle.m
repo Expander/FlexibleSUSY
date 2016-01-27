@@ -8,13 +8,13 @@ RhoHatTree::usage="";
 
 Begin["`Private`"];
 
-FindMassW[masses_List] :=
-    FindMass[masses, SARAH`VectorW];
+FindMassW2[masses_List] :=
+    FindMass2[masses, SARAH`VectorW];
 
-FindMassZ[masses_List] :=
-    FindMass[masses, SARAH`VectorZ];
+FindMassZ2[masses_List] :=
+    FindMass2[masses, SARAH`VectorZ];
 
-FindMass[masses_List, particle_] :=
+FindMass2[masses_List, particle_] :=
     Module[{massExpr},
            massExpr = Cases[masses, TreeMasses`FSMassMatrix[{mass_}, particle, ___] :> mass];
            If[Head[massExpr] =!= List || massExpr === {},
@@ -25,17 +25,17 @@ FindMass[masses_List, particle_] :=
            Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
           ];
 
-(*extracts tree-level mass of Z boson before mixing with additional Z`*)
-UnmixedZMass[] :=
-    Module[{ZMassMatrix, matrixDim, extraGaugeCouplings, deletePositions, keepPositions, massEigenvalues},
+(*extracts squared tree-level mass of Z boson before mixing with additional Z`*)
+UnmixedZMass2[] :=
+    Module[{ZMassMatrix, matrixDim, extraGaugeCouplings, deletePositions, keepPositions, mass2Eigenvalues},
            ZMassMatrix = SARAH`MassMatrix[SARAH`VectorZ];
            matrixDim = Dimensions[ZMassMatrix][[1]];
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            deletePositions = Flatten[Position[Diagonal[ZMassMatrix], x_ /; Or @@ (!FreeQ[x, #]& /@ extraGaugeCouplings), {1}]];
            keepPositions = Complement[Range[matrixDim], deletePositions];
-           massEigenvalues = Eigenvalues[ZMassMatrix[[keepPositions, keepPositions]]];
-           If[Length[massEigenvalues] != 2 || !MemberQ[massEigenvalues, 0], Print["Error: Determination of UnmixedZMass failed"]; Return[0]];
-           Return[Select[massEigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
+           mass2Eigenvalues = Eigenvalues[ZMassMatrix[[keepPositions, keepPositions]]];
+           If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0], Print["Error: Determination of UnmixedZMass2 failed"]; Return[0]];
+           Return[Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
           ];
 
 (*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
@@ -54,7 +54,7 @@ RhoZero[] :=
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{solution},
            Print["Expressing Weinberg angle in terms of model parameters ..."];
-           solution = ArcCos[Sqrt[FindMassW[masses] / UnmixedZMass[] / RhoZero[]]];
+           solution = ArcCos[Sqrt[FindMassW2[masses] / UnmixedZMass2[] / RhoZero[]]];
            Return[Simplify[solution]];
           ];
 
@@ -91,10 +91,10 @@ deltaRHat2LoopSM[]:=
 
 (*calculates tree-level value of rhohat parameter from umixed and mixed Z mass as well as RhoZero*)
 RhoHatTree[massMatrices_List]:=
-    Module[{Zmassunmixed, Zmassmixed, expr, result},
-           Zmassunmixed = UnmixedZMass[];
-           Zmassmixed = FindMassZ[massMatrices];
-           expr = Simplify[RhoZero[] Zmassunmixed / Zmassmixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
+    Module[{Zmass2unmixed, Zmass2mixed, expr, result},
+           Zmass2unmixed = UnmixedZMass2[];
+           Zmass2mixed = FindMassZ2[massMatrices];
+           expr = Simplify[RhoZero[] Zmass2unmixed / Zmass2mixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> "rhohat_tree = ";
            result = result <> CConversion`RValueToCFormString[expr] <> ";";
