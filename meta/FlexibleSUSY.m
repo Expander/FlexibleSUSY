@@ -1967,7 +1967,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
-           DebugPrint["input parameters = ", inputParameters];
            WriteInputParameterClass[inputParameters,
                                     {{FileNameJoin[{$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
