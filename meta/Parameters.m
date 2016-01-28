@@ -77,6 +77,9 @@ GetDependenceSPhenoRules::usage="Returns list of replacement rules for
 GetOutputParameterDependencies::usage="Returns list of output
  parameters which appear in the given expression";
 
+GetIntermediateOutputParameterDependencies::usage="Returns list of
+ intermediate output parameters which appear in the given expression";
+
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
 
@@ -1243,6 +1246,10 @@ GetAllOutputParameterDependencies[expr_] :=
 GetOutputParameterDependencies[expr_] :=
     Select[GetOutputParameters[],
            (!FreeQ[GetAllOutputParameterDependencies[expr] /. GetDependenceSPhenoRules[],#])&];
+
+GetIntermediateOutputParameterDependencies[expr_] :=
+    Complement[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]],
+               GetOutputParameters[]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
