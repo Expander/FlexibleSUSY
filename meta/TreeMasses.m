@@ -122,8 +122,8 @@ FindColorGaugeCoupling::usage="returns symbol of color gauge coupling";
 FindLeftGaugeCoupling::usage="returns symbol of weak (left) gauge coupling";
 FindHyperchargeGaugeCoupling::usage="returns symbol of hypercharge gauge coupling";
 
-CreateDependenceNumPrototypes::usage="";
-CreateDependenceNumFunctions::usage="";
+CreateDependencePrototypes::usage="";
+CreateDependenceFunctions::usage="";
 
 IsScalar::usage="";
 IsFermion::usage="";
@@ -1447,17 +1447,17 @@ FindDependenceNumRules[] :=
            dependenceNumRules
           ];
 
-CreateDependenceNumPrototype[Rule[parameter_, _]] :=
+CreateDependencePrototype[Rule[parameter_, _]] :=
     "double " <> ToValidCSymbolString[parameter] <> "() const;\n";
 
-CreateDependenceNumPrototypes[massMatrices_List] :=
+CreateDependencePrototypes[massMatrices_List] :=
     Module[{dependenceNums, result = ""},
            dependenceNums = FindDependenceNums[massMatrices];
-           (result = result <> CreateDependenceNumPrototype[#])& /@ dependenceNums;
+           (result = result <> CreateDependencePrototype[#])& /@ dependenceNums;
            Return[result];
           ];
 
-CreateDependenceNumFunction[Rule[parameter_, value_]] :=
+CreateDependenceFunction[Rule[parameter_, value_]] :=
     Module[{result, body, parStr},
            parStr = ToValidCSymbolString[parameter];
            body = Parameters`CreateLocalConstRefsForInputParameters[value, "LOCALINPUT"] <> "\n" <>
@@ -1467,10 +1467,10 @@ CreateDependenceNumFunction[Rule[parameter_, value_]] :=
            Return[result];
           ];
 
-CreateDependenceNumFunctions[massMatrices_List] :=
+CreateDependenceFunctions[massMatrices_List] :=
     Module[{dependenceNums, result = ""},
            dependenceNums = FindDependenceNums[massMatrices];
-           (result = result <> CreateDependenceNumFunction[#])& /@ dependenceNums;
+           (result = result <> CreateDependenceFunction[#])& /@ dependenceNums;
            Return[result];
           ];
 

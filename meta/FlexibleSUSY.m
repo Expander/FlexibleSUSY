@@ -848,7 +848,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             getPhysical = "", setPhysical = "",
             getMasses = "", setMasses = "",
             masses, mixingMatrices, oneLoopTadpoles,
-            dependenceNumPrototypes, dependenceNumFunctions,
+            dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "",
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
@@ -966,8 +966,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
+           dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
+           dependenceFunctions       = TreeMasses`CreateDependenceFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
@@ -1062,8 +1062,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@getMasses@"                    -> IndentText[getMasses],
                             "@setMasses@"                    -> IndentText[setMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
-                            "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
-                            "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
+                            "@dependencePrototypes@"         -> IndentText[dependencePrototypes],
+                            "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
                             "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
                             "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
