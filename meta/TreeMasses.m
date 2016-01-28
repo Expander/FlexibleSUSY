@@ -979,6 +979,11 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            dimStart = GetDimensionStartSkippingGoldstones[particle];
            dimEnd   = GetDimension[particle];
            particleName = CConversion`ToValidCSymbolString[particle];
+           (* skip check if all particles in the multiplet are tachyons *)
+           If[(dimEnd == 1 && IsGoldstone[particle]) ||
+              (dimStart >= dimEnd + 1),
+              Return[""];
+             ];
            "if (" <>
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
            If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
