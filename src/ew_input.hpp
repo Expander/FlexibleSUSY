@@ -66,6 +66,10 @@ namespace Electroweak_constants {
       const double g1 = sqrt(4.0 * M_PI * alpha1);
       const double g2 = sqrt(4.0 * M_PI * alpha2);
       const double g3 = sqrt(4.0 * M_PI * alpha3);
+      const double gYSM = 3.57232027E-01;     ///< gY MS-bar in the SM at Q = MZ
+      const double g1SM = sqrt(5./3.) * gYSM; ///< g1 MS-bar in the SM at Q = MZ
+      const double g2SM = 6.51103848E-01;     ///< g2 MS-bar in the SM at Q = MZ
+      const double g3SM = 1.21087245E+00;     ///< g3 MS-bar in the SM at Q = MZ
       const double CKM_THETA12 = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
       const double CKM_THETA13 = 0.003960; ///< From Vub in global CKM fit, PDG
       const double CKM_THETA23 = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
@@ -77,6 +81,18 @@ namespace Electroweak_constants {
       const double PMNS_ALPHA1  = 0.;
       const double PMNS_ALPHA2  = 0.;
       const double gfermi = 1.16637e-5; ///< Fermi constant G_F
+      const double yeSM = 2.85784368E-06; ///< Ye(1,1) MS-bar in the SM at Q = MZ
+      const double ymSM = 5.90911374E-04; ///< Ye(2,2) MS-bar in the SM at Q = MZ
+      const double ylSM = 9.95869693E-03; ///< Ye(3,3) MS-bar in the SM at Q = MZ
+      const double yuSM = 7.89527379E-06; ///< Yu(1,1) MS-bar in the SM at Q = MZ
+      const double ycSM = 3.60854291E-03; ///< Yu(2,2) MS-bar in the SM at Q = MZ
+      const double ytSM = 9.76017610E-01; ///< Yu(3,3) MS-bar in the SM at Q = MZ
+      const double ydSM = 1.56989573E-05; ///< Yd(1,1) MS-bar in the SM at Q = MZ
+      const double ysSM = 3.43724539E-04; ///< Yd(2,2) MS-bar in the SM at Q = MZ
+      const double ybSM = 1.64406299E-02; ///< Yd(3,3) MS-bar in the SM at Q = MZ
+      const double mu2SM = 7.67488232E+03; ///< mu^2 MS-bar in the SM at Q = MZ
+      const double lamSM = 2.79613357E-01; ///< lambda MS-bar in the SM at Q = MZ
+      const double vSM = 2.48997424E+02;   ///< VEV MS-bar in the SM at Q = MZ
    }
 }
 

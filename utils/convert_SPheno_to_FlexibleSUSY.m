@@ -58,6 +58,7 @@ GetSPhenoFile[];
 output = "\
 FSModelName = \"@CLASSNAME@\";
 FSDefaultSARAHModel = UnknownSARAHModel;
+FSRGELoopOrder = 2;
 
 ";
 
