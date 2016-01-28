@@ -1246,11 +1246,15 @@ GetDependenceSPhenoRules[] :=
 GetSARAHParameters[] :=
     (#[[1]])& /@ SARAH`SARAHparameters;
 
-GetOutputParameterDependencies[expr_] :=
+GetAllOutputParameterDependencies[expr_] :=
     Complement[Select[Join[GetSARAHParameters[],
                            GetDependenceSPhenoSymbols[]],
                       (!FreeQ[expr,#])&],
                GetModelParameters[]];
+
+GetOutputParameterDependencies[expr_] :=
+    Select[GetOutputParameters[],
+           (!FreeQ[GetAllOutputParameterDependencies[expr] /. GetDependenceSPhenoRules[],#])&];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
