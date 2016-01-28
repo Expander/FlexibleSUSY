@@ -876,13 +876,13 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
 
 CallMassCalculationFunctions[massMatrices_List] :=
     Module[{result = "", k, sortedMassMatrices, matrix, PredVectorsFirst},
-           (* Predicate function which returns false if m2 is a vector
-              boson and m1 is not.  True otherwise. *)
+           (* Predicate function which returns false if the mass matrix
+              of m1 depends on the mixing matrix of m2.  True otherwise. *)
            PredVectorsFirst[m1_TreeMasses`FSMassMatrix, m2_TreeMasses`FSMassMatrix] :=
-               Module[{es1, es2},
-                      es1 = GetMassEigenstate[m1];
-                      es2 = GetMassEigenstate[m2];
-                      IsVector[es1] || !IsVector[es2]
+               Module[{mm1, z2},
+                      mm1 = GetMassMatrix[m1];
+                      z2  = GetMixingMatrixSymbol[m2];
+                      !FreeQ[mm1, z2]
                      ];
            (* Sort mass matrices such that vector boson masses get
               calculated first.  This is necessary because the later
