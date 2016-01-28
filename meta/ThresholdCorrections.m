@@ -591,12 +591,9 @@ CalculateGaugeCouplings[] :=
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
                     / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
            result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 
