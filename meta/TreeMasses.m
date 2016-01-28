@@ -589,17 +589,20 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
                             SARAH`diracSubBack1[NameOfStates[[k]]] /.
                             SARAH`diracSubBack2[NameOfStates[[k]]];
                          Return[particle];
-                         ,
+                        ];
+                      If[Head[mixingScheme[[1]]] === List,
                          If[mixingScheme[[1,2]] === mixingMatrixSymbol,
                             particle = mixingScheme[[1,1]] /.
-                                SARAH`diracSubBack1[NameOfStates[[k]]] /.
-                                SARAH`diracSubBack2[NameOfStates[[k]]];
+                            SARAH`diracSubBack1[NameOfStates[[k]]] /.
+                            SARAH`diracSubBack2[NameOfStates[[k]]];
                             Return[particle];
                            ];
+                        ];
+                      If[Head[mixingScheme[[2]]] === List,
                          If[mixingScheme[[2,2]] === mixingMatrixSymbol,
-                            particle = mixingScheme[[1,1]] /.
-                                SARAH`diracSubBack1[NameOfStates[[k]]] /.
-                                SARAH`diracSubBack2[NameOfStates[[k]]];
+                            particle = mixingScheme[[2,1]] /.
+                            SARAH`diracSubBack1[NameOfStates[[k]]] /.
+                            SARAH`diracSubBack2[NameOfStates[[k]]];
                             Return[particle];
                            ];
                         ];
