@@ -1477,12 +1477,7 @@ LoadModelFile[file_String] :=
           ];
 
 FindUnfixedParameters[parameters_List, fixed_List] :=
-    Module[{fixedParameters},
-           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
-                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling }]]];
-           Complement[parameters, fixedParameters]
-          ];
+    Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
 GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
@@ -1735,6 +1730,31 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
+           (* add SM gauge couplings to low-scale constraint if not set anywhere *)
+           If[ValueQ[SARAH`hyperchargeCoupling] &&
+              !Constraint`IsFixed[SARAH`hyperchargeCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`hyperchargeCoupling, "new_g1"}];
+             ];
+           If[ValueQ[SARAH`leftCoupling] &&
+              !Constraint`IsFixed[SARAH`leftCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`leftCoupling, "new_g2"}];
+             ];
+           If[ValueQ[SARAH`strongCoupling] &&
+              !Constraint`IsFixed[SARAH`strongCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`strongCoupling, "new_g3"}];
+             ];
            (* add EWSB constraint to SUSY-scale constraint if not set *)
            If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                     FlexibleSUSY`FSSolveEWSBFor[___]],
