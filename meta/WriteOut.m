@@ -122,6 +122,10 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", eigenstateName, eigenstateNameStr, massNameStr,
             pdgList, pdg, dim, i},
            eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
+           (* skip splitted multiplets *)
+           If[Head[eigenstateName] === List,
+              Return[""];
+             ];
            dim = TreeMasses`GetDimension[eigenstateName];
            pdgList = SARAH`getPDGList[eigenstateName];
            If[Length[pdgList] != dim,
