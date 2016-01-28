@@ -344,7 +344,7 @@ CheckModelFileSettings[] :=
                  Print["Warning: FlexibleSUSY`HighScale should be",
                        " set in the model file!"];
                 ];
-              FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
+              FlexibleSUSY`HighScale := 2 10^16;
              ];
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
               If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
