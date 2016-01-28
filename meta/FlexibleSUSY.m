@@ -1145,7 +1145,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
             numberOfDRbarBlocks, drBarBlockNames},
-           particles = GetMassEigenstate /@ massMatrices;
+           particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
@@ -2014,6 +2014,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Parameters`SetOutputParameters[allOutputParameters];
+           DebugPrint["output parameters = ", allOutputParameters];
 
            extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
                FlexibleSUSY`ExtraSLHAOutputBlocks,
