@@ -5,6 +5,7 @@ ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
+InitialGuessAtLowScaleGaugeCouplings::usage="";
 
 FindFixedParametersFromConstraint::usage="Returns a list of all
 parameters which are fixed by the given constraint";
@@ -460,6 +461,23 @@ InitializeInputParameters[defaultValues_List] :=
                result = result <> InitializeInputParameter[defaultValues[[i]]];
               ];
            Return[result];
+          ];
+
+InitialGuessAtLowScaleGaugeCouplings[] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling],
+              result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`leftCoupling],
+              result = result <> Parameters`SetParameter[SARAH`leftCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`strongCoupling],
+              result = result <> Parameters`SetParameter[SARAH`strongCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL"];
+             ];
+           result
           ];
 
 RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
