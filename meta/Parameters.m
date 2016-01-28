@@ -71,6 +71,12 @@ with given mass dimension";
 GetDependenceNumSymbols::usage="Returns symbols which have a
 DependenceNum";
 
+GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
+ DependenceSPheno rule is defined";
+
+GetDependenceSPhenoRules::usage="Returns list of replacement rules for
+ symbols for which a DependenceSPheno rule is defined";
+
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
 
@@ -1224,6 +1230,15 @@ GetDependenceNumSymbols[] :=
                 parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
                 {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
         ];
+
+GetDependenceSPhenoSymbols[] :=
+    DeleteDuplicates @ Flatten @
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> parameter];
+
+GetDependenceSPhenoRules[] :=
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
