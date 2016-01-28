@@ -77,6 +77,9 @@ GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
 GetDependenceSPhenoRules::usage="Returns list of replacement rules for
  symbols for which a DependenceSPheno rule is defined";
 
+GetOutputParameterDependencies::usage="Returns list of output
+ parameters which appear in the given expression";
+
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
 
@@ -1239,6 +1242,15 @@ GetDependenceSPhenoSymbols[] :=
 GetDependenceSPhenoRules[] :=
     Cases[SARAH`ParameterDefinitions,
           {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
+
+GetSARAHParameters[] :=
+    (#[[1]])& /@ SARAH`SARAHparameters;
+
+GetOutputParameterDependencies[expr_] :=
+    Complement[Select[Join[GetSARAHParameters[],
+                           GetDependenceSPhenoSymbols[]],
+                      (!FreeQ[expr,#])&],
+               GetModelParameters[]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
