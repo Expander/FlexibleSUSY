@@ -88,9 +88,10 @@ PrintParameter[parameter_, streamName_String] :=
     Module[{parameterName, parameterNameWithoutIndices, expr, type},
            parameterNameWithoutIndices = parameter /.
                                          a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
-           parameterName = CConversion`ToValidCSymbolString[parameterNameWithoutIndices];
+           parameterName = CConversion`ToValidCSymbolString[TreeMasses`MakeESSymbol[parameterNameWithoutIndices]];
            type = Parameters`GetType[parameterNameWithoutIndices];
-           expr = TransposeIfVector[parameterNameWithoutIndices, type];
+           expr = TransposeIfVector[parameterNameWithoutIndices, type] /.
+              FlexibleSUSY`M[p_List] :> FlexibleSUSY`M[TreeMasses`MakeESSymbol[p]];
            Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
                   CConversion`RValueToCFormString[expr] <> " << '\\n';\n"];
           ];
