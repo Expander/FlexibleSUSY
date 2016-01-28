@@ -883,9 +883,12 @@ CallMassCalculationFunctions[massMatrices_List] :=
               of m1 depends on the mixing matrix of m2.  True otherwise. *)
            PredVectorsFirst[m1_TreeMasses`FSMassMatrix, m2_TreeMasses`FSMassMatrix] :=
                Module[{mm1, z2},
-                      mm1 = GetMassMatrix[m1];
+                      mm1 = GetMassMatrix[m1] /. Parameters`GetDependenceSPhenoRules[];
                       z2  = GetMixingMatrixSymbol[m2];
-                      !FreeQ[mm1, z2]
+                      If[Head[z2] === List && Length[z2] == 2,
+                         FreeQ[mm1, z2[[1]]] && FreeQ[mm1, z2[[2]]],
+                         FreeQ[mm1, z2]
+                        ]
                      ];
            (* Sort mass matrices such that vector boson masses get
               calculated first.  This is necessary because the later
