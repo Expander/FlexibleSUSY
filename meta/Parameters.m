@@ -68,9 +68,6 @@ GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
-GetDependenceNumSymbols::usage="Returns symbols which have a
-DependenceNum";
-
 GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
  DependenceSPheno rule is defined";
 
@@ -182,7 +179,7 @@ FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
            allParameters = Join[allModelParameters, allOutputParameters,
                                 allInputParameters, Phases`GetArg /@ allPhases,
-                                GetDependenceNumSymbols[]];
+                                GetDependenceSPhenoSymbols[]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -933,7 +930,7 @@ CreateLocalConstRefs[expr_] :=
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
-           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
@@ -1224,15 +1221,6 @@ GetThirdGeneration[par_] :=
           IsMatrix[par], par[2,2],
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
-
-GetDependenceNumSymbols[] :=
-    DeleteDuplicates @ Flatten @
-    Join[{SARAH`Weinberg},
-         Cases[SARAH`ParameterDefinitions,
-               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
-                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
-        ];
 
 GetDependenceSPhenoSymbols[] :=
     DeleteDuplicates @ Flatten @

@@ -1401,63 +1401,17 @@ FindLeftGaugeCoupling[] := SARAH`leftCoupling;
 
 FindHyperchargeGaugeCoupling[] := SARAH`hyperchargeCoupling;
 
-dependenceNumsUpToDate = False;
-dependenceNumRulesUpToDate = False;
-dependenceNums = {}; (* replacement rules for all DependenceNum *)
-dependenceNumRules = {}; (* replacement rules for all DependenceNum *)
-
-FindDependenceNums[massMatrices_List] :=
-    Module[{hyperchargeCoupling, leftCoupling},
-           If[!dependenceNumsUpToDate,
-              hyperchargeCoupling = FindHyperchargeGaugeCoupling[];
-              leftCoupling = FindLeftGaugeCoupling[];
-              (* @todo derive Weinberg angle in terms of fundamental model
-                 parameters from SARAH's expressions.  The definition below
-                 might not be true in a general model. *)
-              dependenceNums = Join[
-                  { Rule[SARAH`Weinberg,
-                         WeinbergAngle`ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]] },
-                  Cases[SARAH`ParameterDefinitions,
-                        {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                         parameter =!= SARAH`Weinberg &&
-                         parameter =!= SARAH`electricCharge,
-                         {___, SARAH`DependenceNum -> value:Except[None], ___}} :>
-                        Rule[parameter, value /. Parameters`ApplyGUTNormalization[]]]
-                                   ];
-              dependenceNumsUpToDate = True;
-             ];
-           dependenceNums
-          ];
-
-FindDependenceNumRules[] :=
-    Module[{hyperchargeCoupling, leftCoupling},
-           If[!dependenceNumRulesUpToDate,
-              hyperchargeCoupling = FindHyperchargeGaugeCoupling[];
-              leftCoupling = FindLeftGaugeCoupling[];
-              dependenceNumRules = Join[
-                  { SARAH`Weinberg -> SARAH`Weinberg[] },
-                  Cases[SARAH`ParameterDefinitions,
-                        {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                         parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
-                         {___, SARAH`DependenceNum -> value:Except[None], ___}} :>
-                        Rule[parameter, parameter[]]]
-                                   ];
-              dependenceNumRulesUpToDate = True;
-             ];
-           dependenceNumRules
-          ];
-
-CreateDependencePrototype[Rule[parameter_, _]] :=
+CreateDependencePrototype[(Rule | RuleDelayed)[parameter_, _]] :=
     "double " <> ToValidCSymbolString[parameter] <> "() const;\n";
 
 CreateDependencePrototypes[massMatrices_List] :=
-    Module[{dependenceNums, result = ""},
-           dependenceNums = FindDependenceNums[massMatrices];
-           (result = result <> CreateDependencePrototype[#])& /@ dependenceNums;
+    Module[{dependencies, result = ""},
+           dependencies = Parameters`GetDependenceSPhenoRules[];
+           (result = result <> CreateDependencePrototype[#])& /@ dependencies;
            Return[result];
           ];
 
-CreateDependenceFunction[Rule[parameter_, value_]] :=
+CreateDependenceFunction[(Rule | RuleDelayed)[parameter_, value_]] :=
     Module[{result, body, parStr},
            parStr = ToValidCSymbolString[parameter];
            body = Parameters`CreateLocalConstRefsForInputParameters[value, "LOCALINPUT"] <> "\n" <>
@@ -1468,17 +1422,20 @@ CreateDependenceFunction[Rule[parameter_, value_]] :=
           ];
 
 CreateDependenceFunctions[massMatrices_List] :=
-    Module[{dependenceNums, result = ""},
-           dependenceNums = FindDependenceNums[massMatrices];
-           (result = result <> CreateDependenceFunction[#])& /@ dependenceNums;
+    Module[{dependencies, result = ""},
+           dependencies = Parameters`GetDependenceSPhenoRules[];
+           (result = result <> CreateDependenceFunction[#])& /@ dependencies;
            Return[result];
           ];
 
+CreateDependencyFunctionSymbols[] :=
+    RuleDelayed[#,#[]]& /@ Parameters`GetDependenceSPhenoSymbols[];
+
 ReplaceDependencies[expr_] :=
-    expr /. FindDependenceNumRules[];
+    expr /. CreateDependencyFunctionSymbols[];
 
 ReplaceDependenciesReverse[expr_] :=
-    expr /. (Reverse /@ FindDependenceNumRules[]);
+    expr /. (Reverse /@ CreateDependencyFunctionSymbols[]);
 
 CallThirdGenerationHelperFunctionName[fermion_, msf1_String, msf2_String, theta_] :=
     "calculate_" <>
