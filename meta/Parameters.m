@@ -1234,6 +1234,9 @@ GetDependenceSPhenoRules[] :=
     Cases[SARAH`ParameterDefinitions,
           {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
 
+GetDependenceSPhenoRules[appearingIn_] :=
+    Select[GetDependenceSPhenoRules[], (!FreeQ[appearingIn,#[[1]]] || !FreeQ[appearingIn,(#[[1]])[]])&];
+
 GetSARAHParameters[] :=
     (#[[1]])& /@ SARAH`SARAHparameters;
 
