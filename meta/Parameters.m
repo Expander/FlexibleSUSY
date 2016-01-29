@@ -738,7 +738,7 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, 
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[name[i,j]];
+                   ass = ass <> CConversion`ToValidCSymbolString[name] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[rows * cols != count,
@@ -753,8 +753,8 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count+=2,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[Re[name[i,j]]] <> ", "
-                             <> CConversion`ToValidCSymbolString[Im[name[i,j]]];
+                   ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> ", "
+                             <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[2 * rows * cols != count,
