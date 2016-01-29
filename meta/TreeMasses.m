@@ -636,7 +636,8 @@ GetIntermediateMassMatrices[massMatrices_List] :=
                         ]
                      ];
            intermediatePars = Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
-           massEigenstates = (FindMassEigenstateForMixingMatrix /@ intermediatePars) /. Susyno`LieGroups`conj[a_] :> a;
+           massEigenstates = DeleteCases[
+               (FindMassEigenstateForMixingMatrix /@ intermediatePars) /. Susyno`LieGroups`conj[a_] :> a, Null];
            CreateMMs /@ Utils`Zip[massEigenstates, intermediatePars]
           ];
 
