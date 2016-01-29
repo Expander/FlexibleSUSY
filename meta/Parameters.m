@@ -1225,20 +1225,27 @@ GetThirdGeneration[par_] :=
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
 
-GetDependenceSPhenoSymbols[] :=
+GetSARAHParameters[] :=
+    (#[[1]])& /@ SARAH`SARAHparameters;
+
+GetAllDependenceSPhenoSymbols[] :=
     DeleteDuplicates @ Flatten @
     Cases[SARAH`ParameterDefinitions,
           {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> parameter];
 
-GetDependenceSPhenoRules[] :=
+GetAllDependenceSPhenoRules[] :=
     Cases[SARAH`ParameterDefinitions,
           {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
 
-GetDependenceSPhenoRules[appearingIn_] :=
-    Select[GetDependenceSPhenoRules[], (!FreeQ[appearingIn,#[[1]]] || !FreeQ[appearingIn,(#[[1]])[]])&];
+GetDependenceSPhenoSymbols[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoSymbols[], MemberQ[sarahPars,#]&]
+          ];
 
-GetSARAHParameters[] :=
-    (#[[1]])& /@ SARAH`SARAHparameters;
+GetDependenceSPhenoRules[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoRules[], MemberQ[sarahPars,#[[1]]]&]
+          ];
 
 GetAllOutputParameterDependencies[expr_] :=
     Complement[Select[Join[GetSARAHParameters[],
