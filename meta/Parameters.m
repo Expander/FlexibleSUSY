@@ -1249,7 +1249,7 @@ GetOutputParameterDependencies[expr_] :=
 
 GetIntermediateOutputParameterDependencies[expr_] :=
     Complement[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]],
-               GetOutputParameters[]];
+               Join[GetOutputParameters[], GetInputParameters[]]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
