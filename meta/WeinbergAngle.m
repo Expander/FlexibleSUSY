@@ -8,9 +8,6 @@ RhoHatTree::usage="";
 
 Begin["`Private`"];
 
-FindMassW2[masses_List] :=
-    FindMass2[masses, SARAH`VectorW];
-
 FindMassZ2[masses_List] :=
     FindMass2[masses, SARAH`VectorZ];
 
@@ -39,6 +36,20 @@ UnmixedZMass2[] :=
            Return[Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
           ];
 
+(*extracts squared tree-level mass of W boson before mixing with additional W`*)
+UnmixedWMass2[] :=
+    Module[{WMassMatrix, extraGaugeCouplings, submatrixList, submatrix, mass2Eigenvalues},
+           WMassMatrix = SARAH`MassMatrix[SARAH`VectorW];
+           Assert[MatrixQ[WMassMatrix]];
+           extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
+           submatrixList = WMassMatrix[[#, #]] & /@ Flatten[Table[{i, j}, {i, 1, Length[WMassMatrix]}, {j, i + 1, Length[WMassMatrix]}], 1];
+           submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
+           If[Length[submatrix] != 1, Print["Error: W mass matrix could not be identified"]; Return[0]];
+           mass2Eigenvalues = Eigenvalues[submatrix];
+           If[Length[DeleteDuplicates[mass2Eigenvalues]] != 1, Print["Error: Determination of UnmixedWMass2 failed"]; Return[0]];
+           Return[mass2Eigenvalues[[1]] /. Parameters`ApplyGUTNormalization[]]
+          ];
+
 (*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
 RhoZero[] :=
     Module[{hyperchargePos, leftPos, vevlist},
@@ -52,10 +63,10 @@ RhoZero[] :=
            Return[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist)]];
           ];
 
-ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
+ExpressWeinbergAngleInTermsOfGaugeCouplings[] :=
     Module[{solution},
            Print["Expressing Weinberg angle in terms of model parameters ..."];
-           solution = ArcCos[Sqrt[FindMassW2[masses] / UnmixedZMass2[] / RhoZero[]]];
+           solution = ArcCos[Sqrt[UnmixedWMass2[] / UnmixedZMass2[] / RhoZero[]]];
            Return[Simplify[solution]];
           ];
 
