@@ -326,7 +326,7 @@ SanityCheck[settings_List, constraintName_String:""] :=
            setParameters = #[[1]]& /@ settings;
            (* check for unset Yukawa couplings *)
            For[y = 1, y <= Length[yukawas], y++,
-               If[(ValueQ /@ yukawas)[[y]]] &&
+               If[(ValueQ /@ yukawas)[[y]] &&
                   FreeQ[setParameters, yukawas[[y]]],
                   Print["Warning: Yukawa coupling ", yukawas[[y]],
                         " not set",
