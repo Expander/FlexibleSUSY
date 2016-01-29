@@ -159,6 +159,7 @@ FSMassW;
 
 FSWeakMixingAngleOptions = {
     FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
+    FlexibleSUSY`FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - Mass[SARAH`VectorW]^2/Mass[SARAH`VectorZ]^2]],
     FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
     FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
     FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
