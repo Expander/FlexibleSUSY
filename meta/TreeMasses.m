@@ -1790,10 +1790,6 @@ CreateMassArrayGetter[masses_List] :=
             type, i, assignment = "", nAssignments = 0},
            For[i = 1, i <= Length[masses], i++,
                mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
-               (* skip splitted multiplets as they are already there *)
-               If[Head[GetMassEigenstate[masses[[i]]]] === List,
-                  Continue[];
-                 ];
                type = GetMassType[mass];
                name = CConversion`ToValidCSymbolString[mass];
                {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
@@ -1822,10 +1818,6 @@ CreateMassArraySetter[masses_List, array_String] :=
             type, i, assignment = "", nAssignments = 0},
            For[i = 1, i <= Length[masses], i++,
                mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
-               (* skip splitted multiplets as they are already there *)
-               If[Head[GetMassEigenstate[masses[[i]]]] === List,
-                  Continue[];
-                 ];
                type = GetMassType[mass];
                name = CConversion`ToValidCSymbolString[mass];
                {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];

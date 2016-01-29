@@ -88,10 +88,9 @@ PrintParameter[parameter_, streamName_String] :=
     Module[{parameterName, parameterNameWithoutIndices, expr, type},
            parameterNameWithoutIndices = parameter /.
                                          a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
-           parameterName = CConversion`ToValidCSymbolString[TreeMasses`MakeESSymbol[parameterNameWithoutIndices]];
+           parameterName = CConversion`ToValidCSymbolString[parameterNameWithoutIndices];
            type = Parameters`GetType[parameterNameWithoutIndices];
-           expr = TransposeIfVector[parameterNameWithoutIndices, type] /.
-              FlexibleSUSY`M[p_List] :> FlexibleSUSY`M[TreeMasses`MakeESSymbol[p]];
+           expr = TransposeIfVector[parameterNameWithoutIndices, type];
            Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
                   CConversion`RValueToCFormString[expr] <> " << '\\n';\n"];
           ];
@@ -122,10 +121,6 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", eigenstateName, eigenstateNameStr, massNameStr,
             pdgList, pdg, dim, i},
            eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
-           (* skip splitted multiplets *)
-           If[Head[eigenstateName] === List,
-              Return[""];
-             ];
            dim = TreeMasses`GetDimension[eigenstateName];
            pdgList = SARAH`getPDGList[eigenstateName];
            If[Length[pdgList] != dim,

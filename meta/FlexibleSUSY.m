@@ -872,7 +872,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
-            enablePoleMassThreads = True
+            enablePoleMassThreads = True,
+            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
            },
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
@@ -957,13 +958,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
-           masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           masses                       = DeleteCases[FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices, FlexibleSUSY`M[_List]];
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
-           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
-           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatrices, "pars"];
-           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
-           setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
+           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatricesWithoutSplittedMultiplets];
+           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
+           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatricesWithoutSplittedMultiplets];
+           setMasses                    = TreeMasses`CreateMassArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
@@ -1144,16 +1145,18 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
-            numberOfDRbarBlocks, drBarBlockNames},
+            numberOfDRbarBlocks, drBarBlockNames,
+            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
+           },
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
-           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatricesWithoutSplittedMultiplets];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
-           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
+           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatricesWithoutSplittedMultiplets];
            inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
            inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
@@ -1168,7 +1171,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
-           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
+           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatricesWithoutSplittedMultiplets];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
