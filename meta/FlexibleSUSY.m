@@ -1584,6 +1584,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
+            allIntermediateOutputParametes = {},
+            allIntermediateOutputParameterIndexReplacementRules = {},
             allInputParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
@@ -2011,6 +2013,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
            massMatrices = Lat$massMatrices /. allIndexReplacementRules;
 	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
+
+           allIntermediateOutputParametes =
+               Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
+           DebugPrint["intermediate output parameters = ", allIntermediateOutputParametes];
+
+           (* decrease index literals of intermediate output parameters in mass matrices *)
+           allIntermediateOutputParameterIndexReplacementRules =
+               Parameters`CreateIndexReplacementRules[allIntermediateOutputParametes];
+
+           massMatrices = massMatrices /. allIntermediateOutputParameterIndexReplacementRules;
 
            allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
