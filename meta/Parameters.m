@@ -161,10 +161,10 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
-FindSymbolDef[sym_] :=
+FindSymbolDef[sym_, opt_:DependenceNum] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
-                          {sym, {___, DependenceNum -> definition_, ___}} :> definition];
+                          {sym, {___, opt -> definition_, ___}} :> definition];
            If[Head[symDef] =!= List || symDef === {},
               Print["Error: Could not find definition of ",
                     sym, " in SARAH`ParameterDefinitions"];
