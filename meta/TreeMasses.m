@@ -877,6 +877,20 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+BubbleSort[l_List, Pred_] :=
+    Module[{i,k,t,ltemp = l},
+           For[i = 1, i <= Length[ltemp], i++,
+               For[k = 1, k <= Length[ltemp], k++,
+                   If[!Pred[ltemp[[i]], ltemp[[k]]],
+                      t = ltemp[[i]];
+                      ltemp[[i]] = ltemp[[k]];
+                      ltemp[[k]] = t;
+                     ];
+                  ];
+              ];
+           ltemp
+          ];
+
 CallMassCalculationFunctions[massMatrices_List] :=
     Module[{result = "", k, sortedMassMatrices, matrix, PredVectorsFirst},
            (* Predicate function which returns false if the mass matrix
@@ -894,7 +908,8 @@ CallMassCalculationFunctions[massMatrices_List] :=
               calculated first.  This is necessary because the later
               calculated masses might depend on some SM mixing angles,
               as ThetaW. *)
-           sortedMassMatrices = Sort[massMatrices, PredVectorsFirst];
+           (* Note: Due to the chosen predicate, a stable bubble sort must be used *)
+           sortedMassMatrices = Reverse @ BubbleSort[massMatrices, PredVectorsFirst];
            For[k = 1, k <= Length[sortedMassMatrices], k++,
                matrix = sortedMassMatrices[[k]];
                result = result <> CallMassCalculationFunction[matrix];
