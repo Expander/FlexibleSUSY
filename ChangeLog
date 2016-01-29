@@ -27,6 +27,10 @@ FlexibleSUSY-1.3.3 [not released yet]
  * Bugfix (commit 0a7934e): Fix compilation error in models in which a
    multiplet exists, which consists only of Goldstone bosons.
 
+ * Bugfix (commit a87042f): Rename enum entries for matrices to
+   prevent compilation errors in models which have mixing matrices
+   larger than 10x10.
+
 FlexibleSUSY-1.3.2 [January, 10 2016]
 
  * Bugfix (commit d76ca79): Fix compilation error with Eigen
