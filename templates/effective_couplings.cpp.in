@@ -62,6 +62,28 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 @copyMixingMatrices@
 }
 
+std::complex<double> @ModelName@_effective_couplings::scalar_qcd_factor(double m_decay, double m_loop) const
+{
+   std::complex<double> result(1.0, 0.0);
+
+   if (include_qcd_corrections) {
+@calculateScalarLoopQCDFactor@
+   }
+
+   return result;
+}
+
+std::complex<double> @ModelName@_effective_couplings::fermion_qcd_factor(double m_decay, double m_loop) const
+{
+   std::complex<double> result(1.0, 0.0);
+
+   if (include_qcd_corrections) {
+@calculateFermionLoopQCDFactor@
+   }
+
+   return result;
+}
+
 double @ModelName@_effective_couplings::number_of_active_flavours(double m) const
 {
    if (m < qedqcd.displayMbMb()) {
@@ -83,5 +105,6 @@ double @ModelName@_effective_couplings::qcd_scaling_factor(double m) const
    return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
 }
 
+@partialWidthGetters@
 @loopCouplingsFunctions@
 } // namespace flexiblesusy

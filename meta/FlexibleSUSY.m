@@ -1088,10 +1088,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, files_List] :=
-    Module[{i, loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
+    Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
+            loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
+            calculateScalarLoopQCDFactor, calculateFermionLoopQCDFactor,
             calculateQCDScalingFactor, calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
+           {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1100,18 +1103,24 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
               ];
            loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
            loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
+           {calculateScalarLoopQCDFactor, calculateFermionLoopQCDFactor} =
+               EffectiveCouplings`CalculateQCDAmplitudeScalingFactors[];
            calculateQCDScalingFactor = EffectiveCouplings`CalculateQCDScalingFactor[];
            calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
            {loopCouplingsPrototypes, loopCouplingsFunctions} =
                EffectiveCouplings`CreateEffectiveCouplings[couplings, massMatrices, vertexRules];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
+                                   {   "@partialWidthGetterPrototypes@" -> IndentText[partialWidthGetterPrototypes],
+                                       "@partialWidthGetters@" -> partialWidthGetters,
+                                       "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
                                        "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
                                        "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
                                        "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
                                        "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
+                                       "@calculateScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarLoopQCDFactor]],
+                                       "@calculateFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateFermionLoopQCDFactor]],
                                        "@calculateQCDScalingFactor@" -> IndentText[WrapLines[calculateQCDScalingFactor]],
                                        "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
                                        "@loopCouplingsFunctions@" -> loopCouplingsFunctions,

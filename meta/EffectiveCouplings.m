@@ -4,12 +4,16 @@ InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
 GetNeededVerticesList::usage="";
+CalculatePartialWidths::usage="";
+CalculateQCDAmplitudeScalingFactors::usage="";
 CalculateQCDScalingFactor::usage="";
 CreateEffectiveCouplingsGetters::usage="";
 CreateEffectiveCouplingsDefinitions::usage="";
 CreateEffectiveCouplingsInit::usage="";
 CreateEffectiveCouplingsCalculation::usage="";
 CreateEffectiveCouplings::usage="";
+
+(* @todo error handle when e.g. the strong coupling is not defined *)
 
 Begin["`Private`"];
 
@@ -41,6 +45,30 @@ GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
                        <> CConversion`ToValidCSymbolString[symbol] <> "();\n";
              ];
            result
+          ];
+
+CalculateQCDAmplitudeScalingFactors[] :=
+    Module[{coeff, scalarQCD, fermionQCD, body = "",
+            scalarLoopFactor = "", fermionLoopFactor = ""},
+           scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
+           body = "result = " <> CConversion`RValueToCFormString[scalarQCD] <> ";";
+           scalarLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
+                              <> "if (m_loop > m_decay) {\n"
+                              <> TextFormatting`IndentText[body] <> "\n}";
+           fermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
+                               <> "if (m_loop > m_decay) {\n";
+           fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
+           body = "result = " <> CConversion`RValueToCFormString[fermionQCD] <> ";";
+           fermionLoopFactor = fermionLoopFactor <> TextFormatting`IndentText[body]
+                               <> "\n} else if (m_decay > 4.0 * m_loop) {\n";
+           coeff = 4 Symbol["l"] / 3 + (Pi^2 - Symbol["l"]^2) / 18 + I Pi (2 + Symbol["l"] / 3) / 3;
+           fermionQCD = 1 + (SARAH`strongCoupling^2 / (4 Pi^2)) coeff;
+           body = "const double l = Log(Sqr(m_decay) / Sqr(m_loop));\nresult = " <>
+                  CConversion`RValueToCFormString[fermionQCD] <> ";";
+           fermionLoopFactor = fermionLoopFactor <> TextFormatting`IndentText[body] <> "\n}";
+           scalarLoopFactor = TextFormatting`IndentText[scalarLoopFactor];
+           fermionLoopFactor = TextFormatting`IndentText[fermionLoopFactor];
+           {scalarLoopFactor, fermionLoopFactor}
           ];
 
 CalculateQCDScalingFactor[] :=
@@ -93,6 +121,47 @@ GetExternalStates[couplingSymbol_] :=
                  True, particle = Null; vectorBoson = Null
                 ];
            {particle, vectorBoson}
+          ];
+
+CalculatePartialWidths[couplings_List] :=
+    Module[{couplingSymbol, dim, particle, vectorBoson, particlesStr,
+            massStr, functionName, couplingName,
+            body, prototypes = {}, functions = {}},
+           For[i = 1, i <= Length[couplings], i++,
+               couplingSymbol = couplings[[i,1]];
+               {particle, vectorBoson} = GetExternalStates[couplingSymbol];
+               particlesStr = CConversion`ToValidCSymbolString[particle]
+                              <> CConversion`ToValidCSymbolString[vectorBoson]
+                              <> CConversion`ToValidCSymbolString[vectorBoson];
+               dim = TreeMasses`GetDimension[particle];
+               functionName = "get_" <> particlesStr <> "_partial_width(";
+               If[dim == 1,
+                  functionName = functionName <> ") const";,
+                  functionName = functionName <> "unsigned gO1) const";
+                 ];
+               couplingName = "eff_Cp" <> particlesStr;
+               massStr = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
+               body = "const double mass = PHYSICAL(" <> massStr <> ")";
+               If[dim != 1,
+                  body = body <> "(gO1)";
+                 ];
+               body = body <> ";\n";
+               If[vectorBoson === SARAH`VectorP,
+                  body = body <> "return " <> CConversion`RValueToCFormString[1 / (64 Pi)]
+                         <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
+                         <> If[dim != 1, "(gO1)", ""] <> ");";,
+                  body = body <> "return " <> CConversion`RValueToCFormString[1 / (8 Pi)]
+                         <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
+                         <> If[dim != 1, "(gO1)", ""] <> ");";
+                 ];
+               functions = Append[functions,
+                                  "double " <> FlexibleSUSY`FSModelName <> "_effective_couplings::"
+                                  <> functionName <> "\n{\n" <> TextFormatting`IndentText[body]
+                                  <> "\n}\n"];
+               prototypes = Append[prototypes,
+                                   "double " <> functionName <> ";"];
+              ];
+           Utils`StringJoinWithSeparator[#, "\n"]& /@ {prototypes, functions}
           ];
 
 (* @todo much of this is either identical or very similar to required functions
@@ -363,29 +432,6 @@ CreateEffectiveCouplingPrototype[coupling_] :=
            result
           ];
 
-GetQCDCorrections[particle_, vectorBoson_] :=
-    Module[{scalarQCD, fermionQCD, parameters = {}, corrections = "", result = ""},
-           If[particle === SARAH`HiggsBoson,
-              Which[vectorBoson === SARAH`VectorP,
-                    scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
-                    fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
-                    corrections = "qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
-                             <> ";\nqcd_fermion = " <> CConversion`RValueToCFormString[fermionQCD]<> ";";,
-                    vectorBoson === SARAH`VectorG,
-                    scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
-                    corrections = "qcd_scalar = " <> CConversion`RValueToCFormString[scalarQCD]
-                             <> ";\nqcd_fermion = qcd_scalar;",
-                    True,
-                    result =""
-                   ];
-               result = "double qcd_scalar = 1.0;\ndouble qcd_fermion = 1.0;\n";
-               result = result <> "if (include_qcd_corrections) {\n"
-                        <> TextFormatting`IndentText[corrections] <> "\n}\n\n";
-               parameters = {SARAH`strongCoupling};
-             ];
-           {result, parameters}
-          ];
-
 GetEffectiveVEV[] :=
     Module[{vev, parameters = {}, result = ""},
            vev = Simplify[2 Sqrt[-SARAH`Vertex[{SARAH`VectorW, Susyno`LieGroups`conj[SARAH`VectorW]}][[2,1]]
@@ -506,8 +552,8 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                  factor = 1/2;
                  If[particle === SARAH`HiggsBoson,
                     scaleFunction = "AS0";
-                    If[HasColorCharge[internal],
-                       qcdfactor = "qcd_scalar";,
+                    If[vectorBoson === SARAH`VectorP && HasColorCharge[internal],
+                       qcdfactor = "scalar_qcd_factor(decay_mass, " <> massStr <> ")";,
                        qcdfactor = "";
                       ];,
                     Return[{"",{}}];
@@ -523,8 +569,8 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                  factor = 1;
                  If[particle === SARAH`HiggsBoson,
                     scaleFunction = "AS12";
-                    If[HasColorCharge[internal],
-                       qcdfactor = "qcd_fermion";,
+                    If[vectorBoson === SARAH`VectorP && HasColorCharge[internal],
+                       qcdfactor = "fermion_qcd_factor(decay_mass, " <> massStr <> ")";,
                        qcdfactor = "";
                       ];,
                     scaleFunction = "AP12";
@@ -553,17 +599,6 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                     <> If[qcdfactor != "", qcdfactor <> " * ", ""] <> couplingName
                     <> " * vev * " <> scaleFunction <> "(decay_scale / Sqr(" <> massStr <> ")) / "
                     <> If[IsFermion[internal], massStr, "Sqr(" <> massStr <> ")"] <> ";";
-           If[particle == SARAH`HiggsBoson && vectorBoson =!= SARAH`VectorG &&
-              TreeMasses`IsFermion[internal] && HasColorCharge[internal],
-              body = "if (" <> massStr <> " > decay_mass) {\n"
-                     <> TextFormatting`IndentText[body] <> "\n} else {\n";
-              body = body
-                     <> TextFormatting`IndentText["result += "
-                                                  <> If[factor != 1, CConversion`RValueToCFormString[factor] <> " * ", ""]
-                                                  <> couplingName <> "* vev * " <> scaleFunction
-                                                  <> "(decay_scale / Sqr(" <> massStr <> ")) / " <> massStr <> ";"];
-              body = body <> "\n}";
-             ];
            If[dim == 1,
               result = body <> "\n";,
               start = TreeMasses`GetDimensionStartSkippingGoldstones[internal];
@@ -604,8 +639,6 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  body = body <> mixingName <> " = PHYSICAL(" <> mixingName <> ");\n\n";,
                  body = body <> "\n";
                 ];
-              {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetQCDCorrections[particle, vectorBoson]);
-              body = body <> currentLine;
               {currentLine, parameters} = {#[[1]], Join[parameters, #[[2]]]}& @ (GetEffectiveVEV[]);
               body = body <> currentLine <> "\n";
               body = body <> CConversion`CreateDefaultDefinition["result", CConversion`ScalarType[CConversion`complexScalarCType]] <> ";\n";
@@ -625,6 +658,12 @@ CreateEffectiveCouplingFunction[coupling_] :=
                     body = body <> "result *= std::complex<double>(2.0,0.);\n";
                    ];
 
+              If[vectorBoson === SARAH`VectorG,
+                 parameters = Append[parameters, SARAH`strongCoupling];
+                 body = "const double alpha_s = " <> CConversion`RValueToCFormString[SARAH`strongCoupling^2 / (4 Pi)]
+                        <> ";\n" <> body;
+                ];
+
               body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";
 
               If[vectorBoson === SARAH`VectorP,
@@ -633,7 +672,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
                         <> " * physical_input.get(Physical_input::alpha_em_0) * Sqrt(qedqcd.displayFermiConstant());\n\n";,
                  body = body <> "result *= "
                         <> CConversion`RValueToCFormString[2^(1/4) / (3 Pi)]
-                        <> " * qedqcd.displayAlpha(softsusy::ALPHAS) * Sqrt(qedqcd.displayFermiConstant());\n\n";
+                        <> " * alpha_s * Sqrt(qedqcd.displayFermiConstant());\n\n";
                 ];
 
               (* restore saved mixing *)
