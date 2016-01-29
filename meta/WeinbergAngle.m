@@ -27,13 +27,14 @@ FindMass2[masses_List, particle_] :=
 
 (*extracts squared tree-level mass of Z boson before mixing with additional Z`*)
 UnmixedZMass2[] :=
-    Module[{ZMassMatrix, matrixDim, extraGaugeCouplings, deletePositions, keepPositions, mass2Eigenvalues},
+    Module[{ZMassMatrix, extraGaugeCouplings, submatrixList, submatrix, mass2Eigenvalues},
            ZMassMatrix = SARAH`MassMatrix[SARAH`VectorZ];
-           matrixDim = Dimensions[ZMassMatrix][[1]];
+           Assert[MatrixQ[ZMassMatrix]];
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
-           deletePositions = Flatten[Position[Diagonal[ZMassMatrix], x_ /; Or @@ (!FreeQ[x, #]& /@ extraGaugeCouplings), {1}]];
-           keepPositions = Complement[Range[matrixDim], deletePositions];
-           mass2Eigenvalues = Eigenvalues[ZMassMatrix[[keepPositions, keepPositions]]];
+           submatrixList = ZMassMatrix[[#, #]] & /@ Flatten[Table[{i, j}, {i, 1, Length[ZMassMatrix]}, {j, i + 1, Length[ZMassMatrix]}], 1];
+           submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
+           If[Length[submatrix] != 1, Print["Error: Photon-Z mass matrix could not be identified"]; Return[0]];
+           mass2Eigenvalues = Eigenvalues[submatrix];
            If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0], Print["Error: Determination of UnmixedZMass2 failed"]; Return[0]];
            Return[Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
           ];
