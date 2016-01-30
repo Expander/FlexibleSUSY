@@ -66,7 +66,7 @@ ParameterDefinitions = {
 
 {v1,        { Description -> "Down-VEV", LaTeX -> "v_1"}}, 
 {v2,        { Description -> "Up-VEV", LaTeX -> "v_2"}},       
-{v,         { Description -> "EW-VEV"}},
+{v,         { Description -> "EW-VEV", DependenceSPheno -> None }},
              
 {\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             
 {TanBeta,   { Description -> "Tan Beta" }},              
