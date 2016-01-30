@@ -1238,7 +1238,7 @@ CallSVDFunction[particle_, matrix_String, eigenvalue_String, U_String, V_String]
 " <> IndentText[
 "double eigenvalue_error;
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);\n" <>
-    FlagBadMass[particle, eigenvalue]
+    If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
 ] <> "#else
 " <> IndentText["\
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
@@ -1251,7 +1251,7 @@ CallDiagonalizationFunction[particle_, matrix_String, eigenvalue_String, U_Strin
 " <> IndentText[
 "double eigenvalue_error;
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);\n" <>
-    FlagBadMass[particle, eigenvalue]
+    If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
 ] <> "#else
 " <> IndentText["\
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
