@@ -1200,38 +1200,46 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            {prototype, def}
           ];
 
-CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
+FlagBadMass[particle_String, eigenvalue_String] :=
+    "problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));\n";
+
+FlagBadMass[particles_List, eigenvalue_String] :=
+    StringJoin[FlagBadMass[#,eigenvalue]& /@ particles];
+
+FlagBadMass[particle_, eigenvalue_String] :=
+    FlagBadMass[ToValidCSymbolString[GetHead[particle]], eigenvalue];
+
+CallSVDFunction[particle_, matrix_String, eigenvalue_String, U_String, V_String] :=
     "\
 #ifdef CHECK_EIGENVALUE_ERROR
 " <> IndentText[
 "double eigenvalue_error;
-fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
-#else
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);\n" <>
+    FlagBadMass[particle, eigenvalue]
+] <> "#else
 " <> IndentText["\
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
 #endif
-"
+";
 
-CallDiagonalizationFunction[particle_String, matrix_String, eigenvalue_String, U_String, function_String] :=
+CallDiagonalizationFunction[particle_, matrix_String, eigenvalue_String, U_String, function_String] :=
     "\
 #ifdef CHECK_EIGENVALUE_ERROR
 " <> IndentText[
 "double eigenvalue_error;
-" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
-#else
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);\n" <>
+    FlagBadMass[particle, eigenvalue]
+] <> "#else
 " <> IndentText["\
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
 #endif
 ";
 
-CallDiagonalizeSymmetricFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_symmetric"];
 
-CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+CallDiagonalizeHermitianFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
@@ -1265,17 +1273,17 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
               body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                     CallSVDFunction[particle, matrixSymbol, evMap, U, V] <> "\n" <>
+                     CallSVDFunction[eigenVector, matrixSymbol, evMap, U, V] <> "\n" <>
                      OneDimMappingPost;
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && Head[eigenVector] =!= List && IsFermion[GetHead[eigenVector]],
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeSymmetricFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
+                        CallDiagonalizeSymmetricFunction[eigenVector, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;,
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeHermitianFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
+                        CallDiagonalizeHermitianFunction[eigenVector, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;
                 ];
              ];
