@@ -537,7 +537,16 @@ CalculateThetaWFromMW[] :=
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
+           (* read weinberg angle from DependenceNum *)
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           If[weinbergAngle === None || weinbergAngle === Null,
+              (* read weinberg angle from FSWeakMixingAngleExpr *)
+              weinbergAngle = Utils`FSGetOption[FlexibleSUSY`FSWeakMixingAngleOptions, FlexibleSUSY`FSWeakMixingAngleExpr] /. subst;
+              If[weinbergAngle === None || weinbergAngle === Null,
+                 Print["Warning: No expression for the Weinberg angle defined, setting it to 0."];
+                 weinbergAngle = 0;
+                ];
+             ];
            result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
                     "THETAW = " <>
                     CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
@@ -591,12 +600,9 @@ CalculateGaugeCouplings[] :=
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
                     / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
            result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 

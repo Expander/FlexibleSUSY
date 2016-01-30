@@ -5,6 +5,8 @@ ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
+InitialGuessAtLowScaleGaugeCouplings::usage="";
+IsFixed::usage="returns true if given parameter is fixed in given constraint";
 
 FindFixedParametersFromConstraint::usage="Returns a list of all
 parameters which are fixed by the given constraint";
@@ -324,7 +326,7 @@ SanityCheck[settings_List, constraintName_String:""] :=
            setParameters = #[[1]]& /@ settings;
            (* check for unset Yukawa couplings *)
            For[y = 1, y <= Length[yukawas], y++,
-               If[ValueQ[yukawas[[y]]] &&
+               If[(ValueQ /@ yukawas)[[y]] &&
                   FreeQ[setParameters, yukawas[[y]]],
                   Print["Warning: Yukawa coupling ", yukawas[[y]],
                         " not set",
@@ -461,6 +463,44 @@ InitializeInputParameters[defaultValues_List] :=
               ];
            Return[result];
           ];
+
+InitialGuessAtLowScaleGaugeCouplings[] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling],
+              result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`leftCoupling],
+              result = result <> Parameters`SetParameter[SARAH`leftCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`strongCoupling],
+              result = result <> Parameters`SetParameter[SARAH`strongCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL"];
+             ];
+           result
+          ];
+
+IsFixedIn[par_, {p_, _}] :=
+    Parameters`StripIndices[par] === Parameters`StripIndices[p];
+
+IsFixedIn[par_, FlexibleSUSY`FSMinimize[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSFindRoot[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSSolveEWSBFor[parameters___]] :=
+    MemberQ[Parameters`StripIndices /@ Flatten[{parameters}], Parameters`StripIndices[par]];
+
+IsFixedIn[par_, p___] :=
+    Block[{},
+          Print["Error: This is not a valid constraint setting: ", p];
+          Quit[1];
+         ];
+
+IsFixed[par_, constraint_List] :=
+    Or @@ (IsFixedIn[par, #]& /@ constraint);
 
 RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
     Module[{result = "", value},

@@ -159,6 +159,7 @@ FSMassW;
 
 FSWeakMixingAngleOptions = {
     FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
+    FlexibleSUSY`FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - Mass[SARAH`VectorW]^2/Mass[SARAH`VectorZ]^2]],
     FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
     FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
     FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
@@ -349,7 +350,7 @@ CheckModelFileSettings[] :=
                  Print["Warning: FlexibleSUSY`HighScale should be",
                        " set in the model file!"];
                 ];
-              FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
+              FlexibleSUSY`HighScale := 2 10^16;
              ];
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
               If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
@@ -653,9 +654,11 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           ];
 
 WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
-   Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings,
+   Module[{initialGuessAtLowScale, initialGuessAtLowScaleGaugeCouplings = "",
+           initialGuessAtHighScale, setDRbarYukawaCouplings,
            allSettings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
+          initialGuessAtLowScaleGaugeCouplings = Constraint`InitialGuessAtLowScaleGaugeCouplings[];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
           allSettings             = Join[lowScaleGuess, highScaleGuess];
           setDRbarYukawaCouplings = {
@@ -665,6 +668,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
           };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
+                   "@initialGuessAtLowScaleGaugeCouplings@" -> IndentText[WrapLines[initialGuessAtLowScaleGaugeCouplings]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
@@ -850,7 +854,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             getPhysical = "", setPhysical = "",
             getMasses = "", setMasses = "",
             masses, mixingMatrices, oneLoopTadpoles,
-            dependenceNumPrototypes, dependenceNumFunctions,
+            dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "",
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
@@ -874,7 +878,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
-            enablePoleMassThreads = True
+            enablePoleMassThreads = True,
+            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
            },
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
@@ -959,17 +964,17 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
-           masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           masses                       = DeleteCases[FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices, FlexibleSUSY`M[_List]];
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
-           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
-           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatrices, "pars"];
-           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
-           setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
+           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatricesWithoutSplittedMultiplets];
+           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
+           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatricesWithoutSplittedMultiplets];
+           setMasses                    = TreeMasses`CreateMassArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
+           dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
+           dependenceFunctions       = TreeMasses`CreateDependenceFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
@@ -1064,8 +1069,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@getMasses@"                    -> IndentText[getMasses],
                             "@setMasses@"                    -> IndentText[setMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
-                            "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
-                            "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
+                            "@dependencePrototypes@"         -> IndentText[dependencePrototypes],
+                            "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
                             "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
                             "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
@@ -1204,16 +1209,18 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
-            numberOfDRbarBlocks, drBarBlockNames},
-           particles = GetMassEigenstate /@ massMatrices;
+            numberOfDRbarBlocks, drBarBlockNames,
+            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
+           },
+           particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
-           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatricesWithoutSplittedMultiplets];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
-           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
+           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatricesWithoutSplittedMultiplets];
            inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
            inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
@@ -1228,7 +1235,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
-           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
+           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatricesWithoutSplittedMultiplets];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
@@ -1542,12 +1549,7 @@ LoadModelFile[file_String] :=
           ];
 
 FindUnfixedParameters[parameters_List, fixed_List] :=
-    Module[{fixedParameters},
-           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
-                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling }]]];
-           Complement[parameters, fixedParameters]
-          ];
+    Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
 GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
@@ -1650,6 +1652,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
+            allIntermediateOutputParametes = {},
+            allIntermediateOutputParameterIndexReplacementRules = {},
             allInputParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
@@ -1800,6 +1804,31 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
+           (* add SM gauge couplings to low-scale constraint if not set anywhere *)
+           If[ValueQ[SARAH`hyperchargeCoupling] &&
+              !Constraint`IsFixed[SARAH`hyperchargeCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`hyperchargeCoupling, "new_g1"}];
+             ];
+           If[ValueQ[SARAH`leftCoupling] &&
+              !Constraint`IsFixed[SARAH`leftCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`leftCoupling, "new_g2"}];
+             ];
+           If[ValueQ[SARAH`strongCoupling] &&
+              !Constraint`IsFixed[SARAH`strongCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`strongCoupling, "new_g3"}];
+             ];
            (* add EWSB constraint to SUSY-scale constraint if not set *)
            If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                     FlexibleSUSY`FSSolveEWSBFor[___]],
@@ -2053,12 +2082,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            massMatrices = Lat$massMatrices /. allIndexReplacementRules;
 	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
 
+           allIntermediateOutputParametes =
+               Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
+           DebugPrint["intermediate output parameters = ", allIntermediateOutputParametes];
+
+           (* decrease index literals of intermediate output parameters in mass matrices *)
+           allIntermediateOutputParameterIndexReplacementRules =
+               Parameters`CreateIndexReplacementRules[allIntermediateOutputParametes];
+
+           massMatrices = massMatrices /. allIntermediateOutputParameterIndexReplacementRules;
+
            allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
                Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Parameters`SetOutputParameters[allOutputParameters];
+           DebugPrint["output parameters = ", allOutputParameters];
 
            extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
                FlexibleSUSY`ExtraSLHAOutputBlocks,

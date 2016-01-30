@@ -69,8 +69,17 @@ GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
-GetDependenceNumSymbols::usage="Returns symbols which have a
-DependenceNum";
+GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
+ DependenceSPheno rule is defined";
+
+GetDependenceSPhenoRules::usage="Returns list of replacement rules for
+ symbols for which a DependenceSPheno rule is defined";
+
+GetOutputParameterDependencies::usage="Returns list of output
+ parameters which appear in the given expression";
+
+GetIntermediateOutputParameterDependencies::usage="Returns list of
+ intermediate output parameters which appear in the given expression";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -154,10 +163,10 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
-FindSymbolDef[sym_] :=
+FindSymbolDef[sym_, opt_:DependenceNum] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
-                          {sym, {___, DependenceNum -> definition_, ___}} :> definition];
+                          {sym, {___, opt -> definition_, ___}} :> definition];
            If[Head[symDef] =!= List || symDef === {},
               Print["Error: Could not find definition of ",
                     sym, " in SARAH`ParameterDefinitions"];
@@ -175,7 +184,7 @@ FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
            allParameters = Join[allModelParameters, allOutputParameters,
                                 allInputParameters, Phases`GetArg /@ allPhases,
-                                GetDependenceNumSymbols[]];
+                                GetDependenceSPhenoSymbols[]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -811,7 +820,7 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, 
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[name[i,j]];
+                   ass = ass <> CConversion`ToValidCSymbolString[name] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[rows * cols != count,
@@ -826,8 +835,8 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count+=2,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[Re[name[i,j]]] <> ", "
-                             <> CConversion`ToValidCSymbolString[Im[name[i,j]]];
+                   ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> ", "
+                             <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[2 * rows * cols != count,
@@ -1006,7 +1015,7 @@ CreateLocalConstRefs[expr_] :=
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
-           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
@@ -1307,14 +1316,41 @@ GetThirdGeneration[par_] :=
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
 
-GetDependenceNumSymbols[] :=
+GetSARAHParameters[] :=
+    (#[[1]])& /@ SARAH`SARAHparameters;
+
+GetAllDependenceSPhenoSymbols[] :=
     DeleteDuplicates @ Flatten @
-    Join[{SARAH`Weinberg},
-         Cases[SARAH`ParameterDefinitions,
-               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
-                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
-        ];
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> parameter];
+
+GetAllDependenceSPhenoRules[] :=
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
+
+GetDependenceSPhenoSymbols[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoSymbols[], MemberQ[sarahPars,#]&]
+          ];
+
+GetDependenceSPhenoRules[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoRules[], MemberQ[sarahPars,#[[1]]]&]
+          ];
+
+GetAllOutputParameterDependencies[expr_] :=
+    Complement[Select[Join[GetSARAHParameters[],
+                           GetDependenceSPhenoSymbols[]],
+                      (!FreeQ[expr,#])&],
+               GetModelParameters[]];
+
+GetOutputParameterDependencies[expr_] :=
+    Select[GetOutputParameters[],
+           (!FreeQ[GetAllOutputParameterDependencies[expr] /. GetDependenceSPhenoRules[],#])&];
+
+GetIntermediateOutputParameterDependencies[expr_] :=
+    Complement[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]],
+               Join[GetOutputParameters[], GetInputParameters[]]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
