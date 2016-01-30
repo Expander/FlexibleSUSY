@@ -1257,9 +1257,12 @@ GetOutputParameterDependencies[expr_] :=
     Select[GetOutputParameters[],
            (!FreeQ[GetAllOutputParameterDependencies[expr] /. GetDependenceSPhenoRules[],#])&];
 
+GetExponent[a_^b_] := -I b;
+GetExponent[a_]    := a;
+
 GetIntermediateOutputParameterDependencies[expr_] :=
     Complement[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]],
-               Join[GetOutputParameters[], GetInputParameters[]]];
+               Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
