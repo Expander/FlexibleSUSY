@@ -287,6 +287,12 @@ IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     And @@ (IsMassless /@ sym);
 
+ContainsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
+    IsMassless[sym, states];
+
+ContainsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
+    Or @@ (IsMassless[#,states]& /@ sym);
+
 GetColoredParticles[] :=
     Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
 
@@ -1200,6 +1206,22 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            {prototype, def}
           ];
 
+FlagTachyon[particle_String] :=
+    "problems.flag_tachyon(" <>
+    FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ");\n";
+
+FlagTachyon[particles_List] :=
+    StringJoin[FlagTachyon /@ particles];
+
+FlagTachyon[particle_] :=
+    FlagTachyon[ToValidCSymbolString[GetHead[particle]]];
+
+CheckTachyon[particle_, eigenvector_String] :=
+    "if (" <> eigenvector <> If[GetDimension[particle] > 1, ".minCoeff()", ""] <> " < 0.) {\n" <>
+    IndentText[FlagTachyon[particle]] <>
+    "}\n";
+
 FlagBadMass[particle_String, eigenvalue_String] :=
     "problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
     ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));\n";
@@ -1287,18 +1309,12 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                         OneDimMappingPost;
                 ];
              ];
-           If[(IsScalar[eigenVector] || IsVector[eigenVector]),
+           If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         If[MemberQ[GetParticles[], eigenVector],
-                            "if (" <> evMap <> ".minCoeff() < 0.)\n" <>
-                            IndentText[
-                                "problems.flag_tachyon(" <>
-                                FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-                                ");"
-                            ], ""
-                           ] <> "\n\n" <>
+                         If[ContainsMassless[eigenVector], "",
+                            CheckTachyon[eigenVector, evMap] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
              ];
@@ -1350,14 +1366,8 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
               !IsMassless[massESSymbol],
               body = body <> "\n" <>
-                     If[MemberQ[GetParticles[], massESSymbol],
-                        "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
-                        IndentText[
-                            "problems.flag_tachyon(" <>
-                            FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-                            ");"
-                        ], ""
-                     ] <> "\n\n" <>
+                     If[ContainsMassless[eigenVector], "",
+                        CheckTachyon[massESSymbol, ev] <> "\n"] <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
