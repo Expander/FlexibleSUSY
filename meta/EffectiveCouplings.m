@@ -407,19 +407,16 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
               ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
-               If[SARAH`SupersymmetricModel,
-                  mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-                  savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
-                  result = result <> savedMass;
-                 ];
+               mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+               savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
                dim = TreeMasses`GetDimension[particle];
                If[dim == 1,
                   {body, mustSaveParameters} = RunToDecayingParticleScale[particle];
-                  result = result <> body;
+                  result = result <> If[mustSaveParameters, savedMass, ""] <> body;
                   result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
-                  result = result <> "for (unsigned gO1 = 0; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                   {body, mustSaveParameters} = RunToDecayingParticleScale[particle, "gO1"];
+                  result = result <> If[mustSaveParameters, savedMass, ""] <> "for (unsigned gO1 = 0; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                   body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                   result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                  ];
