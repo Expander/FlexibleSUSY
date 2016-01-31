@@ -59,8 +59,8 @@ ParameterDefinitions = {
                OutputName -> M222,
                LesHouches -> {HMIX,21}}},
 
-{M122,    {    LaTeX -> "m^2_{12}",
-               OutputName -> M122,
+{M12,    {    LaTeX -> "m_{12}",
+               OutputName -> M12,
                LesHouches -> {HMIX,22}}},
 
 
@@ -88,41 +88,8 @@ ParameterDefinitions = {
 {Uu,        {Description ->"Right-Up-Mixing-Matrix"}},
 {Ud,        {Description ->"Right-Down-Mixing-Matrix"}}, 
 {Ve,        {Description ->"Left-Lepton-Mixing-Matrix"}},
-{Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}},
+{Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}}
 
-(* new parameters for THDM-II w/ extra Higgsions and Gauginos *)
+ }; 
+ 
 
-{\[Mu],     { Description -> "Mu-parameter",
-              Real -> True,
-              LaTeX -> "\\mu_{\\text{MSSM}}",
-              OutputName -> Mu }},
-
-{ZN,        { Description->"Neutralino Mixing-Matrix" }},
-{UP,        { Description->"Chargino-plus Mixing-Matrix"}},
-{UM,        { Description->"Chargino-minus Mixing-Matrix"}},
-
-{MassB,     { Description -> "Bino Mass parameter" }},
-{MassWB,    { Description -> "Wino Mass parameter" }},
-{MassG,     { Description -> "Gluino Mass parameter" }},
-{PhaseGlu,  { Description -> "Gluino-Phase" }},
-{g2up,      { Description -> "Higgs-Bino-Up-Higgsino-Coupling",
-              Real -> True,
-              OutputName -> g2up,
-              LaTeX -> "\\tilde{g}_{2\\text{u}}^{\\prime}",
-              LesHouches -> {SplitMSSM,1} }},
-{g2u,       { Description -> "Up-Higgs-Wino-Up-Higgsino-Coupling",
-              Real -> True,
-              OutputName -> g2u,
-              LaTeX -> "\\tilde{g}_{2\\text{u}}",
-              LesHouches -> {SplitMSSM,2} }},
-{g1dp,      { Description -> "Down-Higgs-Bino-Down-Higgsino-Coupling",
-              Real -> True,
-              OutputName -> g1dp,
-              LaTeX -> "\\tilde{g}_{1\\text{d}}^{\\prime}",
-              LesHouches -> {SplitMSSM,3} }},
-{g1d,       { Description -> "Down-Higgs-Wino-Down-Higgsino-Coupling",
-              Real -> True,
-              OutputName -> g1d,
-              LaTeX -> "\\tilde{g}_{1\\text{d}}",
-              LesHouches -> {SplitMSSM,4} }}
-};

@@ -60,6 +60,9 @@ FlexibleSUSY-1.3.3 [not released yet]
    prevent compilation errors in models which have mixing matrices
    larger than 10x10.
 
+ * Bugfix (commit 61fb1ca): Fix compilation errors in models which
+   don't containd SM-like neutrinos.
+
 FlexibleSUSY-1.3.2 [January, 10 2016]
 
  * Bugfix (commit d76ca79): Fix compilation error with Eigen

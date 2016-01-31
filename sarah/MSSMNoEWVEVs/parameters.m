@@ -45,7 +45,7 @@ ParameterDefinitions = {
     {ZUL,       { Description -> "Left-Up-Mixing-Matrix"}},
     {ZUR,       { Description -> "Right-Up-Mixing-Matrix"}},
     {ThetaW,    { Description -> "Weinberg-Angle",
-                  DependenceNum -> 0 }},
+                  DependenceNum -> 0, DependenceSPheno -> 0 }},
     {PhaseGlu,  { Description -> "Gluino-Phase" }},
     {ZZ,        { Description -> "Photon-Z Mixing Matrix"}},
     {ZW,        { Description -> "W Mixing Matrix" }},

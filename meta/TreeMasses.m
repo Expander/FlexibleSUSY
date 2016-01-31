@@ -314,6 +314,12 @@ IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     And @@ (IsMassless /@ sym);
 
+ContainsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
+    IsMassless[sym, states];
+
+ContainsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
+    Or @@ (IsMassless[#,states]& /@ sym);
+
 GetColoredParticles[] :=
     Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
 
@@ -678,7 +684,8 @@ GetIntermediateMassMatrices[massMatrices_List] :=
                          Null
                         ]
                      ];
-           intermediatePars = Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
+           intermediatePars = DeleteCases[
+               Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices], _?NumberQ];
            massEigenstates = DeleteCases[
                (FindMassEigenstateForMixingMatrix /@ intermediatePars) /. Susyno`LieGroups`conj[a_] :> a, Null];
            CreateMMs /@ Utils`Zip[massEigenstates, intermediatePars]
@@ -1243,38 +1250,62 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            {prototype, def}
           ];
 
-CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
+FlagTachyon[particle_String] :=
+    "problems.flag_tachyon(" <>
+    FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ");\n";
+
+FlagTachyon[particles_List] :=
+    StringJoin[FlagTachyon /@ particles];
+
+FlagTachyon[particle_] :=
+    FlagTachyon[ToValidCSymbolString[GetHead[particle]]];
+
+CheckTachyon[particle_, eigenvector_String] :=
+    "if (" <> eigenvector <> If[GetDimension[particle] > 1, ".minCoeff()", ""] <> " < 0.) {\n" <>
+    IndentText[FlagTachyon[particle]] <>
+    "}\n";
+
+FlagBadMass[particle_String, eigenvalue_String] :=
+    "problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));\n";
+
+FlagBadMass[particles_List, eigenvalue_String] :=
+    StringJoin[FlagBadMass[#,eigenvalue]& /@ particles];
+
+FlagBadMass[particle_, eigenvalue_String] :=
+    FlagBadMass[ToValidCSymbolString[GetHead[particle]], eigenvalue];
+
+CallSVDFunction[particle_, matrix_String, eigenvalue_String, U_String, V_String] :=
     "\
 #ifdef CHECK_EIGENVALUE_ERROR
 " <> IndentText[
 "double eigenvalue_error;
-fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
-#else
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);\n" <>
+    If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
+] <> "#else
 " <> IndentText["\
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
 #endif
-"
+";
 
-CallDiagonalizationFunction[particle_String, matrix_String, eigenvalue_String, U_String, function_String] :=
+CallDiagonalizationFunction[particle_, matrix_String, eigenvalue_String, U_String, function_String] :=
     "\
 #ifdef CHECK_EIGENVALUE_ERROR
 " <> IndentText[
 "double eigenvalue_error;
-" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
-#else
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);\n" <>
+    If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
+] <> "#else
 " <> IndentText["\
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
 #endif
 ";
 
-CallDiagonalizeSymmetricFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_symmetric"];
 
-CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+CallDiagonalizeHermitianFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
@@ -1308,32 +1339,26 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
               body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                     CallSVDFunction[particle, matrixSymbol, evMap, U, V] <> "\n" <>
+                     CallSVDFunction[eigenVector, matrixSymbol, evMap, U, V] <> "\n" <>
                      OneDimMappingPost;
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && Head[eigenVector] =!= List && IsFermion[GetHead[eigenVector]],
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeSymmetricFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
+                        CallDiagonalizeSymmetricFunction[eigenVector, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;,
                  body = body <> "\n" <> OneDimMappingPre <> "\n" <>
-                        CallDiagonalizeHermitianFunction[particle, matrixSymbol, evMap, U] <> "\n" <>
+                        CallDiagonalizeHermitianFunction[eigenVector, matrixSymbol, evMap, U] <> "\n" <>
                         OneDimMappingPost;
                 ];
              ];
-           If[(IsScalar[eigenVector] || IsVector[eigenVector]),
+           If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         If[MemberQ[GetParticles[], eigenVector],
-                            "if (" <> evMap <> ".minCoeff() < 0.)\n" <>
-                            IndentText[
-                                "problems.flag_tachyon(" <>
-                                FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-                                ");"
-                            ], ""
-                           ] <> "\n\n" <>
+                         If[ContainsMassless[eigenVector], "",
+                            CheckTachyon[eigenVector, evMap] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
              ];
@@ -1385,14 +1410,8 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
               !IsMassless[massESSymbol],
               body = body <> "\n" <>
-                     If[MemberQ[GetParticles[], massESSymbol],
-                        "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
-                        IndentText[
-                            "problems.flag_tachyon(" <>
-                            FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-                            ");"
-                        ], ""
-                     ] <> "\n\n" <>
+                     If[ContainsMassless[eigenVector], "",
+                        CheckTachyon[massESSymbol, ev] <> "\n"] <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];

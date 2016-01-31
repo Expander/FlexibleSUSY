@@ -1183,7 +1183,7 @@ GetParticleFromDescription[multipletName_String, splitNames_List] :=
     Module[{result},
            result = GetParticleFromDescription[multipletName];
            If[result =!= Null, Return[{result}]];
-           GetParticleFromDescription /@ splitNames
+           DeleteCases[GetParticleFromDescription /@ splitNames, Null]
           ];
 
 GetPDGCodesForParticle[particle_] :=
@@ -1344,13 +1344,21 @@ GetAllOutputParameterDependencies[expr_] :=
                       (!FreeQ[expr,#])&],
                GetModelParameters[]];
 
+GetAllOutputParameterDependenciesReplaced[expr_] :=
+    DeleteCases[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]], _?NumericQ];
+
 GetOutputParameterDependencies[expr_] :=
     Select[GetOutputParameters[],
-           (!FreeQ[GetAllOutputParameterDependencies[expr] /. GetDependenceSPhenoRules[],#])&];
+           (!FreeQ[GetAllOutputParameterDependenciesReplaced[expr],#])&];
+
+GetExponent[a_^b_] := -I b;
+GetExponent[a_]    := a;
 
 GetIntermediateOutputParameterDependencies[expr_] :=
-    Complement[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]],
-               Join[GetOutputParameters[], GetInputParameters[]]];
+    Complement[
+        GetAllOutputParameterDependenciesReplaced[expr],
+        Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
+    ];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
