@@ -485,9 +485,8 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            Return[result];
           ];
 
-ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
-    Module[{result, blockNameStr, parmStr, pdgStr, gutNorm = ""},
-           blockNameStr = ToString[blockName];
+ReadSLHAOutputBlock[{parameter_, {blockName_String, pdg_?NumberQ}}] :=
+    Module[{result, parmStr, pdgStr, gutNorm = ""},
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
            If[parameter === SARAH`hyperchargeCoupling,
@@ -495,10 +494,20 @@ ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
                   1/Parameters`GetGUTNormalization[parameter]];
              ];
            result = "model.set_" <> parmStr <>
-                    "(slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
+                    "(slha_io.read_entry(\"" <> blockName <> "\", " <>
                     pdgStr <> ")" <> gutNorm <> ");\n";
            Return[result];
           ];
+
+ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+    ReadSLHAOutputBlock[{parameter, {ToString[blockName], pdg}}];
+
+ReadSLHAOutputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
+    Block[{},
+          Print["Warning: SLHA block name is not a symbol: ", blockName];
+          Print["   I'm using: ", CConversion`RValueToCFormString[blockName]];
+          ReadSLHAOutputBlock[{parameter, {CConversion`RValueToCFormString[blockName], pdg}}]
+         ];
 
 ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
