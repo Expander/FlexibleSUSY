@@ -3,6 +3,7 @@ BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "S
 InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
+CreateSMRunningFunctions::usage="";
 GetNeededVerticesList::usage="";
 CalculatePartialWidths::usage="";
 CalculateQCDAmplitudeScalingFactors::usage="";
@@ -350,6 +351,19 @@ CreateEffectiveCouplingsInit[couplings_List] :=
                init = init <> ", " <> CConversion`CreateDefaultConstructor[couplingName, type];
               ];
            init
+          ];
+
+CreateSMRunningFunctions[] :=
+    Module[{body = "", prototype = "", function = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
+              ValueQ[SARAH`strongCoupling],
+              prototype = "void run_SM_gauge_couplings_to(double m);\n";
+              body = "// not yet implemented\n";
+              function = "void " <> FlexibleSUSY`FSModelName
+                         <> "_effective_couplings::run_SM_gauge_couplings_to(double m)\n{\n"
+                         <> TextFormatting`IndentText[body] <> "\n}\n";
+             ];
+           {prototype, function}
           ];
 
 RunToDecayingParticleScale[particle_, idx_:""] :=

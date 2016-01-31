@@ -58,7 +58,7 @@ private:
    bool include_qcd_corrections;
 
    void copy_mixing_matrices_from_model();
-
+@runSMGaugeCouplingsPrototype@
    // higher order corrections to the amplitudes for
    // effective coupling to photons
    std::complex<double> scalar_qcd_factor(double, double) const;

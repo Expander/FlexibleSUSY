@@ -1096,10 +1096,12 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
     Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
             loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
+            runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction,
             calculateScalarLoopQCDFactor, calculateFermionLoopQCDFactor,
             calculateQCDScalingFactor, calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
            {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
+           {runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction} = EffectiveCouplings`CreateSMRunningFunctions[];
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1119,11 +1121,13 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
                                        "@partialWidthGetters@" -> partialWidthGetters,
                                        "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
                                        "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                       "@runSMGaugeCouplingsPrototype@" -> IndentText[runSMGaugeCouplingsPrototype],
                                        "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
                                        "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
                                        "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
+                                       "@runSMGaugeCouplingsFunction@" -> runSMGaugeCouplingsFunction,
                                        "@calculateScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarLoopQCDFactor]],
                                        "@calculateFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateFermionLoopQCDFactor]],
                                        "@calculateQCDScalingFactor@" -> IndentText[WrapLines[calculateQCDScalingFactor]],
