@@ -353,19 +353,30 @@ CreateEffectiveCouplingsInit[couplings_List] :=
           ];
 
 RunToDecayingParticleScale[particle_, idx_:""] :=
-    Module[{savedMass, body, result = ""},
-           (* running is only done in SUSY models *)
+    Module[{savedMass, mustRecalculateMasses = False,
+            body, result = ""},
+           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
+           (* full running is only done in SUSY models *)
            If[SARAH`SupersymmetricModel,
-              savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
+              mustRecalculateMasses = True;
               If[idx != "",
                  savedMass = savedMass <> "(" <> idx <> ")";
                 ];
-              body = "model.run_to(" <> savedMass <> ");\nmodel.calculate_DRbar_masses();\n"
-                     <> "copy_mixing_matrices_from_model();\n";
+              body = "model.run_to(" <> savedMass <> ");\n";
               result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
                        <> TextFormatting`IndentText[body] <> "}\n"
             ];
-           result
+           (* @note always run the SM gauge couplings, if defined, to the decay scale *)
+           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
+              ValueQ[SARAH`strongCoupling],
+              mustRecalculateMasses = True;
+              result = result <> "run_SM_gauge_couplings_to(" <> savedMass <> ");\n";
+             ];
+           If[mustRecalculateMasses,
+              result = result <> "model.calculate_DRbar_masses();\n"
+                       <> "copy_mixing_matrices_from_model();\n";
+             ];
+           {result, mustRecalculateMasses}
           ];
 
 CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
@@ -382,7 +393,8 @@ CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
 
 CreateEffectiveCouplingsCalculation[couplings_List] :=
     Module[{i, couplingSymbols, particle, couplingsForParticles = {},
-            pos, couplingList, mass, savedMass, dim, body, result = ""},
+            mustSaveParameters = False, pos, couplingList, mass,
+            savedMass, dim, body, result = ""},
            couplingSymbols = #[[1]]& /@ couplings;
            For[i = 1, i <= Length[couplingSymbols], i++,
                particle = GetExternalStates[couplingSymbols[[i]]][[1]];
@@ -393,9 +405,6 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                   couplingsForParticles = ReplacePart[couplingsForParticles, pos -> couplingList];
                  ];
               ];
-           If[SARAH`SupersymmetricModel,
-              result = result <> "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n";
-             ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
                If[SARAH`SupersymmetricModel,
@@ -405,16 +414,19 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                  ];
                dim = TreeMasses`GetDimension[particle];
                If[dim == 1,
-                  result = result <> RunToDecayingParticleScale[particle];
+                  {body, mustSaveParameters} = RunToDecayingParticleScale[particle];
+                  result = result <> body;
                   result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
                   result = result <> "for (unsigned gO1 = 0; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
-                  body = RunToDecayingParticleScale[particle, "gO1"];
+                  {body, mustSaveParameters} = RunToDecayingParticleScale[particle, "gO1"];
                   body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                   result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                  ];
               ];
-           If[SARAH`SupersymmetricModel,
+           If[mustSaveParameters,
+              result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
+              (* @note should this be done after each running, or only once at the end? *)
               result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
              ];
            result
