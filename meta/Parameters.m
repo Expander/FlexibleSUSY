@@ -1101,7 +1101,7 @@ GetParticleFromDescription[multipletName_String, splitNames_List] :=
     Module[{result},
            result = GetParticleFromDescription[multipletName];
            If[result =!= Null, Return[{result}]];
-           GetParticleFromDescription /@ splitNames
+           DeleteCases[GetParticleFromDescription /@ splitNames, Null]
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
