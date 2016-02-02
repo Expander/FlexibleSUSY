@@ -49,31 +49,38 @@ GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CalculateQCDAmplitudeScalingFactors[] :=
-    Module[{coeff, scalarQCD, fermionQCD, body = "",
-            scalarLoopFactor = "", fermionLoopFactor = ""},
+    Module[{coeff, scalarQCD, fermionQCD, pseudoscalarQCD, body = "",
+            scalarScalarLoopFactor = "", scalarFermionLoopFactor = "",
+            pseudoscalarFermionLoopFactor = ""},
            scalarQCD = 1 + 2 SARAH`strongCoupling^2 / (3 Pi^2);
            body = "result = " <> CConversion`RValueToCFormString[scalarQCD] <> ";";
-           scalarLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
-                              <> "if (m_loop > m_decay) {\n"
-                              <> TextFormatting`IndentText[body] <> "\n}";
-           fermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
-                               <> "if (m_loop > m_decay) {\n";
+           scalarScalarLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
+                                    <> "if (m_loop > m_decay) {\n"
+                                    <> TextFormatting`IndentText[body] <> "\n}";
+           scalarFermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
+                                     <> "if (m_loop > m_decay) {\n";
            fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
            body = "result = " <> CConversion`RValueToCFormString[fermionQCD] <> ";";
-           fermionLoopFactor = fermionLoopFactor <> TextFormatting`IndentText[body]
-                               <> "\n} else if (m_decay > 4.0 * m_loop) {\n";
+           scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body]
+                                     <> "\n} else if (m_decay > 2.0 * m_loop) {\n";
            coeff = 4 Symbol["l"] / 3 + (Pi^2 - Symbol["l"]^2) / 18 + I Pi (2 + Symbol["l"] / 3) / 3;
            fermionQCD = 1 + (SARAH`strongCoupling^2 / (4 Pi^2)) coeff;
            body = "const double l = Log(Sqr(m_decay) / Sqr(m_loop));\nresult = " <>
                   CConversion`RValueToCFormString[fermionQCD] <> ";";
-           fermionLoopFactor = fermionLoopFactor <> TextFormatting`IndentText[body] <> "\n}";
-           scalarLoopFactor = TextFormatting`IndentText[scalarLoopFactor];
-           fermionLoopFactor = TextFormatting`IndentText[fermionLoopFactor];
-           {scalarLoopFactor, fermionLoopFactor}
+           scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body] <> "\n}";
+           pseudoscalarFermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
+                                           <> "if (m_decay > 2.0 * m_loop) {\n";
+           pseudoscalarFermionLoopFactor = pseudoscalarFermionLoopFactor <> TextFormatting`IndentText[body]
+                                           <> "\n}";
+           scalarScalarLoopFactor = TextFormatting`IndentText[scalarScalarLoopFactor];
+           scalarFermionLoopFactor = TextFormatting`IndentText[scalarFermionLoopFactor];
+           pseudoscalarFermionLoopFactor = TextFormatting`IndentText[pseudoscalarFermionLoopFactor];
+           {scalarScalarLoopFactor, scalarFermionLoopFactor, pseudoscalarFermionLoopFactor}
           ];
 
 CalculateQCDScalingFactor[] :=
-    Module[{nloQCD, nnloQCD, nnnloQCD, result = ""},
+    Module[{nloQCD, nnloQCD, nnnloQCD, scalarFactor = "", pseudoscalarFactor = ""},
+           (* NLO, NNLO and NNNLO contributions to scalar coupling *)
            nloQCD = (95 / 4 - 7 / 6 Symbol["Nf"]) SARAH`strongCoupling^2 / (4 Pi^2);
            nnloQCD = 149533 / 288 - 363 Zeta[2] / 8 - 495 Zeta[3] / 8 + 19 Symbol["l"] / 8;
            nnloQCD = nnloQCD + Symbol["Nf"] (-4157 / 72 + 11 Zeta[2] / 2 + 5 Zeta[3] / 4 + 2 Symbol["l"] / 3);
@@ -81,10 +88,22 @@ CalculateQCDScalingFactor[] :=
            nnloQCD = nnloQCD SARAH`strongCoupling^4 / (16 Pi^4);
            nnnloQCD = 467.683620788 + 122.440972222 Symbol["l"] + 10.9409722222 Symbol["l"]^2;
            nnnloQCD = nnnloQCD SARAH`strongCoupling^6 / (64 Pi^6);
-           result = result <> "const double nlo_qcd = " <> CConversion`RValueToCFormString[nloQCD] <> ";\n";
-           result = result <> "const double nnlo_qcd = " <> CConversion`RValueToCFormString[nnloQCD] <> ";\n";
-           result = result <> "const double nnnlo_qcd = " <> CConversion`RValueToCFormString[nnnloQCD] <> ";\n";
-           result = Parameters`CreateLocalConstRefs[nloQCD + nnloQCD + nnnloQCD] <> "\n" <> result
+           scalarFactor = scalarFactor <> "const double nlo_qcd = " <> CConversion`RValueToCFormString[nloQCD] <> ";\n";
+           scalarFactor = scalarFactor <> "const double nnlo_qcd = " <> CConversion`RValueToCFormString[nnloQCD] <> ";\n";
+           scalarFactor = scalarFactor <> "const double nnnlo_qcd = " <> CConversion`RValueToCFormString[nnnloQCD] <> ";\n";
+           scalarFactor = Parameters`CreateLocalConstRefs[nloQCD + nnloQCD + nnnloQCD] <> "\n" <> scalarFactor;
+           (* NLO, NNLO and NNNLO contributions to pseudoscalar coupling *)
+           nloQCD = (97 / 4 - 7 / 6 Symbol["Nf"]) SARAH`strongCoupling^2 / (4 Pi^2);
+           nnloQCD = (171.544 + 5 Symbol["l"]) SARAH`strongCoupling^4 / (16 Pi^4);
+           nnnloQCD = 0;
+           pseudoscalarFactor = pseudoscalarFactor <> "const double nlo_qcd = "
+                                <> CConversion`RValueToCFormString[nloQCD] <> ";\n";
+           pseudoscalarFactor = pseudoscalarFactor <> "const double nnlo_qcd = "
+                                <> CConversion`RValueToCFormString[nnloQCD] <> ";\n";
+           pseudoscalarFactor = pseudoscalarFactor <> "const double nnnlo_qcd = "
+                                <> CConversion`RValueToCFormString[nnnloQCD] <> ";\n";
+           pseudoscalarFactor = Parameters`CreateLocalConstRefs[nloQCD + nnloQCD + nnnloQCD] <> "\n" <> pseudoscalarFactor;
+           {scalarFactor, pseudoscalarFactor}
           ];
 
 GetAllowedCouplingsForModel[] :=
@@ -591,7 +610,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                  If[particle === SARAH`HiggsBoson,
                     scaleFunction = "AS0";
                     If[vectorBoson === SARAH`VectorP && HasColorCharge[internal],
-                       qcdfactor = "scalar_qcd_factor(decay_mass, " <> massStr <> ")";,
+                       qcdfactor = "scalar_scalar_qcd_factor(decay_mass, " <> massStr <> ")";,
                        qcdfactor = "";
                       ];,
                     Return[{"",{}}];
@@ -608,11 +627,14 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                  If[particle === SARAH`HiggsBoson,
                     scaleFunction = "AS12";
                     If[vectorBoson === SARAH`VectorP && HasColorCharge[internal],
-                       qcdfactor = "fermion_qcd_factor(decay_mass, " <> massStr <> ")";,
+                       qcdfactor = "scalar_fermion_qcd_factor(decay_mass, " <> massStr <> ")";,
                        qcdfactor = "";
                       ];,
                     scaleFunction = "AP12";
-                    qcdfactor = "";
+                    If[vectorBoson === SARAH`VectorP && HasColorCharge[internal],
+                       qcdfactor = "pseudoscalar_fermion_qcd_factor(decay_mass, " <> massStr <> ")";,
+                       qcdfactor = "";
+                      ];
                    ];
                 ];
            If[vectorBoson === SARAH`VectorP,
@@ -689,11 +711,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
               Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
                     body = body <> "result *= std::complex<double>(0.75,0.);\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
-                           <> TextFormatting`IndentText["result *= qcd_scaling_factor(decay_mass);"] <> "\n}\n";,
+                           <> TextFormatting`IndentText["result *= scalar_scaling_factor(decay_mass);"] <> "\n}\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
                     body = body <> "result *= std::complex<double>(2.0,0.);\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(2.0,0.);\n";
+                    body = body <> "result *= std::complex<double>(2.0,0.);\n\n";
+                    body = body <> "if (include_qcd_corrections) {\n"
+                           <> TextFormatting`IndentText["result *= pseudoscalar_scaling_factor(decay_mass);"] <> "\n}\n";
                    ];
 
               If[vectorBoson === SARAH`VectorG,

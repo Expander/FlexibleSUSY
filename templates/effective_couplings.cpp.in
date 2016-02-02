@@ -63,23 +63,34 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 }
 
 @runSMGaugeCouplingsFunction@
-std::complex<double> @ModelName@_effective_couplings::scalar_qcd_factor(double m_decay, double m_loop) const
+std::complex<double> @ModelName@_effective_couplings::scalar_scalar_qcd_factor(double m_decay, double m_loop) const
 {
    std::complex<double> result(1.0, 0.0);
 
    if (include_qcd_corrections) {
-@calculateScalarLoopQCDFactor@
+@calculateScalarScalarLoopQCDFactor@
    }
 
    return result;
 }
 
-std::complex<double> @ModelName@_effective_couplings::fermion_qcd_factor(double m_decay, double m_loop) const
+std::complex<double> @ModelName@_effective_couplings::scalar_fermion_qcd_factor(double m_decay, double m_loop) const
 {
    std::complex<double> result(1.0, 0.0);
 
    if (include_qcd_corrections) {
-@calculateFermionLoopQCDFactor@
+@calculateScalarFermionLoopQCDFactor@
+   }
+
+   return result;
+}
+
+std::complex<double> @ModelName@_effective_couplings::pseudoscalar_fermion_qcd_factor(double m_decay, double m_loop) const
+{
+   std::complex<double> result(1.0, 0.0);
+
+   if (include_qcd_corrections) {
+@calculatePseudoscalarFermionLoopQCDFactor@
    }
 
    return result;
@@ -96,13 +107,23 @@ double @ModelName@_effective_couplings::number_of_active_flavours(double m) cons
    }
 }
 
-double @ModelName@_effective_couplings::qcd_scaling_factor(double m) const
+double @ModelName@_effective_couplings::scalar_scaling_factor(double m) const
 {
    const double Nf = number_of_active_flavours(m);
    const double mtpole = qedqcd.displayPoleMt();
    const double l = Log(Sqr(m) / Sqr(mtpole));
 
-@calculateQCDScalingFactor@
+@calculateScalarQCDScalingFactor@
+   return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
+}
+
+double @ModelName@_effective_couplings::pseudoscalar_scaling_factor(double m) const
+{
+   const double Nf = number_of_active_flavours(m);
+   const double mtpole = qedqcd.displayPoleMt();
+   const double l = Log(Sqr(m) / Sqr(mtpole));
+
+@calculatePseudoscalarQCDScalingFactor@
    return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
 }
 

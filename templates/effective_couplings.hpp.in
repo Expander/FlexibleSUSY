@@ -61,13 +61,15 @@ private:
 @runSMGaugeCouplingsPrototype@
    // higher order corrections to the amplitudes for
    // effective coupling to photons
-   std::complex<double> scalar_qcd_factor(double, double) const;
-   std::complex<double> fermion_qcd_factor(double, double) const;
+   std::complex<double> scalar_scalar_qcd_factor(double, double) const;
+   std::complex<double> scalar_fermion_qcd_factor(double, double) const;
+   std::complex<double> pseudoscalar_fermion_qcd_factor(double, double) const;
 
    // higher order corrections to the leading order
    // effective couplings to gluons
    double number_of_active_flavours(double) const;
-   double qcd_scaling_factor(double) const;
+   double scalar_scaling_factor(double) const;
+   double pseudoscalar_scaling_factor(double) const;
 
 @mixingMatricesDefs@
 @loopCouplingsDefs@

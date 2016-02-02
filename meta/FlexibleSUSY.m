@@ -1097,8 +1097,10 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
             loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
             runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction,
-            calculateScalarLoopQCDFactor, calculateFermionLoopQCDFactor,
-            calculateQCDScalingFactor, calculateLoopCouplings, loopCouplingsPrototypes,
+            calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudocalarFermionLoopQCDFactor,
+            calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
+            calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
            {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
            {runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction} = EffectiveCouplings`CreateSMRunningFunctions[];
@@ -1110,9 +1112,11 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
               ];
            loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
            loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
-           {calculateScalarLoopQCDFactor, calculateFermionLoopQCDFactor} =
+           {calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudoscalarFermionLoopQCDFactor} =
                EffectiveCouplings`CalculateQCDAmplitudeScalingFactors[];
-           calculateQCDScalingFactor = EffectiveCouplings`CalculateQCDScalingFactor[];
+           {calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor} =
+               EffectiveCouplings`CalculateQCDScalingFactor[];
            calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
            {loopCouplingsPrototypes, loopCouplingsFunctions} =
                EffectiveCouplings`CreateEffectiveCouplings[couplings, massMatrices, vertexRules];
@@ -1128,9 +1132,11 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
                                        "@runSMGaugeCouplingsFunction@" -> runSMGaugeCouplingsFunction,
-                                       "@calculateScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarLoopQCDFactor]],
-                                       "@calculateFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateFermionLoopQCDFactor]],
-                                       "@calculateQCDScalingFactor@" -> IndentText[WrapLines[calculateQCDScalingFactor]],
+                                       "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
+                                       "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
+                                       "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],
+                                       "@calculateScalarQCDScalingFactor@" -> IndentText[WrapLines[calculateScalarQCDScalingFactor]],
+                                       "@calculatePseudoscalarQCDScalingFactor@" -> IndentText[WrapLines[calculatePseudoscalarQCDScalingFactor]],
                                        "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
                                        "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
                                        Sequence @@ GeneralReplacementRules[]
