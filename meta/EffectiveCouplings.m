@@ -63,9 +63,10 @@ CalculateQCDAmplitudeScalingFactors[] :=
            body = "result = " <> CConversion`RValueToCFormString[fermionQCD] <> ";";
            scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body]
                                      <> "\n} else if (m_decay > 2.0 * m_loop) {\n";
-           coeff = 4 Symbol["l"] / 3 + (Pi^2 - Symbol["l"]^2) / 18 + I Pi (2 + Symbol["l"] / 3) / 3;
+           coeff = 2 Symbol["lmu"] -2 Symbol["l"] / 3 + (Pi^2 - Symbol["l"]^2) / 18 + I Pi (1 + Symbol["l"] / 3) / 3;
            fermionQCD = 1 + (SARAH`strongCoupling^2 / (4 Pi^2)) coeff;
-           body = "const double l = Log(Sqr(m_decay) / Sqr(m_loop));\nresult = " <>
+           body = "const double l = Log(Sqr(m_decay) / Sqr(m_loop));\n"
+                  <> "const double lmu = Log(Sqr(m_decay) / (4.0 * Sqr(m_loop)));\nresult = " <>
                   CConversion`RValueToCFormString[fermionQCD] <> ";";
            scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body] <> "\n}";
            pseudoscalarFermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
