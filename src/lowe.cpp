@@ -459,7 +459,11 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   temp.set(2, a2);
   // calculate alphas(m2)
   QedQcd oneset(*this);
-  oneset.runto(thresh);
+  if (m2 >= 1.0) {
+     oneset.runto(thresh);
+  } else {
+     oneset.runto(1.0);
+  }
   // Set alphas(m) to be what's already calculated.
   temp.set(3, oneset.displayAlpha(ALPHAS));
 
