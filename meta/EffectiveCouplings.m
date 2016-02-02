@@ -420,7 +420,7 @@ CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
 CreateEffectiveCouplingsCalculation[couplings_List] :=
     Module[{i, couplingSymbols, particle, couplingsForParticles = {},
             mustSaveParameters = False, pos, couplingList, mass,
-            savedMass, dim, body, result = ""},
+            savedMass, dim, start, body, result = ""},
            couplingSymbols = #[[1]]& /@ couplings;
            For[i = 1, i <= Length[couplingSymbols], i++,
                particle = GetExternalStates[couplingSymbols[[i]]][[1]];
@@ -436,15 +436,18 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
                savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
                dim = TreeMasses`GetDimension[particle];
-               If[dim == 1,
+               start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+               If[dim == 1 && !TreeMasses`IsGoldstone[particle],
                   {body, mustSaveParameters} = RunToDecayingParticleScale[particle];
                   result = result <> If[mustSaveParameters, savedMass, ""] <> body;
                   result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
-                  {body, mustSaveParameters} = RunToDecayingParticleScale[particle, "gO1"];
-                  result = result <> If[mustSaveParameters, savedMass, ""] <> "for (unsigned gO1 = 0; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
-                  body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
-                  result = result <> TextFormatting`IndentText[body] <> "}\n\n";
+                  If[start <= dim,
+                     {body, mustSaveParameters} = RunToDecayingParticleScale[particle, "gO1"];
+                     result = result <> If[mustSaveParameters, savedMass, ""] <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                     body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
+                     result = result <> TextFormatting`IndentText[body] <> "}\n\n";
+                    ];
                  ];
               ];
            If[mustSaveParameters,
