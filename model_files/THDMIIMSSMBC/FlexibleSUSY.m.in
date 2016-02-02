@@ -42,7 +42,9 @@ HighScaleInput = {
               + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
     {Lambda5, 0
               + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda5th1L + deltaLambda5Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L}
+              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
+    {Lambda6, 0},
+    {Lambda7, 0}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -52,7 +54,7 @@ SUSYScale = MEWSB;
 SUSYScaleFirstGuess = MEWSB;
 
 SUSYScaleInput = {
-    {M12   , -MAInput^2 Sin[ArcTan[v2/v1]] Cos[ArcTan[v2/v1]]}
+    {M122  , MAInput^2 Sin[ArcTan[v2/v1]] Cos[ArcTan[v2/v1]]}
 };
 
 LowScale = LowEnergyConstant[MT];

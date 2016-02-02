@@ -56,7 +56,11 @@ DEFINITION[GaugeES][Additional] = {
 LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H1 + \
 		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + Lambda4 conj[H2].H1.conj[H1].H2 );
 
-LagHC = -(Lambda5/2 conj[H2].H1.conj[H2].H1 - M122 conj[H1].H2 + Yd conj[H1].d.q + Ye conj[H1].e.l + Yu H2.u.q);
+LagHC = -(-M122 conj[H1].H2
+          + Lambda5/2 conj[H2].H1.conj[H2].H1
+          + Lambda6 conj[H1].H1.conj[H1].H2
+          + Lambda7 conj[H2].H2.conj[H1].H2
+          + Yd conj[H1].d.q + Ye conj[H1].e.l + Yu H2.u.q);
 
 LagSplit = - MassG/2 FG.FG - MassWB/2 FW.FW - MassB/2 FB.FB - \[Mu] Hu.Hd \
     - g2u conj[H2].FW.Hu - (g2up/Sqrt[2]) conj[H2].FB.Hu \

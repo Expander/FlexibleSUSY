@@ -41,6 +41,9 @@ Block MINPAR                 # Input parameters
     3   0.5                  # Lambda3IN
     4   0.8                  # Lambda4IN
     5   -2                   # Lambda5IN
+    6   0                    # Lambda6IN
+    7   0                    # Lambda7IN
+    8   1000                 # M122
     10  10                   # TanBeta
 Block EXTPAR
     0   126                  # Qin
