@@ -300,8 +300,8 @@ TimeConstrainedSolve[eq_, par_] :=
                                     FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[result === {} || result === {{}},
               Off[Reduce::nsmet];
-              result = TimeConstrained[ToRules[Reduce[independentEq, par]],
-                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              result = TimeConstrained[{ToRules[Reduce[independentEq, par]]},
+                                        FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[Head[result] === ToRules || Head[result] === Reduce,
                  result = {};
                 ];
