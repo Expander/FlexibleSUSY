@@ -448,33 +448,42 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   a2 = aem / sinth;
 
   const double mtpole = displayPoleMt();
-  const double thresh = minimum(m2, mtpole);
-
-  // Renormalise a1,a2 to threshold scale assuming topless SM with one
-  // light Higgs doublet
-  a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
-  a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
-
-  temp.set(1, a1);
-  temp.set(2, a2);
-  // calculate alphas(m2)
   QedQcd oneset(*this);
-  if (m2 >= 1.0) {
-     oneset.runto(thresh);
-  } else {
-     oneset.runto(1.0);
-  }
-  // Set alphas(m) to be what's already calculated.
-  temp.set(3, oneset.displayAlpha(ALPHAS));
 
-  if (m2 > mtpole) {
-     if (displayThresholds() > 0) {
-       const double mtrun = oneset.displayMass(mTop);
-       const double alphas_5f = oneset.displayAlpha(ALPHAS);
-       const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
-                                             log(mtrun / mtpole) / 3.0);
-       oneset.setAlpha(ALPHAS, alphas_sm);
-     }
+  if (m1 < mtpole) {
+    // Renormalise a1,a2 to threshold scale assuming topless SM with one
+    // light Higgs doublet
+    const double thresh = minimum(m2, mtpole);
+    a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
+    a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
+
+    temp.set(1, a1);
+    temp.set(2, a2);
+
+    // calculate alphas(m2)
+    if (m2 >= 1.0) {
+       oneset.runto(thresh);
+    } else {
+       oneset.runto(1.0);
+    }
+    // Set alphas(m) to be what's already calculated.
+    temp.set(3, oneset.displayAlpha(ALPHAS));
+
+    if (m2 > mtpole) {
+      if (displayThresholds() > 0) {
+        const double mtrun = oneset.displayMass(mTop);
+        const double alphas_5f = oneset.displayAlpha(ALPHAS);
+        const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
+                                              log(mtrun / mtpole) / 3.0);
+        oneset.setAlpha(ALPHAS, alphas_sm);
+      }
+      temp = oneset.runSMGauge(m2, temp);
+    }
+  } else {
+    // Above the top threshold use SM RGEs only
+     temp.set(1, a1);
+     temp.set(2, a2);
+     temp.set(3, oneset.displayAlpha(ALPHAS));
      temp = oneset.runSMGauge(m2, temp);
   }
 
