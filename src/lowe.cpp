@@ -481,10 +481,10 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
     }
   } else {
     // Above the top threshold use SM RGEs only
-     temp.set(1, a1);
-     temp.set(2, a2);
-     temp.set(3, oneset.displayAlpha(ALPHAS));
-     temp = oneset.runSMGauge(m2, temp);
+    temp.set(1, a1);
+    temp.set(2, a2);
+    temp.set(3, oneset.displayAlpha(ALPHAS));
+    temp = oneset.runSMGauge(m2, temp);
   }
 
   return temp;
