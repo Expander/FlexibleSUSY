@@ -468,6 +468,13 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   temp.set(3, oneset.displayAlpha(ALPHAS));
 
   if (m2 > mtpole) {
+     if (displayThresholds() > 0) {
+       const double mtrun = oneset.displayMass(mTop);
+       const double alphas_5f = oneset.displayAlpha(ALPHAS);
+       const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
+                                             log(mtrun / mtpole) / 3.0);
+       oneset.setAlpha(ALPHAS, alphas_sm);
+     }
      temp = oneset.runSMGauge(m2, temp);
   }
 
