@@ -59,8 +59,8 @@ ParameterDefinitions = {
                OutputName -> M222,
                LesHouches -> {HMIX,21}}},
 
-{M12,    {    LaTeX -> "m_{12}",
-               OutputName -> M12,
+{M122,    {    LaTeX -> "m^2_{12}",
+               OutputName -> M122,
                LesHouches -> {HMIX,22}}},
 
 

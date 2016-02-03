@@ -49,7 +49,9 @@ HighScaleInput = {
               + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
     {Lambda5, 0
               + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda5th1L + deltaLambda5Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L}
+              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
+    {Lambda6, 0},
+    {Lambda7, 0}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -111,9 +113,9 @@ Lambda2WagnerLee = 2 Lambda2;
 (* arxiv:1508.00576, Eq. (45) *)
 deltaLambda1th1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -130,9 +132,9 @@ deltaLambda1th1L = With[{
 (* arxiv:1508.00576, Eq. (46) *)
 deltaLambda2th1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -150,9 +152,9 @@ deltaLambda2th1L = With[{
 (* arxiv:1508.00576, Eq. (47)-(48) *)
 deltaLambda3th1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -175,9 +177,9 @@ deltaLambda3th1L = With[{
 (* arxiv:1508.00576, Eq. (49) *)
 deltaLambda4th1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -200,9 +202,9 @@ deltaLambda4th1L = With[{
 (* arxiv:1508.00576, Eq. (50) *)
 deltaLambda5th1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
     AtauMS = Atau / MSUSY,
@@ -216,9 +218,9 @@ deltaLambda5th1L = With[{
 (* arxiv:1508.00576, Eq. (53) *)
 deltaLambda1Phi1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -232,9 +234,9 @@ deltaLambda1Phi1L = With[{
 (* arxiv:1508.00576, Eq. (54) *)
 deltaLambda2Phi1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AtMS = At / MSUSY
@@ -247,9 +249,9 @@ deltaLambda2Phi1L = With[{
 (* arxiv:1508.00576, Eq. (55) *)
 deltaLambda3Phi1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     gY = GUTNormalization[g1] g1,
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
@@ -264,9 +266,9 @@ deltaLambda3Phi1L = With[{
 (* arxiv:1508.00576, Eq. (56) *)
 deltaLambda4Phi1L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
-    hb = Yd[3,3]/Cos[ArcTan[v2/v1]],
-    htau = Ye[3,3]/Cos[ArcTan[v2/v1]],
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
     muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
     AtauMS = Atau / MSUSY,
@@ -283,7 +285,7 @@ deltaLambda5Phi1L = 0;
 (* arxiv:1508.00576, Eq. (59) *)
 deltaLambda1th2L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
+    ht = Yu[3,3],
     muMS = \[Mu] / MSUSY
     },
     (
@@ -294,7 +296,7 @@ deltaLambda1th2L = With[{
 (* arxiv:1508.00576, Eq. (60) *)
 deltaLambda2th2L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
+    ht = Yu[3,3],
     muMS = \[Mu] / MSUSY,
     AtMS = At / MSUSY
     },
@@ -306,7 +308,7 @@ deltaLambda2th2L = With[{
 (* arxiv:1508.00576, Eq. (61) *)
 deltaLambda3th2L = With[{
     kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3]/Sin[ArcTan[v2/v1]],
+    ht = Yu[3,3],
     muMS = \[Mu] / MSUSY,
     AtMS = At / MSUSY
     },

@@ -52,7 +52,11 @@ LagNoHC = -(M112 conj[H1].H1 + M222 conj[H2].H2 + Lambda1 conj[H1].H1.conj[H1].H
 		Lambda2 conj[H2].H2.conj[H2].H2 + Lambda3 conj[H2].H2.conj[H1].H1 + Lambda4 conj[H2].H1.conj[H1].H2 );
 
 
-LagHC = -(M12 conj[H1].H2 + Lambda5/2 conj[H2].H1.conj[H2].H1  + Yd conj[H1].d.q + Ye conj[H1].e.l + Yu H2.u.q);
+LagHC = -(-M122 conj[H1].H2
+          + Lambda5/2 conj[H2].H1.conj[H2].H1
+          + Lambda6 conj[H1].H1.conj[H1].H2
+          + Lambda7 conj[H2].H2.conj[H1].H2
+          + Yd conj[H1].d.q + Ye conj[H1].e.l + Yu H2.u.q);
 
 (* Gauge Sector *)
 
