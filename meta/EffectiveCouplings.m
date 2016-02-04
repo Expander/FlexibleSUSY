@@ -171,9 +171,14 @@ CalculatePartialWidths[couplings_List] :=
                   body = body <> "return " <> CConversion`RValueToCFormString[1 / (64 Pi)]
                          <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
                          <> If[dim != 1, "(gO1)", ""] <> ");";,
-                  body = body <> "return " <> CConversion`RValueToCFormString[1 / (8 Pi)]
-                         <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
-                         <> If[dim != 1, "(gO1)", ""] <> ");";
+                  If[particle === SARAH`HiggsBoson,
+                     body = body <> "return " <> CConversion`RValueToCFormString[1 / (8 Pi)]
+                            <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
+                            <> If[dim != 1, "(gO1)", ""] <> ");";,
+                     body = body <> "return " <> CConversion`RValueToCFormString[9 / (128 Pi)]
+                            <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
+                            <> If[dim != 1, "(gO1)", ""] <> ");";
+                    ];
                  ];
                functions = Append[functions,
                                   "double " <> FlexibleSUSY`FSModelName <> "_effective_couplings::"
