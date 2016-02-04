@@ -95,7 +95,8 @@ CalculateQCDScalingFactor[] :=
            scalarFactor = Parameters`CreateLocalConstRefs[nloQCD + nnloQCD + nnnloQCD] <> "\n" <> scalarFactor;
            (* NLO, NNLO and NNNLO contributions to pseudoscalar coupling *)
            nloQCD = (97 / 4 - 7 / 6 Symbol["Nf"]) SARAH`strongCoupling^2 / (4 Pi^2);
-           nnloQCD = (171.544 + 5 Symbol["l"]) SARAH`strongCoupling^4 / (16 Pi^4);
+           nnloQCD = (237311 / 864 - 529 Zeta[2] / 24 - 445 Zeta[3] / 8 + 5 Symbol["l"]);
+           nnloQCD = nnloQCD SARAH`strongCoupling^4 / (16 Pi^4);
            nnnloQCD = 0;
            pseudoscalarFactor = pseudoscalarFactor <> "const double nlo_qcd = "
                                 <> CConversion`RValueToCFormString[nloQCD] <> ";\n";
