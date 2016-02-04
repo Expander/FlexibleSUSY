@@ -204,13 +204,17 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
 
 CreateBetaFunctionCall[betaFunction_BetaFunction] :=
      Module[{beta1L, beta2L = "", beta3L = "", betaName = "", name = "",
-             oneLoopBetaStr, dataType, localDecl = "",
+             oneLoopBetaStr, cType, localDecl = "",
              twoLoopBetaStr, threeLoopBetaStr, type = ErrorType},
             name          = ToValidCSymbolString[GetName[betaFunction]];
-            dataType      = CConversion`CreateCType[GetType[betaFunction]];
+            type          = GetType[betaFunction];
+            ctype         = CConversion`CreateCType[type];
             betaName      = "beta_" <> name;
-            oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop(TRACE_STRUCT)";
-            beta1L        = dataType <> " " <> betaName <> "(" <> oneLoopBetaStr <> ");\n";
+            localDecl     = ctype <> " " <> CConversion`SetToDefault[betaName, type];
+           If[Length[GetAllBetaFunctions[betaFunction]] > 0,
+              oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop(TRACE_STRUCT)";
+              beta1L = betaName <> " += " <> oneLoopBetaStr <> ";\n";
+             ];
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
               twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
               beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
@@ -234,13 +238,21 @@ CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
                allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
                allBeta3L = allBeta3L <> TextFormatting`IndentText[beta3L];
               ];
-           allBeta = allDecl <> "\n" <> allBeta1L <> "\n" <>
-                     "if (get_loops() > 1) {\n" <>
-                     allBeta2L <> "\n" <>
+           allBeta = allDecl <> "\n" <>
+                     "if (get_loops() > 0) {\n" <>
                      TextFormatting`IndentText[
-                         "if (get_loops() > 2) {\n" <>
-                         allBeta3L <>
-                         "\n}"] <>
+                         "TRACE_STRUCT_TYPE TRACE_STRUCT;\n" <>
+                         "CALCULATE_TRACES();\n\n" <>
+                         allBeta1L <> "\n" <>
+                         "if (get_loops() > 1) {\n" <>
+                         allBeta2L <> "\n" <>
+                         TextFormatting`IndentText[
+                             "if (get_loops() > 2) {\n" <>
+                             allBeta3L <>
+                             "\n}"
+                         ] <>
+                         "\n}"
+                     ] <>
                      "\n}\n";
            Return[allBeta];
           ];
