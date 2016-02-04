@@ -43,8 +43,12 @@ HighScaleInput = {
     {Lambda5, 0
               + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda5th1L + deltaLambda5Phi1L)
               + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
-    {Lambda6, 0},
-    {Lambda7, 0}
+    {Lambda6, 0
+              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda6th1L + deltaLambda6Phi1L)
+              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda6th2L},
+    {Lambda7, 0
+              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda7th1L + deltaLambda7Phi1L)
+              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda7th2L}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -200,6 +204,42 @@ deltaLambda5th1L = With[{
     )
 ];
 
+(* arxiv:1508.00576, Eq. (51) *)
+deltaLambda6th1L = With[{
+    kappa = 1/(4 Pi)^2,
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
+    muMS = MuInput / MSUSY,
+    AbMS = Ab / MSUSY,
+    AtauMS = Atau / MSUSY,
+    AtMS = At / MSUSY
+    },
+    (
+        kappa/6 muMS (+ 3 ht^4 muMS^2 AtMS
+                      + 3 hb^4 AbMS (AbMS^2 - 6)
+                      + htau^4 AtauMS (AtauMS^2 - 6))
+    )
+];
+
+(* arxiv:1508.00576, Eq. (52) *)
+deltaLambda7th1L = With[{
+    kappa = 1/(4 Pi)^2,
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
+    muMS = MuInput / MSUSY,
+    AbMS = Ab / MSUSY,
+    AtauMS = Atau / MSUSY,
+    AtMS = At / MSUSY
+    },
+    (
+        kappa/6 muMS (+ 3 ht^4 AtMS (AtMS^2 - 6)
+                      + 3 hb^4 muMS^2 AbMS
+                      + htau^4 muMS^2 AtauMS)
+    )
+];
+
 (* arxiv:1508.00576, Eq. (53) *)
 deltaLambda1Phi1L = With[{
     kappa = 1/(4 Pi)^2,
@@ -266,6 +306,8 @@ deltaLambda4Phi1L = With[{
 
 (* arxiv:1508.00576, Eq. (57) *)
 deltaLambda5Phi1L = 0;
+deltaLambda6Phi1L = 0;
+deltaLambda7Phi1L = 0;
 
 (* arxiv:1508.00576, Eq. (59) *)
 deltaLambda1th2L = With[{
@@ -304,3 +346,27 @@ deltaLambda3th2L = With[{
 
 deltaLambda4th2L = deltaLambda3th2L;
 deltaLambda5th2L = deltaLambda3th2L;
+
+(* arxiv:1508.00576, Eq. (62) *)
+deltaLambda6th2L = With[{
+    kappa = 1/(4 Pi)^2,
+    ht = Yu[3,3],
+    muMS = MuInput / MSUSY,
+    AtMS = At / MSUSY
+    },
+    (
+        4/3 kappa^2 ht^4 g3^2 muMS^3 (-1 + AtMS)
+    )
+];
+
+(* arxiv:1508.00576, Eq. (63) *)
+deltaLambda7th2L = With[{
+    kappa = 1/(4 Pi)^2,
+    ht = Yu[3,3],
+    muMS = MuInput / MSUSY,
+    AtMS = At / MSUSY
+    },
+    (
+        4 kappa^2 ht^4 g3^2 muMS (2 - AtMS^2 + 1/3 AtMS^3)
+    )
+];
