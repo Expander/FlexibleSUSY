@@ -500,6 +500,7 @@ GetEffectiveVEV[] :=
     Module[{vev, parameters = {}, result = ""},
            vev = Simplify[2 Sqrt[-SARAH`Vertex[{SARAH`VectorW, Susyno`LieGroups`conj[SARAH`VectorW]}][[2,1]]
                         / SARAH`leftCoupling^2] /. SARAH`sum[a_,b_,c_,d_] :> Sum[d,{a,b,c}]];
+           vev = Parameters`DecreaseIndexLiterals[vev];
            parameters = Parameters`FindAllParameters[vev];
            result = "const auto vev = " <> CConversion`RValueToCFormString[vev] <> ";\n";
            {result, parameters}
