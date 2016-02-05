@@ -47,6 +47,7 @@ IsComplexParameter::usage="";
 IsRealExpression::usage="";
 IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
+IsTensor::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
@@ -221,6 +222,12 @@ IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
 
 IsSymmetricMatrixParameter[sym_] :=
     IsMatrix[sym] && MemberQ[SARAH`ListSoftBreakingScalarMasses, sym];
+
+IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
+    IsTensor[sym];
+
+IsTensor[sym_] :=
+    Length[SARAH`getDimParameters[sym]] > 2;
 
 AllModelParametersAreReal[] := MemberQ[SARAH`RealParameters, All];
 
