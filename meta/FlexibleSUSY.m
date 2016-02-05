@@ -1693,7 +1693,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
                                Parameters`StripSARAHIndicesRules[1] /.
-                               Parameters`StripSARAHIndicesRules[2];
+                               Parameters`StripSARAHIndicesRules[2] /.
+                               Parameters`StripSARAHIndicesRules[3] /.
+                               Parameters`StripSARAHIndicesRules[4];
            allIndexReplacementRules = Join[
                Parameters`CreateIndexReplacementRules[allParameters],
                {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
@@ -1782,7 +1784,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                           {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
                                                      Parameters`StripSARAHIndicesRules[1] /.
-                                                     Parameters`StripSARAHIndicesRules[2],
+                                                     Parameters`StripSARAHIndicesRules[2] /.
+                                                     Parameters`StripSARAHIndicesRules[3] /.
+                                                     Parameters`StripSARAHIndicesRules[4],
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
@@ -1817,7 +1821,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
                                                   Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
                                               Parameters`StripSARAHIndicesRules[1] /.
-                                              Parameters`StripSARAHIndicesRules[2],
+                                              Parameters`StripSARAHIndicesRules[2] /.
+                                              Parameters`StripSARAHIndicesRules[3] /.
+                                              Parameters`StripSARAHIndicesRules[4],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
