@@ -674,7 +674,44 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`c
               ];
            If[2 * rows * cols != count,
               Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
+                    <> ToString[2 rows * cols] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
+                              <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                              <> ");\n";
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
+                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                             <> "));\n";
+                       ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
+                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                             <> "));\n";
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[2 dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
            Return[{ass, count}];
           ];
 
