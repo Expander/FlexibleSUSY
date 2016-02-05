@@ -793,6 +793,44 @@ CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`complexScalarC
            Return[ass];
           ];
 
+CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> ")\"";
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\", ";
+                       ass = ass <> "\"Im(" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\"";
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
 CreateParameterEnums[name_, parameterType_] :=
     Block[{},
           Print["Error: CreateParameterEnums: unknown parameter type: ",
@@ -861,6 +899,42 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            If[2 * rows * cols != count,
               Print["Error: CreateParameterEnums: something is wrong with the indices: "
                     <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterEnums[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> CConversion`ToValidCSymbolString[name] <>
+                             ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterEnums[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k] <> ", "
+                                 <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
              ];
            Return[ass];
           ];
