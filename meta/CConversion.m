@@ -186,6 +186,9 @@ CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
 CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
 
+CreateCType[CConversion`TensorType[realScalarCType, dims__]] :=
+    EigenTensor["double", Sequence @@ (ToString /@ {dims})];
+
 CreateCType[CConversion`TensorType[complexScalarCType, dims__]] :=
     EigenTensor["std::complex<double>", Sequence @@ (ToString /@ {dims})];
 
