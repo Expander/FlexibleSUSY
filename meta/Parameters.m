@@ -371,6 +371,18 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
+GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+    If[IsRealParameter[sym],
+       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3],
+       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3]
+      ];
+
+GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
+    If[IsRealParameter[sym],
+       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4],
+       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3, num4]
+      ];
+
 GetRealTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
 
@@ -385,6 +397,12 @@ GetRealTypeFromDimension[{num_?NumberQ}] :=
 
 GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
     CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
+
+GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3];
+
+GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
+    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
@@ -415,6 +433,16 @@ CreateIndexReplacementRule[{parameter_, CConversion`VectorType[_,_] | CConversio
 CreateIndexReplacementRule[{parameter_, CConversion`MatrixType[_,_,_]}] :=
     Module[{i,j},
            RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]]
+          ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_]}] :=
+    Module[{i,j,k},
+           RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]]
+          ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_,_]}] :=
+    Module[{i,j,k,l},
+           RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]]
           ];
 
 CreateIndexReplacementRule[parameter_] :=

@@ -1,6 +1,7 @@
 
 BeginPackage["CConversion`", {"SARAH`", "TextFormatting`", "Utils`"}];
 
+TensorType::usage="";
 MatrixType::usage="";
 ArrayType::usage="";
 VectorType::usage="";
@@ -123,9 +124,16 @@ GetElementType[CConversion`ScalarType[type_]]     := type;
 GetElementType[CConversion`ArrayType[type_, __]]  := type;
 GetElementType[CConversion`VectorType[type_, __]] := type;
 GetElementType[CConversion`MatrixType[type_, __]] := type;
+GetElementType[CConversion`TensorType[type_, __]] := type;
 
 GetScalarElementType[type_] :=
     CConversion`ScalarType[GetElementType[type]];
+
+EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String] :=
+    "Eigen::Tensor<" <> elementType <> ", 3>";
+
+EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String, dim4_String] :=
+    "Eigen::Tensor<" <> elementType <> ", 4>";
 
 EigenMatrix[elementType_String, dim1_String, dim2_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
@@ -146,6 +154,7 @@ ToRealType[CConversion`ScalarType[_]] := CConversion`ScalarType[realScalarCType]
 ToRealType[CConversion`ArrayType[_,n_]] := CConversion`ArrayType[realScalarCType, n];
 ToRealType[CConversion`VectorType[_,n_]] := CConversion`VectorType[realScalarCType, n];
 ToRealType[CConversion`MatrixType[_,m_,n_]] := CConversion`MatrixType[realScalarCType, m, n];
+ToRealType[CConversion`TensorType[_,n__]] := CConversion`TensorType[realScalarCType, n];
 
 CreateCType[type_] :=
     Print["Error: CreateCType: unknown type: " <> ToString[type]];
@@ -177,6 +186,9 @@ CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
 CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
 
+CreateCType[CConversion`TensorType[complexScalarCType, dims__]] :=
+    EigenTensor["std::complex<double>", Sequence @@ (ToString /@ {dims})];
+
 CastTo[expr_String, toType_ /; toType === None] := expr;
 
 CastTo[expr_String, toType_] :=
@@ -186,7 +198,8 @@ CastTo[expr_String, toType_] :=
            ,
            CConversion`VectorType[CConversion`realScalarCType,_] |
            CConversion`ArrayType[ CConversion`realScalarCType,_] |
-           CConversion`MatrixType[CConversion`realScalarCType,__],
+           CConversion`MatrixType[CConversion`realScalarCType,__]|
+           CConversion`TensorType[CConversion`realScalarCType,__],
            "(" <> expr <> ").real()"
            ,
            CConversion`ScalarType[CConversion`complexScalarCType],
@@ -194,7 +207,8 @@ CastTo[expr_String, toType_] :=
            ,
            CConversion`VectorType[CConversion`complexScalarCType,_] |
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
-           CConversion`MatrixType[CConversion`complexScalarCType,__],
+           CConversion`MatrixType[CConversion`complexScalarCType,__]|
+           CConversion`TensorType[CConversion`complexScalarCType,__],
            "(" <> expr <> ").cast<std::complex<double> >()"
            ,
            _,
@@ -217,6 +231,9 @@ CreateGetterReturnType[CConversion`VectorType[type_, entries_]] :=
 CreateGetterReturnType[CConversion`MatrixType[type_, dim1_, dim2_]] :=
     "const " <> CreateCType[CConversion`MatrixType[type, dim1, dim2]] <> "&";
 
+CreateGetterReturnType[CConversion`TensorType[type_, dims__]] :=
+    "const " <> CreateCType[CConversion`TensorType[type, dims]] <> "&";
+
 CreateSetterInputType[type_] :=
     CreateGetterReturnType[type];
 
@@ -228,6 +245,14 @@ CreateInlineElementSetter[parameter_String, elementType_String, dim_Integer] :=
 CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer] :=
     "void set_" <> parameter <> "(int i, int k, " <> elementType <>
     " value) { " <> parameter <> "(i,k) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer] :=
+    "void set_" <> parameter <> "(int i, int k, int l, " <> elementType <>
+    " value) { " <> parameter <> "(i,k,l) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, dim4_Integer] :=
+    "void set_" <> parameter <> "(int i, int k, int l, int j, " <> elementType <>
+    " value) { " <> parameter <> "(i,k,l,j) = value; }\n";
 
 CreateInlineElementSetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_]] :=
     CreateInlineElementSetter[parameter, "double", entries];
@@ -247,6 +272,12 @@ CreateInlineElementSetter[parameter_String, CConversion`MatrixType[realScalarCTy
 CreateInlineElementSetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     CreateInlineElementSetter[parameter, "const std::complex<double>&", dim1, dim2];
 
+CreateInlineElementSetter[parameter_String, CConversion`TensorType[realScalarCType, dims__]] :=
+    CreateInlineElementSetter[parameter, "double", dims];
+
+CreateInlineElementSetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__]] :=
+    CreateInlineElementSetter[parameter, "const std::complex<double>&", dims];
+
 (* Creates a C++ setter *)
 CreateInlineSetter[parameter_String, type_String] :=
     "void set_" <> parameter <> "(" <> type <>
@@ -264,6 +295,14 @@ CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer, pos
 CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, postFix_String:"", wrapper_String:""] :=
     elementType <> " get_" <> parameter <> postFix <> "(int i, int k) const" <>
     " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k)" <> If[wrapper != "", ")", ""] <> "; }\n";
+
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, postFix_String:"", wrapper_String:""] :=
+    elementType <> " get_" <> parameter <> postFix <> "(int i, int k, int l) const" <>
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k,l)" <> If[wrapper != "", ")", ""] <> "; }\n";
+
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, dim4_Integer, postFix_String:"", wrapper_String:""] :=
+    elementType <> " get_" <> parameter <> postFix <> "(int i, int k, int l, int j) const" <>
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k,l,j)" <> If[wrapper != "", ")", ""] <> "; }\n";
 
 CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCType], postFix_String:"", wrapper_String:""] :=
     CreateInlineGetter[parameter, "double", postFix, wrapper];
@@ -288,6 +327,12 @@ CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCTy
 
 CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, wrapper];
+
+CreateInlineElementGetter[parameter_String, CConversion`TensorType[realScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "double", dims, postFix, wrapper];
+
+CreateInlineElementGetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", dims, postFix, wrapper];
 
 (* Creates a C++ inline getter *)
 CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_String:""] :=
@@ -323,6 +368,9 @@ CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries
 CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
 
+CreateDefaultConstructor[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    parameter <> "(" <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero())";
+
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
@@ -337,6 +385,9 @@ CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, entries_
 
 CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     CreateCType[CConversion`MatrixType[type, rows, cols]] <> " " <> parameter;
+
+CreateDefaultDefinition[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    CreateCType[CConversion`TensorType[type, dims]] <> " " <> parameter;
 
 SetToDefault[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
@@ -358,6 +409,9 @@ SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
 
 SetToDefault[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> " = " <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero();\n";
+
+SetToDefault[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    parameter <> " = " <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero();\n";
 
 (* create unitary matrix *)
 CreateUnitMatrix[type_] :=
@@ -395,6 +449,9 @@ CreateZero[CConversion`VectorType[CConversion`realScalarCType, entries_]] :=
 CreateZero[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
 
+CreateZero[CConversion`TensorType[CConversion`realScalarCType, dims__]] :=
+    CConversion`ZEROMATRIX[dims];
+
 CreateZero[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] :=
     CConversion`ZEROARRAYCOMPLEX[entries];
 
@@ -403,6 +460,9 @@ CreateZero[CConversion`VectorType[CConversion`complexScalarCType, entries_]] :=
 
 CreateZero[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIXCOMPLEX[rows,cols];
+
+CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dims__]] :=
+    CConversion`ZEROMATRIXCOMPLEX[dims];
 
 CreateConstExternDecl[parameter_String, type_] :=
     "extern const " <> CreateCType[type] <> " " <>
@@ -892,6 +952,8 @@ HaveSameDimension[{ArrayType[_,n_], ArrayType[_,m_]}] := n === m;
 HaveSameDimension[{VectorType[_,n_], VectorType[_,m_]}] := n === m;
 HaveSameDimension[{VectorType[_,n_], ArrayType[_,m_]}] := n === m;
 HaveSameDimension[{MatrixType[_,n_,k_], MatrixType[_,m_,l_]}] := n === m && k === l;
+HaveSameDimension[{MatrixType[_,dims1__], MatrixType[_,dims2__]}] :=
+    And @@ ((#[[1]] == #[[2]])& /@ Utils`Zip[{dims1},{dims2}]);
 HaveSameDimension[{_,_}] := False;
 HaveSameDimension[types_List] :=
     And @@ (HaveSameDimension /@ Subsets[types, {2}]);
