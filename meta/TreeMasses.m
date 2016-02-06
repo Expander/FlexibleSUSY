@@ -629,11 +629,21 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
           ];
 
 DeleteDuplicateSinglets[massMatrices_List] :=
-    Module[{result = massMatrices, i, me},
+    Module[{result = massMatrices, i, m, me, mm, p, other},
            For[i = 1, i <= Length[massMatrices], i++,
                me = GetMassEigenstate[massMatrices[[i]]];
-               If[Head[me] === List && Length[me] == 1,
-                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, me[[1]], _]];
+               mm = GetMixingMatrixSymbol[massMatrices[[i]]];
+               If[Head[me] =!= List,
+                  other = Cases[result, p:TreeMasses`FSMassMatrix[_, {me}, _] :> p];
+                  If[other === {}, Continue[]];
+                  other = other[[1]];
+                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, {me}, _]];
+                  If[Head[GetMassEigenstate[other]] === List &&
+                     Length[GetMassEigenstate[other]] > 0 &&
+                     GetMixingMatrixSymbol[other] =!= Null,
+                     result = result /.
+                         TreeMasses`FSMassMatrix[m_, me, Null] :> TreeMasses`FSMassMatrix[m, me, GetMixingMatrixSymbol[other]];
+                    ];
                  ];
               ];
            result
