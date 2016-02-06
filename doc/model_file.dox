@@ -2,6 +2,58 @@
 \page model_file_options FlexibleSUSY model file options
 \tableofcontents
 
+\section model_info Model information
+
+_____________________________________________________________________
+
+__Symbol__: `FSModelName`
+
+__Default value__: _unset_
+
+__Description__:
+
+Name of the model class within the generated code.  If `FSModelName`
+is set to the string "@CLASSNAME@", it will be replaced by the
+`createmodel` script to the name of the FlexibleSUSY model given
+during the `./createmodel --name=<model_name>` command.
+
+_____________________________________________________________________
+
+__Symbol__: `FSEigenstates`
+
+__Default value__: ``SARAH`EWSB``
+
+__Description__:
+
+The name of the particle eigenstates in SARAH.  Usually,
+``SARAH`EWSB`` corresponds to the mass eigenstates after breaking of
+the electroweak symmetry.
+
+_____________________________________________________________________
+
+__Symbol__: `FSDefaultSARAHModel`
+
+__Default value__: _unset_
+
+__Description__:
+
+Name of the SARAH model to be used.  A sub-model can be specified
+after a `/`.
+
+Example: In the constrained CP-conserving MSSM (`CMSSM`) the SARAH
+model `MSSM` is used as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSDefaultSARAHModel = MSSM;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example: In the constrained CP-violating MSSM (`CMSSMCPV`) the SARAH
+model `MSSM` together with the sub-model `CPV` is used:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSDefaultSARAHModel = MSSM/CPV;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \section input_parameters Input parameters
 
 _____________________________________________________________________
@@ -158,6 +210,38 @@ Block AuijIN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
+__Symbol__: `RealParameters`
+
+__Default value__: `{ All }`
+
+__Description__:
+
+`RealParameters` is a list, which contains the names of all model
+parameters, which should be treated as real parameters.  By default,
+`RealParameters` is set to `{ All }`, meaning that by default all
+paramerters are treated to be real.  If `RealParameters` is set to the
+empty list `{}`, FlexibleSUSY takes the information which paramerters
+are real and which are complex from the SARAH model file.
+
+Example: In the complex Standard Model (`cSM`), the parameters `mu2`
+and `\[Lambda]` should be defined to be real:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+RealParameters = { mu2, \[Lambda] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note: The gauge couplings and VEVs are always assumed to be real in
+SARAH.
+
+Example: In the CP-violating MSSM (`CMSSMCPV`), the `B[\[Mu]]`
+parameter should be defined to be real:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+RealParameters = { B[\[Mu]] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \section boundary_conditions Boundary conditions
 
