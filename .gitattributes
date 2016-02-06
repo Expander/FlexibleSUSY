@@ -43,6 +43,7 @@ model_files/complexMSSM         export-ignore
 model_files/cCMSSM              export-ignore
 model_files/CMSSMCPV            export-ignore
 model_files/NMSSMCPV            export-ignore
+model_files/TensorCoupling      export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
@@ -57,6 +58,7 @@ sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
 sarah/SMnoGUT                   export-ignore
+sarah/TensorCoupling            export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore
