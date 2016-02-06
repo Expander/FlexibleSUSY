@@ -29,6 +29,7 @@ namespace flexiblesusy {
 
 template <class Scalar, int N, int M, int K>
 class ZeroTensor3 : public Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K> > {
+public:
    typedef Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K> > Base;
 
    using Base::setZero;
@@ -40,6 +41,7 @@ class ZeroTensor3 : public Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K> > 
 
 template <class Scalar, int N, int M, int K, int L>
 class ZeroTensor4 : public Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K,L> > {
+public:
    typedef Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K,L> > Base;
 
    using Base::setZero;
