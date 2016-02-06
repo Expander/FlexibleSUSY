@@ -2,6 +2,9 @@ FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = TensorCoupling;
 
+(* disable RGEs because tensors don't work yet *)
+FSRGELoopOrder = 0;
+
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
