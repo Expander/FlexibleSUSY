@@ -580,7 +580,7 @@ CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realS
                       ];
                   ];
               ];
-           If[dim1 * dim2 != count,
+           If[dim1 * dim2 * dim3 != count,
               Print["Error: CreateSetAssignment: something is wrong with the indices: "
                     <> ToString[dim1 dim2 dim3] <> " != " <> ToString[count]];];
            Return[{ass, count}];
