@@ -297,6 +297,8 @@ CountNumberOfParameters[CConversion`VectorType[CConversion`realScalarCType, entr
 CountNumberOfParameters[CConversion`VectorType[CConversion`complexScalarCType, entries_]] := 2 * entries;
 CountNumberOfParameters[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] := rows * cols;
 CountNumberOfParameters[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] := 2 * rows * cols;
+CountNumberOfParameters[CConversion`TensorType[CConversion`realScalarCType, dims__]] := Times[dims];
+CountNumberOfParameters[CConversion`TensorType[CConversion`complexScalarCType, dims__]] := 2 * Times[dims];
 
 CountNumberOfParameters[betaFunctions_List] :=
     Module[{num = 0},
