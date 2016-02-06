@@ -16,10 +16,12 @@ ToRealType::usage="convers a given type to a type with real elements";
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
+ZEROTENSOR::usage="";
 ZEROVECTOR::usage="";
 UNITMATRIXCOMPLEX::usage="";
 ZEROARRAYCOMPLEX::usage="";
 ZEROMATRIXCOMPLEX::usage="";
+ZEROTENSORCOMPLEX::usage="";
 ZEROVECTORCOMPLEX::usage="";
 PROJECTOR::usage="";
 oneOver16PiSqr::usage="";
@@ -465,7 +467,7 @@ CreateZero[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
 
 CreateZero[CConversion`TensorType[CConversion`realScalarCType, dims__]] :=
-    CConversion`ZEROMATRIX[dims];
+    CConversion`ZEROTENSOR[dims];
 
 CreateZero[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] :=
     CConversion`ZEROARRAYCOMPLEX[entries];
@@ -477,7 +479,7 @@ CreateZero[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]]
     CConversion`ZEROMATRIXCOMPLEX[rows,cols];
 
 CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dims__]] :=
-    CConversion`ZEROMATRIXCOMPLEX[dims];
+    CConversion`ZEROTENSORCOMPLEX[dims];
 
 CreateConstExternDecl[parameter_String, type_] :=
     "extern const " <> CreateCType[type] <> " " <>
