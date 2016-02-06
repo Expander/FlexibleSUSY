@@ -131,9 +131,11 @@ GetElementType[CConversion`TensorType[type_, __]] := type;
 GetScalarElementType[type_] :=
     CConversion`ScalarType[GetElementType[type]];
 
+(* better use TensorFixedSize class *)
 EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String] :=
     "Eigen::Tensor<" <> elementType <> ", 3>";
 
+(* better use TensorFixedSize class *)
 EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String, dim4_String] :=
     "Eigen::Tensor<" <> elementType <> ", 4>";
 
@@ -466,8 +468,11 @@ CreateZero[CConversion`VectorType[CConversion`realScalarCType, entries_]] :=
 CreateZero[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
 
-CreateZero[CConversion`TensorType[CConversion`realScalarCType, dims__]] :=
-    CConversion`ZEROTENSOR[dims];
+CreateZero[CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    CConversion`ZEROTENSOR3[dim1,dim2,dim3];
+
+CreateZero[CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_, dim4_]] :=
+    CConversion`ZEROTENSOR4[dim1,dim2,dim3,dim4];
 
 CreateZero[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] :=
     CConversion`ZEROARRAYCOMPLEX[entries];
@@ -478,8 +483,11 @@ CreateZero[CConversion`VectorType[CConversion`complexScalarCType, entries_]] :=
 CreateZero[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIXCOMPLEX[rows,cols];
 
-CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dims__]] :=
-    CConversion`ZEROTENSORCOMPLEX[dims];
+CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    CConversion`ZEROTENSOR3COMPLEX[dim1,dim2,dim3];
+
+CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_, dim4_]] :=
+    CConversion`ZEROTENSOR4COMPLEX[dim1,dim2,dim3,dim4];
 
 CreateConstExternDecl[parameter_String, type_] :=
     "extern const " <> CreateCType[type] <> " " <>
