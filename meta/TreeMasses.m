@@ -1326,7 +1326,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               body = body <> "\n" <>
                      IndentText[
                          If[ContainsMassless[eigenVector], "",
-                            CheckTachyon[eigenVector, evMap] <> "\n"] <>
+                            CheckTachyon[eigenVector, ev] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
              ];
