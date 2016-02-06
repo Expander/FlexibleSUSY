@@ -467,15 +467,15 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 
 #define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
 #define ZEROMATRIX(rows,cols)        Eigen::Matrix<double,rows,cols>::Zero()
-#define ZEROTENSOR3(d1,d2,d3)        ZeroTensor3<double,d1,d2,d3>
-#define ZEROTENSOR4(d1,d2,d3,d4)     ZeroTensor4<double,d1,d2,d3,d4>
+#define ZEROTENSOR3(d1,d2,d3)        ZeroTensor3<double,d1,d2,d3>()
+#define ZEROTENSOR4(d1,d2,d3,d4)     ZeroTensor4<double,d1,d2,d3,d4>()
 #define ZEROVECTOR(rows)             Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows)              Eigen::Array<double,rows,1>::Zero()
 #define UNITMATRIXCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,rows>::Identity()
 #define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
-#define ZEROTENSOR3COMPLEX(d1,d2,d3) ZeroTensor3<std::complex<double>,d1,d2,d3>
-#define ZEROTENSOR4COMPLEX(d1,d2,d3,d4) ZeroTensor4<std::complex<double>,d1,d2,d3,d4>
+#define ZEROTENSOR3COMPLEX(d1,d2,d3) ZeroTensor3<std::complex<double>,d1,d2,d3>()
+#define ZEROTENSOR4COMPLEX(d1,d2,d3,d4) ZeroTensor4<std::complex<double>,d1,d2,d3,d4>()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
 
 // MxN matrix projection operator, which projects on the (X,Y)
