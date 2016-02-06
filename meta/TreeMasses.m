@@ -628,6 +628,17 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
            Null
           ];
 
+DeleteDuplicateSinglets[massMatrices_List] :=
+    Module[{result = massMatrices, i, me},
+           For[i = 1, i <= Length[massMatrices], i++,
+               me = GetMassEigenstate[massMatrices[[i]]];
+               If[Head[me] === List && Length[me] == 1,
+                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, me[[1]], _]];
+                 ];
+              ];
+           result
+          ];
+
 GetIntermediateMassMatrices[massMatrices_List] :=
     Module[{intermediatePars, massEigenstates},
            CreateMMs[{massEigenstate_, mixingMatrix_}] :=
@@ -669,7 +680,7 @@ ConvertSarahMassMatrices[] :=
                  ];
               ];
            (* append mass matrix for intermediate output parameters *)
-           result = Join[result, GetIntermediateMassMatrices[result]];
+           result = DeleteDuplicateSinglets[Join[result, GetIntermediateMassMatrices[result]]];
            Return[result];
           ];
 
