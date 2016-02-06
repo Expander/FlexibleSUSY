@@ -63,6 +63,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
 		$(DIR)/eigen_utils.hpp \
+		$(DIR)/eigen_tensor.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/ewsb_solver.hpp \
