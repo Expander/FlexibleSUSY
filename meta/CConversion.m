@@ -435,6 +435,18 @@ CreateUnitMatrix[CConversion`MatrixType[CConversion`realScalarCType, rows_, rows
 CreateUnitMatrix[CConversion`MatrixType[CConversion`complexScalarCType, rows_, rows_]] :=
     CConversion`UNITMATRIXCOMPLEX[rows];
 
+CreateUnitMatrix[CConversion`TensorType[CConversion`realScalarCType, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSOR[rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`complexScalarCType, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSORCOMPLEX[rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`realScalarCType, rows_, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSOR[rows,rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`complexScalarCType, rows_, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSORCOMPLEX[rows,rows,rows,rows];
+
 CreateZero[type_] :=
     Block[{},
           Print["Error: CreateZero: can't create zero for type: ", type];
