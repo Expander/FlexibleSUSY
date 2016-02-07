@@ -182,10 +182,13 @@ FindSymbolDef[sym_, opt_:DependenceNum] :=
 
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
-    Module[{symbols, compactExpr, allParameters},
-           allParameters = Join[allModelParameters, allOutputParameters,
-                                allInputParameters, Phases`GetArg /@ allPhases,
-                                GetDependenceSPhenoSymbols[]];
+    Module[{symbols, compactExpr, allParameters, allOutPars},
+           allOutPars = DeleteDuplicates[Join[allOutputParameters,
+                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
+           allParameters = DeleteDuplicates[
+               Join[allModelParameters, allOutPars,
+                    allInputParameters, Phases`GetArg /@ allPhases,
+                    GetDependenceSPhenoSymbols[]]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -204,8 +207,8 @@ FindAllParameters[expr_] :=
            symbols = Join[symbols,
                { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
                  Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutPars,FlexibleSUSY`M[a]], {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutPars,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                }];
            DeleteDuplicates[Flatten[symbols]]
           ];
@@ -582,7 +585,7 @@ CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realS
                       ];
                   ];
               ];
-           If[dim1 * dim2 != count,
+           If[dim1 * dim2 * dim3 != count,
               Print["Error: CreateSetAssignment: something is wrong with the indices: "
                     <> ToString[dim1 dim2 dim3] <> " != " <> ToString[count]];];
            Return[{ass, count}];
@@ -1185,7 +1188,9 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses, phases, depNum},
+            poleMasses, phases, depNum, allOutPars},
+           allOutPars = DeleteDuplicates[Join[allOutputParameters,
+                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
@@ -1195,7 +1200,7 @@ CreateLocalConstRefs[expr_] :=
            poleMasses = DeleteDuplicates[Flatten[poleMasses]];
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
            depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;

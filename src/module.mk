@@ -58,6 +58,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/dilog.hpp \
 		$(DIR)/effective_couplings.hpp \
 		$(DIR)/eigen_utils.hpp \
+		$(DIR)/eigen_tensor.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/ewsb_solver.hpp \

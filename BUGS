@@ -20,3 +20,13 @@ If this does not solve the problem, one can disable multi-threading
 via
 
    ./configure --disable-threads
+
+
+Tensor couplings
+----------------
+
+FlexibleSUSY cannot yet deal with tensor couplings (couplings with 3
+or more indices) in the Lagrangian/Superpotential.  In order to make
+such models work in FlexibleSUSY, please split the tensor coupling
+terms in the Lagrangian/Superpotential into a sum of terms with a
+matrix coupling structure.

@@ -671,6 +671,27 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
            Null
           ];
 
+DeleteDuplicateSinglets[massMatrices_List] :=
+    Module[{result = massMatrices, i, m, me, mm, p, other},
+           For[i = 1, i <= Length[massMatrices], i++,
+               me = GetMassEigenstate[massMatrices[[i]]];
+               mm = GetMixingMatrixSymbol[massMatrices[[i]]];
+               If[Head[me] =!= List,
+                  other = Cases[result, p:TreeMasses`FSMassMatrix[_, {me}, _] :> p];
+                  If[other === {}, Continue[]];
+                  other = other[[1]];
+                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, {me}, _]];
+                  If[Head[GetMassEigenstate[other]] === List &&
+                     Length[GetMassEigenstate[other]] > 0 &&
+                     GetMixingMatrixSymbol[other] =!= Null,
+                     result = result /.
+                         TreeMasses`FSMassMatrix[m_, me, Null] :> TreeMasses`FSMassMatrix[m, me, GetMixingMatrixSymbol[other]];
+                    ];
+                 ];
+              ];
+           result
+          ];
+
 GetIntermediateMassMatrices[massMatrices_List] :=
     Module[{intermediatePars, massEigenstates},
            CreateMMs[{massEigenstate_, mixingMatrix_}] :=
@@ -712,7 +733,7 @@ ConvertSarahMassMatrices[] :=
                  ];
               ];
            (* append mass matrix for intermediate output parameters *)
-           result = Join[result, GetIntermediateMassMatrices[result]];
+           result = DeleteDuplicateSinglets[Join[result, GetIntermediateMassMatrices[result]]];
            Return[result];
           ];
 
@@ -1358,7 +1379,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               body = body <> "\n" <>
                      IndentText[
                          If[ContainsMassless[eigenVector], "",
-                            CheckTachyon[eigenVector, evMap] <> "\n"] <>
+                            CheckTachyon[eigenVector, ev] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
              ];
@@ -1390,7 +1411,9 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               phase = Parameters`GetPhase[massESSymbol];
               If[IsFermion[massESSymbol] && phase =!= Null &&
                  !IsMassless[massESSymbol],
-                 body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ", " <>
+                 body = body <> ev <> " = calculate_" <>
+                        If[IsMajoranaFermion[massESSymbol], "majorana", "dirac"] <>
+                        "_singlet_mass(" <> massMatrixStr <> ", " <>
                         CConversion`ToValidCSymbolString[phase] <> ");\n";
                  ,
                  body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ");\n";
