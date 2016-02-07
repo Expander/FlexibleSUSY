@@ -1368,7 +1368,9 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               phase = Parameters`GetPhase[massESSymbol];
               If[IsFermion[massESSymbol] && phase =!= Null &&
                  !IsMassless[massESSymbol],
-                 body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ", " <>
+                 body = body <> ev <> " = calculate_" <>
+                        If[IsMajoranaFermion[massESSymbol], "majorana", "dirac"] <>
+                        "_singlet_mass(" <> massMatrixStr <> ", " <>
                         CConversion`ToValidCSymbolString[phase] <> ");\n";
                  ,
                  body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ");\n";
