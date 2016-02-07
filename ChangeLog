@@ -65,6 +65,14 @@ FlexibleSUSY-1.4.0 [not released yet]
  * Bugfix (commit 61fb1ca): Fix compilation errors in models which
    don't containd SM-like neutrinos.
 
+ * Bugfix (commit 919347d): Correcting the phase of Dirac fermion
+   singlets if their mass is less than zero: Before commit 919347d,
+   the phase of Dirac fermion singlets was set to e^(i Pi/2) if their
+   mass is less than zero, which is wrong, because in SARAH only one
+   Weyl component of the Dirac spinor receives a phase.  After this
+   commit, the phase of Dirac fermion singlets is set to e^(i Pi) if
+   their mass is less than zero.
+
 FlexibleSUSY-1.3.2 [January, 10 2016]
 
  * Bugfix (commit d76ca79): Fix compilation error with Eigen
