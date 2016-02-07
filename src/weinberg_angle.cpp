@@ -24,6 +24,8 @@
 #include "config.h"
 #include "numerics.h"
 
+#include <limits>
+
 #define WARN_IF_ZERO(p,fun)                     \
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
@@ -680,6 +682,14 @@ double Weinberg_angle::calculate_delta_vb_susy(
 double Weinberg_angle::rho_2(double r)
 {
    const double Pi2 = Pi * Pi;
+
+   if (r <= std::numeric_limits<double>::epsilon()) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+      WARNING("rho_2: value of r is invalid: r = " << r);
+      WARNING("-> setting 2-loop corrections ~ xt^2 to 0");
+#endif
+      return 0.;
+   }
 
    if (r <= 1.9) {
       const double r2 = Sqr(r);
