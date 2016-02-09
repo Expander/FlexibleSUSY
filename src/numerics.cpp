@@ -551,29 +551,23 @@ double c0(double m1, double m2, double m3) {
   if (close(m2, m3, EPSTOL)) {
     if (close(m1, m2, EPSTOL)) {
       ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
-    }
-    else {
+    } else {
       ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
                + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
     }
+  } else if (close(m1, m2, EPSTOL)) {
+     ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
+             / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
+  } else if (close(m1, m3, EPSTOL)) {
+     ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
+             / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
+  } else {
+     ans = (1.0 / (sqr(m2) - sqr(m3)) *
+            (sqr(m2) / (sqr(m1) - sqr(m2)) *
+             log(sqr(m2) / sqr(m1)) -
+             sqr(m3) / (sqr(m1) - sqr(m3)) *
+             log(sqr(m3) / sqr(m1))) );
   }
-  else
-    if (close(m1, m2, EPSTOL)) {
-      ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-               / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
-    }
-    else
-      if (close(m1, m3, EPSTOL)) {
-        ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3))) 
-                 / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
-      }
-      else {
-	ans = (1.0 / (sqr(m2) - sqr(m3)) * 
-		   (sqr(m2) / (sqr(m1) - sqr(m2)) *
-		    log(sqr(m2) / sqr(m1)) -
-		    sqr(m3) / (sqr(m1) - sqr(m3)) *
-		    log(sqr(m3) / sqr(m1))) );
-      }
 
 #ifdef USE_LOOPTOOLS
   if (!close(c0l, ans, 1.0e-3)) {
