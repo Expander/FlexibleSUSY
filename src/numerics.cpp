@@ -546,9 +546,37 @@ double c0(double m1, double m2, double m3) {
   double c0l = C0(psq, psq, psq, m1*m1, m2*m2, m3*m3).real();
 #endif
 
-  double ans;
+  double ans = 0.;
 
-  if (close(m2, m3, EPSTOL)) {
+  if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m2 == m3 == 0
+     ans = 0.;
+  } else if (close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m3 == 0
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL)) {
+     ans= 1./sqr(m3);
+  } else if (close(m1,0.,EPSTOL)) {
+     if (close(m2,m3,EPSTOL)) {
+        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
+     } else {
+        ans = -1./sqr(m2);
+     }
+  } else if (close(m2,0.,EPSTOL)) {
+     if (close(m1,m3,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
+     }
+  } else if (close(m3,0.,EPSTOL)) {
+     if (close(m1,m2,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
+     }
+  } else if (close(m2, m3, EPSTOL)) {
     if (close(m1, m2, EPSTOL)) {
       ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
     } else {
