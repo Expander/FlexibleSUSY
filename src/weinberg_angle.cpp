@@ -25,6 +25,7 @@
 #include "numerics.h"
 
 #include <limits>
+#include <cmath>
 
 #define WARN_IF_ZERO(p,fun)                     \
    if (is_zero(p))                              \
@@ -172,7 +173,16 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
                              number_of_loops);
 
       if (deltaR > 1.) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
          WARNING("delta_r > 1");
+#endif
+         deltaR = 0.;
+      }
+
+      if (!std::isfinite(deltaR)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_r non-finite");
+#endif
          deltaR = 0.;
       }
 
