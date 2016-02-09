@@ -92,6 +92,7 @@ HGTHDMIIMSSMBC,_DEFAULT_,0
 TMSSM,_DEFAULT_,0
 UMSSM,_DEFAULT_,0
 YukawaCMSSM,${DEFAULT_CMSSM_INPUT},0
+DiracGauginos,_DEFAULT_,0
 "
 
 TMP_FILE="${BASEDIR}/test_spectrum_generator.sh.tmp"
