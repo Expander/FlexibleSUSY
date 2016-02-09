@@ -503,9 +503,18 @@ double d0(double m1, double m2, double m3, double m4) {
   if (close(m1, m2, EPSTOL)) {
     double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
 
-    if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) 
+    if (close(m2,0.,EPSTOL)) {
+       // d0 is undefined for m1 == m2 == 0
+       return 0.;
+    } else if (close(m3,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m4));
+    } else if (close(m4,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m3));
+    } else if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
-    else if (close(m2, m3, EPSTOL)) {
+    } else if (close(m2, m3, EPSTOL)) {
       return (sqr(m2sq) - sqr(m4sq) + 2.0 * m4sq * m2sq * log(m4sq / m2sq)) / 
 	(2.0 * m2sq * sqr(m2sq - m4sq) * (m2sq - m4sq));
     } else if (close(m2, m4, EPSTOL)) {
