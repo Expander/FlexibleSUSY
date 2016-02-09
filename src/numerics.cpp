@@ -552,17 +552,19 @@ double c0(double m1, double m2, double m3) {
      // c0 is undefined for m1 == m2 == m3 == 0
      ans = 0.;
   } else if (close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m2 == m3 == 0
      ans = 0.;
   } else if (close(m1,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
      // c0 is undefined for m1 == m3 == 0
      ans = 0.;
   } else if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL)) {
-     ans= 1./sqr(m3);
+     // c0 is undefined for m1 == m2 == 0
+     ans= 0.;
   } else if (close(m1,0.,EPSTOL)) {
      if (close(m2,m3,EPSTOL)) {
-        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
-     } else {
         ans = -1./sqr(m2);
+     } else {
+        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
      }
   } else if (close(m2,0.,EPSTOL)) {
      if (close(m1,m3,EPSTOL)) {
