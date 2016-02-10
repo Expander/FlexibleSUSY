@@ -1315,11 +1315,13 @@ CallDiagonalizationFunction[particle_, matrix_String, eigenvalue_String, U_Strin
 " <> IndentText[
 "double eigenvalue_error;
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);\n" <>
+    If[IsVector[particle], U <> ".transposeInPlace();\n", ""] <>
     If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
 ] <> "#else
 " <> IndentText["\
-" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
-#endif
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");\n" <>
+    If[IsVector[particle], U <> ".transposeInPlace();\n", ""]
+] <> "#endif
 ";
 
 CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U_String] :=
