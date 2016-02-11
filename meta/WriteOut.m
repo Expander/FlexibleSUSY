@@ -234,10 +234,7 @@ GetSLHAInputParameters[] :=
                        MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
-WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
-    WriteSLHAMatrix[{mixingMatrix, lesHouchesName}, head, ""];
-
-WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
+WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String, setter_String:"set_block"] :=
     Module[{str, strSLHA, lhs, wrapper},
            If[SARAH`getDimParameters[mixingMatrix] === {} ||
               SARAH`getDimParameters[mixingMatrix] === {1},
@@ -270,21 +267,29 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
                         "ToMatrix(" <> wrapper <> ")",
                         wrapper
                        ];
-           "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
+           "slha_io." <> setter <> "(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
            "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
-    Module[{result, mixingMatrices, smMix, susyMix, smMixStr = "", susyMixStr = ""},
+    Module[{result, mixingMatrices, smMix, susyMix, majoranaMix,
+            smMixStr = "", susyMixStr = "", majoranaMixStr = ""},
            mixingMatrices = GetSLHAMixinMatrices[];
            smMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@ SARAH`SMParticles];
            smMix = Select[mixingMatrices, MemberQ[smMix,#[[1]]]&];
+           majoranaMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@
+                                 Select[TreeMasses`GetParticles[], TreeMasses`IsMajoranaFermion]];
+           majoranaMix = Select[mixingMatrices, MemberQ[majoranaMix,#[[1]]]&];
+           majoranaMix = {#[[1]], Symbol["IM" <> ToString[#[[2]]]]}& /@ majoranaMix;
            susyMix = Complement[mixingMatrices, smMix];
-           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ smMix;
-           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ susyMix;
+           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL",""])& /@ smMix;
+           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL",""])& /@ susyMix;
+           (majoranaMixStr = majoranaMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL","","set_block_imag"])& /@ majoranaMix;
            result = susyMixStr <> "\n" <>
                     "if (write_sm_mixing_matrics) {\n" <>
-                    TextFormatting`IndentText[smMixStr] <> "}\n";
+                    TextFormatting`IndentText[smMixStr] <> "}\n\n" <>
+                    "if (print_imaginary_parts_of_majorana_mixings) {\n" <>
+                    TextFormatting`IndentText[majoranaMixStr] <> "}\n";
            Return[result];
           ];
 
