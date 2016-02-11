@@ -21,6 +21,7 @@ Block FlexibleSUSY
    13   1                    # Top quark 2-loop corrections QCD
    14   1.000000000e-11      # beta-function zero threshold
    15   0                    # calculate observables (a_muon, ...)
+   16   0                    # force positive majorana masses
 Block SMINPUTS
      1     1.27934000E+02   # alpha^(-1) SM MSbar(MZ)
      2     1.16637000E-05   # G_Fermi
