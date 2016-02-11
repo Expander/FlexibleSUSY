@@ -51,7 +51,7 @@ CLASSNAME::@ModelName@_slha(const @ModelName@_input_parameters& input_)
  *    fermion masses to SLHA convention (allow them to be negative)
  */
 CLASSNAME::@ModelName@_slha(const @ModelName@<Two_scale>& model_,
-                            bool do_convert_masses_to_slha = true)
+                            bool do_convert_masses_to_slha)
    : @ModelName@<Two_scale>(model_)
    , convert_masses_to_slha(do_convert_masses_to_slha)
 {
