@@ -552,7 +552,7 @@ CreateLocalConstRefsIgnoringMixings[expr_, mixings_List] :=
 
 CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
     Module[{symbol, prototype = "", definition = "",
-            indices = {}, body = "", functionName = "", i,
+            indices = {}, localExpr, body = "", functionName = "", i,
             type, typeStr, initialValue},
            indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
@@ -573,9 +573,10 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
            prototype = typeStr <> " " <> functionName <> " const;\n";
            definition = typeStr <> " " <> FlexibleSUSY`FSModelName
                         <> "_effective_couplings::" <> functionName <> " const\n{\n";
-           body = CreateLocalConstRefsIgnoringMixings[expr, mixings] <> "\n" <>
+           localExpr = expr /. Parameters`GetDependenceSPhenoRules[];
+           body = CreateLocalConstRefsIgnoringMixings[localExpr, mixings] <> "\n" <>
                   typeStr <> " result" <> initialValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[expr, "result"];
+           body = body <> TreeMasses`ExpressionToString[localExpr, "result"];
            body = body <> "\nreturn result;\n";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            definition = definition <> body <> "}\n";
