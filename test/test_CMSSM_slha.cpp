@@ -104,6 +104,14 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
    BOOST_CHECK_GT(slha_model.get_physical_slha().MChi.maxCoeff(), 0.);
    BOOST_CHECK_LT(slha_model.get_physical_slha().MChi.minCoeff(), 0.);
    BOOST_CHECK_EQUAL(slha_model.get_physical_slha().ZN.imag().maxCoeff(), 0.);
+
+   // no automatic conversion
+   CMSSM_slha<Two_scale> slha_model_not_converted(model, false);
+
+   // check that model is in non-SLHA convention
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().MChi.maxCoeff(), 0.);
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().MChi.minCoeff(), 0.);
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().ZN.imag().maxCoeff(), 0.);
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
