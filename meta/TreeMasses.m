@@ -1383,7 +1383,7 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
                  ,
                  body = inputParsDecl <> "\n" <>
                         "for (int gt1 = 1; gt1 <= " <> dimStr <> "; gt1++) {\n" <>
-                        IndentText[ev <> "(gt1) = " <> RValueToCFormString[expr /. SARAH`gt2 -> SARAH`gt1] <> ";"] <>
+                        IndentText[ev <> "(gt1 - 1) = " <> RValueToCFormString[expr /. SARAH`gt2 -> SARAH`gt1] <> ";"] <>
                         "\n}\n";
                 ];
              ];
