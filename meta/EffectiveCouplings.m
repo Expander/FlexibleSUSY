@@ -573,7 +573,8 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
            prototype = typeStr <> " " <> functionName <> " const;\n";
            definition = typeStr <> " " <> FlexibleSUSY`FSModelName
                         <> "_effective_couplings::" <> functionName <> " const\n{\n";
-           localExpr = expr /. Parameters`GetDependenceSPhenoRules[];
+           localExpr = expr /. (Rule[#[],#]& /@ Parameters`GetDependenceSPhenoSymbols[]);
+           localExpr = localExpr /. Parameters`GetDependenceSPhenoRules[];
            body = CreateLocalConstRefsIgnoringMixings[localExpr, mixings] <> "\n" <>
                   typeStr <> " result" <> initialValue <> ";\n\n";
            body = body <> TreeMasses`ExpressionToString[localExpr, "result"];
