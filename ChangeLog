@@ -44,6 +44,13 @@ FlexibleSUSY-1.4.0 [not released yet]
        FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
    ];
 
+ * Feature: By setting the entry FlexibleSUSY[16] = 1 in the SLHA
+   input file, the user can force majorana fermion masses to be
+   positive.  In this case, the corresponding mixing matrix is not
+   purely real and its imaginary part will be written to the output in
+   addition.  Note, that setting FlexibleSUSY[16] = 1 is therefore a
+   violation of the SLHA standard.
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
