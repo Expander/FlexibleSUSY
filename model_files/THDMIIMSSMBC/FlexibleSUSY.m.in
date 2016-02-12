@@ -79,7 +79,7 @@ InitialGuessAtLowScale = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {M12, MAInput^2 Sin[ArcTan[TanBeta]] Cos[ArcTan[TanBeta]]}
+   {M122, MAInput^2 Sin[ArcTan[TanBeta]] Cos[ArcTan[TanBeta]]}
 };
 
 DefaultPoleMassPrecision = MediumPrecision;

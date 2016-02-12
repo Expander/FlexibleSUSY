@@ -50,12 +50,18 @@ char const * const @ModelName@_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
 
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
+   , print_imaginary_parts_of_majorana_mixings(false)
 {
 }
 
 void @ModelName@_slha_io::clear()
 {
    slha_io.clear();
+}
+
+void @ModelName@_slha_io::set_print_imaginary_parts_of_majorana_mixings(bool flag)
+{
+   print_imaginary_parts_of_majorana_mixings = flag;
 }
 
 /**

@@ -50,6 +50,7 @@ public:
       top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
       beta_zero_threshold,   ///< [14] beta function zero threshold
       calculate_observables, ///< [15] calculate observables (a_muon, ...)
+      force_positive_masses, ///< [16] force positive masses of majoran fermions
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
