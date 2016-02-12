@@ -52,15 +52,26 @@ UnmixedWMass2[] :=
 
 (*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
 RhoZero[] :=
-    Module[{hyperchargePos, leftPos, vevlist},
+    Module[{photonMassMatrix, extraGaugeCouplings, submatrixIndices, BW3pos, photonEigenSystem, photonVector, hyperchargePos, leftPos, vevlist},
+           If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left], Print["Error: hypercharge or left gauge group does not exist. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
+           photonMassMatrix = SARAH`MassMatrix[SARAH`VectorP];
+           Assert[MatrixQ[photonMassMatrix]];
+           If[Length[photonMassMatrix] > 4, Print["Error: neutral vector boson mass matrix is too large to be diagonalized"]; Return[0]];
+           extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
+           submatrixIndices = Flatten[Table[{i, j}, {i, 1, Length[photonMassMatrix]}, {j, i + 1, Length[photonMassMatrix]}], 1];
+           BW3pos = Flatten[Extract[submatrixIndices, Position[photonMassMatrix[[#, #]] & /@ submatrixIndices, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings), {1}, Heads -> False]]];
+           If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[0]];
+           photonEigenSystem = Eigensystem[photonMassMatrix];
+           photonVector = Extract[photonEigenSystem[[2]], Position[photonEigenSystem[[1]], 0]];
+           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
+           (*now the Gell-Mann-Nishijima formula should be valid*)
            hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
-           (* what about non Higgs vevs? non scalar vevs possible? *)
-           vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 1;;2]];
-           vevlist = vevlist /. {Sfieldname_Symbol, vevinfo_List} :> {ToExpression[StringReplace[ToString[Sfieldname], StartOfString ~~ "S" -> ""]], vevinfo};
+           vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
            (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
-           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List} :> Flatten[{vevinfo, Cases[SARAH`SuperFields, x_ /; !FreeQ[x[[3]], fieldname] :> {(x[[3 + leftPos]] - 1) / 2, -x[[3 + hyperchargePos]]}]}];
-           Return[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 (#[[1]] #[[2]] Sqrt[2])^2 & /@ vevlist)]];
+           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List, comp1_List, comp2_List} :> Flatten[{vevinfo Boole[ReleaseHold[SARAH`getElectricCharge[comp1[[1]]]] == 0], (SA`DimensionGG[fieldname, leftPos] - 1) / 2, -SA`ChargeGG[fieldname, hyperchargePos]}];
+           If[!FreeQ[vevlist, None], Print["Error: determination of electric charge did not work"]; Return[0]];
+           Return[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist)]];
           ];
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[] :=
