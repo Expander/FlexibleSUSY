@@ -85,6 +85,9 @@ particle multiplet, ignoring Goldstone bosons";
 GetDimensionStartSkippingGoldstones::usage="return first index,
 skipping goldstone bosons";
 
+GetDimensionStartSkippingSMGoldstones::usage="return first index,
+ skipping Standard Model goldstone bosons";
+
 FindMixingMatrixSymbolFor::usage="returns the mixing matrix symbol for
 a given field";
 
@@ -415,19 +418,29 @@ GetDimension[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 GetDimensionStartSkippingGoldstones[sym_[__]] :=
     GetDimensionStartSkippingGoldstones[sym];
 
-GetDimensionStartSkippingGoldstones[sym_] :=
+GetDimensionStartSkippingGoldstones[sym_, goldstoneGhost_] :=
     Module[{goldstones, max = 1},
-           goldstones = Transpose[SARAH`GoldstoneGhost][[2]];
+           goldstones = Transpose[goldstoneGhost][[2]];
+           Print["GetDimensionStartSkippingGoldstones: goldstones = ", goldstones];
            If[FreeQ[goldstones, sym],
+              Print["-> FreeQ -> 1"];
               Return[1];,
               If[GetDimension[sym] === 1,
+                 Print["dimension of ", sym, " === 1 -> 2"];
                  Return[2];,
                  While[!FreeQ[goldstones, sym[{max}]],
+                       Print["FreeQ ", sym[{max}], " => max = ", max+1];
                        max++];
                  Return[max];
                 ];
              ];
           ];
+
+GetDimensionStartSkippingGoldstones[sym_] :=
+    GetDimensionStartSkippingGoldstones[sym, SARAH`GoldstoneGhost];
+
+GetDimensionStartSkippingSMGoldstones[sym_] :=
+    GetDimensionStartSkippingGoldstones[sym, Cases[SARAH`GoldstoneGhost, {_?SARAH`SMQ, _}]];
 
 GetDimensionWithoutGoldstones[sym_[__], states_:FlexibleSUSY`FSEigenstates] :=
     GetDimensionWithoutGoldstones[sym, states];
