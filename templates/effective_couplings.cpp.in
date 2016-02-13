@@ -29,6 +29,7 @@ using namespace effective_couplings;
 
 #define INPUTPARAMETER(parameter) model.get_input().parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
+#define DERIVEDPARAMETER(parameter) model.##parameter()
 #define PHASE(parameter) model.get_##parameter()
 #define PHYSICAL(parameter) model.get_physical().parameter
 
