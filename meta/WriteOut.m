@@ -955,6 +955,7 @@ CalculatePMNSMatrix[] :=
     Module[{result = ""},
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`ElectronMatrixL] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`NeutrinoMM] &&
+              SARAH`getDimParameters[SARAH`ElectronMatrixL] === {3,3} &&
               SARAH`getDimParameters[SARAH`ElectronMatrixL] === SARAH`getDimParameters[SARAH`NeutrinoMM]
               ,
               result = "pmns = " <>
