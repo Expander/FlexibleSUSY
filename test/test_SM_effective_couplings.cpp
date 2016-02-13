@@ -8,6 +8,7 @@
 #include "SM_mass_eigenstates.hpp"
 #include "SM_effective_couplings.hpp"
 #include "physical_input.hpp"
+#include "standard_model.hpp"
 #include "wrappers.hpp"
 
 #include <complex>
@@ -27,8 +28,8 @@ public:
    void do_include_qcd_corrections(bool flag) { include_qcd_corrections = flag; }
    void set_model(const SM_mass_eigenstates& model_) { model = model_; }
 
-   std::complex<double> get_eff_CphhVPVP() const;
-   std::complex<double> get_eff_CphhVGVG() const;
+   std::complex<double> get_eff_CphhVPVP();
+   std::complex<double> get_eff_CphhVGVG();
 
 private:
    SM_mass_eigenstates model;
@@ -39,6 +40,7 @@ private:
 
    double number_of_active_flavours(double m) const;
    double qcd_scaling_factor(double m) const;
+   void run_SM_gauge_couplings_to(double m);
 };
 
 double Standard_model_tester::number_of_active_flavours(double m) const
@@ -70,13 +72,37 @@ double Standard_model_tester::qcd_scaling_factor(double m) const
    return Sqrt(1.0 + nlo_qcd + nnlo_qcd + nnnlo_qcd);
 }
 
-std::complex<double> Standard_model_tester::get_eff_CphhVPVP() const
+void Standard_model_tester::run_SM_gauge_couplings_to(double m)
 {
+   using namespace standard_model;
+
+   Standard_model sm;
+
+   sm.set_low_energy_data(qedqcd);
+   sm.set_physical_input(physical_inputs);
+
+   sm.initialise_from_input();
+   sm.run_to(m);
+
+   model.set_g1(sm.get_g1());
+   model.set_g2(sm.get_g2());
+   model.set_g3(sm.get_g3());
+}
+
+std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
+{
+   const double scale = model.get_scale();
+   const Eigen::ArrayXd saved_pars(model.get());
+
+   const double Mhh = model.get_physical().Mhh;
+
+   run_SM_gauge_couplings_to(Mhh);
+   model.calculate_DRbar_masses();
+
    const Eigen::Array<double,3,1> MFu(model.get_MFu());
    const Eigen::Array<double,3,1> MFd(model.get_MFd());
    const Eigen::Array<double,3,1> MFe(model.get_MFe());
    const double MVWp = model.get_MVWp();
-   const double Mhh = model.get_physical().Mhh;
 
    double qcd_fermion = 1.0;
    if (include_qcd_corrections) {
@@ -102,14 +128,24 @@ std::complex<double> Standard_model_tester::get_eff_CphhVPVP() const
    result *= physical_inputs.get(Physical_input::alpha_em_0)
       * Sqrt(qedqcd.displayFermiConstant()) / (Power(2.0, 0.75) * Pi);
 
+   model.set_scale(scale);
+   model.set(saved_pars);
+
    return result;
 }
 
-std::complex<double> Standard_model_tester::get_eff_CphhVGVG() const
+std::complex<double> Standard_model_tester::get_eff_CphhVGVG()
 {
+   const double scale = model.get_scale();
+   const Eigen::ArrayXd saved_pars(model.get());
+
+   const double Mhh = model.get_physical().Mhh;
+
+   run_SM_gauge_couplings_to(Mhh);
+   model.calculate_DRbar_masses();
+
    const Eigen::Array<double,3,1> MFu(model.get_MFu());
    const Eigen::Array<double,3,1> MFd(model.get_MFd());
-   const double Mhh = model.get_physical().Mhh;
 
    double qcd_fermion = 1.0;
    if (include_qcd_corrections) {
@@ -128,13 +164,17 @@ std::complex<double> Standard_model_tester::get_eff_CphhVGVG() const
       result *= qcd_scaling_factor(Mhh);
    }
 
-   result *= qedqcd.displayAlpha(softsusy::ALPHAS)
-      * Sqrt(qedqcd.displayFermiConstant()) * Power(2.0, 0.25) / (3.0 * Pi);
+   const double alpha_s = 0.07957747154594767*Sqr(model.get_g3());
+   result *= alpha_s * Sqrt(qedqcd.displayFermiConstant())
+      * Power(2.0, 0.25) / (3.0 * Pi);
+
+   model.set(saved_pars);
+   model.set_scale(scale);
 
    return result;
 }
 
-void set_test_model_parameters(SM_mass_eigenstates& model)
+void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQcd& qedqcd)
 {
    model.do_calculate_sm_pole_masses(true);
 
@@ -160,7 +200,7 @@ void set_test_model_parameters(SM_mass_eigenstates& model)
 
    const double Lambdax = 0.252805415;
    const double mu2 = 8555.44881e3;
-   const double v = 247.479883;
+   const double v = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    model.set_g1(g1);
    model.set_g2(g2);
@@ -181,11 +221,11 @@ void set_test_model_parameters(SM_mass_eigenstates& model)
 
 BOOST_AUTO_TEST_CASE( test_LO_effective_couplings )
 {
-   SM_mass_eigenstates model;
-   set_test_model_parameters(model);
-
    softsusy::QedQcd qedqcd;
    Physical_input physical_inputs;
+
+   SM_mass_eigenstates model;
+   set_test_model_parameters(model, qedqcd);
 
    Standard_model_tester sm_tester(model, qedqcd, physical_inputs);
    sm_tester.do_rg_improve(false);
@@ -197,35 +237,6 @@ BOOST_AUTO_TEST_CASE( test_LO_effective_couplings )
    SM_effective_couplings eff_cp(model, qedqcd, physical_inputs);
    eff_cp.do_run_couplings(false);
    eff_cp.do_include_qcd_corrections(false);
-   eff_cp.calculate_effective_couplings();
-
-   const std::complex<double> obtained_cphhVPVP = eff_cp.get_eff_CphhVPVP();
-   const std::complex<double> obtained_cphhVGVG = eff_cp.get_eff_CphhVGVG();
-
-   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVPVP), Re(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVPVP), Im(obtained_cphhVPVP), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(-Re(expected_cphhVGVG), Re(obtained_cphhVGVG), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(-Im(expected_cphhVGVG), Im(obtained_cphhVGVG), 1.0e-10);
-}
-
-BOOST_AUTO_TEST_CASE( test_beyond_LO_effective_couplings )
-{
-   SM_mass_eigenstates model;
-   set_test_model_parameters(model);
-
-   softsusy::QedQcd qedqcd;
-   Physical_input physical_inputs;
-
-   Standard_model_tester sm_tester(model, qedqcd, physical_inputs);
-   sm_tester.do_rg_improve(false);
-   sm_tester.do_include_qcd_corrections(true);
-
-   const std::complex<double> expected_cphhVPVP = sm_tester.get_eff_CphhVPVP();
-   const std::complex<double> expected_cphhVGVG = sm_tester.get_eff_CphhVGVG();
-
-   SM_effective_couplings eff_cp(model, qedqcd, physical_inputs);
-   eff_cp.do_run_couplings(false);
-   eff_cp.do_include_qcd_corrections(true);
    eff_cp.calculate_effective_couplings();
 
    const std::complex<double> obtained_cphhVPVP = eff_cp.get_eff_CphhVPVP();
