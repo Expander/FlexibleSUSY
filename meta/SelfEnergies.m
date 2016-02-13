@@ -120,7 +120,7 @@ RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
               For[i = 1, i <= Length[goldstones], i++,
                   g = CConversion`GetHead[goldstones[[i]]];
                   strippedExpr = strippedExpr //.
-                  SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingGoldstones[g],endIdx,expression];
+                  SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingSMGoldstones[g],endIdx,expression];
                  ];
              ];
            Return[head[p,strippedExpr]];
