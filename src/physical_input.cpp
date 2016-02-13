@@ -53,6 +53,7 @@ std::vector<std::string> Physical_input::get_names()
 {
    std::vector<std::string> names(NUMBER_OF_INPUT_PARAMETERS);
    names[0] = "alpha_em(0)";
+   names[1] = "mh_pole";
    return names;
 }
 
@@ -76,10 +77,12 @@ void Physical_input::set(const Eigen::ArrayXd& vec)
  * | enum                             | possible values              | default value   |
  * |----------------------------------|------------------------------|-----------------|
  * | alpha_em_0                       | any positive double          | 1/137.035999074 |
+ * | mh_pole                          | any positive double          | 125.09          |
  */
 void Physical_input::reset()
 {
    values[alpha_em_0] = 1./137.035999074;
+   values[mh_pole] = 125.09;
 }
 
 } // namespace flexiblesusy
