@@ -86,7 +86,7 @@ FlexibleSUSY-1.4.0 [not released yet]
  * Bugfix (commits d62886d): Ensure that only Standard Model goldstone
    bosons are removed to obtain "heavy" W and Z self-energies.
 
- * Bugfix (commits ): Fix compilation error im models where the
+ * Bugfix (commits 60d68af): Fix compilation error in models where the
    left-handed electron and neutrino mass matrices are of equal size,
    but larger than 3x3.
 
