@@ -16,32 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-/**
- * @file observables.hpp
- * @brief contains class Observables
- */
+#ifndef EFFECTIVE_COUPLINGS_H
+#define EFFECTIVE_COUPLINGS_H
 
-#ifndef OBSERVABLES_H
-#define OBSERVABLES_H
-
-#include <string>
-#include <vector>
-#include <Eigen/Core>
+#include <complex>
 
 namespace flexiblesusy {
 
-struct Observables {
-   static const unsigned NUMBER_OF_OBSERVABLES = 2;
+namespace effective_couplings {
 
-   Observables();
-   Eigen::ArrayXd get() const; ///< returns vector of all observables
-   static std::vector<std::string> get_names(); ///< returns vector of all observable names
-   void clear(); ///< sets all observables to zero
-   void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
+// loop functions of hep-ph/9504378, Eq. (53)
+std::complex<double> scaling_function(double tau);
+std::complex<double> AS0(double tau);
+std::complex<double> AS12(double tau);
+std::complex<double> AS1(double tau);
+std::complex<double> AP12(double tau);
 
-   double a_muon_gm2calc; ///< a_muon = (g-2)/2 of the muon (calculated with GM2Calc)
-   double a_muon_gm2calc_uncertainty; ///< uncertainty of (g-2)/2 of the muon (calculated with GM2Calc)
-};
+} // namespace effective_couplings
 
 } // namespace flexiblesusy
 

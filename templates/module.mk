@@ -3,6 +3,8 @@ MODNAME      := templates
 
 TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
+		$(DIR)/effective_couplings.hpp.in \
+		$(DIR)/effective_couplings.cpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/mass_eigenstates.hpp.in \
 		$(DIR)/mass_eigenstates.cpp.in \

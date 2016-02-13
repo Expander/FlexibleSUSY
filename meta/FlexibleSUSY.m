@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -186,6 +186,11 @@ ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass
 tadpole::usage="symbolic expression for a tadpole contribution in the
 EWSB eqs.  The index corresponds to the ordering of the tadpole
 equations in SARAH`TadpoleEquations[] .";
+
+NoScale::usage="placeholder indicating an SLHA block should not
+have a scale associated with it.";
+CurrentScale::usage="placeholder indicating the current renormalization
+scale of the model.";
 
 FSDebugOutput = False;
 
@@ -1087,12 +1092,80 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, files_List] :=
+    Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
+            loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
+            loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
+            runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction,
+            calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudocalarFermionLoopQCDFactor,
+            calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
+            calculateLoopCouplings, loopCouplingsPrototypes,
+            loopCouplingsFunctions},
+           {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
+           {runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction} = EffectiveCouplings`CreateSMRunningFunctions[];
+           loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
+           For[i = 1, i <= Length[massMatrices], i++,
+               mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
+               mixingMatricesInit = mixingMatricesInit <> EffectiveCouplings`InitializeMixingFromModelInput[massMatrices[[i]]];
+               copyMixingMatrices = copyMixingMatrices <> EffectiveCouplings`GetMixingMatrixFromModel[massMatrices[[i]]];
+              ];
+           loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
+           loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
+           {calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudoscalarFermionLoopQCDFactor} =
+               EffectiveCouplings`CalculateQCDAmplitudeScalingFactors[];
+           {calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor} =
+               EffectiveCouplings`CalculateQCDScalingFactor[];
+           calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
+           {loopCouplingsPrototypes, loopCouplingsFunctions} =
+               EffectiveCouplings`CreateEffectiveCouplings[couplings, massMatrices, vertexRules];
+           WriteOut`ReplaceInFiles[files,
+                                   {   "@partialWidthGetterPrototypes@" -> IndentText[partialWidthGetterPrototypes],
+                                       "@partialWidthGetters@" -> partialWidthGetters,
+                                       "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
+                                       "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                       "@runSMGaugeCouplingsPrototype@" -> IndentText[runSMGaugeCouplingsPrototype],
+                                       "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
+                                       "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
+                                       "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
+                                       "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
+                                       "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
+                                       "@runSMGaugeCouplingsFunction@" -> runSMGaugeCouplingsFunction,
+                                       "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
+                                       "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
+                                       "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],
+                                       "@calculateScalarQCDScalingFactor@" -> IndentText[WrapLines[calculateScalarQCDScalingFactor]],
+                                       "@calculatePseudoscalarQCDScalingFactor@" -> IndentText[WrapLines[calculatePseudoscalarQCDScalingFactor]],
+                                       "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
+                                       "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+          ];
+
 (* Write the observables files *)
 WriteObservables[extraSLHAOutputBlocks_, files_List] :=
-    Module[{calculateObservables},
-           calculateObservables = Observables`CalculateObservables[extraSLHAOutputBlocks, "observables"];
+    Module[{requestedObservables, numberOfObservables, observablesDef,
+            observablesInit, getObservables, getObservablesNames,
+            clearObservables, setObservables, calculateObservables,
+            loopCouplingsPrototypes, loopCouplingsFunctions},
+           requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
+           numberOfObservables = Observables`CountNumberOfObservables[requestedObservables];
+           observablesDef = Observables`CreateObservablesDefinitions[requestedObservables];
+           observablesInit = Observables`CreateObservablesInitialization[requestedObservables];
+           {getObservables, getObservablesNames, setObservables} =
+               Observables`CreateSetAndDisplayObservablesFunctions[requestedObservables];
+           clearObservables = Observables`CreateClearObservablesFunction[requestedObservables];
+           calculateObservables = Observables`CalculateObservables[requestedObservables, "observables"];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@calculateObservables@" -> IndentText[calculateObservables],
+                                   {   "@numberOfObservables@" -> ToString[numberOfObservables],
+                                       "@observablesDef@" -> IndentText[observablesDef],
+                                       "@observablesInit@" -> IndentText[WrapLines[observablesInit]],
+                                       "@getObservables@" -> IndentText[getObservables],
+                                       "@getObservablesNames@" -> IndentText[getObservablesNames],
+                                       "@clearObservables@" -> IndentText[clearObservables],
+                                       "@setObservables@" -> IndentText[setObservables],
+                                       "@calculateObservables@" -> IndentText[calculateObservables],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -1343,10 +1416,15 @@ GetVertexRuleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
 		  "FSVertexRules.m"}];
 
+GetEffectiveCouplingsFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+                  "FSEffectiveCouplings.m"}];
+
 NeedToCalculateVertices[eigenstates_] :=
     NeedToUpdateTarget[
 	"vertex",
-	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+	{ GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates],
+          GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, eigenstates] }];
 
 NeedToUpdateTarget[name_String, targets_List] := Module[{
 	targetsExist = FilesExist[targets],
@@ -1592,8 +1670,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             fixedParameters,
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
-            extraSLHAOutputBlocks,
-	    vertexRules, vertexRuleFileName,
+            extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -2160,11 +2238,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
 	   vertexRuleFileName =
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+           effectiveCouplingsFileName =
+              GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, FSEigenstates];
 	   If[NeedToCalculateVertices[FSEigenstates],
+              (* effectiveCouplings = {{coupling, {needed couplings}}, ...} *)
+              Put[effectiveCouplings =
+                      EffectiveCouplings`InitializeEffectiveCouplings[],
+                  effectiveCouplingsFileName];
+              extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices], Lat$massMatrices],
 		  vertexRuleFileName],
-	      vertexRules = Get[vertexRuleFileName]];
+	      vertexRules = Get[vertexRuleFileName];
+              effectiveCouplings = Get[effectiveCouplingsFileName];
+             ];
 
            PrintHeadline["Creating SLHA model"];
            Print["Creating class for SLHA model ..."];
@@ -2200,6 +2287,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating observables"];
+           (* @note separating this out for now for simplicity *)
+           (* @todo maybe implement a flag (like for addons) to turn on/off? *)
+           WriteEffectiveCouplings[effectiveCouplings, massMatrices, vertexRules,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.cpp"}]}
+                                   }];
+
            WriteObservables[extraSLHAOutputBlocks,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},

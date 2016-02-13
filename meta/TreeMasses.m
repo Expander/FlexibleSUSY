@@ -161,6 +161,7 @@ GetSMUpQuarks::usage="";
 GetSMDownQuarks::usage="";
 GetSMQuarks::usage="";
 GetSMGoldstoneBosons::usage="";
+GetColoredParticles::usage="";
 
 GetUpQuark::usage="";
 GetDownQuark::usage="";
@@ -228,27 +229,41 @@ IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     IsOfType[sym, type, states];
 
-IsScalar[sym_Symbol] := IsOfType[sym, S];
+IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
+IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
+IsScalar[sym_] := IsOfType[sym, S];
 IsScalar[sym_List] := And @@ (IsScalar /@ sym);
 
-IsFermion[sym_Symbol] := IsOfType[sym, F];
+IsFermion[Susyno`LieGroups`conj[sym_]] := IsFermion[sym];
+IsFermion[SARAH`bar[sym_]] := IsFermion[sym];
+IsFermion[sym_] := IsOfType[sym, F];
 IsFermion[sym_List] := And @@ (IsFermion /@ sym);
 
-IsVector[sym_Symbol] := IsOfType[sym, V];
+IsVector[Susyno`LieGroups`conj[sym_]] := IsVector[sym];
+IsVector[SARAH`bar[sym_]] := IsVector[sym];
+IsVector[sym_] := IsOfType[sym, V];
 IsVector[sym_List] := And @@ (IsVector /@ sym);
 
-IsGhost[sym_Symbol] := IsOfType[sym, G];
+IsGhost[Susyno`LieGroups`conj[sym_]] := IsGhost[sym];
+IsGhost[SARAH`bar[sym_]] := IsGhost[sym];
+IsGhost[sym_] := IsOfType[sym, G];
 IsGhost[sym_List] := And @@ (IsGhost /@ sym);
 
+IsGoldstone[Susyno`LieGroups`conj[sym_]] := IsGoldstone[sym];
+IsGoldstone[SARAH`bar[sym_]] := IsGoldstone[sym];
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
 IsGoldstone[sym_List] := And @@ (IsGoldstone /@ sym);
 
 GetSMGoldstones[] :=
     Cases[SARAH`GoldstoneGhost /. a_[{idx__}] :> a[idx], {v_?SARAH`SMQ, goldstone_} :> goldstone];
 
+IsSMGoldstone[Susyno`LieGroups`conj[sym_]] := IsSMGoldstone[sym];
+IsSMGoldstone[SARAH`bar[sym_]] := IsSMGoldstone[sym];
 IsSMGoldstone[sym_] :=
     MemberQ[GetSMGoldstones[], sym];
 
+IsChargino[Susyno`LieGroups`conj[p_]] := IsChargino[p];
+IsChargino[SARAH`bar[p_]] := IsChargino[p];
 IsChargino[p_] :=
     p === Parameters`GetParticleFromDescription["Charginos"];
 
@@ -256,34 +271,46 @@ ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym
 
 ContainsGoldstone[sym_[__]] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
+IsAuxiliary[Susyno`LieGroups`conj[sym_]] := IsAuxiliary[sym];
+IsAuxiliary[SARAH`bar[sym_]] := IsAuxiliary[sym];
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
 
 IsVEV[sym_Symbol] := IsOfType[sym, VEV];
 
+IsMajoranaFermion[Susyno`LieGroups`conj[sym_]] := IsMajoranaFermion[sym];
+IsMajoranaFermion[SARAH`bar[sym_]] := IsMajoranaFermion[sym];
 IsMajoranaFermion[sym_Symbol] :=
     And[IsFermion[sym], MemberQ[SARAH`MajoranaPart, sym]];
 
 IsMajoranaFermion[sym_List] :=
     And @@ (IsMajoranaFermion /@ sym);
 
+IsDiracFermion[Susyno`LieGroups`conj[sym_]] := IsDiracFermion[sym];
+IsDiracFermion[SARAH`bar[sym_]] := IsDiracFermion[sym];
 IsDiracFermion[sym_Symbol] :=
     And[IsFermion[sym], !MemberQ[SARAH`MajoranaPart, sym]];
 
 IsDiracFermion[sym_List] :=
     And @@ (IsDiracFermion /@ sym);
 
+IsComplexScalar[Susyno`LieGroups`conj[sym_]] := IsComplexScalar[sym];
+IsComplexScalar[SARAH`bar[sym_]] := IsComplexScalar[sym];
 IsComplexScalar[sym_Symbol] :=
     And[IsScalar[sym], Parameters`IsComplexParameter[sym]];
 
 IsComplexScalar[sym_List] :=
     And @@ (IsComplexScalar /@ sym);
 
+IsRealScalar[Susyno`LieGroups`conj[sym_]] := IsRealScalar[sym];
+IsRealScalar[SARAH`bar[sym_]] := IsRealScalar[sym];
 IsRealScalar[sym_Symbol] :=
     And[IsScalar[sym], Parameters`IsRealParameter[sym]];
 
 IsRealScalar[sym_List] :=
     And[IsScalar[sym], And @@ (Parameters`IsRealParameter /@ sym)];
 
+IsMassless[Susyno`LieGroups`conj[sym_], states_:FlexibleSUSY`FSEigenstates] := IsMassless[sym, states];
+IsMassless[SARAH`bar[sym_], states_:FlexibleSUSY`FSEigenstates] := IsMassless[sym, states];
 IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
 
@@ -299,28 +326,44 @@ ContainsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
 GetColoredParticles[] :=
     Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
 
+IsQuark[Susyno`LieGroups`conj[sym_]] := IsQuark[sym];
+IsQuark[SARAH`bar[sym_]] := IsQuark[sym];
 IsQuark[sym_[___]] := IsQuark[sym];
 IsQuark[sym_Symbol] := MemberQ[GetColoredParticles[], sym];
 
+IsLepton[Susyno`LieGroups`conj[sym_]] := IsLepton[sym];
+IsLepton[SARAH`bar[sym_]] := IsLepton[sym];
 IsLepton[sym_[___]] := IsLepton[sym];
 IsLepton[sym_Symbol] :=
     MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
 
+IsSMChargedLepton[Susyno`LieGroups`conj[sym_]] := IsSMChargedLepton[sym];
+IsSMChargedLepton[SARAH`bar[sym_]] := IsSMChargedLepton[sym];
 IsSMChargedLepton[sym_[__]] := IsSMChargedLepton[sym];
 IsSMChargedLepton[sym_]     := MemberQ[GetSMChargedLeptons[], sym];
 
+IsSMNeutralLepton[Susyno`LieGroups`conj[sym_]] := IsSMNeutralLepton[sym];
+IsSMNeutralLepton[SARAH`bar[sym_]] := IsSMNeutralLepton[sym];
 IsSMNeutralLepton[sym_[__]] := IsSMNeutralLepton[sym];
 IsSMNeutralLepton[sym_]     := MemberQ[GetSMNeutralLeptons[], sym];
 
+IsSMLepton[Susyno`LieGroups`conj[sym_]] := IsSMLepton[sym];
+IsSMLepton[SARAH`bar[sym_]] := IsSMLepton[sym];
 IsSMLepton[sym_[__]]        := IsSMLepton[sym];
 IsSMLepton[sym_]            := MemberQ[GetSMLeptons[], sym];
 
+IsSMUpQuark[Susyno`LieGroups`conj[sym_]] := IsSMUpQuark[sym];
+IsSMUpQuark[SARAH`bar[sym_]] := IsSMUpQuark[sym];
 IsSMUpQuark[sym_[__]]       := IsSMUpQuark[sym];
 IsSMUpQuark[sym_]           := MemberQ[GetSMUpQuarks[], sym];
 
+IsSMDownQuark[Susyno`LieGroups`conj[sym_]] := IsSMDownQuark[sym];
+IsSMDownQuark[SARAH`bar[sym_]] := IsSMDownQuark[sym];
 IsSMDownQuark[sym_[__]]     := IsSMDownQuark[sym];
 IsSMDownQuark[sym_]         := MemberQ[GetSMDownQuarks[], sym];
 
+IsSMQuark[Susyno`LieGroups`conj[sym_]] := IsSMQuark[sym];
+IsSMQuark[SARAH`bar[sym_]] := IsSMQuark[sym];
 IsSMQuark[sym_[__]]         := IsSMQuark[sym];
 IsSMQuark[sym_]             := MemberQ[GetSMQuarks[], sym];
 

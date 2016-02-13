@@ -24,6 +24,7 @@
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_utilities.hpp"
 
+#include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
@@ -48,6 +49,7 @@ int main(int argc, const char* argv[])
    const std::string slha_output_file(options.get_slha_output_file());
    const std::string spectrum_file(options.get_spectrum_file());
    @ModelName@_slha_io slha_io;
+   Physical_input physical_input; // extra non-SLHA physical input
    Spectrum_generator_settings spectrum_generator_settings;
    softsusy::QedQcd qedqcd;
    @ModelName@_input_parameters input;
@@ -62,6 +64,7 @@ int main(int argc, const char* argv[])
       slha_io.read_from_source(slha_input_source);
       slha_io.fill(qedqcd);
       slha_io.fill(input);
+      slha_io.fill(physical_input);
       slha_io.fill(spectrum_generator_settings);
    } catch (const Error& error) {
       ERROR(error.what());
@@ -88,9 +91,9 @@ int main(int argc, const char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   Observables observables;
+   @ModelName@_observables observables;
    if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
-      observables = calculate_observables(model, qedqcd);
+      observables = calculate_observables(model, qedqcd, physical_input);
 
    // SLHA output
    if (!slha_output_file.empty()) {
@@ -115,7 +118,8 @@ int main(int argc, const char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      @ModelName@_database::to_database(database_output_file, model, &qedqcd, &observables);
+      @ModelName@_database::to_database(database_output_file, model, &qedqcd,
+                                        &physical_input, &observables);
    }
 
    if (!spectrum_file.empty())

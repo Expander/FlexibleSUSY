@@ -59,6 +59,8 @@ extern const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAME
 
 /// Returns beta functions of alpha, alpha_s only
 DoubleVector gaugeDerivs(double, const DoubleVector &);
+/// Returns SM beta functions of alpha_i, i = 1, 2, 3
+DoubleVector smGaugeDerivs(double, const DoubleVector&);
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
 class QedQcd: public RGE 
@@ -76,6 +78,8 @@ private:
   double gfermi; ///< Fermi constant
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
+
+  DoubleVector runSMGauge(double, const DoubleVector&);
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
