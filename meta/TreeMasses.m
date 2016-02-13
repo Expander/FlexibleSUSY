@@ -464,15 +464,11 @@ GetDimensionStartSkippingGoldstones[sym_[__]] :=
 GetDimensionStartSkippingGoldstones[sym_, goldstoneGhost_] :=
     Module[{goldstones, max = 1},
            goldstones = Transpose[goldstoneGhost][[2]];
-           Print["GetDimensionStartSkippingGoldstones: goldstones = ", goldstones];
            If[FreeQ[goldstones, sym],
-              Print["-> FreeQ -> 1"];
               Return[1];,
               If[GetDimension[sym] === 1,
-                 Print["dimension of ", sym, " === 1 -> 2"];
                  Return[2];,
                  While[!FreeQ[goldstones, sym[{max}]],
-                       Print["FreeQ ", sym[{max}], " => max = ", max+1];
                        max++];
                  Return[max];
                 ];
