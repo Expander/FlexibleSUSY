@@ -21,6 +21,7 @@
 #include "@ModelName@_effective_couplings.hpp"
 
 #include "effective_couplings.hpp"
+#include "standard_model.hpp"
 #include "wrappers.hpp"
 
 namespace flexiblesusy {

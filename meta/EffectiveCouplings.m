@@ -384,19 +384,16 @@ CreateSMRunningFunctions[] :=
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
               prototype = "void run_SM_gauge_couplings_to(double m);\n";
-              body = "softsusy::QedQcd sm(qedqcd);\nsm.toMz();\n\n";
-              (* @todo here we match SPheno by using a fixed SM value of        *)
-              (* the weak mixing angle; it would be better to calculate this,   *)
-              (* e.g. by converting to MS-bar gauge couplings and computing it. *)
-              body = body <> "const double sw2 = 0.23126; // see 2015 PDG\n\n";
-              body = body <> "softsusy::DoubleVector alphas(sm.getGaugeMu(m, sw2));\n\n";
+              body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
+              body = body <> "sm.set_low_energy_data(qedqcd);\nsm.set_physical_input(physical_input);\n\n";
+              body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
               body = body <> "model.set_"
                      <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling]
-                     <> "(Sqrt(4.0 * Pi * alphas(1)));\nmodel.set_"
+                     <> "(sm.get_g1());\nmodel.set_"
                      <> CConversion`ToValidCSymbolString[SARAH`leftCoupling]
-                     <> "(Sqrt(4.0 * Pi * alphas(2)));\nmodel.set_"
+                     <> "(sm.get_g2());\nmodel.set_"
                      <> CConversion`ToValidCSymbolString[SARAH`strongCoupling]
-                     <> "(Sqrt(4.0 * Pi * alphas(3)));";
+                     <> "(sm.get_g3());";
               function = "void " <> FlexibleSUSY`FSModelName
                          <> "_effective_couplings::run_SM_gauge_couplings_to(double m)\n{\n"
                          <> TextFormatting`IndentText[body] <> "\n}\n";
