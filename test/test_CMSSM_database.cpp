@@ -7,7 +7,7 @@
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_utilities.hpp"
 #include "ew_input.hpp"
-#include "observables.hpp"
+#include "CMSSM_observables.hpp"
 #include "physical_input.hpp"
 #include "test.h"
 #include "lowe.h"
@@ -178,7 +178,7 @@ void test_input_parameter_equality(const T& a, const P& b)
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
-   Observables obs1, obs2;
+   CMSSM_observables obs1, obs2;
    obs1.a_muon_gm2calc = 1e-9;
    obs1.a_muon_gm2calc_uncertainty = 1e-10;
    Physical_input physical_input1, physical_input2;
