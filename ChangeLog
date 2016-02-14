@@ -51,6 +51,40 @@ FlexibleSUSY-1.4.0 [not released yet]
    addition.  Note, that setting FlexibleSUSY[16] = 1 is therefore a
    violation of the SLHA standard.
 
+ * Feature: FlexibleSUSY calculates the effective 1-loop couplings of
+   the CP-even and CP-odd Higgs -> photon + photon and Higgs -> gluon
+   + gluon.
+   Author: Dylan Harries
+
+   For each model the <model>_effective_couplings class is generated
+   and can be used at the C++ level to calculate the effective
+   couplings.  In order to write the effective couplings to the SLHA
+   output, extra SLHA output blocks have to defined in the
+   FlexibleSUSY model file, which contain the symbols
+
+   FlexibleSUSYObservable`CpHiggsPhotonPhoton
+   FlexibleSUSYObservable`CpHiggsGluonGluon
+   FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton
+   FlexibleSUSYObservable`CpPseudoScalarGluonGluon
+
+   Example:
+
+   Definition of an extra SLHA output block named `EFFHIGGSCOUPLINGS',
+   containing the effective 1-loop CP-even and CP-odd Higgs -> photon
+   + photon and Higgs -> gluon + gluon couplings:
+
+   ExtraSLHAOutputBlocks = {
+      {EFFHIGGSCOUPLINGS,
+              {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+               {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+               {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+               {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+   };
+
+   The calculation of the effective couplings can be disabled (or
+   enabled) by setting the flag FlexibleSUSY[15] to 0 (or 1) in the
+   SLHA input file.
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
