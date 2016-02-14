@@ -1093,7 +1093,7 @@ void Standard_model::calculate_Lambdax_DRbar()
       higgsDRbar = calculate_Mhh_DRbar(higgsDRbar);
    }
 
-   Lambdax = 0.5 * Sqr(higgsDRbar) / Sqr(v);
+   Lambdax = Sqr(higgsDRbar) / Sqr(v);
 }
 
 void Standard_model::recalculate_mw_pole()
