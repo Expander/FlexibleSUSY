@@ -179,6 +179,12 @@ void test_input_parameter_equality(const T& a, const P& b)
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    CMSSM_observables obs1, obs2;
+   obs1.eff_cp_higgs_photon_photon(0)     = std::complex<double>(1.,7.);
+   obs1.eff_cp_higgs_photon_photon(1)     = std::complex<double>(2.,8.);
+   obs1.eff_cp_higgs_gluon_gluon(0)       = std::complex<double>(3.,9.);
+   obs1.eff_cp_higgs_gluon_gluon(1)       = std::complex<double>(4.,10.);
+   obs1.eff_cp_pseudoscalar_photon_photon = std::complex<double>(5.,11.);
+   obs1.eff_cp_pseudoscalar_gluon_gluon   = std::complex<double>(6.,12.);
    Physical_input physical_input1, physical_input2;
    physical_input1.set(Physical_input::alpha_em_0, 0.1);
    softsusy::QedQcd qedqcd1, qedqcd2;
