@@ -253,7 +253,12 @@ GetTwoBodyDecays[particle_] :=
            decays
           ];
 
-GetElectricCharge[p_] := SARAH`getElectricCharge[p];
+GetElectricCharge[p_] :=
+    Module[{charge},
+           charge = SARAH`getElectricCharge[p];
+           If[!NumericQ[charge], charge = 0];
+           charge
+          ];
 
 GetParticlesCouplingToVectorBoson[vector_] :=
     Module[{i, charge, allParticles, particles = {}},
@@ -683,7 +688,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  result = result <> "unsigned gO1)\n{\n";
                 ];
 
-              mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+              mass = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
               savedMass = "const auto decay_mass = PHYSICAL(" <> mass <> ")";
               If[dim == 1,
                  savedMass = savedMass <> ";\n";,
