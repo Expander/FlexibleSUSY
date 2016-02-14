@@ -58,7 +58,7 @@ print_block_entry_awk='
   if ($0 ~ /^B/) # skip block head
      next
 
-  split(keys,k,":");
+  len = split(keys,k,":");
 
   matches = 1;
 
@@ -68,7 +68,7 @@ print_block_entry_awk='
   }
 
   if (matches == 1)
-     print $(length(k)+1)
+     print $(len + 1)
 }
 '
 
