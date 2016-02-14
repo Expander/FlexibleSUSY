@@ -6315,7 +6315,7 @@ double Standard_model::calculate_MVWp_DRbar(double m_pole)
 double Standard_model::calculate_Mhh_DRbar(double m_pole)
 {
    const double p = m_pole;
-   const double self_energy = Re(self_energy_VWp(p));
+   const double self_energy = Re(self_energy_hh(p));
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
    if (mass_sqr < 0.) {
