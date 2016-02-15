@@ -892,7 +892,8 @@ void Standard_model::initialise_from_input()
    }
 
    // run all SM parameters to the desired scale
-   run_to(scale);
+   if (scale > 0.)
+      run_to(scale);
 }
 
 void Standard_model::initial_guess_for_parameters()
