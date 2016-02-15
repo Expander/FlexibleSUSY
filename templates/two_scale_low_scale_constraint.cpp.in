@@ -236,7 +236,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    EDRbar = e_drbar;
    ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
 
-   if (!IsFinite(ThetaWDRbar)) {
+   if (IsFinite(ThetaWDRbar)) {
+      model->get_problems().unflag_non_perturbative_parameter(
+         "sin(theta_W)");
+   } else {
       model->get_problems().flag_non_perturbative_parameter(
          "sin(theta_W)", ThetaWDRbar, model->get_scale(), 0);
       ThetaWDRbar = ArcSin(Electroweak_constants::sinThetaW);
