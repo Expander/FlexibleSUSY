@@ -96,7 +96,7 @@ Standard_model::Standard_model()
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , force_output(false)
-   , precision(1.0e-3)
+   , precision(1.0e-4)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
    , problems(standard_model_info::particle_names)
@@ -892,7 +892,8 @@ void Standard_model::initialise_from_input()
    }
 
    // run all SM parameters to the desired scale
-   run_to(scale);
+   if (scale > 0.)
+      run_to(scale);
 }
 
 void Standard_model::initial_guess_for_parameters()
@@ -942,7 +943,7 @@ void Standard_model::initial_guess_for_parameters()
    electronDRbar(2,2) = mtau_guess;
    Ye = ((1.4142135623730951*electronDRbar)/v).transpose();
 
-   Lambdax = 0.5 * Sqr(MH) / Sqr(v);
+   Lambdax = Sqr(MH) / Sqr(v);
 
    solve_ewsb_tree_level();
 }
@@ -6316,8 +6317,8 @@ double Standard_model::calculate_Mhh_DRbar(double m_pole)
 {
    const double p = m_pole;
    const double self_energy = Re(self_energy_hh(p));
-   const double tadpole = Re(tadpole_hh()) / v;
-   const double mass_sqr = Sqr(m_pole) + self_energy - tadpole;
+   const double tadpole = Re(tadpole_hh());
+   const double mass_sqr = Sqr(m_pole) + self_energy - tadpole/v;
 
    if (mass_sqr < 0.) {
       problems.flag_tachyon(standard_model_info::hh);

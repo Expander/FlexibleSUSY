@@ -400,7 +400,11 @@ CreateSMRunningFunctions[] :=
               ValueQ[SARAH`strongCoupling],
               prototype = "void run_SM_gauge_couplings_to(double m);\n";
               body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
-              body = body <> "sm.set_low_energy_data(qedqcd);\nsm.set_physical_input(physical_input);\n\n";
+              body = body <>
+                     "sm.set_loops(3);\n" <>
+                     "sm.set_thresholds(2);\n" <>
+                     "sm.set_low_energy_data(qedqcd);\n" <>
+                     "sm.set_physical_input(physical_input);\n\n";
               body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
               body = body <> "model.set_"
                      <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling]
