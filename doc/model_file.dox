@@ -742,6 +742,40 @@ UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 
 \section pole_masses Pole masses
 
+In order to tune the spectrum generator for speed, the precision of
+the pole mass calculation can be selected for each particle.  There
+are three different pole mass calculation algorithms available:
+`LowPrecision`, `MediumPrecision` and `HighPrecision`.  Please refer
+to Section 6.5 of Ref. [<a href="http://arxiv.org/abs/1406.2319">CPC
+190 (2015) 139-172</a>] for details.
+
+By default, the pole masses of all particles are calculated with
+`MediumPrecision`, except for the CP-even, CP-odd and charged Higgs
+bosons, which are calculated with `HighPrecision` in order to include
+some momentum-dependent 2-loop corrections.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section lsps Lightest supersymmetric particle (LSP)
+
+FlexibleSUSY can generate the helper function `get_lsp()`, which
+returns the mass of the lightest supersymmetric particle (LSP) as well
+as the particle type.  The particles which are candidates for being an
+LSP must be specified in the `PotentialLSPParticles` variable.
+
+Example: In the MSSM the lightest supersymmetric particles might be
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \section output_blocks Output blocks
 
 The user can define additional SLHA output blocks.  These additional
