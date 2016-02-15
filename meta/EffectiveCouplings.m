@@ -255,8 +255,18 @@ GetTwoBodyDecays[particle_] :=
 
 GetElectricCharge[p_] :=
     Module[{charge},
-           charge = SARAH`getElectricCharge[p];
-           If[!NumericQ[charge], charge = 0];
+           If[p === AntiParticle[p],
+              charge = 0;,
+              charge = SARAH`getElectricCharge[p];
+              If[!NumericQ[charge],
+                 charge = Cases[-I SARAH`Vertex[{AntiParticle[p], p, SARAH`VectorP},
+                                                UseDependences -> True][[2,1]], _?NumberQ];
+                 If[charge === {},
+                    charge = 0;,
+                    charge = First[charge];
+                   ];
+                ];
+             ];
            charge
           ];
 
