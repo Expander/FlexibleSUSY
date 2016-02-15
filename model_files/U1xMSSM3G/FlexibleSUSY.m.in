@@ -40,9 +40,9 @@ FSExtraInputParameters = {};
 
 EWSBOutputParameters = {mHd2, mHu2, mC12, lw, mS2};
 
-HighScale = g1 == g1;
+HighScale = mSUSY;
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = mSUSY;
 
 HighScaleInput = {
     {gX, gXInput},
@@ -142,11 +142,10 @@ InitialGuessAtHighScale = {
 
 InitialGuessAtLowScale = {
     {xS, vSInput},
-    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
-    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
-    {g1, g1T},
-    {gX, gXT},
-    {g1X, g1XT},
+    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*Sqrt[1 + TanBetaX^2])},
+    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*Sqrt[1 + TanBetaX^2])},
+    {gX, 0},
+    {g1X, 0},
     {gX1, 0},
     {L[lw], 0},		       
     {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
