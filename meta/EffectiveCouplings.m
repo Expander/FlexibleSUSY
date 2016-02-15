@@ -401,7 +401,7 @@ CreateSMRunningFunctions[] :=
               prototype = "void run_SM_gauge_couplings_to(double m);\n";
               body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
               body = body <>
-                     "sm.set_loops(3);\n" <>
+                     "sm.set_loops(2);\n" <>
                      "sm.set_thresholds(2);\n" <>
                      "sm.set_low_energy_data(qedqcd);\n" <>
                      "sm.set_physical_input(physical_input);\n\n";

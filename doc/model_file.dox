@@ -744,4 +744,89 @@ UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 
 \section output_blocks Output blocks
 
+The user can define additional SLHA output blocks.  These additional
+blocks must be defined in the FlexibleSUSY model file using the
+`ExtraSLHAOutputBlocks` variable.  The `ExtraSLHAOutputBlocks`
+variable is a nested list of the following form:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {<blockname>, [<scale>,]
+      {{<index>, <expression>},
+       {<index>, <expression>},
+       {<index>, <expression>}}
+   },
+   ...
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`<blockname>` is the name of the output block.
+
+Optionally, the renormalization scale can be added to the block head.
+`NoScale` specifies that the block head should have no scale.
+`CurrentScale` specifies that the scale written in the block head
+should be the current scale of the model.  Otherwise, `<scale>` can be
+numeric value.
+
+The fields inside the block are specified in form of a list of
+2-component lists, where the first entry is an integer number
+representing the field index.  The second entry is an expression to be
+evaluated and whose numeric result is written to the field value.
+
+Example: In the MSSM mode file the following additional output blocks
+are defined
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{0, Hold[HighScale]},
+            {1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {EFFHIGGSCOUPLINGS,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
+   {ALPHA, {{ArcSin[Pole[ZH[2,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]^2},
+            {101, B[\[Mu]]},
+            {102, vd},
+            {103, vu} } },
+   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
+            {2, 2, T[Yu][2,2] / Yu[2,2]},
+            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
+   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
+            {2, 2, T[Yd][2,2] / Yd[2,2]},
+            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
+   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
+            {2, 2, T[Ye][2,2] / Ye[2,2]},
+            {3, 3, T[Ye][3,3] / Ye[3,3]} } },
+   {MSOFT, {{1, MassB},
+            {2, MassWB},
+            {3, MassG},
+            {21, mHd2},
+            {22, mHu2},
+            {31, SignedAbsSqrt[ml2[1,1]]},
+            {32, SignedAbsSqrt[ml2[2,2]]},
+            {33, SignedAbsSqrt[ml2[3,3]]},
+            {34, SignedAbsSqrt[me2[1,1]]},
+            {35, SignedAbsSqrt[me2[2,2]]},
+            {36, SignedAbsSqrt[me2[3,3]]},
+            {41, SignedAbsSqrt[mq2[1,1]]},
+            {42, SignedAbsSqrt[mq2[2,2]]},
+            {43, SignedAbsSqrt[mq2[3,3]]},
+            {44, SignedAbsSqrt[mu2[1,1]]},
+            {45, SignedAbsSqrt[mu2[2,2]]},
+            {46, SignedAbsSqrt[mu2[3,3]]},
+            {47, SignedAbsSqrt[md2[1,1]]},
+            {48, SignedAbsSqrt[md2[2,2]]},
+            {49, SignedAbsSqrt[md2[3,3]]} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
 */

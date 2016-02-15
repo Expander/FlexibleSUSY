@@ -40,9 +40,9 @@ FSExtraInputParameters = {};
 
 EWSBOutputParameters = {mHd2, mHu2, mC12, lw, mS2};
 
-HighScale = g1 == g1;
+HighScale = mSUSY;
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = mSUSY;
 
 HighScaleInput = {
     {gX, gXInput},
@@ -110,10 +110,6 @@ SUSYScaleInput = {
     {xS, vSInput},
     {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
     {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
-    {g1, g1T},
-    {gX, gXT},
-    {g1X, g1XT},
-    {gX1, 0},
     {L[lw], 0}
 };
 
@@ -121,16 +117,27 @@ LowScale = LowEnergyConstant[MZ];
 
 LowScaleFirstGuess = LowScale;
 
+gYDRbar = GUTNormalization[g1] LowEnergyGaugeCoupling[1];
+eDRbar  = gYDRbar g2 / Sqrt[gYDRbar^2 + g2^2];
+vDRbar  = AbsSqrt[
+   (-4*gYDRbar^2*(eDRbar^2*gX1^2*(x1^2 + x2^2)*Cos[ThetaWp]^2 -
+      g2*(g2*MZDRbar^2 - g2*gX^2*(x1^2 + x2^2)*Sin[ThetaWp]^2 +
+        eDRbar*gX*gX1*(x1^2 + x2^2)*Sin[2*ThetaWp])))/
+    (eDRbar*(g2^2 + (gYDRbar + gX1)*gYDRbar)*Cos[ThetaWp] -
+      g2*(g1X + gX)*gYDRbar*Sin[ThetaWp])^2];
+
 LowScaleInput = {
-    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
-    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+    {vd, vDRbar Cos[ArcTan[TanBeta]]},
+    {vu, vDRbar Sin[ArcTan[TanBeta]]},
     {Yu[1,1], Sqrt[2] topDRbar[1,1] / vu},
     {Yu[2,2], Sqrt[2] topDRbar[2,2] / vu},
     {Yu[3,3], Sqrt[2] topDRbar[3,3] / vu},
     {Yd, Automatic},
     {Ye[1,1], Sqrt[2] electronDRbar[1,1] / vd},
     {Ye[2,2], Sqrt[2] electronDRbar[2,2] / vd},
-    {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vd}
+    {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vd},
+    (* set g1 in non-triangle basis from gY in triangle basis *)
+    {g1, (g1X*gX1 + LowEnergyGaugeCoupling[1]*Sqrt[gX^2 + gX1^2])/gX}
 };
 
 
@@ -142,11 +149,10 @@ InitialGuessAtHighScale = {
 
 InitialGuessAtLowScale = {
     {xS, vSInput},
-    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
-    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
-    {g1, g1T},
-    {gX, gXT},
-    {g1X, g1XT},
+    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*Sqrt[1 + TanBetaX^2])},
+    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*Sqrt[1 + TanBetaX^2])},
+    {gX, 0},
+    {g1X, 0},
     {gX1, 0},
     {L[lw], 0},		       
     {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},

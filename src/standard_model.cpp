@@ -866,7 +866,10 @@ void Standard_model::initialise_from_input()
       const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
       double theta_w_drbar        = calculate_theta_w(alpha_em_drbar);
 
-      if (!IsFinite(theta_w_drbar)) {
+      if (IsFinite(theta_w_drbar)) {
+         problems.unflag_non_perturbative_parameter(
+            "sin(theta_W)");
+      } else {
          problems.flag_non_perturbative_parameter(
             "sin(theta_W)", theta_w_drbar, get_scale(), 0);
          theta_w_drbar = ArcSin(Electroweak_constants::sinThetaW);
