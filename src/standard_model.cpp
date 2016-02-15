@@ -6316,7 +6316,8 @@ double Standard_model::calculate_Mhh_DRbar(double m_pole)
 {
    const double p = m_pole;
    const double self_energy = Re(self_energy_hh(p));
-   const double mass_sqr = Sqr(m_pole) + self_energy;
+   const double tadpole = Re(tadpole_hh()) / v;
+   const double mass_sqr = Sqr(m_pole) + self_energy - tadpole;
 
    if (mass_sqr < 0.) {
       problems.flag_tachyon(standard_model_info::hh);
