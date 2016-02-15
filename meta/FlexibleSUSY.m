@@ -79,6 +79,7 @@ AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
 LowEnergyConstant;
+LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
