@@ -59,16 +59,20 @@ ParticleDefinitions[GaugeES] = {
       {Chi,  { Description -> "Neutralinos"}},
       {Cha,  { Description -> "Charginos"}},
       {InertChi,  { Description -> "inert Neutralinos",
-                    PDG -> { 1000081, 1000082, 1000083, 1000084 }
+                    PDG -> { 1000081, 1000082, 1000083, 1000084 },
+                    ElectricCharge -> 0
                   }},
       {InertCha,  { Description -> "inert Charginos",
-                    PDG -> { 1000085, 1000086, 1000087, 1000088 }
+                    PDG -> { 1000085, 1000086, 1000087, 1000088 },
+                    ElectricCharge -> -1
                   }},
       {InertHpm,  { Description -> "inert charged Higgs",
-                    PDG -> { 81, 85, 83, 87 }
+                    PDG -> { 81, 85, 83, 87 },
+                    ElectricCharge -> -1
                   }},
       {Inerthh ,  { Description -> "inert neutral Higgs",
-                    PDG -> { 82, 86, 84, 88 }
+                    PDG -> { 82, 86, 84, 88 },
+                    ElectricCharge -> 0
                   }}
         };
 
