@@ -942,7 +942,7 @@ void Standard_model::initial_guess_for_parameters()
    electronDRbar(2,2) = mtau_guess;
    Ye = ((1.4142135623730951*electronDRbar)/v).transpose();
 
-   Lambdax = 0.5 * Sqr(MH) / Sqr(v);
+   Lambdax = Sqr(MH) / Sqr(v);
 
    solve_ewsb_tree_level();
 }
