@@ -177,10 +177,10 @@ InitialGuessAtLowScale = {
 PotentialLSPParticles = {};
 
 ExtraSLHAOutputBlocks = {
-   {FlexibleSUSYOutput,
+   {FlexibleSUSYOutput, NoScale,
            {{1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
-   {EFFHIGGSCOUPLINGS,
+   {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
             {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
             {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
