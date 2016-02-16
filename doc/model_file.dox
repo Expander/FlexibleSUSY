@@ -837,10 +837,10 @@ ExtraSLHAOutputBlocks = {
 `<blockname>` is the name of the output block.
 
 Optionally, the renormalization scale can be added to the block head.
-`NoScale` specifies that the block head should have no scale.
-`CurrentScale` specifies that the scale written in the block head
-should be the current scale of the model.  Otherwise, `<scale>` can be
-numeric value.
+`NoScale` (default) specifies that the block head should have no
+scale.  `CurrentScale` specifies that the scale written in the block
+head should be the current scale of the model.  Otherwise, `<scale>`
+can be numeric value.
 
 The fields inside the block are specified in form of a list of
 2-component lists, where the first entry is an integer number
