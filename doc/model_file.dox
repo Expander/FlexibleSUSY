@@ -632,6 +632,34 @@ SUSYScaleInput = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+### Temporary parameter re-definitions ###
+
+Since FlexibleSUSY 1.4.0, the user can perform a temporary parameter
+definition to be used in the boundary conditions using the Temporary[]
+head.
+
+If a parameter `p` set in a boundary conditions in the form
+`Temporary[p,<expr>]`, the following happens: Immediately after the RG
+running the value of the parameter is saved locally.  Afterwards, the
+parameter is assigned to `<expr>`.  Now, all further boundary
+conditions are imposed and calculations are performed (calculation of
+running masses, solution of the EWSB conditions, etc.).  Finally, the
+parameter `p` is restored to the locally saved value.
+
+Example: Temporarily scale the gauge coupling `g1` by a factor
+`Sqrt[3/5]` and set the up-quark Yukawa coupling to zero:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+LowScaleInput = {
+   {Temporary[g1], g1 Sqrt[3/5]},
+   {Temporary[Yu[1,1]], 0},
+   {v, 2 MZDRbar / Sqrt[g1^2 + g2^2]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this simple example, the VEV `v` is calculated in terms of `g1`, to
+which the value `g1 Sqrt[3/5]` has been assigned.
+
 ### Imposing the electroweak symmetry breaking conditions ###
 
 The scale, at which the electroweak symmetry breaking (EWSB)
