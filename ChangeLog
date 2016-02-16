@@ -85,6 +85,20 @@ FlexibleSUSY-1.4.0 [not released yet]
    enabled) by setting the flag FlexibleSUSY[15] to 0 (or 1) in the
    SLHA input file.
 
+ * Feature: Allow the user to temporarily re-define model parameters
+   in the boundary conditions, which are restored to their original
+   values after the calculations in the boundary condition has been
+   finished.
+
+   Example: Temporarily scale the gauge coupling g1 by a factor 1/2
+   and set the up-quark Yukawa coupling to zero:
+
+   LowScaleInput = {
+      {Temporary[g1], g1 / 2},
+      {Temporary[Yu[1,1]], 0},
+      ...
+   };
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
