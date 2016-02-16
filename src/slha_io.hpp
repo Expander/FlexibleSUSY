@@ -53,7 +53,7 @@ namespace flexiblesusy {
       /// SLHA number formatter
       const boost::format number_formatter("         %16.8E   # %s\n");
       /// SLHA line formatter for entries with three indices
-      const boost::format tensor_formatter(" %2d %2d %2d   %16.8E   # %s\n");
+      const boost::format tensor_formatter(" %8d %8d %8d   %16.8E   # %s\n");
       /// SLHA scale formatter
       const boost::format scale_formatter("%9.8E");
       /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
