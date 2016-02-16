@@ -1,5 +1,5 @@
 /**
-\page model_file_options FlexibleSUSY model file options
+\page model_file_options FlexibleSUSY model file
 \tableofcontents
 
 \section model_info Model information
@@ -632,6 +632,46 @@ SUSYScaleInput = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+### Temporary parameter re-definitions ###
+
+Since FlexibleSUSY 1.4.0, the user can perform a temporary parameter
+definition to be used in the boundary conditions using the Temporary[]
+head.
+
+If a parameter `p` set in a boundary conditions in the form
+`Temporary[p,<expr>]`, the following happens: Immediately after the RG
+running the value of the parameter is saved locally.  Afterwards, the
+parameter is assigned to `<expr>`.  Now, all further boundary
+conditions are imposed and calculations are performed (calculation of
+running masses, solution of the EWSB conditions, etc.).  Finally, the
+parameter `p` is restored to the locally saved value.
+
+Example in `U1xMSSM3G`: Temporarily rotate the gauge couplings to the
+triangular basis:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+g1T  = (g1*gX - g1X*gX1)/Sqrt[gX^2 + gX1^2];
+gXT  = Sqrt[gX^2 + gX1^2];
+g1XT = (g1X*gX + g1*gX1)/Sqrt[gX^2 + gX1^2];
+
+SUSYScaleInput = {
+    {Temporary[g1], g1T},
+    {Temporary[gX], gXT},
+    {Temporary[g1X], g1XT},
+    {Temporary[gX1], 0},
+    {xS, vSInput},
+    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {L[lw], 0},
+    FSSolveEWSBFor[{mHd2, mHu2, mC12, lw, mS2}]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this example the gauge couplings, defined in the triangular basis,
+are used in every calculation performed at the SUSY scale.  This
+includes the calculation of `x1` and `x2` as well as solving the EWSB
+conditions.
+
 ### Imposing the electroweak symmetry breaking conditions ###
 
 The scale, at which the electroweak symmetry breaking (EWSB)
@@ -742,6 +782,40 @@ UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 
 \section pole_masses Pole masses
 
+In order to tune the spectrum generator for speed, the precision of
+the pole mass calculation can be selected for each particle.  There
+are three different pole mass calculation algorithms available:
+`LowPrecision`, `MediumPrecision` and `HighPrecision`.  Please refer
+to Section 6.5 of Ref. [<a href="http://arxiv.org/abs/1406.2319">CPC
+190 (2015) 139-172</a>] for details.
+
+By default, the pole masses of all particles are calculated with
+`MediumPrecision`, except for the CP-even, CP-odd and charged Higgs
+bosons, which are calculated with `HighPrecision` in order to include
+some momentum-dependent 2-loop corrections.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section lsps Lightest supersymmetric particle (LSP)
+
+FlexibleSUSY can generate the helper function `get_lsp()`, which
+returns the mass of the lightest supersymmetric particle (LSP) as well
+as the particle type.  The particles which are candidates for being an
+LSP must be specified in the `PotentialLSPParticles` variable.
+
+Example: In the MSSM the lightest supersymmetric particles might be
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \section output_blocks Output blocks
 
 The user can define additional SLHA output blocks.  These additional
@@ -763,10 +837,10 @@ ExtraSLHAOutputBlocks = {
 `<blockname>` is the name of the output block.
 
 Optionally, the renormalization scale can be added to the block head.
-`NoScale` specifies that the block head should have no scale.
-`CurrentScale` specifies that the scale written in the block head
-should be the current scale of the model.  Otherwise, `<scale>` can be
-numeric value.
+`NoScale` (default) specifies that the block head should have no
+scale.  `CurrentScale` specifies that the scale written in the block
+head should be the current scale of the model.  Otherwise, `<scale>`
+can be numeric value.
 
 The fields inside the block are specified in form of a list of
 2-component lists, where the first entry is an integer number
@@ -778,16 +852,17 @@ are defined
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 ExtraSLHAOutputBlocks = {
-   {FlexibleSUSYOutput,
+   {FlexibleSUSYOutput, NoScale,
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
-   {EFFHIGGSCOUPLINGS,
+   {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
             {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
             {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
             {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
-   {ALPHA, {{ArcSin[Pole[ZH[2,2]]]}}},
+   {ALPHA, NoScale,
+           {{ArcSin[Pole[ZH[2,2]]]}}},
    {HMIX , {{1, \[Mu]},
             {2, vu / vd},
             {3, Sqrt[vu^2 + vd^2]},

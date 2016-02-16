@@ -120,7 +120,7 @@ EffectiveMASqr =. ;
 PotentialLSPParticles = {};
 
 ExtraSLHAOutputBlocks = {
-   {FlexibleSUSYOutput,
+   {FlexibleSUSYOutput, NoScale,
            {{1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } }
 };

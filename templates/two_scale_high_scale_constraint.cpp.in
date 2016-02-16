@@ -76,11 +76,15 @@ void @ModelName@_high_scale_constraint<Two_scale>::apply()
    assert(model && "Error: @ModelName@_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
+@temporarySetting@
+
    update_scale();
 
 @applyConstraint@
 
    check_non_perturbative();
+
+@temporaryResetting@
 }
 
 bool @ModelName@_high_scale_constraint<Two_scale>::check_non_perturbative()

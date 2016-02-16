@@ -75,11 +75,14 @@ void @ModelName@_susy_scale_constraint<Two_scale>::apply()
    assert(model && "Error: @ModelName@_susy_scale_constraint::apply():"
           " model pointer must not be zero");
 
+@temporarySetting@
+
    model->calculate_DRbar_masses();
    update_scale();
 
    // apply user-defined susy scale constraints
 @applyConstraint@
+@temporaryResetting@
 }
 
 double @ModelName@_susy_scale_constraint<Two_scale>::get_scale() const

@@ -1,5 +1,5 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`", "Utils`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
@@ -22,6 +22,10 @@ RestrictScale::usage="";
 CheckPerturbativityForParameters::usage="";
 
 GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
+
+SetTemporarily::usage="set temporary variables";
+
+ResetTemporarily::usage="set temporary variables";
 
 Begin["`Private`"];
 
@@ -177,11 +181,21 @@ ApplyConstraint[p_, _] :=
          ];
 
 ApplyConstraints[settings_List] :=
-    Module[{result, noMacros},
-           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__] | FlexibleSUSY`FSSolveEWSBFor[__]];
+    Module[{result, noMacros, noTemp},
+           noMacros = DeleteCases[
+               settings,
+               FlexibleSUSY`FSMinimize[__] | \
+               FlexibleSUSY`FSFindRoot[__] | \
+               FlexibleSUSY`FSSolveEWSBFor[__] | \
+               {FlexibleSUSY`Temporary[_], _}
+           ];
+           noTemp = DeleteCases[
+               settings,
+               {FlexibleSUSY`Temporary[_], _}
+           ];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> "\n";
-           (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
+           (result = result <> ApplyConstraint[#, "MODEL"])& /@ noTemp;
            Return[result];
           ];
 
@@ -549,6 +563,41 @@ if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
 CheckPerturbativityForParameters[pars_List, thresh_] :=
     Parameters`CreateLocalConstRefs[pars] <> "\n" <>
     StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
+
+SaveValue[par_[idx__], prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par],
+            parStrIdx = CConversion`ToValidCSymbolString[par[idx]]},
+           "const auto " <> prefix <> parStrIdx <> " = MODELPARAMETER(" <> parStr <> ")" <>
+           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");"
+          ];
+
+SaveValue[par_, prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <> parStr <> ");"
+          ];
+
+RestoreValue[par_, prefix_String] :=
+    Parameters`SetParameter[
+        par,
+        prefix <> CConversion`ToValidCSymbolString[par],
+        "MODEL"];
+
+SetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
+            set, savedVals},
+           If[tempSettings === {}, Return[""];];
+           set = ApplyConstraints[tempSettings];
+           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]], "old_"]& /@ tempSettings, "\n"];
+           "// temporary parameter re-definitons\n" <>
+           savedVals <> "\n{\n" <> IndentText[set] <> "}"
+          ];
+
+ResetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}]},
+           If[tempSettings === {}, Return[""];];
+           "// reset temporary parameter re-definitons\n" <>
+           StringJoin[RestoreValue[#[[1]], "old_"]& /@ tempSettings]
+          ];
 
 End[];
 

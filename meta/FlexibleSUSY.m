@@ -83,6 +83,7 @@ LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
+Temporary;
 MZ;
 MT;
 MZDRbar;
@@ -576,6 +577,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
+           temporarySetting = "", temporaryResetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -589,6 +591,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
+          temporarySetting   = Constraint`SetTemporarily[settings];
+          temporaryResetting = Constraint`ResetTemporarily[settings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
@@ -627,6 +631,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
+                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
