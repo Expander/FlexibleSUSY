@@ -646,19 +646,31 @@ conditions are imposed and calculations are performed (calculation of
 running masses, solution of the EWSB conditions, etc.).  Finally, the
 parameter `p` is restored to the locally saved value.
 
-Example: Temporarily scale the gauge coupling `g1` by a factor
-`Sqrt[3/5]` and set the up-quark Yukawa coupling to zero:
+Example in `U1xMSSM3G`: Temporarily rotate the gauge couplings to the
+triangular basis:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-LowScaleInput = {
-   {Temporary[g1], g1 Sqrt[3/5]},
-   {Temporary[Yu[1,1]], 0},
-   {v, 2 MZDRbar / Sqrt[g1^2 + g2^2]}
+g1T  = (g1*gX - g1X*gX1)/Sqrt[gX^2 + gX1^2];
+gXT  = Sqrt[gX^2 + gX1^2];
+g1XT = (g1X*gX + g1*gX1)/Sqrt[gX^2 + gX1^2];
+
+SUSYScaleInput = {
+    {Temporary[g1], g1T},
+    {Temporary[gX], gXT},
+    {Temporary[g1X], g1XT},
+    {Temporary[gX1], 0},
+    {xS, vSInput},
+    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {L[lw], 0},
+    FSSolveEWSBFor[{mHd2, mHu2, mC12, lw, mS2}]
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In this simple example, the VEV `v` is calculated in terms of `g1`, to
-which the value `g1 Sqrt[3/5]` has been assigned.
+In this example the gauge couplings, defined in the triangular basis,
+are used in every calculation performed at the SUSY scale.  This
+includes the calculation of `x1` and `x2` as well as solving the EWSB
+conditions.
 
 ### Imposing the electroweak symmetry breaking conditions ###
 
