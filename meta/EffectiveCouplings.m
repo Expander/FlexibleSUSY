@@ -421,22 +421,28 @@ CreateSMRunningFunctions[] :=
           ];
 
 RunToDecayingParticleScale[particle_, idx_:""] :=
-    Module[{savedMass, body, result = ""},
+    Module[{savedMass, body, result = "", mustRecalculate = False},
            savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
            If[idx != "",
               savedMass = savedMass <> "(" <> idx <> ")";
              ];
-           body = "model.run_to(" <> savedMass <> ");\n";
-           result = "if (rg_improve && scale != " <> savedMass <> ") {\n"
-                    <> TextFormatting`IndentText[body] <> "}\n";
+           If[SARAH`SupersymmetricModel,
+              mustRecalculate = True;
+              body = "model.run_to(" <> savedMass <> ");\n";
+              result = "if (rg_improve && scale > " <> savedMass <> ") {\n"
+                       <> TextFormatting`IndentText[body] <> "}\n";
+             ];
            (* @note always run the SM gauge couplings, if defined, to the decay scale *)
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
+              mustRecalculate = True;
               result = result <> "run_SM_gauge_couplings_to(" <> savedMass <> ");\n";
              ];
-           result = result <> "model.calculate_DRbar_masses();\n"
-                    <> "copy_mixing_matrices_from_model();\n";
-           result
+           If[mustRecalculate,
+              result = result <> "model.calculate_DRbar_masses();\n"
+                       <> "copy_mixing_matrices_from_model();\n";
+             ];
+           {result, mustRecalculate}
           ];
 
 CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
@@ -454,7 +460,7 @@ CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
 CreateEffectiveCouplingsCalculation[couplings_List] :=
     Module[{i, couplingSymbols, particle, couplingsForParticles = {},
             mustSaveParameters = False, pos, couplingList, mass,
-            savedMass, dim, start, body, result = ""},
+            savedMass, dim, start, body, mustRecalculate, result = ""},
            couplingSymbols = #[[1]]& /@ couplings;
            For[i = 1, i <= Length[couplingSymbols], i++,
                particle = GetExternalStates[couplingSymbols[[i]]][[1]];
@@ -467,26 +473,28 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
               ];
            For[i = 1, i <= Length[couplingsForParticles], i++,
                particle = couplingsForParticles[[i,1]];
-               mass = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+               mass = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
                savedMass = "const auto " <> mass <> " = PHYSICAL(" <> mass <> ");\n";
                dim = TreeMasses`GetDimension[particle];
                start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
                If[dim == 1 && !TreeMasses`IsGoldstone[particle],
-                  body = RunToDecayingParticleScale[particle];
+                  {body, mustRecalculate} = RunToDecayingParticleScale[particle];
                   result = result <> savedMass <> body;
                   result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
                   If[start <= dim,
-                     body = RunToDecayingParticleScale[particle, "gO1"];
+                     {body, mustRecalculate} = RunToDecayingParticleScale[particle, "gO1"];
                      result = result <> savedMass <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                      body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
                  ];
               ];
-           result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
+           If[mustRecalculate,
+              result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
               (* @note should this be done after each running, or only once at the end? *)
-           result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+             ];
            result
           ];
 
