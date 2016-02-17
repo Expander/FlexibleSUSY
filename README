@@ -38,9 +38,9 @@ the Needs["SARAH`"] command from inside Mathematica.  We recommend the
 following setup:
 
    $ cd ~/.Mathematica/Applications/
-   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.6.0.tar.gz
-   $ tar -xf SARAH-4.6.0.tar.gz
-   $ ln -s $PWD/SARAH-4.6.0/ SARAH
+   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.7.0.tar.gz
+   $ tar -xf SARAH-4.7.0.tar.gz
+   $ ln -s $PWD/SARAH-4.7.0/ SARAH
 
    $ cd ~/.Mathematica/Kernel/
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \
