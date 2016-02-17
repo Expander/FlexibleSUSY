@@ -113,7 +113,7 @@ Block SPhenoInput    # SPheno specific input
    10  0             # safe-mode used at two-loop 
    11  1             # calculate branching ratios 
    13  0             # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
-   14  0             # Run couplings to scale of decaying particle 
+   14  1             # Run couplings to scale of decaying particle 
    12  1.000E-04     # write only branching ratios larger than this value 
    15  1.000E-30     # write only decay if width larger than this value 
    31  -1            # fixed GUT scale (-1: dynamical GUT scale) 
