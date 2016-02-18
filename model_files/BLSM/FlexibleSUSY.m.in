@@ -41,13 +41,9 @@ LowScaleInput = {
     {Yx, LHInput[Yx]},
     {vX, vXinput},
     {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
-    (* {vH, vSM}, *)
     {Ye, Automatic},
     {Yd, Automatic},
     {Yu, Automatic}
-    (* {g1, g1SM}, *)
-    (* {g2, g2SM}, *)
-    (* {g3, g3SM} *)
 };
 
 InitialGuessAtLowScale = {
