@@ -128,7 +128,7 @@ vDRbar  = AbsSqrt[
       g2*(g2*MZDRbar^2 - g2*gX^2*(x1^2 + x2^2)*Sin[ThetaWp]^2 +
         eDRbar*gX*gX1*(x1^2 + x2^2)*Sin[2*ThetaWp])))/
     (eDRbar*(g2^2 + (gYDRbar + gX1)*gYDRbar)*Cos[ThetaWp] -
-      g2*(g1X + gX)*gYDRbar*Sin[ThetaWp])^2];
+      g2*(g1X GUTNormalization[g1] + gX)*gYDRbar*Sin[ThetaWp])^2];
 
 LowScaleInput = {
     (* do not rotate g1, because it is set to gY *)
