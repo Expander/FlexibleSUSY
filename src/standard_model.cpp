@@ -68,6 +68,8 @@ const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
 
 namespace standard_model {
 
+const int Standard_model::numberOfParameters;
+
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter

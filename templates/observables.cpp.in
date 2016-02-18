@@ -46,6 +46,8 @@
 
 namespace flexiblesusy {
 
+const unsigned @ModelName@_observables::NUMBER_OF_OBSERVABLES;
+
 @ModelName@_observables::@ModelName@_observables()
 @observablesInit@
 {

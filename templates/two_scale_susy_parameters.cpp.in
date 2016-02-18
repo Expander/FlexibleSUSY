@@ -32,6 +32,8 @@ namespace flexiblesusy {
 #define TRACE_STRUCT_TYPE Susy_traces
 #define CALCULATE_TRACES() calc_susy_traces(TRACE_STRUCT);
 
+const int @ModelName@_susy_parameters::numberOfParameters;
+
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()
    @parameterDefaultInit@
