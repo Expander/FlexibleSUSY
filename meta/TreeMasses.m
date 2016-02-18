@@ -1800,12 +1800,12 @@ CreateThirdGenerationHelpers[] :=
            {prototypes, functions}
           ];
 
-GetThirdGenerationMass[fermion_] :=
+GetThirdGenerationMass[fermion_, cConvention_:True] :=
     Module[{dim, mass},
            dim = GetDimension[fermion];
            If[dim == 1,
               mass = FlexibleSUSY`M[fermion];,
-              mass = FlexibleSUSY`M[fermion][dim - 1];
+              mass = FlexibleSUSY`M[fermion][3 - If[cConvention === True, 1, 0]];
              ];
            Return[mass];
           ];
