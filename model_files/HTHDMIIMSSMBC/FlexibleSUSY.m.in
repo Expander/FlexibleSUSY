@@ -325,7 +325,7 @@ deltaLambda5Phi1L = 0;
 deltaLambda6Phi1L = With[{
     gY = GUTNormalization[g1] g1,
     gbar = (gY^2 + g2^2) / 4
-    }
+    },
     (
         gbar/12 kappa muMS (+ 3 AbMS hb^2
                             + 3 AtMS ht^2
