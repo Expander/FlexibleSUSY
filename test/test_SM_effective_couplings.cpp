@@ -78,6 +78,8 @@ void Standard_model_tester::run_SM_gauge_couplings_to(double m)
 
    Standard_model sm;
 
+   sm.set_loops(2);
+   sm.set_thresholds(2);
    sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_inputs);
 
