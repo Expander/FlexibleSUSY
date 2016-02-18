@@ -225,7 +225,7 @@ deltaLambda6th1L = With[{
     ht = Yu[3,3],
     hb = Yd[3,3],
     htau = Ye[3,3],
-    muMS = MuInput / MSUSY,
+    muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
     AtauMS = Atau / MSUSY,
     AtMS = At / MSUSY,
@@ -249,12 +249,11 @@ deltaLambda7th1L = With[{
     ht = Yu[3,3],
     hb = Yd[3,3],
     htau = Ye[3,3],
-    muMS = MuInput / MSUSY,
+    muMS = \[Mu] / MSUSY,
     AbMS = Ab / MSUSY,
     AtauMS = Atau / MSUSY,
     AtMS = At / MSUSY,
-    gY = GUTNormalization[g1] g1,
-    gbar = (gY^2 + g2^2) / 4
+    gbar = ((GUTNormalization[g1] g1)^2 + g2^2) / 4
     },
     (
         kappa/6 muMS (+ 3 ht^4 AtMS (AtMS^2 - 6)
@@ -336,8 +335,15 @@ deltaLambda5Phi1L = 0;
 
 (* arxiv:hep-ph/9307201, Eq. (6.17) *)
 deltaLambda6Phi1L = With[{
-    gY = GUTNormalization[g1] g1,
-    gbar = (gY^2 + g2^2) / 4
+    kappa = 1/(4 Pi)^2,
+    ht = Yu[3,3],
+    hb = Yd[3,3],
+    htau = Ye[3,3],
+    muMS = \[Mu] / MSUSY,
+    AbMS = Ab / MSUSY,
+    AtauMS = Atau / MSUSY,
+    AtMS = At / MSUSY,
+    gbar = ((GUTNormalization[g1] g1)^2 + g2^2) / 4
     },
     (
         gbar/12 kappa muMS (+ 3 AbMS hb^2
@@ -391,7 +397,7 @@ deltaLambda5th2L = deltaLambda3th2L;
 deltaLambda6th2L = With[{
     kappa = 1/(4 Pi)^2,
     ht = Yu[3,3],
-    muMS = MuInput / MSUSY,
+    muMS = \[Mu] / MSUSY,
     AtMS = At / MSUSY
     },
     (
@@ -403,7 +409,7 @@ deltaLambda6th2L = With[{
 deltaLambda7th2L = With[{
     kappa = 1/(4 Pi)^2,
     ht = Yu[3,3],
-    muMS = MuInput / MSUSY,
+    muMS = \[Mu] / MSUSY,
     AtMS = At / MSUSY
     },
     (
