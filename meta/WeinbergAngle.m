@@ -69,7 +69,7 @@ RhoZero[] :=
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
            vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
            (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
-           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List, comp1_List, comp2_List} :> Flatten[{vevinfo Boole[ReleaseHold[SARAH`getElectricCharge[comp1[[1]]]] == 0], (SA`DimensionGG[fieldname, leftPos] - 1) / 2, -SA`ChargeGG[fieldname, hyperchargePos]}];
+           vevlist = vevlist /. {fieldname_Symbol, vevinfo_List, comp1_List, __} :> Flatten[{vevinfo Boole[ReleaseHold[SARAH`getElectricCharge[comp1[[1]]]] == 0], (SA`DimensionGG[fieldname, leftPos] - 1) / 2, -SA`ChargeGG[fieldname, hyperchargePos]}];
            If[!FreeQ[vevlist, None], Print["Error: determination of electric charge did not work"]; Return[0]];
            Return[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist)]];
           ];
@@ -117,7 +117,7 @@ RhoHatTree[massMatrices_List]:=
     Module[{Zmass2unmixed, Zmass2mixed, expr, result},
            Zmass2unmixed = UnmixedZMass2[];
            Zmass2mixed = FindMassZ2[massMatrices];
-           expr = Simplify[RhoZero[] Zmass2unmixed / Zmass2mixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
+           expr = Simplify[RhoZero[] Zmass2unmixed / Zmass2mixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> "rhohat_tree = ";
            result = result <> CConversion`RValueToCFormString[expr] <> ";";
