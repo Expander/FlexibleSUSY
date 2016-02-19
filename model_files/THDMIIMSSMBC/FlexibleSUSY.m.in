@@ -156,7 +156,7 @@ deltaLambda3th1L = With[{
                         + htau^4 (3 - AtauMS^2))
         + kappa/2 ht^2 hb^2 (3 (AtMS + AbMS)^2
                              - (muMS^2 - AtMS AbMS)^2
-                             - 6muMS^2)
+                             - 6 muMS^2)
         - kappa/2 (g2^2 - gY^2)/4 (3 ht^2 (AtMS^2 - muMS^2)
                                    + 3 hb^2 (AbMS^2 - muMS^2)
                                    + htau^2 (AtauMS^2 - muMS^2))
