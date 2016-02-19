@@ -61,9 +61,11 @@ lam2Field = 2 gbar Aprime[[2, 2]];
 lam3Field = -gbarm (Aprime[[1, 1]] + Aprime[[2, 2]]);
 lam4Field = -g2^2/2 (Aprime[[1, 1]] + Aprime[[2, 2]]);
 lam5Field = 0;
-(* the following two terms are 0 in the PhysRev.D.48.4280 *)
-lam6Field = gbar/2 Aprime[[1, 2]];
-lam7Field = gbar/2 Aprime[[1, 2]];
+(* the following two terms are 0 in the PhysRev.D.48.4280
+   and arxiv:1508.00576.  They seem to be incorrect in
+   arxiv:hep-ph/9307201 Eq. (6.17), where they are non-zero. *)
+lam6Field = 0;
+lam7Field = 0;
 
 (* list with vertex + box corrections *)
 lamTh = {
