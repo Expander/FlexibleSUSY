@@ -288,6 +288,7 @@ TEST_META := \
 		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_ThresholdCorrections.m \
+		$(DIR)/test_THDM_threshold_corrections.m \
 		$(DIR)/test_Vertices.m
 
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
