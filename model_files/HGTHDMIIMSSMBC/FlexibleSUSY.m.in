@@ -229,8 +229,7 @@ deltaLambda6th1L = With[{
     AbMS = Ab / MSUSY,
     AtauMS = Atau / MSUSY,
     AtMS = At / MSUSY,
-    gY = GUTNormalization[g1] g1,
-    gbar = (gY^2 + g2^2) / 4
+    gbar = ((GUTNormalization[g1] g1)^2 + g2^2) / 4
     },
     (
         kappa/6 muMS (+ 3 ht^4 muMS^2 AtMS
