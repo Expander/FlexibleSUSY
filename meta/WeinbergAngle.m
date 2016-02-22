@@ -63,7 +63,7 @@ GellMannNishijimaRelationHolds[] :=
            If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[False];];
            photonEigenSystem = Eigensystem[photonMassMatrix];
            photonVector = Extract[photonEigenSystem[[2]], Position[photonEigenSystem[[1]], 0]];
-           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[False];];
+           If[!MemberQ[Total[Abs[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector], {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[False];];
            Return[True];
           ];
 
