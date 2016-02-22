@@ -50,21 +50,27 @@ UnmixedWMass2[] :=
            Return[mass2Eigenvalues[[1]] /. Parameters`ApplyGUTNormalization[]]
           ];
 
-(*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
-RhoZero[] :=
-    Module[{photonMassMatrix, extraGaugeCouplings, submatrixIndices, BW3pos, photonEigenSystem, photonVector, hyperchargePos, leftPos, vevlist},
-           If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left], Print["Error: hypercharge or left gauge group does not exist. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
+(*checks whether the Gell-Mann-Nishijima relation is valid*)
+GellMannNishijimaRelationHolds[] :=
+    Module[{photonMassMatrix, extraGaugeCouplings, submatrixIndices, BW3pos, photonEigenSystem, photonVector},
+           If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left], Print["Error: hypercharge or left gauge group does not exist. Please choose another method for the determination of the Weinberg angle."]; Return[False]];
            photonMassMatrix = SARAH`MassMatrix[SARAH`VectorP];
            Assert[MatrixQ[photonMassMatrix]];
-           If[Length[photonMassMatrix] > 4, Print["Error: neutral vector boson mass matrix is too large to be diagonalized"]; Return[0]];
+           If[Length[photonMassMatrix] > 4, Print["Error: neutral vector boson mass matrix is too large to be diagonalized"]; Return[False]];
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            submatrixIndices = Flatten[Table[{i, j}, {i, 1, Length[photonMassMatrix]}, {j, i + 1, Length[photonMassMatrix]}], 1];
            BW3pos = Flatten[Extract[submatrixIndices, Position[photonMassMatrix[[#, #]] & /@ submatrixIndices, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings), {1}, Heads -> False]]];
-           If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[0]];
+           If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[False]];
            photonEigenSystem = Eigensystem[photonMassMatrix];
            photonVector = Extract[photonEigenSystem[[2]], Position[photonEigenSystem[[1]], 0]];
-           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
-           (*now the Gell-Mann-Nishijima formula should be valid*)
+           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[False]];
+           Return[True];
+          ];
+
+(*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
+RhoZero[] :=
+    Module[{hyperchargePos, leftPos, vevlist},
+           If[!GellMannNishijimaRelationHolds[], Print["Error: the Gell-Mann-Nishijima relation does not hold. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
            hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
            vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
