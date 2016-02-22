@@ -1,8 +1,11 @@
+(* Implementation of THDM threshold corrections from arxiv:0901.2065 *)
+
+flagIno = 1; (* Enable/disable gaugino + Higgsino contribution *)
+flagSferm = 1; (* Enable/disable sfermion contribution *)
+
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
 gtilde /: gtilde^2 = (g2^2 + gY^2);
-(* flagIno = 1; (\* Gaugino + Higgsino contribution *\) *)
-(* flagSferm = 1; (\* Sfermion contribution *\) *)
 
 (* Eq. (122) *)
 as[1] = as[2] = as[3] = -3/4; 
@@ -262,7 +265,6 @@ c26[4] := 0;
 c27[4] := 0;
 
 (* Table 5 *)
-
 d1[1][i_, j_, k_, 
    l_] := (-Te[k, i] Te[l, j] Conjugate[Te[k, j]] Conjugate[Te[l, i]]);
 d1[2][i_, j_, k_, 
@@ -286,7 +288,6 @@ d1[7][i_, j_, k_,
      Ye[k, j]] Conjugate[Ye[l, i]]);
 
 (* Table 6 *)
-
 d2[1][i_, j_, k_, 
    l_] := (-3 Td[k, i] Td[l, j] Conjugate[Td[k, j]] Conjugate[
      Td[l, i]]);
@@ -332,6 +333,14 @@ d3[6][i_, j_, k_,
 d3[7][i_, j_, k_, 
    l_] := (3 Mu Tu[i, l] Tu[j, k] Conjugate[Tu[j, l]] Conjugate[
      Yu[i, k]]);
+
+(* Eq. (124) *)
+d4[1][__] = 
+  d4[2][__] = d4[3][__] = d4[5][__] = d4[6][__] = d4[7][__] = 0;
+d4[4][i_, j_, k_, 
+   l_] := (-3 (Td[k, i] Conjugate[Tu[k, l]] - 
+      Abs[Mu]^2 Yd[k, i] Conjugate[Yu[k, l]]) (Tu[j, l] Conjugate[
+        Td[j, i]] - Abs[Mu]^2 Yu[j, l] Conjugate[Yd[j, i]]));
 
 (* loop functions, Eq. (130)-(131) *)
 loopFunctions = {
@@ -410,15 +419,8 @@ loopFunctions = {
     W[m1_, m2_] :> W[m1, m2, Mu0]
 };
 
-(* Eq. (124) *)
-d4[1][__] = 
-  d4[2][__] = d4[3][__] = d4[5][__] = d4[6][__] = d4[7][__] = 0;
-d4[4][i_, j_, k_, 
-   l_] := (-3 (Td[k, i] Conjugate[Tu[k, l]] - 
-      Abs[Mu]^2 Yd[k, i] Conjugate[Yu[k, l]]) (Tu[j, l] Conjugate[
-        Td[j, i]] - Abs[Mu]^2 Yu[j, l] Conjugate[Yd[j, i]]));
-
 (* counter-terms *)
+
 dgY = -dZB/2;
 dg2 = -dZW/2;
 dZdd = flagSferm dZddSferm + flagIno dZddIno;
@@ -443,7 +445,6 @@ dZddSferm = 1/(32 Pi^2) Summation[
      + B0p[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}];
 (* Eq. (119) *)
-
 dZddIno = -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] + 
      3 g2^2 W[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
@@ -453,7 +454,6 @@ dZudSferm = -1/(16 Pi^2) Summation[
      + Conjugate[Mu] B0p[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}];
 (* Eq. (119) *)
-
 dZudIno = -1/(16 Pi^2) Conjugate[
     Mu] (gY^2 Conjugate[M1] B0p[Abs[M1], Abs[Mu]] + 
      3 g2^2 Conjugate[M2] B0p[Abs[M2], Abs[Mu]]);
@@ -466,13 +466,13 @@ dZuuSferm = 1/(32 Pi^2) Summation[
 (* Eq. (119) *)
 dZuuIno = dZddIno;
 
-(* Eq. (21) *)
+(* tree-level couplings, Eq. (21) *)
 lamTree[[1]] = lamTree[[2]] = gtilde^2/4;
 lamTree[[3]] = -lamTree[[1]];
 lamTree[[4]] = g2^2/2;
 lamTree[[5]] = lamTree[[6]] = lamTree[[7]] = 0;
 
-(* Eq. (120) *)
+(* Higgsino + gaugino contribution, Eq. (120) *)
 lamIno[[5]] = (
    3 g2^4 Mu^2 M2^2 D0[M2, M2, Abs[Mu], Abs[Mu]]
     + 2 g2^2 gY^2 Mu^2 M1 M2 D0[M1, M2, Abs[Mu], Abs[Mu]]
@@ -497,15 +497,16 @@ lamIno[[6]] = lamIno1234676[6];
 lamIno[[7]] = lamIno1234676[7];
 
 (* Eq. (127) *)
-
-Yee[i_, j_] := Summation[Conjugate[Ye[l, i]] Ye[l, j], {l, 1, 3}];
+Yee[i_, j_]    := Summation[Conjugate[Ye[l, i]] Ye[l, j], {l, 1, 3}];
 Yeebar[i_, j_] := Summation[Ye[i, l] Conjugate[Ye[j, l]], {l, 1, 3}];
-Yuu[i_, j_] := Summation[Conjugate[Yu[l, i]] Yu[l, j], {l, 1, 3}];
+Yuu[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yu[l, j], {l, 1, 3}];
 Yuubar[i_, j_] := Summation[Yu[i, l] Conjugate[Yu[j, l]], {l, 1, 3}];
-Ydd[i_, j_] := Summation[Conjugate[Yd[l, i]] Yd[l, j], {l, 1, 3}];
+Ydd[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yd[l, j], {l, 1, 3}];
 Yddbar[i_, j_] := Summation[Yd[i, l] Conjugate[Yd[j, l]], {l, 1, 3}];
-Yud[i_, j_] := Summation[Conjugate[Yu[l, i]] Yd[l, j], {l, 1, 3}];
-Ydu[i_, j_] := Summation[Conjugate[Yd[l, i]] Yu[l, j], {l, 1, 3}];
+Yud[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yd[l, j], {l, 1, 3}];
+Ydu[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yu[l, j], {l, 1, 3}];
+
+(* sfermion contribution *)
 
 (* Eq. (125) *)
 lamSlep1234[l_] := Summation[
@@ -636,38 +637,29 @@ lamSferm[[6]] = lamSferm67[6];
 lamSferm[[7]] = lamSferm67[6];
 
 (* Eq. (116) *)
-lamHat := 
-  lamTree + 
-   UnitStep[
-     THRESHOLD - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
+lamHat := lamTree +
+    UnitStep[THRESHOLD - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
 
 (* Eq. (71) *)
-lamBar[[1]] := 
-  lamHat[[1]] + 
-   UnitStep[
-     THRESHOLD - 1] (gtilde^2 Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
+lamBar[[1]] := lamHat[[1]] +
+    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
-lamBar[[2]] := 
-  lamHat[[2]] + 
-   UnitStep[
-     THRESHOLD - 1] (gtilde^2 Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
+lamBar[[2]] := lamHat[[2]] +
+   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
-lamBar[[3]] := 
-  lamHat[[3]] + 
-   UnitStep[
-     THRESHOLD - 
-      1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
+lamBar[[3]] := lamHat[[3]] +
+   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
-lamBar[[4]] = 
-  lamHat[[4]] + 
+lamBar[[4]] = lamHat[[4]] +
    UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2);
 
 lamBar[[5]] = lamHat[[5]];
 
-lamBar[[6]] = 
-  lamHat[[6]] + UnitStep[THRESHOLD - 1] (-gtilde^2/4 Conjugate[dZud]);
+lamBar[[6]] = lamHat[[6]] +
+    UnitStep[THRESHOLD - 1] (-gtilde^2/4 Conjugate[dZud]);
 
-lamBar[[7]] = lamHat[[7]] + UnitStep[THRESHOLD - 1] (gtilde^2/4 dZud);
+lamBar[[7]] = lamHat[[7]] +
+    UnitStep[THRESHOLD - 1] (gtilde^2/4 dZud);
 
 (* relation to Haber/Wagner/Lee convention p. 6 *)
 lamWagnerLee = {
