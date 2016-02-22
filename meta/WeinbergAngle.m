@@ -30,9 +30,9 @@ UnmixedZMass2[] :=
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            submatrixList = ZMassMatrix[[#, #]] & /@ Flatten[Table[{i, j}, {i, 1, Length[ZMassMatrix]}, {j, i + 1, Length[ZMassMatrix]}], 1];
            submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
-           If[Length[submatrix] != 1, Print["Error: Photon-Z mass matrix could not be identified"]; Return[0]];
+           If[Length[submatrix] != 1, Print["Error: Photon-Z mass matrix could not be identified"]; Return[0];];
            mass2Eigenvalues = Eigenvalues[submatrix];
-           If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0], Print["Error: Determination of UnmixedZMass2 failed"]; Return[0]];
+           If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0], Print["Error: Determination of UnmixedZMass2 failed"]; Return[0];];
            Return[Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]];
           ];
 
@@ -44,39 +44,39 @@ UnmixedWMass2[] :=
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            submatrixList = WMassMatrix[[#, #]] & /@ Flatten[Table[{i, j}, {i, 1, Length[WMassMatrix]}, {j, i + 1, Length[WMassMatrix]}], 1];
            submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
-           If[Length[submatrix] != 1, Print["Error: W mass matrix could not be identified"]; Return[0]];
+           If[Length[submatrix] != 1, Print["Error: W mass matrix could not be identified"]; Return[0];];
            mass2Eigenvalues = Eigenvalues[submatrix];
-           If[Length[DeleteDuplicates[mass2Eigenvalues]] != 1, Print["Error: Determination of UnmixedWMass2 failed"]; Return[0]];
-           Return[mass2Eigenvalues[[1]] /. Parameters`ApplyGUTNormalization[]]
+           If[Length[DeleteDuplicates[mass2Eigenvalues]] != 1, Print["Error: Determination of UnmixedWMass2 failed"]; Return[0];];
+           Return[mass2Eigenvalues[[1]] /. Parameters`ApplyGUTNormalization[]];
           ];
 
 (*checks whether the Gell-Mann-Nishijima relation is valid*)
 GellMannNishijimaRelationHolds[] :=
     Module[{photonMassMatrix, extraGaugeCouplings, submatrixIndices, BW3pos, photonEigenSystem, photonVector},
-           If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left], Print["Error: hypercharge or left gauge group does not exist. Please choose another method for the determination of the Weinberg angle."]; Return[False]];
+           If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left], Print["Error: hypercharge or left gauge group does not exist. Please choose another method for the determination of the Weinberg angle."]; Return[False];];
            photonMassMatrix = SARAH`MassMatrix[SARAH`VectorP];
            Assert[MatrixQ[photonMassMatrix]];
-           If[Length[photonMassMatrix] > 4, Print["Error: neutral vector boson mass matrix is too large to be diagonalized"]; Return[False]];
+           If[Length[photonMassMatrix] > 4, Print["Error: neutral vector boson mass matrix is too large to be diagonalized"]; Return[False];];
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] && FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            submatrixIndices = Flatten[Table[{i, j}, {i, 1, Length[photonMassMatrix]}, {j, i + 1, Length[photonMassMatrix]}], 1];
            BW3pos = Flatten[Extract[submatrixIndices, Position[photonMassMatrix[[#, #]] & /@ submatrixIndices, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings), {1}, Heads -> False]]];
-           If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[False]];
+           If[Length[BW3pos] != 2, Print["Error: Photon-Z mass matrix could not be identified"]; Return[False];];
            photonEigenSystem = Eigensystem[photonMassMatrix];
            photonVector = Extract[photonEigenSystem[[2]], Position[photonEigenSystem[[1]], 0]];
-           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[False]];
+           If[!MemberQ[Total[Part[#, Complement[Range[Length[photonMassMatrix]], BW3pos]] & /@ photonVector, {2}], 0], Print["Error: SM-like photon could not be identified. Please choose another method for the determination of the Weinberg angle."]; Return[False];];
            Return[True];
           ];
 
 (*calculates rho_0 from SU(2)_L representations of the Higgs multipletts as in (16) from 0801.1345 [hep-ph]*)
 RhoZero[] :=
     Module[{hyperchargePos, leftPos, vevlist},
-           If[!GellMannNishijimaRelationHolds[], Print["Error: the Gell-Mann-Nishijima relation does not hold. Please choose another method for the determination of the Weinberg angle."]; Return[0]];
+           If[!GellMannNishijimaRelationHolds[], Print["Error: the Gell-Mann-Nishijima relation does not hold. Please choose another method for the determination of the Weinberg angle."]; Return[0];];
            hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
            vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
            (* extract isospin from SU(2)_left representation and its third component from Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0 *)
            vevlist = vevlist /. {fieldname_Symbol, vevinfo_List, comp1_List, __} :> Flatten[{vevinfo Boole[ReleaseHold[SARAH`getElectricCharge[comp1[[1]]]] == 0], (SA`DimensionGG[fieldname, leftPos] - 1) / 2, -SA`ChargeGG[fieldname, hyperchargePos]}];
-           If[!FreeQ[vevlist, None], Print["Error: determination of electric charge did not work"]; Return[0]];
+           If[!FreeQ[vevlist, None], Print["Error: determination of electric charge did not work"]; Return[0];];
            Return[Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) / Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist),
                            Element[Alternatives @@ Cases[SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 2, 1]], x_ /; Parameters`IsRealParameter[x]], Reals]]];
           ];
