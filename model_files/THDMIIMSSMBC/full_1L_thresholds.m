@@ -626,7 +626,7 @@ lamSferm[[5]] = Summation[
     + d3[5][i, j, k, l] D0[msq[i], msq[j], msu[k], msu[l]]
    , {i, 1, 3}, {j, 1, 3}, {k, 1, 3}, {l, 1, 3}];
 lamSferm[[6]] = lamSferm67[6];
-lamSferm[[7]] = lamSferm67[6];
+lamSferm[[7]] = lamSferm67[7];
 
 (* Eq. (116) *)
 lamHat := lamTree +
