@@ -283,6 +283,7 @@ TEST_META := \
 		$(DIR)/test_CConversion.m \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
+		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_Parameters.m \
 		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_SelfEnergies.m \
