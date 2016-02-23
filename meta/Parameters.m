@@ -9,6 +9,7 @@ CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
 CreateInputParameterEnum::usage="";
 CreateInputParameterNames::usage="";
+CreateStdVectorNamesAssignment::usage="";
 
 CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
@@ -47,6 +48,7 @@ IsComplexParameter::usage="";
 IsRealExpression::usage="";
 IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
+IsTensor::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
@@ -68,8 +70,17 @@ GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
-GetDependenceNumSymbols::usage="Returns symbols which have a
-DependenceNum";
+GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
+ DependenceSPheno rule is defined";
+
+GetDependenceSPhenoRules::usage="Returns list of replacement rules for
+ symbols for which a DependenceSPheno rule is defined";
+
+GetOutputParameterDependencies::usage="Returns list of output
+ parameters which appear in the given expression";
+
+GetIntermediateOutputParameterDependencies::usage="Returns list of
+ intermediate output parameters which appear in the given expression";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -97,6 +108,7 @@ GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
 GetParticleFromDescription::usage="Returns particle symbol from a
 given description string.";
+GetPDGCodesForParticle::usage="Returns the PDG codes for a particle."
 
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
@@ -105,6 +117,10 @@ ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
 
 StripIndices::usage="removes indices from model parameter";
+
+StripIndicesRules::usage="removes given indices from a symbol";
+
+StripSARAHIndicesRules::usage="removes SARAH-specific indices from a symbol";
 
 FilterOutLinearDependentEqs::usage="returns linear independent equations";
 
@@ -148,10 +164,10 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
-FindSymbolDef[sym_] :=
+FindSymbolDef[sym_, opt_:DependenceNum] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
-                          {sym, {___, DependenceNum -> definition_, ___}} :> definition];
+                          {sym, {___, opt -> definition_, ___}} :> definition];
            If[Head[symDef] =!= List || symDef === {},
               Print["Error: Could not find definition of ",
                     sym, " in SARAH`ParameterDefinitions"];
@@ -166,10 +182,13 @@ FindSymbolDef[sym_] :=
 
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
-    Module[{symbols, compactExpr, allParameters},
-           allParameters = Join[allModelParameters, allOutputParameters,
-                                allInputParameters, Phases`GetArg /@ allPhases,
-                                GetDependenceNumSymbols[]];
+    Module[{symbols, compactExpr, allParameters, allOutPars},
+           allOutPars = DeleteDuplicates[Join[allOutputParameters,
+                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
+           allParameters = DeleteDuplicates[
+               Join[allModelParameters, allOutPars,
+                    allInputParameters, Phases`GetArg /@ allPhases,
+                    GetDependenceSPhenoSymbols[]]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -188,8 +207,8 @@ FindAllParameters[expr_] :=
            symbols = Join[symbols,
                { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
                  Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutPars,FlexibleSUSY`M[a]], {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutPars,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                }];
            DeleteDuplicates[Flatten[symbols]]
           ];
@@ -208,6 +227,12 @@ IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
 
 IsSymmetricMatrixParameter[sym_] :=
     IsMatrix[sym] && MemberQ[SARAH`ListSoftBreakingScalarMasses, sym];
+
+IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
+    IsTensor[sym];
+
+IsTensor[sym_] :=
+    Length[SARAH`getDimParameters[sym]] > 2;
 
 AllModelParametersAreReal[] := MemberQ[SARAH`RealParameters, All];
 
@@ -230,6 +255,7 @@ IsPhase[parameter_] := MemberQ[Phases`GetArg /@ allPhases, Phases`GetArg[paramet
 IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
 IsModelParameter[Re[parameter_]] := IsModelParameter[parameter];
 IsModelParameter[Im[parameter_]] := IsModelParameter[parameter];
+IsModelParameter[FlexibleSUSY`Temporary[parameter_]] := IsModelParameter[parameter];
 
 IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
@@ -358,6 +384,18 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
+GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+    If[IsRealParameter[sym],
+       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3],
+       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3]
+      ];
+
+GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
+    If[IsRealParameter[sym],
+       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4],
+       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3, num4]
+      ];
+
 GetRealTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
 
@@ -372,6 +410,12 @@ GetRealTypeFromDimension[{num_?NumberQ}] :=
 
 GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
     CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
+
+GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3];
+
+GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
+    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
@@ -402,6 +446,16 @@ CreateIndexReplacementRule[{parameter_, CConversion`VectorType[_,_] | CConversio
 CreateIndexReplacementRule[{parameter_, CConversion`MatrixType[_,_,_]}] :=
     Module[{i,j},
            RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]]
+          ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_]}] :=
+    Module[{i,j,k},
+           RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]]
+          ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_,_]}] :=
+    Module[{i,j,k,l},
+           RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]]
           ];
 
 CreateIndexReplacementRule[parameter_] :=
@@ -443,30 +497,30 @@ ApplyGUTNormalization[] :=
            Return[rules];
           ];
 
-CreateSetAssignment[name_, startIndex_, parameterType_] :=
+CreateSetAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
           Print["Error: CreateSetAssignment: unknown parameter type: ", ToString[parameterType]];
           Quit[1];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"pars"] :=
     Module[{ass = ""},
-           ass = name <> " = pars(" <> ToString[startIndex] <> ");\n";
+           ass = name <> " = " <> struct <> "(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"pars"] :=
     Module[{ass = "", type},
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
-           ass = name <> " = " <> type <> "(pars(" <> ToString[startIndex] <>
-                 "), pars(" <> ToString[startIndex + 1] <> "));\n";
+           ass = name <> " = " <> type <> "(" <> struct <> "(" <> ToString[startIndex] <>
+                 "), " <> struct <> "(" <> ToString[startIndex + 1] <> "));\n";
            Return[{ass, 2}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+CreateSetAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"pars"] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
-               ass = ass <> name <> "(" <> ToString[i] <> ") = pars(" <>
+               ass = ass <> name <> "(" <> ToString[i] <> ") = " <> struct <> "(" <>
                      ToString[startIndex + count] <> ");\n";
               ];
            If[rows != count,
@@ -475,14 +529,14 @@ CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realS
            Return[{ass, rows}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
+CreateSetAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"pars"] :=
     Module[{ass = "", i, count = 0, type},
            type = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]];
            For[i = 0, i < rows, i++; count+=2,
                ass = ass <> name <> "(" <> ToString[i] <> ") = " <>
-                     type <> "(" <>
-                     "pars(" <> ToString[startIndex + count    ] <> "), " <>
-                     "pars(" <> ToString[startIndex + count + 1] <> "));\n";
+                     type <> "(" <> struct <>
+                     "(" <> ToString[startIndex + count    ] <> "), " <> struct <>
+                     "(" <> ToString[startIndex + count + 1] <> "));\n";
               ];
            If[2 * rows != count,
               Print["Error: CreateSetAssignment: something is wrong with the indices: "
@@ -490,12 +544,12 @@ CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`compl
            Return[{ass, count}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"pars"] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
                    ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> ") = pars(" <> ToString[startIndex + count] <> ");\n";
+                         <> ") = " <> struct <> "(" <> ToString[startIndex + count] <> ");\n";
                   ];
               ];
            If[rows * cols != count,
@@ -504,48 +558,84 @@ CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realS
            Return[{ass, count}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"pars"] :=
     Module[{ass = "", i, j, count = 0, type},
            type = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]];
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count+=2,
                    ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j] <>
-                         ") = " <> type <> "(" <>
-                         "pars(" <> ToString[startIndex + count    ] <> "), " <>
-                         "pars(" <> ToString[startIndex + count + 1] <> "));\n";
+                         ") = " <> type <> "(" <> struct <>
+                         "(" <> ToString[startIndex + count    ] <> "), " <> struct <>
+                         "(" <> ToString[startIndex + count + 1] <> "));\n";
                   ];
               ];
            If[2 * rows * cols != count,
               Print["Error: CreateSetAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
+                    <> ToString[2 rows * cols] <> " != " <> ToString[count]];];
            Return[{ass, count}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
+CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j] <>
+                             "," <> ToString[k] <>
+                             ") = pars(" <> ToString[startIndex + count] <> ");\n";
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateSetAssignment: something is wrong with the indices: "
+                    <> ToString[dim1 dim2 dim3] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0, type},
+           type = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]];
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <>
+                             ToString[k] <> ") = " <> type <> "(" <>
+                             "pars(" <> ToString[startIndex + count    ] <> "), " <>
+                             "pars(" <> ToString[startIndex + count + 1] <> "));\n";
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateSetAssignment: something is wrong with the indices: "
+                    <> ToString[2 dim1 dim2 dim3] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateDisplayAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
           Print["Error: CreateDisplayAssignment: unknown parameter type: ",
                 ToString[parameterType]];
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"pars"] :=
     Module[{ass = ""},
-           ass = "pars(" <> ToString[startIndex] <> ") = "
+           ass = struct <> "(" <> ToString[startIndex] <> ") = "
                  <> name <> ";\n";
            Return[{ass, 1}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"pars"] :=
     Module[{ass = ""},
-           ass = "pars(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
-                 "pars(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
+           ass = struct <> "(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
+                 struct <> "(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
            Return[{ass, 2}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"pars"] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
-               ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
+               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
                      <> name <> "(" <> ToString[i] <> ");\n";
               ];
            If[rows != count,
@@ -554,12 +644,12 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`r
            Return[{ass, rows}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
+CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"pars"] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count+=2,
-               ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
+               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
                      <> name <> "(" <> ToString[i] <> "));\n";
-               ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
+               ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
                      <> name <> "(" <> ToString[i] <> "));\n";
               ];
            If[2 * rows != count,
@@ -568,11 +658,11 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`c
            Return[{ass, count}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"pars"] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
-                   ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
+                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
                           <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                           <> ");\n";
                   ];
@@ -583,20 +673,137 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`r
            Return[{ass, count}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"pars"] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count+=2,
-                   ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
+                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                          <> "));\n";
-                   ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
+                   ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                          <> "));\n";
                   ];
               ];
            If[2 * rows * cols != count,
               Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[2 rows * cols] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
+                              <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                              <> ");\n";
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
+                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                             <> "));\n";
+                       ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
+                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
+                             <> "));\n";
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[2 dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, parameterType_, struct_:"names"] :=
+    Block[{},
+          Print["Error: CreateStdVectorNamesAssignment: unknown parameter type: ",
+                ToString[parameterType]];
+          Quit[1];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"names"] :=
+    Module[{ass = ""},
+           ass = struct <> "[" <> ToString[startIndex] <> "] = \""
+                 <> name <> "\";\n";
+           Return[{ass, 1}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"names"] :=
+    Module[{ass = ""},
+           ass = struct <> "[" <> ToString[startIndex] <> "] = \"Re(" <> name <> ")\";\n" <>
+                 struct <> "[" <> ToString[startIndex + 1] <> "] = \"Im(" <> name <> ")\";\n";
+           Return[{ass, 2}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"names"] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count++,
+               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
+                     <> name <> "(" <> ToString[i] <> ")\";\n";
+              ];
+           If[rows != count,
+              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];];
+           Return[{ass, rows}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"names"] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count+=2,
+               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
+                     <> name <> "(" <> ToString[i] <> "))\";\n";
+               ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
+                     <> name <> "(" <> ToString[i] <> "))\";\n";
+              ];
+           If[2 * rows != count,
+              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"names"] :=
+    Module[{ass = "", i, j, count = 0},
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
+                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
+                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
+                          <> ")\";\n";
+                  ];
+              ];
+           If[rows * cols != count,
+              Print["Error: CreateStdVectorAssignment: something is wrong with the indices: "
+                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
+           Return[{ass, count}];
+          ];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"names"] :=
+    Module[{ass = "", i, j, count = 0},
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count+=2,
+                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
+                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
+                         <> "))\";\n";
+                   ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
+                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
+                         <> "))\";\n";
+                  ];
+              ];
+           If[2 * rows * cols != count,
+              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
                     <> ToString[rows * cols] <> " != " <> ToString[count]];];
            Return[{ass, count}];
           ];
@@ -679,6 +886,44 @@ CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`complexScalarC
            Return[ass];
           ];
 
+CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> ")\"";
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\", ";
+                       ass = ass <> "\"Im(" <> CConversion`ToValidCSymbolString[name] <>
+                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\"";
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
 CreateParameterEnums[name_, parameterType_] :=
     Block[{},
           Print["Error: CreateParameterEnums: unknown parameter type: ",
@@ -725,7 +970,7 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, 
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[name[i,j]];
+                   ass = ass <> CConversion`ToValidCSymbolString[name] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[rows * cols != count,
@@ -740,13 +985,49 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count+=2,
                    If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[Re[name[i,j]]] <> ", "
-                             <> CConversion`ToValidCSymbolString[Im[name[i,j]]];
+                   ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> ", "
+                             <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j];
                   ];
               ];
            If[2 * rows * cols != count,
               Print["Error: CreateParameterEnums: something is wrong with the indices: "
                     <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterEnums[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count++,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> CConversion`ToValidCSymbolString[name] <>
+                             ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
+                      ];
+                  ];
+              ];
+           If[dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterEnums[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    Module[{ass = "", i, j, k, count = 0},
+           For[i = 0, i < dim1, i++,
+               For[j = 0, j < dim2, j++,
+                   For[k = 0, k < dim3, k++; count+=2,
+                       If[ass != "", ass = ass <> ", ";];
+                       ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k] <> ", "
+                                 <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
+                      ];
+                  ];
+              ];
+           If[2 * dim1 * dim2 * dim3 != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
              ];
            Return[ass];
           ];
@@ -908,7 +1189,9 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses, phases, depNum},
+            poleMasses, phases, depNum, allOutPars},
+           allOutPars = DeleteDuplicates[Join[allOutputParameters,
+                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
@@ -918,9 +1201,9 @@ CreateLocalConstRefs[expr_] :=
            poleMasses = DeleteDuplicates[Flatten[poleMasses]];
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
-           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
@@ -1088,7 +1371,16 @@ GetParticleFromDescription[multipletName_String, splitNames_List] :=
     Module[{result},
            result = GetParticleFromDescription[multipletName];
            If[result =!= Null, Return[{result}]];
-           GetParticleFromDescription /@ splitNames
+           DeleteCases[GetParticleFromDescription /@ splitNames, Null]
+          ];
+
+GetPDGCodesForParticle[particle_] :=
+    Module[{pdgList},
+            pdgList = SARAH`getPDGList[particle];
+            If[pdgList === None,
+               pdgList = {};
+              ];
+           pdgList
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
@@ -1155,6 +1447,12 @@ StripIndices[par_[idx___] /; MemberQ[Join[allModelParameters,allOutputParameters
 
 StripIndices[par_] := par;
 
+StripIndicesRules[indices_List, numberOfIndices_] :=
+    Flatten[{ RuleDelayed[a_[Sequence @@ #], a]& /@ Permutations[indices, {numberOfIndices}] }];
+
+StripSARAHIndicesRules[numberOfIndices_] :=
+    StripIndicesRules[sarahIndices, numberOfIndices];
+
 ExtractParametersFromSARAHBetaLists[beta_List] :=
     StripIndices[#[[1]]]& /@ beta;
 
@@ -1206,14 +1504,49 @@ GetThirdGeneration[par_] :=
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
 
-GetDependenceNumSymbols[] :=
+GetSARAHParameters[] :=
+    (#[[1]])& /@ SARAH`SARAHparameters;
+
+GetAllDependenceSPhenoSymbols[] :=
     DeleteDuplicates @ Flatten @
-    Join[{SARAH`Weinberg},
-         Cases[SARAH`ParameterDefinitions,
-               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
-                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
-        ];
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> parameter];
+
+GetAllDependenceSPhenoRules[] :=
+    Cases[SARAH`ParameterDefinitions,
+          {parameter_, {___, SARAH`DependenceSPheno -> value:Except[None], ___}} :> RuleDelayed[parameter, value]];
+
+GetDependenceSPhenoSymbols[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoSymbols[], MemberQ[sarahPars,#]&]
+          ];
+
+GetDependenceSPhenoRules[] :=
+    Module[{sarahPars = GetSARAHParameters[]},
+           Select[GetAllDependenceSPhenoRules[], MemberQ[sarahPars,#[[1]]]&]
+          ];
+
+GetAllOutputParameterDependencies[expr_] :=
+    Complement[Select[Join[GetSARAHParameters[],
+                           GetDependenceSPhenoSymbols[]],
+                      (!FreeQ[expr,#])&],
+               GetModelParameters[]];
+
+GetAllOutputParameterDependenciesReplaced[expr_] :=
+    DeleteCases[GetAllOutputParameterDependencies[expr /. GetDependenceSPhenoRules[]], _?NumericQ];
+
+GetOutputParameterDependencies[expr_] :=
+    Select[GetOutputParameters[],
+           (!FreeQ[GetAllOutputParameterDependenciesReplaced[expr],#])&];
+
+GetExponent[a_^b_] := -I b;
+GetExponent[a_]    := a;
+
+GetIntermediateOutputParameterDependencies[expr_] :=
+    Complement[
+        GetAllOutputParameterDependenciesReplaced[expr],
+        Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
+    ];
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,

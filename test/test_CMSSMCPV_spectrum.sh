@@ -4,7 +4,7 @@
 
 BASEDIR=$(dirname $0)
 
-cmssmcpv_input="$BASEDIR/../model_files/CMSSMCPV/LesHouches.in.CMSSMCPV.wrong_higgs_state"
+cmssmcpv_input="$BASEDIR/test_CMSSMCPV_wrong_higgs_state.in.spc"
 cmssmcpv_output="$BASEDIR/CMSSMCPV.out.spc"
 cmssm_output="$BASEDIR/CMSSM.out.spc"
 rel_error="0.0000001"

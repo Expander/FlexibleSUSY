@@ -7,6 +7,7 @@ DOC_MK       := \
 DOC_TMPL     := \
 		$(DIR)/mainpage.dox.in \
 		$(DIR)/model_file.dox \
+		$(DIR)/slha_input.dox \
 		$(DIR)/version.tex.in
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)

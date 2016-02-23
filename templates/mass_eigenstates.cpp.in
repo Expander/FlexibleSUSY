@@ -687,7 +687,7 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @runningDRbarMassesFunctions@
 
-@dependenceNumFunctions@
+@dependenceFunctions@
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_mass_eigenstates& model)
 {

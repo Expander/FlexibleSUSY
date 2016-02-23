@@ -24,6 +24,9 @@
 #include "config.h"
 #include "numerics.h"
 
+#include <limits>
+#include <cmath>
+
 #define WARN_IF_ZERO(p,fun)                     \
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
@@ -165,9 +168,23 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
    double rho_new = rho_start, sin_new = sin_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaR
+      double deltaR
          = calculate_delta_r(rho_old, sin_old, data, susy_contributions,
                              number_of_loops);
+
+      if (deltaR > 1.) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_r > 1");
+#endif
+         deltaR = 0.;
+      }
+
+      if (!std::isfinite(deltaR)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_r non-finite");
+#endif
+         deltaR = 0.;
+      }
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
@@ -675,6 +692,14 @@ double Weinberg_angle::calculate_delta_vb_susy(
 double Weinberg_angle::rho_2(double r)
 {
    const double Pi2 = Pi * Pi;
+
+   if (r <= std::numeric_limits<double>::epsilon()) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+      WARNING("rho_2: value of r is invalid: r = " << r);
+      WARNING("-> setting 2-loop corrections ~ xt^2 to 0");
+#endif
+      return 0.;
+   }
 
    if (r <= 1.9) {
       const double r2 = Sqr(r);

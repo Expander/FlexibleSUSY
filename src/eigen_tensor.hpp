@@ -16,33 +16,55 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-/**
- * @file observables.hpp
- * @brief contains class Observables
- */
+#ifndef EIGEN_TENSOR_H
+#define EIGEN_TENSOR_H
 
-#ifndef OBSERVABLES_H
-#define OBSERVABLES_H
-
-#include <string>
-#include <vector>
 #include <Eigen/Core>
+
+#if EIGEN_VERSION_AT_LEAST(3,3,0)
+
+#include <unsupported/Eigen/CXX11/Tensor>
 
 namespace flexiblesusy {
 
-struct Observables {
-   static const unsigned NUMBER_OF_OBSERVABLES = 2;
+template <class Scalar, int N, int M, int K>
+class ZeroTensor3 : public Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K> > {
+public:
+   typedef Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K> > Base;
 
-   Observables();
-   Eigen::ArrayXd get() const; ///< returns vector of all observables
-   static std::vector<std::string> get_names(); ///< returns vector of all observable names
-   void clear(); ///< sets all observables to zero
-   void set(const Eigen::ArrayXd&); ///< sets all observables from given vector
+   using Base::setZero;
 
-   double a_muon_gm2calc; ///< a_muon = (g-2)/2 of the muon (calculated with GM2Calc)
-   double a_muon_gm2calc_uncertainty; ///< uncertainty of (g-2)/2 of the muon (calculated with GM2Calc)
+   ZeroTensor3() : Base() {
+      setZero();
+   }
+};
+
+template <class Scalar, int N, int M, int K, int L>
+class ZeroTensor4 : public Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K,L> > {
+public:
+   typedef Eigen::TensorFixedSize<Scalar, Eigen::Sizes<N,M,K,L> > Base;
+
+   using Base::setZero;
+
+   ZeroTensor4() : Base() {
+      setZero();
+   }
 };
 
 } // namespace flexiblesusy
+
+#else
+
+namespace flexiblesusy {
+
+template <class Scalar, int N, int M, int K>
+class ZeroTensor3;
+
+template <class Scalar, int N, int M, int K, int L>
+class ZeroTensor4;
+
+} // namespace flexiblesusy
+
+#endif
 
 #endif

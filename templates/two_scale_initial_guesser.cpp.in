@@ -30,6 +30,7 @@
 
 namespace flexiblesusy {
 
+#define DERIVEDPARAMETER(p) model->p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -112,9 +113,8 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    // guess gauge couplings at mt
    const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * alpha_sm(1)));
-   model->set_@leftCoupling@(sqrt(4.0 * M_PI * alpha_sm(2)));
-   model->set_@strongCoupling@(sqrt(4.0 * M_PI * alpha_sm(3)));
+@initialGuessAtLowScaleGaugeCouplings@
+
    model->set_scale(mtpole);
 
    // apply user-defined initial guess at the low scale

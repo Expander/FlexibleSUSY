@@ -28,6 +28,10 @@ namespace flexiblesusy {
 
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
+#define TRACE_STRUCT_TYPE Soft_traces
+#define CALCULATE_TRACES() calc_soft_traces(TRACE_STRUCT);
+
+const int @ModelName@_soft_parameters::numberOfParameters;
 
 @ModelName@_soft_parameters::@ModelName@_soft_parameters(const @ModelName@_input_parameters& input_)
    : @ModelName@_susy_parameters(input_)
@@ -53,9 +57,6 @@ Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
 
 @ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
 {
-   Soft_traces soft_traces;
-   calc_soft_traces(soft_traces);
-
 @beta@
 
    const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta());

@@ -16,43 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "observables.hpp"
+#ifndef EFFECTIVE_COUPLINGS_H
+#define EFFECTIVE_COUPLINGS_H
+
+#include <complex>
 
 namespace flexiblesusy {
 
-Observables::Observables()
-   : a_muon_gm2calc(0.)
-   , a_muon_gm2calc_uncertainty(0.)
-{
-}
+namespace effective_couplings {
 
-Eigen::ArrayXd Observables::get() const
-{
-   Eigen::ArrayXd vec(NUMBER_OF_OBSERVABLES);
-   vec(0) = a_muon_gm2calc;
-   vec(1) = a_muon_gm2calc_uncertainty;
-   return vec;
-}
+// loop functions of hep-ph/9504378, Eq. (53)
+std::complex<double> scaling_function(double tau);
+std::complex<double> AS0(double tau);
+std::complex<double> AS12(double tau);
+std::complex<double> AS1(double tau);
+std::complex<double> AP12(double tau);
 
-std::vector<std::string> Observables::get_names()
-{
-   std::vector<std::string> names(Observables::NUMBER_OF_OBSERVABLES);
-   names[0] = "a_muon_gm2calc";
-   names[1] = "a_muon_gm2calc_uncertainty";
-   return names;
-}
-
-void Observables::clear()
-{
-   a_muon_gm2calc = 0.;
-   a_muon_gm2calc_uncertainty = 0.;
-}
-
-void Observables::set(const Eigen::ArrayXd& vec)
-{
-   assert(vec.rows() == NUMBER_OF_OBSERVABLES);
-   a_muon_gm2calc = vec(0);
-   a_muon_gm2calc_uncertainty = vec(1);
-}
+} // namespace effective_couplings
 
 } // namespace flexiblesusy
+
+#endif

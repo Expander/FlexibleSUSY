@@ -1,6 +1,6 @@
 BeginPackage["ThreeLoopSM`", {"SARAH`", "Parameters`"}];
 
-BetaSM::usage = "beta functions of the SM from SUSYHD v1.0";
+BetaSM::usage = "beta functions of the SM from SUSYHD v1.0.2";
 
 Begin["`Private`"];
 

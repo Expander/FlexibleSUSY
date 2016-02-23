@@ -234,10 +234,7 @@ GetSLHAInputParameters[] :=
                        MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
-WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
-    WriteSLHAMatrix[{mixingMatrix, lesHouchesName}, head, ""];
-
-WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
+WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String, setter_String:"set_block"] :=
     Module[{str, strSLHA, lhs, wrapper},
            If[SARAH`getDimParameters[mixingMatrix] === {} ||
               SARAH`getDimParameters[mixingMatrix] === {1},
@@ -270,21 +267,29 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
                         "ToMatrix(" <> wrapper <> ")",
                         wrapper
                        ];
-           "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
+           "slha_io." <> setter <> "(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
            "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
-    Module[{result, mixingMatrices, smMix, susyMix, smMixStr = "", susyMixStr = ""},
+    Module[{result, mixingMatrices, smMix, susyMix, majoranaMix,
+            smMixStr = "", susyMixStr = "", majoranaMixStr = ""},
            mixingMatrices = GetSLHAMixinMatrices[];
            smMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@ SARAH`SMParticles];
            smMix = Select[mixingMatrices, MemberQ[smMix,#[[1]]]&];
+           majoranaMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@
+                                 Select[TreeMasses`GetParticles[], TreeMasses`IsMajoranaFermion]];
+           majoranaMix = Select[mixingMatrices, MemberQ[majoranaMix,#[[1]]]&];
+           majoranaMix = {#[[1]], Symbol["IM" <> ToString[#[[2]]]]}& /@ majoranaMix;
            susyMix = Complement[mixingMatrices, smMix];
-           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ smMix;
-           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ susyMix;
+           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL",""])& /@ smMix;
+           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL",""])& /@ susyMix;
+           (majoranaMixStr = majoranaMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL","","set_block_imag"])& /@ majoranaMix;
            result = susyMixStr <> "\n" <>
                     "if (write_sm_mixing_matrics) {\n" <>
-                    TextFormatting`IndentText[smMixStr] <> "}\n";
+                    TextFormatting`IndentText[smMixStr] <> "}\n\n" <>
+                    "if (print_imaginary_parts_of_majorana_mixings) {\n" <>
+                    TextFormatting`IndentText[majoranaMixStr] <> "}\n";
            Return[result];
           ];
 
@@ -340,17 +345,90 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
 
 ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
+WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
+    Module[{i, dim, dimWithoutGoldstones, start, particlePDG, vectorPDG,
+            struct, comment, value, result = ""},
+           vectorPDG = Parameters`GetPDGCodesForParticle[vectorBoson][[1]];
+           particlePDG = Parameters`GetPDGCodesForParticle[particle];
+           dim = TreeMasses`GetDimension[particle];
+           dimWithoutGoldstones = TreeMasses`GetDimensionWithoutGoldstones[particle];
+           If[Length[particlePDG] != dim,
+              Print["Warning: length of PDG number list != dimension of particle ", particle];
+              Print["       PDG number list = ", particlePDG];
+              Print["       dimension of particle ", particle, " = ", dim];
+             ];
+           If[Length[particlePDG] < dim,
+              Return[""];
+             ];
+           start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+           Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorP,
+                 struct = "OBSERVABLES.eff_cp_higgs_photon_photon";
+                 comment = "Abs(effective H-Photon-Photon coupling)";,
+                 particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
+                 struct = "OBSERVABLES.eff_cp_higgs_gluon_gluon";
+                 comment = "Abs(effective H-Gluon-Gluon coupling)";,
+                 particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
+                 struct = "OBSERVABLES.eff_cp_pseudoscalar_photon_photon";
+                 comment = "Abs(effective A-Photon-Photon coupling)";,
+                 particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
+                 struct = "OBSERVABLES.eff_cp_pseudoscalar_gluon_gluon";
+                 comment = "Abs(effective A-Gluon-Gluon coupling)";,
+                 True,
+                 Print["Error: unsupported effective coupling ",
+                       particle, "-", vectorBoson, "-", vectorBoson,
+                       "requested!"];
+                 Quit[1]
+                ];
+           If[dimWithoutGoldstones == 1 || start == dim,
+              value = "Abs(" <> struct <> ")";
+              result = result
+                        <> WriteSLHABlockEntry[{value, particlePDG[[start]], vectorPDG, vectorPDG},
+                                                comment];,
+              For[i = start, i <= Length[particlePDG], i++,
+                  value = "Abs(" <> struct <> "(" <> ToString[i-start] <> "))";
+                  result = result
+                           <> WriteSLHABlockEntry[{value, particlePDG[[i]], vectorPDG, vectorPDG},
+                                                  comment];
+                 ];
+             ];
+           result
+          ];
+
 WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], idx___}, comment_String:""] :=
-    Module[{parStr, commentStr},
-           {parStr, commentStr} = Switch[par,
-                                         FlexibleSUSYObservable`aMuonGM2Calc,
-                                             {"OBSERVABLES.a_muon_gm2calc", "Delta(g-2)_muon/2 GM2Calc"},
-                                         FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                                             {"OBSERVABLES.a_muon_gm2calc_uncertainty", "Delta(g-2)_muon/2 GM2Calc uncertainty"},
-                                         _,
-                                             {"", ""}
-                                        ];
-           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+    Module[{i, dim, scalarPDG, vectorPDG, result = ""},
+           Switch[par,
+                  FlexibleSUSYObservable`aMuonGM2Calc,
+                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc", idx}, "Delta(g-2)_muon/2 GM2Calc"],
+                  FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
+                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc_uncertainty", idx}, "Delta(g-2)_muon/2 GM2Calc uncertainty"],
+                  FlexibleSUSYObservable`CpHiggsPhotonPhoton,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorP],
+                  FlexibleSUSYObservable`CpHiggsGluonGluon,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorG],
+                  FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorP],
+                  FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
+                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorG],
+                  _,
+                     result = WriteSLHABlockEntry[{"", idx}, ""]
+                 ];
+           result
+          ];
+
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, idx1Str, idx2Str, idx3Str, commentStr},
+           parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
+           parVal = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           idx1Str = ToString[idx1];
+           idx2Str = ToString[idx2];
+           idx3Str = ToString[idx3];
+           commentStr = If[comment == "", parStr, comment];
+           (* result *)
+           "      << FORMAT_RANK_THREE_TENSOR(" <> idx1Str <> ", " <> idx2Str <> ", "
+           <> idx3Str <> ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
@@ -437,14 +515,32 @@ WriteSLHAModelParametersBlocks[] :=
            Return[result];
           ];
 
+GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`NoScale] := "";
+
+GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`CurrentScale] := "model.get_scale()";
+
+GetExtraSLHAOutputBlockScale[scale_?NumericQ] := ToString[scale];
+
+GetExtraSLHAOutputBlockScale[scale_] :=
+    Module[{result},
+           scaleStr = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[Parameters`DecreaseIndexLiterals[scale],
+                                           Join[Parameters`GetModelParameters[],
+                                                Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           StringReplace[scaleStr, "CurrentScale" -> "model.get_scale()"]
+          ];
+
 WriteExtraSLHAOutputBlock[outputBlocks_List] :=
     Module[{result = "", reformed},
-           ReformeBlocks[{block_, tuples_List}] := {block, ReformeBlocks /@ tuples};
+           ReformeBlocks[{block_, tuples_List}] := {{block, ReformeBlocks /@ tuples}, "model.get_scale()"};
+           ReformeBlocks[{block_, scale_, tuples_List}] := {{block, ReformeBlocks /@ tuples},
+                                                            GetExtraSLHAOutputBlockScale[scale]};
            ReformeBlocks[{expr_}]               := {expr};
            ReformeBlocks[{idx_, expr_}]         := {expr, idx};
            ReformeBlocks[{idx1_, idx2_, expr_}] := {expr, idx1, idx2};
            reformed = ReformeBlocks /@ outputBlocks;
-           (result = result <> WriteSLHABlock[#])& /@ reformed;
+           (result = result <> WriteSLHABlock[#[[1]], #[[2]]])& /@ reformed;
            Return[result];
           ];
 
@@ -485,9 +581,8 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            Return[result];
           ];
 
-ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
-    Module[{result, blockNameStr, parmStr, pdgStr, gutNorm = ""},
-           blockNameStr = ToString[blockName];
+ReadSLHAOutputBlock[{parameter_, {blockName_String, pdg_?NumberQ}}] :=
+    Module[{result, parmStr, pdgStr, gutNorm = ""},
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
            If[parameter === SARAH`hyperchargeCoupling,
@@ -495,10 +590,20 @@ ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
                   1/Parameters`GetGUTNormalization[parameter]];
              ];
            result = "model.set_" <> parmStr <>
-                    "(slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
+                    "(slha_io.read_entry(\"" <> blockName <> "\", " <>
                     pdgStr <> ")" <> gutNorm <> ");\n";
            Return[result];
           ];
+
+ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+    ReadSLHAOutputBlock[{parameter, {ToString[blockName], pdg}}];
+
+ReadSLHAOutputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
+    Block[{},
+          Print["Warning: SLHA block name is not a symbol: ", blockName];
+          Print["   I'm using: ", CConversion`RValueToCFormString[blockName]];
+          ReadSLHAOutputBlock[{parameter, {CConversion`RValueToCFormString[blockName], pdg}}]
+         ];
 
 ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
@@ -910,7 +1015,9 @@ ConvertSoftSquaredMassesToSLHA[] :=
 CalculateCKMMatrix[] :=
     Module[{result = ""},
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL]
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL] &&
+              SARAH`getDimParameters[SARAH`DownMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3}
               ,
               result = result <> "ckm = " <>
               CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> " * " <>
@@ -920,7 +1027,11 @@ CalculateCKMMatrix[] :=
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL  ] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ]
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ] &&
+              SARAH`getDimParameters[SARAH`DownMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixL] === {3,3} &&
+              SARAH`getDimParameters[SARAH`DownMatrixR] === {3,3} &&
+              SARAH`getDimParameters[SARAH`UpMatrixR] === {3,3}
               ,
               result = result <> "CKM_parameters::to_pdg_convention(ckm, " <>
               CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> ", " <>
@@ -935,6 +1046,7 @@ CalculatePMNSMatrix[] :=
     Module[{result = ""},
            If[MemberQ[Parameters`GetOutputParameters[], SARAH`ElectronMatrixL] &&
               MemberQ[Parameters`GetOutputParameters[], SARAH`NeutrinoMM] &&
+              SARAH`getDimParameters[SARAH`ElectronMatrixL] === {3,3} &&
               SARAH`getDimParameters[SARAH`ElectronMatrixL] === SARAH`getDimParameters[SARAH`NeutrinoMM]
               ,
               result = "pmns = " <>

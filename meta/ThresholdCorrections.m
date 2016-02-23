@@ -240,12 +240,9 @@ SetDRbarYukawaCouplingBottom[settings_] :=
 SetDRbarYukawaCouplingElectron[settings_] :=
     SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
 
-SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
-    Module[{y, f},
-           f = Cases[settings, {yukawa, s_} :> s];
-           If[f === {}, Return[""];];
-           f = f[[1]];
-           If[f === Automatic,
+SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
+    Module[{y, f = setting},
+           If[setting === Automatic,
               {y, f} = InvertMassRelation[fermion, yukawa];
               f = f /. fermion -> mass;
               ,
@@ -253,6 +250,30 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
              ];
            Parameters`CreateLocalConstRefs[f] <>
            Parameters`SetParameter[yukawa, f, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplingFermionElement[{y_, expr_}] :=
+    Parameters`SetParameter[y, expr, "MODEL"];
+
+SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
+    Module[{f, p, i, result = ""},
+           (* check for matrix setting *)
+           f = Cases[settings, {yukawa, s_} :> s];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionMatrix[fermion, yukawa, mass, f[[i]]];
+                 ];
+              Return[result];
+             ];
+           (* check for matrix element setting *)
+           f = Cases[settings, p:{yukawa[__], s_} :> p];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionElement[f[[i]]];
+                 ];
+              Return[Parameters`CreateLocalConstRefs[(#[[2]])& /@ f] <> result];
+             ];
+           ""
           ];
 
 MultiplyBy[factor_ /; factor == 1] := "";
@@ -516,7 +537,16 @@ CalculateThetaWFromMW[] :=
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
+           (* read weinberg angle from DependenceNum *)
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           If[weinbergAngle === None || weinbergAngle === Null,
+              (* read weinberg angle from FSWeakMixingAngleExpr *)
+              weinbergAngle = Utils`FSGetOption[FlexibleSUSY`FSWeakMixingAngleOptions, FlexibleSUSY`FSWeakMixingAngleExpr] /. subst;
+              If[weinbergAngle === None || weinbergAngle === Null,
+                 Print["Warning: No expression for the Weinberg angle defined, setting it to 0."];
+                 weinbergAngle = 0;
+                ];
+             ];
            result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
                     "THETAW = " <>
                     CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
@@ -570,12 +600,9 @@ CalculateGaugeCouplings[] :=
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
                     / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
            result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 

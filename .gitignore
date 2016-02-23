@@ -54,9 +54,24 @@ models/fmssmn/fmssmn_lattice_numerical_constraints_dependence.cpp
 models/fmssmn/fmssmn_lattice_numerical_constraints_functions.f
 models/fmssmn/fmssmn_lattice_rge.f
 models/fmssmn/fmssmn_lattice_translator.inc
+models/*/LesHouches.out.*
+models/**/
+!models/sm/
+!models/smcw/
+!models/SoftsusyMSSM/
+!models/SoftsusyNMSSM/
+
+model_files/*/LesHouches.out.*
 
 Output/
 
+release/*.tar.gz
+release/*.tar.gz.md5
+release/*.*.*
+
+test/*.db
 test/*.log
+test/*.out
 test/*.spc
 test/*.spc.*
+test/LesHouches.out.*

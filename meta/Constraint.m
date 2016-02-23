@@ -1,10 +1,12 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`", "Utils`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
+InitialGuessAtLowScaleGaugeCouplings::usage="";
+IsFixed::usage="returns true if given parameter is fixed in given constraint";
 
 FindFixedParametersFromConstraint::usage="Returns a list of all
 parameters which are fixed by the given constraint";
@@ -20,6 +22,10 @@ RestrictScale::usage="";
 CheckPerturbativityForParameters::usage="";
 
 GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
+
+SetTemporarily::usage="set temporary variables";
+
+ResetTemporarily::usage="set temporary variables";
 
 Begin["`Private`"];
 
@@ -39,17 +45,17 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           ""
          ];
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
                  value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`DownYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
                  value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
                  value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
@@ -175,11 +181,21 @@ ApplyConstraint[p_, _] :=
          ];
 
 ApplyConstraints[settings_List] :=
-    Module[{result, noMacros},
-           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__] | FlexibleSUSY`FSSolveEWSBFor[__]];
+    Module[{result, noMacros, noTemp},
+           noMacros = DeleteCases[
+               settings,
+               FlexibleSUSY`FSMinimize[__] | \
+               FlexibleSUSY`FSFindRoot[__] | \
+               FlexibleSUSY`FSSolveEWSBFor[__] | \
+               {FlexibleSUSY`Temporary[_], _}
+           ];
+           noTemp = DeleteCases[
+               settings,
+               {FlexibleSUSY`Temporary[_], _}
+           ];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> "\n";
-           (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
+           (result = result <> ApplyConstraint[#, "MODEL"])& /@ noTemp;
            Return[result];
           ];
 
@@ -324,7 +340,7 @@ SanityCheck[settings_List, constraintName_String:""] :=
            setParameters = #[[1]]& /@ settings;
            (* check for unset Yukawa couplings *)
            For[y = 1, y <= Length[yukawas], y++,
-               If[ValueQ[yukawas[[y]]] &&
+               If[(ValueQ /@ yukawas)[[y]] &&
                   FreeQ[setParameters, yukawas[[y]]],
                   Print["Warning: Yukawa coupling ", yukawas[[y]],
                         " not set",
@@ -350,13 +366,6 @@ GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], qedqcd_Strin
 
 CalculateScale[s:FlexibleSUSY`LowEnergyConstant[_], scaleName_String] :=
     scaleName <> " = " <> GetSMMatchingScale[s, "qedqcd"] <> ";\n";
-
-(* Don't expand LowEnergyConstant[MZ] to the hard-coded value
-   LowEnergyConstant(MZ), because the pole MZ is an input parameter
-   and the user might want to vary it.
- *)
-CalculateScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], scaleName_String] :=
-    scaleName <> " = MZPole;";
 
 CalculateScale[expr_, scaleName_String] :=
     Module[{result},
@@ -469,6 +478,44 @@ InitializeInputParameters[defaultValues_List] :=
            Return[result];
           ];
 
+InitialGuessAtLowScaleGaugeCouplings[] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling],
+              result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`leftCoupling],
+              result = result <> Parameters`SetParameter[SARAH`leftCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`strongCoupling],
+              result = result <> Parameters`SetParameter[SARAH`strongCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL"];
+             ];
+           result
+          ];
+
+IsFixedIn[par_, {p_, _}] :=
+    Parameters`StripIndices[par] === Parameters`StripIndices[p];
+
+IsFixedIn[par_, FlexibleSUSY`FSMinimize[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSFindRoot[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSSolveEWSBFor[parameters___]] :=
+    MemberQ[Parameters`StripIndices /@ Flatten[{parameters}], Parameters`StripIndices[par]];
+
+IsFixedIn[par_, p___] :=
+    Block[{},
+          Print["Error: This is not a valid constraint setting: ", p];
+          Quit[1];
+         ];
+
+IsFixed[par_, constraint_List] :=
+    Or @@ (IsFixedIn[par, #]& /@ constraint);
+
 RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
     Module[{result = "", value},
            If[NumericQ[minimumScale],
@@ -516,6 +563,41 @@ if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
 CheckPerturbativityForParameters[pars_List, thresh_] :=
     Parameters`CreateLocalConstRefs[pars] <> "\n" <>
     StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
+
+SaveValue[par_[idx__], prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par],
+            parStrIdx = CConversion`ToValidCSymbolString[par[idx]]},
+           "const auto " <> prefix <> parStrIdx <> " = MODELPARAMETER(" <> parStr <> ")" <>
+           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");"
+          ];
+
+SaveValue[par_, prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <> parStr <> ");"
+          ];
+
+RestoreValue[par_, prefix_String] :=
+    Parameters`SetParameter[
+        par,
+        prefix <> CConversion`ToValidCSymbolString[par],
+        "MODEL"];
+
+SetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
+            set, savedVals},
+           If[tempSettings === {}, Return[""];];
+           set = ApplyConstraints[tempSettings];
+           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]], "old_"]& /@ tempSettings, "\n"];
+           "// temporary parameter re-definitons\n" <>
+           savedVals <> "\n{\n" <> IndentText[set] <> "}"
+          ];
+
+ResetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}]},
+           If[tempSettings === {}, Return[""];];
+           "// reset temporary parameter re-definitons\n" <>
+           StringJoin[RestoreValue[#[[1]], "old_"]& /@ tempSettings]
+          ];
 
 End[];
 

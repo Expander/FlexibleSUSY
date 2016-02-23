@@ -188,13 +188,13 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           TreeMasses`CallDiagonalizeHermitianFunction[
-                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")"];
                 ];
               result = result <>
@@ -273,13 +273,13 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           TreeMasses`CallDiagonalizeSymmetricFunction[
-                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")"];
                 ];
               ,
@@ -360,7 +360,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Vtemp = "mix_" <> V;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ", " <> Vtemp <> ";\n" <>
                             TreeMasses`CallSVDFunction[
-                                particleName, "M_1loop", "eigen_values",
+                                particle, "M_1loop", "eigen_values",
                                 Utemp, Vtemp] <> "\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n" <>
                             "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ") {\n" <>
@@ -372,7 +372,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ";\n" <>
                             TreeMasses`CallDiagonalizeHermitianFunction[
-                                particleName, "M_1loop", "eigen_values",
+                                particle, "M_1loop", "eigen_values",
                                 Utemp] <> "\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n";
               If[mixingMatrix =!= Null,
@@ -560,7 +560,7 @@ if (add_2loop_corrections) {
                                      "decltype(" <> V <> ") mix_" <> V <> ";\n"];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particleName, "M_1loop", "eigen_values",
+                              particle, "M_1loop", "eigen_values",
                               "mix_" <> U, "mix_" <> V];
                  result = result <>
                           IndentText["if (es == 0) {\n" <>
@@ -574,7 +574,7 @@ if (add_2loop_corrections) {
                     result = result <>
                              IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
                                         TreeMasses`CallDiagonalizeSymmetricFunction[
-                                            particleName, "M_1loop", "eigen_values",
+                                            particle, "M_1loop", "eigen_values",
                                             "mix_" <> U] <>
                                         "if (es == 0)\n" <>
                                         IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
@@ -584,7 +584,7 @@ if (add_2loop_corrections) {
                     result = result <>
                              IndentText[mixingMatrixType <> " mix_" <> U <> ";\n" <>
                                         TreeMasses`CallDiagonalizeSymmetricFunction[
-                                            particleName, "M_1loop", "eigen_values",
+                                            particle, "M_1loop", "eigen_values",
                                             "mix_" <> U]];
                    ];
                 ];

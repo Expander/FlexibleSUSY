@@ -7,6 +7,7 @@ META_SRC     := \
 		$(DIR)/CConversion.m \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
+		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopMasses.m \

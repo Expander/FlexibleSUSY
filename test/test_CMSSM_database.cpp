@@ -7,7 +7,8 @@
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_utilities.hpp"
 #include "ew_input.hpp"
-#include "observables.hpp"
+#include "CMSSM_observables.hpp"
+#include "physical_input.hpp"
 #include "test.h"
 #include "lowe.h"
 
@@ -177,9 +178,15 @@ void test_input_parameter_equality(const T& a, const P& b)
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
-   Observables obs1, obs2;
-   obs1.a_muon_gm2calc = 1e-9;
-   obs1.a_muon_gm2calc_uncertainty = 1e-10;
+   CMSSM_observables obs1, obs2;
+   obs1.eff_cp_higgs_photon_photon(0)     = std::complex<double>(1.,7.);
+   obs1.eff_cp_higgs_photon_photon(1)     = std::complex<double>(2.,8.);
+   obs1.eff_cp_higgs_gluon_gluon(0)       = std::complex<double>(3.,9.);
+   obs1.eff_cp_higgs_gluon_gluon(1)       = std::complex<double>(4.,10.);
+   obs1.eff_cp_pseudoscalar_photon_photon = std::complex<double>(5.,11.);
+   obs1.eff_cp_pseudoscalar_gluon_gluon   = std::complex<double>(6.,12.);
+   Physical_input physical_input1, physical_input2;
+   physical_input1.set(Physical_input::alpha_em_0, 0.1);
    softsusy::QedQcd qedqcd1, qedqcd2;
    qedqcd1.setAlpha(softsusy::ALPHA, 1./127.);
    qedqcd1.toMz();
@@ -196,9 +203,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const std::string db_file("test/test_CMSSM_database.db");
 
-   CMSSM_database::to_database(db_file, model, &qedqcd1, &obs1);
+   CMSSM_database::to_database(db_file, model, &qedqcd1, &physical_input1, &obs1);
 
-   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &obs2));
+   const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &physical_input2, &obs2));
 
    gErrors = 0;
    test_parameter_equality(model, tmp);
@@ -206,5 +213,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
    test_input_parameter_equality(model.get_input(), tmp.get_input());
    BOOST_REQUIRE(gErrors == 0);
    BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).cwiseAbs().maxCoeff() < 1e-10);
+   BOOST_REQUIRE((physical_input1.get() - physical_input2.get()).cwiseAbs().maxCoeff() < 1e-10);
    BOOST_REQUIRE((obs1.get() - obs2.get()).cwiseAbs().maxCoeff() < 1e-10);
 }
