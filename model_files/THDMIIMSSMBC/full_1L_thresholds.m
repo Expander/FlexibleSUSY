@@ -7,340 +7,332 @@ lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
 gtilde /: gtilde^2 = (g2^2 + gY^2);
 
-(* Eq. (122) *)
-as[1] = as[2] = as[3] = -3/4; 
-as[4] = as[5] = as[6] = as[7] = 0;
-asp[1] = asp[2] = asp[3] = -1/2;
-asp[4] = 1;
-asp[5] = asp[6] = asp[7] = 0;
-aspp[1] = aspp[2] = aspp[3] = -1/4;
-aspp[4] = aspp[5] = aspp[6] = aspp[7] = 0;
+coefficients = {
+    (* Eq. (122) *)
+    as[1] -> -3/4,
+    as[2] -> -3/4,
+    as[3] -> -3/4,
+    as[4] -> 0,
+    as[5] -> 0,
+    as[6] -> 0,
+    as[7] -> 0,
+    asp[1] -> -1/2,
+    asp[2] -> -1/2,
+    asp[3] -> -1/2,
+    asp[4] -> 1,
+    asp[5] -> 0,
+    asp[6] -> 0,
+    asp[7] -> 0,
+    aspp[1] -> -1/4,
+    aspp[2] -> -1/4,
+    aspp[3] -> -1/4,
+    aspp[4] -> 0,
+    aspp[5] -> 0,
+    aspp[6] -> 0,
+    aspp[7] -> 0,
 
-(* Table 4 *)
-a2[1] = a2[2] = Abs[M2]^2/2;
-a2[3] = 3 Abs[Mu]^2 + 5 Abs[M2]^2/2;
-a2[4] = -3 Abs[Mu]^2 - 2 Abs[M2]^2;
-a2[6] = a2[7] = 3 Mu M2;
+    (* Table 4 *)
+    a2[1] -> Abs[M2]^2/2,
+    a2[2] -> Abs[M2]^2/2,
+    a2[3] -> 3 Abs[Mu]^2 + 5 Abs[M2]^2/2,
+    a2[4] -> -3 Abs[Mu]^2 - 2 Abs[M2]^2,
+    a2[6] -> 3 Mu M2,
+    a2[7] -> 3 Mu M2,
 
-a4[1] = a4[2] = 5/2;
-a4[3] = 1/2;
-a4[4] = 2;
-a4[6] = a4[7] = 0;
+    a4[1] -> 5/2,
+    a4[2] -> 5/2,
+    a4[3] -> 1/2,
+    a4[4] -> 2,
+    a4[6] -> a4[7] -> 0,
 
-a2p[1] = a2p[2] = (M1 Conjugate[M2] + Conjugate[M1] M2)/2;
-a2p[3] = 2 Abs[Mu]^2 + (M1 Conjugate[M2] + Conjugate[M1] M2)/2;
-a2p[4] = 2 Abs[Mu]^2 - M1 Conjugate[M2] - Conjugate[M1] M2;
-a2p[6] = a2p[7] = Mu (M1 + M2);
+    a2p[1] -> (M1 Conjugate[M2] + Conjugate[M1] M2)/2,
+    a2p[2] -> (M1 Conjugate[M2] + Conjugate[M1] M2)/2,
+    a2p[3] -> 2 Abs[Mu]^2 + (M1 Conjugate[M2] + Conjugate[M1] M2)/2,
+    a2p[4] -> 2 Abs[Mu]^2 - M1 Conjugate[M2] - Conjugate[M1] M2,
+    a2p[6] -> Mu (M1 + M2),
+    a2p[7] -> Mu (M1 + M2),
 
-a4p[1] = a4p[2] = a4p[3] = 1;
-a4p[4] = -2;
-a4p[6] = a4p[7] = 0;
+    a4p[1] -> 1,
+    a4p[2] -> 1,
+    a4p[3] -> 1,
+    a4p[4] -> -2,
+    a4p[6] -> 0,
+    a4p[7] -> 0,
 
-a2pp[1] = a2pp[2] = Abs[M1]^2/2;
-a2pp[3] = Abs[Mu]^2 + Abs[M1]^2/2;
-a2pp[4] = -Abs[Mu]^2;
-a2pp[6] = a2pp[7] = Mu M1;
+    a2pp[1] -> Abs[M1]^2/2,
+    a2pp[2] -> Abs[M1]^2/2,
+    a2pp[3] -> Abs[Mu]^2 + Abs[M1]^2/2,
+    a2pp[4] -> -Abs[Mu]^2,
+    a2pp[6] -> Mu M1,
+    a2pp[7] -> Mu M1,
 
-a4pp[1] = a4pp[2] = a4pp[3] = 1/2;
-a4pp[4] = a4pp[6] = a4pp[7] = 0;
+    a4pp[1] -> 1/2,
+    a4pp[2] -> 1/2,
+    a4pp[3] -> 1/2,
+    a4pp[4] -> 0,
+    a4pp[6] -> 0,
+    a4pp[7] -> 0,
 
-(* Table 7 *)
-c1p[6] := -gY^2/2;
-c2p[6] := 1;
-c3p[6] := (gY^2 - g2^2)/4;
-c4p[6] := 1;
-c5p[6] := -gY^2/2;
-c6p[6] := 3;
-c7p[6] := (-gY^2 - 3 g2^2)/4;
-c8p[6] := 3;
-c9p[6] := (3 g2^2 - gY^2)/4;
-c10p[6] := 0;
-c11p[6] := gY^2;
-c12p[6] := 0;
+    (* Table 7 *)
+    c1p[6] -> -gY^2/2,
+    c2p[6] -> 1,
+    c3p[6] -> (gY^2 - g2^2)/4,
+    c4p[6] -> 1,
+    c5p[6] -> -gY^2/2,
+    c6p[6] -> 3,
+    c7p[6] -> (-gY^2 - 3 g2^2)/4,
+    c8p[6] -> 3,
+    c9p[6] -> (3 g2^2 - gY^2)/4,
+    c10p[6] -> 0,
+    c11p[6] -> gY^2,
+    c12p[6] -> 0,
 
-c1p[7] := gY^2/2;
-c2p[7] := 0;
-c3p[7] := (-gY^2 + g2^2)/4;
-c4p[7] := 0;
-c5p[7] := gY^2/2;
-c6p[7] := 0;
-c7p[7] := (gY^2 + 3 g2^2)/4;
-c8p[7] := 0;
-c9p[7] := (gY^2 - 3 g2^2)/4;
-c10p[7] := 3;
-c11p[7] := -gY^2;
-c12p[7] := 3;
+    c1p[7] -> gY^2/2,
+    c2p[7] -> 0,
+    c3p[7] -> (-gY^2 + g2^2)/4,
+    c4p[7] -> 0,
+    c5p[7] -> gY^2/2,
+    c6p[7] -> 0,
+    c7p[7] -> (gY^2 + 3 g2^2)/4,
+    c8p[7] -> 0,
+    c9p[7] -> (gY^2 - 3 g2^2)/4,
+    c10p[7] -> 3,
+    c11p[7] -> -gY^2,
+    c12p[7] -> 3,
 
-(* Table 8 and 9 *)
-b1[1] := -gY^2/4;
-b2[1] := gY^2;
-b3[1] := -1;
-b4[1] := (-g2^4 - gY^4)/8;
-b5[1] := (g2^2 - gY^2)/2;
-b6[1] := -1;
-b7[1] := -gY^4/12;
-b8[1] := gY^2;
-b9[1] := -3;
-b10[1] := 0;
-b11[1] := -gY^4/3;
-b12[1] := 0;
-b13[1] := 0;
-b14[1] := (-9 g2^4 - gY^4)/24;
-b15[1] := (3 g2^2 + gY^2)/2;
-b16[1] := 0;
-b17[1] := -3;
-b18[1] := 0;
-b19[1] := 0;
+    (* Table 8 and 9 *)
+    b1[1] -> -gY^2/4,
+    b2[1] -> gY^2,
+    b3[1] -> -1,
+    b4[1] -> (-g2^4 - gY^4)/8,
+    b5[1] -> (g2^2 - gY^2)/2,
+    b6[1] -> -1,
+    b7[1] -> -gY^4/12,
+    b8[1] -> gY^2,
+    b9[1] -> -3,
+    b10[1] -> 0,
+    b11[1] -> -gY^4/3,
+    b12[1] -> 0,
+    b13[1] -> 0,
+    b14[1] -> (-9 g2^4 - gY^4)/24,
+    b15[1] -> (3 g2^2 + gY^2)/2,
+    b16[1] -> 0,
+    b17[1] -> -3,
+    b18[1] -> 0,
+    b19[1] -> 0,
 
-b1[2] := -gY^2/4;
-b2[2] := 0;
-b3[2] := 0;
-b4[2] := (-g2^4 - gY^4)/8;
-b5[2] := 0;
-b6[2] := 0;
-b7[2] := -gY^4/12;
-b8[2] := 0;
-b9[2] := 0;
-b10[2] := 0;
-b11[2] := -gY^4/3;
-b12[2] := 2 gY^2;
-b13[2] := -3;
-b14[2] := (-9 g2^4 - gY^4)/24;
-b15[2] := 0;
-b16[2] := (3 g2^2 - gY^2)/2;
-b17[2] := 0;
-b18[2] := -3;
-b19[2] := 0;
+    b1[2] -> -gY^2/4,
+    b2[2] -> 0,
+    b3[2] -> 0,
+    b4[2] -> (-g2^4 - gY^4)/8,
+    b5[2] -> 0,
+    b6[2] -> 0,
+    b7[2] -> -gY^4/12,
+    b8[2] -> 0,
+    b9[2] -> 0,
+    b10[2] -> 0,
+    b11[2] -> -gY^4/3,
+    b12[2] -> 2 gY^2,
+    b13[2] -> -3,
+    b14[2] -> (-9 g2^4 - gY^4)/24,
+    b15[2] -> 0,
+    b16[2] -> (3 g2^2 - gY^2)/2,
+    b17[2] -> 0,
+    b18[2] -> -3,
+    b19[2] -> 0,
 
-b1[3] := gY^4/4;
-b2[3] := -gY^2/2;
-b3[3] := 0;
-b4[3] := (g2^4 + gY^4)/8;
-b5[3] := (gY^2 - g2^2)/4;
-b6[3] := 0;
-b7[3] := gY^4/12;
-b8[3] := -gY^2/2;
-b9[3] := 0;
-b10[3] := 0;
-b11[3] := gY^4/3;
-b12[3] := -gY^2;
-b13[3] := 0;
-b14[3] := (9 g2^4 + gY^4)/24;
-b15[3] := (-3 g2^2 - gY^2)/4;
-b16[3] := (-3 g2^2 + gY^2)/2;
-b17[3] := 0;
-b18[3] := 0;
-b19[3] := 0;
+    b1[3] -> gY^4/4,
+    b2[3] -> -gY^2/2,
+    b3[3] -> 0,
+    b4[3] -> (g2^4 + gY^4)/8,
+    b5[3] -> (gY^2 - g2^2)/4,
+    b6[3] -> 0,
+    b7[3] -> gY^4/12,
+    b8[3] -> -gY^2/2,
+    b9[3] -> 0,
+    b10[3] -> 0,
+    b11[3] -> gY^4/3,
+    b12[3] -> -gY^2,
+    b13[3] -> 0,
+    b14[3] -> (9 g2^4 + gY^4)/24,
+    b15[3] -> (-3 g2^2 - gY^2)/4,
+    b16[3] -> (-3 g2^2 + gY^2)/2,
+    b17[3] -> 0,
+    b18[3] -> 0,
+    b19[3] -> 0,
 
-b1[4] := 0;
-b2[4] := 0;
-b3[4] := 0;
-b4[4] := -g2^4/4;
-b5[4] := g2^2/2;
-b6[4] := 0;
-b7[4] := 0;
-b8[4] := 0;
-b9[4] := 0;
-b10[4] := -3;
-b11[4] := 0;
-b12[4] := 0;
-b13[4] := 0;
-b14[4] := -3 g2^4/4;
-b15[4] := 3 g2^2/2;
-b16[4] := 3 g2^2/2;
-b17[4] := 0;
-b18[4] := 0;
-b19[4] := -3;
+    b1[4] -> 0,
+    b2[4] -> 0,
+    b3[4] -> 0,
+    b4[4] -> -g2^4/4,
+    b5[4] -> g2^2/2,
+    b6[4] -> 0,
+    b7[4] -> 0,
+    b8[4] -> 0,
+    b9[4] -> 0,
+    b10[4] -> -3,
+    b11[4] -> 0,
+    b12[4] -> 0,
+    b13[4] -> 0,
+    b14[4] -> -3 g2^4/4,
+    b15[4] -> 3 g2^2/2,
+    b16[4] -> 3 g2^2/2,
+    b17[4] -> 0,
+    b18[4] -> 0,
+    b19[4] -> -3,
 
-c1[1] := 0;
-c2[1] := gY^2;
-c3[1] := 0;
-c4[1] := -2;
-c5[1] := 0;
-c6[1] := (g2^2 - gY^2)/2;
-c7[1] := 0;
-c8[1] := -2;
-c9[1] := 0;
-c10[1] := gY^2;
-c11[1] := 0;
-c12[1] := -6;
-c13[1] := 0;
-c14[1] := 0;
-c15[1] := (3 g2^2 + gY^2)/2;
-c16[1] := -6;
-c17[1] := 0;
-c18[1] := 0;
-c19[1] := (gY^2 - 3 g2^2)/2;
-c20[1] := 0;
-c21[1] := 0;
-c22[1] := 0;
-c23[1] := 0;
-c24[1] := -2 gY^2;
-c25[1] := 0;
-c26[1] := 0;
-c27[1] := 0;
+    c1[1] -> 0,
+    c2[1] -> gY^2,
+    c3[1] -> 0,
+    c4[1] -> -2,
+    c5[1] -> 0,
+    c6[1] -> (g2^2 - gY^2)/2,
+    c7[1] -> 0,
+    c8[1] -> -2,
+    c9[1] -> 0,
+    c10[1] -> gY^2,
+    c11[1] -> 0,
+    c12[1] -> -6,
+    c13[1] -> 0,
+    c14[1] -> 0,
+    c15[1] -> (3 g2^2 + gY^2)/2,
+    c16[1] -> -6,
+    c17[1] -> 0,
+    c18[1] -> 0,
+    c19[1] -> (gY^2 - 3 g2^2)/2,
+    c20[1] -> 0,
+    c21[1] -> 0,
+    c22[1] -> 0,
+    c23[1] -> 0,
+    c24[1] -> -2 gY^2,
+    c25[1] -> 0,
+    c26[1] -> 0,
+    c27[1] -> 0,
 
-c1[2] := -gY^2;
-c2[2] := 0;
-c3[2] := 0;
-c4[2] := 0;
-c5[2] := (gY^2 - g2^2)/2;
-c6[2] := 0;
-c7[2] := 0;
-c8[2] := 0;
-c9[2] := -gY^2;
-c10[2] := 0;
-c11[2] := 0;
-c12[2] := 0;
-c13[2] := -(3 g2^2 + gY^2)/2;
-c14[2] := 0;
-c15[2] := 0;
-c16[2] := 0;
-c17[2] := 0;
-c18[2] := 0;
-c19[2] := 0;
-c20[2] := 0;
-c21[2] := (3 g2^2 - gY^2)/2;
-c22[2] := -6;
-c23[2] := 0;
-c24[2] := 0;
-c25[2] := 0;
-c26[2] := 2 gY^2;
-c27[2] := -6;
+    c1[2] -> -gY^2,
+    c2[2] -> 0,
+    c3[2] -> 0,
+    c4[2] -> 0,
+    c5[2] -> (gY^2 - g2^2)/2,
+    c6[2] -> 0,
+    c7[2] -> 0,
+    c8[2] -> 0,
+    c9[2] -> -gY^2,
+    c10[2] -> 0,
+    c11[2] -> 0,
+    c12[2] -> 0,
+    c13[2] -> -(3 g2^2 + gY^2)/2,
+    c14[2] -> 0,
+    c15[2] -> 0,
+    c16[2] -> 0,
+    c17[2] -> 0,
+    c18[2] -> 0,
+    c19[2] -> 0,
+    c20[2] -> 0,
+    c21[2] -> (3 g2^2 - gY^2)/2,
+    c22[2] -> -6,
+    c23[2] -> 0,
+    c24[2] -> 0,
+    c25[2] -> 0,
+    c26[2] -> 2 gY^2,
+    c27[2] -> -6,
 
-c1[3] := gY^2/2;
-c2[3] := -gY^2/2;
-c3[3] := -1;
-c4[3] := 0;
-c5[3] := (-gY^2 + g2^2)/4;
-c6[3] := (gY^2 - g2^2)/4;
-c7[3] := -1;
-c8[3] := 0;
-c9[3] := gY^2/2;
-c10[3] := -gY^2/2;
-c11[3] := -3;
-c12[3] := 0;
-c13[3] := (3 g2^2 + gY^2)/4;
-c14[3] := -3;
-c15[3] := (-3 g2^2 - gY^2)/4;
-c16[3] := 0;
-c17[3] := 0;
-c18[3] := 0;
-c19[3] := (3 g2^2 - gY^2)/4;
-c20[3] := -3;
-c21[3] := (-3 g2^2 + gY^2)/4;
-c22[3] := 0;
-c23[3] := 0;
-c24[3] := gY^2;
-c25[3] := -3;
-c26[3] := -gY^2;
-c27[3] := 0;
+    c1[3] -> gY^2/2,
+    c2[3] -> -gY^2/2,
+    c3[3] -> -1,
+    c4[3] -> 0,
+    c5[3] -> (-gY^2 + g2^2)/4,
+    c6[3] -> (gY^2 - g2^2)/4,
+    c7[3] -> -1,
+    c8[3] -> 0,
+    c9[3] -> gY^2/2,
+    c10[3] -> -gY^2/2,
+    c11[3] -> -3,
+    c12[3] -> 0,
+    c13[3] -> (3 g2^2 + gY^2)/4,
+    c14[3] -> -3,
+    c15[3] -> (-3 g2^2 - gY^2)/4,
+    c16[3] -> 0,
+    c17[3] -> 0,
+    c18[3] -> 0,
+    c19[3] -> (3 g2^2 - gY^2)/4,
+    c20[3] -> -3,
+    c21[3] -> (-3 g2^2 + gY^2)/4,
+    c22[3] -> 0,
+    c23[3] -> 0,
+    c24[3] -> gY^2,
+    c25[3] -> -3,
+    c26[3] -> -gY^2,
+    c27[3] -> 0,
 
-c1[4] := 0;
-c2[4] := 0;
-c3[4] := 0;
-c4[4] := 0;
-c5[4] := -g2^2/2;
-c6[4] := g2^2/2;
-c7[4] := 1;
-c8[4] := 0;
-c9[4] := 0;
-c10[4] := 0;
-c11[4] := 0;
-c12[4] := 0;
-c13[4] := -3 g2^2/2;
-c14[4] := 3;
-c15[4] := 3 g2^2/2;
-c16[4] := 0;
-c17[4] := -3;
-c18[4] := -3;
-c19[4] := -3 g2^2/2;
-c20[4] := 3;
-c21[4] := 3 g2^2/2;
-c22[4] := 0;
-c23[4] := -3;
-c24[4] := 0;
-c25[4] := 0;
-c26[4] := 0;
-c27[4] := 0;
+    c1[4] -> 0,
+    c2[4] -> 0,
+    c3[4] -> 0,
+    c4[4] -> 0,
+    c5[4] -> -g2^2/2,
+    c6[4] -> g2^2/2,
+    c7[4] -> 1,
+    c8[4] -> 0,
+    c9[4] -> 0,
+    c10[4] -> 0,
+    c11[4] -> 0,
+    c12[4] -> 0,
+    c13[4] -> -3 g2^2/2,
+    c14[4] -> 3,
+    c15[4] -> 3 g2^2/2,
+    c16[4] -> 0,
+    c17[4] -> -3,
+    c18[4] -> -3,
+    c19[4] -> -3 g2^2/2,
+    c20[4] -> 3,
+    c21[4] -> 3 g2^2/2,
+    c22[4] -> 0,
+    c23[4] -> -3,
+    c24[4] -> 0,
+    c25[4] -> 0,
+    c26[4] -> 0,
+    c27[4] -> 0,
 
-(* Table 5 *)
-d1[1][i_, j_, k_, 
-   l_] := (-Te[k, i] Te[l, j] Conjugate[Te[k, j]] Conjugate[Te[l, i]]);
-d1[2][i_, j_, k_, 
-   l_] := (-Abs[Mu]^4 Ye[k, j] Ye[l, i] Conjugate[Ye[k, i]] Conjugate[
-     Ye[l, j]]);
-d1[3][i_, j_, k_, 
-   l_] := (-Abs[Mu]^2 Te[l, i] Ye[k, 
-     j] (Conjugate[Te[l, j]] Conjugate[Ye[k, i]] + 
-      Conjugate[Te[k, i]] Conjugate[Ye[l, j]]));
-d1[4][i_, j_, k_, 
-   l_] := (Abs[Mu]^2 Te[l, i] Conjugate[Te[k, i]] Ye[k, j] Conjugate[
-     Ye[l, j]]);
-d1[5][i_, j_, k_, 
-   l_] := (-Mu^2 Te[k, j] Te[l, i] Conjugate[Ye[k, i]] Conjugate[
-     Ye[l, j]]);
-d1[6][i_, j_, k_, 
-   l_] := (Mu Te[k, i] Te[l, j] Conjugate[Te[l, i]] Conjugate[
-     Ye[k, j]]);
-d1[7][i_, j_, k_, 
-   l_] := (Mu Abs[Mu]^2 Te[l, j] Ye[k, i] Conjugate[
-     Ye[k, j]] Conjugate[Ye[l, i]]);
+    (* Table 5 *)
+    d1[1][i_, j_, k_, l_] :> (-Te[k, i] Te[l, j] Conjugate[Te[k, j]] Conjugate[Te[l, i]]),
+    d1[2][i_, j_, k_, l_] :> (-Abs[Mu]^4 Ye[k, j] Ye[l, i] Conjugate[Ye[k, i]] Conjugate[Ye[l, j]]),
+    d1[3][i_, j_, k_, l_] :> (-Abs[Mu]^2 Te[l, i] Ye[k, j] (Conjugate[Te[l, j]] Conjugate[Ye[k, i]] +
+                                                            Conjugate[Te[k, i]] Conjugate[Ye[l, j]])),
+    d1[4][i_, j_, k_, l_] :> (Abs[Mu]^2 Te[l, i] Conjugate[Te[k, i]] Ye[k, j] Conjugate[Ye[l, j]]),
+    d1[5][i_, j_, k_, l_] :> (-Mu^2 Te[k, j] Te[l, i] Conjugate[Ye[k, i]] Conjugate[Ye[l, j]]),
+    d1[6][i_, j_, k_, l_] :> (Mu Te[k, i] Te[l, j] Conjugate[Te[l, i]] Conjugate[Ye[k, j]]),
+    d1[7][i_, j_, k_, l_] :> (Mu Abs[Mu]^2 Te[l, j] Ye[k, i] Conjugate[Ye[k, j]] Conjugate[Ye[l, i]]),
 
-(* Table 6 *)
-d2[1][i_, j_, k_, 
-   l_] := (-3 Td[k, i] Td[l, j] Conjugate[Td[k, j]] Conjugate[
-     Td[l, i]]);
-d2[2][i_, j_, k_, 
-   l_] := (-3 Abs[Mu]^4 Yd[k, j] Yd[l, i] Conjugate[
-     Yd[k, i]] Conjugate[Yd[l, j]]);
-d2[3][i_, j_, k_, 
-   l_] := (-3 Abs[Mu]^2 Td[l, i] Yd[k, 
-     j] (Conjugate[Td[l, j]] Conjugate[Yd[k, i]] + 
-      Conjugate[Td[k, i]] Conjugate[Yd[l, j]]));
-d2[4][i_, j_, k_, 
-   l_] := (3 Abs[Mu]^2 Td[l, i] Conjugate[Td[k, i]] Yd[k, 
-     j] Conjugate[Yd[l, j]]);
-d2[5][i_, j_, k_, 
-   l_] := (-3 Mu^2 Td[k, j] Td[l, i] Conjugate[Yd[k, i]] Conjugate[
-     Yd[l, j]]);
-d2[6][i_, j_, k_, 
-   l_] := (3 Mu Td[k, i] Td[l, j] Conjugate[Td[l, i]] Conjugate[
-     Yd[k, j]]);
-d2[7][i_, j_, k_, 
-   l_] := (3 Mu Abs[Mu]^2 Td[l, j] Yd[k, i] Conjugate[
-     Yd[k, j]] Conjugate[Yd[l, i]]);
+    (* Table 6 *)
+    d2[1][i_, j_, k_, l_] :> (-3 Td[k, i] Td[l, j] Conjugate[Td[k, j]] Conjugate[Td[l, i]]),
+    d2[2][i_, j_, k_, l_] :> (-3 Abs[Mu]^4 Yd[k, j] Yd[l, i] Conjugate[Yd[k, i]] Conjugate[Yd[l, j]]),
+    d2[3][i_, j_, k_, l_] :> (-3 Abs[Mu]^2 Td[l, i] Yd[k, j] (Conjugate[Td[l, j]] Conjugate[Yd[k, i]] +
+                                                              Conjugate[Td[k, i]] Conjugate[Yd[l, j]])),
+    d2[4][i_, j_, k_, l_] :> (3 Abs[Mu]^2 Td[l, i] Conjugate[Td[k, i]] Yd[k, j] Conjugate[Yd[l, j]]),
+    d2[5][i_, j_, k_, l_] :> (-3 Mu^2 Td[k, j] Td[l, i] Conjugate[Yd[k, i]] Conjugate[Yd[l, j]]),
+    d2[6][i_, j_, k_, l_] :> (3 Mu Td[k, i] Td[l, j] Conjugate[Td[l, i]] Conjugate[Yd[k, j]]),
+    d2[7][i_, j_, k_, l_] :> (3 Mu Abs[Mu]^2 Td[l, j] Yd[k, i] Conjugate[Yd[k, j]] Conjugate[Yd[l, i]]),
 
-d3[1][i_, j_, k_, 
-   l_] := (-3 Abs[Mu]^4 Yu[i, l] Yu[j, k] Conjugate[
-     Yu[i, k]] Conjugate[Yu[j, l]]);
-d3[2][i_, j_, k_, 
-   l_] := (-3 Tu[i, k] Tu[j, l] Conjugate[Tu[i, l]] Conjugate[
-     Tu[j, k]]);
-d3[3][i_, j_, k_, 
-   l_] := (-3 Abs[Mu]^2 Tu[j, l] Yu[i, 
-     k] (Conjugate[Tu[j, k]] Conjugate[Yu[i, l]] + 
-      Conjugate[Tu[i, l]] Conjugate[Yu[j, k]]));
-d3[4][i_, j_, k_, 
-   l_] := (3 Abs[Mu]^2 Tu[j, l] Conjugate[Tu[i, l]] Yu[i, 
-     k] Conjugate[Yu[j, k]]);
-d3[5][i_, j_, k_, 
-   l_] := (-3 Mu^2 Tu[i, k] Tu[j, l] Conjugate[Yu[i, l]] Conjugate[
-     Yu[j, k]]);
-d3[6][i_, j_, k_, 
-   l_] := (3 Mu Abs[Mu]^2 Tu[i, l] Yu[j, k] Conjugate[
-     Yu[i, k]] Conjugate[Yu[j, l]]);
-d3[7][i_, j_, k_, 
-   l_] := (3 Mu Tu[i, l] Tu[j, k] Conjugate[Tu[j, l]] Conjugate[
-     Yu[i, k]]);
+    d3[1][i_, j_, k_, l_] :> (-3 Abs[Mu]^4 Yu[i, l] Yu[j, k] Conjugate[Yu[i, k]] Conjugate[Yu[j, l]]),
+    d3[2][i_, j_, k_, l_] :> (-3 Tu[i, k] Tu[j, l] Conjugate[Tu[i, l]] Conjugate[Tu[j, k]]),
+    d3[3][i_, j_, k_, l_] :> (-3 Abs[Mu]^2 Tu[j, l] Yu[i, k] (Conjugate[Tu[j, k]] Conjugate[Yu[i, l]] +
+                                                              Conjugate[Tu[i, l]] Conjugate[Yu[j, k]])),
+    d3[4][i_, j_, k_, l_] :> (3 Abs[Mu]^2 Tu[j, l] Conjugate[Tu[i, l]] Yu[i, k] Conjugate[Yu[j, k]]),
+    d3[5][i_, j_, k_, l_] :> (-3 Mu^2 Tu[i, k] Tu[j, l] Conjugate[Yu[i, l]] Conjugate[Yu[j, k]]),
+    d3[6][i_, j_, k_, l_] :> (3 Mu Abs[Mu]^2 Tu[i, l] Yu[j, k] Conjugate[Yu[i, k]] Conjugate[Yu[j, l]]),
+    d3[7][i_, j_, k_, l_] :> (3 Mu Tu[i, l] Tu[j, k] Conjugate[Tu[j, l]] Conjugate[Yu[i, k]]),
 
-(* Eq. (124) *)
-d4[1][__] = 
-  d4[2][__] = d4[3][__] = d4[5][__] = d4[6][__] = d4[7][__] = 0;
-d4[4][i_, j_, k_, 
-   l_] := (-3 (Td[k, i] Conjugate[Tu[k, l]] - 
-      Abs[Mu]^2 Yd[k, i] Conjugate[Yu[k, l]]) (Tu[j, l] Conjugate[
-        Td[j, i]] - Abs[Mu]^2 Yu[j, l] Conjugate[Yd[j, i]]));
+    (* Eq. (124) *)
+    d4[1][__] :> 0,
+    d4[2][__] :> 0,
+    d4[3][__] :> 0,
+    d4[5][__] :> 0,
+    d4[6][__] :> 0,
+    d4[7][__] :> 0,
+    d4[4][i_, j_, k_, l_] :> (-3 (Td[k, i] Conjugate[Tu[k, l]] -
+                                  Abs[Mu]^2 Yd[k, i] Conjugate[Yu[k, l]]) (Tu[j, l] Conjugate[
+                                      Td[j, i]] - Abs[Mu]^2 Yu[j, l] Conjugate[Yd[j, i]]))
+};
 
 (* loop functions, Eq. (130)-(131) *)
 loopFunctions = {
