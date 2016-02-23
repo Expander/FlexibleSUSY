@@ -343,14 +343,14 @@ loopFunctions = {
        1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
        ],
 
-    B0[m1_, m2_] :> B0[m1, m2, Mu0],
+    B0[m1_, m2_] :> B0[m1, m2, Q],
 
     B0p[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        1/(6*m2^2),
        (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
        ],
 
-    B0p[m1_, m2_] :> B0p[m1, m2, Mu0],
+    B0p[m1_, m2_] :> B0p[m1, m2, Q],
 
     C0[m1_, m2_, m3_] :> Which[
        PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
@@ -408,7 +408,7 @@ loopFunctions = {
         - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2
        ],
 
-    W[m1_, m2_] :> W[m1, m2, Mu0]
+    W[m1_, m2_] :> W[m1, m2, Q]
 };
 
 (* counter-terms *)
@@ -420,16 +420,16 @@ dZud = flagSferm dZudSferm + flagIno dZudIno;
 dZuu = flagSferm dZuuSferm + flagIno dZuuIno;
 (* Eq. (117) *)
 dZW = g2^2/(6 16 Pi^2) (
-    4 Log[Abs[Mu]^2/Mu0^2] + 8 Log[M2^2/Mu^2]
+    4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Mu^2]
      + Summation[
-      Log[msl[i]^2/Mu0^2] + Nc Log[msq[i]^2/Mu0^2], {i, 1, 3}] - 4);
+      Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}] - 4);
 (* Eq. (117) *)
 dZB = gY^2/(3 16 Pi^2) (
-    2 Log[Abs[Mu]^2/Mu0^2]
+    2 Log[Abs[Mu]^2/Q^2]
      + Summation[
-      Log[mse[i]^2/Mu0^2] + Log[msl[i]^2/Mu0^2]/2 + 
-       4 Nc/9 Log[msu[i]^2/Mu0^2] + Nc/9 Log[msd[i]^2/Mu0^2] + 
-       Nc/18 Log[msq[i]^2/Mu0^2], {i, 1, 3}]);
+      Log[mse[i]^2/Q^2] + Log[msl[i]^2/Q^2]/2 +
+       4 Nc/9 Log[msu[i]^2/Q^2] + Nc/9 Log[msd[i]^2/Q^2] +
+       Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]);
 (* Eq. (118) *)
 dZddSferm = 1/(32 Pi^2) Summation[
     3 B0p[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
