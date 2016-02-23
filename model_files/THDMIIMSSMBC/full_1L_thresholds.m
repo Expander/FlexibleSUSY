@@ -345,12 +345,12 @@ loopFunctions = {
 
     B0[m1_, m2_] :> B0[m1, m2, Q],
 
-    B0p[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
+    DB0[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        1/(6*m2^2),
        (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
        ],
 
-    B0p[m1_, m2_] :> B0p[m1, m2, Q],
+    DB0[m1_, m2_] :> DB0[m1, m2, Q],
 
     C0[m1_, m2_, m3_] :> Which[
        PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
@@ -432,28 +432,28 @@ dZB = gY^2/(3 16 Pi^2) (
        Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]);
 (* Eq. (118) *)
 dZddSferm = 1/(32 Pi^2) Summation[
-    3 B0p[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
-     + 3 Abs[Mu]^2 B0p[msu[i], msq[j]] Yu[j, i] Conjugate[Yu[j, i]]
-     + B0p[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
+    3 DB0[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
+     + 3 Abs[Mu]^2 DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Yu[j, i]]
+     + DB0[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}];
 (* Eq. (119) *)
 dZddIno = -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] + 
      3 g2^2 W[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
 dZudSferm = -1/(16 Pi^2) Summation[
-    3 Conjugate[Mu] B0p[msd[i], msq[j]] Yd[j, i] Conjugate[Td[j, i]]
-     + 3 Conjugate[Mu] B0p[msu[i], msq[j]] Yu[j, i] Conjugate[Tu[j, i]]
-     + Conjugate[Mu] B0p[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
+    3 Conjugate[Mu] DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Td[j, i]]
+     + 3 Conjugate[Mu] DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Tu[j, i]]
+     + Conjugate[Mu] DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}];
 (* Eq. (119) *)
 dZudIno = -1/(16 Pi^2) Conjugate[
-    Mu] (gY^2 Conjugate[M1] B0p[Abs[M1], Abs[Mu]] + 
-     3 g2^2 Conjugate[M2] B0p[Abs[M2], Abs[Mu]]);
+    Mu] (gY^2 Conjugate[M1] DB0[Abs[M1], Abs[Mu]] +
+     3 g2^2 Conjugate[M2] DB0[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
 dZuuSferm = 1/(32 Pi^2) Summation[
-    3 B0p[msu[i], msq[j]] Tu[j, i] Conjugate[Tu[j, i]]
-     + 3 Abs[Mu]^2 B0p[msd[i], msq[j]] Yd[j, i] Conjugate[Yd[j, i]]
-     + Abs[Mu]^2 B0p[mse[i], msl[j]] Ye[j, i] Conjugate[Ye[j, i]]
+    3 DB0[msu[i], msq[j]] Tu[j, i] Conjugate[Tu[j, i]]
+     + 3 Abs[Mu]^2 DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Yd[j, i]]
+     + Abs[Mu]^2 DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Ye[j, i]]
     , {j, 1, 3}, {i, 1, 3}];
 (* Eq. (119) *)
 dZuuIno = dZddIno;
