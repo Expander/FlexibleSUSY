@@ -3,13 +3,13 @@
 
 BeginPackage["LoopFunctions`"];
 
+FullMomentum::usage = "Returns loop functions with full momentum
+dependence in BPMZ convention (arxiv:hep-ph/9606211)";
+
 ZeroMomentum::usage = "Returns loop functions at zero momentum in BPMZ
- convention";
+ convention (arxiv:hep-ph/9606211)";
 
-ZeroMomentumMSbar::usage = "Returns loop functions at zero momentum in
- BPMZ convention, renormalized using minimal subtraction-bar scheme";
-
-Delta::usage = "1/eps + - \[Gamma]_E + Log[4 Pi]";
+Delta::usage = "1/eps - \[Gamma]_E + Log[4 Pi]";
 
 Begin["`Private`"];
 
@@ -27,8 +27,19 @@ ZeroMomentum[] := {
     Global`H[0,m1_,m2_,mu_]           | Global`H[m1_,m2_,mu_]           :> Hzero[m1,m2,mu]
 };
 
-ZeroMomentumMSbar[] :=
-    ZeroMomentum[] /. Delta -> 0;
+FullMomentum[] := {
+    Global`A0[m_,mu_]                  :> A0impl[m,mu],
+    Global`B0[p_,m1_,m2_,mu_]          :> B0[p,m1,m2,mu],
+    Global`B1[p_,m1_,m2_,mu_]          :> B1[p,m1,m2,mu],
+    Global`B22[p_,m1_,m2_,mu_]         :> B22[p,m1,m2,mu],
+    Global`B22tilde[p_,m1_,m2_,mu_]    :> B22tilde[p,m1,m2,mu],
+    Global`C0[p_,m1_,m2_,m2_,mu_]      :> C0[p,m1,m2,m3,mu],
+    Global`D0[p_,m1_,m2_,m3_,m4_,mu_]  :> D0[p,m1,m2,m3,m4,mu],
+    Global`D27[p_,m1_,m2_,m3_,m4_,mu_] :> D27[p,m1,m2,m3,m4,mu],
+    Global`F[p_,m1_,m2_,mu_]           :> F[p,m1,m2,mu],
+    Global`G[p_,m1_,m2_,mu_]           :> G[p,m1,m2,mu],
+    Global`H[p_,m1_,m2_,mu_]           :> H[p,m1,m2,mu]
+};
 
 (* A0, Eq. (B.5) *)
 A0impl[m_, mu_] := m^2 (Delta + 1 + Log[mu^2/m^2]);
@@ -39,11 +50,28 @@ B0zero[m1_, m2_, mu_] := If[PossibleZeroQ[m1 - m2],
    Delta + 1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
    ];
 
+(* Eq. (B.6) *)
 B0[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
        B0zero[m1,m2,mu],
-       Undefined
+       B0analytic[p,m1,m2,mu]
       ];
+
+B0analytic[p_, m1_, m2_, mu_] :=
+    Module[{eps, fB, s, xp, xm},
+           s = p^2 - m2^2 + m1^2;
+           xp = (s + Sqrt[s^2 - 4 p^2 (m1^2 - I eps)]) / (2 p^2);
+           xm = (s - Sqrt[s^2 - 4 p^2 (m1^2 - I eps)]) / (2 p^2);
+           fB[x_] := Log[1-x] - x Log[1 - 1/x] - 1;
+           Limit[Delta - Log[p^2/mu^2] - fB[xp] - fB[xm], eps -> 0]
+          ];
+
+B0integral[p_, m1_, m2_, mu_] :=
+    Module[{eps},
+           Limit[
+               Delta - Integrate[Log[((1-x) m1^2 + x m2^2 - x (1-x) p^2 - I eps)/mu^2], {x,0,1}],
+               eps -> 0]
+          ];
 
 (* Eq. (B.9) *)
 B1[p_, m1_, m2_, mu_] :=
