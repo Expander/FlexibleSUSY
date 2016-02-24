@@ -43,7 +43,8 @@ coefficients = {
     a4[2] -> 5/2,
     a4[3] -> 1/2,
     a4[4] -> 2,
-    a4[6] -> a4[7] -> 0,
+    a4[6] -> 0,
+    a4[7] -> 0,
 
     a2p[1] -> (M1 Conjugate[M2] + Conjugate[M1] M2)/2,
     a2p[2] -> (M1 Conjugate[M2] + Conjugate[M1] M2)/2,
