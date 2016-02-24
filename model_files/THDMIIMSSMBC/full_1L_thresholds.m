@@ -1,7 +1,16 @@
 (* Implementation of THDM threshold corrections from arxiv:0901.2065 *)
 
-flagIno = 1; (* Enable/disable gaugino + Higgsino contribution *)
-flagSferm = 1; (* Enable/disable sfermion contribution *)
+flags = {
+    flagSferm -> 1, (* Enable/disable sfermion contribution *)
+    flagSfermZdd -> 1,
+    flagSfermZud -> 1,
+    flagSfermZuu -> 1,
+    flagIno -> 1, (* Enable/disable gaugino + Higgsino contribution *)
+    flagInoZdd -> 1,
+    flagInoZud -> 1,
+    flagInoZuu -> 1,
+    flagdg -> 1
+};
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
