@@ -475,7 +475,7 @@ lamIno[[5]] = (
    );
 
 (* Eq. (121) *)
-lamIno1234676[i_] := (
+lamIno123467[i_] := (
    g2^4 (as[i] + a2[i] D2tilde[M2, M2, Abs[Mu], Abs[Mu]] + 
        a4[i] D4tilde[M2, M2, Abs[Mu], Abs[Mu]])
     + g2^2 gY^2 (asp[i] + a2p[i] D2tilde[M1, M2, Abs[Mu], Abs[Mu]] + 
@@ -484,12 +484,12 @@ lamIno1234676[i_] := (
        a4pp[i] D4tilde[M1, M1, Abs[Mu], Abs[Mu]])
    );
 
-lamIno[[1]] = lamIno1234676[1];
-lamIno[[2]] = lamIno1234676[2];
-lamIno[[3]] = lamIno1234676[3];
-lamIno[[4]] = lamIno1234676[4];
-lamIno[[6]] = lamIno1234676[6];
-lamIno[[7]] = lamIno1234676[7];
+lamIno[[1]] = lamIno123467[1];
+lamIno[[2]] = lamIno123467[2];
+lamIno[[3]] = lamIno123467[3];
+lamIno[[4]] = lamIno123467[4];
+lamIno[[6]] = lamIno123467[6];
+lamIno[[7]] = lamIno123467[7];
 
 (* Eq. (127) *)
 Yee[i_, j_]    := Summation[Conjugate[Ye[l, i]] Ye[l, j], {l, 1, 3}];
