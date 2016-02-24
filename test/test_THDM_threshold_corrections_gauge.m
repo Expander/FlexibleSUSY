@@ -5,7 +5,7 @@ Needs["TestSuite`", "TestSuite.m"];
 
 FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
 
-Get[FileNameJoin[{Directory[], "model_files", "THDMIIMSSMBC", "full_1L_thresholds.m"}]];
+Get[FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
 approx = {
     Yu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,

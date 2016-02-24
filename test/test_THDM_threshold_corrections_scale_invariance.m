@@ -4,7 +4,7 @@ FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
 
 mssmRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
 thdmRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
-thdmThresholds = FileNameJoin[{Directory[], "model_files", "THDMIIMSSMBC", "full_1L_thresholds.m"}];
+thdmThresholds = FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}];
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
