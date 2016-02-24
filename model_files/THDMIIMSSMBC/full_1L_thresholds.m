@@ -2,14 +2,14 @@
 
 flags = {
     flagSferm -> 1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd -> 1,
-    flagSfermZud -> 1,
-    flagSfermZuu -> 1,
+    flagSfermZdd -> -1,
+    flagSfermZud -> 0,
+    flagSfermZuu -> -1,
     flagIno -> 1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd -> 1,
-    flagInoZud -> 1,
-    flagInoZuu -> 1,
-    flagdg -> 1
+    flagInoZdd -> -1,
+    flagInoZud -> 0,
+    flagInoZuu -> -1,
+    flagdg -> 0
 };
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
@@ -427,9 +427,9 @@ loopFunctions = {
 
 dgY = -dZB/2;
 dg2 = -dZW/2;
-dZdd = flagSferm dZddSferm + flagIno dZddIno;
-dZud = flagSferm dZudSferm + flagIno dZudIno;
-dZuu = flagSferm dZuuSferm + flagIno dZuuIno;
+dZdd = flagSfermZdd dZddSferm + flagInoZdd dZddIno;
+dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
+dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
 dZW = g2^2/(6 16 Pi^2) (
     4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Mu^2]
@@ -646,16 +646,16 @@ lamHat := lamTree +
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
+    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - flagdg (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + g2^2 dg2;
+   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + flagdg g2^2 dg2;
 
 lamBar[[5]] = lamHat[[5]];
 
