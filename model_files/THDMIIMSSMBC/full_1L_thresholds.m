@@ -402,6 +402,8 @@ loopFunctions = {
         + m1^4 D0[m1, m2, m3, m4]
        ),
 
+    D4tilde[m1_, m2_, m3_, m4_] :> D4tilde[m1, m2, m3, m4, Q],
+
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        2/3 - 2 Log[mu^2/m2^2],
        (-2/eps - 2 Log[mu^2/m1^2]
