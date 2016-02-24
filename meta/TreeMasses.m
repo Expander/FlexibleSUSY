@@ -88,6 +88,9 @@ skipping goldstone bosons";
 GetDimensionStartSkippingSMGoldstones::usage="return first index,
  skipping Standard Model goldstone bosons";
 
+GetParticleIndices::usage = "returns list of particle indices with
+ names";
+
 FindMixingMatrixSymbolFor::usage="returns the mixing matrix symbol for
 a given field";
 
@@ -493,6 +496,18 @@ GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
            numberOfGoldstones = GetDimensionStartSkippingGoldstones[sym] - 1;
            dim = GetDimension[sym] - numberOfGoldstones;
            If[dim <= 0, 0, dim]
+          ];
+
+GetParticleIndices[sym_[__]] :=
+    GetParticleIndices[sym_];
+
+GetParticleIndices[sym_] :=
+    Module[{result},
+           result = Cases[SARAH`Particles[SARAH`EWSB], {sym, __, indexList_} :> indexList];
+           If[Length[result] > 0,
+              result = result[[1]]
+             ];
+           result
           ];
 
 DimOf[CConversion`ScalarType[CConversion`realScalarCType]] := 1;
