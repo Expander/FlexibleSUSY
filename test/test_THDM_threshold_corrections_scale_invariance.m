@@ -8,20 +8,18 @@ thdmThresholds = FileNameJoin[{Directory[], "model_files", "THDMIIMSSMBC", "full
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
+YuMat = Table[Yu[i, j], {i, 1, 3}, {j, 1, 3}];
+YdMat = Table[Yd[i, j], {i, 1, 3}, {j, 1, 3}];
+YeMat = Table[Ye[i, j], {i, 1, 3}, {j, 1, 3}];
+
 approx = {
-    Yu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Yd[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Ye[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Tu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Td[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Te[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
+    Yu[i_, j_] :> 0 /; i != j,
+    Yd[i_, j_] :> 0 /; i != j,
+    Ye[i_, j_] :> 0 /; i != j,
+    Tu[i_, j_] :> 0 /; i != j,
+    Td[i_, j_] :> 0 /; i != j,
+    Te[i_, j_] :> 0 /; i != j,
     Nc -> 3,
-    Yu[3, 3] -> ht,
-    Yd[3, 3] -> hb,
-    Ye[3, 3] -> htau,
-    Tu[3, 3] -> At ht,
-    Td[3, 3] -> Ab hb,
-    Te[3, 3] -> Atau htau,
     mse[_] :> MSUSY,
     msu[_] :> MSUSY,
     msd[_] :> MSUSY,
@@ -33,15 +31,13 @@ approx = {
     Conjugate[p_] :> p,
     Re[p_] :> p,
     THRESHOLD -> 1,
-    flagSferm -> 1,
-    flagIno -> 1,
-    trace[Yu, Adj[Yu]] -> Yu[3, 3] Conjugate[Yu[3, 3]], 
-    trace[Yd, Adj[Yd]] -> Yd[3, 3] Conjugate[Yd[3, 3]],
-    trace[Ye, Adj[Ye]] -> Ye[3, 3] Conjugate[Ye[3, 3]],
-    trace[Yu, Adj[Yu], Yu, Adj[Yu]] -> Yu[3, 3]^2 Conjugate[Yu[3, 3]]^2,
-    trace[Yd, Adj[Yd], Yd, Adj[Yd]] -> Yd[3, 3]^2 Conjugate[Yd[3, 3]]^2,
-    trace[Ye, Adj[Ye], Ye, Adj[Ye]] -> Ye[3, 3]^2 Conjugate[Ye[3, 3]]^2,
-    trace[Yd, Adj[Yu], Yu, Adj[Yd]] -> Abs[Yd[3, 3]]^2 Abs[Yu[3, 3]]^2
+    trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
+    trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
+    trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
+    trace[Yu, Adj[Yu], Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat].YuMat.ConjugateTranspose[YuMat]],
+    trace[Yd, Adj[Yd], Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat].YdMat.ConjugateTranspose[YdMat]],
+    trace[Ye, Adj[Ye], Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat].YeMat.ConjugateTranspose[YeMat]],
+    trace[Yd, Adj[Yu], Yu, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YuMat].YuMat.ConjugateTranspose[YdMat]]
 };
 
 betag1MSSM = Cases[Get[mssmRGEs], {g1, b_, __} :> b][[1]];
@@ -90,12 +86,6 @@ betaLambdaTHDM = {
 betaDiff =
   Expand[(betaLambdaTHDM - betaLambdaMSSM) /. lambdaTreeRules //. approx];
 
-(* keep only Yukawa terms *)
-betaDiff = Simplify[
-    If[AtomQ[#], #,
-       Plus @@ Select[MonomialList[#], 
-                      Function[x, !FreeQ[x, ht] || !FreeQ[x, hb] || !FreeQ[x, htau]]]]]& /@ betaDiff;
-
 (* load threshold corrections *)
 Get[thdmThresholds];
 
@@ -104,16 +94,10 @@ lamSARAH = lamWagnerLee;
 lamSARAH[[1]] = lamWagnerLee[[1]]/2;
 lamSARAH[[2]] = lamWagnerLee[[2]]/2;
 
-thresh = lamSARAH /. coefficients /. Summation -> Sum //. approx //. loopFunctions;
+thresh = lamSARAH /. flags /. coefficients /. Summation -> Sum //. approx //. loopFunctions;
 
 (* mu-dependence of threshold corrections *)
 threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2];
-
-(* keep only Yukawa terms *)
-threshMuDep = Simplify[
-    If[AtomQ[#], #, 
-       Plus @@ Select[MonomialList[#], 
-                      Function[x, !FreeQ[x, ht] || !FreeQ[x, hb] || !FreeQ[x, htau]]]]]& /@ threshMuDep;
 
 TestEquality[Simplify[betaDiff - threshMuDep], Table[0, {i,1,7}]];
 
