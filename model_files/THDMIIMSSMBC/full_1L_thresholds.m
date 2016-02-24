@@ -501,14 +501,14 @@ lamIno[[6]] = lamIno123467[6];
 lamIno[[7]] = lamIno123467[7];
 
 (* Eq. (127) *)
-Yee[i_, j_]    := Summation[Conjugate[Ye[l, i]] Ye[l, j], {l, 1, 3}];
-Yeebar[i_, j_] := Summation[Ye[i, l] Conjugate[Ye[j, l]], {l, 1, 3}];
-Yuu[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yu[l, j], {l, 1, 3}];
-Yuubar[i_, j_] := Summation[Yu[i, l] Conjugate[Yu[j, l]], {l, 1, 3}];
-Ydd[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yd[l, j], {l, 1, 3}];
-Yddbar[i_, j_] := Summation[Yd[i, l] Conjugate[Yd[j, l]], {l, 1, 3}];
-Yud[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yd[l, j], {l, 1, 3}];
-Ydu[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yu[l, j], {l, 1, 3}];
+Yee[i_, j_]    := Summation[Conjugate[Ye[l1, i]] Ye[l1, j], {l1, 1, 3}];
+Yeebar[i_, j_] := Summation[Ye[i, l2] Conjugate[Ye[j, l2]], {l2, 1, 3}];
+Yuu[i_, j_]    := Summation[Conjugate[Yu[l3, i]] Yu[l3, j], {l3, 1, 3}];
+Yuubar[i_, j_] := Summation[Yu[i, l4] Conjugate[Yu[j, l4]], {l4, 1, 3}];
+Ydd[i_, j_]    := Summation[Conjugate[Yd[l5, i]] Yd[l5, j], {l5, 1, 3}];
+Yddbar[i_, j_] := Summation[Yd[i, l6] Conjugate[Yd[j, l6]], {l6, 1, 3}];
+Yud[i_, j_]    := Summation[Conjugate[Yu[l7, i]] Yd[l7, j], {l7, 1, 3}];
+Ydu[i_, j_]    := Summation[Conjugate[Yd[l8, i]] Yu[l8, j], {l8, 1, 3}];
 
 (* sfermion contribution *)
 

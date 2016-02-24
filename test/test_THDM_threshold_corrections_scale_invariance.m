@@ -8,17 +8,12 @@ thdmThresholds = FileNameJoin[{Directory[], "model_files", "THDMIIMSSMBC", "full
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
-YuMat = Table[Yu[i, j], {i, 1, 3}, {j, 1, 3}];
-YdMat = Table[Yd[i, j], {i, 1, 3}, {j, 1, 3}];
-YeMat = Table[Ye[i, j], {i, 1, 3}, {j, 1, 3}];
+(* Note: Yukawa couplings are transposed, compared to SARAH *)
+YuMat = Table[Yu[j, i], {i, 1, 3}, {j, 1, 3}];
+YdMat = Table[Yd[j, i], {i, 1, 3}, {j, 1, 3}];
+YeMat = Table[Ye[j, i], {i, 1, 3}, {j, 1, 3}];
 
 approx = {
-    Yu[i_, j_] :> 0 /; i != j,
-    Yd[i_, j_] :> 0 /; i != j,
-    Ye[i_, j_] :> 0 /; i != j,
-    Tu[i_, j_] :> 0 /; i != j,
-    Td[i_, j_] :> 0 /; i != j,
-    Te[i_, j_] :> 0 /; i != j,
     Nc -> 3,
     mse[_] :> MSUSY,
     msu[_] :> MSUSY,
