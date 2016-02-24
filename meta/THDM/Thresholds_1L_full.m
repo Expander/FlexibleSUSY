@@ -425,8 +425,8 @@ loopFunctions = {
 
 (* counter-terms *)
 
-dgY = -dZB/2;
-dg2 = -dZW/2;
+dgY = -dZB/2 flagdg;
+dg2 = -dZW/2 flagdg;
 dZdd = flagSfermZdd dZddSferm + flagInoZdd dZddIno;
 dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
 dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
@@ -646,16 +646,16 @@ lamHat := lamTree +
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
+    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - flagdg (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + flagdg g2^2 dg2;
+   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + g2^2 dg2;
 
 lamBar[[5]] = lamHat[[5]];
 
