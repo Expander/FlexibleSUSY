@@ -251,7 +251,11 @@ IsGhost[sym_List] := And @@ (IsGhost /@ sym);
 
 IsGoldstone[Susyno`LieGroups`conj[sym_]] := IsGoldstone[sym];
 IsGoldstone[SARAH`bar[sym_]] := IsGoldstone[sym];
-IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+IsGoldstone[sym_] := MemberQ[
+    Join[GetGoldstoneBosons[],
+         GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx]],
+    sym
+];
 IsGoldstone[sym_List] := And @@ (IsGoldstone /@ sym);
 
 GetSMGoldstones[] :=

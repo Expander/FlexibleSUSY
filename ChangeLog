@@ -99,6 +99,14 @@ FlexibleSUSY-1.4.0 [not released yet]
       ...
    };
 
+ * Feature: The three THDM-like models, which have been used in
+   arxiv:1512.07761, are provided.  They are named:
+   * THDMIIMSSMBC (THDM with boundary condition to the MSSM)
+   * HTHDMIIMSSMBC (THDM + Higgsinos with boundary condition to the
+        MSSM)
+   * HGTHDMIIMSSMBC (THDM + Higgsinos + gauginos with boundary
+        condition to the MSSM)
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 

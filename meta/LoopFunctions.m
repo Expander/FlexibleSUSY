@@ -17,6 +17,8 @@ ZeroMomentum[] := {
                                         Global`A0[m_,mu_]               :> A0impl[m,mu],
     Global`B0[0,m1_,m2_,mu_]          | Global`B0[m1_,m2_,mu_]          :> B0zero[m1,m2,mu],
     Global`B1[0,m1_,m2_,mu_]          | Global`B1[m1_,m2_,mu_]          :> B1zero[m1,m2,mu],
+    Global`B00[0,m1_,m2_,mu_]         | Global`B00[m1_,m2_,mu_]         :> B22zero[m1,m2,mu],
+    Global`B11[0,m1_,m2_,mu_]         | Global`B11[m1_,m2_,mu_]         :> B11zero[m1,m2,mu],
     Global`B22[0,m1_,m2_,mu_]         | Global`B22[m1_,m2_,mu_]         :> B22zero[m1,m2,mu],
     Global`B22tilde[0,m1_,m2_,mu_]    | Global`B22tilde[m1_,m2_,mu_]    :> B22tildezero[m1,m2,mu],
     Global`C0[0,m1_,m2_,m2_,mu_]      | Global`C0[m1_,m2_,m2_,mu_]      :> C0zero[m1,m2,m3,mu],
@@ -31,6 +33,8 @@ FullMomentum[] := {
     Global`A0[m_,mu_]                  :> A0impl[m,mu],
     Global`B0[p_,m1_,m2_,mu_]          :> B0[p,m1,m2,mu],
     Global`B1[p_,m1_,m2_,mu_]          :> B1[p,m1,m2,mu],
+    Global`B00[p_,m1_,m2_,mu_]         :> B22[p,m1,m2,mu],
+    Global`B11[p_,m1_,m2_,mu_]         :> B11[p,m1,m2,mu],
     Global`B22[p_,m1_,m2_,mu_]         :> B22[p,m1,m2,mu],
     Global`B22tilde[p_,m1_,m2_,mu_]    :> B22tilde[p,m1,m2,mu],
     Global`C0[p_,m1_,m2_,m2_,mu_]      :> C0[p,m1,m2,m3,mu],
@@ -87,7 +91,19 @@ B1zero[m1_, m2_, mu_] :=
             + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
       ];
 
-(* Eq. (B.10) *)
+B11[p_, m1_, m2_, mu_] :=
+    If[PossibleZeroQ[p],
+       B11zero[m1,m2,mu],
+       1/(6 p^2) (
+           2 A0impl[m2,mu]
+           - 2 m1^2 B0[p,m1,m2,mu]
+           - 4 (p^2 - m2^2 + m1^2) B1[p,m1,m2,mu]
+           - m1^2 - m2^2 - p^2/3)
+      ];
+
+B11zero[m1_, m2_, mu_] := 0;
+
+(* Eq. (B.10), identical to B00[p,m1,m2,mu] *)
 B22[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
        B22zero[m1,m2,mu],
