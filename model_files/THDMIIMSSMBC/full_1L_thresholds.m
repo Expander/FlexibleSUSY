@@ -1,15 +1,15 @@
 (* Implementation of THDM threshold corrections from arxiv:0901.2065 *)
 
 flags = {
-    flagSferm -> 1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd -> -1,
-    flagSfermZud -> 0,
-    flagSfermZuu -> -1,
-    flagIno -> 1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd -> -1,
-    flagInoZud -> 0,
-    flagInoZuu -> -1,
-    flagdg -> 0
+    flagSferm    ->  1, (* Enable/disable sfermion contribution *)
+    flagSfermZdd -> -1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
+    flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
+    flagSfermZuu -> -1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
+    flagIno      ->  1, (* Enable/disable gaugino + Higgsino contribution *)
+    flagInoZdd   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
+    flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
+    flagInoZuu   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
+    flagdg       ->  0  (* Enable/disable gauge coupling renormalization *)
 };
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
