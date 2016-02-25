@@ -499,7 +499,7 @@ GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
           ];
 
 GetParticleIndices[sym_[__]] :=
-    GetParticleIndices[sym_];
+    GetParticleIndices[sym];
 
 GetParticleIndices[sym_] :=
     Module[{result},
