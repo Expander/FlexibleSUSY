@@ -732,10 +732,10 @@ GetTHDMThresholds1L[OptionsPattern[]] := {
     lamBar[[6]],
     lamBar[[7]]
 } /.
+    loopOrder -> OptionValue[loopOrder] /.
     OptionValue[flags] /.
     OptionValue[coefficients] /.
-    Summation -> OptionValue[sumHead] /.
-    loopOrder -> OptionValue[loopOrder] //.
+    Summation -> OptionValue[sumHead] //.
     OptionValue[loopFunctions];
 
 End[];
