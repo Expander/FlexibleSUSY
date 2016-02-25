@@ -481,7 +481,7 @@ dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
 dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
 dZW = g2^2/(6 16 Pi^2) (
-    4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Mu^2]
+    4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2]
      + Summation[
       Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}] - 4);
 (* Eq. (117) *)
