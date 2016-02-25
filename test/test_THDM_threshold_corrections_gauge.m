@@ -4,6 +4,21 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
+Print["testing THDM tree-level ..."];
+
+(* tree-level lambda couplings in convention of
+   arxiv:hep-ph/9307201 and arxiv:1508.00576 *)
+lambdaTree = {
+    1/4 (gY^2 + g2^2),
+    1/4 (gY^2 + g2^2),
+    1/4 (-gY^2 + g2^2),
+    -1/2 g2^2,
+    0, 0, 0
+};
+
+TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[loopOrder -> 0]],
+             Table[0, {i,1,7}]];
+
 approx = {
     Yu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
     Yd[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
@@ -79,20 +94,5 @@ deltaLambdaFull = deltaLambdaTh + deltaLambdaPhi;
 lamThDiff  = Simplify[result - deltaLambdaFull];
 
 TestEquality[lamThDiff, Table[0, {i,1,7}]];
-
-(* testing tree-level *)
-
-(* tree-level lambda couplings in convention of
-   arxiv:hep-ph/9307201 and arxiv:1508.00576 *)
-lambdaTree = {
-    1/4 (gY^2 + g2^2),
-    1/4 (gY^2 + g2^2),
-    1/4 (-gY^2 + g2^2),
-    -1/2 g2^2,
-    0, 0, 0
-};
-
-TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[loopOrder -> 0]],
-             Table[0, {i,1,7}]];
 
 PrintTestSummary[];
