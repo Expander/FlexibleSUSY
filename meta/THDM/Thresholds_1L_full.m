@@ -64,6 +64,8 @@ GetTHDMThresholds1LFlags[] := {
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
 GetTHDMThresholds1LCoefficients[] := {
+    Nc -> 3,
+
     (* Eq. (122) *)
     as[1] -> -3/4,
     as[2] -> -3/4,
