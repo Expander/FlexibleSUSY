@@ -342,6 +342,7 @@ endif
 		execute-tests execute-meta-tests execute-compiled-tests
 
 all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(TEST_DEP)
@@ -360,6 +361,7 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		-rm -f $(TEST_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
@@ -396,6 +398,8 @@ execute-meta-tests:
 endif
 
 execute-compiled-tests: $(TEST_EXE_LOG)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

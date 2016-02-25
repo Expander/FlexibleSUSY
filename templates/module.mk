@@ -59,8 +59,10 @@ TEMPLATES    := \
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 clean-$(MODNAME):
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
