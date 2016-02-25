@@ -363,6 +363,22 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 distclean-$(MODNAME): clean-$(MODNAME)
 		@true
 
+clean-obj::     clean-$(MODNAME)-obj
+
+clean::         clean-$(MODNAME)
+
+distclean::     distclean-$(MODNAME)
+
+execute-tests:  $(TEST_LOG)
+
+ifeq ($(ENABLE_META),yes)
+execute-meta-tests: $(TEST_META_LOG)
+else
+execute-meta-tests:
+endif
+
+execute-compiled-tests: $(TEST_EXE_LOG)
+
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
 		@echo "**************************************************" >> $@;
@@ -388,22 +404,6 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@echo "**************************************************" >> $@;
 		@$< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
-
-execute-tests:  $(TEST_LOG)
-
-ifeq ($(ENABLE_META),yes)
-execute-meta-tests: $(TEST_META_LOG)
-else
-execute-meta-tests:
-endif
-
-execute-compiled-tests: $(TEST_EXE_LOG)
-
-clean-obj::     clean-$(MODNAME)-obj
-
-clean::         clean-$(MODNAME)
-
-distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 
