@@ -1,6 +1,8 @@
 DIR          := @DIR@
 MODNAME      := @ADDON@
 
+LIB@ADDON@_MK  := $(DIR)/module.mk
+
 # source files
 LIB@ADDON@_SRC :=
 #		$(DIR)/file1.cpp
@@ -33,8 +35,11 @@ EXE@ADDON@_EXE := \
 LIB@ADDON@     := \
 		$(DIR)/lib$(MODNAME)$(LIBEXT)
 
+LIB@ADDON@_INSTALL_DIR := \
+		$(INSTALL_DIR)/$(DIR)
+
 .PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME)
+		 clean-$(MODNAME)-src distclean-$(MODNAME)
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIB@ADDON@_DEP)
@@ -43,6 +48,14 @@ clean-$(MODNAME)-dep:
 clean-$(MODNAME)-obj:
 		-rm -f $(LIB@ADDON@_OBJ)
 		-rm -f $(EXE@ADDON@_OBJ)
+
+# BEGIN: NOT EXPORTED ##########################################
+# remove generated files
+clean-$(MODNAME)-src:
+		@true
+
+clean-$(MODNAME): clean-$(MODNAME)-src
+# END:   NOT EXPORTED ##########################################
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIB@ADDON@)
@@ -55,6 +68,15 @@ clean-obj::     clean-$(MODNAME)-obj
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(LIB@ADDON@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@ADDON@_SRC) $(LIB@ADDON@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@ADDON@_HDR) $(LIB@ADDON@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(EXE@ADDON@_SRC) $(LIB@ADDON@_INSTALL_DIR)
+		$(INSTALL_STRIPPED) $(LIB@ADDON@_MK) $(LIB@ADDON@_INSTALL_DIR) -m u=rw,g=r,o=r
+endif
 
 $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
