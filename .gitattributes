@@ -47,6 +47,7 @@ models/smcw                     export-ignore
 
 release                         export-ignore
 
+sarah/BLSM                      export-ignore
 sarah/InertMSSM                 export-ignore
 sarah/MDM                       export-ignore
 sarah/NoYukawaMSSM              export-ignore
