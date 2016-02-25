@@ -1,6 +1,5 @@
 Needs["TestSuite`", "TestSuite.m"];
-
-FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
+Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
 mssmRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
 thdmRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
@@ -85,11 +84,11 @@ betaDiff =
 Get[thdmThresholds];
 
 (* convert to SARAH convention *)
-lamSARAH = lamWagnerLee;
-lamSARAH[[1]] = lamWagnerLee[[1]]/2;
-lamSARAH[[2]] = lamWagnerLee[[2]]/2;
+lamSARAH = GetTHDMThresholds1L[];
+lamSARAH[[1]] = lamSARAH[[1]]/2;
+lamSARAH[[2]] = lamSARAH[[2]]/2;
 
-thresh = lamSARAH /. flags /. coefficients /. Summation -> Sum //. approx //. loopFunctions;
+thresh = lamSARAH //. approx //. GetTHDMThresholds1LLoopFunctions[];
 
 (* mu-dependence of threshold corrections *)
 threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2];

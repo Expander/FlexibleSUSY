@@ -1,6 +1,55 @@
-(* Implementation of THDM threshold corrections from arxiv:0901.2065 *)
+(* Implementation of THDM 1-loop threshold corrections from arxiv:0901.2065 *)
 
-flags = {
+BeginPackage["THDMThresholds1L`"];
+
+(* parameters *)
+{gY, g2, Yu, Yd, Ye, Tu, Td, Te, msu, msd, mse, msq, msl, M1, M2, Mu, Q};
+
+(* loop functions *)
+{A0, B0, DB0, C0, D0, D2tilde, D4tilde, W};
+
+GetTHDMThresholds1L::usage = "Returns list of 1L threshold corrections
+ for lambda_1 ... lambda_7 using the convention of
+ arxiv:hep-ph/9307201 and arxiv:1508.00576.  The expressions have been
+ taken from arxiv:0901.2065.
+
+ Important note: The Yukawa couplings are transposed compared to
+ SARAH's MSSM and THDM model files.
+
+ To prevent the replacement of the coefficients by their explicite
+ form, run
+
+    GetTHDMThresholds1L[coefficients -> {}]
+
+ To prevent the replacement of the flags marking the different
+ contributions, run
+
+    GetTHDMThresholds1L[flags -> {}]
+
+ To prevent expanding the sums, run for example
+
+    GetTHDMThresholds1L[sumHead -> Summation]
+
+ To select the loop order, run
+
+    GetTHDMThresholds1L[loopOrder -> 1]
+
+ By default, the loop functions are kept unevaluated.";
+
+GetTHDMThresholds1LCoefficients::usage = "Returns list of replacement
+ rules for the coefficients defined in Eq. (122), (124) and Tables 4-9
+ of arxiv:0901.2065.";
+
+GetTHDMThresholds1LFlags::usage = "Returns list of replacement rules
+ for the flags which mark the different contributions.";
+
+GetTHDMThresholds1LLoopFunctions::usage = "Returns list of replacement
+ rules for the loop functions defined in Eq. (130)-(131) of
+ arxiv:0901.2065.";
+
+Begin["`Private`"];
+
+GetTHDMThresholds1LFlags[] := {
     flagSferm    ->  1, (* Enable/disable sfermion contribution *)
     flagSfermZdd -> -1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
     flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
@@ -14,7 +63,7 @@ flags = {
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
-coefficients = {
+GetTHDMThresholds1LCoefficients[] := {
     (* Eq. (122) *)
     as[1] -> -3/4,
     as[2] -> -3/4,
@@ -343,7 +392,7 @@ coefficients = {
 };
 
 (* loop functions, Eq. (130)-(131) *)
-loopFunctions = {
+GetTHDMThresholds1LLoopFunctions[] := {
     A0[m_, mu_] :> m^2 + m^2 Log[mu^2/m^2],
 
     B0[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
@@ -640,31 +689,39 @@ lamSferm[[7]] = lamSferm67[7];
 
 (* Eq. (116) *)
 lamHat := lamTree +
-    UnitStep[THRESHOLD - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
+    UnitStep[loopOrder - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[THRESHOLD - 1] ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
+    UnitStep[loopOrder - 1] ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[THRESHOLD - 1] ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[loopOrder - 1] ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[THRESHOLD - 1] (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[loopOrder - 1] (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + g2^2 dg2;
+   UnitStep[loopOrder - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + g2^2 dg2;
 
 lamBar[[5]] = lamHat[[5]];
 
 lamBar[[6]] = lamHat[[6]] +
-    UnitStep[THRESHOLD - 1] (-(g2^2 + gY^2)/4 Conjugate[dZud]);
+    UnitStep[loopOrder - 1] (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    UnitStep[THRESHOLD - 1] ((g2^2 + gY^2)/4 dZud);
+    UnitStep[loopOrder - 1] ((g2^2 + gY^2)/4 dZud);
+
+Options[GetTHDMThresholds1L] = {
+    coefficients -> GetTHDMThresholds1LCoefficients[],
+    flags -> GetTHDMThresholds1LFlags[],
+    loopFunctions -> {},
+    loopOrder -> 1,
+    sumHead -> Sum
+};
 
 (* relation to Haber/Wagner/Lee convention p. 6 *)
-lamWagnerLee = {
+GetTHDMThresholds1L[OptionsPattern[]] := {
     lamBar[[1]],
     lamBar[[2]],
     lamBar[[3]] + lamBar[[4]],
@@ -672,4 +729,13 @@ lamWagnerLee = {
     lamBar[[5]],
     lamBar[[6]],
     lamBar[[7]]
-};
+} /.
+    OptionValue[flags] /.
+    OptionValue[coefficients] /.
+    Summation -> OptionValue[sumHead] /.
+    loopOrder -> OptionValue[loopOrder] //.
+    OptionValue[loopFunctions];
+
+End[];
+
+EndPackage[];

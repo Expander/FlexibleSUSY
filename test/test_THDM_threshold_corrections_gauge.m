@@ -2,10 +2,7 @@
    implementation of arxiv:hep-ph/9307201 and arxiv:1508.00576 *)
 
 Needs["TestSuite`", "TestSuite.m"];
-
-FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
-
-Get[FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
+Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
 approx = {
     Yu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
@@ -30,15 +27,14 @@ approx = {
     M2 -> Mu,
     Abs[p_] :> p,
     Conjugate[p_] :> p,
-    Re[p_] :> p,
-    THRESHOLD -> 1
+    Re[p_] :> p
 };
 
-result = lamWagnerLee /. coefficients /. Summation -> Sum;
+result = GetTHDMThresholds1L[] /. Summation -> Sum;
 
 TestEquality[FreeQ[result, Undef] && FreeQ[result, Null], True];
 
-result = result /. flags //. approx //. loopFunctions /. Q -> MSUSY // Expand;
+result = result //. approx //. GetTHDMThresholds1LLoopFunctions[] /. Q -> MSUSY // Expand;
 
 (* collect only terms involving Yukawa couplings *)
 result = Simplify[Plus @@ Select[List @@ Expand[#],
