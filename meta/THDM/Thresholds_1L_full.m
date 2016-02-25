@@ -14,8 +14,6 @@ flags = {
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
-gtilde /: gtilde^2 = (g2^2 + gY^2);
-
 coefficients = {
     (* Eq. (122) *)
     as[1] -> -3/4,
@@ -471,7 +469,7 @@ dZuuSferm = 1/(32 Pi^2) Summation[
 dZuuIno = dZddIno;
 
 (* tree-level couplings, Eq. (21) *)
-lamTree[[1]] = lamTree[[2]] = gtilde^2/4;
+lamTree[[1]] = lamTree[[2]] = (g2^2 + gY^2)/4;
 lamTree[[3]] = -lamTree[[1]];
 lamTree[[4]] = g2^2/2;
 lamTree[[5]] = lamTree[[6]] = lamTree[[7]] = 0;
@@ -646,13 +644,13 @@ lamHat := lamTree +
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
+    UnitStep[THRESHOLD - 1] ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
+   UnitStep[THRESHOLD - 1] (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
    UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + g2^2 dg2;
@@ -660,10 +658,10 @@ lamBar[[4]] = lamHat[[4]] +
 lamBar[[5]] = lamHat[[5]];
 
 lamBar[[6]] = lamHat[[6]] +
-    UnitStep[THRESHOLD - 1] (-gtilde^2/4 Conjugate[dZud]);
+    UnitStep[THRESHOLD - 1] (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2/4 dZud);
+    UnitStep[THRESHOLD - 1] ((g2^2 + gY^2)/4 dZud);
 
 (* relation to Haber/Wagner/Lee convention p. 6 *)
 lamWagnerLee = {
