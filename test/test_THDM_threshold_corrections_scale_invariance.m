@@ -1,8 +1,8 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
-mssmRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
-thdmRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
+mssmGaugeRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
+thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
 thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
 thdmThresholds = FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}];
 
@@ -35,9 +35,9 @@ approx = {
     trace[Yd, Adj[Yu], Yu, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YuMat].YuMat.ConjugateTranspose[YdMat]]
 };
 
-betag1MSSM = Cases[Get[mssmRGEs], {g1, b_, __} :> b][[1]];
+betag1MSSM = Cases[Get[mssmGaugeRGEs], {g1, b_, __} :> b][[1]];
 betagYMSSM = (Sqrt[3/5] betag1MSSM /. gRules);
-betag2MSSM = Cases[Get[mssmRGEs], {g2, b_, __} :> b][[1]] /. gRules;
+betag2MSSM = Cases[Get[mssmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
 
 betag1THDM = Cases[Get[thdmGaugeRGEs], {g1, b_, __} :> b][[1]];
 betagYTHDM = (Sqrt[3/5] betag1THDM /. gRules);
@@ -63,12 +63,13 @@ lambdaTreeRules = {
 };
 
 (* beta functions of lambda_i in the MSSM *)
-
 betaLambdaMSSM = (Dt[#] & /@ lambdaTree) /. {
     Dt[gY] -> betagYMSSM,
     Dt[g2] -> betag2MSSM
 } // Simplify;
 
+(* change in scale dependence since threshold corrections are
+   expressed in terms of THDM gauge couplings *)
 betaLambdaGaugeDiff = (Dt[#] & /@ lambdaTree) /. {
     Dt[gY] -> betagYMSSM - betagYTHDM,
     Dt[g2] -> betag2MSSM - betag2THDM
@@ -76,17 +77,16 @@ betaLambdaGaugeDiff = (Dt[#] & /@ lambdaTree) /. {
 
 (* beta functions of lambda_i in the THDM *)
 betaLambdaTHDM = {
-    Cases[Get[thdmRGEs], {Lambda1, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda2, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda3, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda4, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda5, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda6, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda7, b_, __} :> b][[1]]
+    Cases[Get[thdmLambdaRGEs], {Lambda1, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda2, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda3, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda4, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda5, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda6, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda7, b_, __} :> b][[1]]
 } /. gRules;
 
 (* difference of the beta functions in the two models *)
-
 betaDiff =
   Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. approx];
 
