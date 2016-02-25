@@ -58,7 +58,7 @@ GetTHDMThresholds1LFlags[] := {
     flagInoZdd   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
     flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
     flagInoZuu   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
-    flagdg       ->  0  (* Enable/disable gauge coupling renormalization *)
+    flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
 };
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];

@@ -3,6 +3,7 @@ Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Threshold
 
 mssmRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
 thdmRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
+thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
 thdmThresholds = FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}];
 
 gRules = {g1 -> Sqrt[5/3] gY};
@@ -38,6 +39,10 @@ betag1MSSM = Cases[Get[mssmRGEs], {g1, b_, __} :> b][[1]];
 betagYMSSM = (Sqrt[3/5] betag1MSSM /. gRules);
 betag2MSSM = Cases[Get[mssmRGEs], {g2, b_, __} :> b][[1]] /. gRules;
 
+betag1THDM = Cases[Get[thdmGaugeRGEs], {g1, b_, __} :> b][[1]];
+betagYTHDM = (Sqrt[3/5] betag1THDM /. gRules);
+betag2THDM = Cases[Get[thdmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
+
 (* tree-level in SARAH convention *)
 lambdaTree = {
     1/8 (gY^2 + g2^2),
@@ -64,6 +69,11 @@ betaLambdaMSSM = (Dt[#] & /@ lambdaTree) /. {
     Dt[g2] -> betag2MSSM
 } // Simplify;
 
+betaLambdaGaugeDiff = (Dt[#] & /@ lambdaTree) /. {
+    Dt[gY] -> betagYMSSM - betagYTHDM,
+    Dt[g2] -> betag2MSSM - betag2THDM
+} // Simplify;
+
 (* beta functions of lambda_i in the THDM *)
 betaLambdaTHDM = {
     Cases[Get[thdmRGEs], {Lambda1, b_, __} :> b][[1]],
@@ -78,7 +88,7 @@ betaLambdaTHDM = {
 (* difference of the beta functions in the two models *)
 
 betaDiff =
-  Expand[(betaLambdaTHDM - betaLambdaMSSM) /. lambdaTreeRules //. approx];
+  Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. approx];
 
 (* load threshold corrections *)
 Get[thdmThresholds];
