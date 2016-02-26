@@ -21,9 +21,6 @@ approx = {
     msl[_] :> MSUSY,
     M1 -> Mu,
     M2 -> Mu,
-    Abs[p_] :> p,
-    Conjugate[p_] :> p,
-    Re[p_] :> p,
     trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
     trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
     trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
@@ -99,7 +96,7 @@ lamSARAH[[2]] = lamSARAH[[2]]/2;
 thresh = lamSARAH //. approx //. GetTHDMThresholds1LLoopFunctions[];
 
 (* mu-dependence of threshold corrections *)
-threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2];
+threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2] /. Derivative[1][Re][_] -> 1;
 
 TestEquality[Simplify[betaDiff - threshMuDep], Table[0, {i,1,7}]];
 
