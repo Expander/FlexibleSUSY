@@ -16,7 +16,13 @@ lambdaTree = {
     0, 0, 0
 };
 
-TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[loopOrder -> 0]],
+Print["testing THDM flags ..."];
+
+zeroFlags = { flagSferm -> 0, flagSfermZdd -> 0, flagSfermZud -> 0,
+              flagSfermZuu-> 0, flagIno -> 0, flagInoZdd -> 0,
+              flagInoZud -> 0, flagInoZuu -> 0, flagdg -> 0 };
+
+TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[flags -> zeroFlags]],
              Table[0, {i,1,7}]];
 
 approx = {
