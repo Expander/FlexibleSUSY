@@ -14,7 +14,6 @@ YdMat = Table[Yd[j, i], {i, 1, 3}, {j, 1, 3}];
 YeMat = Table[Ye[j, i], {i, 1, 3}, {j, 1, 3}];
 
 approx = {
-    Nc -> 3,
     mse[_] :> MSUSY,
     msu[_] :> MSUSY,
     msd[_] :> MSUSY,
