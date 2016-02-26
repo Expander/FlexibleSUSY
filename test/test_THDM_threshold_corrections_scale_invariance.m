@@ -25,7 +25,6 @@ approx = {
     Abs[p_] :> p,
     Conjugate[p_] :> p,
     Re[p_] :> p,
-    THRESHOLD -> 1,
     trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
     trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
     trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
