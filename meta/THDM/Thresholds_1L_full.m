@@ -8,6 +8,10 @@ BeginPackage["THDMThresholds1L`"];
 (* loop functions *)
 {A0, B0, DB0, C0, D0, D2tilde, D4tilde, W};
 
+(* flags *)
+{ flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
+  flagInoZdd, flagInoZud, flagInoZuu, flagdg };
+
 GetTHDMThresholds1L::usage = "Returns list of 1L threshold corrections
  for lambda_1 ... lambda_7 using the convention of
  arxiv:hep-ph/9307201 and arxiv:1508.00576.  The expressions have been
