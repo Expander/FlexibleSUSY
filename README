@@ -119,8 +119,8 @@ Creating the soucre code documentation
 ======================================
 
 FlexibleSUSY's source code documentation (including the generated
-source code files) can be generated with Doxygen in HTML format.  To
-generate the documentation please run:
+source code files) can be generated with Doxygen in HTML or man
+format.  To generate the HTML documentation please run:
 
    $ make doc-html
 
@@ -128,6 +128,15 @@ The generated HTML index file can then be found in doc/html/index.html
 and can be viewed with any HTML browser, e.g.
 
    $ firefox doc/html/index.html
+
+To generate the man documentation please run:
+
+   $ make doc-man
+
+The generated man pages can then be found in doc/man/man3/ and can be
+viewed as
+
+   $ man doc/man/man3/model_file_options.3
 
 
 Creating only the source code files -- no compilation

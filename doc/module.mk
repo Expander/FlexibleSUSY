@@ -16,8 +16,10 @@ DOC_VERSION_TEX := \
 		$(DIR)/version.tex
 
 HTML_OUTPUT_DIR := $(DIR)/html
+MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
+MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
 DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
@@ -51,7 +53,8 @@ LATEX_TMP       := \
 		$(patsubst %.pdf, %.spl, $(MANUAL_PDF) $(PAPER_PDF))
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PAGE) doc doc-html doc-pdf release-paper
+		$(INDEX_PAGE) $(MAN_PAGE) doc doc-html doc-man doc-pdf \
+		release-paper
 
 doc: all-$(MODNAME)
 
@@ -59,7 +62,9 @@ doc-pdf: $(MANUAL_PDF) $(PAPER_PDF)
 
 doc-html: $(INDEX_PAGE)
 
-all-$(MODNAME): doc-html doc-pdf
+doc-man: $(MAN_PAGE)
+
+all-$(MODNAME): doc-html doc-man doc-pdf
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -95,6 +100,17 @@ $(INDEX_PAGE):
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \
 		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		) | doxygen -
+
+$(MAN_PAGE):
+		( cat $(DOXYFILE) ; \
+		  echo "INPUT = $(MODULES) $(README_FILE)" ; \
+		  echo "OUTPUT_DIRECTORY = $(MAN_OUTPUT_DIR)" ; \
+		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
+		        $(TEST_SRC) $(TEST_META)"; \
+		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		  echo "GENERATE_MAN = YES"; \
+		  echo "GENERATE_HTML = NO"; \
 		) | doxygen -
 
 $(MANUAL_PDF): $(MANUAL_SRC)
