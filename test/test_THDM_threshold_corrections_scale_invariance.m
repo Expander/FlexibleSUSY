@@ -4,7 +4,6 @@ Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Threshold
 mssmGaugeRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
 thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
 thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
-thdmThresholds = FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}];
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
@@ -77,9 +76,6 @@ betaLambdaTHDM = {
 (* difference of the beta functions in the two models *)
 betaDiff =
   Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. expandTraces];
-
-(* load threshold corrections *)
-Get[thdmThresholds];
 
 (* convert to SARAH convention *)
 lamSARAH = GetTHDMThresholds1L[];
