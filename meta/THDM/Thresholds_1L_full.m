@@ -485,10 +485,11 @@ dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
 dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
 dZW = g2^2/(6 16 Pi^2) (
-    flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
+    - 4 (* MS-bar/DR-bar conversion term *)
+    + flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
     + flagSferm (
         Summation[
-            Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}] - 4));
+            Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}]));
 (* Eq. (117) *)
 dZB = gY^2/(3 16 Pi^2) (
     flagIno 2 Log[Abs[Mu]^2/Q^2]
