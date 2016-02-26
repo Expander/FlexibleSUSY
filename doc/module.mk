@@ -17,7 +17,7 @@ DOC_VERSION_TEX := \
 
 HTML_OUTPUT_DIR := $(DIR)/html
 PDF_OUTPUT_DIR  := $(DIR)
-INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
+INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
 DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
@@ -51,13 +51,13 @@ LATEX_TMP       := \
 		$(patsubst %.pdf, %.spl, $(MANUAL_PDF) $(PAPER_PDF))
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PADE) doc doc-html doc-pdf release-paper
+		$(INDEX_PAGE) doc doc-html doc-pdf release-paper
 
 doc: all-$(MODNAME)
 
 doc-pdf: $(MANUAL_PDF) $(PAPER_PDF)
 
-doc-html: $(INDEX_PADE)
+doc-html: $(INDEX_PAGE)
 
 all-$(MODNAME): doc-html doc-pdf
 
@@ -88,7 +88,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(INDEX_PADE):
+$(INDEX_PAGE):
 		( cat $(DOXYFILE) ; \
 		  echo "INPUT = $(MODULES) $(README_FILE)" ; \
 		  echo "OUTPUT_DIRECTORY = $(HTML_OUTPUT_DIR)" ; \
