@@ -196,6 +196,15 @@ Afterwards, the standalone package can be build via
    $ ./configure
    $ make
 
+It is also possible to create a package which includes only the
+generated source code of a given model.  To create such a package run
+
+    make pack-<model>-src
+
+where <model> is the name of the model whose generated source code
+shall be packed.  After `make' has finished, the package file
+<model>.tar.gz can be found in the working directory.
+
 
 Dynamic libraries
 =================
