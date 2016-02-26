@@ -711,7 +711,7 @@ lamBar[[3]] := lamHat[[3]] +
    UnitStep[loopOrder - 1] (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[loopOrder - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2 + g2^2 dg2);
+   UnitStep[loopOrder - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2 dg2);
 
 lamBar[[5]] = lamHat[[5]];
 
