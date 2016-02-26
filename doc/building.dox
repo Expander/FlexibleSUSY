@@ -203,6 +203,35 @@ This will create a standalone executable which does not depend on
 dynamic libraries.
 
 
+\section cleaning Cleaning up
+
+There are several make targets to remove generated files, compiled
+object files, libraries or executables:
+
+     make clean      # deletes all .d .o .a .x and generated files
+
+     make distclean  # calls `make clean' and deletes in addition
+                     # Makefile flexiblesusy-config config.*
+                     # config/list_sarah_model_files.sh
+
+     make clean-dep  # deletes all .d files
+
+     make clean-obj  # deletes all .o files
+
+For each model `<model>` or addon there are specific clean targets to
+remove model-specific files:
+
+     make clean-<model>     # deletes .d .o .a .x and generated files
+
+     make distclean-<model> # same as `make clean-<model>'
+
+     make clean-<model>-dep # deletes .d files
+
+     make clean-<model>-obj # deletes .o files
+
+     make clean-<model>-src # deletes generated files
+
+
 \section looptools Looptools
 
 It is possible to use Looptools (http://www.feynarts.de/looptools/)
