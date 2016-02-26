@@ -14,13 +14,6 @@ YdMat = Table[Yd[j, i], {i, 1, 3}, {j, 1, 3}];
 YeMat = Table[Ye[j, i], {i, 1, 3}, {j, 1, 3}];
 
 approx = {
-    mse[_] :> MSUSY,
-    msu[_] :> MSUSY,
-    msd[_] :> MSUSY,
-    msq[_] :> MSUSY,
-    msl[_] :> MSUSY,
-    M1 -> Mu,
-    M2 -> Mu,
     trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
     trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
     trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
