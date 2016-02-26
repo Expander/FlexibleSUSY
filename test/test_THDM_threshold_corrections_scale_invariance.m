@@ -13,7 +13,7 @@ YuMat = Table[Yu[j, i], {i, 1, 3}, {j, 1, 3}];
 YdMat = Table[Yd[j, i], {i, 1, 3}, {j, 1, 3}];
 YeMat = Table[Ye[j, i], {i, 1, 3}, {j, 1, 3}];
 
-approx = {
+expandTraces = {
     trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
     trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
     trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
@@ -76,7 +76,7 @@ betaLambdaTHDM = {
 
 (* difference of the beta functions in the two models *)
 betaDiff =
-  Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. approx];
+  Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. expandTraces];
 
 (* load threshold corrections *)
 Get[thdmThresholds];
@@ -86,7 +86,7 @@ lamSARAH = GetTHDMThresholds1L[];
 lamSARAH[[1]] = lamSARAH[[1]]/2;
 lamSARAH[[2]] = lamSARAH[[2]]/2;
 
-thresh = lamSARAH //. approx //. GetTHDMThresholds1LLoopFunctions[];
+thresh = lamSARAH //. GetTHDMThresholds1LLoopFunctions[];
 
 (* mu-dependence of threshold corrections *)
 threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2] /. Derivative[1][Re][_] -> 1;
