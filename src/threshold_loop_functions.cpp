@@ -647,8 +647,11 @@ static double Iaac(double a, double b, double c)
 
 double Iabc(double a, double b, double c)
 {
-   if (is_zero(a) || is_zero(b) || is_zero(c))
-      return 0.; // Iabc(0,0,0) is not defined
+   if (is_zero(a) && is_zero(b) && is_zero(c) ||
+       is_zero(a) && is_zero(b) ||
+       is_zero(a) && is_zero(c) ||
+       is_zero(b) && is_zero(c))
+      return 0.;
 
    if (is_equal_rel(std::abs(a), std::abs(b), 0.01) && is_equal_rel(std::abs(a), std::abs(c), 0.01))
       return Iaaa(std::abs(a),std::abs(b),std::abs(c));
