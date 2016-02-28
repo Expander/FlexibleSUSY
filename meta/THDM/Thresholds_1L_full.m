@@ -483,53 +483,58 @@ GetTHDMThresholds1LLoopFunctions[] := {
 
 (* counter-terms *)
 
-dgY = -dZB/2 flagdg;
-dg2 = -dZW/2 flagdg;
-dZdd = flagSfermZdd dZddSferm + flagInoZdd dZddIno;
-dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
-dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
+dgY := -dZB/2 flagdg;
+dg2 := -dZW/2 flagdg;
+dZdd := flagSfermZdd dZddSferm + flagInoZdd dZddIno;
+dZud := flagSfermZud dZudSferm + flagInoZud dZudIno;
+dZuu := flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
-dZW = g2^2/(6 16 Pi^2) (
+dZW := Module[{i},
+    g2^2/(6 16 Pi^2) (
     - 4 (* MS-bar/DR-bar conversion term *)
     + flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
     + flagSferm (
         Summation[
-            Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}]));
+            Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (117) *)
-dZB = gY^2/(3 16 Pi^2) (
+dZB :=  Module[{i},
+    gY^2/(3 16 Pi^2) (
     flagIno 2 Log[Abs[Mu]^2/Q^2]
     + flagSferm (
         Summation[
             Log[mse[i]^2/Q^2] + Log[msl[i]^2/Q^2]/2 +
             4 Nc/9 Log[msu[i]^2/Q^2] + Nc/9 Log[msd[i]^2/Q^2] +
-            Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]));
+            Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (118) *)
-dZddSferm = 1/(32 Pi^2) Summation[
+dZddSferm := Module[{i,j},
+    1/(32 Pi^2) Summation[
     3 DB0[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
      + 3 Abs[Mu]^2 DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Yu[j, i]]
      + DB0[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZddIno = -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] + 
+dZddIno := -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] +
      3 g2^2 W[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
-dZudSferm = -1/(16 Pi^2) Summation[
+dZudSferm :=  Module[{i,j},
+    -1/(16 Pi^2) Summation[
     3 Conjugate[Mu] DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Td[j, i]]
      + 3 Conjugate[Mu] DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Tu[j, i]]
      + Conjugate[Mu] DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZudIno = -1/(16 Pi^2) Conjugate[
+dZudIno := -1/(16 Pi^2) Conjugate[
     Mu] (gY^2 Conjugate[M1] DB0[Abs[M1], Abs[Mu]] +
      3 g2^2 Conjugate[M2] DB0[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
-dZuuSferm = 1/(32 Pi^2) Summation[
+dZuuSferm :=  Module[{i,j},
+    1/(32 Pi^2) Summation[
     3 DB0[msu[i], msq[j]] Tu[j, i] Conjugate[Tu[j, i]]
      + 3 Abs[Mu]^2 DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Yd[j, i]]
      + Abs[Mu]^2 DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Ye[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZuuIno = dZddIno;
+dZuuIno := dZddIno;
 
 (* tree-level couplings, Eq. (21) *)
 lamTree[[1]] = lamTree[[2]] = (g2^2 + gY^2)/4;
@@ -562,19 +567,20 @@ lamIno[[6]] = lamIno123467[6];
 lamIno[[7]] = lamIno123467[7];
 
 (* Eq. (127) *)
-Yee[i_, j_]    := Summation[Conjugate[Ye[l1, i]] Ye[l1, j], {l1, 1, 3}];
-Yeebar[i_, j_] := Summation[Ye[i, l2] Conjugate[Ye[j, l2]], {l2, 1, 3}];
-Yuu[i_, j_]    := Summation[Conjugate[Yu[l3, i]] Yu[l3, j], {l3, 1, 3}];
-Yuubar[i_, j_] := Summation[Yu[i, l4] Conjugate[Yu[j, l4]], {l4, 1, 3}];
-Ydd[i_, j_]    := Summation[Conjugate[Yd[l5, i]] Yd[l5, j], {l5, 1, 3}];
-Yddbar[i_, j_] := Summation[Yd[i, l6] Conjugate[Yd[j, l6]], {l6, 1, 3}];
-Yud[i_, j_]    := Summation[Conjugate[Yu[l7, i]] Yd[l7, j], {l7, 1, 3}];
-Ydu[i_, j_]    := Summation[Conjugate[Yd[l8, i]] Yu[l8, j], {l8, 1, 3}];
+Yee[i_, j_]    := Module[{l1}, Summation[Conjugate[Ye[l1, i]] Ye[l1, j], {l1, 1, 3}]];
+Yeebar[i_, j_] := Module[{l2}, Summation[Ye[i, l2] Conjugate[Ye[j, l2]], {l2, 1, 3}]];
+Yuu[i_, j_]    := Module[{l3}, Summation[Conjugate[Yu[l3, i]] Yu[l3, j], {l3, 1, 3}]];
+Yuubar[i_, j_] := Module[{l4}, Summation[Yu[i, l4] Conjugate[Yu[j, l4]], {l4, 1, 3}]];
+Ydd[i_, j_]    := Module[{l5}, Summation[Conjugate[Yd[l5, i]] Yd[l5, j], {l5, 1, 3}]];
+Yddbar[i_, j_] := Module[{l6}, Summation[Yd[i, l6] Conjugate[Yd[j, l6]], {l6, 1, 3}]];
+Yud[i_, j_]    := Module[{l7}, Summation[Conjugate[Yu[l7, i]] Yd[l7, j], {l7, 1, 3}]];
+Ydu[i_, j_]    := Module[{l8}, Summation[Conjugate[Yd[l8, i]] Yu[l8, j], {l8, 1, 3}]];
 
 (* sfermion contribution *)
 
 (* Eq. (125) *)
-lamSlep1234[l_] := Summation[
+lamSlep1234[l_] := Module[{i,j,k},
+    Summation[
    (b1[l] KroneckerDelta[i, j]
        + b2[l] Yee[i, i] KroneckerDelta[i, j]
        + b3[l] Yee[i, j] Yee[j, i]
@@ -595,10 +601,11 @@ lamSlep1234[l_] := Summation[
          + c7[l] Abs[Mu]^2 Ye[j, i] Conjugate[Ye[k, i]] Yeebar[k, j]
          + c8[l] Te[j, i] Conjugate[Te[k, i]] Yeebar[k, j]
         ) C0[mse[i], msl[j], msl[k]]
-     , {k, 1, 3}], {i, 1, 3}, {j, 1, 3}];
+     , {k, 1, 3}], {i, 1, 3}, {j, 1, 3}]];
 
 (* Eq. (126) of lambda_{1,2,3,4}(n) *)
-lamSquark1234[n_] := Summation[
+lamSquark1234[n_] := Module[{i,j,k,l},
+    Summation[
    (b7[n] KroneckerDelta[i, j]
        + b8[n] Ydd[i, i] KroneckerDelta[i, j]
        + b9[n] Ydd[i, j] Ydd[j, i]
@@ -653,10 +660,11 @@ lamSquark1234[n_] := Summation[
         + d4[n][i, j, k, l] D0[msd[i], msq[j], msq[k], msu[l]]
        , {l, 1, 3}]
      , {k, 1, 3}]
-   , {i, 1, 3}, {j, 1, 3}];
+   , {i, 1, 3}, {j, 1, 3}]];
 
 (* Eq. (128) for lambda_{6,7}(n) *)
-lamSferm67[n_] := Summation[
+lamSferm67[n_] := Module[{i,j,k,l},
+    Summation[
    (c1p[n] Mu Te[k, i] Conjugate[Ye[k, i]] KroneckerDelta[i, j] + 
        c2p[n] Mu Te[k, i] Conjugate[Ye[k, j]] Yee[i, j]) C0[mse[i], 
       mse[j], msl[k]]
@@ -679,7 +687,7 @@ lamSferm67[n_] := Summation[
      +d1[n][i, j, k, l] D0[mse[i], mse[j], msl[k], msl[l]]
       + d2[n][i, j, k, l] D0[msd[i], msd[j], msq[k], msq[l]]
       + d3[n][i, j, k, l] D0[msq[i], msq[j], msq[k], msq[l]]
-     , {l, 1, 3}], {j, 1, 3}, {k, 1, 3}, {i, 1, 3}];
+     , {l, 1, 3}], {j, 1, 3}, {k, 1, 3}, {i, 1, 3}]];
 
 lamSquark = {Undef, Undef, Undef, Undef};
 lamSquark[[1]] = lamSquark1234[1];
@@ -693,11 +701,12 @@ lamSferm[[2]] = lamSlep1234[2] + lamSquark[[2]];
 lamSferm[[3]] = lamSlep1234[3] + lamSquark[[3]];
 lamSferm[[4]] = lamSlep1234[4] + lamSquark[[4]];
 (* Eq. (123) *)
-lamSferm[[5]] = Summation[
+lamSferm[[5]] = Module[{i,j,k,l},
+    Summation[
    d1[5][i, j, k, l] D0[mse[i], mse[j], msl[k], msl[l]]
     + d2[5][i, j, k, l] D0[msd[i], msd[j], msq[k], msq[l]]
     + d3[5][i, j, k, l] D0[msq[i], msq[j], msu[k], msu[l]]
-   , {i, 1, 3}, {j, 1, 3}, {k, 1, 3}, {l, 1, 3}];
+   , {i, 1, 3}, {j, 1, 3}, {k, 1, 3}, {l, 1, 3}]];
 lamSferm[[6]] = lamSferm67[6];
 lamSferm[[7]] = lamSferm67[7];
 
