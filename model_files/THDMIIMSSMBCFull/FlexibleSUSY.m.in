@@ -63,8 +63,8 @@ translate = {
     W[m1_,m2_,mu_]               :> TCW[m1,m2,mu]
 };
 
-deltaLambda0L = GetTHDMThresholds1L[THDMThresholds1L`loopOrder -> {1,0}] //. translate;
-deltaLambda1L = GetTHDMThresholds1L[THDMThresholds1L`loopOrder -> {0,1}] //. translate;
+deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}] //. translate;
+deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}] //. translate;
 
 HighScaleInput = {
     {Lambda1, 1/2 (deltaLambda0L[[1]]
