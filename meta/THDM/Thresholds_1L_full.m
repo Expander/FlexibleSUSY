@@ -6,7 +6,7 @@ BeginPackage["THDMThresholds1L`"];
 {gY, g2, Yu, Yd, Ye, Tu, Td, Te, msu, msd, mse, msq, msl, M1, M2, Mu, Q};
 
 (* loop functions *)
-{A0, B0, DB0, C0, D0, D2tilde, D4tilde, W};
+{B0, DB0, C0, D0, D2tilde, D4tilde, W};
 
 (* flags *)
 { flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
