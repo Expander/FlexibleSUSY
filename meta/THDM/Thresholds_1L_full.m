@@ -464,8 +464,6 @@ GetTHDMThresholds1LLoopFunctions[] := {
         + m1^4 D0[m1, m2, m3, m4]
        ),
 
-    D4tilde[m1_, m2_, m3_, m4_] :> D4tilde[m1, m2, m3, m4, Q],
-
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        2/3 - 2 Log[mu^2/m2^2],
        (-2/eps - 2 Log[mu^2/m1^2]
@@ -545,11 +543,11 @@ lamIno[[5]] = (
 (* Eq. (121) *)
 lamIno123467[i_] := (
    g2^4 (as[i] + a2[i] D2tilde[M2, M2, Abs[Mu], Abs[Mu]] + 
-       a4[i] D4tilde[M2, M2, Abs[Mu], Abs[Mu]])
+       a4[i] D4tilde[M2, M2, Abs[Mu], Abs[Mu], Q])
     + g2^2 gY^2 (asp[i] + a2p[i] D2tilde[M1, M2, Abs[Mu], Abs[Mu]] + 
-       a4p[i] D4tilde[M1, M2, Abs[Mu], Abs[Mu]])
+       a4p[i] D4tilde[M1, M2, Abs[Mu], Abs[Mu], Q])
     + gY^4 (aspp[i] + a2pp[i] D2tilde[M1, M1, Abs[Mu], Abs[Mu]] + 
-       a4pp[i] D4tilde[M1, M1, Abs[Mu], Abs[Mu]])
+       a4pp[i] D4tilde[M1, M1, Abs[Mu], Abs[Mu], Q])
    );
 
 lamIno[[1]] = lamIno123467[1];
