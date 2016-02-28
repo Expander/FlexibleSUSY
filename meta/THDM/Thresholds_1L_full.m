@@ -13,6 +13,9 @@ EndPackage[];
 { flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
   flagInoZdd, flagInoZud, flagInoZuu, flagdg };
 
+(* options *)
+{ coefficients, flags, loopFunctions, loopOrder, sumHead };
+
 GetTHDMThresholds1L::usage = "Returns list of 1L threshold corrections
  for lambda_1 ... lambda_7 using the convention of
  arxiv:hep-ph/9307201 and arxiv:1508.00576.  The expressions have been
