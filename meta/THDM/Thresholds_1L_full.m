@@ -410,8 +410,6 @@ GetTHDMThresholds1LLoopFunctions[] := {
        1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
        ],
 
-    B0[m1_, m2_] :> B0[m1, m2, Q],
-
     DB0[m1_, m2_] :> If[PossibleZeroQ[m1 - m2],
        1/(6*m2^2),
        (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
@@ -473,9 +471,7 @@ GetTHDMThresholds1LLoopFunctions[] := {
        (-2/eps - 2 Log[mu^2/m1^2]
         - Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
         - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
-       ],
-
-    W[m1_, m2_] :> W[m1, m2, Q]
+       ]
 };
 
 (* counter-terms *)
@@ -510,8 +506,8 @@ dZddSferm := Module[{i,j},
      + DB0[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZddIno := -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] +
-     3 g2^2 W[Abs[M2], Abs[Mu]]);
+dZddIno := -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu], Q] +
+     3 g2^2 W[Abs[M2], Abs[Mu], Q]);
 (* Eq. (118) *)
 dZudSferm :=  Module[{i,j},
     -1/(16 Pi^2) Summation[
@@ -581,11 +577,11 @@ lamSlep1234[l_] := Module[{i,j,k},
    (b1[l] KroneckerDelta[i, j]
        + b2[l] Yee[i, i] KroneckerDelta[i, j]
        + b3[l] Yee[i, j] Yee[j, i]
-      ) B0[mse[i], mse[j]]
+      ) B0[mse[i], mse[j], Q]
     + (b4[l] KroneckerDelta[i, j]
        + b5[l] Yeebar[i, i] KroneckerDelta[i, j]
        + b6[l] Yeebar[i, j] Yeebar[j, i]
-      ) B0[msl[i], msl[j]]
+      ) B0[msl[i], msl[j], Q]
     + Summation[
      (c1[l] Abs[Mu]^2 Ye[k, i] Conjugate[Ye[k, i]] KroneckerDelta[i, j]
          + c2[l] Te[k, i] Conjugate[Te[k, i]] KroneckerDelta[i, j]
@@ -606,19 +602,19 @@ lamSquark1234[n_] := Module[{i,j,k,l},
    (b7[n] KroneckerDelta[i, j]
        + b8[n] Ydd[i, i] KroneckerDelta[i, j]
        + b9[n] Ydd[i, j] Ydd[j, i]
-      ) B0[msd[i], msd[j]]
-    + b10[n] Ydu[i, j] Yud[j, i] B0[msd[i], msu[j]]
+      ) B0[msd[i], msd[j], Q]
+    + b10[n] Ydu[i, j] Yud[j, i] B0[msd[i], msu[j], Q]
     + (b11[n] KroneckerDelta[i, j]
        + b12[n] Yuu[i, i] KroneckerDelta[i, j]
        + b13[n] Yuu[i, j] Yuu[j, i]
-      ) B0[msu[i], msu[j]]
+      ) B0[msu[i], msu[j], Q]
     + (b14[n] KroneckerDelta[i, j]
        + b15[n] Yddbar[i, i] KroneckerDelta[i, j]
        + b16[n] Yuubar[i, i] KroneckerDelta[i, j]
        + b17[n] Yddbar[i, j] Yddbar[j, i]
        + b18[n] Yuubar[i, j] Yuubar[j, i]
        + b19[n] Yddbar[i, j] Yuubar[j, i]
-      ) B0[msq[i], msq[j]]
+      ) B0[msq[i], msq[j], Q]
     + Summation[(c9[n] Abs[Mu]^2 Yd[k, i] Conjugate[
            Yd[k, i]] KroneckerDelta[i, j]
          + c10[n] Td[k, i] Conjugate[Td[k, i]] KroneckerDelta[i, j]
