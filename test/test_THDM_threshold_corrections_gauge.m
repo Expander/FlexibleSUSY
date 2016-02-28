@@ -4,6 +4,11 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
+Print["testing THDM loop order ..."];
+
+TestEquality[GetTHDMThresholds1L[loopOrder -> {0,0}],
+             Table[0, {i,1,7}]];
+
 Print["testing THDM tree-level ..."];
 
 (* tree-level lambda couplings in convention of
@@ -16,7 +21,7 @@ lambdaTree = {
     0, 0, 0
 };
 
-TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[loopOrder -> 0]],
+TestEquality[Simplify[lambdaTree - GetTHDMThresholds1L[loopOrder -> {1,0}]],
              Table[0, {i,1,7}]];
 
 Print["testing THDM flags ..."];

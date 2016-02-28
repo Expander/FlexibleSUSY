@@ -36,7 +36,12 @@ GetTHDMThresholds1L::usage = "Returns list of 1L threshold corrections
 
  To select the loop order, run
 
-    GetTHDMThresholds1L[loopOrder -> 1]
+    GetTHDMThresholds1L[loopOrder -> {1,1}]
+
+ {0,0} means no tree-level and no 1-loop.
+ {1,0} means only tree-level.
+ {0,1} means only 1-loop.
+ {1,1} means tree-level plus 1-loop.
 
  By default, the loop functions are kept unevaluated.";
 
@@ -697,35 +702,35 @@ lamSferm[[6]] = lamSferm67[6];
 lamSferm[[7]] = lamSferm67[7];
 
 (* Eq. (116) *)
-lamHat := lamTree +
-    UnitStep[loopOrder - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
+lamHat := loopOrder0 lamTree +
+    loopOrder1 (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[loopOrder - 1] ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
+    loopOrder1 ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[loopOrder - 1] ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
+   loopOrder1 ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[loopOrder - 1] (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
+   loopOrder1 (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[loopOrder - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2 dg2);
+   loopOrder1 (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2 dg2);
 
 lamBar[[5]] = lamHat[[5]];
 
 lamBar[[6]] = lamHat[[6]] +
-    UnitStep[loopOrder - 1] (-(g2^2 + gY^2)/4 Conjugate[dZud]);
+    loopOrder1 (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    UnitStep[loopOrder - 1] ((g2^2 + gY^2)/4 dZud);
+    loopOrder1 ((g2^2 + gY^2)/4 dZud);
 
 Options[GetTHDMThresholds1L] = {
     coefficients -> GetTHDMThresholds1LCoefficients[],
     flags -> GetTHDMThresholds1LFlags[],
     loopFunctions -> {},
-    loopOrder -> 1,
+    loopOrder -> {1,1},
     sumHead -> Sum
 };
 
@@ -739,7 +744,8 @@ GetTHDMThresholds1L[OptionsPattern[]] := {
     lamBar[[6]],
     lamBar[[7]]
 } /.
-    loopOrder -> OptionValue[loopOrder] /.
+    loopOrder0 -> OptionValue[loopOrder][[1]] /.
+    loopOrder1 -> OptionValue[loopOrder][[2]] /.
     OptionValue[flags] /.
     OptionValue[coefficients] /.
     Summation -> OptionValue[sumHead] //.
