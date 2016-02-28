@@ -466,7 +466,7 @@ GetTHDMThresholds1LLoopFunctions[] := {
 
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        2/3 - 2 Log[mu^2/m2^2],
-       (-2/eps - 2 Log[mu^2/m1^2]
+       (- 2 Log[mu^2/m1^2]
         - Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
         - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
        ]
