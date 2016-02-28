@@ -1,6 +1,7 @@
 (* Implementation of THDM 1-loop threshold corrections from arxiv:0901.2065 *)
 
 BeginPackage["THDMThresholds1L`"];
+EndPackage[];
 
 (* parameters *)
 {gY, g2, Yu, Yd, Ye, Tu, Td, Te, msu, msd, mse, msq, msl, M1, M2, Mu, Q};
@@ -56,7 +57,7 @@ GetTHDMThresholds1LLoopFunctions::usage = "Returns list of replacement
  rules for the loop functions defined in Eq. (130)-(131) of
  arxiv:0901.2065.";
 
-Begin["`Private`"];
+Begin["THDMThresholds1L`Private`"];
 
 GetTHDMThresholds1LFlags[] := {
     flagSferm    ->  1, (* Enable/disable sfermion contribution *)
@@ -757,5 +758,3 @@ GetTHDMThresholds1L[OptionsPattern[]] := {
     OptionValue[loopFunctions];
 
 End[];
-
-EndPackage[];
