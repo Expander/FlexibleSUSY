@@ -21,6 +21,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "threshold_loop_functions.hpp"
+#include "numerics.h"
 
 using namespace flexiblesusy;
 using namespace flexiblesusy::threshold_loop_functions;
@@ -43,7 +44,11 @@ BOOST_AUTO_TEST_CASE( test_C0 )
    };
 
    for (int i = 0; i < sizeof(value)/sizeof(value[0]); i++) {
-      BOOST_CHECK_EQUAL(C0(value[i].m1, value[i].m2, value[i].m3),
-                        -Iabc(value[i].m1, value[i].m2, value[i].m3));
+      BOOST_MESSAGE("> m1 = " << value[i].m1
+                    << ", m2 = " << value[i].m2
+                    << ", m3 = " << value[i].m3);
+      BOOST_CHECK_CLOSE(c0(value[i].m1, value[i].m2, value[i].m3),
+                        -Iabc(value[i].m1, value[i].m2, value[i].m3),
+                        1e-10);
    }
 }
