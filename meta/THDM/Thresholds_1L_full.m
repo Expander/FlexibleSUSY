@@ -78,6 +78,7 @@ lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
 GetTHDMThresholds1LCoefficients[] := {
     Nc -> 3,
+    kappa -> 1/(16 Pi^2),
 
     (* Eq. (122) *)
     as[1] -> -3/4,
@@ -484,7 +485,7 @@ dZud := flagSfermZud dZudSferm + flagInoZud dZudIno;
 dZuu := flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
 dZW := Module[{i},
-    g2^2/(6 16 Pi^2) (
+    g2^2 kappa/6 (
     - 4 (* MS-bar/DR-bar conversion term *)
     + flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
     + flagSferm (
@@ -492,7 +493,7 @@ dZW := Module[{i},
             Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (117) *)
 dZB :=  Module[{i},
-    gY^2/(3 16 Pi^2) (
+    gY^2 kappa/3 (
     flagIno 2 Log[Abs[Mu]^2/Q^2]
     + flagSferm (
         Summation[
@@ -501,28 +502,28 @@ dZB :=  Module[{i},
             Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (118) *)
 dZddSferm := Module[{i,j},
-    1/(32 Pi^2) Summation[
+    kappa/2 Summation[
     3 DB0[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
      + 3 Abs[Mu]^2 DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Yu[j, i]]
      + DB0[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZddIno := -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu], Q] +
+dZddIno := -kappa/8 (gY^2 W[Abs[M1], Abs[Mu], Q] +
      3 g2^2 W[Abs[M2], Abs[Mu], Q]);
 (* Eq. (118) *)
 dZudSferm :=  Module[{i,j},
-    -1/(16 Pi^2) Summation[
+    -kappa Summation[
     3 Conjugate[Mu] DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Td[j, i]]
      + 3 Conjugate[Mu] DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Tu[j, i]]
      + Conjugate[Mu] DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
     , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZudIno := -1/(16 Pi^2) Conjugate[
+dZudIno := -kappa Conjugate[
     Mu] (gY^2 Conjugate[M1] DB0[Abs[M1], Abs[Mu]] +
      3 g2^2 Conjugate[M2] DB0[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
 dZuuSferm :=  Module[{i,j},
-    1/(32 Pi^2) Summation[
+    kappa/2 Summation[
     3 DB0[msu[i], msq[j]] Tu[j, i] Conjugate[Tu[j, i]]
      + 3 Abs[Mu]^2 DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Yd[j, i]]
      + Abs[Mu]^2 DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Ye[j, i]]
@@ -706,7 +707,7 @@ lamSferm[[7]] = lamSferm67[7];
 
 (* Eq. (116) *)
 lamHat := loopOrder0 lamTree +
-    loopOrder1 (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
+    loopOrder1 kappa (flagIno lamIno + flagSferm lamSferm);
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
