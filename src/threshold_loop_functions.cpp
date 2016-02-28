@@ -723,7 +723,7 @@ double DB0(double m1, double m2)
  */
 double C0(double m1, double m2, double m3)
 {
-   return -Iabc(m1, m2, m3);
+   return c0(m1, m2, m3);
 }
 
 double D0(double m1, double m2, double m3, double m4)
