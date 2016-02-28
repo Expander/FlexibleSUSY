@@ -404,8 +404,6 @@ GetTHDMThresholds1LCoefficients[] := {
 
 (* loop functions, Eq. (130)-(131) *)
 GetTHDMThresholds1LLoopFunctions[] := {
-    A0[m_, mu_] :> m^2 + m^2 Log[mu^2/m^2],
-
     B0[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        Log[mu^2/m2^2],
        1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
