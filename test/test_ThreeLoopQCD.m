@@ -15,7 +15,7 @@ m1 = Simplify[Normal[Series[m1, {h, 0, 1}]] /. h -> 1];
 m2 = M (GetMTopMSbarOverMTopPole[{1, 0, 0, 0}] +
         GetMTopMSbarOverMTopPole[{0, 1, 0, 0}])
 
-TestEquality[Chop[Simplify[m1 - m2]], 0];
+TestEquality[Simplify[m1 - m2], 0];
 
 Print["Testing 2L arxiv:hep-ph/9912391 vs. hep-ph/9803493 ..."];
 
@@ -29,6 +29,6 @@ m2 = M (GetMTopMSbarOverMTopPole[{1, 0, 0, 0}] +
         GetMTopMSbarOverMTopPole[{0, 1, 0, 0}] +
         GetMTopMSbarOverMTopPole[{0, 0, 1, 0}])
 
-TestEquality[Chop[Simplify[m1 - m2]], 0];
+TestEquality[Simplify[m1 - m2], 0];
 
 PrintTestSummary[];

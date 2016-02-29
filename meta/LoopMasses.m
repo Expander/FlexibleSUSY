@@ -103,7 +103,7 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
            topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
            topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
            topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
-           qcdOneLoop = -TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
+           qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
            qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
 "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
@@ -483,7 +483,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               highestIdx = dim - 1;
               highestIdxStr = ToString[highestIdx];
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
-              qcdOneLoop = -TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
+              qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               qcdCorrections = "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
@@ -986,7 +986,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
                 ];
               body = "return 0.0;\n";
               ,
-              qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
+              qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
