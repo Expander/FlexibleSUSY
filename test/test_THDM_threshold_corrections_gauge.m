@@ -84,8 +84,6 @@ renameRules = {
 };
 
 gRules = {
-    gbar -> (g2^2 + gY^2)/4,
-    gbarm -> (-g2^2 + gY^2)/4,
     g1 -> gY Sqrt[5/3],
     GUTNormalization[g1] -> Sqrt[3/5]
 };
