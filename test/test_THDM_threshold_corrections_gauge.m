@@ -40,7 +40,6 @@ approx = {
     Tu[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
     Td[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
     Te[i_, j_] :> 0 /; i < 3 || j < 3 || i != j,
-    Nc -> 3,
     Yu[3, 3] -> ht,
     Yd[3, 3] -> hb,
     Ye[3, 3] -> htau,
@@ -59,7 +58,7 @@ approx = {
     Re[p_] :> p
 };
 
-result = GetTHDMThresholds1L[] /. Summation -> Sum;
+result = GetTHDMThresholds1L[];
 
 TestEquality[FreeQ[result, Undef] && FreeQ[result, Null], True];
 
