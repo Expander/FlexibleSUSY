@@ -100,7 +100,9 @@ FlexibleSUSY-1.4.0 [not released yet]
    };
 
  * Feature: The three THDM-like models, which have been used in
-   arxiv:1512.07761, are provided.  They are named:
+   arxiv:1512.07761, are provided.  The models implement the 1- and
+   2-loop threshold corrections of arxiv:1508.00576 and
+   arxiv:hep-ph/9307201.  The models are named:
    * THDMIIMSSMBC (THDM with boundary condition to the MSSM)
    * HTHDMIIMSSMBC (THDM + Higgsinos with boundary condition to the
         MSSM)
