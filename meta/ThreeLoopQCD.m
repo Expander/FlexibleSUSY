@@ -75,6 +75,104 @@ GetMTopMSbarOverMTopPole2L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
            CF (as/Pi)^2 (CF d12 + CA d22 + TR NL d32 + TR NH d42)
           ];
 
+(* Q-dependend terms arxiv:hep-ph/9911434 Eq. (29) *)
+Get3LLogs[M_, Q_, CF_, CA_, TR_, NL_] := (
+  CF^3 (
+    - 9/128 Log[Q^2/M^2]^3
+    - 27/128 Log[Q^2/M^2]^2
+    + (
+      -489/512
+      + 45/32 Zeta[2]
+      - 9/4 Zeta[2] Log[2]
+      + 9/16 Zeta[3]
+      ) Log[Q^2/M^2]
+  )
+  + CF^2 CA (
+    33/128 Log[Q^2/M^2]^3
+    +109/64 Log[Q^2/M^2]^2
+    +(
+      5813/1536
+      - 61/16 Zeta[2]
+      + 53/8 Zeta[2] Log[2]
+      - 53/32 Zeta[3]
+    ) Log[Q^2/M^2]
+  )
+  +CF^2 TR NL (
+    - 3/32 Log[Q^2/M^2]^3
+    - 13/32 Log[Q^2/M^2]^2
+    + (
+      65/384
+      +7/8 Zeta[2]
+      - 2 Zeta[2] Log[2]
+      - 1/4 Zeta[3]
+    ) Log[Q^2/M^2]
+  )
+  +CF^2 TR (
+    - 3/32 Log[Q^2/M^2]^3
+    - 13/32 Log[Q^2/M^2]^2
+    + (
+      -151/384
+      + 2 Zeta[2]
+      - 2 Zeta[2]  Log[2]
+      - 1/4 Zeta[3]
+    ) Log[Q^2/M^2]
+  )
+  +CF CA^2 (
+    - 121/576 Log[Q^2/M^2]^3
+    - 2341/1152 Log[Q^2/M^2]^2
+    + (
+      - 13243/1728
+      + 11/12 Zeta[2]
+      - 11/4 Zeta[2] Log[2]
+      + 11/16 Zeta[3]
+    ) Log[Q^2/M^2]
+  )
+  +CF CA TR NL (
+    11/72 Log[Q^2/M^2]^3
+    +373/288 Log[Q^2/M^2]^2
+    + (
+      869/216
+      + 7/12 Zeta[2]
+      + Zeta[2] Log[2]
+      + 1/2 Zeta[3]
+    ) Log[Q^2/M^2]
+  )
+  +CF CA TR (
+    + 11/72 Log[Q^2/M^2]^3
+    + 373/288 Log[Q^2/M^2]^2
+    + (
+      583/108
+      - 13/6 Zeta[2]
+      + Zeta[2] Log[2]
+      + 1/2 Zeta[3]
+    )  Log[Q^2/M^2]
+  )
+  +CF TR^2 NL^2 (
+    - 1/36 Log[Q^2/M^2]^3
+    - 13/72 Log[Q^2/M^2]^2
+    + (
+      -89/216
+      -1/3 Zeta[2]
+    ) Log[Q^2/M^2]
+  )
+  +CF TR^2 NL (
+    - 1/18 Log[Q^2/M^2]^3
+    - 13/36 Log[Q^2/M^2]^2
+    + (
+      -143/108
+      + 1/3 Zeta[2]
+    ) Log[Q^2/M^2]
+  )
+  +CF TR^2 (
+    - 1/36 Log[Q^2/M^2]^3
+    - 13/72 Log[Q^2/M^2]^2
+    + (
+      -197/216
+      +2/3 Zeta[2]
+    ) Log[Q^2/M^2]
+  )
+);
+
 GetMTopMSbarOverMTopPole3L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
     Module[{CF, CA, TR, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
@@ -82,11 +180,14 @@ GetMTopMSbarOverMTopPole3L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
            CA = SA`Casimir[SARAH`VectorG, colorPosition];
            TR = 1/2;
            as = SARAH`strongCoupling^2 / (4 Pi);
-           CF (as/Pi)^3 (
-               CF^2 d13 + CF CA d23 + CA^2 d33 +
-               CF TR NL d43 + CF TR NH d53 + CA TR NL d63 +
-               CA TR NH d73 + TR^2 NL NH d83 + TR^2 NH^2 d93 +
-               TR^2 NL^2 d103
+           (as/Pi)^3 (
+               CF (
+                   CF^2 d13 + CF CA d23 + CA^2 d33 +
+                   CF TR NL d43 + CF TR NH d53 + CA TR NL d63 +
+                   CA TR NH d73 + TR^2 NL NH d83 + TR^2 NH^2 d93 +
+                   TR^2 NL^2 d103
+                  ) +
+               Get3LLogs[FlexibleSUSY`Pole[FlexibleSUSY`M[quark]], Q, CF, CA, TR, NL]
            )
           ];
 
