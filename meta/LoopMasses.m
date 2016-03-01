@@ -1,8 +1,8 @@
 
 BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
                              "CConversion`", "TreeMasses`",
-                             "SelfEnergies`", "TwoLoopQCD`", "Parameters`",
-                             "Utils`"}];
+                             "SelfEnergies`", "TwoLoopQCD`", "ThreeLoopQCD`",
+                             "Parameters`", "Utils`"}];
 
 CreateOneLoopPoleMassFunctions::usage="";
 CreateOneLoopPoleMassPrototypes::usage="";
@@ -971,7 +971,7 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
 
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
-            selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop,
+            selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop, qcdThreeLoop = 0,
             dimParticle, treeLevelMass},
            dimParticle = TreeMasses`GetDimension[particle];
            treeLevelMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
@@ -988,6 +988,17 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               ,
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+              If[FlexibleSUSY`UseYukawa3LoopQCD === True &&
+                 FlexibleSUSY`FSRenormalizationScheme =!= FlexibleSUSY`MSbar,
+                 Print["Warning: UseYukawa3LoopQCD == True, but the renormalization scheme is not MSbar!"];
+                 Print["  The 3-loop QCD corrections to the top Yukawa coupling will be disabled."];
+                ];
+              If[FlexibleSUSY`UseYukawa3LoopQCD === True ||
+                 FlexibleSUSY`UseYukawa3LoopQCD === Automatic,
+                 If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
+                    qcdThreeLoop = N[Expand[ThreeLoopQCD`GetMTopMSbarOverMTopPole[{0,0,0,1}, particle, Global`currentScale]]];
+                   ];
+                ];
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
                  body = "const double p = m_pole;\n" <>
@@ -1005,8 +1016,12 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               "const double currentScale = get_scale();\n" <>
               "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
               "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
+              "double qcd_3l = 0;\n\n" <>
+              "if (get_thresholds() > 2) {\n" <>
+                  IndentText["qcd_3l = " <> CConversion`RValueToCFormString[qcdThreeLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"] <> "\n" <>
+              "}\n\n" <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
-              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
+              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l + qcd_3l);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
