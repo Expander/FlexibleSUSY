@@ -1,4 +1,10 @@
 BeginPackage["ThreeLoopQCD`", {"SARAH`"}];
+EndPackage[];
+
+(* parameters *)
+{Q};
+
+BeginPackage["ThreeLoopQCD`", {"SARAH`"}];
 
 GetMTopMSbarOverMTopPole::usage = "Returns the ratio Eq. (10) of
  arxiv:hep-ph/9912391 at the scale Q = Mt_pole.
@@ -7,16 +13,26 @@ Example call:
 
    mTopMSbar = MtPole GetMTopMSbarOverMTopPole[{1,1,1,1}]
 
-The function argument is a list of numbers, which are multiplied by
-the tree-level, 1-loop, 2-loop and 3-loop contributions, respectively.
-I.e. by setting factors to 0, different loop orders can be disabled.
+The first function argument is a list of numbers, which are multiplied
+by the tree-level, 1-loop, 2-loop and 3-loop contributions,
+respectively.  I.e. by setting factors to 0, different loop orders can
+be disabled.
+
+The second function argument is the symbol for the quark under
+consideration.  The default is SARAH`TopQuark.
+
+The third function argument is the symbol to be used for the
+renormalization scale.  The default is Q.
+
+The last two parameters are NH and NL, the number of heavy and light
+quarks, respectively.  The default is NH = 1, NL = 5.
 ";
 
 Begin["`Private`"];
 
 GetMTopMSbarOverMTopPole0L[] := 1;
 
-GetMTopMSbarOverMTopPole1L[Q_, quark_:SARAH`TopQuark] :=
+GetMTopMSbarOverMTopPole1L[Q_, quark_] :=
     Module[{CF, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -71,7 +87,7 @@ Get2LLogs[M_, Q_, CF_, CA_] := (
      216*CF*Log[M^2/Q^2]^2)/384
 );
 
-GetMTopMSbarOverMTopPole2L[Q_, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
+GetMTopMSbarOverMTopPole2L[Q_, quark_, NH_, NL_] :=
     Module[{CF, CA, TR, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -182,7 +198,7 @@ Get3LLogs[M_, Q_, CF_, CA_, TR_, NL_] := (
   )
 );
 
-GetMTopMSbarOverMTopPole3L[Q_, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
+GetMTopMSbarOverMTopPole3L[Q_, quark_, NH_, NL_] :=
     Module[{CF, CA, TR, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
