@@ -41,8 +41,6 @@ std::complex<double> scalar_diphoton_fermion_loop(
 std::complex<double> pseudoscalar_diphoton_fermion_loop(
    double m_decay, double m_loop);
 
-std::complex<double> spline_interpolation(
-   double x, const std::map<double,std::complex<double> >& data);
 std::complex<double> linear_interpolation(
    double x, const std::map<double,std::complex<double> >& data);
 std::complex<double> quadratic_interpolation(

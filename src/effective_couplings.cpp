@@ -20,14 +20,9 @@
 #include "error.hpp"
 #include "wrappers.hpp"
 
-#include <gsl/gsl_spline.h>
-
 namespace flexiblesusy {
 
 namespace effective_couplings {
-
-// temporary macro for testing
-#undef SPLINE_INTERPOLATION
 
 std::complex<double> scaling_function(double tau)
 {
@@ -77,17 +72,12 @@ std::complex<double> scalar_diphoton_fermion_loop(
 
    std::complex<double> result;
    if (tau < tau_min) {
-#ifdef SPLINE_INTERPOLATION
-      result = spline_interpolation(tau, data);
-#else
       const bool do_linear_interp = false;
-
       if (do_linear_interp) {
          result = linear_interpolation(tau, data);
       } else {
          result = quadratic_interpolation(tau, data);
       }
-#endif
    } else {
       // analytic expression in the m_loop -> 0 limit
       const std::complex<double> limit =
@@ -120,17 +110,12 @@ std::complex<double> pseudoscalar_diphoton_fermion_loop(
 
    std::complex<double> result;
    if (tau < tau_min) {
-#ifdef SPLINE_INTERPOLATION
-      result = spline_interpolation(tau, data);
-#else
       const bool do_linear_interp = false;
-
       if (do_linear_interp) {
          result = linear_interpolation(tau, data);
       } else {
          result = quadratic_interpolation(tau, data);
       }
-#endif
    } else {
       // analytic expression in the m_loop -> 0 limit
       const std::complex<double> limit =
@@ -148,43 +133,6 @@ std::complex<double> pseudoscalar_diphoton_fermion_loop(
 
       result = limit + constant;
    }
-
-   return result;
-}
-
-std::complex<double> spline_interpolation(
-   double x, const std::map<double,std::complex<double> >& data)
-{
-   const std::size_t num_points = data.size();
-
-   double x_values[num_points];
-   double real_parts[num_points];
-   double imag_parts[num_points];
-
-   std::size_t idx = 0;
-   for (std::map<double,std::complex<double> >::const_iterator it
-           = data.begin(), end = data.end(); it != end; ++it, ++idx) {
-      x_values[idx] = it->first;
-      real_parts[idx] = Re(it->second);
-      imag_parts[idx] = Im(it->second);
-   }
-
-   gsl_interp_accel* acc = gsl_interp_accel_alloc();
-   gsl_spline* real_spline = gsl_spline_alloc(gsl_interp_cspline, num_points);
-   gsl_spline* imag_spline = gsl_spline_alloc(gsl_interp_cspline, num_points);
-
-   if (!acc || !real_spline || !imag_spline)
-      throw OutOfMemoryError("GSL spline allocation failed in spline_interpolation");
-
-   gsl_spline_init(real_spline, x_values, real_parts, num_points);
-   gsl_spline_init(imag_spline, x_values, imag_parts, num_points);
-
-   std::complex<double> result = gsl_spline_eval(real_spline, x, acc)
-      + std::complex<double>(0., 1.) * gsl_spline_eval(imag_spline, x, acc);
-
-   gsl_spline_free(real_spline);
-   gsl_spline_free(imag_spline);
-   gsl_interp_accel_free(acc);
 
    return result;
 }
