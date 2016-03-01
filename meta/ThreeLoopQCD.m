@@ -6,8 +6,10 @@ EndPackage[];
 
 BeginPackage["ThreeLoopQCD`", {"SARAH`"}];
 
-GetMTopMSbarOverMTopPole::usage = "Returns the ratio Eq. (10) of
- arxiv:hep-ph/9912391 at the scale Q = Mt_pole.
+GetMTopMSbarOverMTopPole::usage = "Returns the ratio of the MS-bar top
+ mass over the top pole mass, Eq. (10) of arxiv:hep-ph/9912391 and at
+ an arbitrary scale Q The logarithmic scale dependence is taken from
+ arxiv:hep-ph/9911434.
 
 Example call:
 
