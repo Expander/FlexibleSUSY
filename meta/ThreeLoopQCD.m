@@ -16,12 +16,12 @@ Begin["`Private`"];
 
 GetMTopMSbarOverMTopPole0L[] := 1;
 
-GetMTopMSbarOverMTopPole1L[quark_:SARAH`TopQuark] :=
+GetMTopMSbarOverMTopPole1L[Q_, quark_:SARAH`TopQuark] :=
     Module[{CF, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
            as = SARAH`strongCoupling^2 / (4 Pi);
-           -CF as / Pi
+           CF as / Pi (-1 + 3/4 Log[FlexibleSUSY`M[quark]^2/Q^2])
           ];
 
 (* 2-loop coefficients *)
@@ -65,14 +65,23 @@ d83 = -5917/3888 + 2/9 Zeta[3] + 13/108 Pi^2;
 d93 = -9481/7776 + 11/18 Zeta[3] + 4/135 Pi^2;
 d103 = -2353/7776 - 7/18 Zeta[3] - 13/108 Pi^2;
 
-GetMTopMSbarOverMTopPole2L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
+Get2LLogs[M_, Q_, CF_, CA_] := (
+    (-4*(-156 + 185*CA + 81*CF)*Log[Q^2/M^2] - 12*(-12 + 11*CA +
+     9*CF)*Log[Q^2/M^2]^2 - 576*CF*Log[M^2/Q^2] +
+     216*CF*Log[M^2/Q^2]^2)/384
+);
+
+GetMTopMSbarOverMTopPole2L[Q_, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
     Module[{CF, CA, TR, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
            CA = SA`Casimir[SARAH`VectorG, colorPosition];
            TR = 1/2;
            as = SARAH`strongCoupling^2 / (4 Pi);
-           CF (as/Pi)^2 (CF d12 + CA d22 + TR NL d32 + TR NH d42)
+           CF (as/Pi)^2 (
+               CF d12 + CA d22 + TR NL d32 + TR NH d42 +
+               Get2LLogs[FlexibleSUSY`M[quark], Q, CF, CA]
+           )
           ];
 
 (* Q-dependend terms arxiv:hep-ph/9911434 Eq. (29) *)
@@ -173,7 +182,7 @@ Get3LLogs[M_, Q_, CF_, CA_, TR_, NL_] := (
   )
 );
 
-GetMTopMSbarOverMTopPole3L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
+GetMTopMSbarOverMTopPole3L[Q_, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
     Module[{CF, CA, TR, colorPosition, as},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -191,14 +200,14 @@ GetMTopMSbarOverMTopPole3L[quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
            )
           ];
 
-GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
+GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5] :=
     Module[{},
            Assert[Length[loopOrder] == 4];
            (
                loopOrder[[1]] GetMTopMSbarOverMTopPole0L[] +
-               loopOrder[[2]] GetMTopMSbarOverMTopPole1L[quark] +
-               loopOrder[[3]] GetMTopMSbarOverMTopPole2L[quark, NH, NL] +
-               loopOrder[[4]] GetMTopMSbarOverMTopPole3L[quark, NH, NL]
+               loopOrder[[2]] GetMTopMSbarOverMTopPole1L[Q, quark] +
+               loopOrder[[3]] GetMTopMSbarOverMTopPole2L[Q, quark, NH, NL] +
+               loopOrder[[4]] GetMTopMSbarOverMTopPole3L[Q, quark, NH, NL]
            )
           ];
 
