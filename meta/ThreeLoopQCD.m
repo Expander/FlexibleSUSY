@@ -196,7 +196,7 @@ GetMTopMSbarOverMTopPole3L[Q_, quark_:SARAH`TopQuark, NH_:1, NL_:5] :=
                    CA TR NH d73 + TR^2 NL NH d83 + TR^2 NH^2 d93 +
                    TR^2 NL^2 d103
                   ) +
-               Get3LLogs[FlexibleSUSY`Pole[FlexibleSUSY`M[quark]], Q, CF, CA, TR, NL]
+               Get3LLogs[FlexibleSUSY`M[quark], Q, CF, CA, TR, NL]
            )
           ];
 
