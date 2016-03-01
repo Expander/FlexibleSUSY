@@ -24,7 +24,7 @@ META_SRC     := \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
-		$(DIR)/TwoLoop.m \
+		$(DIR)/TwoLoopQCD.m \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \

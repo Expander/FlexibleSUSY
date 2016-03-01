@@ -1,7 +1,7 @@
 
 BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
                              "CConversion`", "TreeMasses`",
-                             "SelfEnergies`", "TwoLoop`", "Parameters`",
+                             "SelfEnergies`", "TwoLoopQCD`", "Parameters`",
                              "Utils`"}];
 
 CreateOneLoopPoleMassFunctions::usage="";
@@ -103,8 +103,8 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
            topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
            topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
            topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
-           qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-           qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+           qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+           qcdTwoLoop = N[Expand[-TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
 "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
 const double currentScale = get_scale();
@@ -483,8 +483,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               highestIdx = dim - 1;
               highestIdxStr = ToString[highestIdx];
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
-              qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-              qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+              qcdTwoLoop = N[Expand[-TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               qcdCorrections = "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
 const double currentScale = get_scale();
@@ -986,8 +986,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
                 ];
               body = "return 0.0;\n";
               ,
-              qcdOneLoop = N[-TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-              qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+              qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
                  body = "const double p = m_pole;\n" <>
@@ -1023,7 +1023,7 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle], _] :=
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            twoLoopCorrection = 0; (* disable corrections until checked against Softsusy *)
-           (* twoLoopCorrection = TwoLoop`GetDeltaMQCD[particle, Global`displayMu[]] /. *)
+           (* twoLoopCorrection = TwoLoopQCD`GetDeltaMQCD[particle, Global`displayMu[]] /. *)
            (*                     FlexibleSUSY`M[p_] :> FlexibleSUSY`M[p[Global`idx]]; *)
            addTwoLoopCorrection = twoLoopCorrection =!= 0;
            If[addTwoLoopCorrection,

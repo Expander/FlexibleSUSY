@@ -1,6 +1,6 @@
 Needs["SARAH`"];
 Needs["TestSuite`", "TestSuite.m"];
-Needs["TwoLoop`", "TwoLoop.m"];
+Needs["TwoLoopQCD`", "TwoLoopQCD.m"];
 Needs["ThreeLoopQCD`", "ThreeLoopQCD.m"];
 
 Start["SM"];

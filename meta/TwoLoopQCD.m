@@ -1,5 +1,4 @@
-
-BeginPackage["TwoLoop`", {"SARAH`"}];
+BeginPackage["TwoLoopQCD`", {"SARAH`"}];
 
 GetDeltaMOverMQCDOneLoop::usage="Returns one-loop QCD contributions to
 Delta m_f/m_f in the given renormalization scheme.";
