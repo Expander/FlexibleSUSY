@@ -109,6 +109,18 @@ FlexibleSUSY-1.4.0 [not released yet]
    * HGTHDMIIMSSMBC (THDM + Higgsinos + gauginos with boundary
         condition to the MSSM)
 
+ * Feature: In non-SUSY models the 3-loop (Standard Model) QCD
+   corrections to the MS-bar Yukawa coupling of the order O(alpha_s^3)
+   [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] are added
+   automatically.  They are taken into account at run-time if the
+   threshold correction loop (FlexibleSUSY[7]) order is set to a value
+   > 2 in the SLHA input file.
+
+   The generation of 3-loop QCD corrections can be disabled by setting
+   in the model file
+
+   UseYukawa3LoopQCD = False;
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
