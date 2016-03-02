@@ -46,7 +46,7 @@ Block MINPAR                 # Input parameters
    10   5.0000000E-01        # g1pINPUT
    11   0.0000000E+00        # g1p1INPUT
    12   0.0000000E+00        # g11pINPUT
-   20   2.5000000E+03        # vXinput
+   20   1.0000000E+02        # vXinput
 Block YVIN
     1 1   0.000000E+00       # Yv(1,1)
     1 2   0.000000E+00       # Yv(1,2)
