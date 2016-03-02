@@ -117,6 +117,12 @@ PrintInputParameters[parameters_List, streamName_String] :=
            Return[result];
           ];
 
+WriteSLHAMass[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
+    Module[{massMatrices},
+           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           StringJoin[WriteSLHAMass /@ massMatrices]
+          ];
+
 WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", eigenstateName, eigenstateNameStr, massNameStr,
             pdgList, pdg, dim, i},
@@ -154,10 +160,9 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 WriteSLHAMassBlock[massMatrices_List] :=
-    Module[{result, allMasses, smMasses, susyMasses,
+    Module[{result, smMasses, susyMasses,
             smMassesStr = "", susyMassesStr = ""},
-           allMasses = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
-           smMasses = Select[massMatrices, (SARAH`SMQ[TreeMasses`GetMassEigenstate[#]])&];
+           smMasses = Select[massMatrices, (IsSMParticle[TreeMasses`GetMassEigenstate[#]])&];
            (* filter out MW, because MW should always appear in the output *)
            smMasses = Select[smMasses, (TreeMasses`GetMassEigenstate[#] =!= SARAH`VectorW)&];
            susyMasses = Complement[massMatrices, smMasses];
