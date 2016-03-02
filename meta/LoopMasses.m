@@ -304,13 +304,12 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
 
 DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix,
-            selfEnergyFunction, selfEnergyMatrixType, selfEnergyMatrixCType, massMatrixStr},
+            selfEnergyFunction, selfEnergyMatrixType, selfEnergyMatrixCType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
-           massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixCType = CreateCType[selfEnergyMatrixType];
@@ -323,7 +322,7 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+              result = "const " <> selfEnergyMatrixCType <> " M_tree(Sqr(" <> massName <> "));\n" <>
                        Do1DimVector[particleName, massName, "M_tree", selfEnergyFunction, massName];
              ];
            Return[result];
@@ -614,14 +613,13 @@ if (add_2loop_corrections) {
 
 DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
-            momentum = inputMomentum, selfEnergyMatrixType, selfEnergyMatrixCType, massMatrixStr},
+            momentum = inputMomentum, selfEnergyMatrixType, selfEnergyMatrixCType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
-           massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixCType = CreateCType[selfEnergyMatrixType];
@@ -634,7 +632,7 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+              result = "const " <> selfEnergyMatrixCType <> " M_tree(Sqr(" <> massName <> "));\n" <>
                        Do1DimVector[particleName, massName, "M_tree", selfEnergyFunction, momentum];
              ];
            Return[result];
@@ -721,7 +719,7 @@ Create1DimPoleMassPrototype[particle_Symbol] :=
 
 (* return pole mass of a singlet as a function of p *)
 Create1DimPoleMassFunction[particle_Symbol] :=
-    Module[{result, body = "", particleName, massName},
+    Module[{result, body = "", particleName, massName, mTree},
            If[GetDimension[particle] > 1,
               Print["Warning: cannot generate extra pole mass"
                     " calculation function for ", particle, ", because"
@@ -736,9 +734,17 @@ Create1DimPoleMassFunction[particle_Symbol] :=
                particleName = ToValidCSymbolString[particle];
                massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
                selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+               (* vector bosons are always unmixed -> make sure the
+                  right mass eigenvalue is used.  The mass matrix might
+                  contain mixing matrix elements, which can result in
+                  the wrong mass eigenstate. *)
+               If[IsVector[particle],
+                  mTree = "Sqr(" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ")",
+                  mTree = "get_mass_matrix_" <> particleName <> "()";
+                 ];
                body = body <>
                       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-                      "const double mass_sqr = get_mass_matrix_" <> particleName <> "() - self_energy;\n\n" <>
+                      "const double mass_sqr = " <> mTree <> " - self_energy;\n\n" <>
                       "if (mass_sqr < 0.)\n" <>
                       IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                       "return AbsSqrt(mass_sqr);\n";
