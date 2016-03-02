@@ -1358,6 +1358,23 @@ CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U
 CallDiagonalizeHermitianFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
 
+AssignVectorBosonMassesFrom[eigenVector_List] :=
+    Module[{i, ev, result = ""},
+           ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[MakeESSymbol[eigenVector]]]];
+           For[i = 1, i <= Length[eigenVector], i++,
+               result = result <>
+                        CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenVector[[i]]]] <>
+                        " = " <>
+                        If[IsMassless[eigenVector[[i]]],
+                           "0.;\n",
+                           ev <> "(" <> ToString[i-1] <> ");\n"
+                          ];
+             ];
+           result
+          ];
+
+AssignVectorBosonMassesFrom[eigenVector_] := "";
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body, result, U = "", V = "", dimStr = "", ev, evMap, particle, k,
             diagFunctionStr, matrixType, matrixElementType, vectorType,
@@ -1411,6 +1428,12 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                             CheckTachyon[eigenVector, ev] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
+             ];
+           If[IsVector[eigenVector],
+              (* assign individual vector boson masses to the
+                 calculated mass eigenvalues *)
+              body = body <> "\n" <>
+                     IndentText[AssignVectorBosonMassesFrom[eigenVector]];
              ];
            Return[result <> body <> "}\n"];
           ];
