@@ -44,6 +44,26 @@ FlexibleSUSY-1.4.0 [not released yet]
        FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
    ];
 
+   Important note: In the SARAH model file a mass ordering of the
+   vector bosons is assumed.  For example, the statement
+
+   DEFINITION[EWSB][GaugeSector] = {
+       {{VB,VWB[3],VBp}, {VP,VZ,VZp}, ZZ},
+       ...
+   };
+
+   assumes MVP < MZ < MZp.  Thus, the user has to make sure that the
+   studied parameter region leads to Photon, Z and Z' masses which are
+   in agreement with the relation MVP < MZ < MZp.  Otherwise, the
+   calculated Z and Z' masses will be incorrect.  If a parameter
+   region shall be studied where MVP < MZp < MZ, then the ordering of
+   vector bosons in the SARAH model file has to be changed to
+
+   DEFINITION[EWSB][GaugeSector] = {
+       {{VB,VWB[3],VBp}, {VP,VZp,VZ}, ZZ},
+       ...
+   };
+
  * Feature: By setting the entry FlexibleSUSY[16] = 1 in the SLHA
    input file, the user can force majorana fermion masses to be
    positive.  In this case, the corresponding mixing matrix is not
