@@ -997,6 +997,23 @@ BubbleSort[l_List, Pred_] :=
            ltemp
           ];
 
+(* delete duplicates of the form
+
+   FSMassMatrix[_, {m1, m2}, _]
+   FSMassMatrix[_,  m1     , _]   <--  delete
+   FSMassMatrix[_,  m2     , _]   <--  delete
+ *)
+DeleteDuplicateVectors[massMatrices_List] :=
+    Module[{result = massMatrices, i, m, me},
+           For[i = 1, i <= Length[massMatrices], i++,
+               me = GetMassEigenstate[massMatrices[[i]]];
+               If[Head[me] === List,
+                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, m_ /; MemberQ[me, m], _]];
+                 ];
+              ];
+           result
+          ];
+
 CallMassCalculationFunctions[massMatrices_List] :=
     Module[{result = "", k, sortedMassMatrices, matrix, PredVectorsFirst},
            (* Predicate function which returns false if the mass matrix
@@ -1016,6 +1033,9 @@ CallMassCalculationFunctions[massMatrices_List] :=
               as ThetaW. *)
            (* Note: Due to the chosen predicate, a stable bubble sort must be used *)
            sortedMassMatrices = Reverse @ BubbleSort[massMatrices, PredVectorsFirst];
+           (* don't call vector boson *singlet* mass calculation functions,
+              if they are already calculated as eigenvalues of a matrix *)
+           sortedMassMatrices = DeleteDuplicateVectors[sortedMassMatrices];
            For[k = 1, k <= Length[sortedMassMatrices], k++,
                matrix = sortedMassMatrices[[k]];
                result = result <> CallMassCalculationFunction[matrix];
