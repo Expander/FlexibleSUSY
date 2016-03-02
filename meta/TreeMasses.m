@@ -155,6 +155,7 @@ IsSMLepton::usage="";
 IsSMUpQuark::usage="";
 IsSMDownQuark::usage="";
 IsSMQuark::usage="";
+IsSMParticle::usage="";
 ContainsGoldstone::usage="";
 
 GetSMChargedLeptons::usage="";
@@ -231,6 +232,10 @@ IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 
 IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     IsOfType[sym, type, states];
+
+IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
+IsSMParticle[sym_[__]] := IsSMParticle[sym];
+IsSMParticle[sym_] := SARAH`SMQ[sym];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
