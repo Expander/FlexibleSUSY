@@ -701,6 +701,13 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
 
 DeleteDuplicateSinglets[massMatrices_List] :=
     Module[{result = massMatrices, i, m, me, mm, p, other},
+           (* delete duplicates of the form
+
+              FSMassMatrix[_, {me}, _]
+              FSMassMatrix[_,  me , _]   <--  delete
+
+              but keep mixing matrix from one or the other
+            *)
            For[i = 1, i <= Length[massMatrices], i++,
                me = GetMassEigenstate[massMatrices[[i]]];
                mm = GetMixingMatrixSymbol[massMatrices[[i]]];
