@@ -2,6 +2,9 @@ Needs["SARAH`"];
 Needs["TestSuite`", "TestSuite.m"];
 Needs["TwoLoopQCD`", "TwoLoopQCD.m"];
 Needs["ThreeLoopQCD`", "ThreeLoopQCD.m"];
+Needs["ThreeLoopSM`", "ThreeLoopSM.m"];
+
+FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
 
 Start["SM"];
 
@@ -49,8 +52,8 @@ Print["Testing 3L renormalization scale invariance ..."];
 
 gRules = {
     g3 -> Sqrt[as[Q] 4 Pi],
-    gt -> 0,
-    gb -> 0,
+    Yu[__] -> 0,
+    Yd[__] -> 0,
     g1 -> 0,
     g2 -> 0
 };
@@ -58,7 +61,7 @@ gRules = {
 ass = {Q > 0, FlexibleSUSY`M[Fu] > 0, m[Q] > 0};
 
 (* beta functions of g3 *)
-betag3 = Get["meta/ThreeLoopSM/beta_g3.m"];
+betag3 = ThreeLoopSM`BetaSM[SARAH`strongCoupling];
 betag3[[1]] *= 1/(4 Pi)^2;
 betag3[[2]] *= 1/(4 Pi)^4;
 betag3[[3]] *= 1/(4 Pi)^6;
