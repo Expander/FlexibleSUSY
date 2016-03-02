@@ -97,6 +97,8 @@ UMSSM,_DEFAULT_,0
 YukawaCMSSM,${DEFAULT_CMSSM_INPUT},0
 DiracGauginos,_DEFAULT_,0
 U1xMSSM3G,_DEFAULT_,0
+BLSM,_DEFAULT_,0
+BLSMlightZp,_DEFAULT_,0
 "
 
 TMP_FILE="${BASEDIR}/test_spectrum_generator.sh.tmp"

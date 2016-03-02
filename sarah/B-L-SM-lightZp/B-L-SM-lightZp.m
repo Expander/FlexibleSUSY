@@ -60,7 +60,7 @@ LagHC = - (+ Yd H.d.q + Ye H.e.l + Yu conj[H].u.q + Yv conj[H].l.v + Yx bi.v.v  
 
 DEFINITION[EWSB][GaugeSector] =
 { 
-  {{VB,VWB[3],VBp},{VP,VZ,VZp},ZZ},
+  {{VB,VWB[3],VBp},{VP,VZp,VZ},ZZ},
   {{VWB[1],VWB[2]},{VWm,conj[VWm]},ZW}
 };
         

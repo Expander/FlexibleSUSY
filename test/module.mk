@@ -182,9 +182,9 @@ ALLDEP += $(LIBFFLITE_DEP)
 endif
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-BLSM),yes)
+ifeq ($(shell $(FSCONFIG) --with-BLSMlightZp),yes)
 TEST_SH += \
-		$(DIR)/test_BLSM_ZZp_mixing.sh
+		$(DIR)/test_BLSMlightZp_ZZp_mixing.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)

@@ -6,9 +6,9 @@ BASEDIR=$(dirname $0)
 CONFIGDIR="${BASEDIR}/../config"
 print_block="${CONFIGDIR}/print_slha_block.awk"
 
-blsm_input="$BASEDIR/test_BLSM_ZZp_mixing.in.spc"
-blsm_output="$BASEDIR/test_BLSM_ZZp_mixing.out.spc"
-blsm_exe="$BASEDIR/../models/BLSM/run_BLSM.x"
+blsm_input="$BASEDIR/../models/BLSMlightZp/LesHouches.in.BLSMlightZp"
+blsm_output="$BASEDIR/test_BLSMlightZp_ZZp_mixing.out.spc"
+blsm_exe="$BASEDIR/../models/BLSMlightZp/run_BLSMlightZp.x"
 
 if test ! -x "$blsm_exe"; then
     echo "Error: BLSM spectrum generator not found: $blsm_exe"
