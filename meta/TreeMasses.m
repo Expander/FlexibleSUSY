@@ -1992,11 +1992,12 @@ CreateMixingMatrixArrayGetterSetter[masses_List, offset_Integer, func_] :=
 
 CreateMassArrayGetter[masses_List] :=
     Module[{display = "", paramCount = 0, name = "", mass,
-            type, i, v, assignment = "", nAssignments = 0},
+            type, i, v, assignment = "", nAssignments = 0, mes},
            For[i = 1, i <= Length[masses], i++,
                If[Head[GetMassEigenstate[masses[[i]]]] === List,
-                  For[v = 1, v <= Length[GetMassEigenstate[masses[[i]]]], v++,
-                      mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]][[v]]];
+                  mes = DeleteDuplicates[GetMassEigenstate[masses[[i]]]];
+                  For[v = 1, v <= Length[mes], v++,
+                      mass = FlexibleSUSY`M[mes[[v]]];
                       type = GetMassType[mass];
                       name = CConversion`ToValidCSymbolString[mass];
                       {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
@@ -2031,11 +2032,12 @@ CreatePhysicalArrayGetter[masses_List] :=
 
 CreateMassArraySetter[masses_List, array_String] :=
     Module[{set = "", paramCount = 0, name = "", mass,
-            type, i, v, assignment = "", nAssignments = 0},
+            type, i, v, assignment = "", nAssignments = 0, mes},
            For[i = 1, i <= Length[masses], i++,
                If[Head[GetMassEigenstate[masses[[i]]]] === List,
-                  For[v = 1, v <= Length[GetMassEigenstate[masses[[i]]]], v++,
-                      mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]][[v]]];
+                  mes = DeleteDuplicates[GetMassEigenstate[masses[[i]]]];
+                  For[v = 1, v <= Length[mes], v++,
+                      mass = FlexibleSUSY`M[mes[[v]]];
                       type = GetMassType[mass];
                       name = CConversion`ToValidCSymbolString[mass];
                       {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
