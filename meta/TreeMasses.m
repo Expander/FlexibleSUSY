@@ -789,7 +789,7 @@ MakeESSymbol[p_] := p;
 
 CreateMassGetter[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_], postFix_String:"", wrapper_String:""] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[CreateMassGetter[#,postFix,wrapper]& /@ massMatrices]
           ];
 
@@ -1556,7 +1556,7 @@ CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
 
 CreatePhysicalMassDefinition[p:TreeMasses`FSMassMatrix[_, massESSymbols_List, _]] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[CreatePhysicalMassDefinition /@ massMatrices]
           ];
 
@@ -1576,7 +1576,7 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
 
 CreatePhysicalMassInitialization[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[CreatePhysicalMassInitialization /@ massMatrices]
           ];
 
@@ -1614,7 +1614,7 @@ CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
 
 ClearOutputParameters[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[ClearOutputParameters /@ massMatrices]
           ];
 
@@ -1642,7 +1642,7 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
 
 CopyDRBarMassesToPoleMasses[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[CopyDRBarMassesToPoleMasses /@ massMatrices]
           ];
 

@@ -119,7 +119,7 @@ PrintInputParameters[parameters_List, streamName_String] :=
 
 WriteSLHAMass[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
     Module[{massMatrices},
-           massMatrices = TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols;
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
            StringJoin[WriteSLHAMass /@ massMatrices]
           ];
 
