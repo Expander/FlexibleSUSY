@@ -141,6 +141,12 @@ FlexibleSUSY-1.4.0 [not released yet]
 
    UseYukawa3LoopQCD = False;
 
+ * Change (commit f2f913e): When threshold corrections are disabled,
+   the top pole mass is used to determine the top Yukawa coupling.
+   Before commit f2f913e, the running Standard Model top mass was
+   used.  This change makes it easier to compare the mass spectrum
+   with SPheno when threshold corrections are disabled.
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
