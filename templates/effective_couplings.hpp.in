@@ -58,6 +58,8 @@ private:
    bool include_qcd_corrections;
 
    void copy_mixing_matrices_from_model();
+
+@runSMParametersPrototype@
 @runSMGaugeCouplingsPrototype@
    // higher order corrections to the amplitudes for
    // effective coupling to photons

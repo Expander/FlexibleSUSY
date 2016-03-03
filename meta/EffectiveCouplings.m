@@ -4,6 +4,7 @@ InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
 CreateSMRunningFunctions::usage="";
+CreateSMGaugeRunningFunctions::usage="";
 GetNeededVerticesList::usage="";
 CalculatePartialWidths::usage="";
 CalculateQCDAmplitudeScalingFactors::usage="";
@@ -381,7 +382,35 @@ CreateEffectiveCouplingsInit[couplings_List] :=
            init
           ];
 
-CreateSMRunningFunctions[] :=
+CreateSMRunningFunctions[settings_List] :=
+    Module[{body = "", prototype = "", function = ""},
+           If[!SARAH`SupersymmetricModel,
+              prototype = "void run_SM_parameters_to(double m);\n";
+              body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
+              body = body <>
+                     "sm.set_loops(2);\n" <>
+                     "sm.set_thresholds(0);\n" <>
+                     "sm.set_low_energy_data(qedqcd);\n" <>
+                     "sm.set_physical_input(physical_input);\n\n";
+              body = body <> "sm.initialise_from_input();\n"
+                          <> "sm.run_to(m);\n\n";
+              (* for effective couplings the on-shell SM vev and top mass are used *)
+              body = body <> "// use on-shell SM vev and top mass\n"
+                          <> "sm.set_v(1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0)));\n"
+                          <> "sm.set_Yu(2, 2, -Sqrt(2.0) * qedqcd.displayPoleMt() / sm.get_v());\n"
+                          <> "sm.calculate_DRbar_masses();\n\n";
+
+              (* update parameters depending on SM gauge and Yukawa couplings *)
+              body = body <> ApplyLowEnergyConstraints[settings];
+
+              function = "void " <> FlexibleSUSY`FSModelName
+                         <> "_effective_couplings::run_SM_parameters_to(double m)\n{\n"
+                         <> TextFormatting`IndentText[body] <> "\n}\n";
+             ];
+           {prototype, function}
+          ];
+
+CreateSMGaugeRunningFunctions[] :=
     Module[{body = "", prototype = "", function = ""},
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
@@ -389,7 +418,7 @@ CreateSMRunningFunctions[] :=
               body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
               body = body <>
                      "sm.set_loops(2);\n" <>
-                     "sm.set_thresholds(2);\n" <>
+                     "sm.set_thresholds(0);\n" <>
                      "sm.set_low_energy_data(qedqcd);\n" <>
                      "sm.set_physical_input(physical_input);\n\n";
               body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
@@ -407,36 +436,44 @@ CreateSMRunningFunctions[] :=
            {prototype, function}
           ];
 
-RunToDecayingParticleScale[particle_, idx_:""] :=
-    Module[{savedMass, body, result = "", mustRecalculate = False},
-           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
-           If[idx != "",
-              savedMass = savedMass <> "(" <> idx <> ")";
-             ];
+RunToDecayingParticleScale[scale_] :=
+    Module[{body, result = ""},
            If[SARAH`SupersymmetricModel,
-              mustRecalculate = True;
-              body = "model.run_to(" <> savedMass <> ");\n";
-              result = "if (rg_improve && scale > " <> savedMass <> ") {\n"
-                       <> TextFormatting`IndentText[body] <> "}\n";
+              body = "model.run_to(" <> scale <> ");\n";
+              result = "if (rg_improve && scale > " <> scale <> ") {\n"
+                       <> TextFormatting`IndentText[body] <> "}\n";,
+              result = result <> "run_SM_parameters_to(" <> scale <> ");\n";
              ];
-           (* @note always run the SM gauge couplings, if defined, to the decay scale *)
-           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
-              ValueQ[SARAH`strongCoupling],
-              mustRecalculate = True;
-              result = result <> "run_SM_gauge_couplings_to(" <> savedMass <> ");\n";
-             ];
-           If[mustRecalculate,
-              result = result <> "model.calculate_DRbar_masses();\n"
-                       <> "copy_mixing_matrices_from_model();\n";
-             ];
-           {result, mustRecalculate}
+           result
           ];
 
-CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
-    Module[{particle, vectorBoson, couplingName, call = ""},
+RunSMToScale[scale_] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
+              ValueQ[SARAH`strongCoupling],
+              result = result <> "run_SM_gauge_couplings_to(" <> scale <> ");\n";
+             ];
+           result
+          ];
+
+CallEffectiveCouplingCalculation[couplingSymbol_] :=
+    Module[{particle, vectorBoson, savedMass, dim, start, idx = "",
+            body, couplingName, call = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
+           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
+           dim = TreeMasses`GetDimension[particle];
+           start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+           If[dim != 1 && start <= dim,
+              idx = "gO1";
+              savedMass = savedMass <> "(" <> idx <> ")";
+             ];
+           If[vectorBoson === SARAH`VectorP,
+              body = RunSMToScale["0.5 * " <> savedMass];,
+              body = RunSMToScale[savedMass];
+             ];
+           call = call <> body;
            couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
-           call = "calculate_" <> couplingName;
+           call = call <> "calculate_" <> couplingName;
            If[idx != "",
               call = call <> "(" <> idx <> ");";,
               call = call <> "();";
@@ -446,8 +483,8 @@ CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
 
 CreateEffectiveCouplingsCalculation[couplings_List] :=
     Module[{i, couplingSymbols, particle, couplingsForParticles = {},
-            mustSaveParameters = False, pos, couplingList, mass,
-            savedMass, dim, start, body, mustRecalculate, result = ""},
+            pos, couplingList, mass,
+            savedMass, dim, start, body, result = ""},
            couplingSymbols = #[[1]]& /@ couplings;
            For[i = 1, i <= Length[couplingSymbols], i++,
                particle = GetExternalStates[couplingSymbols[[i]]][[1]];
@@ -465,23 +502,25 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                dim = TreeMasses`GetDimension[particle];
                start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
                If[dim == 1 && !TreeMasses`IsGoldstone[particle],
-                  {body, mustRecalculate} = RunToDecayingParticleScale[particle];
-                  result = result <> savedMass <> body;
-                  result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
+                  body = RunToDecayingParticleScale[mass];
+                  body = body <> "model.calculate_DRbar_masses();\n"
+                              <> "copy_mixing_matrices_from_model();\n";
+                  result = result <> savedMass <> body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
                   If[start <= dim,
-                     {body, mustRecalculate} = RunToDecayingParticleScale[particle, "gO1"];
+                     body = RunToDecayingParticleScale[mass <> "(gO1)"];
+                     body = body <> "model.calculate_DRbar_masses();\n"
+                                 <> "copy_mixing_matrices_from_model();\n";
                      result = result <> savedMass <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
-                     body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
+                     body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
                  ];
               ];
-           If[mustRecalculate,
-              result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
-              (* @note should this be done after each running, or only once at the end? *)
-              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
-             ];
+
+           result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
+           result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+
            result
           ];
 
