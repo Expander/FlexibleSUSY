@@ -1023,9 +1023,10 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
               "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
               "double qcd_3l = 0;\n\n" <>
+              If[qcdThreeLoop =!= 0,
               "if (get_thresholds() > 2) {\n" <>
                   IndentText["qcd_3l = " <> CConversion`RValueToCFormString[qcdThreeLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"] <> "\n" <>
-              "}\n\n" <>
+              "}\n\n", ""] <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
               "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l + qcd_3l);\n\n" <>
               "return m_susy_drbar;\n";
