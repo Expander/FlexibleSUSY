@@ -108,8 +108,12 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    md_guess = leAtMt.displayMass(mDown);
    ms_guess = leAtMt.displayMass(mStrange);
    mb_guess = leAtMt.displayMass(mBottom);
-   me_guess = leAtMt.displayMass(mElectron);
-   mm_guess = leAtMt.displayMass(mMuon);
+   me_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mElectron) :
+      leAtMt.displayPoleMel();
+   mm_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mMuon) :
+      leAtMt.displayPoleMmuon();
    mtau_guess = leAtMt.displayMass(mTau);
 
    // guess gauge couplings at mt
