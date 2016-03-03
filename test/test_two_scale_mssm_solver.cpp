@@ -161,7 +161,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         VERBOSE_MSG(ss.str());
+         BOOST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
