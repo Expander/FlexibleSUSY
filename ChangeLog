@@ -147,6 +147,14 @@ FlexibleSUSY-1.4.0 [not released yet]
    used.  This change makes it easier to compare the mass spectrum
    with SPheno when threshold corrections are disabled.
 
+ * Change (commit 1c7e4a7): The 2-loop QCD contribution to the top
+   Yukawa coupling [hep-ph/0210258 Eq. (60)-(61), hep-ph/9803493
+   Eq. (17)] is taken into account only if the threshold correction
+   loop order (flag FlexibleSUSY[7]) is set to a value > 1.  Before
+   commit 1c7e4a7 the 2-loop QCD contribution was always taken into
+   account and could not be disabled.  This change allows the user to
+   consistently disable 2-loop contributions.
+
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
 
