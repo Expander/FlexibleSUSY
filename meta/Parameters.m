@@ -183,8 +183,11 @@ FindSymbolDef[sym_, opt_:DependenceNum] :=
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters, allOutPars},
-           allOutPars = DeleteDuplicates[Join[allOutputParameters,
-                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
+           allOutPars = DeleteDuplicates[Flatten[
+               Join[allOutputParameters,
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
+                   ]]];
            allParameters = DeleteDuplicates[
                Join[allModelParameters, allOutPars,
                     allInputParameters, Phases`GetArg /@ allPhases,
@@ -1190,8 +1193,11 @@ CalculateLocalPoleMasses[parameter_] :=
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
             poleMasses, phases, depNum, allOutPars},
-           allOutPars = DeleteDuplicates[Join[allOutputParameters,
-                                              allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a]]];
+           allOutPars = DeleteDuplicates[Flatten[
+               Join[allOutputParameters,
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
+                   ]]];
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
