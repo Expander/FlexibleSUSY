@@ -88,6 +88,9 @@ skipping goldstone bosons";
 GetDimensionStartSkippingSMGoldstones::usage="return first index,
  skipping Standard Model goldstone bosons";
 
+GetParticleIndices::usage = "returns list of particle indices with
+ names";
+
 FindMixingMatrixSymbolFor::usage="returns the mixing matrix symbol for
 a given field";
 
@@ -152,6 +155,7 @@ IsSMLepton::usage="";
 IsSMUpQuark::usage="";
 IsSMDownQuark::usage="";
 IsSMQuark::usage="";
+IsSMParticle::usage="";
 ContainsGoldstone::usage="";
 
 GetSMChargedLeptons::usage="";
@@ -229,6 +233,10 @@ IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     IsOfType[sym, type, states];
 
+IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
+IsSMParticle[sym_[__]] := IsSMParticle[sym];
+IsSMParticle[sym_] := SARAH`SMQ[sym];
+
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
 IsScalar[sym_] := IsOfType[sym, S];
@@ -251,7 +259,11 @@ IsGhost[sym_List] := And @@ (IsGhost /@ sym);
 
 IsGoldstone[Susyno`LieGroups`conj[sym_]] := IsGoldstone[sym];
 IsGoldstone[SARAH`bar[sym_]] := IsGoldstone[sym];
-IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+IsGoldstone[sym_] := MemberQ[
+    Join[GetGoldstoneBosons[],
+         GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx]],
+    sym
+];
 IsGoldstone[sym_List] := And @@ (IsGoldstone /@ sym);
 
 GetSMGoldstones[] :=
@@ -491,6 +503,18 @@ GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
            If[dim <= 0, 0, dim]
           ];
 
+GetParticleIndices[sym_[__]] :=
+    GetParticleIndices[sym];
+
+GetParticleIndices[sym_] :=
+    Module[{result},
+           result = Cases[SARAH`Particles[SARAH`EWSB], {sym, __, indexList_} :> indexList];
+           If[Length[result] > 0,
+              result = result[[1]]
+             ];
+           result
+          ];
+
 DimOf[CConversion`ScalarType[CConversion`realScalarCType]] := 1;
 DimOf[CConversion`VectorType[CConversion`realScalarCType, dim]] := dim;
 DimOf[t_] := (Print["Unknown type: ", t]; Quit[1]);
@@ -682,6 +706,13 @@ FindMassEigenstateForMixingMatrix[mixingMatrixSymbol_Symbol] :=
 
 DeleteDuplicateSinglets[massMatrices_List] :=
     Module[{result = massMatrices, i, m, me, mm, p, other},
+           (* delete duplicates of the form
+
+              FSMassMatrix[_, {me}, _]
+              FSMassMatrix[_,  me , _]   <--  delete
+
+              but keep mixing matrix from one or the other
+            *)
            For[i = 1, i <= Length[massMatrices], i++,
                me = GetMassEigenstate[massMatrices[[i]]];
                mm = GetMixingMatrixSymbol[massMatrices[[i]]];
@@ -742,6 +773,7 @@ ConvertSarahMassMatrices[] :=
               ];
            (* append mass matrix for intermediate output parameters *)
            result = DeleteDuplicateSinglets[Join[result, GetIntermediateMassMatrices[result]]];
+           result = DeleteDuplicateVectors[result];
            Return[result];
           ];
 
@@ -754,6 +786,12 @@ GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 MakeESSymbol[p_List] := Symbol[StringJoin[ToString /@ p]];
 MakeESSymbol[FlexibleSUSY`M[p_List]] := FlexibleSUSY`M[MakeESSymbol[p]];
 MakeESSymbol[p_] := p;
+
+CreateMassGetter[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_], postFix_String:"", wrapper_String:""] :=
+    Module[{massMatrices},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           StringJoin[CreateMassGetter[#,postFix,wrapper]& /@ massMatrices]
+          ];
 
 CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", wrapper_String:""] :=
     Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr, CreateElementGetter},
@@ -969,6 +1007,23 @@ BubbleSort[l_List, Pred_] :=
                   ];
               ];
            ltemp
+          ];
+
+(* delete duplicates of the form
+
+   FSMassMatrix[_, {m1, m2}, _]
+   FSMassMatrix[_,  m1     , _]   <--  delete
+   FSMassMatrix[_,  m2     , _]   <--  delete
+ *)
+DeleteDuplicateVectors[massMatrices_List] :=
+    Module[{result = massMatrices, i, m, me},
+           For[i = 1, i <= Length[massMatrices], i++,
+               me = GetMassEigenstate[massMatrices[[i]]];
+               If[Head[me] === List,
+                  result = DeleteCases[result, TreeMasses`FSMassMatrix[_, m_ /; MemberQ[me, m], _]];
+                 ];
+              ];
+           result
           ];
 
 CallMassCalculationFunctions[massMatrices_List] :=
@@ -1339,6 +1394,23 @@ CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U
 CallDiagonalizeHermitianFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
 
+AssignVectorBosonMassesFrom[eigenVector_List] :=
+    Module[{i, ev, result = ""},
+           ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[MakeESSymbol[eigenVector]]]];
+           For[i = 1, i <= Length[eigenVector], i++,
+               result = result <>
+                        CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenVector[[i]]]] <>
+                        " = " <>
+                        If[IsMassless[eigenVector[[i]]],
+                           "0.;\n",
+                           ev <> "(" <> ToString[i-1] <> ");\n"
+                          ];
+             ];
+           result
+          ];
+
+AssignVectorBosonMassesFrom[eigenVector_] := "";
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body, result, U = "", V = "", dimStr = "", ev, evMap, particle, k,
             diagFunctionStr, matrixType, matrixElementType, vectorType,
@@ -1351,6 +1423,14 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            evMap = ev;
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            body = IndentText["const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n"];
+           (* declare vector boson multiplet *)
+           If[IsVector[eigenVector] && Head[eigenVector] === List,
+              body = body <>
+                     IndentText[
+                         CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <>
+                         " " <> ev <> ";\n"
+                     ];
+             ];
            (* map scalar matrix and eigenvector to matrix and array types *)
            If[dim == 1,
               matrixElementType = CConversion`GetElementType[GetMassMatrixType[GetHead[eigenvector]]];
@@ -1392,6 +1472,12 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                             CheckTachyon[eigenVector, ev] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
+             ];
+           If[IsVector[eigenVector],
+              (* assign individual vector boson masses to the
+                 calculated mass eigenvalues *)
+              body = body <> "\n" <>
+                     IndentText[AssignVectorBosonMassesFrom[eigenVector]];
              ];
            Return[result <> body <> "}\n"];
           ];
@@ -1468,6 +1554,12 @@ CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+CreatePhysicalMassDefinition[p:TreeMasses`FSMassMatrix[_, massESSymbols_List, _]] :=
+    Module[{massMatrices},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           StringJoin[CreatePhysicalMassDefinition /@ massMatrices]
+          ];
+
 CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol, dim, dimStr, returnType},
            massESSymbol = GetMassEigenstate[massMatrix];
@@ -1480,6 +1572,12 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
            result = CreateCType[returnType] <> " " <>
                     ToValidCSymbolString[FlexibleSUSY`M[MakeESSymbol[massESSymbol]]] <> ";\n";
            Return[result];
+          ];
+
+CreatePhysicalMassInitialization[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
+    Module[{massMatrices},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           StringJoin[CreatePhysicalMassInitialization /@ massMatrices]
           ];
 
 CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
@@ -1514,6 +1612,12 @@ CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+ClearOutputParameters[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
+    Module[{massMatrices},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           StringJoin[ClearOutputParameters /@ massMatrices]
+          ];
+
 ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, massESSymbol, mixingMatrixSymbol, matrixType,
             dim, massESType},
@@ -1534,6 +1638,12 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
                 ];
              ];
            Return[result];
+          ];
+
+CopyDRBarMassesToPoleMasses[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
+    Module[{massMatrices},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           StringJoin[CopyDRBarMassesToPoleMasses /@ massMatrices]
           ];
 
 CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
@@ -1882,14 +1992,26 @@ CreateMixingMatrixArrayGetterSetter[masses_List, offset_Integer, func_] :=
 
 CreateMassArrayGetter[masses_List] :=
     Module[{display = "", paramCount = 0, name = "", mass,
-            type, i, assignment = "", nAssignments = 0},
+            type, i, v, assignment = "", nAssignments = 0, mes},
            For[i = 1, i <= Length[masses], i++,
-               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
-               type = GetMassType[mass];
-               name = CConversion`ToValidCSymbolString[mass];
-               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
-               display = display <> assignment;
-               paramCount += nAssignments;
+               If[Head[GetMassEigenstate[masses[[i]]]] === List,
+                  mes = DeleteDuplicates[GetMassEigenstate[masses[[i]]]];
+                  For[v = 1, v <= Length[mes], v++,
+                      mass = FlexibleSUSY`M[mes[[v]]];
+                      type = GetMassType[mass];
+                      name = CConversion`ToValidCSymbolString[mass];
+                      {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+                      display = display <> assignment;
+                      paramCount += nAssignments;
+                     ];
+                  ,
+                  mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+                  type = GetMassType[mass];
+                  name = CConversion`ToValidCSymbolString[mass];
+                  {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+                  display = display <> assignment;
+                  paramCount += nAssignments;
+                 ];
               ];
            display = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
                      display <> "\n" <>
@@ -1910,14 +2032,26 @@ CreatePhysicalArrayGetter[masses_List] :=
 
 CreateMassArraySetter[masses_List, array_String] :=
     Module[{set = "", paramCount = 0, name = "", mass,
-            type, i, assignment = "", nAssignments = 0},
+            type, i, v, assignment = "", nAssignments = 0, mes},
            For[i = 1, i <= Length[masses], i++,
-               mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
-               type = GetMassType[mass];
-               name = CConversion`ToValidCSymbolString[mass];
-               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
-               set = set <> assignment;
-               paramCount += nAssignments;
+               If[Head[GetMassEigenstate[masses[[i]]]] === List,
+                  mes = DeleteDuplicates[GetMassEigenstate[masses[[i]]]];
+                  For[v = 1, v <= Length[mes], v++,
+                      mass = FlexibleSUSY`M[mes[[v]]];
+                      type = GetMassType[mass];
+                      name = CConversion`ToValidCSymbolString[mass];
+                      {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+                      set = set <> assignment;
+                      paramCount += nAssignments;
+                     ];
+                  ,
+                  mass = FlexibleSUSY`M[GetMassEigenstate[masses[[i]]]];
+                  type = GetMassType[mass];
+                  name = CConversion`ToValidCSymbolString[mass];
+                  {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+                  set = set <> assignment;
+                  paramCount += nAssignments;
+                 ];
               ];
            Return[set];
           ];

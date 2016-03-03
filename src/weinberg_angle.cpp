@@ -200,9 +200,16 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
 
       sin_new = Sin(theta);
 
-      const double deltaRho
+      double deltaRho
          = calculate_delta_rho(rho_old, sin_new, data, susy_contributions,
                                number_of_loops);
+
+      if (!std::isfinite(deltaRho)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("delta_rho non-finite");
+#endif
+         deltaRho = 0.;
+      }
 
       if (Abs(deltaRho) < 1.0)
          rho_new = 1.0 / (1.0 - deltaRho);

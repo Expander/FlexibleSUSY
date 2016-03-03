@@ -425,9 +425,9 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
    ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
    ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "mnu3(pole)");
    ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()       , "MW(pole)");
-   ss << FORMAT_ELEMENT(11, qedqcd.displayMass(mElectron), "melectron(pole)");
+   ss << FORMAT_ELEMENT(11, qedqcd.displayPoleMel()      , "melectron(pole)");
    ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
-   ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
+   ss << FORMAT_ELEMENT(13, qedqcd.displayPoleMmuon()    , "mmuon(pole)");
    ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "mnu2(pole)");
 
    // recalculate mc(mc)^MS-bar
@@ -541,6 +541,7 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 11:
       qedqcd.setMass(mElectron, value);
+      qedqcd.setPoleMel(value);
       break;
    case 12:
       qedqcd.setNeutrinoPoleMass(1, value);

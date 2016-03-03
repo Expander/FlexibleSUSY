@@ -1,5 +1,4 @@
-
-BeginPackage["TwoLoop`", {"SARAH`"}];
+BeginPackage["TwoLoopQCD`", {"SARAH`"}];
 
 GetDeltaMOverMQCDOneLoop::usage="Returns one-loop QCD contributions to
 Delta m_f/m_f in the given renormalization scheme.";
@@ -50,7 +49,7 @@ GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, renScale_] :=
                      + 12 Zeta[3] + (3/2) log + (9/2) log^2)
                + CA (1093/24 - 8 Zeta[2] + 24 Log[2] Zeta[2]
                      - 6 Zeta[3] - (179/6) log + 11/2 log^2));
-           Simplify[N[result]]
+           result
           ];
 
 GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] :=
@@ -70,7 +69,7 @@ GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] 
                + CA (1093/24 - 8 Zeta[2] + 24 Log[2] Zeta[2]
                      - 6 Zeta[3] - (179/6) log + 11/2 log^2)
                - 13/3 logMt + logMt^2);
-           Simplify[N[result]]
+           result
           ];
 
 GetDeltaMOverMQCDTwoLoopDRbar[_, _] := 0;
@@ -90,7 +89,7 @@ GetDeltaMOverMQCDTwoLoopMSbar[quark_, renScale_] :=
                - CF t Nf (71/6 + 8 Zeta[2] + 26/3 log + 2 log^2)
                + CF^2 (121/8 + 30 Zeta[2] + 8 I31 + 27/2 log + 9/2 log^2)
                - 12 CF t (1 - 2 Zeta[2]));
-           Simplify[N[result]]
+           result
           ];
 
 (* ******* one-loop ******* *)
@@ -110,7 +109,7 @@ GetDeltaMOverMQCDOneLoopDRbar[quark_, renScale_] :=
            alphaStrong = SARAH`strongCoupling^2 / (4 Pi);
            mf = FlexibleSUSY`M[quark];
            result = CF alphaStrong / (4 Pi) (5 - 3 Log[(mf / renScale)^2]);
-           Simplify[N[result]]
+           result
           ];
 
 GetDeltaMOverMQCDOneLoopMSbar[quark_, renScale_] :=
@@ -120,7 +119,7 @@ GetDeltaMOverMQCDOneLoopMSbar[quark_, renScale_] :=
            alphaStrong = SARAH`strongCoupling^2 / (4 Pi);
            mf = FlexibleSUSY`M[quark];
            result = CF alphaStrong / (4 Pi) (4 - 3 Log[(mf / renScale)^2]);
-           Simplify[N[result]]
+           result
           ];
 
 End[];

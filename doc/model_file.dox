@@ -902,6 +902,86 @@ ExtraSLHAOutputBlocks = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\section model_specific_switches Model-specific switches
 
+### 2- and 3-loop corrections to pole masses ###
+
+#### MSSM ####
+
+In the MSSM the dominant two-loop Higgs pole mass corrections
+[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,
+arxiv:hep-ph/0206101, arxiv:hep-ph/0305127] can be used by setting in
+the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopMSSM = True; (* use 2-loop Higgs corrections *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition, the effective \f$\mu\f$ parameter must be specified using
+the `EffectiveMu` variable:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+EffectiveMu = \[Mu];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### NMSSM ####
+
+In the NMSSM the dominant two-loop Higgs pole mass corrections from
+Ref.  [arXiv:0907.4682] plus the MSSM-like contributions from Refs.
+[hep-ph/0105096, hep-ph/0112177, hep-ph/0212132, hep-ph/0206101,
+hep-ph/0305127] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopNMSSM = True; (* use 2-loop Higgs corrections *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition, the effective \f$\mu\f$ parameter must be specified using
+the `EffectiveMu` variable, Furthermore, the tree-level value of the
+effective CP-odd MSSM-like Higgs must be specified in the
+`EffectiveMASqr` variable.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+EffectiveMu = \[Lambda] vS / Sqrt[2];
+EffectiveMASqr = (T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2) (vu^2 + vd^2) / (vu vd);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Standard Model (SM) ####
+
+In the Standard Model the two-loop Higgs pole mass corrections
+[arxiv:1205.6497, Eq.(20)] of the order \f$O(\alpha_t\alpha_s +
+\alpha_t^2)\f$ can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Split-MSSM (SplitMSSM) ####
+
+In the split-MSSM the two-loop Higgs pole mass corrections from
+[arxiv:1312.5220, Eq. (4.8)] of the order \f$O(\alpha_t \alpha_s^2)\f$
+can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs3LoopSplit = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### 3-loop QCD corrections to the top Yukawa coupling ###
+
+In non-SUSY models the known 3-loop (Standard Model) QCD corrections
+\f$O(\alpha_s^3)\f$ [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] can
+be used in the determination of the running \f$\overline{MS}\f$ top
+Yukawa coupling \f$y_t\f$ at the low-energy scale by setting
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseYukawa3LoopQCD = Automatic;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+or
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseYukawa3LoopQCD = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note, that these 3-loop corrections are only applied at run-time if
+the threshold correction loop order (block `FlexibleSUSY[7]`) is set
+to a value > 2.
 
 */

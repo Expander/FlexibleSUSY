@@ -13,7 +13,7 @@ namespace softsusy {
 
 const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
    "alpha_em_MSbar_at_MZ", "GFermi", "alpha_s_MSbar_at_MZ", "MZ_pole",
-   "mb_mb", "MT_pole", "MTau_pole", "MMuon_pole", "Mv3_pole", "MW_pole", "ME_pole",
+   "mb_mb", "MT_pole", "MTau_pole", "MMuon_pole", "MElectron_pole", "Mv3_pole", "MW_pole", "ME_pole",
    "Mv1_pole", "MM_pole", "Mv2_pole", "MD_2GeV", "MU_2GeV", "MS_2GeV",
    "MC_2GeV" };
 
@@ -25,6 +25,7 @@ QedQcd::QedQcd()
   : a(2), mf(9), mnu(3), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM),
     mtauPole(MTAU)
   , mmuonPole(MMUON)
+  , melPole(MELECTRON)
   , mwPole(flexiblesusy::Electroweak_constants::MW)
   , mzPole(flexiblesusy::Electroweak_constants::MZ)
   , gfermi(flexiblesusy::Electroweak_constants::gfermi)
@@ -50,6 +51,7 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mbMb   = m.mbMb;
   mtauPole = m.mtauPole;
   mmuonPole = m.mmuonPole;
+  melPole = m.melPole;
   mwPole = m.mwPole;
   mzPole = m.mzPole;
   gfermi = m.gfermi;
@@ -632,21 +634,22 @@ void QedQcd::set_input(const Eigen::ArrayXd& pars)
    mtPole   = pars(5);
    mtauPole = pars(6);
    mmuonPole= pars(7);
-   mnu(3)   = pars(8);
-   mwPole   = pars(9);
-   mf(7)    = pars(10); // ME_pole
-   mnu(1)   = pars(11);
-   mf(8)    = pars(12); // MM_pole
-   mnu(2)   = pars(13);
-   mf(4)    = pars(14); // MD
-   mf(1)    = pars(15); // MU
-   mf(5)    = pars(16); // MS
-   mf(2)    = pars(17); // MC
+   melPole  = pars(8);
+   mnu(3)   = pars(9);
+   mwPole   = pars(10);
+   mf(7)    = pars(11); // ME
+   mnu(1)   = pars(12);
+   mf(8)    = pars(13); // MM
+   mnu(2)   = pars(14);
+   mf(4)    = pars(15); // MD
+   mf(1)    = pars(16); // MU
+   mf(5)    = pars(17); // MS
+   mf(2)    = pars(18); // MC
 }
 
 Eigen::ArrayXd QedQcd::display_input() const
 {
-   Eigen::ArrayXd pars(18);
+   Eigen::ArrayXd pars(19);
 
    pars(0)  = a(1);
    pars(1)  = gfermi;
@@ -656,16 +659,17 @@ Eigen::ArrayXd QedQcd::display_input() const
    pars(5)  = mtPole;
    pars(6)  = mtauPole;
    pars(7)  = mmuonPole;
-   pars(8)  = mnu(3);
-   pars(9)  = mwPole;
-   pars(10) = mf(7); // ME_pole
-   pars(11) = mnu(1);
-   pars(12) = mf(8); // MM_pole
-   pars(13) = mnu(2);
-   pars(14) = mf(4); // MD
-   pars(15) = mf(1); // MU
-   pars(16) = mf(5); // MS
-   pars(17) = mf(2); // MC
+   pars(8)  = melPole;
+   pars(9)  = mnu(3);
+   pars(10) = mwPole;
+   pars(11) = mf(7); // ME
+   pars(12) = mnu(1);
+   pars(13) = mf(8); // MM
+   pars(14) = mnu(2);
+   pars(15) = mf(4); // MD
+   pars(16) = mf(1); // MU
+   pars(17) = mf(5); // MS
+   pars(18) = mf(2); // MC
 
    return pars;
 }

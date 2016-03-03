@@ -318,28 +318,8 @@ deltaLambda4Phi1L = With[{
 
 (* arxiv:1508.00576, Eq. (57) *)
 deltaLambda5Phi1L = 0;
-
-(* arxiv:hep-ph/9307201, Eq. (6.17) *)
-deltaLambda6Phi1L = With[{
-    kappa = 1/(4 Pi)^2,
-    ht = Yu[3,3],
-    hb = Yd[3,3],
-    htau = Ye[3,3],
-    muMS = \[Mu] / MSUSY,
-    AbMS = Ab / MSUSY,
-    AtauMS = Atau / MSUSY,
-    AtMS = At / MSUSY,
-    gbar = ((GUTNormalization[g1] g1)^2 + g2^2) / 4
-    },
-    (
-        gbar/12 kappa muMS (+ 3 AbMS hb^2
-                            + 3 AtMS ht^2
-                            + AtauMS htau^2)
-    )
-];
-
-(* arxiv:hep-ph/9307201, Eq. (6.17) *)
-deltaLambda7Phi1L = deltaLambda6Phi1L;
+deltaLambda6Phi1L = 0; (* wrong in arxiv:hep-ph/9307201, Eq. (6.17) *)
+deltaLambda7Phi1L = 0; (* wrong in arxiv:hep-ph/9307201, Eq. (6.17) *)
 
 (* arxiv:1508.00576, Eq. (59) *)
 deltaLambda1th2L = With[{

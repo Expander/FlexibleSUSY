@@ -307,7 +307,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
    Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
    topDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
    topDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
-   topDRbar(2,2)      = qedqcd.displayMass(softsusy::mTop);
+   topDRbar(2,2)      = qedqcd.displayPoleMt();
 
    if (model->get_thresholds()) {
 @calculateDRbarMassTop@
@@ -339,9 +339,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
           "calculate_@ElectronYukawa@_DRbar(): model pointer is zero");
 
    Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = qedqcd.displayMass(softsusy::mElectron);
-   electronDRbar(1,1) = qedqcd.displayMass(softsusy::mMuon);
-   electronDRbar(2,2) = qedqcd.displayMass(softsusy::mTau);
+   electronDRbar(0,0) = qedqcd.displayPoleMel();
+   electronDRbar(1,1) = qedqcd.displayPoleMmuon();
+   electronDRbar(2,2) = qedqcd.displayPoleMtau();
 
    if (model->get_thresholds()) {
 @calculateDRbarMassElectron@

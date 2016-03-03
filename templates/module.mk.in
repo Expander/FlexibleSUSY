@@ -189,6 +189,9 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(EXE@CLASSNAME@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

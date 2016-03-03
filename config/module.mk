@@ -52,14 +52,22 @@ install-src::
 		$(INSTALL_STRIPPED) $(CONVERT_DOS_PATHS) $(CONFIG_INSTALL_DIR) -m u=rwx,g=r,o=r
 endif
 
-clean-$(MODNAME):
-		-rm -f $(DEPGEN_OBJ) $(DEPGEN_EXE)
+clean-$(MODNAME)-dep:
+		@true
+
+clean-$(MODNAME)-obj:
+		-rm -f $(DEPGEN_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(DEPGEN_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(CONFIG_HDR)
 		-rm -f $(FLEXIBLESUSY_VERSION_FILE)
 		-rm -f $(FLEXIBLESUSY_GIT_COMMIT_FILE)
 		-rm -f $(REQUIRED_SARAH_VERSION_FILE)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

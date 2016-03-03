@@ -21,6 +21,7 @@ install-src::
 endif
 
 clean-$(MODNAME):
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 

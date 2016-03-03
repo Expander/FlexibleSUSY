@@ -44,6 +44,26 @@ FlexibleSUSY-1.4.0 [not released yet]
        FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
    ];
 
+   Important note: In the SARAH model file a mass ordering of the
+   vector bosons is assumed.  For example, the statement
+
+   DEFINITION[EWSB][GaugeSector] = {
+       {{VB,VWB[3],VBp}, {VP,VZ,VZp}, ZZ},
+       ...
+   };
+
+   assumes MVP < MZ < MZp.  Thus, the user has to make sure that the
+   studied parameter region leads to Photon, Z and Z' masses which are
+   in agreement with the relation MVP < MZ < MZp.  Otherwise, the
+   calculated Z and Z' masses will be incorrect.  If a parameter
+   region shall be studied where MVP < MZp < MZ, then the ordering of
+   vector bosons in the SARAH model file has to be changed to
+
+   DEFINITION[EWSB][GaugeSector] = {
+       {{VB,VWB[3],VBp}, {VP,VZp,VZ}, ZZ},
+       ...
+   };
+
  * Feature: By setting the entry FlexibleSUSY[16] = 1 in the SLHA
    input file, the user can force majorana fermion masses to be
    positive.  In this case, the corresponding mixing matrix is not
@@ -98,6 +118,43 @@ FlexibleSUSY-1.4.0 [not released yet]
       {Temporary[Yu[1,1]], 0},
       ...
    };
+
+ * Feature: The three THDM-like models, which have been used in
+   arxiv:1512.07761, are provided.  The models implement the 1- and
+   2-loop threshold corrections of arxiv:1508.00576 and
+   arxiv:hep-ph/9307201.  The models are named:
+   * THDMIIMSSMBC (THDM with boundary condition to the MSSM)
+   * HTHDMIIMSSMBC (THDM + Higgsinos with boundary condition to the
+        MSSM)
+   * HGTHDMIIMSSMBC (THDM + Higgsinos + gauginos with boundary
+        condition to the MSSM)
+
+ * Feature: In non-SUSY models the 3-loop (Standard Model) QCD
+   corrections to the MS-bar Yukawa coupling of the order O(alpha_s^3)
+   [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] are added
+   automatically.  They are taken into account at run-time if the
+   threshold correction loop (FlexibleSUSY[7]) order is set to a value
+   > 2 in the SLHA input file.
+
+   The generation of 3-loop QCD corrections can be disabled by setting
+   in the model file
+
+   UseYukawa3LoopQCD = False;
+
+ * Change (commit f2f913e, 002c904): When threshold corrections are
+   disabled, the charged lepton and top quark pole masses are used to
+   determine the corresponding Yukawa couplings.  Before commit
+   f2f913e, the running Standard Model masses were used.  This change
+   makes it easier to compare the mass spectrum with SPheno when
+   threshold corrections are disabled.
+
+ * Change (commit 1c7e4a7): The 2-loop QCD contribution to the top
+   Yukawa coupling [hep-ph/0210258 Eq. (60)-(61), hep-ph/9803493
+   Eq. (17)] is taken into account only if the threshold correction
+   loop order (flag FlexibleSUSY[7]) is set to a value > 1.  Before
+   commit 1c7e4a7 the 2-loop QCD contribution was always taken into
+   account and could not be disabled.  This change allows the user to
+   consistently disable 2-loop contributions.
 
  * Bugfix (commit f7ff872): Support models which have couplings
    proportional to the epsilon tensor in color space.
