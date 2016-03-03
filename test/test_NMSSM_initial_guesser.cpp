@@ -21,6 +21,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    softsusy::GUTlambda = true;
    NMSSM<Two_scale> m;
    m.set_loops(2);
+   m.set_thresholds(2);
    SoftsusyNMSSM<Two_scale> snmssm;
 
    // create NMSSM initial guesser

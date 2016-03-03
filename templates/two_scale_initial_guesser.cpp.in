@@ -102,7 +102,9 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 
    mu_guess = leAtMt.displayMass(mUp);
    mc_guess = leAtMt.displayMass(mCharm);
-   mt_guess = leAtMt.displayMass(mTop) - 30.0;
+   mt_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mTop) - 30.0 :
+      leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(mDown);
    ms_guess = leAtMt.displayMass(mStrange);
    mb_guess = leAtMt.displayMass(mBottom);

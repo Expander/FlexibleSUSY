@@ -26,6 +26,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    softsusy::TOLERANCE = 1.0e-3;
    CMSSM<Two_scale> m(input);
    m.set_loops(2);
+   m.set_thresholds(2);
    SoftsusyMSSM<Two_scale> smssm;
 
    // create CMSSM initial guesser
