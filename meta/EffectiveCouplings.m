@@ -395,13 +395,12 @@ CreateSMRunningFunctions[settings_List] :=
               body = body <> "sm.initialise_from_input();\n"
                           <> "sm.run_to(m);\n\n";
               (* for effective couplings the on-shell SM vev and top mass are used *)
-              body = body <> "// use on-shell SM vev and top mass\n"
+              body = body <> "// ensure on-shell SM vev and top mass\n"
                           <> "sm.set_v(1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0)));\n"
                           <> "sm.set_Yu(2, 2, -Sqrt(2.0) * qedqcd.displayPoleMt() / sm.get_v());\n"
                           <> "sm.calculate_DRbar_masses();\n\n";
 
               (* update parameters depending on SM gauge and Yukawa couplings *)
-              body = body <> ApplyLowEnergyConstraints[settings];
 
               function = "void " <> FlexibleSUSY`FSModelName
                          <> "_effective_couplings::run_SM_parameters_to(double m)\n{\n"
@@ -414,7 +413,7 @@ CreateSMGaugeRunningFunctions[] :=
     Module[{body = "", prototype = "", function = ""},
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
-              prototype = "void run_SM_gauge_couplings_to(double m);\n";
+              prototype = "void run_SM_strong_coupling_to(double m);\n";
               body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
               body = body <>
                      "sm.set_loops(2);\n" <>
@@ -423,14 +422,10 @@ CreateSMGaugeRunningFunctions[] :=
                      "sm.set_physical_input(physical_input);\n\n";
               body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
               body = body <> "model.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling]
-                     <> "(sm.get_g1());\nmodel.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`leftCoupling]
-                     <> "(sm.get_g2());\nmodel.set_"
                      <> CConversion`ToValidCSymbolString[SARAH`strongCoupling]
                      <> "(sm.get_g3());";
               function = "void " <> FlexibleSUSY`FSModelName
-                         <> "_effective_couplings::run_SM_gauge_couplings_to(double m)\n{\n"
+                         <> "_effective_couplings::run_SM_strong_coupling_to(double m)\n{\n"
                          <> TextFormatting`IndentText[body] <> "\n}\n";
              ];
            {prototype, function}
@@ -447,11 +442,11 @@ RunToDecayingParticleScale[scale_] :=
            result
           ];
 
-RunSMToScale[scale_] :=
+RunStrongCouplingToScale[scale_] :=
     Module[{result = ""},
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
-              result = result <> "run_SM_gauge_couplings_to(" <> scale <> ");\n";
+              result = result <> "run_SM_strong_coupling_to(" <> scale <> ");\n";
              ];
            result
           ];
@@ -468,8 +463,8 @@ CallEffectiveCouplingCalculation[couplingSymbol_] :=
               savedMass = savedMass <> "(" <> idx <> ")";
              ];
            If[vectorBoson === SARAH`VectorP,
-              body = RunSMToScale["0.5 * " <> savedMass];,
-              body = RunSMToScale[savedMass];
+              body = RunStrongCouplingToScale["0.5 * " <> savedMass];,
+              body = RunStrongCouplingToScale[savedMass];
              ];
            call = call <> body;
            couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
