@@ -68,7 +68,8 @@ B0analytic[p_, m1_, m2_, mu_] :=
            xp = (s + Sqrt[s^2 - 4 p^2 (m1^2 - I eps)]) / (2 p^2);
            xm = (s - Sqrt[s^2 - 4 p^2 (m1^2 - I eps)]) / (2 p^2);
            fB[x_] := Log[1-x] - x Log[1 - 1/x] - 1;
-           Limit[Delta - Log[p^2/mu^2] - fB[xp] - fB[xm], eps -> 0]
+           Limit[Delta - Log[p^2/mu^2] - fB[xp] - fB[xm], eps -> 0,
+                 Assumptions :> p > 0 && m1 > 0 && m2 > 0 && mu > 0 && eps > 0]
           ];
 
 B0integral[p_, m1_, m2_, mu_] :=
