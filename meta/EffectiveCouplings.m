@@ -1,11 +1,11 @@
-BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`"}];
+BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`", "Constraint`"}];
 
 InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
-CreateSMRunningFunctions::usage="";
-CreateSMGaugeRunningFunctions::usage="";
 GetNeededVerticesList::usage="";
+GetSMParameterReplacements::usage="";
+SetModelParametersFromSM::usage="";
 CalculatePartialWidths::usage="";
 CalculateQCDAmplitudeScalingFactors::usage="";
 CalculateQCDScalingFactor::usage="";
@@ -382,53 +382,81 @@ CreateEffectiveCouplingsInit[couplings_List] :=
            init
           ];
 
-CreateSMRunningFunctions[settings_List] :=
-    Module[{body = "", prototype = "", function = ""},
-           If[!SARAH`SupersymmetricModel,
-              prototype = "void run_SM_parameters_to(double m);\n";
-              body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
-              body = body <>
-                     "sm.set_loops(2);\n" <>
-                     "sm.set_thresholds(0);\n" <>
-                     "sm.set_low_energy_data(qedqcd);\n" <>
-                     "sm.set_physical_input(physical_input);\n\n";
-              body = body <> "sm.initialise_from_input();\n"
-                          <> "sm.run_to(m);\n\n";
-              (* for effective couplings the on-shell SM vev and top mass are used *)
-              body = body <> "// ensure on-shell SM vev and top mass\n"
-                          <> "sm.set_v(1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0)));\n"
-                          <> "sm.set_Yu(2, 2, -Sqrt(2.0) * qedqcd.displayPoleMt() / sm.get_v());\n"
-                          <> "sm.calculate_DRbar_masses();\n\n";
-
-              (* update parameters depending on SM gauge and Yukawa couplings *)
-
-              function = "void " <> FlexibleSUSY`FSModelName
-                         <> "_effective_couplings::run_SM_parameters_to(double m)\n{\n"
-                         <> TextFormatting`IndentText[body] <> "\n}\n";
-             ];
-           {prototype, function}
+DependsOnSMCouplings[{parameter_, value_}] :=
+    Module[{smVev, smSyms},
+           smVev = Parameters`GetParameterFromDescription["EW-VEV"];
+           smSyms = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa,
+                     FlexibleSUSY`LowEnergyConstant, FlexibleSUSY`LowEnergyGaugeCoupling};
+           If[ValueQ[SARAH`hyperchargeCoupling], smSyms = Append[smSyms, SARAH`hyperchargeCoupling];];
+           If[ValueQ[SARAH`leftCoupling], smSyms = Append[smSyms, SARAH`leftCoupling];];
+           If[ValueQ[SARAH`strongCoupling], smSyms = Append[smSyms, SARAH`strongCoupling];];
+           If[smVev =!= Null, smSyms = Append[smSyms, smVev];];
+           !(And @@ FreeQ[value, #]& /@ smSyms)
           ];
 
-CreateSMGaugeRunningFunctions[] :=
-    Module[{body = "", prototype = "", function = ""},
-           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
-              ValueQ[SARAH`strongCoupling],
-              prototype = "void run_SM_strong_coupling_to(double m);\n";
-              body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
-              body = body <>
-                     "sm.set_loops(2);\n" <>
-                     "sm.set_thresholds(0);\n" <>
-                     "sm.set_low_energy_data(qedqcd);\n" <>
-                     "sm.set_physical_input(physical_input);\n\n";
-              body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
-              body = body <> "model.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`strongCoupling]
-                     <> "(sm.get_g3());";
-              function = "void " <> FlexibleSUSY`FSModelName
-                         <> "_effective_couplings::run_SM_strong_coupling_to(double m)\n{\n"
-                         <> TextFormatting`IndentText[body] <> "\n}\n";
-             ];
-           {prototype, function}
+DependsOnSMCouplings[FlexibleSUSY`FSSolveEWSBFor[__]] := True;
+
+DependsOnSMCouplings[setting_] := False;
+
+GetSMParameterReplacements[] :=
+    {"LowEnergyConstant(gYSM)" :> "Sqrt(3./5.) * sm->get_g1()",
+     "LowEnergyConstant(g1SM)" :> "sm->get_g1()",
+     "LowEnergyConstant(g2SM)" :> "sm->get_g2()",
+     "LowEnergyConstant(g3SM)" :> "sm->get_g3()",
+     "LowEnergyConstant(yeSM)" :> "sm->get_Ye(0,0)",
+     "LowEnergyConstant(ymSM)" :> "sm->get_Ye(1,1)",
+     "LowEnergyConstant(ylSM)" :> "sm->get_Ye(2,2)",
+     "LowEnergyConstant(yuSM)" :> "sm->get_Yu(0,0)",
+     "LowEnergyConstant(ycSM)" :> "sm->get_Yu(1,1)",
+     "LowEnergyConstant(ytSM)" :> "sm->get_Yu(2,2)",
+     "LowEnergyConstant(ydSM)" :> "sm->get_Yd(0,0)",
+     "LowEnergyConstant(ysSM)" :> "sm->get_Yd(1,1)",
+     "LowEnergyConstant(ybSM)" :> "sm->get_Yd(2,2)",
+     "LowEnergyConstant(mu2SM)" :> "sm->get_mu2()",
+     "LowEnergyConstant(lamSM)" :> "sm->get_Lambdax()",
+     "LowEnergyConstant(vSM)" :> "sm->get_v()"
+    };
+
+ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
+                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
+                 modelName_String] :=
+    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
+
+ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
+                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
+                 modelName_String] :=
+    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
+
+ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
+                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
+                 modelName_String] :=
+    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
+
+
+SetModelParametersFromSM[settings_List] :=
+    Module[{result = "", smSettings = settings, noMacros, noTemp},
+           smSettings = smSettings /. {"new_g1" -> "sm->get_g1()",
+                                       "new_g2" -> "sm->get_g2()",
+                                       "new_g3" -> "sm->get_g3()"};
+           result = Constraint`ApplyConstraints[smSettings];
+           result = StringReplace[result,
+                                  {Shortest["INPUTPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->get_input()." <> p,
+                                   Shortest["MODELPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->get_" <> p <> "()",
+                                   Shortest["DERIVEDPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->" <> p <> "()",
+                                   Shortest["PHASE(" ~~ p__ ~~ ")"] :> "MODEL->get_" <> p <> "()",
+                                   Shortest["PHYSICAL(" ~~ p__ ~~ ")"] :> "MODEL->get_physical()." <> p,
+                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`UpYukawa]
+                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`UpYukawa]
+                                   <> "_from_SM()",
+                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`DownYukawa]
+                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`DownYukawa]
+                                   <> "_from_SM()",
+                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa]
+                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa]
+                                   <> "_from_SM()"
+                                  }];
+           result = StringReplace[result, GetSMParameterReplacements[]];
+           result
           ];
 
 RunToDecayingParticleScale[scale_] :=
