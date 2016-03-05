@@ -1103,7 +1103,7 @@ WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertex
     Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
             loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
-            setSMStrongCoupling = "", applyLowScaleConstraint = "", setDRbarYukawaCouplings = "",
+            setSMStrongCoupling = "",
             calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
             calculatePseudocalarFermionLoopQCDFactor,
             calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
@@ -1113,15 +1113,6 @@ WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertex
            If[ValueQ[SARAH`strongCoupling],
               setSMStrongCoupling = "model.set_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <> "(sm.get_g3());\n";
              ];
-           applyLowScaleConstraint = EffectiveCouplings`SetModelParametersFromSM[settings];
-           setDRbarYukawaCouplings = {
-               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
-               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
-               ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
-           };
-           setDRbarYukawaCouplings = StringReplace[#, Shortest["MODELPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->get_" <> p <> "()"]&
-                                       /@ setDRbarYukawaCouplings;
-           setDRbarYukawaCouplings = StringReplace[#, EffectiveCouplings`GetSMParameterReplacements[]]& /@ setDRbarYukawaCouplings;
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1149,10 +1140,6 @@ WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertex
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
                                        "@setSMStrongCoupling@" -> IndentText[setSMStrongCoupling],
-                                       "@applyLowScaleConstraint@" -> IndentText[WrapLines[applyLowScaleConstraint]],
-                                       "@setDRbarUpQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
-                                       "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
-                                       "@setDRbarElectronYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                                        "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
                                        "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
                                        "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],

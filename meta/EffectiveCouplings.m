@@ -4,8 +4,6 @@ InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
 GetNeededVerticesList::usage="";
-GetSMParameterReplacements::usage="";
-SetModelParametersFromSM::usage="";
 CalculatePartialWidths::usage="";
 CalculateQCDAmplitudeScalingFactors::usage="";
 CalculateQCDScalingFactor::usage="";
@@ -20,31 +18,39 @@ CreateEffectiveCouplings::usage="";
 Begin["`Private`"];
 
 InitializeMixingFromModelInput[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{i, symbol, result = ""},
+    Module[{i, macro, symbol, result = ""},
            symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
+           If[SARAH`SupersymmetricModel,
+              macro = "MODELPARAMETER";,
+              macro = "PHYSICAL";
+             ];
            If[symbol === Null,
               Return[""];
              ];
            If[Length[symbol] > 1,
-              (result = result <> ", " <> CConversion`ToValidCSymbolString[#] <> "(model_.get_"
-                        <> CConversion`ToValidCSymbolString[#] <> "())")& /@ symbol;,
+              (result = result <> ", " <> CConversion`ToValidCSymbolString[#] <> "(" <> macro <> "("
+                        <> CConversion`ToValidCSymbolString[#] <> "))")& /@ symbol;,
               result = ", " <> CConversion`ToValidCSymbolString[symbol]
-                       <> "(model_.get_" <> CConversion`ToValidCSymbolString[symbol] <> "())";
+                       <> "(" <> macro <> "(" <> CConversion`ToValidCSymbolString[symbol] <> "))";
              ];
            result
           ];
 
 GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{i, symbol, result = ""},
+    Module[{i, macro, symbol, result = ""},
            symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
            If[symbol === Null,
               Return[""];
              ];
+           If[SARAH`SupersymmetricModel,
+              macro = "MODELPARAMETER";,
+              macro = "PHYSICAL";
+             ];
            If[Length[symbol] > 1,
-              (result = result <> CConversion`ToValidCSymbolString[#] <> " = model.get_"
-                        <> CConversion`ToValidCSymbolString[#] <> "();\n")& /@ symbol;,
-              result = CConversion`ToValidCSymbolString[symbol] <> " = model.get_"
-                       <> CConversion`ToValidCSymbolString[symbol] <> "();\n";
+              (result = result <> CConversion`ToValidCSymbolString[#] <> " = " <> macro <> "("
+                        <> CConversion`ToValidCSymbolString[#] <> ");\n")& /@ symbol;,
+              result = CConversion`ToValidCSymbolString[symbol] <> " = " <> macro <> "("
+                       <> CConversion`ToValidCSymbolString[symbol] <> ");\n";
              ];
            result
           ];
@@ -382,90 +388,12 @@ CreateEffectiveCouplingsInit[couplings_List] :=
            init
           ];
 
-DependsOnSMCouplings[{parameter_, value_}] :=
-    Module[{smVev, smSyms},
-           smVev = Parameters`GetParameterFromDescription["EW-VEV"];
-           smSyms = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa,
-                     FlexibleSUSY`LowEnergyConstant, FlexibleSUSY`LowEnergyGaugeCoupling};
-           If[ValueQ[SARAH`hyperchargeCoupling], smSyms = Append[smSyms, SARAH`hyperchargeCoupling];];
-           If[ValueQ[SARAH`leftCoupling], smSyms = Append[smSyms, SARAH`leftCoupling];];
-           If[ValueQ[SARAH`strongCoupling], smSyms = Append[smSyms, SARAH`strongCoupling];];
-           If[smVev =!= Null, smSyms = Append[smSyms, smVev];];
-           !(And @@ FreeQ[value, #]& /@ smSyms)
-          ];
-
-DependsOnSMCouplings[FlexibleSUSY`FSSolveEWSBFor[__]] := True;
-
-DependsOnSMCouplings[setting_] := False;
-
-GetSMParameterReplacements[] :=
-    {"LowEnergyConstant(gYSM)" :> "Sqrt(3./5.) * sm->get_g1()",
-     "LowEnergyConstant(g1SM)" :> "sm->get_g1()",
-     "LowEnergyConstant(g2SM)" :> "sm->get_g2()",
-     "LowEnergyConstant(g3SM)" :> "sm->get_g3()",
-     "LowEnergyConstant(yeSM)" :> "sm->get_Ye(0,0)",
-     "LowEnergyConstant(ymSM)" :> "sm->get_Ye(1,1)",
-     "LowEnergyConstant(ylSM)" :> "sm->get_Ye(2,2)",
-     "LowEnergyConstant(yuSM)" :> "sm->get_Yu(0,0)",
-     "LowEnergyConstant(ycSM)" :> "sm->get_Yu(1,1)",
-     "LowEnergyConstant(ytSM)" :> "sm->get_Yu(2,2)",
-     "LowEnergyConstant(ydSM)" :> "sm->get_Yd(0,0)",
-     "LowEnergyConstant(ysSM)" :> "sm->get_Yd(1,1)",
-     "LowEnergyConstant(ybSM)" :> "sm->get_Yd(2,2)",
-     "LowEnergyConstant(mu2SM)" :> "sm->get_mu2()",
-     "LowEnergyConstant(lamSM)" :> "sm->get_Lambdax()",
-     "LowEnergyConstant(vSM)" :> "sm->get_v()"
-    };
-
-ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
-                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
-                 modelName_String] :=
-    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
-
-ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
-                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
-                 modelName_String] :=
-    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
-
-ApplyLowScaleConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
-                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
-                 modelName_String] :=
-    "set_" <> CConversion`ToValidCSymbolString[parameter] <> "_from_SM();\n";
-
-
-SetModelParametersFromSM[settings_List] :=
-    Module[{result = "", smSettings = settings, noMacros, noTemp},
-           smSettings = smSettings /. {"new_g1" -> "sm->get_g1()",
-                                       "new_g2" -> "sm->get_g2()",
-                                       "new_g3" -> "sm->get_g3()"};
-           result = Constraint`ApplyConstraints[smSettings];
-           result = StringReplace[result,
-                                  {Shortest["INPUTPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->get_input()." <> p,
-                                   Shortest["MODELPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->get_" <> p <> "()",
-                                   Shortest["DERIVEDPARAMETER(" ~~ p__ ~~ ")"] :> "MODEL->" <> p <> "()",
-                                   Shortest["PHASE(" ~~ p__ ~~ ")"] :> "MODEL->get_" <> p <> "()",
-                                   Shortest["PHYSICAL(" ~~ p__ ~~ ")"] :> "MODEL->get_physical()." <> p,
-                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`UpYukawa]
-                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`UpYukawa]
-                                   <> "_from_SM()",
-                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`DownYukawa]
-                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`DownYukawa]
-                                   <> "_from_SM()",
-                                   "calculate_" <> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa]
-                                   <> "_DRbar()" :> "set_" <> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa]
-                                   <> "_from_SM()"
-                                  }];
-           result = StringReplace[result, GetSMParameterReplacements[]];
-           result
-          ];
-
 RunToDecayingParticleScale[scale_] :=
     Module[{body, result = ""},
            If[SARAH`SupersymmetricModel,
               body = "model.run_to(" <> scale <> ");\n";
               result = "if (rg_improve && scale > " <> scale <> ") {\n"
-                       <> TextFormatting`IndentText[body] <> "}\n";,
-              result = result <> "run_SM_parameters_to(" <> scale <> ");\n";
+                       <> TextFormatting`IndentText[body] <> "}\n";
              ];
            result
           ];
@@ -526,22 +454,36 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
                If[dim == 1 && !TreeMasses`IsGoldstone[particle],
                   body = RunToDecayingParticleScale[mass];
-                  body = body <> "model.calculate_DRbar_masses();\n"
-                              <> "copy_mixing_matrices_from_model();\n";
+                  If[SARAH`SupersymmetricModel,
+                     body = body <> "model.calculate_DRbar_masses();\n"
+                                 <> "copy_mixing_matrices_from_model();\n";
+                    ];
                   result = result <> savedMass <> body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
                   If[start <= dim,
                      body = RunToDecayingParticleScale[mass <> "(gO1)"];
-                     body = body <> "model.calculate_DRbar_masses();\n"
-                                 <> "copy_mixing_matrices_from_model();\n";
-                     result = result <> savedMass <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                     If[SARAH`SupersymmetricModel,
+                        body = body <> "model.calculate_DRbar_masses();\n"
+                                    <> "copy_mixing_matrices_from_model();\n";
+                       ];
+                     result = result <> savedMass
+                                     <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                      body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
                  ];
               ];
 
-           result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
+           result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n"
+                    <> "const double saved_mt = PHYSICAL("
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> ");\nPHYSICAL("
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> ") = qedqcd.displayPoleMt();\n\n"
+                    <> result;
+           result = result <> "PHYSICAL("
+                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                           <> ") = saved_mt;\n";
            result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
 
            result
@@ -747,7 +689,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
 CreateEffectiveCouplingFunction[coupling_] :=
     Module[{i, couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
             particle, vectorBoson, dim, type, name, savedMass, mass, mixingSymbol,
-            mixingName, parameters = {}, currentLine, body = "", result = ""},
+            mixingName, parameters = {}, poleMasses, currentLine, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
               name = CreateEffectiveCouplingName[particle, vectorBoson];
@@ -802,7 +744,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
                         <> ";\n" <> body;
                 ];
 
-              body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";
+              (* use pole masses in loop functions *)
+              If[SARAH`SupersymmetricModel,
+                 body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";,
+                 poleMasses = DeleteDuplicates[Select[parameters, Parameters`IsOutputParameter]];
+                 body = Parameters`CreateLocalConstRefsForPhysicalParameters[poleMasses] <> body <> "\n";
+                 body = Parameters`CreateLocalConstRefs[DeleteDuplicates[Complement[parameters, poleMasses]]] <> body <> "\n";
+                ];
 
               If[vectorBoson === SARAH`VectorP,
                  body = body <> "result *= "

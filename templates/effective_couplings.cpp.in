@@ -33,9 +33,6 @@ using namespace effective_couplings;
 #define DERIVEDPARAMETER(parameter) model.##parameter()
 #define PHASE(parameter) model.get_##parameter()
 #define PHYSICAL(parameter) model.get_physical().parameter
-#define MODEL model
-#define MZDRbar sm->get_MVZ()
-#define MWDRbar sm->get_MVWp()
 
 @ModelName@_effective_couplings::@ModelName@_effective_couplings(
    const @ModelName@_mass_eigenstates& model_,
@@ -68,31 +65,6 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 @copyMixingMatrices@
 }
 
-void @ModelName@_effective_couplings::run_SM_parameters_to(double m)
-{
-   using namespace standard_model;
-
-   Standard_model sm;
-
-   sm.set_loops(2);
-   sm.set_thresholds(0);
-   sm.set_low_energy_data(qedqcd);
-   sm.set_physical_input(physical_input);
-
-   sm.initialise_from_input();
-   sm.run_to(m);
-
-   // ensure on-shell SM vev and top mass
-   sm.set_v(1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0)));
-   sm.set_Yu(2, 2, -Sqrt(2.0) * qedqcd.displayPoleMt() / sm.get_v());
-   sm.calculate_DRbar_masses();
-
-   Low_scale_matching matching;
-   matching.model = &model;
-   matching.sm = &sm;
-   matching.match_model_to_SM();
-}
-
 void @ModelName@_effective_couplings::run_SM_strong_coupling_to(double m)
 {
    using namespace standard_model;
@@ -100,7 +72,7 @@ void @ModelName@_effective_couplings::run_SM_strong_coupling_to(double m)
    Standard_model sm;
 
    sm.set_loops(2);
-   sm.set_thresholds(0);
+   sm.set_thresholds(2);
    sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_input);
 
@@ -108,41 +80,6 @@ void @ModelName@_effective_couplings::run_SM_strong_coupling_to(double m)
    sm.run_to(m);
 
 @setSMStrongCoupling@
-}
-
-void @ModelName@_effective_couplings::Low_scale_matching::match_model_to_SM()
-{
-@applyLowScaleConstraint@
-}
-
-void @ModelName@_effective_couplings::Low_scale_matching::set_@UpYukawa@_from_SM()
-{
-   Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
-   topDRbar(0,0)      = sm->get_MFu(0);
-   topDRbar(1,1)      = sm->get_MFu(1);
-   topDRbar(2,2)      = sm->get_MFu(2);
-
-@setDRbarUpQuarkYukawaCouplings@
-}
-
-void @ModelName@_effective_couplings::Low_scale_matching::set_@DownYukawa@_from_SM()
-{
-   Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
-   bottomDRbar(0,0)   = sm->get_MFd(0);
-   bottomDRbar(1,1)   = sm->get_MFd(1);
-   bottomDRbar(2,2)   = sm->get_MFd(2);
-
-@setDRbarDownQuarkYukawaCouplings@
-}
-
-void @ModelName@_effective_couplings::Low_scale_matching::set_@ElectronYukawa@_from_SM()
-{
-   Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = sm->get_MFe(0);
-   electronDRbar(1,1) = sm->get_MFe(1);
-   electronDRbar(2,2) = sm->get_MFe(2);
-
-@setDRbarElectronYukawaCouplings@
 }
 
 std::complex<double> @ModelName@_effective_couplings::scalar_scalar_qcd_factor(double m_decay, double m_loop) const

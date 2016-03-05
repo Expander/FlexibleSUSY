@@ -55,16 +55,6 @@ public:
 
 @loopCouplingsPrototypes@
 private:
-   struct Low_scale_matching {
-      @ModelName@_mass_eigenstates* model;
-      standard_model::Standard_model* sm;
-
-      void match_model_to_SM();
-      void set_@UpYukawa@_from_SM();
-      void set_@DownYukawa@_from_SM();
-      void set_@ElectronYukawa@_from_SM();
-   };
-
    @ModelName@_mass_eigenstates model;
    softsusy::QedQcd qedqcd;
    Physical_input physical_input;
@@ -73,7 +63,6 @@ private:
 
    void copy_mixing_matrices_from_model();
 
-   void run_SM_parameters_to(double m);
    void run_SM_strong_coupling_to(double m);
 
    // higher order corrections to the amplitudes for
