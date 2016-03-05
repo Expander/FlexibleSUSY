@@ -86,11 +86,12 @@ void Standard_model_tester::run_SM_gauge_couplings_to(double m)
    sm.initialise_from_input();
    sm.run_to(m);
 
-   model.set_g1(sm.get_g1());
-   model.set_g2(sm.get_g2());
    model.set_g3(sm.get_g3());
 }
 
+// @note in the current mixed scheme, the LO expressions
+// are not correctly reproduced, i.e. the ratios coupling * vev / mass
+// do not reduce to 1 - this should be fixed
 std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
 {
    const double scale = model.get_scale();
@@ -98,13 +99,12 @@ std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
 
    const double Mhh = model.get_physical().Mhh;
 
-   run_SM_gauge_couplings_to(Mhh);
-   model.calculate_DRbar_masses();
+   run_SM_gauge_couplings_to(0.5 * Mhh);
 
-   const Eigen::Array<double,3,1> MFu(model.get_MFu());
-   const Eigen::Array<double,3,1> MFd(model.get_MFd());
-   const Eigen::Array<double,3,1> MFe(model.get_MFe());
-   const double MVWp = model.get_MVWp();
+   Eigen::Array<double,3,1> MFu(model.get_physical().MFu);
+   const Eigen::Array<double,3,1> MFd(model.get_physical().MFd);
+   const Eigen::Array<double,3,1> MFe(model.get_physical().MFe);
+   const double MVWp = model.get_physical().MVWp;
 
    double qcd_fermion = 1.0;
    if (include_qcd_corrections) {
@@ -146,8 +146,9 @@ std::complex<double> Standard_model_tester::get_eff_CphhVGVG()
    run_SM_gauge_couplings_to(Mhh);
    model.calculate_DRbar_masses();
 
-   const Eigen::Array<double,3,1> MFu(model.get_MFu());
-   const Eigen::Array<double,3,1> MFd(model.get_MFd());
+   Eigen::Array<double,3,1> MFu(model.get_physical().MFu);
+   MFu(2) = qedqcd.displayPoleMt();
+   const Eigen::Array<double,3,1> MFd(model.get_physical().MFd);
 
    double qcd_fermion = 1.0;
    if (include_qcd_corrections) {
@@ -180,6 +181,9 @@ void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQc
 {
    model.do_calculate_sm_pole_masses(true);
 
+
+   const double v = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
+
    const double g1 = Sqrt(5.0 / 3.0) * 3.58533449e-1;
    const double g2 = 6.47712483e-1;
    const double g3 = 1.16182994;
@@ -190,7 +194,7 @@ void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQc
 
    Yu << 7.55665947e-6, 0.0, 0.0,
          0.0, 3.45513221e-3, 0.0,
-         0.0, 0.0, 9.38544577e-1;
+         0.0, 0.0, Sqrt(2.0) * qedqcd.displayPoleMt() / v;
 
    Yd << 1.50336005e-5, 0.0, 0.0,
          0.0, 3.29156700e-4, 0.0,
@@ -202,7 +206,6 @@ void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQc
 
    const double Lambdax = 0.252805415;
    const double mu2 = 8555.44881e3;
-   const double v = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    model.set_g1(g1);
    model.set_g2(g2);
@@ -216,6 +219,9 @@ void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQc
    
    model.set_scale(173.34);
 
+   // necessary to match LO expressions above
+   model.set_pole_mass_loop_order(0);
+   model.set_ewsb_loop_order(0);
    model.calculate_DRbar_masses();
    model.solve_ewsb();
    model.calculate_spectrum();

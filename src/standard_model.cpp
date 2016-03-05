@@ -911,12 +911,18 @@ void Standard_model::initial_guess_for_parameters()
 
    const double mu_guess = qedqcd.displayMass(softsusy::mUp);
    const double mc_guess = qedqcd.displayMass(softsusy::mCharm);
-   const double mt_guess = qedqcd.displayMass(softsusy::mTop) - 30.0;
+   const double mt_guess = get_thresholds() > 0 ?
+      qedqcd.displayMass(softsusy::mTop) - 30.0 :
+      qedqcd.displayPoleMt();
    const double md_guess = qedqcd.displayMass(softsusy::mDown);
    const double ms_guess = qedqcd.displayMass(softsusy::mStrange);
    const double mb_guess = qedqcd.displayMass(softsusy::mBottom);
-   const double me_guess = qedqcd.displayMass(softsusy::mElectron);
-   const double mm_guess = qedqcd.displayMass(softsusy::mMuon);
+   const double me_guess = get_thresholds() > 0 ?
+      qedqcd.displayMass(softsusy::mElectron) :
+      qedqcd.displayPoleMel();
+   const double mm_guess = get_thresholds() > 0 ?
+      qedqcd.displayMass(softsusy::mMuon) :
+      qedqcd.displayPoleMmuon();
    const double mtau_guess = qedqcd.displayMass(softsusy::mTau);
 
    // guess gauge couplings at mt
@@ -1051,7 +1057,7 @@ void Standard_model::calculate_Yu_DRbar()
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
    topDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
-   topDRbar(2,2)      = qedqcd.displayMass(softsusy::mTop);
+   topDRbar(2,2)      = qedqcd.displayPoleMt();
 
    if (get_thresholds()) {
       topDRbar(2,2) = calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
@@ -1077,9 +1083,9 @@ void Standard_model::calculate_Yd_DRbar()
 void Standard_model::calculate_Ye_DRbar()
 {
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   electronDRbar(0,0) = qedqcd.displayMass(softsusy::mElectron);
-   electronDRbar(1,1) = qedqcd.displayMass(softsusy::mMuon);
-   electronDRbar(2,2) = qedqcd.displayMass(softsusy::mTau);
+   electronDRbar(0,0) = qedqcd.displayPoleMel();
+   electronDRbar(1,1) = qedqcd.displayPoleMmuon();
+   electronDRbar(2,2) = qedqcd.displayPoleMtau();
 
    if (get_thresholds()) {
       electronDRbar(0,0) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mElectron), 0);

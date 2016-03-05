@@ -30,6 +30,10 @@
 
 namespace flexiblesusy {
 
+namespace standard_model {
+class Standard_model;
+}
+
 class @ModelName@_effective_couplings {
 public:
    @ModelName@_effective_couplings(const @ModelName@_mass_eigenstates&,
@@ -58,7 +62,9 @@ private:
    bool include_qcd_corrections;
 
    void copy_mixing_matrices_from_model();
-@runSMGaugeCouplingsPrototype@
+
+   void run_SM_strong_coupling_to(double m);
+
    // higher order corrections to the amplitudes for
    // effective coupling to photons
    std::complex<double> scalar_scalar_qcd_factor(double, double) const;

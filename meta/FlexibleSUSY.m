@@ -1099,18 +1099,20 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, files_List] :=
+WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertexRules_List, files_List] :=
     Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
             loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
-            runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction,
+            setSMStrongCoupling = "",
             calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
             calculatePseudocalarFermionLoopQCDFactor,
             calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
             calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
            {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
-           {runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction} = EffectiveCouplings`CreateSMRunningFunctions[];
+           If[ValueQ[SARAH`strongCoupling],
+              setSMStrongCoupling = "model.set_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <> "(sm.get_g3());\n";
+             ];
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1132,13 +1134,12 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
                                        "@partialWidthGetters@" -> partialWidthGetters,
                                        "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
                                        "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
-                                       "@runSMGaugeCouplingsPrototype@" -> IndentText[runSMGaugeCouplingsPrototype],
                                        "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
                                        "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
                                        "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
-                                       "@runSMGaugeCouplingsFunction@" -> runSMGaugeCouplingsFunction,
+                                       "@setSMStrongCoupling@" -> IndentText[setSMStrongCoupling],
                                        "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
                                        "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
                                        "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],
@@ -2295,7 +2296,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
-           WriteEffectiveCouplings[effectiveCouplings, massMatrices, vertexRules,
+           WriteEffectiveCouplings[effectiveCouplings, FlexibleSUSY`LowScaleInput, massMatrices, vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
