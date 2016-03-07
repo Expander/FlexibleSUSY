@@ -124,13 +124,14 @@ B11impl[p_, m1_, m2_, mu_] :=
        1/(6 p^2) (
            2 A0impl[m2,mu]
            - 2 m1^2 B0impl[p,m1,m2,mu]
-           - 4 (p^2 - m2^2 + m1^2) B1impl[p,m1,m2,mu]
-           - m1^2 - m2^2 - p^2/3)
+           + 4 (p^2 - m2^2 + m1^2) B1impl[p,m1,m2,mu]
+           - m1^2 - m2^2 + p^2/3)
       ];
 
-B11zero[m1_, m2_, mu_] := 0;
+(* DirectedInfinity[(m1^2 - m2^2)*(-2*m1^2 + 2*m2^2)] *)
+B11zero[m1_, m2_, mu_] := Undefined;
 
-DivB11[p_, m1_, m2_, _] := -(2*m1^2 - 2*m2^2 + p^2)/(3*p^2);
+DivB11[p_, m1_, m2_, _] := Delta / 3;
 
 (* Eq. (B.10), identical to B00[p,m1,m2,mu] *)
 B22impl[p_, m1_, m2_, mu_] :=
