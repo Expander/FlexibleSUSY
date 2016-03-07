@@ -11,7 +11,7 @@ TestEquality[
     Coefficient[A0[m,Q] /. ZeroMomentum[], Delta]
 ];
 
-loopFunctions = {B0, B1, B00, B11, B22, B22tilde, F, G, H};
+loopFunctions = {B0, B1, B00, B22, B22tilde, F, G, H};
 
 For[i = 1, i <= Length[loopFunctions], i++,
     Print["   testing ", loopFunctions[[i]], "[p,m,m,Q] ..."];
