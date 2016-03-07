@@ -15,6 +15,12 @@ Divergence::usage = "returns divergent part of loop functions in BPMZ
 
 Delta::usage = "1/eps - \[Gamma]_E + Log[4 Pi]";
 
+$BPMZSign::usage = "If set to 1, loop functions are returned in BPMZ
+ convention (arxiv:hep-ph/9606211).  If set to -1, loop functions are
+ returned in Denner convention (arxiv:hep-ph/0709.1075).";
+
+$BPMZSign = 1;
+
 Begin["LoopFunctions`Private`"];
 
 ZeroMomentum[] := {
@@ -106,17 +112,19 @@ DivB0[_, _, _, _] := Delta;
 B1impl[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
        B1zero[m1,m2,mu],
-       1/(2 p^2) (A0impl[m2,mu] - A0impl[m1,mu] + (p^2 + m1^2 - m2^2) B0impl[p,m1,m2,mu])
+       $BPMZSign 1/(2 p^2) (A0impl[m2,mu] - A0impl[m1,mu]
+                            + (p^2 + m1^2 - m2^2) B0impl[p,m1,m2,mu])
       ];
 
 B1zero[m1_, m2_, mu_] :=
     If[PossibleZeroQ[m1 - m2],
-       (Delta + Log[mu^2/m2^2])/2,
-       1/2 (Delta + 1 + Log[mu^2/m2^2] + (m1^2/(m1^2 - m2^2))^2 Log[m2^2/m1^2]
-            + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
+       $BPMZSign (Delta + Log[mu^2/m2^2])/2,
+       $BPMZSign 1/2 (Delta + 1 + Log[mu^2/m2^2]
+                      + (m1^2/(m1^2 - m2^2))^2 Log[m2^2/m1^2]
+                      + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
       ];
 
-DivB1[_, _, _, _] := Delta / 2;
+DivB1[_, _, _, _] := $BPMZSign Delta / 2;
 
 B11impl[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
@@ -124,7 +132,7 @@ B11impl[p_, m1_, m2_, mu_] :=
        1/(6 p^2) (
            2 A0impl[m2,mu]
            - 2 m1^2 B0impl[p,m1,m2,mu]
-           + 4 (p^2 - m2^2 + m1^2) B1impl[p,m1,m2,mu]
+           + $BPMZSign 4 (p^2 - m2^2 + m1^2) B1impl[p,m1,m2,mu]
            - m1^2 - m2^2 + p^2/3)
       ];
 
