@@ -57,7 +57,7 @@ Divergence[] := {
     B11[p_,m1_,m2_,mu_]                 :> DivB11[p,m1,m2,mu],
     B22[p_,m1_,m2_,mu_]                 :> DivB22[p,m1,m2,mu],
     B22tilde[p_,m1_,m2_,mu_]            :> DivB22tilde[p,m1,m2,mu],
-    C0[p1_,p2_,m1_,m2_,m2_,mu_]         :> 0,
+    C0[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
     D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> 0,
     D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> 0,
     F[p_,m1_,m2_,mu_]                   :> DivF[p,m1,m2,mu],
