@@ -77,16 +77,25 @@ A0impl[m_, mu_] := m^2 (Delta + 1 + Log[mu^2/m^2]);
 DivA0[m_, mu_] := m^2 Delta;
 
 (* A0, Eq. (B.5) *)
-B0zero[m1_, m2_, mu_] := If[PossibleZeroQ[m1 - m2],
-   Delta + Log[mu^2/m2^2],
-   Delta + 1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
+B0zero[m1_, m2_, mu_] :=
+    Which[PossibleZeroQ[m1 - m2],
+          Delta + Log[mu^2/m2^2],
+          PossibleZeroQ[m1],
+          Delta + 1 + Log[mu^2/m2^2],
+          True,
+          Delta + 1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
    ];
 
 (* Eq. (B.6) *)
 B0impl[p_, m1_, m2_, mu_] :=
-    If[PossibleZeroQ[p],
-       B0zero[m1,m2,mu],
-       B0analytic[p,m1,m2,mu]
+    Which[PossibleZeroQ[p],
+          B0zero[m1,m2,mu],
+          PossibleZeroQ[p - m2] && PossibleZeroQ[m1],
+          Delta + Log[mu^2/m2^2] + 2,
+          PossibleZeroQ[m1] && PossibleZeroQ[m2],
+          Delta - Log[(-p^2 - I eps)/mu^2] + 2,
+          True,
+          B0analytic[p,m1,m2,mu]
       ];
 
 B0analytic[p_, m1_, m2_, mu_] :=
