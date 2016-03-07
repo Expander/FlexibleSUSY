@@ -59,7 +59,7 @@ loopFunctions = {
 
 For[i = 1, i <= Length[loopFunctions], i++,
     Print["   testing ", loopFunctions[[i]], " ..."];
-    expr2 = loopFunctions[[i]] /. Divergence[] /. Delta -> 1;
+    expr2 = loopFunctions[[i]] /. Divergence[];
     TestEquality[expr2, 0];
    ];
 
