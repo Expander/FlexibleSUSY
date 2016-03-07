@@ -2,13 +2,16 @@ BeginPackage["LoopFunctions`"];
 EndPackage[];
 
 (* loop functions *)
-{A0, B0, B1, B22, B22tilde, C0, D0, D27, F, G, H};
+{A0, B0, B1, B00, B11, B22, B22tilde, C0, D0, D27, F, G, H};
 
 FullMomentum::usage = "Returns loop functions with full momentum
 dependence in BPMZ convention (arxiv:hep-ph/9606211)";
 
 ZeroMomentum::usage = "Returns loop functions at zero momentum in BPMZ
  convention (arxiv:hep-ph/9606211)";
+
+Divergence::usage = "returns divergent part of loop functions in BPMZ
+ convention (arxiv:hep-ph/9606211).";
 
 Delta::usage = "1/eps - \[Gamma]_E + Log[4 Pi]";
 
@@ -46,8 +49,26 @@ FullMomentum[] := {
     H[p_,m1_,m2_,mu_]                   :> Himpl[p,m1,m2,mu]
 };
 
+Divergence[] := {
+    A0[m_,mu_]                          :> DivA0[m,mu],
+    B0[p_,m1_,m2_,mu_]                  :> DivB0[p,m1,m2,mu],
+    B1[p_,m1_,m2_,mu_]                  :> DivB1[p,m1,m2,mu],
+    B00[p_,m1_,m2_,mu_]                 :> DivB22[p,m1,m2,mu],
+    B11[p_,m1_,m2_,mu_]                 :> DivB11[p,m1,m2,mu],
+    B22[p_,m1_,m2_,mu_]                 :> DivB22[p,m1,m2,mu],
+    B22tilde[p_,m1_,m2_,mu_]            :> DivB22tilde[p,m1,m2,mu],
+    C0[p1_,p2_,m1_,m2_,m2_,mu_]         :> 0,
+    D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> 0,
+    D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> 0,
+    F[p_,m1_,m2_,mu_]                   :> DivF[p,m1,m2,mu],
+    G[p_,m1_,m2_,mu_]                   :> DivG[p,m1,m2,mu],
+    H[p_,m1_,m2_,mu_]                   :> DivH[p,m1,m2,mu]
+};
+
 (* A0, Eq. (B.5) *)
 A0impl[m_, mu_] := m^2 (Delta + 1 + Log[mu^2/m^2]);
+
+DivA0[m_, mu_] := m^2 Delta;
 
 (* A0, Eq. (B.5) *)
 B0zero[m1_, m2_, mu_] := If[PossibleZeroQ[m1 - m2],
@@ -79,6 +100,8 @@ B0integral[p_, m1_, m2_, mu_] :=
                eps -> 0]
           ];
 
+DivB0[_, _, _, _] := Delta;
+
 (* Eq. (B.9) *)
 B1impl[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
@@ -93,6 +116,8 @@ B1zero[m1_, m2_, mu_] :=
             + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
       ];
 
+DivB1[_, _, _, _] := Delta / 2;
+
 B11impl[p_, m1_, m2_, mu_] :=
     If[PossibleZeroQ[p],
        B11zero[m1,m2,mu],
@@ -104,6 +129,8 @@ B11impl[p_, m1_, m2_, mu_] :=
       ];
 
 B11zero[m1_, m2_, mu_] := 0;
+
+DivB11[p_, m1_, m2_, _] := -(2*m1^2 - 2*m2^2 + p^2)/(3*p^2);
 
 (* Eq. (B.10), identical to B00[p,m1,m2,mu] *)
 B22impl[p_, m1_, m2_, mu_] :=
@@ -122,6 +149,8 @@ B22zero[m1_, m2_, mu_] :=
        ((5 + 3*Delta)*(m1^4 - m2^4) + m1^2*(3*m1^2 + m2^2)*Log[mu^2/m1^2] - 
         m2^2*(m1^2 + 3*m2^2)*Log[mu^2/m2^2])/(12*(m1^2 - m2^2))
       ];
+
+DivB22[p_, m1_, m2_, _] := (3*m1^2 + 3*m2^2 - p^2)/12;
 
 (* Eq. (C.19) *)
 C0zero[m1_, m2_, m3_] := Which[
@@ -175,20 +204,28 @@ Fimpl[p_, m1_, m2_, mu_] :=
 
 Fzero[m1_, m2_, mu_] := Fimpl[0,m1,m2,mu];
 
+DivF[p_, m1_, m2_, mu_] := -m1^2 - m2^2 - 2*p^2;
+
 (* Eq. (B.12) *)
 Gimpl[p_, m1_, m2_, mu_] :=
     (p^2 - m1^2 - m2^2) B0impl[p,m1,m2,mu] - A0impl[m1,mu] - A0impl[m2,mu];
 
 Gzero[m1_, m2_, mu_] := Gimpl[0,m1,m2,mu];
 
+DivG[p_, m1_, m2_, mu_] := -2*m1^2 - 2*m2^2 + p^2;
+
 (* Eq. (B.13) *)
 Himpl[p_, m1_, m2_, mu_] := 4 B22impl[p,m1,m2,mu] + Gimpl[p,m1,m2,mu];
 
 Hzero[m1_, m2_, mu_] := Himpl[0,m1,m2,mu];
 
+DivH[p_, m1_, m2_, mu_] := -m1^2 - m2^2 + (2*p^2)/3;
+
 (* Eq. (B.14) *)
 B22tildeimpl[p_, m1_, m2_, mu_] := B22impl[p,m1,m2,mu] - A0impl[m1,mu]/4 - A0impl[m2,mu]/4;
 
 B22tildezero[m1_, m2_, mu_] := B22tildeimpl[0,m1,m2,mu];
+
+DivB22tilde[p_, m1_, m2_, mu_] := -p^2/12;
 
 End[];
