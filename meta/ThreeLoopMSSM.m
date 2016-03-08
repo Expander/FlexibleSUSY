@@ -4,7 +4,7 @@ BetaMSSM::usage = "beta functions of the MSSM from SUSYHD v1.0";
 
 Begin["`Private`"];
 
-subDir = FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "ThreeLoopMSSM"}];
+subDir = FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "MSSM"}];
 
 IsDefinedAndEqual[descr_String, c_] :=
     Parameters`GetParameterFromDescription[descr] =!= Null &&

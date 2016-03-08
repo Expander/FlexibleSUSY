@@ -41,6 +41,7 @@ namespace softsusy {
 namespace flexiblesusy {
 
    class Spectrum_generator_settings;
+   class Physical_input;
 
    namespace {
       /// SLHA line formatter for the MASS block entries
@@ -51,6 +52,8 @@ namespace flexiblesusy {
       const boost::format vector_formatter(" %5d   %16.8E   # %s\n");
       /// SLHA number formatter
       const boost::format number_formatter("         %16.8E   # %s\n");
+      /// SLHA line formatter for entries with three indices
+      const boost::format tensor_formatter(" %8d %8d %8d   %16.8E   # %s\n");
       /// SLHA scale formatter
       const boost::format scale_formatter("%9.8E");
       /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
@@ -71,6 +74,8 @@ namespace flexiblesusy {
    boost::format(number_formatter) % (n) % (str)
 #define FORMAT_SPINFO(n,str)                                            \
    boost::format(spinfo_formatter) % (n) % (str)
+#define FORMAT_RANK_THREE_TENSOR(i,j,k,entry,name)                      \
+   boost::format(tensor_formatter) % (i) % (j) % (k) % (entry) % (name)
 
 /**
  * @class SLHA_io
@@ -164,6 +169,7 @@ public:
    bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
    void fill(Spectrum_generator_settings&) const;
+   void fill(Physical_input&) const;
    const Modsel& get_modsel() const { return modsel; }
    const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
@@ -185,6 +191,10 @@ public:
    void set_block(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, N>&, const std::string&, double scale = 0.);
    template<class Scalar, int M>
    void set_block(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, 1>&, const std::string&, double scale = 0.);
+   template<class Scalar, int M, int N>
+   void set_block_imag(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, N>&, const std::string&, double scale = 0.);
+   template<class Scalar, int M>
+   void set_block_imag(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, 1>&, const std::string&, double scale = 0.);
    template <class Derived>
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
@@ -232,6 +242,7 @@ private:
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
+   static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
 };
 
 template <class Scalar>
@@ -340,6 +351,37 @@ void SLHA_io::set_block(const std::string& name,
          ss << boost::format(mixing_matrix_formatter) % i % k
             % Re(matrix(i-1,k-1))
             % ("Re(" + symbol + "(" + ToString(i) + ","
+               + ToString(k) + "))");
+      }
+   }
+
+   set_block(ss);
+}
+
+template<class Scalar, int NRows>
+void SLHA_io::set_block_imag(const std::string& name,
+                             const Eigen::Matrix<std::complex<Scalar>, NRows, 1>& matrix,
+                             const std::string& symbol, double scale)
+{
+   set_block(name, matrix, symbol, scale);
+}
+
+template<class Scalar, int NRows, int NCols>
+void SLHA_io::set_block_imag(const std::string& name,
+                             const Eigen::Matrix<std::complex<Scalar>, NRows, NCols>& matrix,
+                             const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_SCALE(scale);
+   ss << '\n';
+
+   for (int i = 1; i <= NRows; ++i) {
+      for (int k = 1; k <= NCols; ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k
+            % Im(matrix(i-1,k-1))
+            % ("Im(" + symbol + "(" + ToString(i) + ","
                + ToString(k) + "))");
       }
    }

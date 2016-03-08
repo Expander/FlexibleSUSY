@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -79,9 +79,11 @@ AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
 LowEnergyConstant;
+LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
+Temporary;
 MZ;
 MT;
 MZDRbar;
@@ -97,6 +99,8 @@ UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
+UseYukawa3LoopQCD = Automatic;
+FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -158,6 +162,7 @@ FSMassW;
 
 FSWeakMixingAngleOptions = {
     FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
+    FlexibleSUSY`FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - Mass[SARAH`VectorW]^2/Mass[SARAH`VectorZ]^2]],
     FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
     FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
     FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
@@ -184,6 +189,11 @@ ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass
 tadpole::usage="symbolic expression for a tadpole contribution in the
 EWSB eqs.  The index corresponds to the ordering of the tadpole
 equations in SARAH`TadpoleEquations[] .";
+
+NoScale::usage="placeholder indicating an SLHA block should not
+have a scale associated with it.";
+CurrentScale::usage="placeholder indicating the current renormalization
+scale of the model.";
 
 FSDebugOutput = False;
 
@@ -343,7 +353,7 @@ CheckModelFileSettings[] :=
                  Print["Warning: FlexibleSUSY`HighScale should be",
                        " set in the model file!"];
                 ];
-              FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
+              FlexibleSUSY`HighScale := 2 10^16;
              ];
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
               If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
@@ -568,6 +578,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
+           temporarySetting = "", temporaryResetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -581,6 +592,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
+          temporarySetting   = Constraint`SetTemporarily[settings];
+          temporaryResetting = Constraint`ResetTemporarily[settings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
@@ -619,6 +632,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
+                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
@@ -647,9 +662,11 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           ];
 
 WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
-   Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings,
+   Module[{initialGuessAtLowScale, initialGuessAtLowScaleGaugeCouplings = "",
+           initialGuessAtHighScale, setDRbarYukawaCouplings,
            allSettings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
+          initialGuessAtLowScaleGaugeCouplings = Constraint`InitialGuessAtLowScaleGaugeCouplings[];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
           allSettings             = Join[lowScaleGuess, highScaleGuess];
           setDRbarYukawaCouplings = {
@@ -659,6 +676,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
           };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
+                   "@initialGuessAtLowScaleGaugeCouplings@" -> IndentText[WrapLines[initialGuessAtLowScaleGaugeCouplings]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
@@ -844,7 +862,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             getPhysical = "", setPhysical = "",
             getMasses = "", setMasses = "",
             masses, mixingMatrices, oneLoopTadpoles,
-            dependenceNumPrototypes, dependenceNumFunctions,
+            dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "",
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
@@ -953,7 +971,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
-           masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           masses                       = DeleteCases[FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices, FlexibleSUSY`M[_List]];
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
@@ -962,8 +980,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
+           dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
+           dependenceFunctions       = TreeMasses`CreateDependenceFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
@@ -1058,8 +1076,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@getMasses@"                    -> IndentText[getMasses],
                             "@setMasses@"                    -> IndentText[setMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
-                            "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
-                            "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
+                            "@dependencePrototypes@"         -> IndentText[dependencePrototypes],
+                            "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
                             "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
                             "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
@@ -1081,12 +1099,81 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertexRules_List, files_List] :=
+    Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
+            loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
+            loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
+            setSMStrongCoupling = "",
+            calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudocalarFermionLoopQCDFactor,
+            calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
+            calculateLoopCouplings, loopCouplingsPrototypes,
+            loopCouplingsFunctions},
+           {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
+           If[ValueQ[SARAH`strongCoupling],
+              setSMStrongCoupling = "model.set_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <> "(sm.get_g3());\n";
+             ];
+           loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
+           For[i = 1, i <= Length[massMatrices], i++,
+               mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
+               mixingMatricesInit = mixingMatricesInit <> EffectiveCouplings`InitializeMixingFromModelInput[massMatrices[[i]]];
+               copyMixingMatrices = copyMixingMatrices <> EffectiveCouplings`GetMixingMatrixFromModel[massMatrices[[i]]];
+              ];
+           loopCouplingsDefs = EffectiveCouplings`CreateEffectiveCouplingsDefinitions[couplings];
+           loopCouplingsInit = EffectiveCouplings`CreateEffectiveCouplingsInit[couplings];
+           {calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
+            calculatePseudoscalarFermionLoopQCDFactor} =
+               EffectiveCouplings`CalculateQCDAmplitudeScalingFactors[];
+           {calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor} =
+               EffectiveCouplings`CalculateQCDScalingFactor[];
+           calculateLoopCouplings = EffectiveCouplings`CreateEffectiveCouplingsCalculation[couplings];
+           {loopCouplingsPrototypes, loopCouplingsFunctions} =
+               EffectiveCouplings`CreateEffectiveCouplings[couplings, massMatrices, vertexRules];
+           WriteOut`ReplaceInFiles[files,
+                                   {   "@partialWidthGetterPrototypes@" -> IndentText[partialWidthGetterPrototypes],
+                                       "@partialWidthGetters@" -> partialWidthGetters,
+                                       "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
+                                       "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
+                                       "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
+                                       "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
+                                       "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
+                                       "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
+                                       "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
+                                       "@setSMStrongCoupling@" -> IndentText[setSMStrongCoupling],
+                                       "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
+                                       "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
+                                       "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],
+                                       "@calculateScalarQCDScalingFactor@" -> IndentText[WrapLines[calculateScalarQCDScalingFactor]],
+                                       "@calculatePseudoscalarQCDScalingFactor@" -> IndentText[WrapLines[calculatePseudoscalarQCDScalingFactor]],
+                                       "@calculateLoopCouplings@" -> IndentText[calculateLoopCouplings],
+                                       "@loopCouplingsFunctions@" -> loopCouplingsFunctions,
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+          ];
+
 (* Write the observables files *)
 WriteObservables[extraSLHAOutputBlocks_, files_List] :=
-    Module[{calculateObservables},
-           calculateObservables = Observables`CalculateObservables[extraSLHAOutputBlocks, "observables"];
+    Module[{requestedObservables, numberOfObservables, observablesDef,
+            observablesInit, getObservables, getObservablesNames,
+            clearObservables, setObservables, calculateObservables,
+            loopCouplingsPrototypes, loopCouplingsFunctions},
+           requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
+           numberOfObservables = Observables`CountNumberOfObservables[requestedObservables];
+           observablesDef = Observables`CreateObservablesDefinitions[requestedObservables];
+           observablesInit = Observables`CreateObservablesInitialization[requestedObservables];
+           {getObservables, getObservablesNames, setObservables} =
+               Observables`CreateSetAndDisplayObservablesFunctions[requestedObservables];
+           clearObservables = Observables`CreateClearObservablesFunction[requestedObservables];
+           calculateObservables = Observables`CalculateObservables[requestedObservables, "observables"];
            WriteOut`ReplaceInFiles[files,
-                                   {   "@calculateObservables@" -> IndentText[calculateObservables],
+                                   {   "@numberOfObservables@" -> ToString[numberOfObservables],
+                                       "@observablesDef@" -> IndentText[observablesDef],
+                                       "@observablesInit@" -> IndentText[WrapLines[observablesInit]],
+                                       "@getObservables@" -> IndentText[getObservables],
+                                       "@getObservablesNames@" -> IndentText[getObservablesNames],
+                                       "@clearObservables@" -> IndentText[clearObservables],
+                                       "@setObservables@" -> IndentText[setObservables],
+                                       "@calculateObservables@" -> IndentText[calculateObservables],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -1140,8 +1227,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
-            numberOfDRbarBlocks, drBarBlockNames},
-           particles = GetMassEigenstate /@ massMatrices;
+            numberOfDRbarBlocks, drBarBlockNames
+           },
+           particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
@@ -1335,10 +1423,15 @@ GetVertexRuleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
 		  "FSVertexRules.m"}];
 
+GetEffectiveCouplingsFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+                  "FSEffectiveCouplings.m"}];
+
 NeedToCalculateVertices[eigenstates_] :=
     NeedToUpdateTarget[
 	"vertex",
-	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+	{ GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates],
+          GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, eigenstates] }];
 
 NeedToUpdateTarget[name_String, targets_List] := Module[{
 	targetsExist = FilesExist[targets],
@@ -1363,12 +1456,17 @@ NeedToUpdateTarget[name_String, targets_List] := Module[{
 NeedToUpdateTarget[name_String, target_] :=
     NeedToUpdateTarget[name, {target}];
 
-FSPrepareRGEs[] :=
+FSPrepareRGEs[loopOrder_] :=
     Module[{needToCalculateRGEs, betas},
-           needToCalculateRGEs = NeedToCalculateRGEs[];
-           SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
-                          TwoLoop -> True,
-                          NoMatrixMultiplication -> False];
+           If[loopOrder > 0,
+              needToCalculateRGEs = NeedToCalculateRGEs[];
+              SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
+                             TwoLoop -> If[loopOrder < 2, False, True],
+                             NoMatrixMultiplication -> False];
+              ,
+              (* create Beta* symbols with beta functions set to 0 *)
+              SARAH`MakeDummyListRGEs[];
+             ];
            (* check if the beta functions were calculated correctly *)
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
@@ -1468,12 +1566,7 @@ LoadModelFile[file_String] :=
           ];
 
 FindUnfixedParameters[parameters_List, fixed_List] :=
-    Module[{fixedParameters},
-           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
-                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling }]]];
-           Complement[parameters, fixedParameters]
-          ];
+    Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
 GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
@@ -1576,14 +1669,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
+            allIntermediateOutputParametes = {},
+            allIntermediateOutputParameterIndexReplacementRules = {},
             allInputParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
             fixedParameters,
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
-            extraSLHAOutputBlocks,
-	    vertexRules, vertexRuleFileName,
+            extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -1606,7 +1701,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Reading SARAH output files"];
            (* get RGEs *)
-           FSPrepareRGEs[];
+           FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
@@ -1674,12 +1769,26 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaVEV };
              ];
 
+           (* filter out buggy and duplicate beta functions *)
+           DeleteBuggyBetaFunctions[beta_List] :=
+               DeleteDuplicates[Select[beta, (!NumericQ[#[[1]]])&], (#1[[1]] === #2[[1]])&];
+           susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
+           susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
+
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
-                               a_[Susyno`LieGroups`i1] :> a /.
-                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
-           allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
+                               Parameters`StripSARAHIndicesRules[1] /.
+                               Parameters`StripSARAHIndicesRules[2] /.
+                               Parameters`StripSARAHIndicesRules[3] /.
+                               Parameters`StripSARAHIndicesRules[4];
+           allIndexReplacementRules = Join[
+               Parameters`CreateIndexReplacementRules[allParameters],
+               {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
+                Global`bottomDRbar[i_,j_]   :> Global`bottomDRbar[i-1,j-1],
+                Global`electronDRbar[i_,j_] :> Global`electronDRbar[i-1,j-1]}
+           ];
            Parameters`SetModelParameters[allParameters];
+           DebugPrint["model parameters: ", allParameters];
 
            (* collect all phases from SARAH *)
            phases = DeleteDuplicates @ Join[
@@ -1714,6 +1823,31 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
+           (* add SM gauge couplings to low-scale constraint if not set anywhere *)
+           If[ValueQ[SARAH`hyperchargeCoupling] &&
+              !Constraint`IsFixed[SARAH`hyperchargeCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`hyperchargeCoupling, "new_g1"}];
+             ];
+           If[ValueQ[SARAH`leftCoupling] &&
+              !Constraint`IsFixed[SARAH`leftCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`leftCoupling, "new_g2"}];
+             ];
+           If[ValueQ[SARAH`strongCoupling] &&
+              !Constraint`IsFixed[SARAH`strongCoupling,
+                                  Join[FlexibleSUSY`LowScaleInput,
+                                       FlexibleSUSY`SUSYScaleInput,
+                                       FlexibleSUSY`HighScaleInput]],
+              AppendTo[FlexibleSUSY`LowScaleInput,
+                       {SARAH`strongCoupling, "new_g3"}];
+             ];
            (* add EWSB constraint to SUSY-scale constraint if not set *)
            If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                     FlexibleSUSY`FSSolveEWSBFor[___]],
@@ -1734,8 +1868,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* adding the types and their input names to the parameters *)
            FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                           {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
-                                                     a_[Susyno`LieGroups`i1] :> a /.
-                                                     a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                                     Parameters`StripSARAHIndicesRules[1] /.
+                                                     Parameters`StripSARAHIndicesRules[2] /.
+                                                     Parameters`StripSARAHIndicesRules[3] /.
+                                                     Parameters`StripSARAHIndicesRules[4],
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
@@ -1769,8 +1905,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
                                                Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
                                                   Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
-                                              a_[Susyno`LieGroups`i1] :> a /.
-                                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                              Parameters`StripSARAHIndicesRules[1] /.
+                                              Parameters`StripSARAHIndicesRules[2] /.
+                                              Parameters`StripSARAHIndicesRules[3] /.
+                                              Parameters`StripSARAHIndicesRules[4],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
@@ -1967,12 +2105,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            massMatrices = Lat$massMatrices /. allIndexReplacementRules;
 	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
 
+           allIntermediateOutputParametes =
+               Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
+           DebugPrint["intermediate output parameters = ", allIntermediateOutputParametes];
+
+           (* decrease index literals of intermediate output parameters in mass matrices *)
+           allIntermediateOutputParameterIndexReplacementRules =
+               Parameters`CreateIndexReplacementRules[allIntermediateOutputParametes];
+
+           massMatrices = massMatrices /. allIntermediateOutputParameterIndexReplacementRules;
+
            allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
                Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Parameters`SetOutputParameters[allOutputParameters];
+           DebugPrint["output parameters = ", allOutputParameters];
 
            extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
                FlexibleSUSY`ExtraSLHAOutputBlocks,
@@ -2096,11 +2245,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
 	   vertexRuleFileName =
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+           effectiveCouplingsFileName =
+              GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, FSEigenstates];
 	   If[NeedToCalculateVertices[FSEigenstates],
+              (* effectiveCouplings = {{coupling, {needed couplings}}, ...} *)
+              Put[effectiveCouplings =
+                      EffectiveCouplings`InitializeEffectiveCouplings[],
+                  effectiveCouplingsFileName];
+              extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices], Lat$massMatrices],
 		  vertexRuleFileName],
-	      vertexRules = Get[vertexRuleFileName]];
+	      vertexRules = Get[vertexRuleFileName];
+              effectiveCouplings = Get[effectiveCouplingsFileName];
+             ];
 
            PrintHeadline["Creating SLHA model"];
            Print["Creating class for SLHA model ..."];
@@ -2136,6 +2294,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating observables"];
+           (* @note separating this out for now for simplicity *)
+           (* @todo maybe implement a flag (like for addons) to turn on/off? *)
+           WriteEffectiveCouplings[effectiveCouplings, FlexibleSUSY`LowScaleInput, massMatrices, vertexRules,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.cpp"}]}
+                                   }];
+
            WriteObservables[extraSLHAOutputBlocks,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, "observables.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},

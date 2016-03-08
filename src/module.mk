@@ -13,18 +13,19 @@ LIBFLEXI_SRC := \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
+		$(DIR)/effective_couplings.cpp \
 		$(DIR)/error.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
-		$(DIR)/observables.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
@@ -33,6 +34,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/split_threeloophiggs.cpp \
+		$(DIR)/standard_model.cpp \
+		$(DIR)/standard_model_physical.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -55,7 +58,9 @@ LIBFLEXI_HDR := \
 		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
+		$(DIR)/effective_couplings.hpp \
 		$(DIR)/eigen_utils.hpp \
+		$(DIR)/eigen_tensor.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/ewsb_solver.hpp \
@@ -78,7 +83,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
-		$(DIR)/observables.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
@@ -92,6 +96,9 @@ LIBFLEXI_HDR := \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
+		$(DIR)/standard_model.hpp \
+		$(DIR)/standard_model_physical.hpp \
+		$(DIR)/physical_input.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
@@ -154,6 +161,8 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBFLEXI)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

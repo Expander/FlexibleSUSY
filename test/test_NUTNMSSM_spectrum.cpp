@@ -159,7 +159,7 @@ public:
       if (!high_constraint)
          high_constraint = new NUTNMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm);
+         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm, qedqcd);
       if (!low_constraint)
          low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }

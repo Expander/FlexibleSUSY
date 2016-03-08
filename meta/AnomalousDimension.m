@@ -71,13 +71,13 @@ GuessType[{field1_, field2_}] :=
           ];
 
 StripIndices[expr_, _CConversion`ScalarType] :=
-    expr /. a_[Susyno`LieGroups`i1, SARAH`i2] :> a;
+    expr /. Parameters`StripIndicesRules[{Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4}, 2];
 
 StripIndices[expr_, _CConversion`MatrixType] :=
-    expr /. a_[Susyno`LieGroups`i1, SARAH`i2] :> a;
+    expr /. Parameters`StripIndicesRules[{Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4}, 2];
 
 StripIndices[expr_, _CConversion`VectorType] :=
-    expr /. { a_[Susyno`LieGroups`i1] :> a, a_[SARAH`i2] :> a };
+    expr /. Parameters`StripIndicesRules[{Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4}, 1];
 
 (* Converts SARAH anomalous dimensions
  *

@@ -336,8 +336,8 @@ ParameterDefinitions = {
 		 OutputName -> UHAP}},
 {ThetaWp,  { Description -> "Theta'",
 	     LesHouches -> {ESIXRUN,20},
-	     DependenceNum -> 1/2 ArcTan[Sqrt[g1^2+g2^2] gN (-3 vd^2 + 2 vu^2)
-	       /(gN^2 (9 vd^2 + 4 vu^2 + 25 vs^2 )-(g1^2+g2^2) (vd^2 + vu^2)/4)]
+	     DependenceNum -> 1/2 ArcTan[Sqrt[g1^2+g2^2] gN (-3 / Sqrt[40] vd^2 + 2 / Sqrt[40] vu^2) 
+	       / ( gN^2 (9 vd^2 + 4 vu^2 + 25 vs^2 ) / 40 - (g1^2+g2^2) (vd^2 + vu^2)/4)]
                 }},
 {ZZ, {Description ->   "Photon-Z-Z' Mixing Matrix"}},
 {ZW, {Description -> "W Mixing Matrix" }},

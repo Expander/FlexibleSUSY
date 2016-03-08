@@ -36,15 +36,15 @@ double get_random() {
       p << get_random(), get_random(), get_random(),                    \
          get_random(), get_random(), get_random(),                      \
          get_random(), get_random(), get_random();                      \
-      parameters(CMSSM_info::p##00) = p(0,0);                            \
-      parameters(CMSSM_info::p##01) = p(0,1);                            \
-      parameters(CMSSM_info::p##02) = p(0,2);                            \
-      parameters(CMSSM_info::p##10) = p(1,0);                            \
-      parameters(CMSSM_info::p##11) = p(1,1);                            \
-      parameters(CMSSM_info::p##12) = p(1,2);                            \
-      parameters(CMSSM_info::p##20) = p(2,0);                            \
-      parameters(CMSSM_info::p##21) = p(2,1);                            \
-      parameters(CMSSM_info::p##22) = p(2,2);                            \
+      parameters(CMSSM_info::p##0_0) = p(0,0);                          \
+      parameters(CMSSM_info::p##0_1) = p(0,1);                          \
+      parameters(CMSSM_info::p##0_2) = p(0,2);                          \
+      parameters(CMSSM_info::p##1_0) = p(1,0);                          \
+      parameters(CMSSM_info::p##1_1) = p(1,1);                          \
+      parameters(CMSSM_info::p##1_2) = p(1,2);                          \
+      parameters(CMSSM_info::p##2_0) = p(2,0);                          \
+      parameters(CMSSM_info::p##2_1) = p(2,1);                          \
+      parameters(CMSSM_info::p##2_2) = p(2,2);                          \
       mssm.set(parameters);                                             \
       for (int i = 0; i < 3; i++)                                       \
          for (int k = 0; k < 3; k++)                                    \

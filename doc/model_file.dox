@@ -1,6 +1,58 @@
 /**
-\page model_file_options FlexibleSUSY model file options
+\page model_file_options FlexibleSUSY model file
 \tableofcontents
+
+\section model_info Model information
+
+_____________________________________________________________________
+
+__Symbol__: `FSModelName`
+
+__Default value__: _unset_
+
+__Description__:
+
+Name of the model class within the generated code.  If `FSModelName`
+is set to the string "@CLASSNAME@", it will be replaced by the
+`createmodel` script to the name of the FlexibleSUSY model given
+during the `./createmodel --name=<model_name>` command.
+
+_____________________________________________________________________
+
+__Symbol__: `FSEigenstates`
+
+__Default value__: ``SARAH`EWSB``
+
+__Description__:
+
+The name of the particle eigenstates in SARAH.  Usually,
+``SARAH`EWSB`` corresponds to the mass eigenstates after breaking of
+the electroweak symmetry.
+
+_____________________________________________________________________
+
+__Symbol__: `FSDefaultSARAHModel`
+
+__Default value__: _unset_
+
+__Description__:
+
+Name of the SARAH model to be used.  A sub-model can be specified
+after a `/`.
+
+Example: In the constrained CP-conserving MSSM (`CMSSM`) the SARAH
+model `MSSM` is used as:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSDefaultSARAHModel = MSSM;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example: In the constrained CP-violating MSSM (`CMSSMCPV`) the SARAH
+model `MSSM` together with the sub-model `CPV` is used:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSDefaultSARAHModel = MSSM/CPV;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \section input_parameters Input parameters
 
@@ -158,6 +210,38 @@ Block AuijIN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
+__Symbol__: `RealParameters`
+
+__Default value__: `{ All }`
+
+__Description__:
+
+`RealParameters` is a list, which contains the names of all model
+parameters, which should be treated as real parameters.  By default,
+`RealParameters` is set to `{ All }`, meaning that by default all
+paramerters are treated to be real.  If `RealParameters` is set to the
+empty list `{}`, FlexibleSUSY takes the information which paramerters
+are real and which are complex from the SARAH model file.
+
+Example: In the complex Standard Model (`cSM`), the parameters `mu2`
+and `\[Lambda]` should be defined to be real:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+RealParameters = { mu2, \[Lambda] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note: The gauge couplings and VEVs are always assumed to be real in
+SARAH.
+
+Example: In the CP-violating MSSM (`CMSSMCPV`), the `B[\[Mu]]`
+parameter should be defined to be real:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+RealParameters = { B[\[Mu]] };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \section boundary_conditions Boundary conditions
 
@@ -548,6 +632,46 @@ SUSYScaleInput = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+### Temporary parameter re-definitions ###
+
+Since FlexibleSUSY 1.4.0, the user can perform a temporary parameter
+definition to be used in the boundary conditions using the Temporary[]
+head.
+
+If a parameter `p` set in a boundary conditions in the form
+`Temporary[p,<expr>]`, the following happens: Immediately after the RG
+running the value of the parameter is saved locally.  Afterwards, the
+parameter is assigned to `<expr>`.  Now, all further boundary
+conditions are imposed and calculations are performed (calculation of
+running masses, solution of the EWSB conditions, etc.).  Finally, the
+parameter `p` is restored to the locally saved value.
+
+Example in `U1xMSSM3G`: Temporarily rotate the gauge couplings to the
+triangular basis:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+g1T  = (g1*gX - g1X*gX1)/Sqrt[gX^2 + gX1^2];
+gXT  = Sqrt[gX^2 + gX1^2];
+g1XT = (g1X*gX + g1*gX1)/Sqrt[gX^2 + gX1^2];
+
+SUSYScaleInput = {
+    {Temporary[g1], g1T},
+    {Temporary[gX], gXT},
+    {Temporary[g1X], g1XT},
+    {Temporary[gX1], 0},
+    {xS, vSInput},
+    {x2, Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)]/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {x1, (TanBetaX*Sqrt[4*MZpInput^2 - gX^2*(vu^2 + vd^2)])/(2*gX*Sqrt[1 + TanBetaX^2])},
+    {L[lw], 0},
+    FSSolveEWSBFor[{mHd2, mHu2, mC12, lw, mS2}]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In this example the gauge couplings, defined in the triangular basis,
+are used in every calculation performed at the SUSY scale.  This
+includes the calculation of `x1` and `x2` as well as solving the EWSB
+conditions.
+
 ### Imposing the electroweak symmetry breaking conditions ###
 
 The scale, at which the electroweak symmetry breaking (EWSB)
@@ -614,15 +738,250 @@ vector-valued function to be zero.
 
 Example:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 SUSYScaleInput = {
    FSFindRoot[{vd,vu}, {LowEnergyConstant[MZ] - Pole[M[VZ]], LowEnergyConstant[MH] - Pole[M[hh[1]]]}]
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\section rges Renormalization group equations (RGEs)
+
+The loop order of the RGEs to be used can be selected in the model
+file using the `FSRGELoopOrder` variable: By setting `FSRGELoopOrder =
+0;` no RGEs will be generated by SARAH.  By setting `FSRGELoopOrder =
+1;` only one-loop RGEs will be generated by SARAH.  By setting
+`FSRGELoopOrder = 2;` the two-loop RGEs will be generated by SARAH
+(this is the default).
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSRGELoopOrder = 2; (* generate two-loop RGEs using SARAH *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Three-loop RGEs for specific models ###
+
+#### Standard Model ####
+
+In the Standard Model the known three-loop RGEs from [arxiv:1303.4364,
+arXiv:1307.3536] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseSM3LoopRGEs = True; (* use three-loop SM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### MSSM ####
+
+In the MSSM the known three-loop RGEs from [arxiv:hep-ph/0308231,
+http://www.liv.ac.uk/~dij/betas/allgennb.log] can be used by setting
+in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \section pole_masses Pole masses
 
+In order to tune the spectrum generator for speed, the precision of
+the pole mass calculation can be selected for each particle.  There
+are three different pole mass calculation algorithms available:
+`LowPrecision`, `MediumPrecision` and `HighPrecision`.  Please refer
+to Section 6.5 of Ref. [<a href="http://arxiv.org/abs/1406.2319">CPC
+190 (2015) 139-172</a>] for details.
+
+By default, the pole masses of all particles are calculated with
+`MediumPrecision`, except for the CP-even, CP-odd and charged Higgs
+bosons, which are calculated with `HighPrecision` in order to include
+some momentum-dependent 2-loop corrections.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section lsps Lightest supersymmetric particle (LSP)
+
+FlexibleSUSY can generate the helper function `get_lsp()`, which
+returns the mass of the lightest supersymmetric particle (LSP) as well
+as the particle type.  The particles which are candidates for being an
+LSP must be specified in the `PotentialLSPParticles` variable.
+
+Example: In the MSSM the lightest supersymmetric particles might be
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \section output_blocks Output blocks
+
+The user can define additional SLHA output blocks.  These additional
+blocks must be defined in the FlexibleSUSY model file using the
+`ExtraSLHAOutputBlocks` variable.  The `ExtraSLHAOutputBlocks`
+variable is a nested list of the following form:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {<blockname>, [<scale>,]
+      {{<index>, <expression>},
+       {<index>, <expression>},
+       {<index>, <expression>}}
+   },
+   ...
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`<blockname>` is the name of the output block.
+
+Optionally, the renormalization scale can be added to the block head.
+`NoScale` (default) specifies that the block head should have no
+scale.  `CurrentScale` specifies that the scale written in the block
+head should be the current scale of the model.  Otherwise, `<scale>`
+can be numeric value.
+
+The fields inside the block are specified in form of a list of
+2-component lists, where the first entry is an integer number
+representing the field index.  The second entry is an expression to be
+evaluated and whose numeric result is written to the field value.
+
+Example: In the MSSM mode file the following additional output blocks
+are defined
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput, NoScale,
+           {{0, Hold[HighScale]},
+            {1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
+   {ALPHA, NoScale,
+           {{ArcSin[Pole[ZH[2,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]^2},
+            {101, B[\[Mu]]},
+            {102, vd},
+            {103, vu} } },
+   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
+            {2, 2, T[Yu][2,2] / Yu[2,2]},
+            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
+   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
+            {2, 2, T[Yd][2,2] / Yd[2,2]},
+            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
+   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
+            {2, 2, T[Ye][2,2] / Ye[2,2]},
+            {3, 3, T[Ye][3,3] / Ye[3,3]} } },
+   {MSOFT, {{1, MassB},
+            {2, MassWB},
+            {3, MassG},
+            {21, mHd2},
+            {22, mHu2},
+            {31, SignedAbsSqrt[ml2[1,1]]},
+            {32, SignedAbsSqrt[ml2[2,2]]},
+            {33, SignedAbsSqrt[ml2[3,3]]},
+            {34, SignedAbsSqrt[me2[1,1]]},
+            {35, SignedAbsSqrt[me2[2,2]]},
+            {36, SignedAbsSqrt[me2[3,3]]},
+            {41, SignedAbsSqrt[mq2[1,1]]},
+            {42, SignedAbsSqrt[mq2[2,2]]},
+            {43, SignedAbsSqrt[mq2[3,3]]},
+            {44, SignedAbsSqrt[mu2[1,1]]},
+            {45, SignedAbsSqrt[mu2[2,2]]},
+            {46, SignedAbsSqrt[mu2[3,3]]},
+            {47, SignedAbsSqrt[md2[1,1]]},
+            {48, SignedAbsSqrt[md2[2,2]]},
+            {49, SignedAbsSqrt[md2[3,3]]} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section model_specific_switches Model-specific switches
+
+### 2- and 3-loop corrections to pole masses ###
+
+#### MSSM ####
+
+In the MSSM the dominant two-loop Higgs pole mass corrections
+[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,
+arxiv:hep-ph/0206101, arxiv:hep-ph/0305127] can be used by setting in
+the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopMSSM = True; (* use 2-loop Higgs corrections *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition, the effective \f$\mu\f$ parameter must be specified using
+the `EffectiveMu` variable:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+EffectiveMu = \[Mu];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### NMSSM ####
+
+In the NMSSM the dominant two-loop Higgs pole mass corrections from
+Ref.  [arXiv:0907.4682] plus the MSSM-like contributions from Refs.
+[hep-ph/0105096, hep-ph/0112177, hep-ph/0212132, hep-ph/0206101,
+hep-ph/0305127] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopNMSSM = True; (* use 2-loop Higgs corrections *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition, the effective \f$\mu\f$ parameter must be specified using
+the `EffectiveMu` variable, Furthermore, the tree-level value of the
+effective CP-odd MSSM-like Higgs must be specified in the
+`EffectiveMASqr` variable.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+EffectiveMu = \[Lambda] vS / Sqrt[2];
+EffectiveMASqr = (T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2) (vu^2 + vd^2) / (vu vd);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Standard Model (SM) ####
+
+In the Standard Model the two-loop Higgs pole mass corrections
+[arxiv:1205.6497, Eq.(20)] of the order \f$O(\alpha_t\alpha_s +
+\alpha_t^2)\f$ can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Split-MSSM (SplitMSSM) ####
+
+In the split-MSSM the two-loop Higgs pole mass corrections from
+[arxiv:1312.5220, Eq. (4.8)] of the order \f$O(\alpha_t \alpha_s^2)\f$
+can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs3LoopSplit = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### 3-loop QCD corrections to the top Yukawa coupling ###
+
+In non-SUSY models the known 3-loop (Standard Model) QCD corrections
+\f$O(\alpha_s^3)\f$ [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] can
+be used in the determination of the running \f$\overline{MS}\f$ top
+Yukawa coupling \f$y_t\f$ at the low-energy scale by setting
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseYukawa3LoopQCD = Automatic;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+or
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseYukawa3LoopQCD = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note, that these 3-loop corrections are only applied at run-time if
+the threshold correction loop order (block `FlexibleSUSY[7]`) is set
+to a value > 2.
 
 */

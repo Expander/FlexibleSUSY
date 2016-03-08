@@ -30,6 +30,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "dilog.hpp"
+#include "eigen_tensor.hpp"
 
 namespace flexiblesusy {
 
@@ -90,19 +91,42 @@ double calculate_singlet_mass(T value)
 }
 
 /**
- * Calculates the mass of a singlet from a (possibly complex)
- * numerical value by taking the magnitude of the value.  The phase is
- * set to exp(i theta/2), where theta is the phase angle of the
- * complex value.
+ * Calculates the mass of a Majoran fermion singlet from a (possibly
+ * complex) numerical value by taking the magnitude of the value.
+ *
+ * The phase is set to exp(i theta/2), where theta is the phase angle
+ * of the complex value.  If the value is pure real, then the phase
+ * will be set to 1.  If the value is purely imaginary, then the phase
+ * will be set to \f$e^{i \pi/2}\f$.
  *
  * @param value numerical value
  * @param[out] phase phase
  * @return mass
  */
 template <typename T>
-double calculate_singlet_mass(T value, std::complex<double>& phase)
+double calculate_majorana_singlet_mass(T value, std::complex<double>& phase)
 {
    phase = std::polar(1., 0.5 * std::arg(std::complex<double>(value)));
+   return std::abs(value);
+}
+
+/**
+ * Calculates the mass of a Dirac fermion singlet from a (possibly
+ * complex) numerical value by taking the magnitude of the value.
+ *
+ * The phase is set to exp(i theta), where theta is the phase angle of
+ * the complex value.  If the value is pure real, then the phase will
+ * be set to 1.  If the value is purely imaginary, then the phase will
+ * be set to \f$e^{i \pi}\f$.
+ *
+ * @param value numerical value
+ * @param[out] phase phase
+ * @return mass
+ */
+template <typename T>
+double calculate_dirac_singlet_mass(T value, std::complex<double>& phase)
+{
+   phase = std::polar(1., std::arg(std::complex<double>(value)));
    return std::abs(value);
 }
 
@@ -134,6 +158,12 @@ inline double Conj(double a)
 inline std::complex<double> Conj(const std::complex<double>& a)
 {
    return std::conj(a);
+}
+
+template <class T>
+T Conjugate(T a)
+{
+   return Conj(a);
 }
 
 template <typename T>
@@ -466,11 +496,15 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 
 #define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
 #define ZEROMATRIX(rows,cols)        Eigen::Matrix<double,rows,cols>::Zero()
+#define ZEROTENSOR3(d1,d2,d3)        ZeroTensor3<double,d1,d2,d3>()
+#define ZEROTENSOR4(d1,d2,d3,d4)     ZeroTensor4<double,d1,d2,d3,d4>()
 #define ZEROVECTOR(rows)             Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows)              Eigen::Array<double,rows,1>::Zero()
 #define UNITMATRIXCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,rows>::Identity()
 #define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
+#define ZEROTENSOR3COMPLEX(d1,d2,d3) ZeroTensor3<std::complex<double>,d1,d2,d3>()
+#define ZEROTENSOR4COMPLEX(d1,d2,d3,d4) ZeroTensor4<std::complex<double>,d1,d2,d3,d4>()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
 
 // MxN matrix projection operator, which projects on the (X,Y)

@@ -57,6 +57,14 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    }
 }
 
+void test_weinberg_angle(CMSSM_mass_eigenstates m)
+{
+   m.calculate_DRbar_masses();
+
+   const double weinberg_angle = ArcTan(Sqrt(0.6) * m.get_g1() / m.get_g2());
+   TEST_EQUALITY(weinberg_angle, m.ThetaW());
+}
+
 void compare_anomalous_dimensions(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
 {
   DoubleMatrix gEE(3,3),gLL(3,3),gQQ(3,3),gDD(3,3),gUU(3,3);
@@ -900,6 +908,7 @@ void compare_top_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.calcDrBarPars();
    m.set_scale(MZ);
    m.calculate_DRbar_masses();
+   m.set_thresholds(2);
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();
@@ -1599,6 +1608,9 @@ void compare_models(int loopLevel)
    std::cout << "done\n";
    std::cout << "comparing beta functions ... ";
    test_beta_function_equality(softSusy, m);
+   std::cout << "done\n";
+   std::cout << "testing weak mixing angle ... ";
+   test_weinberg_angle(m);
    std::cout << "done\n";
 
    if (loopLevel < 3) {

@@ -65,6 +65,8 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
+clean-obj::     clean-$(MODNAME)-obj
+
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)

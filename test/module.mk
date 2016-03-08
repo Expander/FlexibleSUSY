@@ -21,6 +21,7 @@ TEST_SRC := \
 		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_derivative.cpp \
+		$(DIR)/test_effective_couplings.cpp \
 		$(DIR)/test_eigen_utils.cpp \
 		$(DIR)/test_ewsb_solver.cpp \
 		$(DIR)/test_fixed_point_iterator.cpp \
@@ -36,6 +37,7 @@ TEST_SRC := \
 		$(DIR)/test_sminput.cpp \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
+		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_wrappers.cpp
 
 TEST_SH := \
@@ -180,6 +182,11 @@ ALLDEP += $(LIBFFLITE_DEP)
 endif
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-BLSMlightZp),yes)
+TEST_SH += \
+		$(DIR)/test_BLSMlightZp_ZZp_mixing.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh
@@ -206,6 +213,7 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
+		$(DIR)/test_SM_effective_couplings.cpp \
 		$(DIR)/test_SM_low_scale_constraint.cpp \
 		$(DIR)/test_SM_one_loop_spectrum.cpp \
 		$(DIR)/test_SM_higgs_loop_corrections.cpp \
@@ -276,16 +284,27 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-THDMIIMSSMBC --with-THDMIIMSSMBCApprox --with-HGTHDMIIMSSMBC --with-HGTHDMIIMSSMBCApprox),yes yes yes yes)
+TEST_SH += \
+		$(DIR)/test_THDMIIMSSMBCFull_approximation.sh
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
+		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m \
+		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_Parameters.m \
-		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/test_TextFormatting.m \
+		$(DIR)/test_THDM_threshold_corrections.m \
+		$(DIR)/test_THDM_threshold_corrections_gauge.m \
+		$(DIR)/test_THDM_threshold_corrections_scale_invariance.m \
+		$(DIR)/test_ThreeLoopQCD.m \
 		$(DIR)/test_ThresholdCorrections.m \
+		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_Vertices.m
 
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
@@ -336,6 +355,7 @@ endif
 		execute-tests execute-meta-tests execute-compiled-tests
 
 all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(TEST_DEP)
@@ -354,6 +374,23 @@ clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
 		-rm -f $(TEST_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-obj::     clean-$(MODNAME)-obj
+
+clean::         clean-$(MODNAME)
+
+distclean::     distclean-$(MODNAME)
+
+execute-tests:  $(TEST_LOG)
+
+ifeq ($(ENABLE_META),yes)
+execute-meta-tests: $(TEST_META_LOG)
+else
+execute-meta-tests:
+endif
+
+execute-compiled-tests: $(TEST_EXE_LOG)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
@@ -381,20 +418,6 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@$< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
-execute-tests:  $(TEST_LOG)
-
-ifeq ($(ENABLE_META),yes)
-execute-meta-tests: $(TEST_META_LOG)
-else
-execute-meta-tests:
-endif
-
-execute-compiled-tests: $(TEST_EXE_LOG)
-
-clean::         clean-$(MODNAME)
-
-distclean::     distclean-$(MODNAME)
-
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 
 $(DIR)/test_cast_model.x: $(DIR)/test_cast_model.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -410,6 +433,9 @@ $(DIR)/test_lowe.x: $(DIR)/test_lowe.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,
 
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_effective_couplings.x: $(DIR)/test_effective_couplings.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_ewsb_solver.x: $(DIR)/test_ewsb_solver.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
@@ -443,6 +469,9 @@ $(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI) $(LIBLEGACY) $(filter-o
 
 $(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+
+$(DIR)/test_threshold_loop_functions.x: $(DIR)/test_threshold_loop_functions.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS) $(LIBTEST)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS) $(LIBTEST)
@@ -590,6 +619,8 @@ $(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY
 $(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_effective_couplings.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_higgs_loop_corrections.x: $(DIR)/test_SM_higgs_loop_corrections.o $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$< $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(THREADLIBS)

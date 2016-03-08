@@ -1,0 +1,74 @@
+FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = "B-L-SM-lightZp";
+FSRGELoopOrder = 0;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {1, Lambda1INPUT},
+    {2, Lambda2INPUT},
+    {3, Lambda3INPUT},
+    {10, g1pINPUT},
+    {11, g1p1INPUT},
+    {12, g11pINPUT},
+    {20, vXinput}
+};
+
+EXTPAR = {};
+
+FSExtraInputParameters = {};
+
+EWSBOutputParameters = {MuP, mu2};
+
+SUSYScale = LowScale;
+
+SUSYScaleFirstGuess = LowScaleFirstGuess;
+
+SUSYScaleInput = {};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowScale;
+
+LowScaleInput = {
+    {g1p, g1pINPUT},
+    {g11p, g11pINPUT},
+    {g1p1, g1p1INPUT},
+    {L1, Lambda1INPUT},
+    {L2, Lambda2INPUT},
+    {L3, Lambda3INPUT},
+    {Yv, LHInput[Yv]},
+    {Yx, LHInput[Yx]},
+    {vX, vXinput},
+    {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {Ye, Automatic},
+    {Yd, Automatic},
+    {Yu, Automatic}
+};
+
+InitialGuessAtLowScale = {
+   {g1p, g1pINPUT},
+   {g11p, g11pINPUT},
+   {g1p1, g1p1INPUT},
+   {L1, Lambda1INPUT},
+   {L2, Lambda2INPUT},
+   {L3, Lambda3INPUT},
+   {vX, vXinput},
+   {vH, LowEnergyConstant[vev]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+PotentialLSPParticles = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput,
+           {{1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+};

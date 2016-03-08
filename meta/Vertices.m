@@ -195,6 +195,7 @@ StripGroupStructure[expr_, indices_List] := Module[{
     },
     expr /. {
 	PatternWithDistinctIndices[SARAH`Delta, 2, indexPattern] -> 1,
+	SARAH`epsTensor[__] -> 1,
 	SARAH`Lam[__] -> 2,
 	SARAH`Sig[__] -> 2,
 	SARAH`fSU2[__] -> 1,

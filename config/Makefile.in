@@ -119,7 +119,7 @@ CONVERT_DOS_PATHS := \
 README_FILE := $(ABSBASEDIR)/README
 
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
-	 clean clean-dep depend distclean showbuild tag \
+	 clean clean-dep clean-obj depend distclean showbuild tag \
 	 release-tag release-head
 
 all:

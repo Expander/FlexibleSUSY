@@ -29,6 +29,7 @@
 
 namespace flexiblesusy {
 
+#define DERIVEDPARAMETER(p) model->p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -98,20 +99,25 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 
    mu_guess = leAtMt.displayMass(mUp);
    mc_guess = leAtMt.displayMass(mCharm);
-   mt_guess = leAtMt.displayMass(mTop) - 30.0;
+   mt_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mTop) - 30.0 :
+      leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(mDown);
    ms_guess = leAtMt.displayMass(mStrange);
    mb_guess = leAtMt.displayMass(mBottom);
-   me_guess = leAtMt.displayMass(mElectron);
-   mm_guess = leAtMt.displayMass(mMuon);
+   me_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mElectron) :
+      leAtMt.displayPoleMel();
+   mm_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mMuon) :
+      leAtMt.displayPoleMmuon();
    mtau_guess = leAtMt.displayMass(mTau);
 
    // guess gauge couplings at mt
    const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * alpha_sm(1)));
-   model->set_@leftCoupling@(sqrt(4.0 * M_PI * alpha_sm(2)));
-   model->set_@strongCoupling@(sqrt(4.0 * M_PI * alpha_sm(3)));
+@initialGuessAtLowScaleGaugeCouplings@
+
    model->set_scale(mtpole);
 
    // apply user-defined initial guess at the low scale
@@ -184,9 +190,15 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
 
    model->run_to(susy_scale_guess, running_precision);
 
+   // set EWSB loop order to 0 temporarily
+   const unsigned lo = model->get_ewsb_loop_order();
+   model->set_ewsb_loop_order(0);
+
    // apply susy-scale constraint
    susy_constraint.set_model(model);
    susy_constraint.apply();
+
+   model->set_ewsb_loop_order(lo);
 
    model->run_to(low_scale_guess, running_precision);
 

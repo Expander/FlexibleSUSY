@@ -20,6 +20,7 @@ STANDALONE_DIR := \
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(EXAMPLES_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(EXAMPLES_DEP)
@@ -34,6 +35,8 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		-@for d in $(STANDALONE_DIR); do \
 			(cd $$d && make distclean); \
 		 done
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
