@@ -62,9 +62,12 @@ models_array="             \
    SM,SM                   \
    HSSUSY,SM               \
    SplitMSSM,SplitMSSM     \
+   THDMIIMSSMBC,THDM-II    \
+   HTHDMIIMSSMBC,HTHDM-II  \
+   HGTHDMIIMSSMBC,HGTHDM-II \
 "
 
-models="`echo $models_array | sed 's/,[a-zA-Z0-9]*//g'`"
+models="`echo $models_array | sed 's/,[a-zA-Z0-9-]*//g'`"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -85,7 +88,7 @@ do
 done
 
 # running configure
-models_comma="`echo $models | tr ' ' ','`"
+models_comma=$(echo $models | tr ' ' ',')
 
 ./configure \
     --with-models=${models_comma} \
