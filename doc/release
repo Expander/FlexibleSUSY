@@ -49,7 +49,7 @@ When releasing FlexibleSUSY, please follow these steps:
  7. Pregenerate models:
 
       ./release/generate-models.sh \
-         --number-of-jobs=2 \
+         --number-of-jobs=4 \
          --directory=release/<version>
 
       scp release/<version>/*.tar.gz \
