@@ -63,8 +63,17 @@ translate = {
     W[m1_,m2_,mu_]               :> TCW[m1,m2,mu]
 };
 
-deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}] //. translate;
-deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}] //. translate;
+transposeYuks = {
+    Yu[i_,j_] :> Yu[j,i],
+    Yd[i_,j_] :> Yd[j,i],
+    Ye[i_,j_] :> Ye[j,i],
+    AuInput[i_,j_] :> AuInput[j,i],
+    AdInput[i_,j_] :> AdInput[j,i],
+    AeInput[i_,j_] :> AeInput[j,i]
+};
+
+deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}] //. translate /. transposeYuks;
+deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}] //. translate /. transposeYuks;
 
 HighScaleInput = {
     {Lambda1, 1/2 (deltaLambda0L[[1]]
