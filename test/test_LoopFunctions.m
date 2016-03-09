@@ -64,6 +64,32 @@ RunTests[] := (
         expr2 = loopFunctions[[i]] /. Divergence[];
         TestEquality[expr2, 0];
        ];
+
+    Print["testing logaritms ..."];
+
+    loopFunctions = {
+        A0[m, mu],
+        B0[p, m1, m2, mu],
+        B1[p, m1, m2, mu],
+        B00[p, m1, m2, mu],
+        B11[p, m1, m2, mu],
+        B22[p, m1, m2, mu],
+        B22tilde[p, m1, m2, mu],
+        C0[p1, p2, m1, m2, m3, mu],
+        D0[p1, p2, p3, m1, m2, m3, m4, mu],
+        D27[p1, p2, p3, m1, m2, m3, m4, mu],
+        F[p, m1, m2, mu],
+        G[p, m1, m2, mu],
+        H[p, m1, m2, mu]
+    };
+
+    divs = loopFunctions /. Divergence[] /. Delta -> Log[mu^2];
+    logs = loopFunctions /. Logarithms[];
+
+    divs = (mu D[#, mu]) & /@ divs;
+    logs = (mu D[#, mu]) & /@ logs;
+
+    TestEquality[Simplify[divs - logs], Table[0,{i,1,Length[loopFunctions]}]];
 );
 
 $BPMZSign = 1;
