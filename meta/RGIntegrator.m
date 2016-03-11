@@ -11,10 +11,19 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
 
  Example:
 
- betas = { {g, a g, b g^2 l^2},
-           {l, c l + d g, e l^2 + f g^2 + k l g} }
+ betas = { {g, h a g, h^2 b g^2 l^2},
+           {l, h (c l + d g), h^2 (e l^2 + f g^2 + k l g)} }
 
  RGIntegrate[betas, Q1, Q2]
+
+ Result:
+
+ { g[Q1] -> g[Q2] -
+            (h*g[Q2]*(- (a^2*h*Log[Q1/Q2]^2)
+                     + 2*(a + b*h*g[Q2]*l[Q2]^2)*Log[Q2/Q1]))/2,
+   l[Q1] -> l[Q2] -
+            (h*Log[Q1/Q2]*(- 2*(f*h*g[Q2]^2 + l[Q2]*(c + e*h*l[Q2]) + g[Q2]*(d + h*k*l[Q2]))
+                          - h*((a + c)*d*g[Q2] + c^2*l[Q2])*Log[Q1/Q2]))/2 }
 ";
 
 Begin["RGIntegrator`Private`"];
