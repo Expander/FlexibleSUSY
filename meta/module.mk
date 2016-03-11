@@ -8,14 +8,16 @@ META_SRC     := \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/EffectiveCouplings.m \
+		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/LatticeUtils.m \
+		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \
 		$(DIR)/Observables.m \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
+		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
-		$(DIR)/EWSB.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThreeLoopMSSM.m \
