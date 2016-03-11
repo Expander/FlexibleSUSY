@@ -30,9 +30,14 @@ MultiplyLoopFactor[{par_, betas___}, h_] :=
 PerformIntegrals[expr_] := expr /. Integral -> Integrate;
 
 IntegrateSingleRHS[{par_, betas___}, Q1_, Q2_, Qp_, addScales_, sol_] :=
-    par[Q1] -> par[Q2] - Integral[
-        Total[{betas} /. addScales /. (sol /. Q1 -> Qp)]/Qp,
-        {Qp, Q1, Q2}, Assumptions :> Q1 > 0 && Q2 > 0 && Qp > 0 && Q2 > Q1];
+    Module[{loopOrder = Length[{betas}], integrand},
+           integrand = Total[{betas} /. addScales /. (sol /. Q1 -> Qp)]/Qp;
+           integrand = Normal @ Series[integrand, {h,0,loopOrder}];
+           par[Q1] -> par[Q2] - Integral[integrand, {Qp, Q1, Q2},
+                                         Assumptions :> Q1 > 0 && Q2 > 0 && Qp > 0 && Q2 > Q1]
+          ];
+
+IntegrateRHS[{}, Q1_, Q2_, sol_] := {};
 
 IntegrateRHS[betas_List, Q1_, Q2_, sol_] :=
     Module[{Qp, addScales, ints},
