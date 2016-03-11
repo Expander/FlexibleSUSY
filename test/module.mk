@@ -297,6 +297,7 @@ TEST_META := \
 		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m \
 		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_Parameters.m \
+		$(DIR)/test_RGIntegrator.m \
 		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_THDM_threshold_corrections.m \
