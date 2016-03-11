@@ -33,6 +33,10 @@ Begin["RGIntegrator`Private`"];
 
 AddScale[par_, Q_] := Rule[par, par[Q]];
 
+collectLogs := {
+    Plus[a___, x_ Log[Q1_], b___, y_ Log[Q2_], c___] /; x === -y :> Plus[a, b, c, x Log[Q1/Q2]]
+};
+
 MultiplyLoopFactor[{par_, betas___}, h_] :=
     Join[{par}, MapIndexed[#1 h^(First[#2])&, {betas}]];
 
@@ -77,7 +81,7 @@ RGIntegrateRecursively[betas_List, Q1_, Q2_] :=
 RGIntegrate[beta_List, Q1_, Q2_] :=
     Module[{lbeta},
            lbeta = MultiplyLoopFactor[#, h]& /@ beta;
-           RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1
+           RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1 /. collectLogs
           ];
 
 End[];
