@@ -4,6 +4,7 @@ Needs["RGIntegrator`", "RGIntegrator.m"];
 On[Assert];
 
 betas = {
+    {},
     {{g}},
     {{g}, {l}},
     {{g, h a g}},
