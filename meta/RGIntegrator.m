@@ -1,6 +1,9 @@
 BeginPackage["RGIntegrator`"];
 EndPackage[];
 
+(* options *)
+{ loopOrder };
+
 RGIntegrate::usage = "Integrates a given list of renormalization group
  equations from a starting scale to a destination scale.
 
