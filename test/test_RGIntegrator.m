@@ -13,21 +13,46 @@ betas = {
      {l, h (c l + d g), h^2 (e l^2 + f g^2 + k l g)}}
 };
 
-Print["Testing running up and back down ..."]
+Print["Testing running up and back down ..."];
 
 For[i = 1, i <= Length[betas], i++,
     For[p = 1, p <= Length[betas[[i]]], p++,
         par = First[betas[[i, p]]];
-        Print["  Running ", par, " using ", InputForm[betas[[i]]]];
+        lo = Length[betas[[i, p]]] - 1;
+        Print["  Running ", par, " using ", InputForm[betas[[i]]], " (",lo,"L)"];
         runningPar = FullSimplify[
             Normal@Series[(par[Q0] /. RGIntegrate[betas[[i]], Q0, Q1] /. 
                            RGIntegrate[betas[[i]], Q1, Q0]),
-                          {h, 0, Length[betas[[i]] - 1]}], Assumptions :> Q0 > 0 && Q1 > 0];
+                          {h, 0, lo}], Assumptions :> Q0 > 0 && Q1 > 0];
         TestEquality[runningPar, par[Q0]];
        ];
    ];
 
-Print["Testing scale dependence of solution ..."]
+betas = {
+    {{g}},
+    {{g}, {l}},
+    {{g, h a g}},
+    {{g, h a g, h^2 b g^2}},
+    {{g, h a g, h^2 b g^2 l^2},
+     {l, h (c l + d g), h^2 (e l^2 + f g^2 + k l g)}}
+};
+
+Print["Testing running up and back down with higher loop order ..."];
+
+For[i = 1, i <= Length[betas], i++,
+    For[p = 1, p <= Length[betas[[i]]], p++,
+        par = First[betas[[i, p]]];
+        lo = Length[betas[[i, p]]] - 1 + 1;
+        Print["  Running ", par, " using ", InputForm[betas[[i]]], " (",lo,"L)"];
+        runningPar = FullSimplify[
+            Normal@Series[(par[Q0] /. RGIntegrate[betas[[i]], Q0, Q1, loopOrder -> lo] /. 
+                           RGIntegrate[betas[[i]], Q1, Q0, loopOrder -> lo]),
+                          {h, 0, lo}], Assumptions :> Q0 > 0 && Q1 > 0];
+        TestEquality[runningPar, par[Q0]];
+       ];
+   ];
+
+Print["Testing scale dependence of solution ..."];
 
 For[i = 1, i <= Length[betas], i++,
     pars = #[[1]]& /@ betas[[i]];
