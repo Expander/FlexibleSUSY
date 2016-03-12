@@ -63,21 +63,27 @@ Begin["RGIntegrator`Private`"];
 
 AddScale[par_, Q_] := Rule[par, par[Q]];
 
-collectLogs := {
-    Plus[a___, x_ Log[Q1_], b___, y_ Log[Q2_], c___] /; x === -y :> Plus[a, b, c, x Log[Q1/Q2]]
-};
-
 MultiplyLoopFactor[{par_, betas___}, h_] :=
     Join[{par}, MapIndexed[#1 h^(First[#2])&, {betas}]];
 
-PerformIntegrals[expr_] := expr /. Integral -> Integrate /. collectLogs;
+PerformIntegrals[expr_] :=
+    expr /.
+    Integral[ex_, rest__] :> Distribute[Integral[Expand[ex], rest]] /.
+    {
+        (* Log[]^0 *)
+        Integral[ex_ /; FreeQ[ex,Log], {Log[Qp_], Log[Q1_], Log[Q2_]}, ___] :>
+        (ex Log[Q2/Q1]),
+        (* Log[]^n *)
+        Integral[ex_, {Log[Qp_], Log[Q1_], Log[Q2_]}, ___] :>
+        (ex /. {Log[Qp/Q1]^n_ :> Log[Q2/Q1]^(n+1)/(n+1),
+                Log[Qp/Q1] -> Log[Q2/Q1]^2/2} )
+    };
 
 IntegrateSingleRHS[{par_, betas___}, Q1_, Q2_, Qp_, addScales_, sol_] :=
     Module[{loopOrder = Length[{betas}], integrand},
-           integrand = Total[{betas} /. addScales /. (sol /. Q1 -> Qp)]/Qp;
+           integrand = Total[{betas} /. addScales /. (sol /. Q1 -> Qp)];
            integrand = Normal @ Series[integrand, {h,0,loopOrder}];
-           par[Q1] -> par[Q2] - Integral[integrand, {Qp, Q1, Q2},
-                                         Assumptions :> Q1 > 0 && Q2 > 0 && Qp > 0 && Q2 > Q1]
+           par[Q1] -> par[Q2] + Integral[integrand, {Log[Qp], Log[Q2], Log[Q1]}]
           ];
 
 IntegrateRHS[{}, Q1_, Q2_, sol_] := {};
