@@ -67,7 +67,7 @@ collectLogs := {
 MultiplyLoopFactor[{par_, betas___}, h_] :=
     Join[{par}, MapIndexed[#1 h^(First[#2])&, {betas}]];
 
-PerformIntegrals[expr_] := expr /. Integral -> Integrate;
+PerformIntegrals[expr_] := expr /. Integral -> Integrate /. collectLogs;
 
 IntegrateSingleRHS[{par_, betas___}, Q1_, Q2_, Qp_, addScales_, sol_] :=
     Module[{loopOrder = Length[{betas}], integrand},
@@ -116,7 +116,7 @@ RGIntegrate[beta_List, Q1_, Q2_, OptionsPattern[]] :=
               (* chop or fill beta functions with zeros *)
               lbeta = PadRight[#, lo + 1]& /@ lbeta;
              ];
-           RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1 /. collectLogs
+           RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1
           ];
 
 End[];
