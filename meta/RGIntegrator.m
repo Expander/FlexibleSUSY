@@ -9,6 +9,9 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
  of the parameter and the rest are the 1-loop, 2-loop, ... beta
  functions.
 
+ The loopOrder of the integration can be given as an optional
+ argument, see Example 3, (default: Automatic).
+
  Example 1
  =========
 
@@ -18,7 +21,7 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
 
  Result:
 
- {g[Q1] -> g[Q2] - a*h*g[Q2]^2*Log[Q2/Q1]}
+ {g[Q1] -> g[Q2] - a h g[Q2]^2 Log[Q2/Q1]}
 
  Example 2
  =========
@@ -35,6 +38,19 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
   l[Q1] -> l[Q2] + h (-(d g[Q2]^2 Log[Q2/Q1]) - c l[Q2]^2 Log[Q2/Q1]) +
     h^2 ((a d g[Q2]^3 + c d g[Q2]^2 l[Q2] + c^2 l[Q2]^3) Log[Q1/Q2]^2 -
       f g[Q2]^2 l[Q2]^2 Log[Q2/Q1] - e l[Q2]^4 Log[Q2/Q1])}
+
+ Example 3
+ =========
+
+ Integrate the beta functions up to the 2nd order:
+
+ betas = { {g, h a g^2} }
+
+ RGIntegrate[betas, Q1, Q2, loopOrder -> 2]
+
+ Result:
+
+ {g[Q1] -> g[Q2] - a h g[Q2]^2 Log[Q2/Q1] + a^2 h^2 g[Q2]^3 Log[Q1/Q2]^2}
 ";
 
 Begin["RGIntegrator`Private`"];
@@ -89,9 +105,17 @@ RGIntegrateRecursively[betas_List, Q1_, Q2_] :=
            RGIntegrateRecursively[betas, Q1, Q2, sol]
       ];
 
-RGIntegrate[beta_List, Q1_, Q2_] :=
-    Module[{lbeta},
+Options[RGIntegrate] = {
+    loopOrder -> Automatic
+};
+
+RGIntegrate[beta_List, Q1_, Q2_, OptionsPattern[]] :=
+    Module[{lbeta, lo = OptionValue[loopOrder]},
            lbeta = MultiplyLoopFactor[#, h]& /@ beta;
+           If[IntegerQ[lo],
+              (* chop or fill beta functions with zeros *)
+              lbeta = PadRight[#, lo + 1]& /@ lbeta;
+             ];
            RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1 /. collectLogs
           ];
 
