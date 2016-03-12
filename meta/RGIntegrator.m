@@ -24,7 +24,7 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
 
  Result:
 
- {g[Q1] -> g[Q2] - a h g[Q2]^2 Log[Q2/Q1]}
+ {g[Q1] -> g[Q2] + a h g[Q2]^2 Log[Q1/Q2]}
 
  Example 2
  =========
@@ -36,11 +36,12 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
 
  Result:
 
- {g[Q1] -> g[Q2] - a h g[Q2]^2 Log[Q2/Q1] +
-    h^2 (a^2 g[Q2]^3 Log[Q1/Q2]^2 - b g[Q2]^2 l[Q2]^2 Log[Q2/Q1]),
-  l[Q1] -> l[Q2] + h (-(d g[Q2]^2 Log[Q2/Q1]) - c l[Q2]^2 Log[Q2/Q1]) +
-    h^2 ((a d g[Q2]^3 + c d g[Q2]^2 l[Q2] + c^2 l[Q2]^3) Log[Q1/Q2]^2 -
-      f g[Q2]^2 l[Q2]^2 Log[Q2/Q1] - e l[Q2]^4 Log[Q2/Q1])}
+ {g[Q1] -> g[Q2] + a*h*g[Q2]^2*Log[Q1/Q2] +
+    h^2*(b*g[Q2]^2*l[Q2]^2*Log[Q1/Q2] + a^2*g[Q2]^3*Log[Q1/Q2]^2),
+  l[Q1] -> l[Q2] + h*(d*g[Q2]^2*Log[Q1/Q2] + c*l[Q2]^2*Log[Q1/Q2]) +
+    h^2*(f*g[Q2]^2*l[Q2]^2*Log[Q1/Q2] + e*l[Q2]^4*Log[Q1/Q2] +
+      a*d*g[Q2]^3*Log[Q1/Q2]^2 + c*d*g[Q2]^2*l[Q2]*Log[Q1/Q2]^2 +
+      c^2*l[Q2]^3*Log[Q1/Q2]^2)}
 
  Example 3
  =========
@@ -53,7 +54,7 @@ RGIntegrate::usage = "Integrates a given list of renormalization group
 
  Result:
 
- {g[Q1] -> g[Q2] - a h g[Q2]^2 Log[Q2/Q1] + a^2 h^2 g[Q2]^3 Log[Q1/Q2]^2}
+ {g[Q1] -> g[Q2] + a h g[Q2]^2 Log[Q1/Q2] + a^2 h^2 g[Q2]^3 Log[Q1/Q2]^2}
 ";
 
 Begin["RGIntegrator`Private`"];
