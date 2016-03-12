@@ -83,7 +83,7 @@ PerformIntegrals[expr_] :=
 IntegrateSingleRHS[{par_, betas___}, Q1_, Q2_, Qp_, addScales_, sol_] :=
     Module[{loopOrder = Length[{betas}], integrand},
            integrand = Total[{betas} /. addScales /. (sol /. Q1 -> Qp)];
-           integrand = Normal @ Series[integrand, {h,0,loopOrder}];
+           integrand = Normal @ Series[integrand, {RGIntegrator`Private`h,0,loopOrder}];
            par[Q1] -> par[Q2] + Integral[integrand, {Log[Qp], Log[Q2], Log[Q1]}]
           ];
 
@@ -121,12 +121,12 @@ Options[RGIntegrate] = {
 
 RGIntegrate[beta_List, Q1_, Q2_, OptionsPattern[]] :=
     Module[{lbeta, lo = OptionValue[loopOrder]},
-           lbeta = MultiplyLoopFactor[#, h]& /@ beta;
+           lbeta = MultiplyLoopFactor[#, RGIntegrator`Private`h]& /@ beta;
            If[IntegerQ[lo],
               (* chop or fill beta functions with zeros *)
               lbeta = PadRight[#, lo + 1]& /@ lbeta;
              ];
-           RGIntegrateRecursively[lbeta, Q1, Q2] /. h -> 1
+           RGIntegrateRecursively[lbeta, Q1, Q2] /. RGIntegrator`Private`h -> 1
           ];
 
 End[];
