@@ -4,29 +4,32 @@ EndPackage[];
 (* loop functions *)
 {A0, B0, B1, B00, B11, B22, B22tilde, C0, D0, D27, F, G, H};
 
-FullMomentum::usage = "Returns loop functions with full momentum
-dependence in BPMZ convention (arxiv:hep-ph/9606211)";
+LFFull::usage = "Returns explicit form of loop functions with full
+ momentum dependence.  The convention depends on the value of
+ $BPMZSign .";
 
-ZeroMomentum::usage = "Returns loop functions at zero momentum in BPMZ
- convention (arxiv:hep-ph/9606211)";
+LFZeroMomentum::usage = "Returns loop functions at zero momentum.  The
+ convention depends on the value of $BPMZSign .";
 
-Divergence::usage = "returns divergent part of loop functions in BPMZ
- convention (arxiv:hep-ph/9606211).";
+LFDivergence::usage = "Returns divergent part of loop functions.  The
+ convention depends on the value of $BPMZSign .";
 
-Logarithms::usage = "returns the renormalization scale dependent part
- of loop functions in BPMZ convention (arxiv:hep-ph/9606211).";
+LFScaleDependence::usage = "Returns the renormalization scale
+ dependent part of loop functions.  The convention depends on the
+ value of $BPMZSign .";
 
 Delta::usage = "1/eps - \[Gamma]_E + Log[4 Pi]";
 
 $BPMZSign::usage = "If set to 1, loop functions are returned in BPMZ
- convention (arxiv:hep-ph/9606211).  If set to -1, loop functions are
- returned in Denner convention (arxiv:hep-ph/0709.1075).";
+ convention (arxiv:hep-ph/9606211) (default).  If set to -1, loop
+ functions are returned in Denner convention
+ (arxiv:hep-ph/0709.1075).";
 
 $BPMZSign = 1;
 
 Begin["LoopFunctions`Private`"];
 
-ZeroMomentum[] := {
+LFZeroMomentum[] := {
     A0[m_,mu_]                                               :> A0impl[m,mu],
     B0[0,m1_,m2_,mu_]             | B0[m1_,m2_,mu_]          :> B0zero[m1,m2,mu],
     B1[0,m1_,m2_,mu_]             | B1[m1_,m2_,mu_]          :> B1zero[m1,m2,mu],
@@ -42,7 +45,7 @@ ZeroMomentum[] := {
     H[0,m1_,m2_,mu_]              | H[m1_,m2_,mu_]           :> Hzero[m1,m2,mu]
 };
 
-FullMomentum[] := {
+LFFull[] := {
     A0[m_,mu_]                          :> A0impl[m,mu],
     B0[p_,m1_,m2_,mu_]                  :> B0impl[p,m1,m2,mu],
     B1[p_,m1_,m2_,mu_]                  :> B1impl[p,m1,m2,mu],
@@ -58,7 +61,7 @@ FullMomentum[] := {
     H[p_,m1_,m2_,mu_]                   :> Himpl[p,m1,m2,mu]
 };
 
-Divergence[] := {
+LFDivergence[] := {
     A0[m_,mu_]                          :> DivA0[m,mu],
     B0[p_,m1_,m2_,mu_]                  :> DivB0[p,m1,m2,mu],
     B1[p_,m1_,m2_,mu_]                  :> DivB1[p,m1,m2,mu],
@@ -74,7 +77,7 @@ Divergence[] := {
     H[p_,m1_,m2_,mu_]                   :> DivH[p,m1,m2,mu]
 };
 
-Logarithms[] := {
+LFScaleDependence[] := {
     A0[m_,mu_]                          :> LogA0[m,mu],
     B0[p_,m1_,m2_,mu_]                  :> LogB0[p,m1,m2,mu],
     B1[p_,m1_,m2_,mu_]                  :> LogB1[p,m1,m2,mu],

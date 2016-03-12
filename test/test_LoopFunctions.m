@@ -9,24 +9,24 @@ RunTests[] := (
 
     TestEquality[
         Print["   testing A0 ..."];
-        Coefficient[A0[m,Q] /. FullMomentum[], Delta],
-        Coefficient[A0[m,Q] /. ZeroMomentum[], Delta]
+        Coefficient[A0[m,Q] /. LFFull[], Delta],
+        Coefficient[A0[m,Q] /. LFZeroMomentum[], Delta]
     ];
 
     loopFunctions = {B0, B1, B00, B22, B22tilde, F, G, H};
 
     For[i = 1, i <= Length[loopFunctions], i++,
         Print["   testing ", loopFunctions[[i]], "[p,m,m,Q] ..."];
-        expr1 = Limit[loopFunctions[[i]][p,m,m,Q] /. FullMomentum[], p -> 0,
+        expr1 = Limit[loopFunctions[[i]][p,m,m,Q] /. LFFull[], p -> 0,
                       Assumptions :> assumptions];
-        expr2 = loopFunctions[[i]][0,m,m,Q] /. ZeroMomentum[];
+        expr2 = loopFunctions[[i]][0,m,m,Q] /. LFZeroMomentum[];
         TestEquality[FullSimplify[expr1 - expr2, assumptions], 0];
        ];
 
     Print["testing B0[] function ..."];
 
     TestEquality[Simplify[
-        (B0[1, 2, 3, 4] /. FullMomentum[]) -
+        (B0[1, 2, 3, 4] /. LFFull[]) -
         LoopFunctions`Private`B0integral[1, 2, 3, 4]],
                  0
     ];
@@ -48,8 +48,8 @@ RunTests[] := (
 
     For[i = 1, i <= Length[loopFunctions], i++,
         Print["   testing ", loopFunctions[[i]], " ..."];
-        expr1 = 1/2 Q D[loopFunctions[[i]] /. FullMomentum[], Q];
-        expr2 = loopFunctions[[i]] /. Divergence[] /. Delta -> 1;
+        expr1 = 1/2 Q D[loopFunctions[[i]] /. LFFull[], Q];
+        expr2 = Coefficient[loopFunctions[[i]] /. LFDivergence[], Delta];
         TestEquality[FullSimplify[expr1 - expr2, assumptions], 0];
        ];
 
@@ -61,7 +61,7 @@ RunTests[] := (
 
     For[i = 1, i <= Length[loopFunctions], i++,
         Print["   testing ", loopFunctions[[i]], " ..."];
-        expr2 = loopFunctions[[i]] /. Divergence[];
+        expr2 = loopFunctions[[i]] /. LFDivergence[];
         TestEquality[expr2, 0];
        ];
 
@@ -83,8 +83,8 @@ RunTests[] := (
         H[p, m1, m2, mu]
     };
 
-    divs = loopFunctions /. Divergence[] /. Delta -> Log[mu^2];
-    logs = loopFunctions /. Logarithms[];
+    divs = loopFunctions /. LFDivergence[] /. Delta -> Log[mu^2];
+    logs = loopFunctions /. LFScaleDependence[];
 
     divs = (mu D[#, mu]) & /@ divs;
     logs = (mu D[#, mu]) & /@ logs;
