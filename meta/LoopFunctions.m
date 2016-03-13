@@ -165,12 +165,17 @@ B1impl[p_, m1_, m2_, mu_] :=
       ];
 
 B1zero[m1_, m2_, mu_] :=
-    If[PossibleZeroQ[m1 - m2],
-       $BPMZSign (Delta + Log[mu^2/m2^2])/2,
-       $BPMZSign 1/2 (Delta + 1 + Log[mu^2/m2^2]
-                      + (m1^2/(m1^2 - m2^2))^2 Log[m2^2/m1^2]
-                      + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
-      ];
+    Which[PossibleZeroQ[m1],
+          $BPMZSign (1/4 + Delta/2 + Log[mu^2/m2^2]/2),
+          PossibleZeroQ[m2],
+          $BPMZSign (3/4 + Delta/2 + Log[mu^2/m1^2]/2),
+          PossibleZeroQ[m1 - m2],
+          $BPMZSign (Delta + Log[mu^2/m2^2])/2,
+          True,
+          $BPMZSign 1/2 (Delta + 1 + Log[mu^2/m2^2]
+                         + (m1^2/(m1^2 - m2^2))^2 Log[m2^2/m1^2]
+                         + 1/2 (m1^2 + m2^2)/(m1^2 - m2^2))
+         ];
 
 DivB1[_, _, _, _] := $BPMZSign Delta / 2;
 
@@ -217,10 +222,17 @@ B22impl[p_, m1_, m2_, mu_] :=
       ];
 
 B22zero[m1_, m2_, mu_] :=
-    If[PossibleZeroQ[m1 - m2],
-       (m2^2*(1 + Delta + Log[mu^2/m2^2]))/2,
-       ((5 + 3*Delta)*(m1^4 - m2^4) + m1^2*(3*m1^2 + m2^2)*Log[mu^2/m1^2] - 
-        m2^2*(m1^2 + 3*m2^2)*Log[mu^2/m2^2])/(12*(m1^2 - m2^2))
+    Which[PossibleZeroQ[m1] && PossibleZeroQ[m2],
+          0,
+          PossibleZeroQ[m1],
+          (m2^2*(5 + 3*Delta + 3*Log[mu^2/m2^2]))/12,
+          PossibleZeroQ[m2],
+          (m1^2*(5 + 3*Delta + 3*Log[mu^2/m1^2]))/12,
+          PossibleZeroQ[m1 - m2],
+          (m2^2*(1 + Delta + Log[mu^2/m2^2]))/2,
+          True,
+          ((5 + 3*Delta)*(m1^4 - m2^4) + m1^2*(3*m1^2 + m2^2)*Log[mu^2/m1^2] -
+           m2^2*(m1^2 + 3*m2^2)*Log[mu^2/m2^2])/(12*(m1^2 - m2^2))
       ];
 
 DivB22[p_, m1_, m2_, _] := Delta (3*m1^2 + 3*m2^2 - p^2)/12;
