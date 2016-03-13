@@ -53,7 +53,7 @@ LFFull[] := {
     B11[p_,m1_,m2_,mu_]                 :> B11impl[p,m1,m2,mu],
     B22[p_,m1_,m2_,mu_]                 :> B22impl[p,m1,m2,mu],
     B22tilde[p_,m1_,m2_,mu_]            :> B22tildeimpl[p,m1,m2,mu],
-    C0[p1_,p2_,m1_,m2_,m2_,mu_]         :> C0impl[p1,p2,m1,m2,m3,mu],
+    C0[p1_,p2_,m1_,m2_,m3_,mu_]         :> C0impl[p1,p2,m1,m2,m3,mu],
     D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> D0impl[p1,p2,p3,m1,m2,m3,m4,mu],
     D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> D27impl[p1,p2,p3,m1,m2,m3,m4,mu],
     F[p_,m1_,m2_,mu_]                   :> Fimpl[p,m1,m2,mu],
@@ -255,7 +255,7 @@ C0zero[m1_, m2_, m3_] := Which[
     PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
     -1/(2*m3^2),
     PossibleZeroQ[m1 - m2],
-    (-m2^2 + m3^2 - m3^2*Log[m3^2/m2^2])/(m2^2 - m3^2)^2
+    (-m2^2 + m3^2 - m3^2*Log[m3^2/m2^2])/(m2^2 - m3^2)^2,
     PossibleZeroQ[m1 - m3],
     (m2^2 - m3^2 - m2^2*Log[m2^2/m3^2])/(m2^2 - m3^2)^2,
     PossibleZeroQ[m2 - m3],
@@ -265,6 +265,10 @@ C0zero[m1_, m2_, m3_] := Which[
     (+ m2^2 / (m1^2 - m2^2) Log[m2^2/m1^2]
      - m3^2 / (m1^2 - m3^2) Log[m3^2/m1^2]) / (m2^2 - m3^2)
 ];
+
+C0impl[0, 0, m1_, m2_, m3_, mu_] := C0zero[m1,m2,m3];
+
+C0impl[p1_, p2_, m1_, m2_, m3_, mu_] := NotImplemented;
 
 (* Eq. (C.21) *)
 D0zero[m1_, m2_, m3_, m4_] := Which[
@@ -290,11 +294,19 @@ D0zero[m1_, m2_, m3_, m4_] := Which[
       m3^2*m4^2*(-2*m2^2 + m3^2 + m4^2)*
        Log[m4^2/m3^2])/((m2^2 - m3^2)^2*(m2^2 - m4^2)^2*(m3^2 - m4^2)),
    True,
-   (C0impl[m1, m3, m4] - C0impl[m2, m3, m4])/(m1^2 - m2^2)];
+   (C0zero[m1, m3, m4] - C0zero[m2, m3, m4])/(m1^2 - m2^2)];
+
+D0impl[0, 0, 0, m1_, m2_, m3_, m4_, mu_] := D0zero[m1, m2, m3, m4];
+
+D0impl[p1_, p2_, p3_, m1_, m2_, m3_, m4_, mu_] := NotImplemented;
 
 (* Eq. (C.22) *)
 D27zero[m1_, m2_, m3_, m4_] :=
-   (m1^2 C0impl[m1, m3, m4] - m2^2 C0impl[m2, m3, m4])/(4 (m1^2 - m2^2));
+   (m1^2 C0zero[m1, m3, m4] - m2^2 C0zero[m2, m3, m4])/(4 (m1^2 - m2^2));
+
+D27impl[0, 0, 0, m1_, m2_, m3_, m4_, mu_] := D27zero[m1, m2, m3, m4];
+
+D27impl[p1_, p2_, p3_, m1_, m2_, m3_, m4_, mu_] := NotImplemented;
 
 (* Eq. (B.11) *)
 Fimpl[p_, m1_, m2_, mu_] :=
