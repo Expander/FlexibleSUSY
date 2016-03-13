@@ -37,9 +37,9 @@ LFZeroMomentum[] := {
     B11[0,m1_,m2_,mu_]            | B11[m1_,m2_,mu_]         :> B11zero[m1,m2,mu],
     B22[0,m1_,m2_,mu_]            | B22[m1_,m2_,mu_]         :> B22zero[m1,m2,mu],
     B22tilde[0,m1_,m2_,mu_]       | B22tilde[m1_,m2_,mu_]    :> B22tildezero[m1,m2,mu],
-    C0[0,0,m1_,m2_,m2_,mu_]       | C0[m1_,m2_,m2_,mu_]      :> C0zero[m1,m2,m3,mu],
-    D0[0,0,0,m1_,m2_,m3_,m4_,mu_] | D0[m1_,m2_,m3_,m4_,mu_]  :> D0zero[m1,m2,m3,m4,mu],
-    D27[0,m1_,m2_,m3_,m4_,mu_]    | D27[m1_,m2_,m3_,m4_,mu_] :> D27zero[m1,m2,m3,m4,mu],
+    C0[0,0,m1_,m2_,m3_,mu_]       | C0[m1_,m2_,m3_,mu_]      :> C0zero[m1,m2,m3],
+    D0[0,0,0,m1_,m2_,m3_,m4_,mu_] | D0[m1_,m2_,m3_,m4_,mu_]  :> D0zero[m1,m2,m3,m4],
+    D27[0,0,0,m1_,m2_,m3_,m4_,mu_]| D27[m1_,m2_,m3_,m4_,mu_] :> D27zero[m1,m2,m3,m4],
     F[0,m1_,m2_,mu_]              | F[m1_,m2_,mu_]           :> Fzero[m1,m2,mu],
     G[0,m1_,m2_,mu_]              | G[m1_,m2_,mu_]           :> Gzero[m1,m2,mu],
     H[0,m1_,m2_,mu_]              | H[m1_,m2_,mu_]           :> Hzero[m1,m2,mu]
