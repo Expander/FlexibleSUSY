@@ -6,7 +6,26 @@ EndPackage[];
 
 LFFull::usage = "Returns explicit form of loop functions with full
  momentum dependence.  The convention depends on the value of
- $BPMZSign .";
+ $BPMZSign .
+
+ The following functions are implemented:
+
+   A0[m,Q]                     [arxiv:hep-ph/9606211, Eq. (B.5)]
+   B0[p,m1,m2,Q]               [arxiv:hep-ph/9606211, Eq. (B.7)]
+   B1[p,m1,m2,Q]               [arxiv:hep-ph/9606211, Eq. (B.5)]
+   B00[p,m1,m2,Q]              [arxiv:hep-ph/9606211, Eq. (B.10)]
+   B11[p,m1,m2,Q]              [arxiv:hep-ph/0709.1075, Eq. (4.6)]
+   B22[p,m1,m2,Q]              [arxiv:hep-ph/9606211, Eq. (B.10)]
+   B22tilde[p,m1,m2,Q]         [arxiv:hep-ph/9606211, Eq. (B.14)]
+   F[p,m1,m2,Q]                [arxiv:hep-ph/9606211, Eq. (B.11)]
+   G[p,m1,m2,Q]                [arxiv:hep-ph/9606211, Eq. (B.12)]
+   H[p,m1,m2,Q]                [arxiv:hep-ph/9606211, Eq. (B.13)]
+   C0[0,0,m1,m2,m3,Q]          [arxiv:hep-ph/9606211, Eq. (C.19)]
+   D0[0,0,0,m1,m2,m3,m4,Q]     [arxiv:hep-ph/9606211, Eq. (C.21)]
+   D27[0,0,0,m1,m2,m3,m4,Q]    [arxiv:hep-ph/9606211, Eq. (C.22)]
+
+B00[p,m1,m2,Q] is an alias for B22[p,m1,m2,Q].
+";
 
 LFZeroMomentum::usage = "Returns loop functions at zero momentum.  The
  convention depends on the value of $BPMZSign .";
