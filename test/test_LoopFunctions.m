@@ -7,19 +7,28 @@ RunTests[] := (
     Print["running all tests with $BPMZSign = ", $BPMZSign];
     Print["testing p -> 0 limit ..."];
 
-    TestEquality[
-        Print["   testing A0 ..."];
-        Coefficient[A0[m,Q] /. LFFull[], Delta],
-        Coefficient[A0[m,Q] /. LFZeroMomentum[], Delta]
-    ];
-
-    loopFunctions = {B0, B1, B00, B22, B22tilde, F, G, H};
+    loopFunctions = {
+        {A0[m,Q], A0[m,Q]},
+        {B0[p,m,m,Q], B0[0,m,m,Q]},
+        {B1[p,m,m,Q], B1[0,m,m,Q]},
+        {B00[p,m,m,Q], B00[0,m,m,Q]},
+        {B22[p,m,m,Q], B22[0,m,m,Q]},
+        {B22tilde[p,m,m,Q], B22tilde[0,m,m,Q]},
+        {F[p,m,m,Q], F[0,m,m,Q]},
+        {G[p,m,m,Q], G[0,m,m,Q]},
+        {H[p,m,m,Q], H[0,m,m,Q]}
+        (* {C0[p1,p2,m1,m2,m3,Q], C0[0,0,m1,m2,m3,Q]}, *)
+        (* {D0[p1,p2,p3,m1,m2,m3,m4,Q], D0[0,0,0,m1,m2,m3,m4,Q]}, *)
+        (* {D27[p1,p2,p3,m1,m2,m3,m4,Q], D27[0,0,0,m1,m2,m3,m4,Q]} *)
+    };
 
     For[i = 1, i <= Length[loopFunctions], i++,
-        Print["   testing ", loopFunctions[[i]], "[p,m,m,Q] ..."];
-        expr1 = Limit[loopFunctions[[i]][p,m,m,Q] /. LFFull[], p -> 0,
+        lffull = loopFunctions[[i,1]];
+        lfzero = loopFunctions[[i,2]];
+        Print["   testing ", lffull, " ..."];
+        expr1 = Limit[lffull /. LFFull[], p -> 0,
                       Assumptions :> assumptions];
-        expr2 = loopFunctions[[i]][0,m,m,Q] /. LFZeroMomentum[];
+        expr2 = lfzero /. LFZeroMomentum[];
         TestEquality[FullSimplify[expr1 - expr2, assumptions], 0];
        ];
 
