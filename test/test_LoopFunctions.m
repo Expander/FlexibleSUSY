@@ -23,6 +23,54 @@ RunTests[] := (
         TestEquality[FullSimplify[expr1 - expr2, assumptions], 0];
        ];
 
+    Print["testing m -> 0 limits ..."];
+
+    loopFunctions = {
+        {B0[p,m1,m2,Q], m1 -> 0},
+        {B0[p,m1,m2,Q], m2 -> 0},
+        {B0[0,m1,m2,Q], m1 -> 0},
+        {B0[0,m1,m2,Q], m2 -> 0},
+        {B1[p,m1,m2,Q], m1 -> 0},
+        {B1[p,m1,m2,Q], m2 -> 0},
+        {B1[0,m1,m2,Q], m1 -> 0},
+        {B1[0,m1,m2,Q], m2 -> 0},
+        {B00[p,m1,m2,Q], m1 -> 0},
+        {B00[p,m1,m2,Q], m2 -> 0},
+        {B00[0,m1,m2,Q], m1 -> 0},
+        {B00[0,m1,m2,Q], m2 -> 0},
+        {B11[p,m1,m2,Q], m1 -> 0},
+        {B11[p,m1,m2,Q], m2 -> 0},
+        {B22[p,m1,m2,Q], m1 -> 0},
+        {B22[p,m1,m2,Q], m2 -> 0},
+        {B22[0,m1,m2,Q], m1 -> 0},
+        {B22[0,m1,m2,Q], m2 -> 0},
+        {B22tilde[p,m1,m2,Q], m1 -> 0},
+        {B22tilde[p,m1,m2,Q], m2 -> 0},
+        {B22tilde[0,m1,m2,Q], m1 -> 0},
+        {B22tilde[0,m1,m2,Q], m2 -> 0},
+        {F[p,m1,m2,Q], m1 -> 0},
+        {F[p,m1,m2,Q], m2 -> 0},
+        {F[0,m1,m2,Q], m1 -> 0},
+        {F[0,m1,m2,Q], m2 -> 0},
+        {G[p,m1,m2,Q], m1 -> 0},
+        {G[p,m1,m2,Q], m2 -> 0},
+        {G[0,m1,m2,Q], m1 -> 0},
+        {G[0,m1,m2,Q], m2 -> 0},
+        {H[p,m1,m2,Q], m1 -> 0},
+        {H[p,m1,m2,Q], m2 -> 0},
+        {H[0,m1,m2,Q], m1 -> 0},
+        {H[0,m1,m2,Q], m2 -> 0}
+    };
+
+    For[i = 1, i <= Length[loopFunctions], i++,
+        lf = First[loopFunctions[[i]]];
+        limit = Drop[loopFunctions[[i]], 1];
+        Print["   testing ", lf, " in the limit ", limit," ..."];
+        expr1 = Limit[lf /. LFFull[], Sequence @@ limit, Assumptions :> assumptions];
+        expr2 = (lf /. limit) /. LFFull[];
+        TestEquality[FullSimplify[expr1 - expr2, assumptions], 0];
+       ];
+
     Print["testing B0[] function ..."];
 
     TestEquality[Simplify[
@@ -65,7 +113,7 @@ RunTests[] := (
         TestEquality[expr2, 0];
        ];
 
-    Print["testing logaritms ..."];
+    Print["testing logarithms ..."];
 
     loopFunctions = {
         A0[m, mu],
