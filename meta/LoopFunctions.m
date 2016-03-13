@@ -94,11 +94,19 @@ LFScaleDependence[] := {
 };
 
 (* A0, Eq. (B.5) *)
-A0impl[m_, mu_] := m^2 (Delta + 1 + Log[mu^2/m^2]);
+A0impl[m_, mu_] :=
+    If[PossibleZeroQ[m],
+       0,
+       m^2 (Delta + 1 + Log[mu^2/m^2])
+      ];
 
 DivA0[m_, mu_] := m^2 Delta;
 
-LogA0[m_, mu_] := m^2 Log[mu^2/m^2];
+LogA0[m_, mu_] :=
+    If[PossibleZeroQ[m],
+       0,
+       m^2 Log[mu^2/m^2]
+      ];
 
 (* A0, Eq. (B.5) *)
 B0zero[m1_, m2_, mu_] :=
