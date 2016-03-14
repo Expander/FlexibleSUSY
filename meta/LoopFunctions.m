@@ -285,9 +285,63 @@ C0zero[m1_, m2_, m3_] := Which[
      - m3^2 / (m1^2 - m3^2) Log[m3^2/m1^2]) / (m2^2 - m3^2)
 ];
 
-C0impl[0, 0, m1_, m2_, m3_, mu_] := C0zero[m1,m2,m3];
+C0impl[p1_, p2_, m1_, m2_, m3_, mu_] :=
+    If[PossibleZeroQ[p1] && PossibleZeroQ[p2],
+       C0zero[m1,m2,m3],
+       C0analytic[p1, p2, m1, m2, m3, mu]
+      ];
 
-C0impl[p1_, p2_, m1_, m2_, m3_, mu_] := NotImplemented;
+(* [arxiv:hep-ph/0709.1075, Eq. (4.26)] *)
+C0analytic[p1_, p2_, m1_, m2_, m3_, mu_] :=
+    Module[{p21 = (p2 - p1), p12 = (p1 - p2), pjk, pki, pij, mi, mj, mk,
+            Dilogs, y0, xi, yi, alpha, alphai, eps, kappa, eta, result},
+           (* Källén function, [arxiv:hep-ph/0709.1075, Eq. (4.28)] *)
+           kappa[x_, y_, z_] := Sqrt[x^2 + y^2 + z^2 - 2 (x y + y z + z x)];
+           (* [arxiv:hep-ph/0709.1075, Eq. (4.30)] *)
+           eta[a_, b_] := Log[a b] - Log[a] - Log[b];
+
+           pjk[i_?IntegerQ] :=
+               Which[i == 0, p12, (* j = 1, k = 2 *)
+                     i == 1, p2,  (* j = 2, k = 0 *)
+                     i == 2, p1   (* j = 0, k = 1 *)];
+           pki[i_?IntegerQ] :=
+               Which[i == 0, p2,  (* j = 1, k = 2 *)
+                     i == 1, p1,  (* j = 2, k = 0 *)
+                     i == 2, p12  (* j = 0, k = 1 *)];
+           pij[i_?IntegerQ] :=
+               Which[i == 0, p1,  (* j = 1, k = 2 *)
+                     i == 1, p12, (* j = 2, k = 0 *)
+                     i == 2, p2   (* j = 0, k = 1 *)];
+           mi[i_?IntegerQ] := Which[i == 0, m1,
+                                    i == 1, m2,
+                                    i == 2, m3];
+           mj[i_?IntegerQ] := Which[i == 0, m2, (* j = 1, k = 2 *)
+                                    i == 1, m3, (* j = 2, k = 0 *)
+                                    i == 2, m1  (* j = 0, k = 1 *)];
+           mk[i_?IntegerQ] := Which[i == 0, m3, (* j = 1, k = 2 *)
+                                    i == 1, m1, (* j = 2, k = 0 *)
+                                    i == 2, m2  (* j = 0, k = 1 *)];
+           y0[i_] := (pjk[i]^2 (pjk[i]^2 - pki[i]^2 - pij[i]^2 + 2 mi[i]^2 - mj[i]^2 - mk[i]^2)
+                      - (pki[i]^2 - pij[i]^2) (mj[i]^2 - mk[i]^2)
+                      + alpha (pjk[i]^2 - mj[i]^2 + mk[i]^2)) / (2 alpha pjk[i]^2);
+           xi[i_, s_] := (pjk[i]^2 - mj[i]^2 - mk[i]^2 + s alphai[i]) / (2 pjk[i]^2);
+           yi[i_, s_] := y0[i] - xi[i,s];
+           alpha = kappa[p1^2, p21^2, p2^2];
+           alphai[i_] := kappa[pjk[i]^2, mj[i]^2, mk[i]^2] (1 + I eps pjk[i]^2);
+           Dilogs[i_, s_] := (
+               PolyLog[2,(y0[i] - 1)/yi[i,s]] - PolyLog[2,y0[i]/yi[i,s]]
+               + eta[1 - xi[i,s], 1/yi[i,s]] Log[(y0[i] - 1)/yi[i,s]]
+               - eta[-xi[i,s], 1/yi[i,s]] Log[y0[i]/yi[i,s]]);
+
+           result = Sum[Dilogs[i,+1] + Dilogs[i,-1]
+                        - (eta[-xi[i,+1],-xi[i,-1]]
+                           - eta[yi[i,+1],yi[i,-1]]
+                           - 2 Pi I UnitStep[-pjk[i]^2] UnitStep[-Im[yi[i,+1] yi[i,-1]]]
+                          ),
+                        {i,0,2}] / alpha;
+
+           Limit[result, eps -> 0, Direction -> -1]
+          ];
 
 (* Eq. (C.21) *)
 D0zero[m1_, m2_, m3_, m4_] := Which[
