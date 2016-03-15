@@ -295,6 +295,7 @@ TEST_META := \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
 		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m \
+		$(DIR)/test_HSSUSY_thresholds.m \
 		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_Parameters.m \
 		$(DIR)/test_RGIntegrator.m \
