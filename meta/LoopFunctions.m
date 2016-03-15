@@ -292,6 +292,8 @@ C0impl[p1_, p2_, m1_, m2_, m3_, mu_] :=
       ];
 
 (* [arxiv:hep-ph/0709.1075, Eq. (4.26)] *)
+(* Note: This implementation is divergent for real momenta.    *)
+(* For real momenta a different implementation should be used. *)
 C0analytic[p1_, p2_, m1_, m2_, m3_, mu_] :=
     Module[{p21 = (p2 - p1), p12 = (p1 - p2), pjk, pki, pij, mi, mj, mk,
             Dilogs, y0, xi, yi, alpha, alphai, eps, kappa, eta, result},
