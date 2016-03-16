@@ -40,11 +40,11 @@ LFScaleDependence::usage = "Returns the renormalization scale
 Delta::usage = "1/eps - \[Gamma]_E + Log[4 Pi]";
 
 $BPMZSign::usage = "If set to 1, loop functions are returned in BPMZ
- convention (arxiv:hep-ph/9606211) (default).  If set to -1, loop
- functions are returned in Denner convention
- (arxiv:hep-ph/0709.1075).";
+ convention (arxiv:hep-ph/9606211).  If set to -1, loop functions are
+ returned in Denner convention (arxiv:hep-ph/0709.1075).  The default
+ is -1.";
 
-$BPMZSign = 1;
+$BPMZSign = -1;
 
 Begin["LoopFunctions`Private`"];
 
