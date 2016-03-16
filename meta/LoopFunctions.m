@@ -357,11 +357,13 @@ C0analytic[p1_, p2_, m1_, m2_, m3_, mu_] :=
            result = Sum[Dilogs[i,+1] + Dilogs[i,-1]
                         - (eta[-xi[i,+1],-xi[i,-1]]
                            - eta[yi[i,+1],yi[i,-1]]
-                           - 2 Pi I UnitStep[-pjk[i]^2] UnitStep[-Im[yi[i,+1] yi[i,-1]]]
+                           - 2 Pi I UnitStep[-Re[pjk[i]^2]] UnitStep[-Im[yi[i,+1] yi[i,-1]]]
                           ),
                         {i,0,2}] / alpha;
 
-           Limit[result, eps -> 0, Direction -> -1]
+           Limit[result, eps -> 0, Direction -> -1,
+                 Assumptions :> Element[p1, Complexes] || \
+                                Element[p2, Complexes]]
           ];
 
 (********************* D0 *********************)
