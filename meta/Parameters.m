@@ -1467,8 +1467,8 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
            Switch[dim,
                   0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk, SARAH`BetaQijkl];,
                   1, dimPars = Join[SARAH`BetaMuij, SARAH`BetaTijk, SARAH`BetaMi, SARAH`BetaDGi, SARAH`BetaVEV];,
-                  2, dimPars = Join[SARAH`BetaLSi, SARAH`BetaBij, SARAH`Betam2ij];,
-                  3, dimPars = Join[SARAH`BetaLi];,
+                  2, dimPars = Join[SARAH`BetaLi, SARAH`BetaBij, SARAH`Betam2ij];,
+                  3, dimPars = Join[SARAH`BetaLSi];,
                   _,
                   Print["Error: GetModelParametersWithMassDimension: ", dim,
                         " is not a valid dimension"];
