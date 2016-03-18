@@ -11,6 +11,7 @@ M3=
 AS="1.184000000e-01"
 MT="1.733400000e+02"
 MTmethod=0
+UseMTmethod="$MTmethod"
 
 dump_fs_slha_input_file=
 dump_fs_slha_output_file=
@@ -136,7 +137,7 @@ run_sg() {
     { echo "$slha_tmpl" ; \
       cat <<EOF
 Block FlexibleSUSY
-   17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
+   17   ${UseMTmethod}       # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
 Block SMINPUTS               # Standard Model inputs
     3   ${AS}                # alpha_s(MZ) SM MSbar
     6   ${MT}                # mtop(pole)
@@ -294,6 +295,7 @@ Options:
   --MS=          M_SUSY (default: ${MS})
   --MT=          Top quark pole mass (default: ${MT})
   --MTmethod=    0 = FlexibleSUSY, 1 = SPheno (default: $MTmethod)
+                 (Only used in FlexibleSUSY/MSSMMuBMu)
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
   --help=|-h     print this help message
@@ -362,10 +364,16 @@ $MS * $M3factor
 EOF
          )
 
-    # run the spectrum generator
+    # run the spectrum generators
+    UseMTmethod=0
     MhMSSMtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
+
+    UseMTmethod="$MTmethod"
     MhMSSMMuBMu=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
+
+    UseMTmethod=0
     MhHSSUSY=$(run_sg "models/HSSUSY/run_HSSUSY.x")
+
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
     printf "%16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy"
