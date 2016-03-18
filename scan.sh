@@ -9,6 +9,11 @@ M3="MS"
 AS="1.184000000e-01"
 MT="1.733400000e+02"
 
+dump_fs_slha_input_file=
+dump_fs_slha_output_file=
+dump_ss_slha_input_file=
+dump_ss_slha_output_file=
+
 start=91
 stop=1000
 steps=10
@@ -121,16 +126,16 @@ run_sg() {
     local slha_output=
     local block=
     local value=
+    local slha_input=
 
     [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
-    # run the spectrum generator
-    slha_output=$(
+    slha_input=$(
     { echo "$slha_tmpl" ; \
       cat <<EOF
 Block SMINPUTS               # Standard Model inputs
-    3   {AS}                 # alpha_s(MZ) SM MSbar
-    6   {MT}                 # mtop(pole)
+    3   ${AS}                # alpha_s(MZ) SM MSbar
+    6   ${MT}                # mtop(pole)
 Block TanBeta
     ${TB}                    # tan(Beta) at the SUSY scale
 Block Xtt
@@ -168,12 +173,21 @@ Block MSD2IN
   2  2     ${MS2}   # md2(2,2)
   3  3     ${MS2}   # md2(3,3)
 EOF
-    } | $SG --slha-input-file=- 2>/dev/null)
+    })
+
+    # run the spectrum generator
+    slha_output=$(echo "$slha_input" | $SG --slha-input-file=- 2>/dev/null)
 
     block=$(echo "$slha_output" | awk -v block="MASS" "$print_slha_block_awk")
     value=$(echo "$block"       | awk -v keys="25" "$print_block_entry_awk")
 
     [ "x$value" = "x" ] && value="-"
+
+    [ "x$dump_fs_slha_input_file" != "x" ] && \
+        echo "$slha_input" > "$dump_fs_slha_input_file"
+
+    [ "x$dump_fs_slha_output_file" != "x" ] && \
+        echo "$slha_output" > "$dump_fs_slha_output_file"
 
     echo $value
 }
@@ -189,11 +203,11 @@ run_ss() {
     local slha_output=
     local block=
     local value=
+    local slha_input=
 
     [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
-    # run the SOFTSUSY spectrum generator
-    slha_output=$(
+    slha_input=$(
     { cat <<EOF
 Block MODSEL                 # Select model
     1    0                   # mSUGRA
@@ -208,8 +222,8 @@ Block MINPAR                 # Input parameters
     4   1.000000000e+00      # sign(mu)
 ${sminputs_tmpl}
 Block SMINPUTS               # Standard Model inputs
-    3   {AS}                 # alpha_s(MZ) SM MSbar
-    6   {MT}                 # mtop(pole)
+    3   ${AS}                # alpha_s(MZ) SM MSbar
+    6   ${MT}                # mtop(pole)
 BLOCK EXTPAR
          0     ${MS}   # Q
          1     ${MS}   # M1
@@ -237,7 +251,10 @@ BLOCK EXTPAR
         48     ${MS}   # MSD(2)
         49     ${MS}   # MSD(3)
 EOF
-    } | $SG leshouches 2>/dev/null)
+    })
+
+    # run the SOFTSUSY spectrum generator
+    slha_output=$(echo "$slha_input" | $SG leshouches 2>/dev/null)
 
     # echo "$slha_output"
 
@@ -246,6 +263,12 @@ EOF
 
     [ "x$value" = "x" ] && value="-"
 
+    [ "x$dump_ss_slha_input_file" != "x" ] && \
+        echo "$slha_input" > "$dump_ss_slha_input_file"
+
+    [ "x$dump_ss_slha_output_file" != "x" ] && \
+        echo "$slha_output" > "$dump_ss_slha_output_file"
+
     echo $value
 }
 
@@ -253,6 +276,10 @@ help() {
     cat <<EOF
 Usage: $0 [options]
 Options:
+  --dump-flexiblesusy-slha-input=   dump FlexibleSUSY SLHA input file
+  --dump-flexiblesusy-slha-output=  dump FlexibleSUSY SLHA output file
+  --dump-softsusy-slha-input=       dump SOFTSUSY SLHA input file
+  --dump-softsusy-slha-output=      dump SOFTSUSY SLHA output file
   --parameter=   scanned parameter (default: ${parameter})
   --start=       start value (default: ${start})
   --stop=        end value (default: ${stop})
@@ -276,6 +303,10 @@ if test $# -gt 0 ; then
         esac
 
         case $1 in
+            --dump-flexiblesusy-slha-input=*)  dump_fs_slha_input_file=$optarg ;;
+            --dump-flexiblesusy-slha-output=*) dump_fs_slha_output_file=$optarg ;;
+            --dump-softsusy-slha-input=*)      dump_ss_slha_input_file=$optarg ;;
+            --dump-softsusy-slha-output=*)     dump_ss_slha_output_file=$optarg ;;
             --parameter=*)           parameter=$optarg ;;
             --start=*)               start=$optarg ;;
             --stop=*)                stop=$optarg ;;
