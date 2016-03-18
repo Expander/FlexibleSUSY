@@ -1,3 +1,12 @@
+FlexibleSUSY-1.4.1 [not released yet]
+
+ * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
+   M3^2 -> MSQ^2 / M3^2 in HSSUSY.
+
+ * Bugfix (commit f3864b8): Catch exception from SoftSUSY's QedQcd
+   class which are triggered when the input value of Mt_pole is chosen
+   to be smaller than MZ_pole.
+
 FlexibleSUSY-1.4.0 [March, 08 2016]
 
  * Feature: Allow the user to chose the loop order of the RGEs to be
