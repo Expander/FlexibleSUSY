@@ -71,7 +71,12 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   qedqcd.toMz(); // run SM fermion masses to MZ
+   try {
+      qedqcd.toMz(); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
