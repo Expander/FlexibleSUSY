@@ -12,7 +12,25 @@ steps=10
 
 step_size=linear
 
-softsusy_tmpl="\
+sminputs_tmpl="\
+Block SMINPUTS               # Standard Model inputs
+    1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
+    2   1.166380000e-05      # G_Fermi
+    3   1.184000000e-01      # alpha_s(MZ) SM MSbar
+    4   9.118760000e+01      # MZ(pole)
+    5   4.180000000e+00      # mb(mb) SM MSbar
+    6   1.733400000e+02      # mtop(pole)
+    7   1.777000000e+00      # mtau(pole)
+    8   0.000000000e+00      # mnu3(pole)
+    9   80.384               # MW pole
+   11   5.109989020e-04      # melectron(pole)
+   12   0.000000000e+00      # mnu1(pole)
+   13   1.056583570e-01      # mmuon(pole)
+   14   0.000000000e+00      # mnu2(pole)
+   21   4.750000000e-03      # md(2 GeV) MS-bar
+   22   2.400000000e-03      # mu(2 GeV) MS-bar
+   23   1.040000000e-01      # ms(2 GeV) MS-bar
+   24   1.270000000e+00      # mc(mc) MS-bar
 "
 
 slha_tmpl="\
@@ -36,24 +54,7 @@ Block FlexibleSUSY
    14   1                    # Higgs logarithmic resummation
    15   1.000000000e-11      # beta-function zero threshold
    16   0                    # calculate observables (a_muon, ...)
-Block SMINPUTS               # Standard Model inputs
-    1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
-    2   1.166380000e-05      # G_Fermi
-    3   1.184000000e-01      # alpha_s(MZ) SM MSbar
-    4   9.118760000e+01      # MZ(pole)
-    5   4.180000000e+00      # mb(mb) SM MSbar
-    6   1.733400000e+02      # mtop(pole)
-    7   1.777000000e+00      # mtau(pole)
-    8   0.000000000e+00      # mnu3(pole)
-    9   80.384               # MW pole
-   11   5.109989020e-04      # melectron(pole)
-   12   0.000000000e+00      # mnu1(pole)
-   13   1.056583570e-01      # mmuon(pole)
-   14   0.000000000e+00      # mnu2(pole)
-   21   4.750000000e-03      # md(2 GeV) MS-bar
-   22   2.400000000e-03      # mu(2 GeV) MS-bar
-   23   1.040000000e-01      # ms(2 GeV) MS-bar
-   24   1.270000000e+00      # mc(mc) MS-bar
+${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR                 # Input parameters
@@ -193,23 +194,7 @@ Block SOFTSUSY               # SOFTSUSY specific inputs
     7   2                    # Mh-loops
 Block MINPAR                 # Input parameters
     4   1.000000000e+00      # sign(mu)
-BLOCK SMINPUTS
-         1     1.27944000E+02   # invAlfaMZ
-         2     1.16638000E-05   # GF
-         3     1.18400000E-01   # AlfasMZ
-         4     9.11876000E+01   # MZ
-         5     4.18000000E+00   # Mb
-         6     1.73340000E+02   # Mt
-         7     1.77700000E+00   # Mtau
-         8     0.00000000E+00   # Mnu3
-        11     5.10998902E-04   # Me
-        12     0.00000000E+00   # Mnu1
-        13     1.05658357E-01   # Mmu
-        14     0.00000000E+00   # Mnu2
-        21     4.75000000E-03   # Md
-        22     2.40000000E-03   # Mu
-        23     1.04000000E-01   # Ms
-        24     1.27000000E+00   # Mc
+${sminputs_tmpl}
 BLOCK EXTPAR
          0     ${MS}   # Q
          1     ${MS}   # M1
