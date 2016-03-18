@@ -1,5 +1,6 @@
 #!/bin/sh
 
+output="MASS:25"
 parameter=MS
 Xt=0
 TB=5
@@ -127,6 +128,8 @@ run_sg() {
     local block=
     local value=
     local slha_input=
+    local output_block=$(echo "${output}" | cut -d':' -f1)
+    local output_entry=$(echo "${output}" | cut -d':' -f2)
 
     slha_input=$(
     { echo "$slha_tmpl" ; \
@@ -176,8 +179,8 @@ EOF
     # run the spectrum generator
     slha_output=$(echo "$slha_input" | $SG --slha-input-file=- 2>/dev/null)
 
-    block=$(echo "$slha_output" | awk -v block="MASS" "$print_slha_block_awk")
-    value=$(echo "$block"       | awk -v keys="25" "$print_block_entry_awk")
+    block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
+    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk")
 
     [ "x$value" = "x" ] && value="-"
 
@@ -201,6 +204,8 @@ run_ss() {
     local block=
     local value=
     local slha_input=
+    local output_block=$(echo "${output}" | cut -d':' -f1)
+    local output_entry=$(echo "${output}" | cut -d':' -f2)
 
     slha_input=$(
     { cat <<EOF
@@ -253,8 +258,8 @@ EOF
 
     # echo "$slha_output"
 
-    block=$(echo "$slha_output" | awk -v block="MASS" "$print_slha_block_awk")
-    value=$(echo "$block"       | awk -v keys="25" "$print_block_entry_awk")
+    block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
+    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk")
 
     [ "x$value" = "x" ] && value="-"
 
@@ -275,6 +280,7 @@ Options:
   --dump-flexiblesusy-slha-output=  dump FlexibleSUSY SLHA output file
   --dump-softsusy-slha-input=       dump SOFTSUSY SLHA input file
   --dump-softsusy-slha-output=      dump SOFTSUSY SLHA output file
+  --output=      output parameter in the format BLOCK:ENTRY (default: ${output})
   --parameter=   scanned parameter (default: ${parameter})
   --start=       start value (default: ${start})
   --stop=        end value (default: ${stop})
@@ -302,6 +308,7 @@ if test $# -gt 0 ; then
             --dump-flexiblesusy-slha-output=*) dump_fs_slha_output_file=$optarg ;;
             --dump-softsusy-slha-input=*)      dump_ss_slha_input_file=$optarg ;;
             --dump-softsusy-slha-output=*)     dump_ss_slha_output_file=$optarg ;;
+            --output=*)              output=$optarg ;;
             --parameter=*)           parameter=$optarg ;;
             --start=*)               start=$optarg ;;
             --stop=*)                stop=$optarg ;;
