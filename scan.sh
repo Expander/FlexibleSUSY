@@ -10,6 +10,7 @@ M3factor=1
 M3=
 AS="1.184000000e-01"
 MT="1.733400000e+02"
+MTmethod=0
 
 dump_fs_slha_input_file=
 dump_fs_slha_output_file=
@@ -134,6 +135,8 @@ run_sg() {
     slha_input=$(
     { echo "$slha_tmpl" ; \
       cat <<EOF
+Block FlexibleSUSY
+   17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
 Block SMINPUTS               # Standard Model inputs
     3   ${AS}                # alpha_s(MZ) SM MSbar
     6   ${MT}                # mtop(pole)
@@ -290,6 +293,7 @@ Options:
   --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
   --MS=          M_SUSY (default: ${MS})
   --MT=          Top quark pole mass (default: ${MT})
+  --MTmethod=    0 = FlexibleSUSY, 1 = SPheno (default: $MTmethod)
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
   --help=|-h     print this help message
@@ -318,6 +322,7 @@ if test $# -gt 0 ; then
             --M3factor=*)            M3factor=$optarg ;;
             --MS=*)                  MS=$optarg ;;
             --MT=*)                  MT=$optarg ;;
+            --MTmethod=*)            MTmethod=$optarg ;;
             --TB=*)                  TB=$optarg ;;
             --Xt=*)                  Xt=$optarg ;;
             --help|-h)               help; exit 0 ;;
