@@ -71,7 +71,13 @@ int main(int argc, char* argv[])
    set_command_line_parameters(argc, argv, input);
 
    softsusy::QedQcd qedqcd;
-   qedqcd.toMz();
+
+   try {
+      qedqcd.toMz(); // run SM fermion masses to MZ
+   } catch (const std::string& s) {
+      ERROR(s);
+      return EXIT_FAILURE;
+   }
 
    @SpectrumGenerator@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
