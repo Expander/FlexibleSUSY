@@ -258,7 +258,7 @@ lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
    arXiv:1407.4081, provided by Pietro Slavich,
    in the limit M3 = MQ[3,3] = MU[3,3] != MSUSY *)
 lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -279,7 +279,7 @@ lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
    arXiv:1407.4081, provided by Pietro Slavich,
    General expression. *)
 lambda2LPhiHSSAlphaTAlphaSFull = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -357,7 +357,7 @@ lambda2LPhiHSSAlphaTAlphaSFull = With[{
    in the limit MQ[3,3] = M3 (x1 -> 1), MU[3,3] != M3 (x2 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -415,7 +415,7 @@ lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
    in the limit MU[3,3] = M3 (x2 -> 1), MQ[3,3] != M3 (x1 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMUM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -488,6 +488,7 @@ lambda2LHSSAlphaT2 = With[{
     Xt = xt,
     gt = Yu[3,3] (* SM Yukawa coupling *)
     },
+    (
 (3*(1 + tan\[Beta]^2)*(1/2 - 8.34993159891064/(1 + tan\[Beta]^2) +
    (6*\[Mu]^2)/mst^2 +
    (Xt^6*(-1/2 + (1/2 - Log[mst^2/Q^2]/2)/(1 + tan\[Beta]^2) +
@@ -548,5 +549,5 @@ lambda2LHSSAlphaT2 = With[{
          (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
           (1 - \[Mu]^2/mst^2)])/(2*mst^2)))/mst^4)*gt^6)/
     (256*Pi^4*tan\[Beta]^2)
-    /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
+    ) /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
     ];
