@@ -67,6 +67,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | higgs_log_resum                  | 0 (disabled), 1 (enalbed)    | 0 (= disabled)  |
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
+ * | mt_method                        | 0 (FlexibleSUSY), 1 (SPheno) | 0 (= FlexibleSUSY) |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -87,6 +88,7 @@ void Spectrum_generator_settings::reset()
    values[higgs_log_resum]       = 0.;
    values[beta_zero_threshold]              = 1.0e-11;
    values[calculate_observables]            = 0;
+   values[mt_method]                        = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
@@ -98,6 +100,7 @@ Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() con
    two_loop_corrections.higgs_atau_atau = get(higgs_2loop_correction_atau_atau);
    two_loop_corrections.top_qcd         = get(top_2loop_corrections_qcd);
    two_loop_corrections.higgs_log       = get(higgs_log_resum);
+   two_loop_corrections.mt_method       = get(mt_method);
 
    return two_loop_corrections;
 }

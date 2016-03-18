@@ -974,7 +974,7 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop,
-            dimParticle, treeLevelMass},
+            dimParticle, treeLevelMass, treeLevelMassStr},
            dimParticle = TreeMasses`GetDimension[particle];
            treeLevelMass = TreeMasses`GetThirdGenerationMass[particle] /. a_[i_?IntegerQ] :> a[Global`idx];
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
@@ -991,14 +991,16 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
               qcdTwoLoop = N[Expand[- TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               If[dimParticle == 1,
+                 treeLevelMassStr = name;
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
-                 body = "const double p = m_pole;\n" <>
+                 body = "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
                  "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n\n";
                  ,
+                 treeLevelMassStr = name <> "(idx)";
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole, int idx) const\n{\n";
-                 body = "const double p = m_pole;\n" <>
+                 body = "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
                  "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n\n";
@@ -1007,8 +1009,16 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               "const double currentScale = get_scale();\n" <>
               "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
               "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
-              "const double m_susy_drbar = m_pole + self_energy_1 " <>
-              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + Sqr(qcd_1l) + qcd_2l);\n\n" <>
+              "double m_susy_drbar = 0.;\n\n" <>
+              "if (MT_METHOD == 0) {\n" <>
+              IndentText[
+                  "// FlexibleSUSY approach\n" <>
+                  "m_susy_drbar = m_pole + self_energy_1 + m_pole * (self_energy_PL + self_energy_PR + qcd_1l + Sqr(qcd_1l) + qcd_2l);"
+              ] <> "\n} else {\n" <>
+              IndentText[
+                  "// SPheno approach\n" <>
+                  "m_susy_drbar = m_pole + self_energy_1 + " <> treeLevelMassStr <> " * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);"
+              ] <> "\n}\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];

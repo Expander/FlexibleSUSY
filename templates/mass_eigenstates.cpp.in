@@ -74,6 +74,7 @@ using namespace @ModelName@_info;
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
+#define MT_METHOD                        two_loop_corrections.mt_method
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
