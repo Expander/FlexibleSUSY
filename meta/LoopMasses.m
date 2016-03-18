@@ -989,7 +989,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               body = "return 0.0;\n";
               ,
               qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
-              qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+              qcdTwoLoop = N[Expand[- TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
                  body = "const double p = m_pole;\n" <>
@@ -1008,7 +1008,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
               "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
-              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
+              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + Sqr(qcd_1l) + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
