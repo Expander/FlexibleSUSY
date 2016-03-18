@@ -5,6 +5,7 @@ Xt=0
 TB=5
 MS=1000
 At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
+M3="MS"
 
 start=91
 stop=1000
@@ -114,9 +115,12 @@ run_sg() {
     local SG="$1"
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
+    local M3value="${M3}"
     local slha_output=
     local block=
     local value=
+
+    [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
     # run the spectrum generator
     slha_output=$(
@@ -132,7 +136,7 @@ Block EXTPAR                 # Input parameters
     0   ${MS}                # MSUSY
     1   ${MS}                # M1(MSUSY)
     2   ${MS}                # M2(MSUSY)
-    3   ${MS}                # M3(MSUSY)
+    3   ${M3value}           # M3(MSUSY)
     4   ${MS}                # Mu(MSUSY)
     5   ${MS}                # mA(MSUSY)
     6   173.34               # MEWSB
@@ -176,9 +180,12 @@ run_ss() {
     local Ab=$(echo "scale=10; ${TB} * ${MS}" | bc)
     local Atau=$(echo "scale=10; ${TB} * ${MS}" | bc)
     local MA="$MS"
+    local M3value="${M3}"
     local slha_output=
     local block=
     local value=
+
+    [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
     # run the SOFTSUSY spectrum generator
     slha_output=$(
@@ -199,7 +206,7 @@ BLOCK EXTPAR
          0     ${MS}   # Q
          1     ${MS}   # M1
          2     ${MS}   # M2
-         3     ${MS}   # M3
+         3     ${M3}   # M3
         11     ${At}   # At
         12     ${Ab}   # Ab
         13     ${Atau} # Atau
@@ -243,6 +250,7 @@ Options:
   --stop=        end value (default: ${stop})
   --steps=       number of steps (default: ${steps})
   --step_size=   linear or log (default: ${step_size})
+  --M3=          Gluino mass (default: ${M3})
   --MS=          M_SUSY (default: ${MS})
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
@@ -263,10 +271,11 @@ if test $# -gt 0 ; then
             --stop=*)                stop=$optarg ;;
             --steps=*)               steps=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
+            --M3=*)                  M3=$optarg ;;
             --MS=*)                  MS=$optarg ;;
             --TB=*)                  TB=$optarg ;;
             --Xt=*)                  Xt=$optarg ;;
-          --help|-h)               help; exit 0 ;;
+            --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
         shift

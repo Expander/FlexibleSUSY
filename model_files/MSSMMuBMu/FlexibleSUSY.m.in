@@ -10,6 +10,7 @@ MINPAR = {
 };
 
 EXTPAR = {
+    {3, M3Input}
 };
 
 FSExtraInputParameters = {
@@ -27,7 +28,7 @@ SUSYScaleFirstGuess = Ms;
 SUSYScaleInput = {
 {MassB, Ms},
 {MassWB, Ms},
-{MassG, Ms},
+{MassG, M3Input},
 {mq2, ZEROMATRIX[3,3]},
 {mu2, ZEROMATRIX[3,3]},
 {md2, ZEROMATRIX[3,3]},
@@ -65,7 +66,7 @@ InitialGuessAtLowScale = {
 {Ye, Automatic},
 {MassB, Ms},
 {MassWB, Ms},
-{MassG, Ms},
+{MassG, M3Input},
 {mq2, ZEROMATRIX[3,3]},
 {mu2, ZEROMATRIX[3,3]},
 {md2, ZEROMATRIX[3,3]},
