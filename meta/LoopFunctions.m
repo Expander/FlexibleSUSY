@@ -358,7 +358,7 @@ C0analytic[p1_, p2_, m1_, m2_, m3_, mu_] :=
                         - (eta[-xi[i,+1],-xi[i,-1]]
                            - eta[yi[i,+1],yi[i,-1]]
                            - 2 Pi I UnitStep[-Re[pjk[i]^2]] UnitStep[-Im[yi[i,+1] yi[i,-1]]]
-                          ),
+                          ) Log[(1 - y0[i])/(-y0[i])],
                         {i,0,2}] / alpha;
 
            Limit[result, eps -> 0, Direction -> -1,
