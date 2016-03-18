@@ -52,6 +52,9 @@ HighScaleInput = {
                           lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate,
                           IsCloseRel[M3Input^2,msu2[3,3],0.01],
                           lambda2LPhiHSSAlphaTAlphaSMUM3Degenerate,
+                          Not[IsClose[M3Input^2, 0]] &&
+                          IsCloseRel[msu2[3,3]/M3Input^2,msq2[3,3]/M3Input^2,0.01],
+                          lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate,
                           True,
                           lambda2LPhiHSSAlphaTAlphaSFull
                          ]
@@ -359,6 +362,62 @@ lambda2LPhiHSSAlphaTAlphaSFull = With[{
              (-1 + x1)*x1*(-1 + x2)*x2*(-2 + x1 + x2)*PolyLog[2, (-1 + x2)/x2]))/
            ((-1 + x1)*x1*(x1 - x2)^3*(-1 + x2)*x2))
     )
+];
+
+(* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
+   in the limit MQ[3,3]/M3 = MU[3,3]/M3
+ *)
+lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate = With[{
+    htSM = Yu[3,3],
+    CF = 4/3,
+    Nc = 3,
+    as = g3^2 / (4 Pi),
+    g = M3Input^2,
+    x2 = msu2[3,3]/M3Input^2,
+    q2 = SCALE^2,
+    Xt = xt / M3Input
+    },
+    (as*CF*htSM^4*Nc*(24*x2^2 - 78*x2^3 + 72*x2^4 - 18*x2^5 - 
+   48*x2^2*Xt + 96*x2^3*Xt - 48*x2^4*Xt - 24*x2*Xt^2 + 
+   108*x2^2*Xt^2 - 96*x2^3*Xt^2 + 12*x2^4*Xt^2 + 8*x2*Xt^3 - 
+   72*x2^2*Xt^3 + 64*x2^3*Xt^3 + 4*Xt^4 - 13*x2*Xt^4 + 
+   10*x2^2*Xt^4 - x2^3*Xt^4 + 4*x2*Xt^5 - 4*x2^2*Xt^5 - 
+   24*x2^2*Log[g] + 72*x2^3*Log[g] - 72*x2^4*Log[g] + 
+   24*x2^5*Log[g] + 48*x2^2*Xt*Log[g] - 96*x2^3*Xt*Log[g] + 
+   48*x2^4*Xt*Log[g] + 24*x2*Xt^2*Log[g] - 120*x2^2*Xt^2*Log[g] + 
+   168*x2^3*Xt^2*Log[g] - 72*x2^4*Xt^2*Log[g] - 8*x2*Xt^3*Log[g] + 
+   16*x2^2*Xt^3*Log[g] - 8*x2^3*Xt^3*Log[g] - 4*Xt^4*Log[g] + 
+   14*x2*Xt^4*Log[g] - 16*x2^2*Xt^4*Log[g] + 6*x2^3*Xt^4*Log[g] - 
+   36*x2^3*Log[g]^2 + 72*x2^4*Log[g]^2 - 36*x2^5*Log[g]^2 + 
+   24*x2^2*Log[q2] - 72*x2^3*Log[q2] + 72*x2^4*Log[q2] - 
+   24*x2^5*Log[q2] - 48*x2^2*Xt*Log[q2] + 96*x2^3*Xt*Log[q2] - 
+   48*x2^4*Xt*Log[q2] - 24*x2*Xt^2*Log[q2] + 
+   120*x2^2*Xt^2*Log[q2] - 168*x2^3*Xt^2*Log[q2] + 
+   72*x2^4*Xt^2*Log[q2] + 8*x2*Xt^3*Log[q2] - 
+   16*x2^2*Xt^3*Log[q2] + 8*x2^3*Xt^3*Log[q2] + 4*Xt^4*Log[q2] - 
+   14*x2*Xt^4*Log[q2] + 16*x2^2*Xt^4*Log[q2] - 
+   6*x2^3*Xt^4*Log[q2] + 72*x2^3*Log[g]*Log[q2] - 
+   144*x2^4*Log[g]*Log[q2] + 72*x2^5*Log[g]*Log[q2] - 
+   36*x2^3*Log[q2]^2 + 72*x2^4*Log[q2]^2 - 36*x2^5*Log[q2]^2 + 
+   96*x2^2*Xt*Log[1 - (-1 + x2)/x2] + 
+   32*Xt^3*Log[1 - (-1 + x2)/x2] - 
+   72*x2*Xt^3*Log[1 - (-1 + x2)/x2] + 
+   48*x2^2*Xt^3*Log[1 - (-1 + x2)/x2] + 
+   8*Xt^4*Log[1 - (-1 + x2)/x2] - 
+   18*x2*Xt^4*Log[1 - (-1 + x2)/x2] + 
+   12*x2^2*Xt^4*Log[1 - (-1 + x2)/x2] + 84*x2^3*Log[x2] - 
+   72*x2^4*Log[x2] + 24*x2^5*Log[x2] + 96*x2^2*Xt*Log[x2] - 
+   144*x2^3*Xt*Log[x2] + 48*x2^4*Xt*Log[x2] - 
+   48*x2^2*Xt^2*Log[x2] + 168*x2^3*Xt^2*Log[x2] - 
+   72*x2^4*Xt^2*Log[x2] + 32*Xt^3*Log[x2] - 72*x2*Xt^3*Log[x2] - 
+   8*x2^3*Xt^3*Log[x2] + 8*Xt^4*Log[x2] - 12*x2*Xt^4*Log[x2] - 
+   4*x2^2*Xt^4*Log[x2] + 6*x2^3*Xt^4*Log[x2] + 4*x2*Xt^5*Log[x2] - 
+   72*x2^3*Log[g]*Log[x2] + 144*x2^4*Log[g]*Log[x2] - 
+   72*x2^5*Log[g]*Log[x2] + 72*x2^3*Log[q2]*Log[x2] - 
+   144*x2^4*Log[q2]*Log[x2] + 72*x2^5*Log[q2]*Log[x2] - 
+   36*x2^3*Log[x2]^2 + 72*x2^4*Log[x2]^2 - 36*x2^5*Log[x2]^2 - 
+   48*x2^3*PolyLog[2, (-1 + x2)/x2] + 
+   96*x2^3*Xt*PolyLog[2, (-1 + x2)/x2]))/(192*Pi^3*(-1 + x2)^2*x2^3)
 ];
 
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
