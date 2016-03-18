@@ -6,6 +6,8 @@ TB=5
 MS=1000
 At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
 M3="MS"
+AS="1.184000000e-01"
+MT="1.733400000e+02"
 
 start=91
 stop=1000
@@ -126,6 +128,9 @@ run_sg() {
     slha_output=$(
     { echo "$slha_tmpl" ; \
       cat <<EOF
+Block SMINPUTS               # Standard Model inputs
+    3   {AS}                 # alpha_s(MZ) SM MSbar
+    6   {MT}                 # mtop(pole)
 Block TanBeta
     ${TB}                    # tan(Beta) at the SUSY scale
 Block Xtt
@@ -202,6 +207,9 @@ Block SOFTSUSY               # SOFTSUSY specific inputs
 Block MINPAR                 # Input parameters
     4   1.000000000e+00      # sign(mu)
 ${sminputs_tmpl}
+Block SMINPUTS               # Standard Model inputs
+    3   {AS}                 # alpha_s(MZ) SM MSbar
+    6   {MT}                 # mtop(pole)
 BLOCK EXTPAR
          0     ${MS}   # Q
          1     ${MS}   # M1
@@ -250,8 +258,10 @@ Options:
   --stop=        end value (default: ${stop})
   --steps=       number of steps (default: ${steps})
   --step_size=   linear or log (default: ${step_size})
+  --AS=          alpha_s (default: ${AS})
   --M3=          Gluino mass (default: ${M3})
   --MS=          M_SUSY (default: ${MS})
+  --MT=          Top quark pole mass (default: ${MT})
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
   --help=|-h     print this help message
@@ -271,8 +281,10 @@ if test $# -gt 0 ; then
             --stop=*)                stop=$optarg ;;
             --steps=*)               steps=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
+            --AS=*)                  AS=$optarg ;;
             --M3=*)                  M3=$optarg ;;
             --MS=*)                  MS=$optarg ;;
+            --MT=*)                  MT=$optarg ;;
             --TB=*)                  TB=$optarg ;;
             --Xt=*)                  Xt=$optarg ;;
             --help|-h)               help; exit 0 ;;
