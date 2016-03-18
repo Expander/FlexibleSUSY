@@ -5,7 +5,8 @@ Xt=0
 TB=5
 MS=1000
 At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
-M3="MS"
+M3factor=1
+M3=
 AS="1.184000000e-01"
 MT="1.733400000e+02"
 
@@ -122,13 +123,10 @@ run_sg() {
     local SG="$1"
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
-    local M3value="${M3}"
     local slha_output=
     local block=
     local value=
     local slha_input=
-
-    [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
     slha_input=$(
     { echo "$slha_tmpl" ; \
@@ -146,7 +144,7 @@ Block EXTPAR                 # Input parameters
     0   ${MS}                # MSUSY
     1   ${MS}                # M1(MSUSY)
     2   ${MS}                # M2(MSUSY)
-    3   ${M3value}           # M3(MSUSY)
+    3   ${M3}                # M3(MSUSY)
     4   ${MS}                # Mu(MSUSY)
     5   ${MS}                # mA(MSUSY)
     6   173.34               # MEWSB
@@ -199,13 +197,10 @@ run_ss() {
     local Ab=$(echo "scale=10; ${TB} * ${MS}" | bc)
     local Atau=$(echo "scale=10; ${TB} * ${MS}" | bc)
     local MA="$MS"
-    local M3value="${M3}"
     local slha_output=
     local block=
     local value=
     local slha_input=
-
-    [ "x${M3value}" = "xMS" ] && M3value="${MS}"
 
     slha_input=$(
     { cat <<EOF
@@ -286,7 +281,7 @@ Options:
   --steps=       number of steps (default: ${steps})
   --step_size=   linear or log (default: ${step_size})
   --AS=          alpha_s (default: ${AS})
-  --M3=          Gluino mass (default: ${M3})
+  --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
   --MS=          M_SUSY (default: ${MS})
   --MT=          Top quark pole mass (default: ${MT})
   --TB=          tan(beta) (default: ${TB})
@@ -313,7 +308,7 @@ if test $# -gt 0 ; then
             --steps=*)               steps=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
             --AS=*)                  AS=$optarg ;;
-            --M3=*)                  M3=$optarg ;;
+            --M3factor=*)            M3factor=$optarg ;;
             --MS=*)                  MS=$optarg ;;
             --MT=*)                  MT=$optarg ;;
             --TB=*)                  TB=$optarg ;;
@@ -348,6 +343,12 @@ EOF
     esac
 
     eval "${parameter}=${value}"
+
+    M3=$(cat <<EOF | bc
+scale=10
+$MS * $M3factor
+EOF
+         )
 
     # run the spectrum generator
     MhMSSMtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
