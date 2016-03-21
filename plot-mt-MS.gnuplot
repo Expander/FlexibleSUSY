@@ -11,7 +11,7 @@ set style line 4 lt 1 dt 3 lw 2 lc rgb "#FFBF00"
 set style line 5 lt 1 dt 5 lw 2 lc rgb "#FF00FF"
 
 set xlabel "M_S / TeV"
-set ylabel "M_h / GeV"
+set ylabel "m_t(M_S) / GeV"
 
 calc_mt(yt,v) = yt * v / sqrt(2)
 
