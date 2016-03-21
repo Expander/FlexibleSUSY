@@ -9,7 +9,7 @@ set style line 3 lt 1 dt 4 lw 2 lc rgb "#45AD53"
 set style line 4 lt 1 dt 3 lw 2 lc rgb "#FFBF00"
 set style line 5 lt 1 dt 5 lw 2 lc rgb "#FF00FF"
 
-set xlabel "alpha_s(M_S)"
+set xlabel "alpha_s(M_Z)"
 set ylabel "M_h / GeV"
 
 plot [:] [:] \
