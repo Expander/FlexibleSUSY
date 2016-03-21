@@ -63,6 +63,7 @@ public:
    {}
    virtual ~@ModelName@_SM_spectrum_generator() {}
 
+   const SM<T>& get_eft() const { return eft; }
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
@@ -220,6 +221,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       // run to output scale (if scale > 0)
       if (!is_zero(this->parameter_output_scale)) {
          model.run_to(this->parameter_output_scale);
+         eft.run_to(this->parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
