@@ -2,7 +2,7 @@ BeginPackage["LoopFunctions`"];
 EndPackage[];
 
 (* loop functions *)
-{A0, B0, B1, B00, B11, B22, B22tilde, C0, D0, D27, F, G, H};
+{A0, B0, B1, B00, B11, B22, B22tilde, C0, C1, C2, D0, D27, F, G, H};
 
 LFFull::usage = "Returns explicit form of loop functions with full
  momentum dependence.  The convention depends on the value of
@@ -21,6 +21,8 @@ LFFull::usage = "Returns explicit form of loop functions with full
    G[p,m1,m2,Q]                [arxiv:hep-ph/9606211, Eq. (B.12)]
    H[p,m1,m2,Q]                [arxiv:hep-ph/9606211, Eq. (B.13)]
    C0[0,0,m1,m2,m3,Q]          [arxiv:hep-ph/9606211, Eq. (C.19)]
+   C1[0,0,m1,m2,m3,Q]
+   C2[0,0,m1,m2,m3,Q]
    D0[0,0,0,m1,m2,m3,m4,Q]     [arxiv:hep-ph/9606211, Eq. (C.21)]
    D27[0,0,0,m1,m2,m3,m4,Q]    [arxiv:hep-ph/9606211, Eq. (C.22)]
 
@@ -57,6 +59,8 @@ LFZeroMomentum[] := {
     B22[0,m1_,m2_,mu_]            | B22[m1_,m2_,mu_]         :> B22zero[m1,m2,mu],
     B22tilde[0,m1_,m2_,mu_]       | B22tilde[m1_,m2_,mu_]    :> B22tildezero[m1,m2,mu],
     C0[0,0,m1_,m2_,m3_,mu_]       | C0[m1_,m2_,m3_,mu_]      :> C0zero[m1,m2,m3],
+    C1[0,0,m1_,m2_,m3_,mu_]       | C1[m1_,m2_,m3_,mu_]      :> C1zero[m1,m2,m3],
+    C2[0,0,m1_,m2_,m3_,mu_]       | C2[m1_,m2_,m3_,mu_]      :> C2zero[m1,m2,m3],
     D0[0,0,0,m1_,m2_,m3_,m4_,mu_] | D0[m1_,m2_,m3_,m4_,mu_]  :> D0zero[m1,m2,m3,m4],
     D27[0,0,0,m1_,m2_,m3_,m4_,mu_]| D27[m1_,m2_,m3_,m4_,mu_] :> D27zero[m1,m2,m3,m4],
     F[0,m1_,m2_,mu_]              | F[m1_,m2_,mu_]           :> Fzero[m1,m2,mu],
@@ -73,6 +77,8 @@ LFFull[] := {
     B22[p_,m1_,m2_,mu_]                 :> B22impl[p,m1,m2,mu],
     B22tilde[p_,m1_,m2_,mu_]            :> B22tildeimpl[p,m1,m2,mu],
     C0[p1_,p2_,m1_,m2_,m3_,mu_]         :> C0impl[p1,p2,m1,m2,m3,mu],
+    C1[p1_,p2_,m1_,m2_,m3_,mu_]         :> C1impl[p1,p2,m1,m2,m3],
+    C2[p1_,p2_,m1_,m2_,m3_,mu_]         :> C2impl[p1,p2,m1,m2,m3],
     D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> D0impl[p1,p2,p3,m1,m2,m3,m4,mu],
     D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> D27impl[p1,p2,p3,m1,m2,m3,m4,mu],
     F[p_,m1_,m2_,mu_]                   :> Fimpl[p,m1,m2,mu],
@@ -89,6 +95,8 @@ LFDivergence[] := {
     B22[p_,m1_,m2_,mu_]                 :> DivB22[p,m1,m2,mu],
     B22tilde[p_,m1_,m2_,mu_]            :> DivB22tilde[p,m1,m2,mu],
     C0[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
+    C1[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
+    C2[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
     D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> 0,
     D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> 0,
     F[p_,m1_,m2_,mu_]                   :> DivF[p,m1,m2,mu],
@@ -105,6 +113,8 @@ LFScaleDependence[] := {
     B22[p_,m1_,m2_,mu_]                 :> LogB22[p,m1,m2,mu],
     B22tilde[p_,m1_,m2_,mu_]            :> LogB22tilde[p,m1,m2,mu],
     C0[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
+    C1[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
+    C2[p1_,p2_,m1_,m2_,m3_,mu_]         :> 0,
     D0[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_] :> 0,
     D27[p1_,p2_,p3_,m1_,m2_,m3_,m4_,mu_]:> 0,
     F[p_,m1_,m2_,mu_]                   :> LogF[p,m1,m2,mu],
@@ -364,6 +374,64 @@ C0analytic[p1_, p2_, m1_, m2_, m3_, mu_] :=
            Limit[result, eps -> 0, Direction -> -1,
                  Assumptions :> Element[p1, Complexes] || \
                                 Element[p2, Complexes]]
+          ];
+
+(********************* C1 *********************)
+
+C1impl[p1_, p2_, m1_, m2_, m3_] :=
+    If[PossibleZeroQ[p1] && PossibleZeroQ[p2],
+       C1zero[m1,m2,m3],
+       NotImplemented
+      ];
+
+(* C1 for p = 0 [arxiv:hep-ph/9606211 Eq. (C.19)] *)
+C1zero[m1_, m2_, m3_] :=
+    Module[{t1 = m2^2/m1^2, t2 = m3^2/m1^2},
+           Which[
+               PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
+               -1/(6 m1^2),
+               PossibleZeroQ[m1 - m2],
+               -(m2^4 - 4*m2^2*m3^2 + 3*m3^4 - 2*m3^4*Log[m3^2/m2^2])/(4*(m2^2 - m3^2)^3),
+               PossibleZeroQ[m2 - m3],
+               (3*m1^4 - 4*m1^2*m3^2 + m3^4 + 2*m1^4*Log[m3^2/m1^2])/(4*(m1^2 - m3^2)^3),
+               PossibleZeroQ[m1 - m3],
+               (-m2^4 + m3^4 + 2*m2^2*m3^2*Log[m2^2/m3^2])/(2*(m2^2 - m3^2)^3),
+               (* general case *)
+               True,
+               -(t1 / (2 (t1 - 1) (t1 - t2))
+                 - t1 (t1 - 2 t2 + t1 t2) Log[t1] / (2 (t1 - 1)^2 (t1 - t2)^2)
+                 + (t2^2 - 2 t1 t2^2 + t1^2 t2^2) Log[t2] / (2 (t1 - 1)^2 (t1 - t2)^2 (t2 - 1))
+                )/m1^2
+                ]
+          ];
+
+(********************* C2 *********************)
+
+C2impl[p1_, p2_, m1_, m2_, m3_] :=
+    If[PossibleZeroQ[p1] && PossibleZeroQ[p2],
+       C2zero[m1,m2,m3],
+       NotImplemented
+      ];
+
+(* C2 for p = 0 [arxiv:hep-ph/9606211 Eq. (C.19)] *)
+C2zero[m1_, m2_, m3_] :=
+    Module[{t1 = m2^2/m1^2, t2 = m3^2/m1^2},
+           Which[
+               PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
+               -1/(6 m1^2),
+               PossibleZeroQ[m1 - m2],
+               (-m2^4 + m3^4 + 2*m2^2*m3^2*Log[m2^2/m3^2])/(2*(m2^2 - m3^2)^3),
+               PossibleZeroQ[m2 - m3],
+               (3*m1^4 - 4*m1^2*m3^2 + m3^4 + 2*m1^4*Log[m3^2/m1^2])/(4*(m1^2 - m3^2)^3),
+               PossibleZeroQ[m1 - m3],
+               (3*m2^4 - 4*m2^2*m3^2 + m3^4 - 2*m2^4*Log[m2^2/m3^2])/(4*(m2^2 - m3^2)^3),
+               (* general case *)
+               True,
+               -(- t2 / (2 (t1 - t2) (t2 - 1))
+                 + Log[t1] / (2 (t1 - 1) (t2 - 1)^2)
+                 + (2 t1 t2 - 2 t1^2 t2 - t2^2 + t1^2 t2^2) Log[t1/t2] / (2 (t1 - 1) (t1 - t2)^2 (t2 - 1)^2)
+                )/m1^2
+                ]
           ];
 
 (********************* D0 *********************)
