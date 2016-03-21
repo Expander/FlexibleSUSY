@@ -1,6 +1,6 @@
 #!/bin/sh
 
-output="MASS:25"
+output="MASS-25"
 parameter=MS
 Xt=0
 TB=5
@@ -130,8 +130,8 @@ run_sg() {
     local block=
     local value=
     local slha_input=
-    local output_block=$(echo "${output}" | cut -d':' -f1)
-    local output_entry=$(echo "${output}" | cut -d':' -f2)
+    local output_block=$(echo "${output}" | cut -d'-' -f1)
+    local output_entry=$(echo "${output}" | cut -d'-' -f2)
 
     slha_input=$(
     { echo "$slha_tmpl" ; \
@@ -208,8 +208,8 @@ run_ss() {
     local block=
     local value=
     local slha_input=
-    local output_block=$(echo "${output}" | cut -d':' -f1)
-    local output_entry=$(echo "${output}" | cut -d':' -f2)
+    local output_block=$(echo "${output}" | cut -d'-' -f1)
+    local output_entry=$(echo "${output}" | cut -d'-' -f2)
 
     slha_input=$(
     { cat <<EOF
@@ -260,8 +260,6 @@ EOF
     # run the SOFTSUSY spectrum generator
     slha_output=$(echo "$slha_input" | $SG leshouches 2>/dev/null)
 
-    # echo "$slha_output"
-
     block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
     value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk")
 
@@ -284,7 +282,7 @@ Options:
   --dump-flexiblesusy-slha-output=  dump FlexibleSUSY SLHA output file
   --dump-softsusy-slha-input=       dump SOFTSUSY SLHA input file
   --dump-softsusy-slha-output=      dump SOFTSUSY SLHA output file
-  --output=      output parameter in the format BLOCK:ENTRY (default: ${output})
+  --output=      output parameter in the format BLOCK-ENTRY1[:ENTRY2] (default: ${output})
   --parameter=   scanned parameter (default: ${parameter})
   --start=       start value (default: ${start})
   --stop=        end value (default: ${stop})
