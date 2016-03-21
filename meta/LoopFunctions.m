@@ -384,7 +384,7 @@ C1impl[p1_, p2_, m1_, m2_, m3_] :=
        NotImplemented
       ];
 
-(* C1 for p = 0 [arxiv:hep-ph/9606211 Eq. (C.19)] *)
+(* C1 for p = 0 *)
 C1zero[m1_, m2_, m3_] :=
     Module[{t1 = m2^2/m1^2, t2 = m3^2/m1^2},
            Which[
@@ -413,7 +413,7 @@ C2impl[p1_, p2_, m1_, m2_, m3_] :=
        NotImplemented
       ];
 
-(* C2 for p = 0 [arxiv:hep-ph/9606211 Eq. (C.19)] *)
+(* C2 for p = 0 *)
 C2zero[m1_, m2_, m3_] :=
     Module[{t1 = m2^2/m1^2, t2 = m3^2/m1^2},
            Which[
