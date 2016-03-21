@@ -36,7 +36,7 @@ for Xt in $Xt_values ; do
 
                     output_file_yt="Yt_MS_TB-${TB}_Xt-${Xt}_AS-${AS}_MT-${MT}_MTmethod-${MTmethod}_M3factor-${M3factor}.dat"
 
-                    echo "generating $output_file ..."
+                    echo "generating $output_file_yt ..."
 
                     ./scan.sh --parameter=MS --start="$start" \
                               --stop="$stop" --steps=$steps --step-size=log \
@@ -51,7 +51,7 @@ for Xt in $Xt_values ; do
 
                     output_file_vu="vu_MS_TB-${TB}_Xt-${Xt}_AS-${AS}_MT-${MT}_MTmethod-${MTmethod}_M3factor-${M3factor}.dat"
 
-                    echo "generating $output_file ..."
+                    echo "generating $output_file_vu ..."
 
                     ./scan.sh --parameter=MS --start="$start" \
                               --stop="$stop" --steps=$steps --step-size=log \
@@ -66,7 +66,7 @@ for Xt in $Xt_values ; do
 
                     output_file_v="v_MS_TB-${TB}_Xt-${Xt}_AS-${AS}_MT-${MT}_MTmethod-${MTmethod}_M3factor-${M3factor}.dat"
 
-                    echo "generating $output_file ..."
+                    echo "generating $output_file_v ..."
 
                     ./scan.sh --parameter=MS --start="$start" \
                               --stop="$stop" --steps=$steps --step-size=log \
