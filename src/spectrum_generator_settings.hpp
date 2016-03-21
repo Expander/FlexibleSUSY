@@ -52,6 +52,7 @@ public:
       beta_zero_threshold,   ///< [15] beta function zero threshold
       calculate_observables, ///< [16] calculate observables (a_muon, ...)
       mt_method,             ///< [17] mt calculation method
+      write_eft,             ///< [18] write EFT output, instead of full model
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

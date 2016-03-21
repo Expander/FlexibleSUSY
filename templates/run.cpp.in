@@ -23,6 +23,7 @@
 #include "@ModelName@_slha_io.hpp"
 #include "@SpectrumGenerator@_spectrum_generator.hpp"
 #include "@ModelName@_utilities.hpp"
+@runTowerIncludes@
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -48,6 +49,7 @@ int main(int argc, const char* argv[])
    const std::string slha_output_file(options.get_slha_output_file());
    const std::string spectrum_file(options.get_spectrum_file());
    @ModelName@_slha_io slha_io;
+@runTowerSLHAIO@
    Spectrum_generator_settings spectrum_generator_settings;
    softsusy::QedQcd qedqcd;
    @ModelName@_input_parameters input;
@@ -95,6 +97,8 @@ int main(int argc, const char* argv[])
    if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
       observables = calculate_observables(model, qedqcd);
 
+   const bool write_eft = spectrum_generator_settings.get(Spectrum_generator_settings::write_eft);
+
    // SLHA output
    if (!slha_output_file.empty()) {
       slha_io.set_spinfo(problems);
@@ -102,14 +106,13 @@ int main(int argc, const char* argv[])
       slha_io.set_extpar(input);
       if (!problems.have_problem() ||
           spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
-         slha_io.set_spectrum(model);
-         slha_io.set_extra(model, scales, observables);
+@runTowerSetSpectrum@
       }
 
       if (slha_output_file == "-") {
-         slha_io.write_to_stream(std::cout);
+@runTowerWriteToStream@
       } else {
-         slha_io.write_to_file(slha_output_file);
+@runTowerWriteToFile@
       }
    }
 

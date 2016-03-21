@@ -1132,17 +1132,56 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, spectrumGen},
+    Module[{parseCmdLineOptions, printCommandLineOptions, spectrumGen,
+            runTowerIncludes = "", runTowerSLHAIO = "", runTowerSetSpectrum = "",
+            runTowerWriteToStream = "", runTowerWriteToFile = ""},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
            spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_SM",
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
+           If[SMTower,
+              runTowerIncludes = "#include \"SM_slha_io.hpp\"";
+              runTowerSLHAIO = IndentText["SM_slha_io eft_slha_io;"];
+              runTowerSetSpectrum = IndentText[IndentText[IndentText[
+                  "if (!write_eft) {\n" <>
+                  IndentText[
+                      "slha_io.set_spectrum(model);\n" <>
+                      "slha_io.set_extra(model, scales, observables);"
+                  ] <> "\n} else {\n" <>
+                  IndentText[
+                      "eft_slha_io.set_spectrum(spectrum_generator.get_eft());"
+                  ] <> "\n}"
+              ]]];
+              runTowerWriteToStream = IndentText[IndentText[IndentText[
+                  "if (!write_eft) {\n" <>
+                  IndentText[
+                      "slha_io.write_to_stream(std::cout);"
+                  ] <> "\n} else {\n" <>
+                  IndentText[
+                      "eft_slha_io.write_to_stream(std::cout);"
+                  ] <> "\n}"
+              ]]];
+              runTowerWriteToFile = IndentText[IndentText[IndentText[
+                  "if (!write_eft) {\n" <>
+                  IndentText[
+                      "slha_io.write_to_file(slha_output_file);"
+                  ] <> "\n} else {\n" <>
+                  IndentText[
+                      "eft_slha_io.write_to_stream(std::cout);"
+                  ] <> "\n}"
+              ]]];
+             ];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@SpectrumGenerator@" -> spectrumGen,
+                            "@runTowerIncludes@" -> runTowerIncludes,
+                            "@runTowerSLHAIO@" -> runTowerSLHAIO,
+                            "@runTowerSetSpectrum@" -> runTowerSetSpectrum,
+                            "@runTowerWriteToStream@" -> runTowerWriteToStream,
+                            "@runTowerWriteToFile@" -> runTowerWriteToFile,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

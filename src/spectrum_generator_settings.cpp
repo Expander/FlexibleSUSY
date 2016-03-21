@@ -68,6 +68,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | mt_method                        | 0 (FlexibleSUSY), 1 (SPheno) | 0 (= FlexibleSUSY) |
+ * | write_eft                        | 0 (no), 1 (yes)              | 0 (= write full model) |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -89,6 +90,7 @@ void Spectrum_generator_settings::reset()
    values[beta_zero_threshold]              = 1.0e-11;
    values[calculate_observables]            = 0;
    values[mt_method]                        = 0;
+   values[write_eft]                        = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
