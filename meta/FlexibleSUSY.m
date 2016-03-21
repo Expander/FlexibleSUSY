@@ -1141,7 +1141,7 @@ WriteUserExample[inputParameters_List, files_List] :=
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
-           If[SMTower,
+           If[SMTower === True,
               runTowerIncludes = "#include \"SM_slha_io.hpp\"";
               runTowerSLHAIO = IndentText["SM_slha_io eft_slha_io;"];
               runTowerSetSpectrum = IndentText[IndentText[IndentText[
@@ -1171,6 +1171,19 @@ WriteUserExample[inputParameters_List, files_List] :=
                   IndentText[
                       "eft_slha_io.write_to_stream(std::cout);"
                   ] <> "\n}"
+              ]]];
+              ,
+              runTowerIncludes = "#include \"SM_slha_io.hpp\"";
+              runTowerSLHAIO = IndentText["SM_slha_io eft_slha_io;"];
+              runTowerSetSpectrum = IndentText[IndentText[IndentText[
+                      "slha_io.set_spectrum(model);\n" <>
+                      "slha_io.set_extra(model, scales, observables);"
+              ]]];
+              runTowerWriteToStream = IndentText[IndentText[IndentText[
+                  "slha_io.write_to_stream(std::cout);"
+              ]]];
+              runTowerWriteToFile = IndentText[IndentText[IndentText[
+                  "slha_io.write_to_file(slha_output_file);"
               ]]];
              ];
            WriteOut`ReplaceInFiles[files,
