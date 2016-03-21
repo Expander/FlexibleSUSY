@@ -91,3 +91,67 @@ for Xt in $Xt_values ; do
         done
     done
 done
+
+start=0
+stop=0.4736
+steps=20
+
+TB=5
+Xt_values="0"
+MT_values="173.34 91.1876"
+MTmethod_values="0 1"
+
+for Xt in $Xt_values ; do
+    for MT in $MT_values ; do
+        for MTmethod in $MTmethod_values ; do
+            output_file="Mh_AS_TB-${TB}_Xt-${Xt}_MT-${MT}_MTmethod-${MTmethod}.dat"
+
+            echo "generating $output_file ..."
+
+            ./scan.sh --parameter=AS --start="$start" \
+                      --stop="$stop" --steps=$steps \
+                      --TB="$TB" \
+                      --Xt="$Xt" \
+                      --MS=100000 \
+                      --MT="$MT" \
+                      --MTmethod="$MTmethod" \
+                      > "$output_file"
+
+            echo "plotting ..."
+
+            gnuplot -e "filename=\"$output_file\"" plot-Mh-AS.gnuplot
+        done
+    done
+done
+
+start=91.1876
+stop=346.68
+steps=20
+
+TB=5
+Xt_values="0"
+AS_values="0.1184 0.2368 0.4736"
+MTmethod_values="0 1"
+
+for Xt in $Xt_values ; do
+    for AS in $AS_values ; do
+        for MTmethod in $MTmethod_values ; do
+            output_file="Mh_Mt_TB-${TB}_Xt-${Xt}_AS-${AS}_MTmethod-${MTmethod}.dat"
+
+            echo "generating $output_file ..."
+
+            ./scan.sh --parameter=MT --start="$start" \
+                      --stop="$stop" --steps=$steps \
+                      --TB="$TB" \
+                      --Xt="$Xt" \
+                      --AS="$AS" \
+                      --MS=100000 \
+                      --MTmethod="$MTmethod" \
+                      > "$output_file"
+
+            echo "plotting ..."
+
+            gnuplot -e "filename=\"$output_file\"" plot-Mh-Mt.gnuplot
+        done
+    done
+done

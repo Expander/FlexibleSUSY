@@ -4,9 +4,9 @@ output="MASS-25"
 parameter=MS
 Xt=0
 TB=5
-MS=1000
+MS=100000
 At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
-M3factor=1
+M3factor=0.99999
 M3=
 AS="1.184000000e-01"
 MT="1.733400000e+02"
@@ -51,7 +51,7 @@ Block MODSEL                 # Select model
     6   0                    # flavour violation
 Block FlexibleSUSY
     0   1.000000000e-05      # precision goal
-    1   0                    # max. iterations (0 = automatic)
+    1   1000                 # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   1                    # calculate SM pole masses
     4   2                    # pole mass loop order
