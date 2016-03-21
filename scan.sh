@@ -12,6 +12,7 @@ AS="1.184000000e-01"
 MT="1.733400000e+02"
 MTmethod=0
 UseMTmethod="$MTmethod"
+WRITE_EFT=0
 
 dump_fs_slha_input_file=
 dump_fs_slha_output_file=
@@ -136,8 +137,11 @@ run_sg() {
     slha_input=$(
     { echo "$slha_tmpl" ; \
       cat <<EOF
+Block MODSEL                 # Select model
+   12    ${MS}
 Block FlexibleSUSY
    17   ${UseMTmethod}       # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
+   18   ${WRITE_EFT}         # write full model (0) / EFT (1)
 Block SMINPUTS               # Standard Model inputs
     3   ${AS}                # alpha_s(MZ) SM MSbar
     6   ${MT}                # mtop(pole)
@@ -179,6 +183,8 @@ Block MSD2IN
   3  3     ${MS2}   # md2(3,3)
 EOF
     })
+
+    # echo "$slha_input"
 
     # run the spectrum generator
     slha_output=$(echo "$slha_input" | $SG --slha-input-file=- 2>/dev/null)
@@ -333,7 +339,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "MSSMMuBMu" "HSSUSY" "Softsusy"
+printf "# %14s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -363,17 +369,24 @@ EOF
          )
 
     # run the spectrum generators
+    WRITE_EFT=0
     UseMTmethod=0
     MhMSSMtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
 
+    WRITE_EFT=1
+    UseMTmethod=0
+    MhEFTtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
+
+    WRITE_EFT=0
     UseMTmethod="$MTmethod"
     MhMSSMMuBMu=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
 
+    WRITE_EFT=0
     UseMTmethod=0
     MhHSSUSY=$(run_sg "models/HSSUSY/run_HSSUSY.x")
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
-    printf "%16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy"
+    printf "%16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy"
 
 done

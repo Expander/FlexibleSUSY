@@ -14,6 +14,6 @@ set ylabel "M_h / GeV"
 
 plot [:] [:] \
      filename u ($1/1000):2 t 'FlexibleSUSY/MSSM-tower' w lines ls 1, \
-     "< awk '{ if ($3 > 0) print }' ".filename u ($1/1000):3 t 'FlexibleSUSY/MSSM 2L' w lines ls 3, \
-     filename u ($1/1000):4 t 'HSSUSY 2L' w lines ls 2, \
-     filename u ($1/1000):5 t 'SOFTSUSY 2L' w lines ls 4
+     "< awk '{ if ($4 > 0) print }' ".filename u ($1/1000):4 t 'FlexibleSUSY/MSSM 2L' w lines ls 3, \
+     filename u ($1/1000):5 t 'HSSUSY 2L' w lines ls 2, \
+     filename u ($1/1000):6 t 'SOFTSUSY 2L' w lines ls 4
