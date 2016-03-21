@@ -15,8 +15,7 @@ m1 = M/(1 +
 
 m1 = Simplify[Normal[Series[m1, {h, 0, 1}]] /. h -> 1];
 
-m2 = M (GetMTopMSbarOverMTopPole[{1, 0, 0, 0}] +
-        GetMTopMSbarOverMTopPole[{0, 1, 0, 0}])
+m2 = M GetMTopMSbarOverMTopPole[{1, 1, 0, 0}];
 
 TestEquality[Simplify[m1 - m2], 0];
 
@@ -28,9 +27,7 @@ m1 = M/(1 +
 
 m1 = Simplify[Normal[Series[m1, {h, 0, 2}]] /. h -> 1];
 
-m2 = M (GetMTopMSbarOverMTopPole[{1, 0, 0, 0}] +
-        GetMTopMSbarOverMTopPole[{0, 1, 0, 0}] +
-        GetMTopMSbarOverMTopPole[{0, 0, 1, 0}])
+m2 = M GetMTopMSbarOverMTopPole[{1, 1, 1, 0}];
 
 TestEquality[Simplify[m1 - m2], 0];
 
