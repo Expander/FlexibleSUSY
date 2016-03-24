@@ -5,7 +5,7 @@ BASEDIR=$(dirname $0)
 input="$BASEDIR/test_HSSUSY_SUSYHD.dat"
 output="$BASEDIR/test_HSSUSY_SUSYHD.out.dat"
 exe="$BASEDIR/../models/HSSUSY/run_HSSUSY.x"
-print_block="$BASEDIR/../config/print_slha_block.awk"
+print_block="$BASEDIR/../utils/print_slha_block.awk"
 
 rel_error="0.0006"
 

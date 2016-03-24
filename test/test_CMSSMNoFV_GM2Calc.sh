@@ -8,7 +8,7 @@ GM2CALC_EXE=$(readlink -f "${BASEDIR}/../addons/GM2Calc/gm2calc.x")
 CMSSMNoFV_EXE=$(readlink -f "${BASEDIR}/../models/CMSSMNoFV/run_CMSSMNoFV.x")
 SLHA_IN=$(readlink -f "${BASEDIR}/../models/CMSSMNoFV/LesHouches.in.CMSSMNoFV")
 SLHA_OUT=$(readlink -f "${BASEDIR}/test_CMSSMNoFV_GM2Calc.out.spc")
-print_block="$BASEDIR/../config/print_slha_block.awk"
+print_block="$BASEDIR/../utils/print_slha_block.awk"
 rel_error=0.000000001
 
 [ $("$FSCONFIG" --with-CMSSMNoFV) = yes -a -x ${CMSSMNoFV_EXE} ] || {

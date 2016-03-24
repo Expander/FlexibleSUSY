@@ -4,7 +4,7 @@
 # for real input parameters
 
 BASEDIR=$(dirname $0)
-CONFIGDIR=${BASEDIR}/../config
+UTILSDIR=${BASEDIR}/../utils
 
 cmssm_input="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
 cmssm_output="$BASEDIR/test_cCMSSM_CMSSM.out.spc"
@@ -40,25 +40,25 @@ if test ! -x "$ccmssm_exe"; then
 fi
 
 remove_imaginary_blocks() {
-    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=ImAu \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=ImAd \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=ImAe \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=ImHMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=ImMSOFT
+    $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=ImAu \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=ImAd \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=ImAe \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=ImHMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=ImMSOFT
 }
 
 remove_mixing_matrix_blocks() {
-    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
+    $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=UMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=VMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=DSQMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SELMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SCALARMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=NMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=CHARGEMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=USQMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SNUMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
 }
 
 # generate CMSSM point
