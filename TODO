@@ -14,68 +14,6 @@ Decays
 ------
 
 
-ThetaW
-------
-
-Solve the ThetaW problem for models with multiple U(1) gauge groups.
-Jae-hyeon's solution was:
-
- 1. Use mass matrices for Photon, Z, W+ etc.  Do not make use of the
-   already calculated analytic mass eigenvalues in
-   UnrotatedParticles.m.
-
- 2. Avoid replacing ZZ[1,1] -> Cos[ThetaW] etc. in SARAH.  This can be
-   achieved by locally overwriting the SARAH`subAlways variable.  Here
-   is Jae-hyeon's e-mail:
-
-   <snip>
-   From: Jae-hyeon Park <jae.park@uv.es>
-   Subject: Alternative to back substitution
-   To: Alexander Voigt <Alexander.Voigt@physik.tu-dresden.de>
-   Date: Fri, 14 Feb 2014 11:05:03 +0100 (7 weeks, 2 days, 11 hours ago)
-   
-   Hi Alex,
-
-   I am testing a workaround which prevents SARAH from parametrizing ZZ in
-   terms of ThetaW.  I tried something like the following:
-   
-   someNPointFunctions =
-     Cases[FlexibleSUSY`Private`nPointFunctions, 
-      FSSelfEnergy[Fe[_, _][1], ___]];
-   
-   Select[
-    Vertices`VertexRules[someNPointFunctions, 
-     FlexibleSUSY`Private`Lat$massMatrices],
-    ! FreeQ[#, VZ] &]
-   
-   => {Cp[bar[UFe[{gO2_}]], VZ, Fe[{gI2_}]][
-      PR] -> -Sqrt[(3/5)] g1 Sin[ThetaW[]] ThetaStep[gI2, 3] ZER[gI2, 
-       gO2], Cp[bar[UFe[{gO1_}]], VZ, Fe[{gI2_}]][
-      PL] -> -I (1/
-         2 I g2 conj[ZEL[gI2, gO1]] Cos[ThetaW[]] ThetaStep[gI2, 3] - 
-        1/2 I Sqrt[3/5]
-          g1 conj[ZEL[gI2, gO1]] Sin[ThetaW[]] ThetaStep[gI2, 3])}
-   
-   Select[
-    Block[{SARAH`subAlways = 
-       DeleteCases[SARAH`subAlways, HoldPattern[ZZ[_, _] :> _]]},
-     Vertices`VertexRules[someNPointFunctions, 
-      FlexibleSUSY`Private`Lat$massMatrices]
-     ],
-    ! FreeQ[#, VZ] &]
-   
-   => {Cp[bar[UFe[{gO2_}]], VZ, Fe[{gI2_}]][PR] -> 
-     Sqrt[3/5] g1 ThetaStep[gI2, 3] ZER[gI2, gO2] ZZ[1, 2], 
-    Cp[bar[UFe[{gO1_}]], VZ, Fe[{gI2_}]][
-      PL] -> -I (1/2 I Sqrt[3/5]
-          g1 conj[ZEL[gI2, gO1]] ThetaStep[gI2, 3] ZZ[1, 2] + 
-        1/2 I g2 conj[ZEL[gI2, gO1]] ThetaStep[gI2, 3] ZZ[2, 2])}
-   
-   In the last result, the ZZ matrix elements remain.  IMO, this method is
-   simpler and probably faster.  What do you think?
-   </snip>
-
-
 Parameter output names
 ----------------------
 
@@ -112,12 +50,6 @@ returns a list of (mass ordered) particles and their properies
 (R-parity, Hypercharge, ...).  From this list a user can easily
 extract for example the LSP (which would be the first particle in the
 list with R-charge -1) or the weakly interacting particles etc.
-
-
-Allow for complex parameters
-----------------------------
-
-This will allow to use CP-violating models as the MSSMCPV for example.
 
 
 Allow to not run VEVs up to the GUT scale
