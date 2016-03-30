@@ -1,9 +1,8 @@
-BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`"}];
+BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`", "Constraint`"}];
 
 InitializeEffectiveCouplings::usage="";
 InitializeMixingFromModelInput::usage="";
 GetMixingMatrixFromModel::usage="";
-CreateSMRunningFunctions::usage="";
 GetNeededVerticesList::usage="";
 CalculatePartialWidths::usage="";
 CalculateQCDAmplitudeScalingFactors::usage="";
@@ -19,31 +18,39 @@ CreateEffectiveCouplings::usage="";
 Begin["`Private`"];
 
 InitializeMixingFromModelInput[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{i, symbol, result = ""},
+    Module[{i, macro, symbol, result = ""},
            symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
+           If[SARAH`SupersymmetricModel,
+              macro = "MODELPARAMETER";,
+              macro = "PHYSICAL";
+             ];
            If[symbol === Null,
               Return[""];
              ];
            If[Length[symbol] > 1,
-              (result = result <> ", " <> CConversion`ToValidCSymbolString[#] <> "(model_.get_"
-                        <> CConversion`ToValidCSymbolString[#] <> "())")& /@ symbol;,
+              (result = result <> ", " <> CConversion`ToValidCSymbolString[#] <> "(" <> macro <> "("
+                        <> CConversion`ToValidCSymbolString[#] <> "))")& /@ symbol;,
               result = ", " <> CConversion`ToValidCSymbolString[symbol]
-                       <> "(model_.get_" <> CConversion`ToValidCSymbolString[symbol] <> "())";
+                       <> "(" <> macro <> "(" <> CConversion`ToValidCSymbolString[symbol] <> "))";
              ];
            result
           ];
 
 GetMixingMatrixFromModel[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{i, symbol, result = ""},
+    Module[{i, macro, symbol, result = ""},
            symbol = TreeMasses`GetMixingMatrixSymbol[massMatrix];
            If[symbol === Null,
               Return[""];
              ];
+           If[SARAH`SupersymmetricModel,
+              macro = "MODELPARAMETER";,
+              macro = "PHYSICAL";
+             ];
            If[Length[symbol] > 1,
-              (result = result <> CConversion`ToValidCSymbolString[#] <> " = model.get_"
-                        <> CConversion`ToValidCSymbolString[#] <> "();\n")& /@ symbol;,
-              result = CConversion`ToValidCSymbolString[symbol] <> " = model.get_"
-                       <> CConversion`ToValidCSymbolString[symbol] <> "();\n";
+              (result = result <> CConversion`ToValidCSymbolString[#] <> " = " <> macro <> "("
+                        <> CConversion`ToValidCSymbolString[#] <> ");\n")& /@ symbol;,
+              result = CConversion`ToValidCSymbolString[symbol] <> " = " <> macro <> "("
+                       <> CConversion`ToValidCSymbolString[symbol] <> ");\n";
              ];
            result
           ];
@@ -58,21 +65,13 @@ CalculateQCDAmplitudeScalingFactors[] :=
                                     <> "if (m_loop > m_decay) {\n"
                                     <> TextFormatting`IndentText[body] <> "\n}";
            scalarFermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
-                                     <> "if (m_loop > m_decay) {\n";
-           fermionQCD = 1 - SARAH`strongCoupling^2 / (4 Pi^2);
-           body = "result = " <> CConversion`RValueToCFormString[fermionQCD] <> ";";
-           scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body]
-                                     <> "\n} else if (m_decay > 2.0 * m_loop) {\n";
-           coeff = 2 Symbol["lmu"] -2 Symbol["l"] / 3 + (Pi^2 - Symbol["l"]^2) / 18 + I Pi (1 + Symbol["l"] / 3) / 3;
-           fermionQCD = 1 + (SARAH`strongCoupling^2 / (4 Pi^2)) coeff;
-           body = "const double l = Log(Sqr(m_decay) / Sqr(m_loop));\n"
-                  <> "const double lmu = Log(Sqr(m_decay) / (4.0 * Sqr(m_loop)));\nresult = " <>
-                  CConversion`RValueToCFormString[fermionQCD] <> ";";
-           scalarFermionLoopFactor = scalarFermionLoopFactor <> TextFormatting`IndentText[body] <> "\n}";
+                                     <> "result = 1.0 + "
+                                     <> CConversion`RValueToCFormString[SARAH`strongCoupling^2 / (4 Pi^2)]
+                                     <> " * scalar_diphoton_fermion_loop(m_decay, m_loop);\n";
            pseudoscalarFermionLoopFactor = Parameters`CreateLocalConstRefs[{SARAH`strongCoupling}]
-                                           <> "if (m_decay > 2.0 * m_loop) {\n";
-           pseudoscalarFermionLoopFactor = pseudoscalarFermionLoopFactor <> TextFormatting`IndentText[body]
-                                           <> "\n}";
+                                           <> "result = 1.0 + "
+                                           <> CConversion`RValueToCFormString[SARAH`strongCoupling^2 / (4 Pi^2)]
+                                           <> " * pseudoscalar_diphoton_fermion_loop(m_decay, m_loop);\n";
            scalarScalarLoopFactor = TextFormatting`IndentText[scalarScalarLoopFactor];
            scalarFermionLoopFactor = TextFormatting`IndentText[scalarFermionLoopFactor];
            pseudoscalarFermionLoopFactor = TextFormatting`IndentText[pseudoscalarFermionLoopFactor];
@@ -172,14 +171,9 @@ CalculatePartialWidths[couplings_List] :=
                   body = body <> "return " <> CConversion`RValueToCFormString[1 / (64 Pi)]
                          <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
                          <> If[dim != 1, "(gO1)", ""] <> ");";,
-                  If[particle === SARAH`HiggsBoson,
-                     body = body <> "return " <> CConversion`RValueToCFormString[1 / (8 Pi)]
-                            <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
-                            <> If[dim != 1, "(gO1)", ""] <> ");";,
-                     body = body <> "return " <> CConversion`RValueToCFormString[9 / (128 Pi)]
-                            <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
-                            <> If[dim != 1, "(gO1)", ""] <> ");";
-                    ];
+                  body = body <> "return " <> CConversion`RValueToCFormString[1 / (8 Pi)]
+                         <> " * Power(mass, 3.0) * AbsSqr(" <> couplingName
+                         <> If[dim != 1, "(gO1)", ""] <> ");";
                  ];
                functions = Append[functions,
                                   "double " <> FlexibleSUSY`FSModelName <> "_effective_couplings::"
@@ -394,62 +388,43 @@ CreateEffectiveCouplingsInit[couplings_List] :=
            init
           ];
 
-CreateSMRunningFunctions[] :=
-    Module[{body = "", prototype = "", function = ""},
-           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
-              ValueQ[SARAH`strongCoupling],
-              prototype = "void run_SM_gauge_couplings_to(double m);\n";
-              body = "using namespace standard_model;\n\nStandard_model sm;\n\n";
-              body = body <>
-                     "sm.set_loops(2);\n" <>
-                     "sm.set_thresholds(2);\n" <>
-                     "sm.set_low_energy_data(qedqcd);\n" <>
-                     "sm.set_physical_input(physical_input);\n\n";
-              body = body <> "sm.initialise_from_input();\nsm.run_to(m);\n\n";
-              body = body <> "model.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling]
-                     <> "(sm.get_g1());\nmodel.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`leftCoupling]
-                     <> "(sm.get_g2());\nmodel.set_"
-                     <> CConversion`ToValidCSymbolString[SARAH`strongCoupling]
-                     <> "(sm.get_g3());";
-              function = "void " <> FlexibleSUSY`FSModelName
-                         <> "_effective_couplings::run_SM_gauge_couplings_to(double m)\n{\n"
-                         <> TextFormatting`IndentText[body] <> "\n}\n";
-             ];
-           {prototype, function}
-          ];
-
-RunToDecayingParticleScale[particle_, idx_:""] :=
-    Module[{savedMass, body, result = "", mustRecalculate = False},
-           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
-           If[idx != "",
-              savedMass = savedMass <> "(" <> idx <> ")";
-             ];
+RunToDecayingParticleScale[scale_] :=
+    Module[{body, result = ""},
            If[SARAH`SupersymmetricModel,
-              mustRecalculate = True;
-              body = "model.run_to(" <> savedMass <> ");\n";
-              result = "if (rg_improve && scale > " <> savedMass <> ") {\n"
+              body = "model.run_to(" <> scale <> ");\n";
+              result = "if (rg_improve && scale > " <> scale <> ") {\n"
                        <> TextFormatting`IndentText[body] <> "}\n";
              ];
-           (* @note always run the SM gauge couplings, if defined, to the decay scale *)
-           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
-              ValueQ[SARAH`strongCoupling],
-              mustRecalculate = True;
-              result = result <> "run_SM_gauge_couplings_to(" <> savedMass <> ");\n";
-             ];
-           If[mustRecalculate,
-              result = result <> "model.calculate_DRbar_masses();\n"
-                       <> "copy_mixing_matrices_from_model();\n";
-             ];
-           {result, mustRecalculate}
+           result
           ];
 
-CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
-    Module[{particle, vectorBoson, couplingName, call = ""},
+RunStrongCouplingToScale[scale_] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
+              ValueQ[SARAH`strongCoupling],
+              result = result <> "run_SM_strong_coupling_to(" <> scale <> ");\n";
+             ];
+           result
+          ];
+
+CallEffectiveCouplingCalculation[couplingSymbol_] :=
+    Module[{particle, vectorBoson, savedMass, dim, start, idx = "",
+            body, couplingName, call = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
+           savedMass = CConversion`RValueToCFormString[FlexibleSUSY`M[particle]];
+           dim = TreeMasses`GetDimension[particle];
+           start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+           If[dim != 1 && start <= dim,
+              idx = "gO1";
+              savedMass = savedMass <> "(" <> idx <> ")";
+             ];
+           If[vectorBoson === SARAH`VectorP,
+              body = RunStrongCouplingToScale["0.5 * " <> savedMass];,
+              body = RunStrongCouplingToScale[savedMass];
+             ];
+           call = call <> body;
            couplingName = CreateEffectiveCouplingName[particle, vectorBoson];
-           call = "calculate_" <> couplingName;
+           call = call <> "calculate_" <> couplingName;
            If[idx != "",
               call = call <> "(" <> idx <> ");";,
               call = call <> "();";
@@ -459,8 +434,8 @@ CallEffectiveCouplingCalculation[couplingSymbol_, idx_:""] :=
 
 CreateEffectiveCouplingsCalculation[couplings_List] :=
     Module[{i, couplingSymbols, particle, couplingsForParticles = {},
-            mustSaveParameters = False, pos, couplingList, mass,
-            savedMass, dim, start, body, mustRecalculate, result = ""},
+            pos, couplingList, mass,
+            savedMass, dim, start, body, result = ""},
            couplingSymbols = #[[1]]& /@ couplings;
            For[i = 1, i <= Length[couplingSymbols], i++,
                particle = GetExternalStates[couplingSymbols[[i]]][[1]];
@@ -478,23 +453,39 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                dim = TreeMasses`GetDimension[particle];
                start = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
                If[dim == 1 && !TreeMasses`IsGoldstone[particle],
-                  {body, mustRecalculate} = RunToDecayingParticleScale[particle];
-                  result = result <> savedMass <> body;
-                  result = result <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
+                  body = RunToDecayingParticleScale[mass];
+                  If[SARAH`SupersymmetricModel,
+                     body = body <> "model.calculate_DRbar_masses();\n"
+                                 <> "copy_mixing_matrices_from_model();\n";
+                    ];
+                  result = result <> savedMass <> body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n\n";
                   ,
                   If[start <= dim,
-                     {body, mustRecalculate} = RunToDecayingParticleScale[particle, "gO1"];
-                     result = result <> savedMass <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
-                     body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#, "gO1"]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
+                     body = RunToDecayingParticleScale[mass <> "(gO1)"];
+                     If[SARAH`SupersymmetricModel,
+                        body = body <> "model.calculate_DRbar_masses();\n"
+                                    <> "copy_mixing_matrices_from_model();\n";
+                       ];
+                     result = result <> savedMass
+                                     <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                     body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
                  ];
               ];
-           If[mustRecalculate,
-              result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n" <> result;
-              (* @note should this be done after each running, or only once at the end? *)
-              result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
-             ];
+
+           result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n"
+                    <> "const double saved_mt = PHYSICAL("
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> ");\nPHYSICAL("
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> ") = qedqcd.displayPoleMt();\n\n"
+                    <> result;
+           result = result <> "PHYSICAL("
+                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                           <> ") = saved_mt;\n";
+           result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
+
            result
           ];
 
@@ -698,7 +689,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
 CreateEffectiveCouplingFunction[coupling_] :=
     Module[{i, couplingSymbol = coupling[[1]], neededCouplings = coupling[[2]],
             particle, vectorBoson, dim, type, name, savedMass, mass, mixingSymbol,
-            mixingName, parameters = {}, currentLine, body = "", result = ""},
+            mixingName, parameters = {}, poleMasses, currentLine, body = "", result = ""},
            {particle, vectorBoson} = GetExternalStates[couplingSymbol];
            If[particle =!= Null && vectorBoson =!= Null,
               name = CreateEffectiveCouplingName[particle, vectorBoson];
@@ -742,7 +733,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
                     body = body <> "result *= std::complex<double>(2.0,0.);\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(2.0,0.);\n\n";
+                    body = body <> "result *= std::complex<double>(1.5,0.);\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
                            <> TextFormatting`IndentText["result *= pseudoscalar_scaling_factor(decay_mass);"] <> "\n}\n";
                    ];
@@ -753,7 +744,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
                         <> ";\n" <> body;
                 ];
 
-              body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";
+              (* use pole masses in loop functions *)
+              If[SARAH`SupersymmetricModel,
+                 body = Parameters`CreateLocalConstRefs[DeleteDuplicates[parameters]] <> body <> "\n";,
+                 poleMasses = DeleteDuplicates[Select[parameters, Parameters`IsOutputParameter]];
+                 body = Parameters`CreateLocalConstRefsForPhysicalParameters[poleMasses] <> body <> "\n";
+                 body = Parameters`CreateLocalConstRefs[DeleteDuplicates[Complement[parameters, poleMasses]]] <> body <> "\n";
+                ];
 
               If[vectorBoson === SARAH`VectorP,
                  body = body <> "result *= "

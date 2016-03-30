@@ -3,7 +3,7 @@
 #
 # Example:
 #
-#   awk -f config/print_slha_block.awk -v block=MINPAR input.slha
+#   awk -f print_slha_block.awk -v block=MINPAR input.slha
 
 BEGIN {
    is_block = 0

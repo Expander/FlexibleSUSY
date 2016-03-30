@@ -8,22 +8,25 @@ META_SRC     := \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/EffectiveCouplings.m \
+		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/LatticeUtils.m \
+		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \
 		$(DIR)/Observables.m \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
+		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
-		$(DIR)/EWSB.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThreeLoopMSSM.m \
+		$(DIR)/ThreeLoopQCD.m \
 		$(DIR)/ThreeLoopSM.m \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
-		$(DIR)/TwoLoop.m \
+		$(DIR)/TwoLoopQCD.m \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
@@ -32,8 +35,10 @@ META_SRC     := \
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 clean-$(MODNAME):
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 

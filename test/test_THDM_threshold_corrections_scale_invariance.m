@@ -1,36 +1,18 @@
 Needs["TestSuite`", "TestSuite.m"];
+Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
-FlexibleSUSY`$flexiblesusyMetaDir = FileNameJoin[{Directory[], "meta"}];
-
-mssmRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
-thdmRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
-thdmThresholds = FileNameJoin[{Directory[], "model_files", "THDMIIMSSMBC", "full_1L_thresholds.m"}];
+mssmGaugeRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
+thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
+thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
-YuMat = Table[Yu[i, j], {i, 1, 3}, {j, 1, 3}];
-YdMat = Table[Yd[i, j], {i, 1, 3}, {j, 1, 3}];
-YeMat = Table[Ye[i, j], {i, 1, 3}, {j, 1, 3}];
+(* Note: Yukawa couplings are transposed, compared to SARAH *)
+YuMat = Table[Yu[j, i], {i, 1, 3}, {j, 1, 3}];
+YdMat = Table[Yd[j, i], {i, 1, 3}, {j, 1, 3}];
+YeMat = Table[Ye[j, i], {i, 1, 3}, {j, 1, 3}];
 
-approx = {
-    Yu[i_, j_] :> 0 /; i != j,
-    Yd[i_, j_] :> 0 /; i != j,
-    Ye[i_, j_] :> 0 /; i != j,
-    Tu[i_, j_] :> 0 /; i != j,
-    Td[i_, j_] :> 0 /; i != j,
-    Te[i_, j_] :> 0 /; i != j,
-    Nc -> 3,
-    mse[_] :> MSUSY,
-    msu[_] :> MSUSY,
-    msd[_] :> MSUSY,
-    msq[_] :> MSUSY,
-    msl[_] :> MSUSY,
-    M1 -> Mu,
-    M2 -> Mu,
-    Abs[p_] :> p,
-    Conjugate[p_] :> p,
-    Re[p_] :> p,
-    THRESHOLD -> 1,
+expandTraces = {
     trace[Yu, Adj[Yu]] -> Tr[YuMat.ConjugateTranspose[YuMat]],
     trace[Yd, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YdMat]],
     trace[Ye, Adj[Ye]] -> Tr[YeMat.ConjugateTranspose[YeMat]],
@@ -40,9 +22,13 @@ approx = {
     trace[Yd, Adj[Yu], Yu, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YuMat].YuMat.ConjugateTranspose[YdMat]]
 };
 
-betag1MSSM = Cases[Get[mssmRGEs], {g1, b_, __} :> b][[1]];
+betag1MSSM = Cases[Get[mssmGaugeRGEs], {g1, b_, __} :> b][[1]];
 betagYMSSM = (Sqrt[3/5] betag1MSSM /. gRules);
-betag2MSSM = Cases[Get[mssmRGEs], {g2, b_, __} :> b][[1]] /. gRules;
+betag2MSSM = Cases[Get[mssmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
+
+betag1THDM = Cases[Get[thdmGaugeRGEs], {g1, b_, __} :> b][[1]];
+betagYTHDM = (Sqrt[3/5] betag1THDM /. gRules);
+betag2THDM = Cases[Get[thdmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
 
 (* tree-level in SARAH convention *)
 lambdaTree = {
@@ -64,40 +50,42 @@ lambdaTreeRules = {
 };
 
 (* beta functions of lambda_i in the MSSM *)
-
 betaLambdaMSSM = (Dt[#] & /@ lambdaTree) /. {
     Dt[gY] -> betagYMSSM,
     Dt[g2] -> betag2MSSM
 } // Simplify;
 
+(* change in scale dependence since threshold corrections are
+   expressed in terms of THDM gauge couplings *)
+betaLambdaGaugeDiff = (Dt[#] & /@ lambdaTree) /. {
+    Dt[gY] -> betagYMSSM - betagYTHDM,
+    Dt[g2] -> betag2MSSM - betag2THDM
+} // Simplify;
+
 (* beta functions of lambda_i in the THDM *)
 betaLambdaTHDM = {
-    Cases[Get[thdmRGEs], {Lambda1, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda2, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda3, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda4, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda5, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda6, b_, __} :> b][[1]],
-    Cases[Get[thdmRGEs], {Lambda7, b_, __} :> b][[1]]
+    Cases[Get[thdmLambdaRGEs], {Lambda1, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda2, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda3, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda4, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda5, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda6, b_, __} :> b][[1]],
+    Cases[Get[thdmLambdaRGEs], {Lambda7, b_, __} :> b][[1]]
 } /. gRules;
 
 (* difference of the beta functions in the two models *)
-
 betaDiff =
-  Expand[(betaLambdaTHDM - betaLambdaMSSM) /. lambdaTreeRules //. approx];
-
-(* load threshold corrections *)
-Get[thdmThresholds];
+  Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. lambdaTreeRules //. expandTraces];
 
 (* convert to SARAH convention *)
-lamSARAH = lamWagnerLee;
-lamSARAH[[1]] = lamWagnerLee[[1]]/2;
-lamSARAH[[2]] = lamWagnerLee[[2]]/2;
+lamSARAH = GetTHDMThresholds1L[];
+lamSARAH[[1]] = lamSARAH[[1]]/2;
+lamSARAH[[2]] = lamSARAH[[2]]/2;
 
-thresh = lamSARAH /. flags /. coefficients /. Summation -> Sum //. approx //. loopFunctions;
+thresh = lamSARAH //. GetTHDMThresholds1LLoopFunctions[];
 
 (* mu-dependence of threshold corrections *)
-threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2];
+threshMuDep = Expand[Q D[thresh, Q] 16 Pi^2] /. Derivative[1][Re][_] -> 1;
 
 TestEquality[Simplify[betaDiff - threshMuDep], Table[0, {i,1,7}]];
 

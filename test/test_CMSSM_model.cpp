@@ -908,6 +908,7 @@ void compare_top_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.calcDrBarPars();
    m.set_scale(MZ);
    m.calculate_DRbar_masses();
+   m.set_thresholds(2);
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();

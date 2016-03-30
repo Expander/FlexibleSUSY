@@ -99,6 +99,7 @@ UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseHiggs2LoopSM;
 UseHiggs3LoopSplit;
+UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
@@ -895,8 +896,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
-            enablePoleMassThreads = True,
-            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
+            enablePoleMassThreads = True
            },
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
@@ -984,10 +984,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            masses                       = DeleteCases[FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices, FlexibleSUSY`M[_List]];
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
-           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatricesWithoutSplittedMultiplets];
-           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
-           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatricesWithoutSplittedMultiplets];
-           setMasses                    = TreeMasses`CreateMassArraySetter[massMatricesWithoutSplittedMultiplets, "pars"];
+           getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
+           setPhysical                  = TreeMasses`CreatePhysicalArraySetter[massMatrices, "pars"];
+           getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
+           setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
@@ -1109,18 +1109,20 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, files_List] :=
+WriteEffectiveCouplings[couplings_List, settings_List, massMatrices_List, vertexRules_List, files_List] :=
     Module[{i, partialWidthGetterPrototypes, partialWidthGetters,
             loopCouplingsGetters, loopCouplingsDefs, mixingMatricesDefs = "",
             loopCouplingsInit, mixingMatricesInit = "", copyMixingMatrices = "",
-            runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction,
+            setSMStrongCoupling = "",
             calculateScalarScalarLoopQCDFactor, calculateScalarFermionLoopQCDFactor,
             calculatePseudocalarFermionLoopQCDFactor,
             calculateScalarQCDScalingFactor, calculatePseudoscalarQCDScalingFactor,
             calculateLoopCouplings, loopCouplingsPrototypes,
             loopCouplingsFunctions},
            {partialWidthGetterPrototypes, partialWidthGetters} = EffectiveCouplings`CalculatePartialWidths[couplings];
-           {runSMGaugeCouplingsPrototype, runSMGaugeCouplingsFunction} = EffectiveCouplings`CreateSMRunningFunctions[];
+           If[ValueQ[SARAH`strongCoupling],
+              setSMStrongCoupling = "model.set_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <> "(sm.get_g3());\n";
+             ];
            loopCouplingsGetters = EffectiveCouplings`CreateEffectiveCouplingsGetters[couplings];
            For[i = 1, i <= Length[massMatrices], i++,
                mixingMatricesDefs = mixingMatricesDefs <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[i]]];
@@ -1142,13 +1144,12 @@ WriteEffectiveCouplings[couplings_List, massMatrices_List, vertexRules_List, fil
                                        "@partialWidthGetters@" -> partialWidthGetters,
                                        "@loopCouplingsGetters@" -> IndentText[loopCouplingsGetters],
                                        "@loopCouplingsPrototypes@" -> IndentText[loopCouplingsPrototypes],
-                                       "@runSMGaugeCouplingsPrototype@" -> IndentText[runSMGaugeCouplingsPrototype],
                                        "@mixingMatricesDefs@" -> IndentText[mixingMatricesDefs],
                                        "@loopCouplingsDefs@" -> IndentText[loopCouplingsDefs],
                                        "@mixingMatricesInit@" -> IndentText[WrapLines[mixingMatricesInit]],
                                        "@loopCouplingsInit@" -> IndentText[WrapLines[loopCouplingsInit]],
                                        "@copyMixingMatrices@" -> IndentText[copyMixingMatrices],
-                                       "@runSMGaugeCouplingsFunction@" -> runSMGaugeCouplingsFunction,
+                                       "@setSMStrongCoupling@" -> IndentText[setSMStrongCoupling],
                                        "@calculateScalarScalarLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarScalarLoopQCDFactor]],
                                        "@calculateScalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculateScalarFermionLoopQCDFactor]],
                                        "@calculatePseudoscalarFermionLoopQCDFactor@" -> IndentText[WrapLines[calculatePseudoscalarFermionLoopQCDFactor]],
@@ -1236,18 +1237,17 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
-            numberOfDRbarBlocks, drBarBlockNames,
-            massMatricesWithoutSplittedMultiplets = Select[massMatrices, (Head[TreeMasses`GetMassEigenstate[#]] =!= List)&]
+            numberOfDRbarBlocks, drBarBlockNames
            },
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
-           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatricesWithoutSplittedMultiplets];
+           particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
-           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatricesWithoutSplittedMultiplets];
+           particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
            inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
            inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
@@ -1262,7 +1262,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
-           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatricesWithoutSplittedMultiplets];
+           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
@@ -2315,7 +2315,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
-           WriteEffectiveCouplings[effectiveCouplings, massMatrices, vertexRules,
+           WriteEffectiveCouplings[effectiveCouplings, FlexibleSUSY`LowScaleInput, massMatrices, vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_effective_couplings.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "effective_couplings.cpp.in"}],

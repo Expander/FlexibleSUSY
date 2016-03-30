@@ -160,6 +160,12 @@ inline std::complex<double> Conj(const std::complex<double>& a)
    return std::conj(a);
 }
 
+template <class T>
+T Conjugate(T a)
+{
+   return Conj(a);
+}
+
 template <typename T>
 T Exp(T z)
 {

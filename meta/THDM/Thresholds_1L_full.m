@@ -1,22 +1,85 @@
-(* Implementation of THDM threshold corrections from arxiv:0901.2065 *)
+(* Implementation of THDM 1-loop threshold corrections from arxiv:0901.2065 *)
 
-flags = {
-    flagSferm -> 1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd -> -1,
-    flagSfermZud -> 0,
-    flagSfermZuu -> -1,
-    flagIno -> 1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd -> -1,
-    flagInoZud -> 0,
-    flagInoZuu -> -1,
-    flagdg -> 0
+BeginPackage["THDMThresholds1L`"];
+EndPackage[];
+
+(* parameters *)
+{gY, g2, Yu, Yd, Ye, Tu, Td, Te, msu, msd, mse, msq, msl, M1, M2, Mu, Q};
+
+(* loop functions *)
+{B0, DB0, C0, D0, D2tilde, D4tilde, W};
+
+(* flags *)
+{ flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
+  flagInoZdd, flagInoZud, flagInoZuu, flagdg };
+
+(* options *)
+{ coefficients, flags, loopFunctions, loopOrder, sumHead };
+
+GetTHDMThresholds1L::usage = "Returns list of 1L threshold corrections
+ for lambda_1 ... lambda_7 using the convention of
+ arxiv:hep-ph/9307201 and arxiv:1508.00576.  The expressions have been
+ taken from arxiv:0901.2065.
+
+ Important note: The Yukawa couplings are transposed compared to
+ SARAH's MSSM and THDM model files.
+
+ To prevent the replacement of the coefficients by their explicite
+ form, run
+
+    GetTHDMThresholds1L[coefficients -> {}]
+
+ To prevent the replacement of the flags marking the different
+ contributions, run
+
+    GetTHDMThresholds1L[flags -> {}]
+
+ To prevent expanding the sums, run for example
+
+    GetTHDMThresholds1L[sumHead -> Summation]
+
+ To select the loop order, run
+
+    GetTHDMThresholds1L[loopOrder -> {1,1}]
+
+ {0,0} means no tree-level and no 1-loop.
+ {1,0} means only tree-level.
+ {0,1} means only 1-loop.
+ {1,1} means tree-level plus 1-loop.
+
+ By default, the loop functions are kept unevaluated.";
+
+GetTHDMThresholds1LCoefficients::usage = "Returns list of replacement
+ rules for the coefficients defined in Eq. (122), (124) and Tables 4-9
+ of arxiv:0901.2065.";
+
+GetTHDMThresholds1LFlags::usage = "Returns list of replacement rules
+ for the flags which mark the different contributions.";
+
+GetTHDMThresholds1LLoopFunctions::usage = "Returns list of replacement
+ rules for the loop functions defined in Eq. (130)-(131) of
+ arxiv:0901.2065.";
+
+Begin["THDMThresholds1L`Private`"];
+
+GetTHDMThresholds1LFlags[] := {
+    flagSferm    ->  1, (* Enable/disable sfermion contribution *)
+    flagSfermZdd -> -1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
+    flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
+    flagSfermZuu -> -1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
+    flagIno      ->  1, (* Enable/disable gaugino + Higgsino contribution *)
+    flagInoZdd   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
+    flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
+    flagInoZuu   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
+    flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
 };
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
 
-gtilde /: gtilde^2 = (g2^2 + gY^2);
+GetTHDMThresholds1LCoefficients[] := {
+    Nc -> 3,
+    kappa -> 1/(16 Pi^2),
 
-coefficients = {
     (* Eq. (122) *)
     as[1] -> -3/4,
     as[2] -> -3/4,
@@ -345,22 +408,16 @@ coefficients = {
 };
 
 (* loop functions, Eq. (130)-(131) *)
-loopFunctions = {
-    A0[m_, mu_] :> m^2 + m^2 Log[mu^2/m^2],
-
+GetTHDMThresholds1LLoopFunctions[] := {
     B0[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        Log[mu^2/m2^2],
        1 + (m1^2 Log[mu^2/m1^2] - m2^2 Log[mu^2/m2^2])/(m1^2 - m2^2)
        ],
 
-    B0[m1_, m2_] :> B0[m1, m2, Q],
-
-    DB0[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
+    DB0[m1_, m2_] :> If[PossibleZeroQ[m1 - m2],
        1/(6*m2^2),
        (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
        ],
-
-    DB0[m1_, m2_] :> DB0[m1, m2, Q],
 
     C0[m1_, m2_, m3_] :> Which[
        PossibleZeroQ[m1 - m2] && PossibleZeroQ[m1 - m3],
@@ -411,67 +468,71 @@ loopFunctions = {
         + m1^4 D0[m1, m2, m3, m4]
        ),
 
-    D4tilde[m1_, m2_, m3_, m4_] :> D4tilde[m1, m2, m3, m4, Q],
-
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
        2/3 - 2 Log[mu^2/m2^2],
-       (-2/eps - 2 Log[mu^2/m1^2]
+       (- 2 Log[mu^2/m1^2]
         - Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
         - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
-       ],
-
-    W[m1_, m2_] :> W[m1, m2, Q]
+       ]
 };
 
 (* counter-terms *)
 
-dgY = -dZB/2;
-dg2 = -dZW/2;
-dZdd = flagSfermZdd dZddSferm + flagInoZdd dZddIno;
-dZud = flagSfermZud dZudSferm + flagInoZud dZudIno;
-dZuu = flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
+dgY := -dZB/2 flagdg;
+dg2 := -dZW/2 flagdg;
+dZdd := flagSfermZdd dZddSferm + flagInoZdd dZddIno;
+dZud := flagSfermZud dZudSferm + flagInoZud dZudIno;
+dZuu := flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
 (* Eq. (117) *)
-dZW = g2^2/(6 16 Pi^2) (
-    4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Mu^2]
-     + Summation[
-      Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}] - 4);
+dZW := Module[{i},
+    g2^2 kappa/6 (
+    - 4 (* MS-bar/DR-bar conversion term *)
+    + flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
+    + flagSferm (
+        Summation[
+            Log[msl[i]^2/Q^2] + Nc Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (117) *)
-dZB = gY^2/(3 16 Pi^2) (
-    2 Log[Abs[Mu]^2/Q^2]
-     + Summation[
-      Log[mse[i]^2/Q^2] + Log[msl[i]^2/Q^2]/2 +
-       4 Nc/9 Log[msu[i]^2/Q^2] + Nc/9 Log[msd[i]^2/Q^2] +
-       Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]);
+dZB :=  Module[{i},
+    gY^2 kappa/3 (
+    flagIno 2 Log[Abs[Mu]^2/Q^2]
+    + flagSferm (
+        Summation[
+            Log[mse[i]^2/Q^2] + Log[msl[i]^2/Q^2]/2 +
+            4 Nc/9 Log[msu[i]^2/Q^2] + Nc/9 Log[msd[i]^2/Q^2] +
+            Nc/18 Log[msq[i]^2/Q^2], {i, 1, 3}]))];
 (* Eq. (118) *)
-dZddSferm = 1/(32 Pi^2) Summation[
+dZddSferm := Module[{i,j},
+    kappa/2 Summation[
     3 DB0[msd[i], msq[j]] Td[j, i] Conjugate[Td[j, i]]
      + 3 Abs[Mu]^2 DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Yu[j, i]]
      + DB0[mse[i], msl[j]] Te[j, i] Conjugate[Te[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZddIno = -1/(8 16 Pi^2) (gY^2 W[Abs[M1], Abs[Mu]] + 
-     3 g2^2 W[Abs[M2], Abs[Mu]]);
+dZddIno := -kappa/8 (gY^2 W[Abs[M1], Abs[Mu], Q] +
+     3 g2^2 W[Abs[M2], Abs[Mu], Q]);
 (* Eq. (118) *)
-dZudSferm = -1/(16 Pi^2) Summation[
+dZudSferm :=  Module[{i,j},
+    -kappa Summation[
     3 Conjugate[Mu] DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Td[j, i]]
      + 3 Conjugate[Mu] DB0[msu[i], msq[j]] Yu[j, i] Conjugate[Tu[j, i]]
      + Conjugate[Mu] DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Te[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZudIno = -1/(16 Pi^2) Conjugate[
+dZudIno := -kappa Conjugate[
     Mu] (gY^2 Conjugate[M1] DB0[Abs[M1], Abs[Mu]] +
      3 g2^2 Conjugate[M2] DB0[Abs[M2], Abs[Mu]]);
 (* Eq. (118) *)
-dZuuSferm = 1/(32 Pi^2) Summation[
+dZuuSferm :=  Module[{i,j},
+    kappa/2 Summation[
     3 DB0[msu[i], msq[j]] Tu[j, i] Conjugate[Tu[j, i]]
      + 3 Abs[Mu]^2 DB0[msd[i], msq[j]] Yd[j, i] Conjugate[Yd[j, i]]
      + Abs[Mu]^2 DB0[mse[i], msl[j]] Ye[j, i] Conjugate[Ye[j, i]]
-    , {j, 1, 3}, {i, 1, 3}];
+    , {j, 1, 3}, {i, 1, 3}]];
 (* Eq. (119) *)
-dZuuIno = dZddIno;
+dZuuIno := dZddIno;
 
 (* tree-level couplings, Eq. (21) *)
-lamTree[[1]] = lamTree[[2]] = gtilde^2/4;
+lamTree[[1]] = lamTree[[2]] = (g2^2 + gY^2)/4;
 lamTree[[3]] = -lamTree[[1]];
 lamTree[[4]] = g2^2/2;
 lamTree[[5]] = lamTree[[6]] = lamTree[[7]] = 0;
@@ -486,11 +547,11 @@ lamIno[[5]] = (
 (* Eq. (121) *)
 lamIno123467[i_] := (
    g2^4 (as[i] + a2[i] D2tilde[M2, M2, Abs[Mu], Abs[Mu]] + 
-       a4[i] D4tilde[M2, M2, Abs[Mu], Abs[Mu]])
+       a4[i] D4tilde[M2, M2, Abs[Mu], Abs[Mu], Q])
     + g2^2 gY^2 (asp[i] + a2p[i] D2tilde[M1, M2, Abs[Mu], Abs[Mu]] + 
-       a4p[i] D4tilde[M1, M2, Abs[Mu], Abs[Mu]])
+       a4p[i] D4tilde[M1, M2, Abs[Mu], Abs[Mu], Q])
     + gY^4 (aspp[i] + a2pp[i] D2tilde[M1, M1, Abs[Mu], Abs[Mu]] + 
-       a4pp[i] D4tilde[M1, M1, Abs[Mu], Abs[Mu]])
+       a4pp[i] D4tilde[M1, M1, Abs[Mu], Abs[Mu], Q])
    );
 
 lamIno[[1]] = lamIno123467[1];
@@ -501,27 +562,28 @@ lamIno[[6]] = lamIno123467[6];
 lamIno[[7]] = lamIno123467[7];
 
 (* Eq. (127) *)
-Yee[i_, j_]    := Summation[Conjugate[Ye[l, i]] Ye[l, j], {l, 1, 3}];
-Yeebar[i_, j_] := Summation[Ye[i, l] Conjugate[Ye[j, l]], {l, 1, 3}];
-Yuu[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yu[l, j], {l, 1, 3}];
-Yuubar[i_, j_] := Summation[Yu[i, l] Conjugate[Yu[j, l]], {l, 1, 3}];
-Ydd[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yd[l, j], {l, 1, 3}];
-Yddbar[i_, j_] := Summation[Yd[i, l] Conjugate[Yd[j, l]], {l, 1, 3}];
-Yud[i_, j_]    := Summation[Conjugate[Yu[l, i]] Yd[l, j], {l, 1, 3}];
-Ydu[i_, j_]    := Summation[Conjugate[Yd[l, i]] Yu[l, j], {l, 1, 3}];
+Yee[i_, j_]    := Module[{l1}, Summation[Conjugate[Ye[l1, i]] Ye[l1, j], {l1, 1, 3}]];
+Yeebar[i_, j_] := Module[{l2}, Summation[Ye[i, l2] Conjugate[Ye[j, l2]], {l2, 1, 3}]];
+Yuu[i_, j_]    := Module[{l3}, Summation[Conjugate[Yu[l3, i]] Yu[l3, j], {l3, 1, 3}]];
+Yuubar[i_, j_] := Module[{l4}, Summation[Yu[i, l4] Conjugate[Yu[j, l4]], {l4, 1, 3}]];
+Ydd[i_, j_]    := Module[{l5}, Summation[Conjugate[Yd[l5, i]] Yd[l5, j], {l5, 1, 3}]];
+Yddbar[i_, j_] := Module[{l6}, Summation[Yd[i, l6] Conjugate[Yd[j, l6]], {l6, 1, 3}]];
+Yud[i_, j_]    := Module[{l7}, Summation[Conjugate[Yu[l7, i]] Yd[l7, j], {l7, 1, 3}]];
+Ydu[i_, j_]    := Module[{l8}, Summation[Conjugate[Yd[l8, i]] Yu[l8, j], {l8, 1, 3}]];
 
 (* sfermion contribution *)
 
 (* Eq. (125) *)
-lamSlep1234[l_] := Summation[
+lamSlep1234[l_] := Module[{i,j,k},
+    Summation[
    (b1[l] KroneckerDelta[i, j]
        + b2[l] Yee[i, i] KroneckerDelta[i, j]
        + b3[l] Yee[i, j] Yee[j, i]
-      ) B0[mse[i], mse[j]]
+      ) B0[mse[i], mse[j], Q]
     + (b4[l] KroneckerDelta[i, j]
        + b5[l] Yeebar[i, i] KroneckerDelta[i, j]
        + b6[l] Yeebar[i, j] Yeebar[j, i]
-      ) B0[msl[i], msl[j]]
+      ) B0[msl[i], msl[j], Q]
     + Summation[
      (c1[l] Abs[Mu]^2 Ye[k, i] Conjugate[Ye[k, i]] KroneckerDelta[i, j]
          + c2[l] Te[k, i] Conjugate[Te[k, i]] KroneckerDelta[i, j]
@@ -534,26 +596,27 @@ lamSlep1234[l_] := Summation[
          + c7[l] Abs[Mu]^2 Ye[j, i] Conjugate[Ye[k, i]] Yeebar[k, j]
          + c8[l] Te[j, i] Conjugate[Te[k, i]] Yeebar[k, j]
         ) C0[mse[i], msl[j], msl[k]]
-     , {k, 1, 3}], {i, 1, 3}, {j, 1, 3}];
+     , {k, 1, 3}], {i, 1, 3}, {j, 1, 3}]];
 
 (* Eq. (126) of lambda_{1,2,3,4}(n) *)
-lamSquark1234[n_] := Summation[
+lamSquark1234[n_] := Module[{i,j,k,l},
+    Summation[
    (b7[n] KroneckerDelta[i, j]
        + b8[n] Ydd[i, i] KroneckerDelta[i, j]
        + b9[n] Ydd[i, j] Ydd[j, i]
-      ) B0[msd[i], msd[j]]
-    + b10[n] Ydu[i, j] Yud[j, i] B0[msd[i], msu[j]]
+      ) B0[msd[i], msd[j], Q]
+    + b10[n] Ydu[i, j] Yud[j, i] B0[msd[i], msu[j], Q]
     + (b11[n] KroneckerDelta[i, j]
        + b12[n] Yuu[i, i] KroneckerDelta[i, j]
        + b13[n] Yuu[i, j] Yuu[j, i]
-      ) B0[msu[i], msu[j]]
+      ) B0[msu[i], msu[j], Q]
     + (b14[n] KroneckerDelta[i, j]
        + b15[n] Yddbar[i, i] KroneckerDelta[i, j]
        + b16[n] Yuubar[i, i] KroneckerDelta[i, j]
        + b17[n] Yddbar[i, j] Yddbar[j, i]
        + b18[n] Yuubar[i, j] Yuubar[j, i]
        + b19[n] Yddbar[i, j] Yuubar[j, i]
-      ) B0[msq[i], msq[j]]
+      ) B0[msq[i], msq[j], Q]
     + Summation[(c9[n] Abs[Mu]^2 Yd[k, i] Conjugate[
            Yd[k, i]] KroneckerDelta[i, j]
          + c10[n] Td[k, i] Conjugate[Td[k, i]] KroneckerDelta[i, j]
@@ -592,10 +655,11 @@ lamSquark1234[n_] := Summation[
         + d4[n][i, j, k, l] D0[msd[i], msq[j], msq[k], msu[l]]
        , {l, 1, 3}]
      , {k, 1, 3}]
-   , {i, 1, 3}, {j, 1, 3}];
+   , {i, 1, 3}, {j, 1, 3}]];
 
 (* Eq. (128) for lambda_{6,7}(n) *)
-lamSferm67[n_] := Summation[
+lamSferm67[n_] := Module[{i,j,k,l},
+    Summation[
    (c1p[n] Mu Te[k, i] Conjugate[Ye[k, i]] KroneckerDelta[i, j] + 
        c2p[n] Mu Te[k, i] Conjugate[Ye[k, j]] Yee[i, j]) C0[mse[i], 
       mse[j], msl[k]]
@@ -618,7 +682,7 @@ lamSferm67[n_] := Summation[
      +d1[n][i, j, k, l] D0[mse[i], mse[j], msl[k], msl[l]]
       + d2[n][i, j, k, l] D0[msd[i], msd[j], msq[k], msq[l]]
       + d3[n][i, j, k, l] D0[msq[i], msq[j], msq[k], msq[l]]
-     , {l, 1, 3}], {j, 1, 3}, {k, 1, 3}, {i, 1, 3}];
+     , {l, 1, 3}], {j, 1, 3}, {k, 1, 3}, {i, 1, 3}]];
 
 lamSquark = {Undef, Undef, Undef, Undef};
 lamSquark[[1]] = lamSquark1234[1];
@@ -632,41 +696,50 @@ lamSferm[[2]] = lamSlep1234[2] + lamSquark[[2]];
 lamSferm[[3]] = lamSlep1234[3] + lamSquark[[3]];
 lamSferm[[4]] = lamSlep1234[4] + lamSquark[[4]];
 (* Eq. (123) *)
-lamSferm[[5]] = Summation[
+lamSferm[[5]] = Module[{i,j,k,l},
+    Summation[
    d1[5][i, j, k, l] D0[mse[i], mse[j], msl[k], msl[l]]
     + d2[5][i, j, k, l] D0[msd[i], msd[j], msq[k], msq[l]]
     + d3[5][i, j, k, l] D0[msq[i], msq[j], msu[k], msu[l]]
-   , {i, 1, 3}, {j, 1, 3}, {k, 1, 3}, {l, 1, 3}];
+   , {i, 1, 3}, {j, 1, 3}, {k, 1, 3}, {l, 1, 3}]];
 lamSferm[[6]] = lamSferm67[6];
 lamSferm[[7]] = lamSferm67[7];
 
 (* Eq. (116) *)
-lamHat := lamTree +
-    UnitStep[THRESHOLD - 1] (flagIno lamIno + flagSferm lamSferm)/(16 Pi^2);
+lamHat := loopOrder0 lamTree +
+    loopOrder1 kappa (flagIno lamIno + flagSferm lamSferm);
 
 (* Eq. (71) *)
 lamBar[[1]] := lamHat[[1]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZdd] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
+    loopOrder1 ((g2^2 + gY^2) Re[dZdd] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[2]] := lamHat[[2]] +
-   UnitStep[THRESHOLD - 1] (gtilde^2 Re[dZuu] + flagdg (g2^2 dg2 + gY^2 dgY)/2);
+   loopOrder1 ((g2^2 + gY^2) Re[dZuu] + (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[3]] := lamHat[[3]] +
-   UnitStep[THRESHOLD - 1] (-gtilde^2/2 (Re[dZdd] + Re[dZuu]) - flagdg (g2^2 dg2 + gY^2 dgY)/2);
+   loopOrder1 (-(g2^2 + gY^2)/2 (Re[dZdd] + Re[dZuu]) - (g2^2 dg2 + gY^2 dgY)/2);
 
 lamBar[[4]] = lamHat[[4]] +
-   UnitStep[THRESHOLD - 1] (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2) + flagdg g2^2 dg2;
+   loopOrder1 (g2^2 (Re[dZdd] + Re[dZuu]) + g2^2 dg2);
 
 lamBar[[5]] = lamHat[[5]];
 
 lamBar[[6]] = lamHat[[6]] +
-    UnitStep[THRESHOLD - 1] (-gtilde^2/4 Conjugate[dZud]);
+    loopOrder1 (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    UnitStep[THRESHOLD - 1] (gtilde^2/4 dZud);
+    loopOrder1 ((g2^2 + gY^2)/4 dZud);
+
+Options[GetTHDMThresholds1L] = {
+    coefficients -> GetTHDMThresholds1LCoefficients[],
+    flags -> GetTHDMThresholds1LFlags[],
+    loopFunctions -> {},
+    loopOrder -> {1,1},
+    sumHead -> Sum
+};
 
 (* relation to Haber/Wagner/Lee convention p. 6 *)
-lamWagnerLee = {
+GetTHDMThresholds1L[OptionsPattern[]] := {
     lamBar[[1]],
     lamBar[[2]],
     lamBar[[3]] + lamBar[[4]],
@@ -674,4 +747,12 @@ lamWagnerLee = {
     lamBar[[5]],
     lamBar[[6]],
     lamBar[[7]]
-};
+} /.
+    loopOrder0 -> OptionValue[loopOrder][[1]] /.
+    loopOrder1 -> OptionValue[loopOrder][[2]] /.
+    OptionValue[flags] /.
+    OptionValue[coefficients] /.
+    Summation -> OptionValue[sumHead] //.
+    OptionValue[loopFunctions];
+
+End[];

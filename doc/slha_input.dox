@@ -56,6 +56,169 @@ index | description                          | possible values              | de
 15    | calculate observables                | 0 (no) or 1 (yes)            | 0 (= no)
 16    | force positive Majorana masses       | 0 (no) or 1 (yes)            | 0 (= no)
 
+### Threshold correction loop order ###
+
+Using the flag `FlexibleSUSY[7]` the loop order of the threshold
+corrections can be selected.  The threshold corrections affect the
+determination of model parameters \f$\alpha_{\text{em}}, \alpha_s,
+\sin(\theta_W), y_e, y_\mu, y_\tau, y_b, y_t, v\f$ at the low-energy
+scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
+\f$\overline{\text{DR}}\f$ scheme.
+
+- \f$\alpha_{\text{em}}(Q_{\text{low}})\f$: If the threshold
+  correction loop order is set to `0`,
+  \f$\alpha_{\text{em}}(Q_{\text{low}})\f$ is set to
+  \f$\alpha_{\text{em}}^{\text{SM}(5)}(Q_{\text{low}})\f$ in the
+  Standard Model with 5 active quark flavours.  If the threshold
+  correction loop order is set to `1`,
+  \f$\alpha_{\text{em}}(Q_{\text{low}})\f$ is calculated from
+  \f$\alpha_{\text{em}}^{\text{SM}(5)}(Q_{\text{low}})\f$ using 1-loop
+  threshold corrections.
+
+- \f$\alpha_s(Q_{\text{low}})\f$: If the threshold correction loop
+  order is set to `0`, \f$\alpha_s(Q_{\text{low}})\f$ is set to
+  \f$\alpha_s^{\text{SM}(5)}(Q_{\text{low}})\f$ in the Standard Model
+  with 5 active quark flavours.  If the threshold correction loop
+  order is set to `1`, \f$\alpha_s(Q_{\text{low}})\f$ is calculated
+  from \f$\alpha_s^{\text{SM}(5)}(Q_{\text{low}})\f$ using 1-loop
+  threshold corrections.
+
+- \f$\sin(\theta_W)(Q_{\text{low}})\f$: If the threshold correction
+  loop order is set to `0`, the weak mixing angle is calculated from
+  either (i) \f$\{G_F,M_Z\}\f$ or (ii) \f$\{M_W,M_Z\}\f$ (depending on
+  the choice of the weak mixing angle calculation in the FlexibleSUSY
+  model file @ref model_file_options) using the corresponding
+  tree-level relation.
+
+  If the threshold correction loop order is set to `1`, the the weak
+  mixing angle is calculated taking into account
+
+  - (i): complete 1-loop corrections to the W and Z self-energies
+    \f$\Pi_{ZZ}^T, \Pi_{ZZ}^T\f$ as well as 1-loop corrections to
+    \f$\Delta r\f$, which includes vertex and box contributions
+    \f$\delta_{\text{VG}}\f$ from neutralinos, charginos, selectrons
+    and smuons.
+
+  - (ii): complete 1-loop corrections to the W and Z self-energies
+    \f$\Pi_{ZZ}^T, \Pi_{ZZ}^T\f$.
+
+  If the threshold correction loop order is set to `2`, the the weak
+  mixing angle is calculated taking into account
+
+  - (i): 2-loop corrections to \f$\Delta r\f$ of the order
+    \f$O(\alpha_{\text{em}} \alpha_s + y_t^4)\f$ from
+    [arxiv:hep-ph/9606211 Eqs. (C.5), (C.6)].
+
+- \f$y_e(Q_{\text{low}}), y_\mu(Q_{\text{low}}),
+  y_\tau(Q_{\text{low}})\f$: If the threshold correction loop order is
+  set to `0`, the lepton Yukawa couplings \f$y_e(Q_{\text{low}}),
+  y_\mu(Q_{\text{low}}), y_\tau(Q_{\text{low}})\f$ are calculated from
+  the lepton pole masses in the Standard Model with 5 active quark
+  flavours using the tree-level relation.
+
+  If the threshold correction loop order is set to `1`,
+  \f$y_e(Q_{\text{low}}), y_\mu(Q_{\text{low}}),
+  y_\tau(Q_{\text{low}})\f$ are calculated at the scale
+  \f$Q_{\text{low}}\f$ at the 1-loop level from the running lepton
+  masses in Standard Model with 5 active quark flavours.
+
+- \f$y_b(Q_{\text{low}})\f$: If the threshold correction loop order is
+  set to `0`, the bottom Yukawa couplings \f$y_b(Q_{\text{low}})\f$ is
+  calculated from the running bottom mass in the Standard Model with 5
+  active quark flavours, \f$m_b(Q_{\text{low}})\f$, using the
+  tree-level relation.
+
+  If the threshold correction loop order is set to `1`,
+  \f$y_b(Q_{\text{low}})\f$ is calculated at the scale
+  \f$Q_{\text{low}}\f$ from \f$m_b(Q_{\text{low}})\f$ taking the
+  complete 1-loop correction into account.
+
+- \f$y_t(Q_{\text{low}})\f$: If the threshold correction loop order is
+  set to `0`, the top Yukawa couplings \f$y_t(Q_{\text{low}})\f$ is
+  calculated from the top pole mass, \f$M_t\f$, using the tree-level
+  relation.
+
+  If the threshold correction loop order is set to `1`,
+  \f$y_t(Q_{\text{low}})\f$ is calculated at the scale
+  \f$Q_{\text{low}}\f$ from \f$M_t\f$ taking the complete 1-loop
+  correction into account as
+  \f{align*}{
+    m_t(Q) &= M_t +
+    \text{Re\;}\Sigma_{t}^{S}(M_t)
+    + M_t
+    \left[ \text{Re\;}\Sigma_{t}^{L}(M_t) +
+      \text{Re\;}\Sigma_{t}^{R}(M_t) + \Delta
+      m_t^{(1),\text{QCD}} \right] ,
+  \f}
+  where \f$\Sigma_{t}^{S}(p), \Sigma_{t}^{L}(p), \Sigma_{t}^{R}(p)\f$
+  denote the scalar, left- and right-handed parts of the top
+  self-energy without the gluon contribution.  The 1-loop QCD
+  contribution \f$m_t^{(1),\text{QCD}}\f$ reads in the
+  \f$\overline{\text{DR}}\f$ scheme
+  \f{align*}{
+    \Delta m_t^{(1),\text{QCD}} &=
+       -\frac{g_3^2}{12 \pi^2} \left[5-3 \log\left(\frac{m_t^2}{Q^2}\right)\right],
+  \f}
+  and in the \f$\overline{\text{MS}}\f$ scheme
+  \f{align*}{
+    \Delta m_t^{(1),\text{QCD}} &=
+       -\frac{g_3^2}{12 \pi^2} \left[4-3 \log\left(\frac{m_t^2}{Q^2}\right)\right],
+  \f}
+
+  If the threshold correction loop order is set to `2`,
+  2-loop QCD corrections are taken into count as
+  \f{align*}{
+    m_t(Q) &= M_t +
+    \text{Re\;}\Sigma_{t}^{S}(M_t)
+    + M_t
+    \left[ \text{Re\;}\Sigma_{t}^{L}(M_t) +
+      \text{Re\;}\Sigma_{t}^{R}(M_t) + \Delta
+      m_t^{(1),\text{QCD}} + \Delta m_t^{(2),\text{QCD}} \right] ,
+  \f}
+  where \f$\Delta m_t^{(2),\text{QCD}}\f$ reads in the
+  \f$\overline{\text{DR}}\f$ scheme [arxiv:hep-ph/0210258]
+  \f{align*}{
+    \Delta m_t^{(2),\text{QCD}} &= \left(\Delta
+      m_t^{(1),\text{QCD}}\right)^2
+    - \frac{g_3^4}{4608 \pi^4} \Bigg[396
+    \log^2\left(\frac{m_t^2}{Q^2}\right)-1476
+    \log\left(\frac{m_t^2}{Q^2}\right)
+    -48 \zeta(3)+2011+16 \pi^2 (1+\log 4)\Bigg] \,,
+  \f}
+  and in the \f$\overline{\text{MS}}\f$ scheme [arxiv:hep-ph/9803493]
+  \f{align*}{
+    \Delta m_t^{(2),\text{QCD}} &= \left(\Delta
+      m_t^{(1),\text{QCD}}\right)^2 - \frac{g_3^4}{4608 \pi^4}
+    \Bigg[396 \log^2\left(\frac{m_t^2}{Q^2}\right)
+    - 2028 \log\left(\frac{m_t^2}{Q^2}\right)
+    - 48 \zeta(3) + 2821 + 16 \pi^2 (1+\log 4)\Bigg] \,.
+  \f}
+  If the threshold correction loop order is set to `3` in non-SUSY
+  models, the 3-loop QCD corrections from Ref. [arxiv:hep-ph/9912391,
+  arxiv:hep-ph/9911434] are taken into count as
+  \f{align*}{
+    m_t(Q) &= M_t +
+    \text{Re\;}\Sigma_{t}^{S}(M_t)
+    + M_t
+    \left[ \text{Re\;}\Sigma_{t}^{L}(M_t) +
+      \text{Re\;}\Sigma_{t}^{R}(M_t) + \Delta
+      m_t^{(1),\text{QCD}} + \Delta m_t^{(2),\text{QCD}} + \Delta m_t^{(3),\text{QCD}} \right] ,
+  \f}
+  where \f$\Delta m_t^{(3),\text{QCD}}\f$ reads in the
+  \f$\overline{\text{MS}}\f$ scheme
+  \f{align*}{
+     \Delta m_t^{(3),\text{QCD}} =
+     -\frac{g_3^6 \left\{2700 \left[-312 \zeta (3)+1645+8 \pi ^2
+        (1+\log (4))\right] \log \left(\frac{Q^2}{m^2}\right)+48600 \log
+        ^3\left(\frac{Q^2}{m^2}\right)+714420 \log
+        ^2\left(\frac{Q^2}{m^2}\right)-15 \left[69120
+        \text{Li}_4\left(\frac{1}{2}\right)+116496 \zeta(3)-94800 \zeta
+        (5)-531197+2880 \log^4(2)\right] - 4 \pi^2 [129510 \zeta
+        (3)-393101+240 \log(2) (697+24 \log(2))] + 10500 \pi
+        ^4\right\}}{9953280 \pi^6}
+  \f}
+
+
 \section FlexibleSUSY_input Additional physical input parameters (FlexibleSUSYInput)
 
 __Block name__: `FlexibleSUSYInput`

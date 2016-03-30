@@ -65,7 +65,23 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 @copyMixingMatrices@
 }
 
-@runSMGaugeCouplingsFunction@
+void @ModelName@_effective_couplings::run_SM_strong_coupling_to(double m)
+{
+   using namespace standard_model;
+
+   Standard_model sm;
+
+   sm.set_loops(2);
+   sm.set_thresholds(2);
+   sm.set_low_energy_data(qedqcd);
+   sm.set_physical_input(physical_input);
+
+   sm.initialise_from_input();
+   sm.run_to(m);
+
+@setSMStrongCoupling@
+}
+
 std::complex<double> @ModelName@_effective_couplings::scalar_scalar_qcd_factor(double m_decay, double m_loop) const
 {
    std::complex<double> result(1.0, 0.0);
