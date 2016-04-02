@@ -1893,7 +1893,7 @@ check_sarah() {
     rm -f ${sarahconfig}
     "$MATH" <<EOF > /dev/null
 Needs["SARAH\`"];
-If[!ValueQ[SA\`Version], Quit[1]];
+If[!ValueQ[SA\`Version] || !StringQ[\$sarahDir], Quit[1]];
 Export["${sarahconfig}", SA\`Version, "String"];
 Quit[0];
 EOF
