@@ -7,6 +7,9 @@ FlexibleSUSY-1.4.1 [not released yet]
    class which are triggered when the input value of Mt_pole is chosen
    to be smaller than MZ_pole.
 
+ * Bugfix (commit 077c5b9): Fixing check for SARAH installation with
+   Mathematica 10.
+
 FlexibleSUSY-1.4.0 [March, 08 2016]
 
  * Feature: Allow the user to chose the loop order of the RGEs to be
