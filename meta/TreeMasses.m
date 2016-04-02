@@ -753,8 +753,7 @@ GetIntermediateMassMatrices[massMatrices_List] :=
 
 ConvertSarahMassMatrices[] :=
     Module[{particles = {}, result = {}, eigenstateName, massMatrix,
-            gaugeDefs = {}, gaugeMassES = {}, multiplet = {},
-            k, multipletName, rules = {}, mixingMatrixSymbol, dim},
+            k, mixingMatrixSymbol},
            (* the ghost masses will later be replaced explicitely by the
               corresponding vector boson masses *)
            particles = Select[GetParticles[], (!IsGhost[#])&];
