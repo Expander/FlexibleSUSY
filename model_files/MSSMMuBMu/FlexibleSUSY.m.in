@@ -99,7 +99,7 @@ LowScaleInput = {
 {Yu, Automatic},
 {Yd, Automatic},
 {Ye, Automatic},
-{vu, Sqrt[4 Sqr[MODELPARAMETER[M[VZ]]] / (Sqr[MODELPARAMETER[g2]] + 3/5 Sqr[MODELPARAMETER[g1]]) - Sqr[vd]]}
+{vu, Sqrt[4 Sqr[MZDRbar] / (g2^2 + 3/5 g1^2) - Sqr[vd]]}
 };
 
 (* InitialGuessAtLowScale is ignored if SMTower is true *)
