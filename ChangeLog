@@ -1,5 +1,11 @@
 FlexibleSUSY-1.4.1 [not released yet]
 
+ * Feature: Tab-completion for FlexibleSUSY's spectrum generators in
+   the bash.
+
+   Usage:
+   . utils/install-bash_completions.bash
+
  * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
    M3^2 -> MSQ^2 / M3^2 in HSSUSY.
 
