@@ -1,4 +1,4 @@
-# ./scan.sh --parameter=MS --start=91 --stop=100000 --steps=100 --step-size=log --TB=5 --Xt=0 | tee scale_high_TB5.dat
+# ./scan.sh --parameter=MS --start=91.1876 --stop=100000 --steps=60 --step-size=log --TB=5 --Xt=0 | tee scale_high_TB5.dat
 
 start="91.1876"
 stop=100000
