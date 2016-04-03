@@ -744,6 +744,65 @@ SUSYScaleInput = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\section convergence_tester Convergence tester
+
+FlexibleSUSY solves the given boundary value problem (BVP) by running
+to each scale and imposing the corresponding boundary conditions until
+a convergent solution has been found.
+
+The convergence criterion can be customized using the
+`FSConvergenceCheck` variable.  The default is
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSConvergenceCheck = Automatic; (* default *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If `FSConvergenceCheck` is set to `Automatic`, then the following
+convergence criteria are used:
+
+- In SUSY models the BVP solver stops if the maximum number of
+  iterations has been reached (`FlexibleSUSY[1]`, see @ref
+  slha_input_fields) or the maximum relative difference of the DR-bar
+  masses of the SUSY particles at the SUSY scale between two
+  successive iterations is less than the precision goal
+  (`FlexibleSUSY[0]`, see @ref slha_input_fields).
+
+- In non-SUSY models the BVP solver stops if the maximum number of
+  iterations has been reached (`FlexibleSUSY[1]`, see @ref
+  slha_input_fields) or the maximum relative difference of all MS-bar
+  masses of the model at the SUSY scale between two successive
+  iterations is less than the precision goal (`FlexibleSUSY[0]`, see
+  @ref slha_input_fields).
+
+To create a custom convergence tester, the `FSConvergenceCheck`
+variable must be set to a list containing the running masses and/or
+running parameters to be compared between two successive iterations.
+The BVP solver stops if the maximum number of iterations has been
+reached (`FlexibleSUSY[1]`) or the maximum relative difference of all
+running masses and/or parameters given in the `FSConvergenceCheck`
+list at the SUSY scale between two successive iterations is less than
+the precision goal (`FlexibleSUSY[0]`).
+
+Example: In the following MSSM example the running masses of all
+massive particles as well as the running parameters `g1, g2, g3, Yu,
+Yd[3,3], Ye, B[\[Mu]], \[Mu]` are tested for convergence.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSConvergenceCheck = {
+    M[hh], M[Ah], M[Hpm],
+    M[Su], M[Sd], M[Se],
+    M[Chi], M[Cha], M[Glu],
+    M[Fu], M[Fd], M[Fe],
+    M[VZ], M[VWm],
+    g1, g2, g3, Yu, Yd[3,3], Ye, B[\[Mu]], \[Mu]
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: For matrix- or vector-valued parameters every component is
+used in the convergence test, if the matrix/vector indices are
+omitted.
+
+
 \section rges Renormalization group equations (RGEs)
 
 The loop order of the RGEs to be used can be selected in the model
