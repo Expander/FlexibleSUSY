@@ -15,12 +15,15 @@ set ylabel "m_t(M_S) / GeV"
 
 calc_mt(yt,v) = yt * v / sqrt(2)
 
+# TODO: check the following indices!!!!
+
 # 1: MS
 # 2: yt of MSSMtower
 # 3: yt of EFTtower
 # 4: yt of MSSMMuBMu
 # 5: yt of HSSUSY
 # 6: yt of SOFTSUSY
+# 7: yt of MSSMMuBMu/SPheno-like
 
 # 7 : MS
 # 8 : vu of MSSMtower

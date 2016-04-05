@@ -16,4 +16,5 @@ plot [:] [:] \
      filename u 1:2 t 'MSSM-tower/MSSM' w lines ls 1, \
      "< awk '{ if ($4 > 0) print }' ".filename u 1:4 t 'MSSM 2L' w lines ls 3, \
      filename u 1:5 t 'HSSUSY 2L' w lines ls 2, \
-     filename u 1:6 t 'SOFTSUSY 2L' w lines ls 4
+     filename u 1:6 t 'SOFTSUSY 2L' w lines ls 4, \
+     filename u 1:7 t 'MSSM 2L SPheno-like' w lines ls 5

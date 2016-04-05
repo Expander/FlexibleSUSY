@@ -11,7 +11,6 @@ M3=
 AS="1.184000000e-01"
 MT="1.733400000e+02"
 MTmethod=0
-UseMTmethod="$MTmethod"
 WRITE_EFT=0
 GF=0.0000116638
 MZ=91.1876
@@ -142,7 +141,7 @@ run_sg() {
 Block MODSEL                 # Select model
    12    ${MS}
 Block FlexibleSUSY
-   17   ${UseMTmethod}       # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
+   17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
    18   ${WRITE_EFT}         # write full model (0) / EFT (1)
 Block SMINPUTS               # Standard Model inputs
     2   ${GF}                # G_Fermi
@@ -305,8 +304,6 @@ Options:
   --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
   --MS=          M_SUSY (default: ${MS})
   --MT=          Top quark pole mass (default: ${MT})
-  --MTmethod=    0 = FlexibleSUSY, 1 = SPheno (default: $MTmethod)
-                 (Only used in FlexibleSUSY/MSSMMuBMu)
   --MZ           Z pole mass
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
@@ -337,7 +334,6 @@ if test $# -gt 0 ; then
             --M3factor=*)            M3factor=$optarg ;;
             --MS=*)                  MS=$optarg ;;
             --MT=*)                  MT=$optarg ;;
-            --MTmethod=*)            MTmethod=$optarg ;;
             --MZ=*)                  MZ=$optarg ;;
             --TB=*)                  TB=$optarg ;;
             --Xt=*)                  Xt=$optarg ;;
@@ -349,7 +345,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy"
+printf "# %14s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -380,23 +376,27 @@ EOF
 
     # run the spectrum generators
     WRITE_EFT=0
-    UseMTmethod=0
+    MTmethod=0
     MhMSSMtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
 
     WRITE_EFT=1
-    UseMTmethod=0
+    MTmethod=0
     MhEFTtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
 
     WRITE_EFT=0
-    UseMTmethod="$MTmethod"
+    MTmethod=0
     MhMSSMMuBMu=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
 
     WRITE_EFT=0
-    UseMTmethod=0
+    MTmethod=1
+    MhMSSMMuBMuSPheno=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
+
+    WRITE_EFT=0
+    MTmethod=0
     MhHSSUSY=$(run_sg "models/HSSUSY/run_HSSUSY.x")
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
-    printf "%16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy"
+    printf "%16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno"
 
 done
