@@ -239,12 +239,6 @@ std::vector<std::string> filter(const std::string& dir,
    return existing_files;
 }
 
-struct File_exists : std::unary_function<std::string, bool> {
-   bool operator()(const std::string& file_name) const {
-      return file_exists(file_name);
-   }
-};
-
 /// search recursively for include statments in `file_name'
 /// taking into account only directories given in `paths'
 std::vector<std::string> search_includes(const std::string& file_name,
@@ -262,7 +256,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
    std::vector<std::string> existing;
    for (std::vector<std::string>::const_iterator it = paths.begin(),
            end = paths.end(); it != end; ++it) {
-      const std::vector<std::string> existing_in_path(filter(*it, includes, File_exists()));
+      const std::vector<std::string> existing_in_path(filter(*it, includes, file_exists));
       existing.insert(existing.end(), existing_in_path.begin(), existing_in_path.end());
    }
 
