@@ -6,6 +6,9 @@ FSMassMatrix::usage="Head of a mass matrix";
 ConvertSarahMassMatrices::usage="creates list of mass matrices using
 SARAH's MassMatrix[] function";
 
+GetUnmixedParticleMasses::usage="returns list of masses of unmixed
+ particles";
+
 CreateMassGetter::usage="creates a C function for
 the mass getter";
 
@@ -753,8 +756,7 @@ GetIntermediateMassMatrices[massMatrices_List] :=
 
 ConvertSarahMassMatrices[] :=
     Module[{particles = {}, result = {}, eigenstateName, massMatrix,
-            gaugeDefs = {}, gaugeMassES = {}, multiplet = {},
-            k, multipletName, rules = {}, mixingMatrixSymbol, dim},
+            k, mixingMatrixSymbol},
            (* the ghost masses will later be replaced explicitely by the
               corresponding vector boson masses *)
            particles = Select[GetParticles[], (!IsGhost[#])&];
@@ -775,6 +777,18 @@ ConvertSarahMassMatrices[] :=
            result = DeleteDuplicateSinglets[Join[result, GetIntermediateMassMatrices[result]]];
            result = DeleteDuplicateVectors[result];
            Return[result];
+          ];
+
+(* returns masses of unmixed particles *)
+GetUnmixedParticleMasses[] :=
+    Module[{particles = {}, result = {}, eigenstateName, massMatrix, k},
+           particles = Select[GetParticles[], (!IsGhost[#] && IsUnmixed[#])&];
+           For[k = 1, k <= Length[particles], k++,
+               eigenstateName = particles[[k]];
+               massMatrix = { ReplaceDependencies[GetMassOfUnmixedParticle[eigenstateName]] };
+               AppendTo[result, TreeMasses`FSMassMatrix[massMatrix, eigenstateName, Null]];
+              ];
+           result
           ];
 
 GetMixingMatrixSymbol[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[3]];

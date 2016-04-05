@@ -1531,7 +1531,7 @@ PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
            nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
            If[nonMixedParticlesFile == "",
-              Print["Error: file with unrotated fields not found: ", tadpolesFile];
+              Print["Error: file with unrotated fields not found: ", nonMixedParticlesFile];
               Quit[1];
              ];
            Print["Reading unrotated particles from file ", nonMixedParticlesFile, " ..."];
