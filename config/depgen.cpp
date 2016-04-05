@@ -187,9 +187,20 @@ std::vector<std::string> get_includes(const std::string& file_name)
       if (!tline.empty() && tline[0] == '#') {
          const std::string ttline(trim_left(tline.substr(1)));
          if (starts_with(ttline, "include")) {
+            // throw away `include'
             const std::string header(trim_left(ttline.substr(7)));
-            if (!header.empty() && header[0] == '"')
-               includes.push_back(header.substr(1, header.size()-2));
+            // extract file name
+            std::size_t pos1 = header.find_first_of('"');
+            if (pos1 == std::string::npos)
+               continue;
+            pos1++;
+            std::size_t pos2 = header.find_first_of('"', pos1);
+            if (pos2 == std::string::npos)
+               continue;
+            pos2--;
+            const std::string file = header.substr(pos1, pos2);
+            if (!file.empty())
+               includes.push_back(file);
          }
       }
    }
