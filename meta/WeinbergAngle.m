@@ -120,10 +120,10 @@ deltaRHat2LoopSM[]:=
           ];
 
 (*calculates tree-level value of rhohat parameter from umixed and mixed Z mass as well as RhoZero*)
-RhoHatTree[massMatrices_List]:=
+RhoHatTree[]:=
     Module[{Zmass2unmixed, Zmass2mixed, expr, result},
            Zmass2unmixed = UnmixedZMass2[];
-           Zmass2mixed = FindMassZ2[massMatrices];
+           Zmass2mixed = FindMassZ2[TreeMasses`GetUnmixedParticleMasses[] /. Parameters`ApplyGUTNormalization[]];
            expr = Simplify[RhoZero[] Zmass2unmixed / Zmass2mixed /. SARAH`Weinberg -> ExpressWeinbergAngleInTermsOfGaugeCouplings[], SARAH`hyperchargeCoupling > 0 && SARAH`leftCoupling > 0];
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> "rhohat_tree = ";
