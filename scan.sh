@@ -13,6 +13,8 @@ MT="1.733400000e+02"
 MTmethod=0
 UseMTmethod="$MTmethod"
 WRITE_EFT=0
+GF=0.0000116638
+MZ=91.1876
 
 dump_fs_slha_input_file=
 dump_fs_slha_output_file=
@@ -143,7 +145,9 @@ Block FlexibleSUSY
    17   ${UseMTmethod}       # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
    18   ${WRITE_EFT}         # write full model (0) / EFT (1)
 Block SMINPUTS               # Standard Model inputs
+    2   ${GF}                # G_Fermi
     3   ${AS}                # alpha_s(MZ) SM MSbar
+    4   ${MZ}                # MZ(pole)
     6   ${MT}                # mtop(pole)
 Block TanBeta
     ${TB}                    # tan(Beta) at the SUSY scale
@@ -232,7 +236,9 @@ Block MINPAR                 # Input parameters
     4   1.000000000e+00      # sign(mu)
 ${sminputs_tmpl}
 Block SMINPUTS               # Standard Model inputs
+    2   ${GF}                # G_Fermi
     3   ${AS}                # alpha_s(MZ) SM MSbar
+    4   ${MZ}                # MZ(pole)
     6   ${MT}                # mtop(pole)
 BLOCK EXTPAR
          0     ${MS}   # Q
@@ -295,11 +301,13 @@ Options:
   --steps=       number of steps (default: ${steps})
   --step_size=   linear or log (default: ${step_size})
   --AS=          alpha_s (default: ${AS})
+  --GF           Fermi constant
   --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
   --MS=          M_SUSY (default: ${MS})
   --MT=          Top quark pole mass (default: ${MT})
   --MTmethod=    0 = FlexibleSUSY, 1 = SPheno (default: $MTmethod)
                  (Only used in FlexibleSUSY/MSSMMuBMu)
+  --MZ           Z pole mass
   --TB=          tan(beta) (default: ${TB})
   --Xt=          Xt (default: ${Xt})
   --help=|-h     print this help message
@@ -325,10 +333,12 @@ if test $# -gt 0 ; then
             --steps=*)               steps=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
             --AS=*)                  AS=$optarg ;;
+            --GF=*)                  GF=$optarg ;;
             --M3factor=*)            M3factor=$optarg ;;
             --MS=*)                  MS=$optarg ;;
             --MT=*)                  MT=$optarg ;;
             --MTmethod=*)            MTmethod=$optarg ;;
+            --MZ=*)                  MZ=$optarg ;;
             --TB=*)                  TB=$optarg ;;
             --Xt=*)                  Xt=$optarg ;;
             --help|-h)               help; exit 0 ;;
