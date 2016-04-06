@@ -80,7 +80,7 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates&
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at tree-level
  */
-void @ModelName@_SM_matching::match_low_to_high_sale_model_tree_level(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
 {
    sm.calculate_DRbar_masses();
    model.run_to(sm.get_scale());
@@ -112,7 +112,7 @@ void @ModelName@_SM_matching::match_low_to_high_sale_model_tree_level(@ModelName
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at one-loop
  */
-void @ModelName@_SM_matching::match_low_to_high_sale_model(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_SM_matching::match_low_to_high_scale_model(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
 {
    Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
