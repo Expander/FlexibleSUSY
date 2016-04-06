@@ -84,7 +84,7 @@ Eigen::ArrayXd @ModelName@_soft_parameters::get() const
 void @ModelName@_soft_parameters::print(std::ostream& ostr) const
 {
    @ModelName@_susy_parameters::print(ostr);
-   ostr << "soft parameters:\n";
+   ostr << "soft parameters at Q = " << get_scale() << ":\n";
 @printParameters@
 }
 

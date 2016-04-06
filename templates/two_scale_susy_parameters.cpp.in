@@ -89,7 +89,7 @@ Eigen::ArrayXd @ModelName@_susy_parameters::get() const
 
 void @ModelName@_susy_parameters::print(std::ostream& ostr) const
 {
-   ostr << "susy parameters:\n";
+   ostr << "susy parameters at Q = " << get_scale() << ":\n";
 @printParameters@
 }
 
