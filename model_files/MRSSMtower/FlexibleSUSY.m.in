@@ -18,7 +18,7 @@ EXTPAR = {
     {0, Ms}
 };
 
-EWSBOutputParameters = { mHd2, mHu2, mS2, mT2 };
+EWSBOutputParameters = { mHd2, mHu2, vS, vT };
 
 SUSYScale = Ms;
 
@@ -30,7 +30,9 @@ SUSYScaleInput = {
     {md2, UNITMATRIX[3] Sqr[Ms]},
     {ml2, UNITMATRIX[3] Sqr[Ms]},
     {me2, UNITMATRIX[3] Sqr[Ms]},
-    {\[Mu], Ms},
+    {mS2, Sqr[Ms]},
+    {mT2, Sqr[Ms]},
+    {\[Mu], SARAH`LHInput[\[Mu]]},
     {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
     {LamSD , SARAH`LHInput[LamSD]},
     {LamSU , SARAH`LHInput[LamSU]},
@@ -44,8 +46,6 @@ SUSYScaleInput = {
     {mRu2  , SARAH`LHInput[mRu2]},
     {MuD   , SARAH`LHInput[MuD]}, 
     {MuU   , SARAH`LHInput[MuU]},
-    {vS    , SARAH`LHInput[vS]},
-    {vT    , SARAH`LHInput[vT]},
     {B[MuD], SARAH`LHInput[B[MuD]]},
     {B[MuU], SARAH`LHInput[B[MuU]]}
 };
@@ -56,7 +56,9 @@ InitialGuessAtSUSYScale = {
     {md2, UNITMATRIX[3] Sqr[Ms]},
     {ml2, UNITMATRIX[3] Sqr[Ms]},
     {me2, UNITMATRIX[3] Sqr[Ms]},
-    {\[Mu], Ms},
+    {mS2, Sqr[Ms]},
+    {mT2, Sqr[Ms]},
+    {\[Mu], 0},
     {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)}
 };
 

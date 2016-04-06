@@ -45,8 +45,6 @@ Block MINPAR
     3    5                # TanBeta
 Block EXTPAR
     0    1e3              # Ms
-Block NMSSMRUNIN
-    5    1                # vS
 Block MSOFTIN
     300  10               # MDB
     302  2000             # MDO
@@ -60,7 +58,6 @@ Block HMIXIN
     304 -0.1              # LTU
     201  250              # MuD
     202  250              # MuU
-    310  1                # vT
     1    0                # Mu
     203  0                # BmuD
     204  0                # BmuU
