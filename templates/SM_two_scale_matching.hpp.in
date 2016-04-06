@@ -72,9 +72,9 @@ public:
       model->solve_ewsb_one_loop();
       
       if(!model->get_thresholds())
-         @ModelName@_SM_matching::matchingTL(*eft, *model);
+         @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
       else 
-         @ModelName@_SM_matching::matching(*eft, *model);
+         @ModelName@_SM_matching::match_high_to_low_scale_model(*eft, *model);
    }
 
    virtual void match_low_to_high_scale_model()
@@ -83,9 +83,9 @@ public:
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
       if(!model->get_thresholds())
-         @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+         @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
       else
-         @ModelName@_SM_matching::matchingReverse(*model, *eft);
+         @ModelName@_SM_matching::match_low_to_high_scale_model(*model, *eft);
    }
 
    void match_high_to_low_scale_model_tree_level()
@@ -95,7 +95,7 @@ public:
 
       model->calculate_DRbar_masses();
 
-      @ModelName@_SM_matching::matchingTL(*eft, *model);
+      @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
    }
 
    void match_low_to_high_scale_model_tree_level()
@@ -103,7 +103,7 @@ public:
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
-      @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+      @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
    }
 
 private:

@@ -36,7 +36,7 @@ namespace flexiblesusy {
 /**
  * matches Standardmodel from @ModelName@-Model at tree-level
  */
-void @ModelName@_SM_matching::matchingTL(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
 {
   sm.run_to(model.get_scale());
   model.calculate_DRbar_masses();
@@ -48,7 +48,7 @@ void @ModelName@_SM_matching::matchingTL(SM_mass_eigenstates& sm, @ModelName@_ma
 /**
  * matches Lambda in SM from @ModelName@ by Higgs mass 1-loop pole mass matching
  */
-void @ModelName@_SM_matching::matching(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
 {
    const auto model_pole_mass_order = model.get_pole_mass_loop_order();
    const auto sm_pole_mass_order = sm.get_pole_mass_loop_order();
@@ -80,7 +80,7 @@ void @ModelName@_SM_matching::matching(SM_mass_eigenstates& sm, @ModelName@_mass
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at tree-level
  */
-void @ModelName@_SM_matching::matchingReverseTL(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_SM_matching::match_low_to_high_sale_model_tree_level(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
 {
    sm.calculate_DRbar_masses();
    model.run_to(sm.get_scale());
@@ -112,7 +112,7 @@ void @ModelName@_SM_matching::matchingReverseTL(@ModelName@_mass_eigenstates& mo
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at one-loop
  */
-void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_SM_matching::match_low_to_high_sale_model(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
 {
    Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
