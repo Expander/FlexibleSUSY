@@ -152,6 +152,16 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
    const double MW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW()_0@);
    const double MZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ()_0@);
 
+   if (MZ2_1L < 0.)
+      model.get_problems().flag_tachyon(@ModelName@_info::@VectorZ@);
+   else
+      model.get_problems().unflag_tachyon(@ModelName@_info::@VectorZ@);
+
+   if (MW2_1L < 0.)
+      model.get_problems().flag_tachyon(@ModelName@_info::@VectorW@);
+   else
+      model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
+
    for( unsigned gen = 0; gen < 3; gen++)
    {
       topDRbar(gen, gen)      = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
@@ -169,7 +179,7 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
    model.set_@strongCoupling@(g3_1L);
 
    // 'vev' is a keyword for user-defined matching
-   const double vev = 2. * Sqrt(MZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
+   const double vev = 2. * AbsSqrt(MZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
 
 @applyUserMatching@
 @setYukawas@
