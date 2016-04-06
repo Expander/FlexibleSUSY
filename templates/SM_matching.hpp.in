@@ -34,10 +34,10 @@ namespace flexiblesusy
 class @ModelName@_SM_matching
 {
   public:
-   static void matchingTL(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
-   static void matching(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
-   static void matchingReverseTL(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
-   static void matchingReverse(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
+   static void match_high_to_low_scale_model_tree_level(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
+   static void match_high_to_low_scale_model(SM_mass_eigenstates&, @ModelName@_mass_eigenstates&);
+   static void match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
+   static void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, SM_mass_eigenstates&);
 
 };
 
