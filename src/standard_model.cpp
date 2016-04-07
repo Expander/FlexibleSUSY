@@ -441,15 +441,6 @@ int Standard_model::solve_ewsb_tree_level()
    return error;
 }
 
-int Standard_model::solve_ewsb_tree_level_via_soft_higgs_masses()
-{
-   int error = 0;
-
-
-
-   return error;
-}
-
 int Standard_model::solve_ewsb_one_loop()
 {
    return solve_ewsb_iteratively(1);
