@@ -44,19 +44,12 @@ Block SMINPUTS               # Standard Model inputs
 Block MINPAR
     3    5                # TanBeta
 Block EXTPAR
-    0    1e3              # Ms
-Block MSOFTIN
-    300  10               # MDB
-    302  2000             # MDO
-    301  100              # MDW
+    0    1e5              # Ms
 Block HMIXIN
     301 -0.1              # LSD
     302 -0.1              # LSU
     303 -0.1              # LTD
     304 -0.1              # LTU
-    201  250              # MuD
-    202  250              # MuU
     1    0                # Mu
     203  0                # BmuD
     204  0                # BmuU
-    101  1e4              # Bmu
