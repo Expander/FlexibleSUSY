@@ -19,10 +19,6 @@ EWSB eqs. solver";
 CreateTreeLevelEwsbSolver::usage="Converts tree-level EWSB solutions
 to C form";
 
-SolveTreeLevelEwsbVia::usage="Solves tree-level EWSB equations for the
-given list of parameters.  Retuns an empty string if no unique
-solution can be found";
-
 CreateEWSBRootFinders::usage="Creates comma separated list of GSL root
 finders";
 
@@ -630,60 +626,6 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               ,
               result = "error = solve_ewsb_iteratively(0);\n";
              ];
-           Return[result];
-          ];
-
-SolveTreeLevelEwsbVia[equations_List, {}] :=
-    Module[{},
-           Print["Error: SolveTreeLevelEwsbVia: list of output parameters is empty"];
-           Quit[1];
-          ];
-
-SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
-    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr, type, ctype},
-           If[Length[equations] =!= Length[parameters],
-              Print["Warning: SolveTreeLevelEwsbVia: trying to solve ",
-                    Length[equations], " equations for ", Length[parameters],
-                    " parameters ", parameters];
-             ];
-           simplifiedEqs = (# == 0)& /@ equations;
-           simplifiedEqs = Parameters`FilterOutIndependentEqs[simplifiedEqs, parameters];
-           solution = TimeConstrainedSolve[simplifiedEqs, parameters];
-           If[solution === {} || Length[solution] > 1,
-              Print["Error: can't solve the EWSB equations for the parameters ",
-                    parameters, " uniquely"];
-              Print["Here are the EWSB equations we have: ", InputForm[simplifiedEqs]];
-              Print["Here is the solution we get: ", InputForm[solution]];
-              Return[result];
-             ];
-           solution = solution[[1]]; (* select first solution *)
-           (* create local const refs to input parameters appearing
-              in the solution *)
-           result = Parameters`CreateLocalConstRefsForInputParameters[solution, "LOCALINPUT"] <> "\n";
-           For[i = 1, i <= Length[solution], i++,
-               par  = solution[[i,1]];
-               expr = solution[[i,2]];
-               type = CConversion`GetScalarElementType[Parameters`GetType[par]];
-               ctype = CConversion`CreateCType[type];
-               parStr = "new_" <> CConversion`ToValidCSymbolString[par];
-               result = result <>
-               "const " <> ctype <> " " <> parStr <> " = " <>
-               CConversion`CastTo[CConversion`RValueToCFormString[expr],type] <> ";\n";
-              ];
-           result = result <> "\n";
-           For[i = 1, i <= Length[solution], i++,
-               par  = solution[[i,1]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               result = result <>
-               "if (IsFinite(new_" <> parStr <> "))\n" <>
-               IndentText[CConversion`RValueToCFormString[par] <>
-                          " = new_" <> parStr <> ";"] <> "\n" <>
-               "else\n" <>
-               IndentText["error = 1;"] <> "\n";
-               If[i < Length[solution],
-                  result = result <> "\n";
-                 ];
-              ];
            Return[result];
           ];
 
