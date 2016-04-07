@@ -49,8 +49,6 @@ Block MSOFTIN
     300  10               # MDB
     302  2000             # MDO
     301  100              # MDW
-    50   5e4              # mRd2
-    51   5e4              # mRu2
 Block HMIXIN
     301 -0.1              # LSD
     302 -0.1              # LSU
