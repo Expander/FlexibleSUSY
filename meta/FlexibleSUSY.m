@@ -1011,18 +1011,25 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softScalarMasses          = {};
              ];
            (* find soft Higgs masses that appear in tree-level EWSB eqs. *)
-           If[Head[FlexibleSUSY`FSSoftHiggsMasses] =!= List ||
-              FlexibleSUSY`FSSoftHiggsMasses === {},
-              softHiggsMasses = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
+           If[Head[FlexibleSUSY`FSSolveEWSBTreeLevelFor] =!= List ||
+              FlexibleSUSY`FSSolveEWSBTreeLevelFor === {},
+              treeLevelEWSBOutputParameters = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
               ,
-              softHiggsMasses = FlexibleSUSY`FSSoftHiggsMasses;
+              treeLevelEWSBOutputParameters = FlexibleSUSY`FSSolveEWSBTreeLevelFor;
              ];
-           softHiggsMasses              = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]]];
-           If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
-              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
-              restoreSoftHiggsMasses    = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
-              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[independentEwsbEquationsTreeLevel, softHiggsMasses];
-              solveEWSBTemporarily = "solve_ewsb_tree_level_via_soft_higgs_masses();";
+           treeLevelEWSBOutputParameters = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[treeLevelEWSBOutputParameters]]];
+           If[Head[treeLevelEWSBOutputParameters] === List && Length[treeLevelEWSBOutputParameters] > 0,
+              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[treeLevelEWSBOutputParameters, "old_", ""];
+              restoreSoftHiggsMasses    = Parameters`RestoreParameter[treeLevelEWSBOutputParameters, "old_", ""];
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`FindSolutionAndFreePhases[independentEwsbEquationsTreeLevel,
+                                                                                    treeLevelEWSBOutputParameters][[1]];
+              If[solveTreeLevelEWSBviaSoftHiggsMasses === {},
+                 Print["Error: could not find an analytic solution to the tree-level EWSB eqs."];
+                 Print["   for the parameters ", treeLevelEWSBOutputParameters];
+                 Quit[1];
+                ];
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`CreateTreeLevelEwsbSolver[solveTreeLevelEWSBviaSoftHiggsMasses];
+              solveEWSBTemporarily = "solve_ewsb_tree_level_custom();";
               ,
               saveSoftHiggsMasses       = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
               restoreSoftHiggsMasses    = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
