@@ -83,6 +83,7 @@ LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
 FSSolveEWSBFor;
+FSSolveEWSBTreeLevelFor = {};
 Temporary;
 MZ;
 MT;
@@ -126,9 +127,6 @@ FSSolveWeinbergAngleTimeConstraint = 120;
 FSCheckPerturbativityOfDimensionlessParameters = True;
 FSPerturbativityThreshold = N[Sqrt[4 Pi]];
 FSMaximumExpressionSize = 100;
-
-(* list of soft breaking Higgs masses for solving EWSB eqs. *)
-FSSoftHiggsMasses = {};
 
 (* list of masses and parameters to check for convergence
 
@@ -989,11 +987,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softScalarMasses          = {};
              ];
            (* find soft Higgs masses that appear in tree-level EWSB eqs. *)
-           If[Head[FlexibleSUSY`FSSoftHiggsMasses] =!= List ||
-              FlexibleSUSY`FSSoftHiggsMasses === {},
+           If[Head[FlexibleSUSY`FSSolveEWSBTreeLevelFor] =!= List ||
+              FlexibleSUSY`FSSolveEWSBTreeLevelFor === {},
               softHiggsMasses = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
               ,
-              softHiggsMasses = FlexibleSUSY`FSSoftHiggsMasses;
+              softHiggsMasses = FlexibleSUSY`FSSolveEWSBTreeLevelFor;
              ];
            softHiggsMasses              = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]]];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
