@@ -1,0 +1,100 @@
+
+FSModelName = "MRSSMMSUSY";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = MRSSM;
+AutomaticInputAtMSUSY = False;
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+MINPAR = {
+    {3, TanBeta}
+};
+
+EXTPAR = {
+    {0, Ms}
+};
+
+EWSBOutputParameters = { mHd2, mHu2, vS, vT };
+
+SUSYScale = Ms;
+
+SUSYScaleFirstGuess = Ms;
+
+SUSYScaleInput = {
+    {mq2, UNITMATRIX[3] Ms^2},
+    {mu2, UNITMATRIX[3] Ms^2},
+    {md2, UNITMATRIX[3] Ms^2},
+    {ml2, UNITMATRIX[3] Ms^2},
+    {me2, UNITMATRIX[3] Ms^2},
+    {mS2, Ms^2},
+    {mT2, Ms^2},
+    {\[Mu], SARAH`LHInput[\[Mu]]},
+    {B[\[Mu]], Ms^2/(TanBeta + 1/TanBeta)},
+    {LamSD , SARAH`LHInput[LamSD]},
+    {LamSU , SARAH`LHInput[LamSU]},
+    {LamTD , SARAH`LHInput[LamTD]},
+    {LamTU , SARAH`LHInput[LamTU]},
+    {MDBS  , SARAH`LHInput[MDBS]},
+    {MDGoc , SARAH`LHInput[MDGoc]},
+    {MDWBT , SARAH`LHInput[MDWBT]},
+    {moc2  , Ms^2},
+    {mRd2  , Ms^2},
+    {mRu2  , Ms^2},
+    {MuD   , SARAH`LHInput[MuD]}, 
+    {MuU   , SARAH`LHInput[MuU]},
+    {B[MuD], SARAH`LHInput[B[MuD]]},
+    {B[MuU], SARAH`LHInput[B[MuU]]}
+};
+
+InitialGuessAtSUSYScale = {
+    {mq2, UNITMATRIX[3] Ms^2},
+    {mu2, UNITMATRIX[3] Ms^2},
+    {md2, UNITMATRIX[3] Ms^2},
+    {ml2, UNITMATRIX[3] Ms^2},
+    {me2, UNITMATRIX[3] Ms^2},
+    {mS2, Ms^2},
+    {mT2, Ms^2},
+    {\[Mu], 0},
+    {B[\[Mu]], Ms^2/(TanBeta + 1/TanBeta)}
+};
+
+InitialGuessAtLowScale = {
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+DefaultPoleMassPrecision = HighPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
+FSWeakMixingAngleOptions = FSSetOption[
+    FSWeakMixingAngleOptions,
+    FSWeakMixingAngleInput -> FSMassW
+];
+FSWeakMixingAngleOptions = FSSetOption[
+    FSWeakMixingAngleOptions,
+    FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
+];
+
+SARAH`ParameterDefinitions = Append[
+    Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`ThetaW, ___}],
+    {SARAH`ThetaW,
+     { Description -> "Weinberg-Angle",
+       DependenceNum -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]}}
+];
