@@ -5,7 +5,8 @@ LIBtest_call_tsil_MK  := $(DIR)/module.mk
 
 # source files
 LIBtest_call_tsil_SRC := \
-		$(DIR)/call_tsil.c
+		$(DIR)/call_tsil.c \
+		$(DIR)/call_tsil_cpp.cpp
 
 # main()
 EXEtest_call_tsil_SRC := \
@@ -13,7 +14,8 @@ EXEtest_call_tsil_SRC := \
 
 # header files
 LIBtest_call_tsil_HDR := \
-		$(DIR)/call_tsil.h
+		$(DIR)/call_tsil.h \
+		$(DIR)/call_tsil.hpp
 
 # header files
 LIBtest_call_tsil_HDR :=
