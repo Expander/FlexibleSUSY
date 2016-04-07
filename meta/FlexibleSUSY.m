@@ -888,7 +888,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "",
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
-            softScalarMasses, softHiggsMasses,
+            softScalarMasses, treeLevelEWSBOutputParameters,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             solveEWSBTemporarily,
@@ -1032,7 +1032,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solver->get_solution"];
            fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
-           solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, softHiggsMasses];
+           solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, treeLevelEWSBOutputParameters];
            getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
