@@ -559,6 +559,31 @@ In a model with complex parameters, as in the CMSSMCPV for example,
 EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+_____________________________________________________________________
+
+__Symbol__: `FSSolveEWSBTreeLevelFor`
+
+__Default value__: `{}`
+
+__Description__:
+
+In the `FSSolveEWSBTreeLevelFor` variable the model parameters can be
+specified, which are fixed by the tree-level electroweak symmetry
+breaking (EWSB) conditions when the running (tree-level) masses are
+calculated.  The length of the `FSSolveEWSBTreeLevelFor` list must be
+either zero (default) or equal to the number of EWSB conditions.  If
+`FSSolveEWSBTreeLevelFor` is the empty list, then the temporary EWSB
+output parameters are chosen automatically as follows:
+
+- In SUSY models, by default the soft-breaking squared Higgs mass
+  parameters are fixed by the tree-level EWSB equation temporarily
+  when the running (tree-level) masses are calculated.
+
+- In non-SUSY models, by default the parameters given in
+  `EWSBOutputParameters` are fixed by the tree-level EWSB equation
+  temporarily when the running (tree-level) masses are calculated.
+
+
 \subsection input_format Boundary condition format
 
 The variables `LowScaleInput`, `SUSYScaleInput` and `HighScaleInput`
