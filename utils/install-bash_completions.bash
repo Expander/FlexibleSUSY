@@ -74,7 +74,12 @@ _run_spectrum_generator()
 
 _configure()
 {
-    local opts="
+    local cur prev pprev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    pprev="${COMP_WORDS[COMP_CWORD-2]}"
+    opts="
 --enable-colors
 --enable-compile
 --enable-compiler-warnings
@@ -138,6 +143,37 @@ _configure()
 --help
 --version
 "
+
+    local available_models=$(__find_available_models)
+    local available_addons=$(__find_available_addons)
+
+    # handle --with-models=
+    if [[ ${prev} == "--with-models" && ${cur} == "=" ]] ; then
+        COMPREPLY=( $available_models )
+        return 0
+    fi
+
+    # handle --with-models=XXX
+    if [[ ${pprev} == "--with-models" && ${prev} == "=" ]] ; then
+        local x
+        local selected_models=$(for x in ${available_models} ; do [[ $x == "${cur}"* ]] && echo $x; done)
+        COMPREPLY=( $selected_models )
+        return 0
+    fi
+
+    # handle --with-addons=
+    if [[ ${prev} == "--with-addons" && ${cur} == "=" ]] ; then
+        COMPREPLY=( $available_addons )
+        return 0
+    fi
+
+    # handle --with-addons=XXX
+    if [[ ${pprev} == "--with-addons" && ${prev} == "=" ]] ; then
+        local x
+        local selected_addons=$(for x in ${available_addons} ; do [[ $x == "${cur}"* ]] && echo $x; done)
+        COMPREPLY=( $selected_addons )
+        return 0
+    fi
 
     _build_completion_list "${opts}"
 }
