@@ -2225,12 +2225,6 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
-  --with-optional-modules=  Load optional FlexibleSUSY modules
-                            (for example the \`test' or \`examples' module)
-  --with-sqlite-libdir=     Path to search for SQLite library
-  --with-sqlite-incdir=     Path to search for SQLite header
-  --with-tsil-libdir=       Path to search for TSIL library
-  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2241,6 +2235,12 @@ cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
+  --with-sqlite-libdir=     Path to search for SQLite library
+  --with-sqlite-incdir=     Path to search for SQLite header
+  --with-tsil-libdir=       Path to search for TSIL library
+  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 }
 
