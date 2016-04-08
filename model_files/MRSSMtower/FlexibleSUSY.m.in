@@ -32,7 +32,7 @@ SUSYScaleInput = {
     {moc2  , Ms^2},
     {mRd2  , Ms^2},
     {mRu2  , Ms^2},
-    {\[Mu], SARAH`LHInput[\[Mu]]},
+    {\[Mu], 0},
     {B[\[Mu]], Ms^2/(TanBeta + 1/TanBeta)},
     {LamSD , SARAH`LHInput[LamSD]},
     {LamSU , SARAH`LHInput[LamSU]},
@@ -43,8 +43,8 @@ SUSYScaleInput = {
     {MDWBT , Ms},
     {MuD   , Ms},
     {MuU   , Ms},
-    {B[MuD], SARAH`LHInput[B[MuD]]},
-    {B[MuU], SARAH`LHInput[B[MuU]]}
+    {B[MuD], 0},
+    {B[MuU], 0}
 };
 
 InitialGuessAtSUSYScale = {
