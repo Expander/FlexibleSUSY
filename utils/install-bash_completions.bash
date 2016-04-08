@@ -5,6 +5,16 @@
 #
 #   . install-bash_completions.bash
 
+__find_available_models()
+{
+    find $(dirname $0)/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -exec bash -c 'basename $(dirname $1)' modelname {} \; | sort -u
+}
+
+__find_available_addons()
+{
+    find $(dirname $0)/addons/ -mindepth 1 -type d -name "*" -exec basename {} \; | sort -u
+}
+
 _build_completion_list()
 {
     local cur prev opts
@@ -169,7 +179,7 @@ _createmodel()
 --help
 "
 
-    local available_models=$(find $(dirname $0)/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -exec bash -c 'basename $(dirname $1)' modelname {} \; | sort -u)
+    local available_models=$(__find_available_models)
 
     # handle --model-file=
     if [[ ${prev} == "--model-file" && ${cur} == "=" ]] ; then
