@@ -15,7 +15,7 @@ __find_available_addons()
     find $(dirname $0)/addons/ -mindepth 1 -type d -name "*" -exec basename {} \; | sort -u
 }
 
-_build_completion_list()
+__build_filename_completion_list()
 {
     local cur prev opts
     COMPREPLY=()
@@ -55,6 +55,33 @@ _build_completion_list()
     return 0
 }
 
+__select_from_list()
+{
+    local pprev="$1"
+    shift
+    local prev="$1"
+    shift
+    local cur="$1"
+    shift
+    local option="$1"
+    shift
+    local list="$@"
+
+    # handle --XXX=
+    if [[ ${prev}${cur} == "${option}" ]] ; then
+        echo "$list"
+        return 0
+    fi
+
+    # handle --XXX=YYY
+    if [[ ${pprev}${prev} == "${option}" ]] ; then
+        local x
+        local selected_list=$(for x in ${list} ; do [[ $x == "${cur}"* ]] && echo $x; done)
+        echo "$selected_list"
+        return 0
+    fi
+}
+
 _run_spectrum_generator()
 {
     local opts="
@@ -69,7 +96,7 @@ _run_spectrum_generator()
 --version
 "
 
-    _build_completion_list "${opts}"
+    __build_filename_completion_list "${opts}"
 }
 
 _configure()
@@ -132,50 +159,99 @@ _configure()
 --with-looptools-libdir=
 --with-looptools-incdir=
 --with-make-lib-cmd=
+--with-math-cmd=
+--with-models=
 --with-optional-modules=
 --with-sqlite-libdir=
 --with-sqlite-incdir=
 --with-tsil-libdir=
 --with-tsil-incdir=
---with-math-cmd=
---with-models=
 
 --help
 --version
 "
 
-    local available_models=$(__find_available_models)
-    local available_addons=$(__find_available_addons)
+    # handle --with-addons=
+    if [[ ${prev}${cur} == "--with-addons=" || ${pprev}${prev} == "--with-addons=" ]] ; then
+        local available_addons=$(__find_available_addons)
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-addons=" "$available_addons") )
+        return 0
+    fi
+
+    # handle --with-algorithms=
+    if [[ ${prev}${cur} == "--with-algorithms=" || ${pprev}${prev} == "--with-algorithms=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-algorithms=" "two_scale lattice") )
+        return 0
+    fi
+
+    # handle --with-cxx=
+    if [[ ${prev}${cur} == "--with-cxx=" || ${pprev}${prev} == "--with-cxx=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-cxx=" $(compgen -c)) )
+        return 0
+    fi
+
+    # handle --with-cxxflags=
+    if [[ ${prev}${cur} == "--with-cxxflags=" || ${pprev}${prev} == "--with-cxxflags=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-fc=
+    if [[ ${prev}${cur} == "--with-fc=" || ${pprev}${prev} == "--with-fc=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-fc=" $(compgen -c)) )
+        return 0
+    fi
+
+    # handle --with-fflags=
+    if [[ ${prev}${cur} == "--with-fflags=" || ${pprev}${prev} == "--with-fflags=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-gsl-config=
+    if [[ ${prev}${cur} == "--with-gsl-config=" || ${pprev}${prev} == "--with-gsl-config=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-gsl-config=" $(compgen -c)) )
+        return 0
+    fi
+
+    # handle --with-ldflags=
+    if [[ ${prev}${cur} == "--with-ldflags=" || ${pprev}${prev} == "--with-ldflags=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-libext=
+    if [[ ${prev}${cur} == "--with-libext=" || ${pprev}${prev} == "--with-libext=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-make-lib-cmd=
+    if [[ ${prev}${cur} == "--with-make-lib-cmd=" || ${pprev}${prev} == "--with-make-lib-cmd=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-make-lib-cmd=" $(compgen -c)) )
+        return 0
+    fi
+
+    # handle --with-math-cmd=
+    if [[ ${prev}${cur} == "--with-math-cmd=" || ${pprev}${prev} == "--with-math-cmd=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-math-cmd=" $(compgen -c)) )
+        return 0
+    fi
 
     # handle --with-models=
-    if [[ ${prev} == "--with-models" && ${cur} == "=" ]] ; then
-        COMPREPLY=( $available_models )
+    if [[ ${prev}${cur} == "--with-models=" || ${pprev}${prev} == "--with-models=" ]] ; then
+        local available_models=$(__find_available_models)
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-models=" "$available_models") )
         return 0
     fi
 
-    # handle --with-models=XXX
-    if [[ ${pprev} == "--with-models" && ${prev} == "=" ]] ; then
-        local x
-        local selected_models=$(for x in ${available_models} ; do [[ $x == "${cur}"* ]] && echo $x; done)
-        COMPREPLY=( $selected_models )
+    # handle --with-optional-modules=
+    if [[ ${prev}${cur} == "--with-optional-modules=" || ${pprev}${prev} == "--with-optional-modules=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-optional-modules=" "examples test") )
         return 0
     fi
 
-    # handle --with-addons=
-    if [[ ${prev} == "--with-addons" && ${cur} == "=" ]] ; then
-        COMPREPLY=( $available_addons )
-        return 0
-    fi
-
-    # handle --with-addons=XXX
-    if [[ ${pprev} == "--with-addons" && ${prev} == "=" ]] ; then
-        local x
-        local selected_addons=$(for x in ${available_addons} ; do [[ $x == "${cur}"* ]] && echo $x; done)
-        COMPREPLY=( $selected_addons )
-        return 0
-    fi
-
-    _build_completion_list "${opts}"
+    __build_filename_completion_list "${opts}"
 }
 
 _createaddon()
@@ -215,31 +291,16 @@ _createmodel()
 --help
 "
 
-    local available_models=$(__find_available_models)
-
     # handle --model-file=
-    if [[ ${prev} == "--model-file" && ${cur} == "=" ]] ; then
-        COMPREPLY=( $available_models )
-        return 0
-    fi
-
-    # handle --model-file=XXX
-    if [[ ${pprev} == "--model-file" && ${prev} == "=" ]] ; then
-        local x
-        local selected_models=$(for x in ${available_models} ; do [[ $x == "${cur}"* ]] && echo $x; done)
-        COMPREPLY=( $selected_models )
+    if [[ ${prev}${cur} == "--model-file=" || ${pprev}${prev} == "--model-file=" ]] ; then
+        local available_models=$(__find_available_models)
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--model-file=" "$available_models") )
         return 0
     fi
 
     # handle --with-math-cmd=
-    if [[ ${prev} == "--with-math-cmd" && ${cur} == "=" ]] ; then
-        COMPREPLY=( $(compgen -c) )
-        return 0
-    fi
-
-    # handle --with-math-cmd=XXX
-    if [[ ${pprev} == "--with-math-cmd" && ${prev} == "=" ]] ; then
-        COMPREPLY=( $(compgen -c -- "${cur}") )
+    if [[ ${prev}${cur} == "--with-math-cmd=" || ${pprev}${prev} == "--with-math-cmd=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-math-cmd=" $(compgen -c)) )
         return 0
     fi
 
