@@ -134,11 +134,9 @@ _configure()
 
 _createaddon()
 {
-    local cur prev opts
+    local cur opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    pprev="${COMP_WORDS[COMP_CWORD-2]}"
     opts="
 --name=
 --force
@@ -156,7 +154,7 @@ _createaddon()
 
 _createmodel()
 {
-    local cur prev opts
+    local cur prev pprev opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
