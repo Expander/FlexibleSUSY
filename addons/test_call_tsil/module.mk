@@ -17,9 +17,6 @@ LIBtest_call_tsil_HDR := \
 		$(DIR)/call_tsil.h \
 		$(DIR)/call_tsil.hpp
 
-# header files
-LIBtest_call_tsil_HDR :=
-
 LIBtest_call_tsil_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBtest_call_tsil_SRC))) \
 		$(patsubst %.c, %.o, $(filter %.c, $(LIBtest_call_tsil_SRC))) \
