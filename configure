@@ -2159,8 +2159,10 @@ EOF
 # END:   NOT EXPORTED ##########################################
 cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
+  sqlite            Enable SQLite (default: $enable_sqlite)
   static-libs       Create static libraries (default: $enable_static_libs)
   threads           Enable multi-threading (default: $enable_threads)
+  tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
 
 Package directories, compilation settings and model selection
