@@ -137,7 +137,7 @@ f2[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
                    Log[msqu/Q^2] - Log[mt^2/Q^2] Log[msqu/Q^2]
                  )
                - (mg s2t)/(mt diff) (
-                   (msqu + msqd) Log[msqu/Q^2]
+                   (msqu + msqd) Log[msqu/Q^2]^2
                    + (10 mt^2 - 2 mg^2 + msqu + msqd) Log[mt^2/Q^2] Log[msqu/Q^2] 
                    + (2 mg^2 - 2 mt^2 + msqu + msqd) Log[msqu/Q^2] Log[mg^2/Q^2]
                  )
