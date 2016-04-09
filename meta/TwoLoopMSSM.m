@@ -1,8 +1,10 @@
 BeginPackage["TwoLoopMSSM`"];
 EndPackage[];
 
-CPEvenHiggsSelfEnergy::usage = "Returns the CP-even Higgs self-energy
- of arxiv:hep-ph/0105096.
+GetMSSMCPEvenHiggsLoopMassMatrix::usage = "Returns the
+ loop-corrections to the CP-even Higgs mass matrix in the
+ CP-conserving MSSM.  The loop-corrections are taken from
+ arxiv:hep-ph/0105096.
 
 Note: The return value contains the contributions from tadpole
  diagrams.
@@ -10,7 +12,7 @@ Note: The return value contains the contributions from tadpole
 Note: The sign of the mu parameter is opposite to the one in SARAH.
  In order to switch to the SARAH convention, set $signMu = -1;
 
-Usage: CPEvenHiggsSelfEnergy[loopOrder, corrections]
+Usage: GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder, corrections]
 
 Parameters:
 
@@ -20,7 +22,7 @@ Parameters:
   #3: 2-loop level
   (default: {1,1,1})
 
-- corrections: List of factors multiplied each corrections.
+- corrections: List of factors multiplied by each correction.
   (default: {1})
   #1: alpha_t * alpha_s
 ";
@@ -66,7 +68,7 @@ CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_] :=
           ];
 
 (* Eq. (31) of arxiv:hep-ph/0105096 *)
-CPEvenHiggsSelfEnergy1LAlphaTAlphaS[] :=
+GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] :=
     Module[{F1, F2, F3, Nc = 3, h = 1/(16 Pi^2)},
            F1 = Nc h Log[mst1^2 mst2^2 / mt^4];
            F2 = Nc h Log[mst1^2 / mst2^2];
@@ -194,7 +196,7 @@ f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
           ];
 
 (* Eqs. (32)-(34) of arxiv:hep-ph/0105096 *)
-CPEvenHiggsSelfEnergy2LAlphaTAlphaS[] :=
+GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[] :=
     Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2),
             mg, cos2Theta2, F1, F2, F3, F31L, DeltaF2, DeltaF3},
            unit = g3^2 CF Nc h^2;
@@ -284,11 +286,11 @@ CPEvenHiggsSelfEnergy2LAlphaTAlphaS[] :=
            CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3]
           ];
 
-CPEvenHiggsSelfEnergy[loopOrder_List:{1,1,1}, corr_List:{1}] :=
+GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder_List:{1,1,1}, corr_List:{1}] :=
     (
         loopOrder[[1]] {{0,0}, {0,0}} +
-        loopOrder[[2]] corr[[1]] CPEvenHiggsSelfEnergy1LAlphaTAlphaS[] +
-        loopOrder[[3]] corr[[1]] CPEvenHiggsSelfEnergy2LAlphaTAlphaS[]
+        loopOrder[[2]] corr[[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] +
+        loopOrder[[3]] corr[[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[]
     );
 
 ReplaceStopMasses[] :=
