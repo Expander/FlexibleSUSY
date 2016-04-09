@@ -10,6 +10,19 @@ points = {
    {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118}
 };
 
+randomPoints = {mt -> RandomReal[{100,200}],
+                M3 -> RandomReal[{100,10000}],
+                mst1 -> RandomReal[{100,10000}],
+                mst2 -> RandomReal[{100,10000}],
+                sinTheta -> RandomReal[{-1,1}],
+                Q -> RandomReal[{10,10000}],
+                Mu -> RandomReal[{0,10000}],
+                TanBeta -> RandomReal[{1,100}],
+                v -> RandomReal[{240,250}],
+                g3 -> RandomReal[{0.1,0.2}]}& /@ Table[i, {i,1,100}];
+
+points = Join[points, randomPoints];
+
 CalculatePointFromAnalyticExpr[point_] :=
     Module[{s2t, yt, at, deltaMh},
            s2t = Sin[2 ArcSin[sinTheta /. point]];
@@ -63,20 +76,29 @@ int main(){
                "Libraries" -> {FileNameJoin[{Directory[], "src", "libflexisusy.a"}], "gfortran"}
                (*, "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)
            ];
-           ToExpression[Import["!" <> QuoteFile[exec], "String"]]
+           ToExpression[
+               StringReplace[
+                   Import["!" <> QuoteFile[exec], "String"], {"e+" :> "*^", "e-" :> "*^-"}
+               ]
+           ]
           ];
 
 For[i = 1, i <= Length[points], i++,
     pAnalytic = CalculatePointFromAnalyticExpr[points[[i]]];
     pNumeric = CalculatePointNumerical[points[[i]]];
 
-    max = 10^(-4);
-    test = Max[Abs[pAnalytic - pNumeric]] < max;
+    max = N[10^(-3)];
+    relDiff = Max[Abs[pAnalytic - pNumeric]]/Max[Abs[pAnalytic]];
+    test = relDiff < max;
+
+    Print["Running point ", i];
+    Print["analytic: ", pAnalytic];
+    Print["numeric : ", pNumeric];
+    Print[""];
 
     If[!test,
-       Print["analytic: ", pAnalytic];
-       Print["numerica: ", pNumeric];
-       Print["Error: difference = ", InputForm[pAnalytic - pNumeric], " > ", InputForm[max]];
+       Print["Error: rel. difference = ", InputForm[relDiff], " > ", InputForm[max]];
+       Print["Point was: ", points[[i]]];
       ];
 
     TestEquality[test, True];
