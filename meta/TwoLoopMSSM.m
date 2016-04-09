@@ -196,7 +196,7 @@ f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
 (* Eqs. (32)-(34) of arxiv:hep-ph/0105096 *)
 CPEvenHiggsSelfEnergy2LAlphaTAlphaS[] :=
     Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2),
-            mg, cos2Theta2, F1, F2, F3, DeltaF2, DeltaF3},
+            mg, cos2Theta2, F1, F2, F3, F31L, DeltaF2, DeltaF3},
            unit = g3^2 CF Nc h^2;
            cos2Theta2 = 1 - sin2Theta^2;
            mg = Abs[M3];
