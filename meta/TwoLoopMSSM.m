@@ -86,8 +86,7 @@ Phi[x_, y_, z_] :=
 
 (* Eq. (A1) *)
 f1[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
-    Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2), delta},
-           unit = g3^2 CF Nc h^2;
+    Module[{delta},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
            (
                4 (mt^2 + mg^2 - mg mt s2t)/(msqu) (1 - Log[mg^2/Q^2])
@@ -109,8 +108,7 @@ f1[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
 
 (* Eq. (A2) *)
 f2[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
-    Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2), delta, diff},
-           unit = g3^2 CF Nc h^2;
+    Module[{delta, diff},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
            diff = msqu - msqd;
            (
@@ -153,8 +151,7 @@ f2[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
 
 (* Eq. (A3) *)
 f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
-    Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2), delta, diff},
-           unit = g3^2 CF Nc h^2;
+    Module[{delta, diff},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
            diff = msqu - msqd;
            (
