@@ -1,0 +1,85 @@
+Needs["TestSuite`", "TestSuite.m"];
+Needs["CCompilerDriver`"];
+
+Get[FileNameJoin[{Directory[], "meta", "TwoLoopMSSM.m"}]];
+$signMu = 1;
+
+points = {
+   {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118}
+};
+
+CalculatePointFromAnalyticExpr[point_] :=
+    Module[{s2t, yt, at, deltaMh},
+           s2t = Sin[2 ArcSin[sinTheta /. point]];
+           yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
+           at = ((mst1^2 - mst2^2) s2t/(2 mt) - Mu/TanBeta) /. point;
+           deltaMh = Simplify[
+               Re[N[GetMSSMCPEvenHiggsLoopMassMatrix[{0, 0, 1}] /.
+                    {sin2Theta -> s2t, ht -> yt, At -> at} /. point]]];
+           {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]]}
+          ];
+
+CalculatePointNumerical[point_] :=
+    Module[{progr, exec},
+           progr = "
+#include <stdio.h>
+#include <math.h>
+#include \"mssm_twoloophiggs.h\"
+
+double sqr(double x) { return x*x; }
+
+int calc_Sij(double* S11, double* S22, double* S12)
+{
+   int OS = 0;
+   double mt2 = sqr(" <> ToString[mt /. point] <> ");
+   double mg = " <> ToString[M3 /. point] <> ";
+   double mst12 = sqr(" <> ToString[mst1 /. point] <> ");
+   double mst22 = sqr(" <> ToString[mst2 /. point] <> ");
+   double st = " <> ToString[sinTheta /. point] <> ";
+   double ct = sqrt(1. - sqr(st));
+   double q2 = sqr(" <> ToString[Q /. point] <> ");
+   double mu = " <> ToString[Mu /. point] <> ";
+   double tb = " <> ToString[TanBeta /. point] <> ";
+   double v2 = sqr(" <> ToString[v /. point] <> ");
+   double g3 = " <> ToString[g3 /. point] <> ";
+
+   return dszhiggs_(
+      &mt2, &mg, &mst12, &mst22, &st, &ct,
+      &q2, &mu, &tb, &v2, &g3, &OS, S11, S22, S12);
+}
+
+int main(){
+   double S11 = 0., S22 = 0., S12 = 0.;
+   calc_Sij(&S11, &S22, &S12);
+   printf(\"{%g, %g, %g}\\n\", S11, S22, S12);
+   return 0;
+}
+";
+           exec = CreateExecutable[
+               progr, "exec",
+               "CompileOptions" -> "-I" <> FileNameJoin[{Directory[], "src"}],
+               "Libraries" -> {FileNameJoin[{Directory[], "src", "libflexisusy.a"}], "gfortran"}
+               (*, "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)
+           ];
+           ToExpression[Import["!" <> QuoteFile[exec], "String"]]
+          ];
+
+For[i = 1, i <= Length[points], i++,
+    pAnalytic = CalculatePointFromAnalyticExpr[points[[i]]];
+    pNumeric = CalculatePointNumerical[points[[i]]];
+
+    max = 10^(-4);
+    test = Max[Abs[pAnalytic - pNumeric]] < max;
+
+    If[!test,
+       Print["analytic: ", pAnalytic];
+       Print["numerica: ", pNumeric];
+       Print["Error: difference = ", InputForm[pAnalytic - pNumeric], " > ", InputForm[max]];
+      ];
+
+    TestEquality[test, True];
+   ];
+
+PrintTestSummary[];
