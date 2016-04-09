@@ -296,8 +296,8 @@ GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder_List:{1,1,1}, corr_List:{1}] :=
 ReplaceStopMasses[] :=
     Module[{mstop = CalculateMStop2[$signMu]},
            {
-               mst1^2 -> mstop[[1]],
-               mst2^2 -> mstop[[2]],
+               mst1 -> Sqrt[mstop[[1]]],
+               mst2 -> Sqrt[mstop[[2]]],
                sin2Theta -> mstop[[3]]
            }
           ];
