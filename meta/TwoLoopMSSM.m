@@ -247,7 +247,7 @@ CPEvenHiggsSelfEnergy2LAlphaTAlphaS[] :=
                    - mst2^2 Log[mst2^2 / Q^2]
                  )
                + 3 (mst1^2 + mst2^2)/(mst1^2 - mst2^2) (
-                   + Log[mst1^2 / Q^2] - Log[mst2^2 / Q^2]
+                   + Log[mst1^2 / Q^2]^2 - Log[mst2^2 / Q^2]^2
                  )
                - cos2Theta2 (
                    + 4
@@ -280,8 +280,8 @@ CPEvenHiggsSelfEnergy2LAlphaTAlphaS[] :=
                    - Log[mst1^2 / Q^2]^2
                  )
                + 8 / (mst1^2 - mst2^2) (
-                   + mst2^2 Log[mst2^2 / Q^2]^2
-                   - mst1^2 Log[mst1^2 / Q^2]^2
+                   + mst2^2 Log[mst2^2 / Q^2]
+                   - mst1^2 Log[mst1^2 / Q^2]
                  )
            );
            CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3]
