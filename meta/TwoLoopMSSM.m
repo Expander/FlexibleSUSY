@@ -43,6 +43,7 @@ $signMu = 1;
 
 Begin["TwoLoopMSSM`Private`"];
 
+(* Eqs. (17) of arxiv:hep-ph/0105096 *)
 CalculateMStop2[signMu_] :=
     Module[{mst2 = {0,0}, mL2, mR2, Xt, s2t},
            mL2 = mQ33^2 + mt^2;
@@ -76,7 +77,7 @@ GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] :=
            CreateMassMatrixCPEven[F1, F2, F3, 0, 0]
           ];
 
-(* Eq. (A4) *)
+(* Eq. (A4) of arxiv:hep-ph/0105096 *)
 Phi[x_, y_, z_] :=
     Module[{u = x/z, v = y/z, lambda, xp, xm},
            lambda = Sqrt[(1 - u - v)^2 - 4 u v];
@@ -86,7 +87,7 @@ Phi[x_, y_, z_] :=
                      - 2 (PolyLog[2,xp] + PolyLog[2,xm]) + Pi^2/3)
           ];
 
-(* Eq. (A1) *)
+(* Eq. (A1) of arxiv:hep-ph/0105096 *)
 f1[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
     Module[{delta},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
@@ -108,7 +109,7 @@ f1[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
            )
           ];
 
-(* Eq. (A2) *)
+(* Eq. (A2) of arxiv:hep-ph/0105096 *)
 f2[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
     Module[{delta, diff},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
@@ -151,7 +152,7 @@ f2[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
            )
           ];
 
-(* Eq. (A3) *)
+(* Eq. (A3) of arxiv:hep-ph/0105096 *)
 f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
     Module[{delta, diff},
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
