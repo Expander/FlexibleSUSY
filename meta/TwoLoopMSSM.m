@@ -160,7 +160,7 @@ f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
            (
                - 4 (msqd (mg^2 + mt^2))/(msqu diff)
                + (4 mg mt s2t)/(diff^2) (
-                   21 msqu - (msqdq)/(msqu)
+                   21 msqu - msqd^2/msqu
                  )
                + 4/diff ( 
                    (mg^2msqd)/(msqu)Log[mg^2/Q^2]
