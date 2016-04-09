@@ -34,15 +34,18 @@ ReplaceStopMasses::usage = "Returns list of replacetment rules which
 (* Stop mass parameters *)
 { sin2Theta, mst1, mst2 };
 
+$signMu::usage = "Sign of the mu parameter (default: 1).
+In order to switch to the SARAH convention, set $signMu = -1";
+
 $signMu = 1;
 
 Begin["TwoLoopMSSM`Private`"];
 
-CalculateMStop2[] :=
+CalculateMStop2[signMu_] :=
     Module[{mst2 = {0,0}, mL2, mR2, Xt, s2t},
            mL2 = mQ33^2 + mt^2;
            mR2 = mU33^2 + mt^2;
-           Xt = mt Abs[At + $signMu Mu / TanBeta]; (* Eq. (14) and below *)
+           Xt = mt Abs[At + signMu Mu / TanBeta]; (* Eq. (14) and below *)
            (* Eq. (17) *)
            mst2[[1]] = 1/2 ((mL2 + mR2) + Sqrt[(mL2 - mR2)^2 + 4 Abs[Xt]^2]);
            mst2[[2]] = 1/2 ((mL2 + mR2) - Sqrt[(mL2 - mR2)^2 + 4 Abs[Xt]^2]);
@@ -291,8 +294,8 @@ CPEvenHiggsSelfEnergy[loopOrder_List:{1,1,1}, corr_List:{1}] :=
         loopOrder[[3]] corr[[1]] CPEvenHiggsSelfEnergy2LAlphaTAlphaS[]
     );
 
-ReplaceStopMasses[] =
-    Module[{mstop = CalculateMStop2[]},
+ReplaceStopMasses[] :=
+    Module[{mstop = CalculateMStop2[$signMu]},
            {
                mst1^2 -> mstop[[1]],
                mst2^2 -> mstop[[2]],
