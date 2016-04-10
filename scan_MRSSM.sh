@@ -1,6 +1,10 @@
+n_points=60
+
 slha_templ="
-Block MODSEL     #
-#   12 1000       # output scale
+Block MODSEL
+    1 1           # 1/0: High/low scale input
+    2 1           # Boundary Condition
+    6 1           # Generation Mixing
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
@@ -41,51 +45,110 @@ Block SMINPUTS               # Standard Model inputs
    24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR
     3    5                # TanBeta
-Block EXTPAR
-    0    1e4              # Ms
-Block MSOFTIN
-    300  10               # MDB
-    302  2000             # MDO
-    301  100              # MDW
 Block HMIXIN
     301 -0.1              # LSD
     302 -0.1              # LSU
     303 -0.1              # LTD
     304 -0.1              # LTU
-    201  250              # MuD
-    202  250              # MuU
-    1    0                # Mu
-    203  0                # BmuD
-    204  0                # BmuU
-    101  1e4              # Bmu
 "
 
-slha_templ_spheno="
+slha_templ_fs="
+${slha_templ}
+Block MINPAR
+    3    5                # TanBeta
+Block EXTPAR
+    0    1e4              # Ms
+Block HMIXIN
+    301 -0.1              # LSD
+    302 -0.1              # LSU
+    303 -0.1              # LTD
+    304 -0.1              # LTU
+"
+
+slha_templ_spheno_like="
 ${slha_templ}
 Block FlexibleSUSY
    17   1                  # Mt method (0 = FS, 1 = SPheno)
 "
 
+slha_templ_spheno_1L="
+${slha_templ}
+Block SPhenoInput   # SPheno specific input 
+    1  -1              # error level 
+    2   0              # SPA conventions 
+    7   1              # Skip 2-loop Higgs corrections 
+    8   3              # Method used for two-loop calculation 
+    9   1              # Gaugeless limit used at two-loop 
+   10   0              # safe-mode used at two-loop 
+   11   0               # calculate branching ratios 
+   13   0               # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
+   14   0               # Run couplings to scale of decaying particle 
+   12   1.000E-04       # write only branching ratios larger than this value 
+   15   1.000E-30       # write only decay if width larger than this value 
+   31   -1              # fixed GUT scale (-1: dynamical GUT scale) 
+   32   0               # Strict unification 
+   34   1.000E-04       # Precision of mass calculation 
+   35   40              # Maximal number of iterations
+   36   5               # Minimal number of iterations before discarding points
+   37   1               # Set Yukawa scheme  
+   38   2               # 1- or 2-Loop RGEs 
+   50   1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) 
+   51   0               # Write Output in CKM basis 
+   52   0               # Write spectrum in case of tachyonic states 
+   55   1               # Calculate loop corrected masses 
+   57   0               # Calculate low energy constraints 
+   65   1               # Solution tadpole equation 
+   75   1               # Write WHIZARD files 
+   76   1               # Write HiggsBounds file   
+   86   0               # Maximal width to be counted as invisible in Higgs decays; -1: only LSP 
+  510   0               # Write tree level values for tadpole solutions 
+  515   0               # Write parameter values at GUT scale 
+  520   0               # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! 
+  521   0               # Diphoton/Digluon widths including higher order 
+  525   0               # Write loop contributions to diphoton decay of Higgs 
+  530   0               # Write Blocks for Vevacious 
+"
+
+slha_templ_spheno_2L="
+${slha_templ_spheno_1L}
+Block SPhenoInput   # SPheno specific input 
+    7   0              # Skip 2-loop Higgs corrections 
+"
+
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
-    --scan-range=EXTPAR[0]=91~100000:60 \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5.dat
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
-    --scan-range=EXTPAR[0]=91~100000:60 \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMMSUSY_TB-5.dat
 
-echo "$slha_templ_spheno" | ./utils/scan-slha.sh \
+echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
-    --scan-range=EXTPAR[0]=91~100000:60 \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSY_TB-5_SPheno.dat
+    > scale_MRSSMMSUSY_TB-5_SPheno-like.dat
+
+echo "$slha_templ_spheno_1L" | ./utils/scan-SPhenoMRSSM.sh \
+    --spectrum-generator=./SPhenoMRSSM \
+    --scan-range=MINPAR[1]=91~100000:$n_points \
+    --step-size=log \
+    --output=MINPAR[1],MASS[25] \
+    > tee scale_SPhenoMRSSM_TB-5_1L.dat
+
+echo "$slha_templ_spheno_2L" | ./utils/scan-SPhenoMRSSM.sh \
+    --spectrum-generator=./SPhenoMRSSM \
+    --scan-range=MINPAR[1]=91~100000:$n_points \
+    --step-size=log \
+    --output=MINPAR[1],MASS[25] \
+    > scale_SPhenoMRSSM_TB-5_2L.dat
 
 plot_scale="
 set terminal pdfcairo
@@ -104,9 +167,11 @@ set xlabel 'M_S / TeV'
 set ylabel 'M_h / GeV'
 
 plot [:] [:] \
-     'scale_MRSSMtower_TB-5.dat' u (\$1/1000):2 t 'MRSSM-tower' w lines ls 1, \
-     'scale_MRSSMMSUSY_TB-5.dat' u (\$1/1000):2 t 'MRSSM 1L' w lines ls 3, \
-     'scale_MRSSMMSUSY_TB-5_SPheno.dat' u (\$1/1000):2 t 'MRSSM 1L SPheno-like' w lines ls 5
+     'scale_MRSSMtower_TB-5.dat' u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
+     'scale_MRSSMMSUSY_TB-5.dat' u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
+     'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM 1L SPheno-like' w lines ls 5, \
+     'scale_SPhenoMRSSM_TB-5_1L.dat'   u (\$1/1000):2 t 'SPheno/MRSSM 1L' w lines ls 2, \
+     'scale_SPhenoMRSSM_TB-5_2L.dat'   u (\$1/1000):2 t 'SPheno/MRSSM 2L' w lines ls 4
 "
 
 echo "$plot_scale" | gnuplot
