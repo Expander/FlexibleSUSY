@@ -12,7 +12,8 @@ Note: The return value contains the contributions from tadpole
 Note: The sign of the mu parameter is opposite to the one in SARAH.
  In order to switch to the SARAH convention, set $signMu = -1;
 
-Usage: GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {1,1,1}, corrections -> {1}]
+Usage: GetMSSMCPEvenHiggsLoopMassMatrix[
+           loopOrder -> {1,1,1}, corrections -> {1}, parameters -> {}]
 
 Parameters:
 
@@ -25,6 +26,10 @@ Parameters:
 - corrections: List of factors multiplied by each correction.
   (default: {1})
   #1: alpha_t * alpha_s
+
+- parameters: List of parameter internal replacement rules,
+  useful when certain limits are considered (default: {}).
+  Example:  parameters -> {At -> 0}
 ";
 
 ReplaceStopMasses::usage = "Returns list of replacetment rules which
@@ -57,24 +62,30 @@ CalculateMStop2[signMu_] :=
           ];
 
 (* Eqs. (25)-(27) of arxiv:hep-ph/0105096 *)
-CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_] :=
+CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_, parameters_List] :=
     Module[{mm = {{0,0},{0,0}}},
            mm[[1,1]] = 1/2 ht^2 Mu^2 sin2Theta^2 F3;
            mm[[1,2]] = (ht^2 $signMu Mu mt sin2Theta F2
                         + 1/2 ht^2 At $signMu Mu sin2Theta^2 (F3 + DeltaF3));
-           mm[[2,1]] = mm[[1,2]];
            mm[[2,2]] = (2 ht^2 mt^2 F1 + 2 ht^2 At mt sin2Theta (F2 + DeltaF2)
                         + 1/2 ht^2 At^2 sin2Theta^2 (F3 + 2 DeltaF3));
+           If[PossibleZeroQ[At /. parameters],
+              mm[[1,2]] = Expand[mm[[1,2]]];
+              mm[[2,2]] = Expand[mm[[2,2]]];
+             ];
+           mm[[2,1]] = mm[[1,2]];
            mm
           ];
 
 (* Eq. (31) of arxiv:hep-ph/0105096 *)
-GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] :=
-    Module[{F1, F2, F3, Nc = 3, h = 1/(16 Pi^2)},
+GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[parameters_List] :=
+    Module[{F1, F2, F3 = 0, Nc = 3, h = 1/(16 Pi^2)},
            F1 = Nc h Log[mst1^2 mst2^2 / mt^4];
            F2 = Nc h Log[mst1^2 / mst2^2];
-           F3 = Nc h (2 - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]);
-           CreateMassMatrixCPEven[F1, F2, F3, 0, 0]
+           If[!PossibleZeroQ[mst1 - mst2 /. parameters],
+              F3 = Nc h (2 - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]);
+             ];
+           CreateMassMatrixCPEven[F1, F2, F3, 0, 0, {}]
           ];
 
 (* Eq. (A4) of arxiv:hep-ph/0105096 *)
@@ -197,7 +208,7 @@ f3[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
           ];
 
 (* Eqs. (32)-(34) of arxiv:hep-ph/0105096 *)
-GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[] :=
+GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[parameters_List] :=
     Module[{unit, CF = 4/3, Nc = 3, h = 1/(16 Pi^2),
             mg, cos2Theta2, F1, F2, F3, F31L, DeltaF2, DeltaF3},
            unit = g3^2 CF Nc h^2;
@@ -284,23 +295,28 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[] :=
                    - mst1^2 Log[mst1^2 / Q^2]
                  )
            );
-           CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3]
+           CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3, parameters]
           ];
 
 Options[GetMSSMCPEvenHiggsLoopMassMatrix] = {
     loopOrder -> {1,1,1},
-    corrections -> {1}
+    corrections -> {1},
+    parameters -> {}
 };
 
 GetMSSMCPEvenHiggsLoopMassMatrix[OptionsPattern[]] :=
     (
         OptionValue[loopOrder][[1]] {{0,0}, {0,0}} +
-        OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] +
-        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[]
-    );
+        OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[OptionValue[parameters]] +
+        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[OptionValue[parameters]]
+    ) /. OptionValue[parameters];
 
-ReplaceStopMasses[] :=
-    Module[{mstop = CalculateMStop2[$signMu]},
+Options[ReplaceStopMasses] = {
+    parameters -> {}
+};
+
+ReplaceStopMasses[OptionsPattern[]] :=
+    Module[{mstop = CalculateMStop2[$signMu] /. OptionValue[parameters]},
            {
                mst1 -> Sqrt[mstop[[1]]],
                mst2 -> Sqrt[mstop[[2]]],
