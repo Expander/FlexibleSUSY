@@ -129,10 +129,14 @@ points = {
 
 For[i = 1, i <= Length[points], i++,
     ex = GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0, 0, 1}, parameters -> points[[i]]];
+    re = ReplaceStopMasses[parameters -> points[[i]]];
     TestEquality[ex[[1,1]] =!= Indeterminate, True];
     TestEquality[ex[[1,2]] =!= Indeterminate, True];
     TestEquality[ex[[2,1]] =!= Indeterminate, True];
     TestEquality[ex[[2,2]] =!= Indeterminate, True];
+    TestEquality[(mst1 /. re) =!= Indeterminate, True];
+    TestEquality[(mst2 /. re) =!= Indeterminate, True];
+    TestEquality[(sin2Theta /. re) =!= Indeterminate, True];
    ];
 
 Print["done"];
