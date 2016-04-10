@@ -29,7 +29,7 @@ Parameters:
 
 - parameters: List of internal replacement rules for parameters,
   useful when certain limits are considered (default: {}).
-  Example:  parameters -> {At -> 0}
+  Example:  parameters -> {At -> 0, sin2Theta -> 0}
 ";
 
 ReplaceStopMasses::usage = "Returns list of replacetment rules which
