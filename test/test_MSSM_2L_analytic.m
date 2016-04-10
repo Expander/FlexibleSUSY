@@ -25,7 +25,7 @@ randomPoints = {mt -> RandomReal[{100,200}],
                 TanBeta -> RandomReal[{1,100}],
                 v -> RandomReal[{240,250}],
                 g3 -> RandomReal[{0.1,0.2}],
-                signMu -> 1}& /@ Table[i, {i,1,100}];
+                signMu -> RandomChoice[{-1,1}]}& /@ Table[i, {i,1,100}];
 
 points = Join[points, randomPoints];
 
@@ -33,7 +33,7 @@ CalculatePointFromAnalyticExpr[point_] :=
     Module[{s2t, yt, at, deltaMh, pars},
            s2t = Sin[2 ArcSin[sinTheta /. point]];
            yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
-           at = ((mst1^2 - mst2^2) s2t/(2 mt) - Mu/TanBeta) /. point;
+           at = ((mst1^2 - mst2^2) s2t/(2 mt) - signMu Mu/TanBeta) /. point;
            pars = Join[
                { sin2Theta -> s2t, ht -> yt, At -> at },
                point
@@ -63,7 +63,7 @@ int calc_Sij(double* S11, double* S22, double* S12)
    double st = " <> ToString[sinTheta /. point] <> ";
    double ct = sqrt(1. - sqr(st));
    double q2 = sqr(" <> ToString[Q /. point] <> ");
-   double mu = " <> ToString[Mu /. point] <> ";
+   double mu = " <> ToString[signMu Mu /. point] <> ";
    double tb = " <> ToString[TanBeta /. point] <> ";
    double v2 = sqr(" <> ToString[v /. point] <> ");
    double g3 = " <> ToString[g3 /. point] <> ";
