@@ -9,8 +9,9 @@ GetMSSMCPEvenHiggsLoopMassMatrix::usage = "Returns the
 Note: The return value contains the contributions from tadpole
  diagrams.
 
-Note: The sign of the mu parameter is opposite to the one in SARAH.
- In order to switch to the SARAH convention, set $signMu = -1;
+Note: The sign of the mu parameter in arxiv:hep-ph/0105096 is opposite
+ to the one in SARAH.  In order to switch to the SARAH convention,
+ pass parameters -> {signMu -> -1} to the function.
 
 Usage: GetMSSMCPEvenHiggsLoopMassMatrix[
            loopOrder -> {1,1,1}, corrections -> {1}, parameters -> {}]
@@ -30,26 +31,26 @@ Parameters:
 - parameters: List of internal replacement rules for parameters,
   useful when certain limits are considered (default: {}).
   Example:  parameters -> {At -> 0, sin2Theta -> 0}
+
+To express the result by the stop mixing parameter Xt, call
+
+  GetMSSMCPEvenHiggsLoopMassMatrix[
+      parameters -> {At -> Xt - signMu Mu/TanBeta}]
 ";
 
 ReplaceStopMasses::usage = "Returns list of replacetment rules which
  replace mst1, mst2 and sin2Theta by DR-bar parameters.";
 
 (* DR-bar parameters *)
-{ ht, Mu, mt, At, mQ33, mU33, TanBeta, g3, Q, M3 };
+{ ht, Mu, mt, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu };
 
 (* Stop mass parameters *)
 { sin2Theta, mst1, mst2 };
 
-$signMu::usage = "Sign of the mu parameter (default: 1).
-In order to switch to the SARAH convention, set $signMu = -1";
-
-$signMu = 1;
-
 Begin["TwoLoopMSSM`Private`"];
 
 (* Eqs. (17) of arxiv:hep-ph/0105096 *)
-CalculateMStop2[signMu_] :=
+CalculateMStop2[] :=
     Module[{mst2 = {0,0}, mL2, mR2, Xt, s2t},
            mL2 = mQ33^2 + mt^2;
            mR2 = mU33^2 + mt^2;
@@ -65,8 +66,8 @@ CalculateMStop2[signMu_] :=
 CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_, parameters_List] :=
     Module[{mm = {{0,0},{0,0}}},
            mm[[1,1]] = 1/2 ht^2 Mu^2 sin2Theta^2 F3;
-           mm[[1,2]] = (ht^2 $signMu Mu mt sin2Theta F2
-                        + 1/2 ht^2 At $signMu Mu sin2Theta^2 (F3 + DeltaF3));
+           mm[[1,2]] = (ht^2 signMu Mu mt sin2Theta F2
+                        + 1/2 ht^2 At signMu Mu sin2Theta^2 (F3 + DeltaF3));
            mm[[2,2]] = (2 ht^2 mt^2 F1 + 2 ht^2 At mt sin2Theta (F2 + DeltaF2)
                         + 1/2 ht^2 At^2 sin2Theta^2 (F3 + 2 DeltaF3));
            If[PossibleZeroQ[At /. parameters],
@@ -75,7 +76,7 @@ CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_, parameters_List] :=
              ];
            If[PossibleZeroQ[sin2Theta /. parameters],
               mm[[1,1]] = 0;
-              mm[[1,2]] = Expand[ht^2 $signMu Mu mt sin2Theta F2];
+              mm[[1,2]] = Expand[ht^2 signMu Mu mt sin2Theta F2];
               mm[[2,2]] = Expand[2 ht^2 mt^2 F1
                                  + 2 ht^2 At mt sin2Theta (F2 + DeltaF2)];
              ];
@@ -333,7 +334,7 @@ Options[ReplaceStopMasses] = {
 };
 
 ReplaceStopMasses[OptionsPattern[]] :=
-    Module[{mstop = CalculateMStop2[$signMu] /. OptionValue[parameters]},
+    Module[{mstop = CalculateMStop2[] /. OptionValue[parameters]},
            {
                mst1 -> Sqrt[mstop[[1]]],
                mst2 -> Sqrt[mstop[[2]]],

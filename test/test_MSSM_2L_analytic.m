@@ -2,18 +2,17 @@ Needs["TestSuite`", "TestSuite.m"];
 Needs["CCompilerDriver`"];
 
 Get[FileNameJoin[{Directory[], "meta", "TwoLoopMSSM.m"}]];
-$signMu = 1;
 
 Print["Comparing numerically with Pietro Slavich's routines ... "];
 
 points = {
-   {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118}
+   {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1}
 };
 
 randomPoints = {mt -> RandomReal[{100,200}],
@@ -25,7 +24,8 @@ randomPoints = {mt -> RandomReal[{100,200}],
                 Mu -> RandomReal[{0,10000}],
                 TanBeta -> RandomReal[{1,100}],
                 v -> RandomReal[{240,250}],
-                g3 -> RandomReal[{0.1,0.2}]}& /@ Table[i, {i,1,100}];
+                g3 -> RandomReal[{0.1,0.2}],
+                signMu -> 1}& /@ Table[i, {i,1,100}];
 
 points = Join[points, randomPoints];
 
@@ -34,11 +34,13 @@ CalculatePointFromAnalyticExpr[point_] :=
            s2t = Sin[2 ArcSin[sinTheta /. point]];
            yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
            at = ((mst1^2 - mst2^2) s2t/(2 mt) - Mu/TanBeta) /. point;
-           pars = { sin2Theta -> s2t };
+           pars = Join[
+               { sin2Theta -> s2t, ht -> yt, At -> at },
+               point
+           ];
            deltaMh = Simplify @ Re @ N[
                GetMSSMCPEvenHiggsLoopMassMatrix[
-                   loopOrder -> {0,0,1}, parameters -> pars] /.
-               {ht -> yt, At -> at} /. point];
+                   loopOrder -> {0,0,1}, parameters -> pars]];
            {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]]}
           ];
 
