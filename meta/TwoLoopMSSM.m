@@ -18,18 +18,18 @@ Usage: GetMSSMCPEvenHiggsLoopMassMatrix[
 
 Parameters:
 
-- loopOrder: List of factors multiplied by each loop order.
+- loopOrder (optional): List of factors multiplied by each loop order.
   #1: tree-level
   #2: 1-loop level
   #3: 2-loop level
   (default: {1,1,1})
 
-- corrections: List of factors multiplied by each correction.
+- corrections (optional): List of factors multiplied by each correction.
   (default: {1})
   #1: alpha_t * alpha_s
 
-- parameters: List of internal replacement rules for parameters,
-  useful when certain limits are considered (default: {}).
+- parameters (optional): List of internal replacement rules for
+  parameters, useful when certain limits are considered (default: {}).
   Example:  parameters -> {At -> 0, sin2Theta -> 0}
 
 To express the result by the stop mixing parameter Xt, call
@@ -39,13 +39,27 @@ To express the result by the stop mixing parameter Xt, call
 ";
 
 ReplaceStopMasses::usage = "Returns list of replacetment rules which
- replace mst1, mst2 and sin2Theta by DR-bar parameters.";
+ replace mst1, mst2 and sin2Theta by DR-bar Lagrangian parameters.
+
+Usage:
+
+  ReplaceStopMasses[parameters -> {}]
+
+Parameters:
+
+- parameters (optional): List of internal replacement rules for
+  parameters, useful when certain limits are considered (default: {}).
+  Example: parameters -> {At -> 0, sin2Theta -> 0}
+";
 
 (* DR-bar parameters *)
 { ht, Mu, mt, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu };
 
 (* Stop mass parameters *)
 { sin2Theta, mst1, mst2 };
+
+(* options *)
+{ loopOrder, corrections, parameters };
 
 Begin["TwoLoopMSSM`Private`"];
 
