@@ -5,9 +5,13 @@ Get[FileNameJoin[{Directory[], "meta", "TwoLoopMSSM.m"}]];
 $signMu = 1;
 
 points = {
-   {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
-   {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001, sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118}
+   {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 2001, mst2 -> 1001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 2000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
+   {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118}
 };
 
 randomPoints = {mt -> RandomReal[{100,200}],
@@ -24,13 +28,15 @@ randomPoints = {mt -> RandomReal[{100,200}],
 points = Join[points, randomPoints];
 
 CalculatePointFromAnalyticExpr[point_] :=
-    Module[{s2t, yt, at, deltaMh},
+    Module[{s2t, yt, at, deltaMh, pars},
            s2t = Sin[2 ArcSin[sinTheta /. point]];
            yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
            at = ((mst1^2 - mst2^2) s2t/(2 mt) - Mu/TanBeta) /. point;
-           deltaMh = Simplify[
-               Re[N[GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0,0,1}] /.
-                    {sin2Theta -> s2t, ht -> yt, At -> at} /. point]]];
+           pars = { sin2Theta -> s2t };
+           deltaMh = Simplify @ Re @ N[
+               GetMSSMCPEvenHiggsLoopMassMatrix[
+                   loopOrder -> {0,0,1}, parameters -> pars] /.
+               {ht -> yt, At -> at} /. point];
            {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]]}
           ];
 

@@ -74,9 +74,10 @@ CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_, parameters_List] :=
               mm[[2,2]] = Expand[mm[[2,2]]];
              ];
            If[PossibleZeroQ[sin2Theta /. parameters],
-              mm[[1,1]] = Expand[mm[[1,1]]];
-              mm[[1,2]] = Expand[mm[[1,2]]];
-              mm[[2,2]] = Expand[mm[[2,2]]];
+              mm[[1,1]] = 0;
+              mm[[1,2]] = Expand[ht^2 $signMu Mu mt sin2Theta F2];
+              mm[[2,2]] = Expand[2 ht^2 mt^2 F1
+                                 + 2 ht^2 At mt sin2Theta (F2 + DeltaF2)];
              ];
            mm[[2,1]] = mm[[1,2]];
            mm
@@ -235,24 +236,35 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[parameters_List] :=
                + f1[mt, mg, mst2^2, mst1^2, -sin2Theta, Q]
            );
            (* Eq. (33) *)
-           F2 = unit (
-               + 5 Log[mst1^2 / mst2^2]
-               - 3 (Log[mst1^2 / Q^2]^2 - Log[mst2^2 / Q^2]^2)
-               + cos2Theta2 (
-                   + 5 Log[mst1^2 / mst2^2]
-                   - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]^2
-                   - 2 / (mst1^2 - mst2^2) (
-                       + mst1^2 Log[mst1^2 / Q^2]
-                       - mst2^2 Log[mst2^2 / Q^2]
-                     ) Log[mst1^2 / mst2^2]
-                 )
-               + sin2Theta^2 (
-                   + mst1^2 / mst2^2 (1 - Log[mst1^2 / Q^2])
-                   - mst2^2 / mst1^2 (1 - Log[mst2^2 / Q^2])
-                 )
-               + f2[mt, mg, mst1^2, mst2^2, sin2Theta, Q]
-               - f2[mt, mg, mst2^2, mst1^2, -sin2Theta, Q]
-           );
+           If[PossibleZeroQ[mst1 - mst2 /. parameters],
+              If[PossibleZeroQ[sin2Theta /. parameters],
+                 F2 = 0;
+                 ,
+                 F2 = unit (
+                     + f2[mt, mg, mst1^2, mst2^2, sin2Theta, Q]
+                     - f2[mt, mg, mst2^2, mst1^2, -sin2Theta, Q]
+                 );
+                ];
+              ,
+              F2 = unit (
+                  + 5 Log[mst1^2 / mst2^2]
+                  - 3 (Log[mst1^2 / Q^2]^2 - Log[mst2^2 / Q^2]^2)
+                  + cos2Theta2 (
+                      + 5 Log[mst1^2 / mst2^2]
+                      - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]^2
+                      - 2 / (mst1^2 - mst2^2) (
+                          + mst1^2 Log[mst1^2 / Q^2]
+                          - mst2^2 Log[mst2^2 / Q^2]
+                                              ) Log[mst1^2 / mst2^2]
+                               )
+                  + sin2Theta^2 (
+                      + mst1^2 / mst2^2 (1 - Log[mst1^2 / Q^2])
+                      - mst2^2 / mst1^2 (1 - Log[mst2^2 / Q^2])
+                                )
+                  + f2[mt, mg, mst1^2, mst2^2, sin2Theta, Q]
+                  - f2[mt, mg, mst2^2, mst1^2, -sin2Theta, Q]
+              );
+             ];
            (* Eq. (33) *)
            F31L = Nc h (2 - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]);
            F3 = unit (
