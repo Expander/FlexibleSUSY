@@ -27,7 +27,7 @@ Parameters:
   (default: {1})
   #1: alpha_t * alpha_s
 
-- parameters: List of parameter internal replacement rules,
+- parameters: List of internal replacement rules for parameters,
   useful when certain limits are considered (default: {}).
   Example:  parameters -> {At -> 0}
 ";
@@ -70,6 +70,11 @@ CreateMassMatrixCPEven[F1_, F2_, F3_, DeltaF2_, DeltaF3_, parameters_List] :=
            mm[[2,2]] = (2 ht^2 mt^2 F1 + 2 ht^2 At mt sin2Theta (F2 + DeltaF2)
                         + 1/2 ht^2 At^2 sin2Theta^2 (F3 + 2 DeltaF3));
            If[PossibleZeroQ[At /. parameters],
+              mm[[1,2]] = Expand[mm[[1,2]]];
+              mm[[2,2]] = Expand[mm[[2,2]]];
+             ];
+           If[PossibleZeroQ[sin2Theta /. parameters],
+              mm[[1,1]] = Expand[mm[[1,1]]];
               mm[[1,2]] = Expand[mm[[1,2]]];
               mm[[2,2]] = Expand[mm[[2,2]]];
              ];
