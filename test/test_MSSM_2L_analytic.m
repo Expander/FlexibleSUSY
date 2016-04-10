@@ -4,6 +4,8 @@ Needs["CCompilerDriver`"];
 Get[FileNameJoin[{Directory[], "meta", "TwoLoopMSSM.m"}]];
 $signMu = 1;
 
+Print["Comparing numerically with Pietro Slavich's routines ... "];
+
 points = {
    {mt -> 175, M3 -> 1000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
    {mt -> 175, M3 -> 2000, mst1 -> 1001, mst2 -> 2001   , sinTheta -> 0.2, Q -> 900, Mu -> 100, TanBeta -> 10, v -> 245, g3 -> 0.118},
@@ -109,5 +111,29 @@ For[i = 1, i <= Length[points], i++,
 
     TestEquality[test, True];
    ];
+
+Print["done"];
+Print[""];
+
+Print["Testing limits ... "];
+
+points = {
+    {Mu -> 0, At -> 0},
+    {Mu -> 0, At -> 0, sin2Theta -> 0},
+    {Mu -> 0, At -> 0, sin2Theta -> 0, mst1 -> mst2},
+    {sin2Theta -> 0},
+    {sin2Theta -> 0, mst1 -> mst2}
+};
+
+For[i = 1, i <= Length[points], i++,
+    ex = GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0, 0, 1}, parameters -> points[[i]]];
+    TestEquality[ex[[1,1]] =!= Indeterminate, True];
+    TestEquality[ex[[1,2]] =!= Indeterminate, True];
+    TestEquality[ex[[2,1]] =!= Indeterminate, True];
+    TestEquality[ex[[2,2]] =!= Indeterminate, True];
+   ];
+
+Print["done"];
+Print[""];
 
 PrintTestSummary[];
