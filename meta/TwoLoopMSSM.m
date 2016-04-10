@@ -12,7 +12,7 @@ Note: The return value contains the contributions from tadpole
 Note: The sign of the mu parameter is opposite to the one in SARAH.
  In order to switch to the SARAH convention, set $signMu = -1;
 
-Usage: GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder, corrections]
+Usage: GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {1,1,1}, corrections -> {1}]
 
 Parameters:
 
@@ -287,11 +287,16 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[] :=
            CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3]
           ];
 
-GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder_List:{1,1,1}, corr_List:{1}] :=
+Options[GetMSSMCPEvenHiggsLoopMassMatrix] = {
+    loopOrder -> {1,1,1},
+    corrections -> {1}
+};
+
+GetMSSMCPEvenHiggsLoopMassMatrix[OptionsPattern[]] :=
     (
-        loopOrder[[1]] {{0,0}, {0,0}} +
-        loopOrder[[2]] corr[[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] +
-        loopOrder[[3]] corr[[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[]
+        OptionValue[loopOrder][[1]] {{0,0}, {0,0}} +
+        OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[] +
+        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[]
     );
 
 ReplaceStopMasses[] :=

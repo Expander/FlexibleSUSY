@@ -29,7 +29,7 @@ CalculatePointFromAnalyticExpr[point_] :=
            yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
            at = ((mst1^2 - mst2^2) s2t/(2 mt) - Mu/TanBeta) /. point;
            deltaMh = Simplify[
-               Re[N[GetMSSMCPEvenHiggsLoopMassMatrix[{0, 0, 1}] /.
+               Re[N[GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0,0,1}] /.
                     {sin2Theta -> s2t, ht -> yt, At -> at} /. point]]];
            {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]]}
           ];
