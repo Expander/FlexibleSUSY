@@ -141,6 +141,27 @@ run_flexiblesusy() {
     echo "$input" | $sg --slha-input-file=- 2>/dev/null
 }
 
+#_____________________________________________________________________
+run_spheno() {
+    local sg="$1"
+    local input="$2"
+    local tmp_in="$$.in"
+    local tmp_out="$$.spc"
+
+    rm -f "$tmp_out" "$tmp_in"
+    echo "$input" > "$tmp_in"
+
+    $sg "$tmp_in" "$tmp_out" > /dev/null 2>&1
+
+    if test "x$?" = "x0" -a -f "$tmp_out" ; then
+        cat "$tmp_out"
+    fi
+
+    rm -f "$tmp_out" "$tmp_in" Messages.out SPheno.out \
+       WHIZARD.par.* effC.dat BR_t.dat BR_Hplus.dat BR_H_NP.dat \
+       LEP_HpHm_CS_ratios.dat MH_GammaTot.dat MHplus_GammaTot.dat fort.10
+}
+
 trap do_actions_at_exit 0
 trap "exit 1" INT QUIT TERM
 
