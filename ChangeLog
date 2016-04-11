@@ -1,7 +1,7 @@
 FlexibleSUSY-1.4.1 [not released yet]
 
- * Feature: Tab-completion for FlexibleSUSY's spectrum generators in
-   the bash.
+ * Feature: Tab-completion for FlexibleSUSY's spectrum generators and
+   scripts in the bash.
 
    Usage:
    . utils/install-bash_completions.bash

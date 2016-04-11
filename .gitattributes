@@ -2,6 +2,8 @@
 .gitattributes                  export-ignore
 TODO                            export-ignore
 
+addons/test_*                   export-ignore
+
 doc/images                      export-ignore
 doc/release                     export-ignore
 doc/FlexibleFuture.txt          export-ignore

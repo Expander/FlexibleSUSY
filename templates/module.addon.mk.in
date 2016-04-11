@@ -16,10 +16,12 @@ LIB@ADDON@_HDR :=
 
 LIB@ADDON@_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@ADDON@_SRC))) \
+		$(patsubst %.c, %.o, $(filter %.c, $(LIB@ADDON@_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(LIB@ADDON@_SRC)))
 
 EXE@ADDON@_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXE@ADDON@_SRC))) \
+		$(patsubst %.c, %.o, $(filter %.c, $(EXE@ADDON@_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXE@ADDON@_SRC)))
 
 LIB@ADDON@_DEP := \
@@ -84,11 +86,15 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
+ifeq ($(ENABLE_TSIL),yes)
+$(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAGS += $(TSILFLAGS)
+endif
+
 $(LIB@ADDON@): $(LIB@ADDON@_OBJ)
 		$(MAKELIB) $@ $^
 
 $(EXE@ADDON@_EXE): $(EXE@ADDON@_OBJ) $(LIB@ADDON@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS)
 
 ALLDEP += $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP)
 ALLSRC += $(LIB@ADDON@_SRC) $(EXE@ADDON@_SRC)

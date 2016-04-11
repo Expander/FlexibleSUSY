@@ -168,7 +168,7 @@ private:
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
-   int solve_ewsb_tree_level_via_soft_higgs_masses();
+   int solve_ewsb_tree_level_custom();
    void ewsb_initial_guess(double[number_of_ewsb_equations]);
    int ewsb_step(double[number_of_ewsb_equations]) const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
