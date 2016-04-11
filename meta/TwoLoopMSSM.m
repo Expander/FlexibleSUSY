@@ -2,7 +2,7 @@ BeginPackage["TwoLoopMSSM`"];
 EndPackage[];
 
 GetMSSMCPEvenHiggsLoopMassMatrix::usage = "Returns the
- loop-corrections to the CP-even Higgs mass matrix in the
+ loop corrections to the CP-even Higgs mass matrix in the
  CP-conserving MSSM.  The loop-corrections are taken from
  arxiv:hep-ph/0105096.
 
