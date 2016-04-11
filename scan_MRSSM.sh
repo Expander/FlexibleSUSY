@@ -136,32 +136,36 @@ echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMMSUSY_TB-5_SPheno-like.dat
 
-echo "$slha_templ_spheno_1L" | ./utils/scan-SPhenoMRSSM.sh \
+echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_1L.dat
 
-echo "$slha_templ_spheno_2L" | ./utils/scan-SPhenoMRSSM.sh \
+echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_2L.dat
 
-echo "$slha_templ_spheno_1L" | ./utils/scan-SPhenoMRSSM.sh \
+echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_1L_FSlike.dat
 
-echo "$slha_templ_spheno_2L" | ./utils/scan-SPhenoMRSSM.sh \
+echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_2L_FSlike.dat
 
 plot_scale="
