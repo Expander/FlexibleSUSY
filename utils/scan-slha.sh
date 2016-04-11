@@ -21,6 +21,7 @@
 
 output=
 scan_range=
+sg_type=FlexibleSUSY
 slha_input=
 slha_input_file=
 spectrum_generator=
@@ -108,6 +109,8 @@ Options:
                         read from stdin .
   --spectrum-generator= Spectrum generator executable
   --step-size=          the step size (linear or log)
+  --type=               Spectrum generator type (default: ${sg_type})
+                        Possible values: FlexibleSUSY SPheno
   --help,-h             Print this help message
 
 Examples:
@@ -162,6 +165,24 @@ run_spheno() {
        LEP_HpHm_CS_ratios.dat MH_GammaTot.dat MHplus_GammaTot.dat fort.10
 }
 
+#_____________________________________________________________________
+run_sg() {
+    local type="$1"
+    local sg="$2"
+    local input="$3"
+    local func=
+
+    case "$type" in
+        FlexibleSUSY) func=run_flexiblesusy ;;
+        SPheno)       func=run_spheno ;;
+        *)
+            echo "Error: unknown spectrum generator type: $type"
+            exit 1
+    esac
+
+    ${func} "$sg" "$input"
+}
+
 trap do_actions_at_exit 0
 trap "exit 1" INT QUIT TERM
 
@@ -178,6 +199,7 @@ if test $# -gt 0 ; then
             --slha-input-file=*)     slha_input_file=$optarg ;;
             --spectrum-generator=*)  spectrum_generator=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
+            --type=*)                sg_type=$optarg ;;
             --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
@@ -256,7 +278,7 @@ EOF
     })
 
     # run the spectrum generator
-    slha_output=$(run_flexiblesusy "$spectrum_generator" "$slha_input")
+    slha_output=$(run_sg "$sg_type" "$spectrum_generator" "$slha_input")
 
     printfstr=" "
     args=
