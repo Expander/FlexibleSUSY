@@ -86,6 +86,10 @@ int main(){
                "Libraries" -> {FileNameJoin[{Directory[], "src", "libflexisusy.a"}], "gfortran"}
                (*, "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)
            ];
+           If[exec === $Failed,
+              Print["Error: cannot create executable"];
+              Return[{0,0,0}];
+             ];
            ToExpression[
                StringReplace[
                    Import["!" <> QuoteFile[exec], "String"], {"e+" :> "*^", "e-" :> "*^-"}
