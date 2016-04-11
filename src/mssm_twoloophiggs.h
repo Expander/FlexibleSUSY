@@ -219,8 +219,6 @@ int tausqtad_(double * t, double * A0, double * BL, double * T1,
 // c.real and d.imag
 int dilogwrap_(double * a, double * b, double * c, double * d);
 
-int dummy_();
-
 #define tadpole_higgs_2loop_at_as_mssm                ewsb2loop_
 #define tadpole_higgs_2loop_ab_as_mssm                ewsb2loop_
 #define tadpole_higgs_2loop_at_at_mssm                ddstad_
