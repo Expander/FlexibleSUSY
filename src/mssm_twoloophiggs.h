@@ -215,10 +215,6 @@ int tausqtad_(double * t, double * A0, double * BL, double * T1,
 			 double * mu, double * tanb, double * vv,  
 			 double * s1, double * s2);
 
-// dilog wrapper for complex variables: inputs are a.real and b.imag, outputs
-// c.real and d.imag
-int dilogwrap_(double * a, double * b, double * c, double * d);
-
 #define tadpole_higgs_2loop_at_as_mssm                ewsb2loop_
 #define tadpole_higgs_2loop_ab_as_mssm                ewsb2loop_
 #define tadpole_higgs_2loop_at_at_mssm                ddstad_
