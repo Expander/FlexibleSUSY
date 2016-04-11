@@ -133,6 +133,14 @@ Examples:
 EOF
 }
 
+#_____________________________________________________________________
+run_flexiblesusy() {
+    local sg="$1"
+    local input="$2"
+
+    echo "$input" | $sg --slha-input-file=- 2>/dev/null
+}
+
 trap do_actions_at_exit 0
 trap "exit 1" INT QUIT TERM
 
@@ -217,14 +225,17 @@ EOF
            exit 1 ;;
     esac
 
-    # run the spectrum generator
-    slha_output=$(
+    # create input data
+    slha_input=$(
     { echo "$slha_input" ; \
       cat <<EOF
 Block $block # added by `basename $0`
   $entry    $value
 EOF
-    } | $spectrum_generator --slha-input-file=- 2>/dev/null)
+    })
+
+    # run the spectrum generator
+    slha_output=$(run_flexiblesusy "$spectrum_generator" "$slha_input")
 
     printfstr=" "
     args=
