@@ -1,3 +1,6 @@
+SA`TadpoleEquationsWithField[EWSB] = Drop[SA`TadpoleEquationsWithField[EWSB],-3];
+TadpoleEquations[EWSB] = Drop[TadpoleEquations[EWSB],-3];
+
 MINPAR = {
     {1, Ms},
     {3, TanBeta}

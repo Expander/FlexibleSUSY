@@ -137,7 +137,7 @@ echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     > scale_MRSSMMSUSY_TB-5_SPheno-like.dat
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM \
+    --spectrum-generator=./SPhenoMRSSM2 \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -145,7 +145,7 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_1L.dat
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM \
+    --spectrum-generator=./SPhenoMRSSM2 \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -153,7 +153,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_2L.dat
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM_FlexibleSUSY_like \
+    --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -161,7 +161,7 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_1L_FSlike.dat
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM_FlexibleSUSY_like \
+    --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -187,13 +187,13 @@ set xlabel 'M_S / TeV'
 set ylabel 'M_h / GeV'
 
 plot [:] [:] \
-     'scale_MRSSMtower_TB-5.dat' u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
-     'scale_MRSSMMSUSY_TB-5.dat' u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
+     'scale_MRSSMMSUSY_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
      'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM 1L SPheno-like' w lines ls 5, \
-     'scale_SPhenoMRSSM_TB-5_1L.dat'   u (\$1/1000):2 t 'SPheno/MRSSM 1L' w lines ls 2, \
-     'scale_SPhenoMRSSM_TB-5_2L.dat'   u (\$1/1000):2 t 'SPheno/MRSSM 2L' w lines ls 4, \
-     'scale_SPhenoMRSSM_TB-5_1L_FSlike.dat' u (\$1/1000):2 t 'SPheno/MRSSM 1L FS-like' w lines ls 6, \
-     'scale_SPhenoMRSSM_TB-5_2L_FSlike.dat' u (\$1/1000):2 t 'SPheno/MRSSM 2L FS-like' w lines ls 7
+     'scale_SPhenoMRSSM_TB-5_1L.dat'         u (\$1/1000):2 t 'SPheno/MRSSM 1L' w lines ls 2, \
+     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):2 t 'SPheno/MRSSM 2L' w lines ls 4, \
+     'scale_SPhenoMRSSM_TB-5_1L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 1L FS-like' w lines ls 6, \
+     'scale_SPhenoMRSSM_TB-5_2L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 2L FS-like' w lines ls 7
 "
 
 echo "$plot_scale" | gnuplot
