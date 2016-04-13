@@ -1203,16 +1203,12 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
-WriteSLHAInputFile[minpar_List, extpar_List, inputParameters_List,
-                   lesHouchesInputParameters_List,
-                   files_List] :=
-    Module[{},
-           Print["minpar = ", minpar];
-           Print["extpar = ", minpar];
-           Print["inputParameters = ", inputParameters];
-           Print["lesHouchesInputParameters = ", lesHouchesInputParameters];
+WriteSLHAInputFile[inputParameters_List, files_List] :=
+    Module[{formattedSLHAInputBlocks},
+           formattedSLHAInputBlocks = CreateFormattedSLHABlocks[inputParameters];
            WriteOut`ReplaceInFiles[files,
-                          { Sequence @@ GeneralReplacementRules[]
+                          { "@formattedSLHAInputBlocks@" -> formattedSLHAInputBlocks,
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
@@ -2210,8 +2206,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            ];
 
            Print["Creating example SLHA input file ..."];
-           WriteSLHAInputFile[MINPAR, EXTPAR, inputParameters,
-                              lesHouchesInputParameters,
+           WriteSLHAInputFile[inputParameters,
                               {{FileNameJoin[{$flexiblesusyTemplateDir, "LesHouches.in"}],
                                 FileNameJoin[{FSOutputDir, "LesHouches.in." <> FlexibleSUSY`FSModelName <> "_generated"}]}}
                              ];

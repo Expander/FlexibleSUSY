@@ -42,6 +42,8 @@ CalculatePMNSMatrix::usage="";
 CreateInputBlockName::usage="Creates an SLHA input block name for a
  given SLHA block name";
 
+CreateFormattedSLHABlocks::usage = "";
+
 Begin["`Private`"];
 
 (*
@@ -1076,6 +1078,69 @@ GetGaugeCouplingNormalizationsDefs[gauge_List] :=
             Parameters`GetGUTNormalization[#[[4]]]
         ]& /@ gauge
     ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`ScalarType[_]}] :=
+    "   0   # " <> CConversion`RValueToCFormString[par] <> "\n";
+
+CreateFormattedSLHABlockEntry[{par_, (CConversion`ArrayType | CConversion`VectorType)[_,n_]}] :=
+    Module[{i, result = ""},
+           For[i = 1, i <= n, i++,
+               result = result <>
+                        "   " <> ToString[i] <> "   0   # " <>
+                        CConversion`RValueToCFormString[par[i]] <> "\n";
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`MatrixType[_,m_,n_]}] :=
+    Module[{i, k, result = ""},
+           For[i = 1, i <= m, i++,
+               For[k = 1, k <= n, k++,
+                   result = result <>
+                            "   " <> ToString[i] <> "   " <> ToString[k] <>
+                            "   0   # " <>
+                            CConversion`RValueToCFormString[par[i,k]] <> "\n";
+                  ];
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`TensorType[_,m_,n_,o_]}] :=
+    Module[{i, k, l, result = ""},
+           For[i = 1, i <= m, i++,
+               For[k = 1, k <= n, k++,
+                   For[l = 1, l <= o, l++,
+                       result = result <>
+                                "   " <> ToString[i] <> "   " <> ToString[k] <>
+                                "   " <> ToString[l] <> "   0   # " <>
+                                CConversion`RValueToCFormString[par[i,k,l]] <> "\n";
+                      ];
+                  ];
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`TensorType[_,__]}] := "\n";
+
+CreateFormattedSLHABlockEntry[{par_, _, idx_}] :=
+    "   " <> ToString[idx] <> "   0   # " <> CConversion`RValueToCFormString[par] <> "\n";
+
+CreateFormattedSLHABlock[{block_, parameters_List}] :=
+    Module[{head = "Block " <> ToString[block] <> "\n", body},
+           body = StringJoin[CreateFormattedSLHABlockEntry /@ parameters];
+           head <> body
+          ];
+
+FindParametersInBlock[inputParameters_List, block_] :=
+    Join[Cases[inputParameters, {p_, block, t_} :> {p, t}],
+         Cases[inputParameters, {p_, {block, idx_}, t_} :> {p, t, idx}]];
+
+CreateFormattedSLHABlocks[inputPars_List] :=
+    Module[{blocks, sortForBlocks},
+           blocks = DeleteDuplicates @ Cases[inputPars, {_, {block_, _} | block_, ___} :> block];
+           sortForBlocks = {#, FindParametersInBlock[inputPars, #]}& /@ blocks;
+           StringJoin[CreateFormattedSLHABlock /@ sortForBlocks]
+          ];
 
 End[];
 
