@@ -556,12 +556,13 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set},
-          defineInputParameters = Constraint`DefineInputParameters[inputParameters];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[inputParameters];
-          printInputParameters = WriteOut`PrintInputParameters[inputParameters,"ostr"];
-          get = Parameters`CreateInputParameterArrayGetter[inputParameters];
-          set = Parameters`CreateInputParameterArraySetter[inputParameters];
+   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set, inputPars},
+          inputPars = {First[#], #[[3]]}& /@ inputParameters;
+          defineInputParameters = Constraint`DefineInputParameters[inputPars];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[inputPars];
+          printInputParameters = WriteOut`PrintInputParameters[inputPars,"ostr"];
+          get = Parameters`CreateInputParameterArrayGetter[inputPars];
+          set = Parameters`CreateInputParameterArraySetter[inputPars];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -1184,9 +1185,10 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions},
-           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
-           printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
+    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars},
+           inputPars = {First[#], #[[3]]}& /@ inputParameters;
+           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
+           printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
@@ -1669,7 +1671,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
-            inputParameters (* list of 2-component lists of the form {name, type} *),
+            inputParameters (* list of 3-component lists of the form {name, block, type} *),
             haveEWSB = True,
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
@@ -1726,8 +1728,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
-           Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
+           (* collect input parameters from MINPAR and EXTPAR lists *)
+           inputParameters = Join[
+               DeleteDuplicates[{#[[2]], {Hold[SARAH`MINPAR], #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
+               DeleteDuplicates[{#[[2]], {Hold[SARAH`EXTPAR], #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
+           ];
+
+           Parameters`SetInputParameters[First /@ inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",
@@ -1884,8 +1891,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
+                                                        {#[[2]], #[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+              Parameters`AddInputParameters[First /@ inputParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -1920,9 +1927,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
            inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                     {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters,
-                                                     {#[[2]], #[[3]]}& /@ lesHouchesInputParameters];
-           Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
+                                                     FlexibleSUSY`FSExtraInputParameters,
+                                                     {#[[2]], #[[2]], #[[3]]}& /@ lesHouchesInputParameters];
+           Parameters`AddInputParameters[First /@ inputParameters];
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
@@ -2070,9 +2077,19 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
+              FindPhaseInInputParameters[inputPars_List, phase_] :=
+                  Module[{foundBlock},
+                         foundBlock = Cases[inputPars, {phase, block_, ___} :> block];
+                         If[foundBlock === {},
+                            Print["Error: ", phase, " is not defined as an input parameter!"];
+                            Print["   Please add ", phase, " to the MINPAR or EXTPAR input parameter list."];
+                            Quit[1];
+                           ];
+                         foundBlock[[1]]
+                        ];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#, GuessInputParameterType[#]}& /@ freePhases];
-              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
+                                                        {#, FindPhaseInInputParameters[inputParameters,#], GuessInputParameterType[#]}& /@ freePhases];
+              Parameters`AddInputParameters[First /@ inputParameters];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
