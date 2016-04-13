@@ -6,6 +6,10 @@ FlexibleSUSY-1.4.1 [not released yet]
    Usage:
    . utils/install-bash_completions.bash
 
+ * Feature: For each model an example SLHA input file generated.  For
+   each model the generated file is located at
+   models/<model>/LesHouches.in.<model>_generated .
+
  * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
    M3^2 -> MSQ^2 / M3^2 in HSSUSY.
 
