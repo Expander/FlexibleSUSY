@@ -179,6 +179,7 @@ clean-$(MODNAME)-src:
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 		-rm -f $(@CLASSNAME@_TWO_SCALE_MK)
+		-rm -f $(@CLASSNAME@_SLHA_INPUT)
 		-rm -f $(@CLASSNAME@_GNUPLOT)
 
 clean-$(MODNAME): clean-$(MODNAME)-src
