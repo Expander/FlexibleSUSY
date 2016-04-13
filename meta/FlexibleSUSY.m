@@ -1897,7 +1897,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#[[2]], #[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+                                                        {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               Parameters`AddInputParameters[First /@ inputParameters];
              ];
 
