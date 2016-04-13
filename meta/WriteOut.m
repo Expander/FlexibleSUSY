@@ -39,6 +39,9 @@ ConvertSoftSquaredMassesToSLHA::usage="";
 CalculateCKMMatrix::usage="";
 CalculatePMNSMatrix::usage="";
 
+CreateInputBlockName::usage="Creates an SLHA input block name for a
+ given SLHA block name";
+
 Begin["`Private`"];
 
 (*
@@ -574,15 +577,9 @@ CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
 CreateInputBlockName[blockName_] :=
     ToString[blockName] <> "IN";
 
-ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
-    Module[{result = "", parameters, names, rules},
-           names = (#[[1]])& /@ lesHouchesInputParameters;
-           rules = Cases[lesHouchesInputParameters, {p_, block_, _} /; MemberQ[Parameters`GetModelParameters[],p] :> Rule[p,block]];
-           (* get block names of all les Houches input parameters (names) *)
-           parameters = Select[Join[GetSLHAModelParameters[],GetSLHAInputParameters[]], MemberQ[names,#[[1]]]&];
-           parameters = {#[[1]] /. rules,
-                         If[MemberQ[Parameters`GetModelParameters[],#[[1]]], CreateInputBlockName[#[[2]]], #[[2]]]}& /@ parameters;
-           (result = result <> ReadSLHAInputBlock[#])& /@ parameters;
+ReadLesHouchesInputParameters[slhaInputParameters_List] :=
+    Module[{result = ""},
+           (result = result <> ReadSLHAInputBlock[#])& /@ slhaInputParameters;
            Return[result];
           ];
 
