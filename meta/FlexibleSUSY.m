@@ -1213,10 +1213,9 @@ WriteMakefileModule[rgeFile_List, files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
-                    lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
-                    files_List] :=
+                    extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
-            minpar, extpar,
+            minpar, extpar, extraSLHAInputParameters,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
@@ -1241,6 +1240,11 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            smParticles   = Complement[particles, susyParticles];
            minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
            extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
+           extraSLHAInputParameters = Complement[
+               inputParameters,
+               Cases[inputParameters, {_, {"MINPAR", _}, ___}],
+               Cases[inputParameters, {_, {"EXTPAR", _}, ___}]
+           ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
            particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
@@ -1258,7 +1262,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
-           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
+           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
@@ -1928,12 +1932,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determine type of extra input parameters *)
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
+           FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
+
            inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                      FlexibleSUSY`FSExtraInputParameters,
-                                                     {#[[2]], #[[2]], #[[3]]}& /@ lesHouchesInputParameters];
+                                                     {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ lesHouchesInputParameters];
            Parameters`AddInputParameters[First /@ inputParameters];
-
-           FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
@@ -1970,11 +1974,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
                lesHouchesInputParameterReplacementRules;
-
-           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
-              lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
-                                               lesHouchesInputParameters];
-             ];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
@@ -2119,8 +2118,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-           lesHouchesInputParameters = Join[lesHouchesInputParameters, FlexibleSUSY`FSExtraInputParameters];
-
 	   On[Assert];
 
            Lat$massMatrices = ConvertSarahMassMatrices[] /.
@@ -2176,7 +2173,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               inputParameters, lesHouchesInputParameters, extraSLHAOutputBlocks,
+                               inputParameters, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],

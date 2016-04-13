@@ -131,6 +131,9 @@ given list of parameters are omitted from the output.";
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
 
+FindSLHABlock::usage = "returns SLHA input block name for given
+ parameter";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -1593,6 +1596,16 @@ CreateInputParameterArraySetter[inputParameters_List] :=
                paramCount += nAssignments;
               ];
            Return[set];
+          ];
+
+FindSLHABlock[blockList_List, par_] :=
+    Module[{foundBlocks},
+           foundBlocks = Cases[blockList, {par, block_, ___} :> block];
+           If[foundBlocks === {},
+              Print["Error: FindSLHABlock: no input block defined for parameter ", par];
+              Quit[1];
+             ];
+           foundBlocks[[1]]
           ];
 
 End[];
