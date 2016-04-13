@@ -1201,6 +1201,19 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
+WriteSLHAInputFile[minpar_List, extpar_List, inputParameters_List,
+                   lesHouchesInputParameters_List,
+                   files_List] :=
+    Module[{},
+           Print["minpar = ", minpar];
+           Print["extpar = ", minpar];
+           Print["inputParameters = ", inputParameters];
+           Print["lesHouchesInputParameters = ", lesHouchesInputParameters];
+           WriteOut`ReplaceInFiles[files,
+                          { Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WriteMakefileModule[rgeFile_List, files_List] :=
     Module[{concatenatedFileList},
            concatenatedFileList = "\t" <> Utils`StringJoinWithSeparator[rgeFile, " \\\n\t"];
@@ -2180,6 +2193,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "plot_rgflow.gnuplot.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
                            ];
+
+           Print["Creating example SLHA input file ..."];
+           WriteSLHAInputFile[MINPAR, EXTPAR, inputParameters,
+                              lesHouchesInputParameters,
+                              {{FileNameJoin[{$flexiblesusyTemplateDir, "LesHouches.in"}],
+                                FileNameJoin[{FSOutputDir, "LesHouches.in." <> FlexibleSUSY`FSModelName <> "_generated"}]}}
+                             ];
 
            PrintHeadline["Creating constraints"];
            Print["Creating class for high-scale constraint ..."];
