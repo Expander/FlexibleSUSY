@@ -1212,11 +1212,11 @@ WriteMakefileModule[rgeFile_List, files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
-                    inputParameters_List,
+WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                     lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
                     files_List] :=
     Module[{k, particles, susyParticles, smParticles,
+            minpar, extpar,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
@@ -1239,6 +1239,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
+           minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
+           extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
            particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
@@ -1730,8 +1732,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
            inputParameters = Join[
-               DeleteDuplicates[{#[[2]], {Hold[SARAH`MINPAR], #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
-               DeleteDuplicates[{#[[2]], {Hold[SARAH`EXTPAR], #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
+               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
+               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
            ];
 
            Parameters`SetInputParameters[First /@ inputParameters];
@@ -2174,8 +2176,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR, inputParameters,
-                               lesHouchesInputParameters, extraSLHAOutputBlocks,
+                               inputParameters, lesHouchesInputParameters, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],
