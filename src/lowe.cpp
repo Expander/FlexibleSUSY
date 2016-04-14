@@ -194,16 +194,12 @@ double QedQcd::qcdBeta() const {
   qb1 = (102.0e0 - (38.0e0 * quarkFlavours) / 3.0e0) / 16.0;
   qb2 = (2.857e3 * 0.5 - (5.033e3 * quarkFlavours) / 18.0  +
          (3.25e2 * sqr(quarkFlavours) ) / 5.4e1) / 64;
-  double qa0, qa1, qa2;
 
-  if (displayLoops() < 0 || displayLoops() > 3) {
-    ostringstream ii;
-      ii << "Wrong loops parameter :" << displayLoops() << " in " << *this;
-      throw ii.str();
-    }
-  if (displayLoops() > 0) qa0 = qb0 * INVPI; else qa0 = 0.0;
-  if (displayLoops() > 1) qa1 = qb1 * sqr(INVPI); else qa1 = 0.0;
-  if (displayLoops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI; else qa2 = 0.0;
+  double qa0 = 0., qa1 = 0., qa2 = 0.;
+
+  if (displayLoops() > 0) qa0 = qb0 * INVPI;
+  if (displayLoops() > 1) qa1 = qb1 * sqr(INVPI);
+  if (displayLoops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI;
 
   // add contributions of the one, two and three loop constributions resp.
   double beta;
