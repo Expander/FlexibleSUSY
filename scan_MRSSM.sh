@@ -4,12 +4,12 @@ parameter_point="
 Block MINPAR
     3    5                # TanBeta
 Block HMIXIN
-    301 -0.1              # LSD
-    302 -0.1              # LSU
-    303 -0.1              # LTD
-    304 -0.1              # LTU
-    201  1e5              # MuD
-    202  1e5              # MuU
+    301 -0.01             # LSD
+    302 -0.01             # LSU
+    303 -0.01             # LTD
+    304 -0.01             # LTU
+    201  1e2              # MuD
+    202  1e2              # MuU
 "
 
 slha_templ="
