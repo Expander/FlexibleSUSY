@@ -1,5 +1,5 @@
 Block MODSEL     #
-    1 0          #  1/0: High/low scale input
+    1 1          #  1/0: High/low scale input
     2 1          # Boundary Condition
     6 1          # Generation Mixing
 #   12 1000       # output scale
