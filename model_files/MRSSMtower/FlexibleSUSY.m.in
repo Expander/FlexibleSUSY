@@ -41,8 +41,8 @@ SUSYScaleInput = {
     {MDBS  , Ms},
     {MDGoc , Ms},
     {MDWBT , Ms},
-    {MuD   , Ms},
-    {MuU   , Ms},
+    {MuD   , SARAH`LHInput[MuD]},
+    {MuU   , SARAH`LHInput[MuU]},
     {B[MuD], 0},
     {B[MuU], 0}
 };

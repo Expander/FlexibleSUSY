@@ -1,5 +1,17 @@
 n_points=60
 
+parameter_point="
+Block MINPAR
+    3    5                # TanBeta
+Block HMIXIN
+    301 -0.1              # LSD
+    302 -0.1              # LSU
+    303 -0.1              # LTD
+    304 -0.1              # LTU
+    201  1e5              # MuD
+    202  1e5              # MuU
+"
+
 slha_templ="
 Block MODSEL
     1 1           # 1/0: High/low scale input
@@ -43,26 +55,13 @@ Block SMINPUTS               # Standard Model inputs
    22   2.400000000e-03      # mu(2 GeV) MS-bar
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
-Block MINPAR
-    3    5                # TanBeta
-Block HMIXIN
-    301 -0.1              # LSD
-    302 -0.1              # LSU
-    303 -0.1              # LTD
-    304 -0.1              # LTU
+${parameter_point}
 "
 
 slha_templ_fs="
 ${slha_templ}
-Block MINPAR
-    3    5                # TanBeta
 Block EXTPAR
     0    1e4              # Ms
-Block HMIXIN
-    301 -0.1              # LSD
-    302 -0.1              # LSU
-    303 -0.1              # LTD
-    304 -0.1              # LTU
 "
 
 slha_templ_spheno_like="

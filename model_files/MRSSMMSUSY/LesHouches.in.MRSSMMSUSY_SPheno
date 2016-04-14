@@ -83,3 +83,5 @@ Block HMIXIN
     302 -0.1              # LSU
     303 -0.1              # LTD
     304 -0.1              # LTU
+    201  1e5              # MuD
+    202  1e5              # MuU
