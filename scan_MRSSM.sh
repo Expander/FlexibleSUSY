@@ -79,7 +79,7 @@ Block SPhenoInput   # SPheno specific input
     7   1              # Skip 2-loop Higgs corrections 
     8   3              # Method used for two-loop calculation 
     9   1              # Gaugeless limit used at two-loop 
-   10   0              # safe-mode used at two-loop 
+   10   1              # safe-mode used at two-loop
    11   0               # calculate branching ratios 
    13   0               # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
    14   0               # Run couplings to scale of decaying particle 
