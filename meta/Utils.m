@@ -160,13 +160,14 @@ InputFormOfNonStrings[a_] := InputForm[a];
 
 MaxRelDiff[{}, _] := 0;
 
+MaxRelDiff[{a_, b_}, underflow_:10^(-16)] :=
+    If[Abs[a] < underflow && Abs[b] < underflow,
+       0,
+       Abs[(a-b)/Max[Abs[{a,b}]]]
+      ];
+
 MaxRelDiff[numbers_List, underflow_:10^(-16)] :=
-    Module[{max = Max[Abs[numbers]]},
-           If[max < underflow,
-              0,
-              Abs[1 - Min[numbers]/max]
-             ]
-          ];
+    Max[MaxRelDiff[#,underflow]& /@ Tuples[numbers, 2]];
 
 End[];
 
