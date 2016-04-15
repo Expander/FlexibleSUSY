@@ -6,6 +6,22 @@ concatenates the resulting list.";
 
 InputFormOfNonStrings::usage = "apply InputForm to non-strings";
 
+MaxRelDiff::usage="Returns maximum relative difference between numbers
+ in a given list.  The second argument defines the numeric underflow.
+
+In[]:= MaxRelDiff[{1, 1.1, 0.9}]
+Out[]= 0.181818
+
+In[]:= MaxRelDiff[{0, 10^(-100)}]
+Out[]= 0
+
+In[]:= MaxRelDiff[{0, 10^(-100)}, 10^(-101)]
+Out[]= 1
+
+In[]:= MaxRelDiff[{1, -1}]
+Out[]= 2
+";
+
 StringJoinWithSeparator::usage = "Joins a list of strings with a given separator string";
 
 Zip::usage = "Combines two lists to a list of touples.
@@ -141,6 +157,16 @@ ForceJoin[elem___] :=
 
 InputFormOfNonStrings[a_String] := a;
 InputFormOfNonStrings[a_] := InputForm[a];
+
+MaxRelDiff[{}, _] := 0;
+
+MaxRelDiff[numbers_List, underflow_:10^(-16)] :=
+    Module[{max = Max[Abs[numbers]]},
+           If[max < underflow,
+              0,
+              Abs[1 - Min[numbers]/max]
+             ]
+          ];
 
 End[];
 
