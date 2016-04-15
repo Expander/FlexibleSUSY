@@ -221,6 +221,9 @@ test -z "$slha_input_file" -o -e "$slha_input_file" || \
 
 slha_input=`cat ${slha_input_file}`
 
+# substitute ~ by $HOME
+spectrum_generator=$(echo "$spectrum_generator" | sed 's|~|'"${HOME}"'|g')
+
 if test ! -x "$spectrum_generator"; then
     echo "Error: spectrum generator executable $spectrum_generator not found."
     exit 1
