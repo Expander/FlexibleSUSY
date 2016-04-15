@@ -258,21 +258,21 @@ double b0(double p, double m1, double m2, double q) {
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
     
     Complex xPlus, xMinus;
 
-    xPlus = (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon))) /
-      (2. * sqr(p));
-    xMinus = 2. * (sqr(mMax) - iEpsilon) / 
-      (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon)));
+    xPlus = (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) /
+      (2. * pSq);
+    xMinus = 2. * (mMaxSq - iEpsilon) /
+      (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
+      const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
