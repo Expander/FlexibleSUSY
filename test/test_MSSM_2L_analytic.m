@@ -1,4 +1,5 @@
 Needs["TestSuite`", "TestSuite.m"];
+Needs["Utils`", "Utils.m"];
 Needs["CCompilerDriver`"];
 
 Get[FileNameJoin[{Directory[], "meta", "TwoLoopMSSM.m"}]];
@@ -102,7 +103,7 @@ For[i = 1, i <= Length[points], i++,
     pNumeric = CalculatePointNumerical[points[[i]]];
 
     max = N[10^(-3)];
-    relDiff = Max[Abs[pAnalytic - pNumeric]]/Max[Abs[pAnalytic]];
+    relDiff = Max[MaxRelDiff /@ Zip[pAnalytic, pNumeric]];
     test = relDiff < max;
 
     Print["Running point ", i];
