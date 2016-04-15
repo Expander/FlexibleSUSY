@@ -110,7 +110,7 @@ Options:
   --spectrum-generator= Spectrum generator executable
   --step-size=          the step size (linear or log)
   --type=               Spectrum generator type (default: ${sg_type})
-                        Possible values: FlexibleSUSY SPheno
+                        Possible values: FlexibleSUSY SOFTSUSY SPheno
   --help,-h             Print this help message
 
 Examples:
@@ -145,6 +145,14 @@ run_flexiblesusy() {
 }
 
 #_____________________________________________________________________
+run_softsusy() {
+    local sg="$1"
+    local input="$2"
+
+    echo "$input" | $sg leshouches 2>/dev/null
+}
+
+#_____________________________________________________________________
 run_spheno() {
     local sg="$1"
     local input="$2"
@@ -174,6 +182,7 @@ run_sg() {
 
     case "$type" in
         FlexibleSUSY) func=run_flexiblesusy ;;
+        SOFTSUSY)     func=run_softsusy ;;
         SPheno)       func=run_spheno ;;
         *)
             echo "Error: unknown spectrum generator type: $type"
