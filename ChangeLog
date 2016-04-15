@@ -19,6 +19,10 @@ FlexibleSUSY-1.4.1 [not released yet]
  * Bugfix (commit 077c5b9): Fixing check for SARAH installation with
    Mathematica 10.
 
+ * Bugfix (commit e9954d6): Fixing numerical instability of SOFTSUSY's
+   B0 and B22 functions for very heavy spectra and external small
+   momenta.
+
 FlexibleSUSY-1.4.0 [March, 08 2016]
 
  * Feature: Allow the user to chose the loop order of the RGEs to be
