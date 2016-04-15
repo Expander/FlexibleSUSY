@@ -161,7 +161,7 @@ InputFormOfNonStrings[a_] := InputForm[a];
 MaxRelDiff[{}, _] := 0;
 
 MaxRelDiff[{a_, b_}, underflow_:10^(-16)] :=
-    If[Abs[a] < underflow && Abs[b] < underflow,
+    If[Max[Abs[{a,b}]] < underflow,
        0,
        Abs[(a-b)/Max[Abs[{a,b}]]]
       ];
