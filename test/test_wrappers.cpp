@@ -299,3 +299,20 @@ BOOST_AUTO_TEST_CASE(test_Which)
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
 }
+
+BOOST_AUTO_TEST_CASE(test_MaxRelDiff)
+{
+   BOOST_CHECK_CLOSE(MaxRelDiff(0., 0.)  , 0. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., 0.)  , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., 0.) , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., -1.) , 2. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., -1.), 0. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., -2.), 0.5, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., 2.), 0.5, 1e-10);
+
+   Eigen::Matrix<double,1,1> M1, M2;
+   M1(0) = 1.;
+   M2(0) = -1.;
+
+   BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2. , 1e-10);
+}
