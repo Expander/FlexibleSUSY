@@ -38,6 +38,14 @@ To express the result by the stop mixing parameter Xt, call
       parameters -> {At -> Xt - signMu Mu/TanBeta}]
 ";
 
+GetMSSMCPOddHiggsLoopMass::usage = "Returns the loop corrections to
+ the CP-odd Higgs mass in the CP-conserving MSSM.  The
+ loop-corrections are taken from arxiv:hep-ph/0105096.
+
+The function takes the same arguments as
+GetMSSMCPEvenHiggsLoopMassMatrix[].
+"
+
 ReplaceStopMasses::usage = "Returns list of replacetment rules which
  replace mst1, mst2 and sin2Theta by DR-bar Lagrangian parameters.
 
@@ -330,7 +338,77 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[parameters_List] :=
            CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3, parameters]
           ];
 
-Options[GetMSSMCPEvenHiggsLoopMassMatrix] = {
+(* Eqs. (C1) of arxiv:hep-ph/0105096 *)
+CalculateMassCPOdd[FA_, parameters_List] :=
+    Module[{result = 0},
+           If[!PossibleZeroQ[mst1 - mst2 /. parameters],
+              result = Expand[ht^2 signMu Mu At FA / (mst1^2 - mst2^2) (TanBeta + 1/TanBeta)];
+             ];
+           result /. parameters
+          ];
+
+(* Eq. (C3) of arxiv:hep-ph/0105096 *)
+GetMSSMCPOddHiggsLoopMass1LAlphaTAlphaS[parameters_List] :=
+    Module[{FA, Nc = 3, h = 1/(16 Pi^2)},
+           FA = Nc h (mst1^2 (1 - Log[mst1^2/Q^2]) - mst2^2 (1 - Log[mst2^2/Q^2]));
+           CalculateMassCPOdd[FA, parameters]
+          ];
+
+(* Eq. (C5) of arxiv:hep-ph/0105096 *)
+fA[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
+    Module[{diff, delta},
+           diff = msqu - msqd;
+           delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
+           (
+               + (16 msqu mg mt sin2Theta)/diff
+               - (Pi^2 mg (msqu + msqd))/(6 At)
+               - 4 (mg^2 + mt^2) Log[msqu/Q^2]
+               - (2 mg)/At (
+                   + msqu (6 - 5 Log[msqu/Q^2])
+                   + msqd (1 - Log[msqd/Q^2])
+                 )
+               - (4 mg mt sin2Theta (3 msqu + msqd))/diff Log[msqu/Q^2]
+               - mg/At (msqu Log[msqu/Q^2]^2 + msqd Log[msqd/Q^2]^2)
+               + 2 (mg^2 + mt^2 - msqu) Log[mg^2 mt^2/Q^4] Log[msqu/Q^2]
+               + 2 msqu (1 + mg/At) Log[mg^2/Q^2] Log[mt^2/Q^2]
+               - 2 mg / At (
+                   + (mg^2 - mt^2) Log[mg^2/mt^2]
+                   + msqu Log[mg^2 mt^2/Q^4]
+                 ) Log[msqu/Q^2]
+               + (2 mg mt sin2Theta)/diff (
+                   + 2 (mg^2 - mt^2) Log[mg^2/mt^2]
+                   + (msqu + msqd) Log[mg^2 mt^2/Q^4]
+                 ) Log[msqu/Q^2]
+               - (
+                   4 mt^2
+                   + 2 delta/mg^2 (1 + mg/At)
+                   - 2 mt sin2Theta (2 delta + (mg^2 + mt^2 - msqu) diff)/(mg diff) Phi[mt^2, msqu, mg^2]
+                 )
+           )
+          ];
+
+(* Eq. (C4) of arxiv:hep-ph/0105096 *)
+GetMSSMCPOddHiggsLoopMass2LAlphaTAlphaS[parameters_List] :=
+    Module[{FA, FA1L, CF = 4/3, Nc = 3, h = 1/(16 Pi^2)},
+           unit = g3^2 CF Nc h^2;
+           FA1L = Nc h (mst1^2 (1 - Log[mst1^2/Q^2]) - mst2^2 (1 - Log[mst2^2/Q^2]));
+           FA = unit (
+               Nc/h FA1L (
+                   8 - sin2Theta^2 (
+                       2
+                       - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]
+                   )
+                 )
+               + 2 (mst1^2 Log[mst1^2/Q^2]^2 - mst2^2 Log[mst2^2/Q^2]^2)
+               + 2/(mst1^2 - mst2^2) (mst1^2 Log[mst1^2/Q^2] - mst2^2 Log[mst2^2/Q^2])^2
+               + fA[mt, Abs[M3], mst1^2, mst2^2, sin2Theta, Q]
+               - fA[mt, Abs[M3], mst2^2, mst1^2, -sin2Theta, Q]
+           );
+           CalculateMassCPOdd[FA, parameters]
+          ];
+
+Options[GetMSSMCPEvenHiggsLoopMassMatrix] = \
+Options[GetMSSMCPOddHiggsLoopMass] = {
     loopOrder -> {1,1,1},
     corrections -> {1},
     parameters -> {}
@@ -341,6 +419,13 @@ GetMSSMCPEvenHiggsLoopMassMatrix[OptionsPattern[]] :=
         OptionValue[loopOrder][[1]] {{0,0}, {0,0}} +
         OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[OptionValue[parameters]] +
         OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[OptionValue[parameters]]
+    ) /. OptionValue[parameters];
+
+GetMSSMCPOddHiggsLoopMass[OptionsPattern[]] :=
+    (
+        OptionValue[loopOrder][[1]] 0 +
+        OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPOddHiggsLoopMass1LAlphaTAlphaS[OptionValue[parameters]] +
+        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPOddHiggsLoopMass2LAlphaTAlphaS[OptionValue[parameters]]
     ) /. OptionValue[parameters];
 
 Options[ReplaceStopMasses] = {

@@ -31,7 +31,7 @@ randomPoints = {mt -> RandomReal[{100,200}],
 points = Join[points, randomPoints];
 
 CalculatePointFromAnalyticExpr[point_] :=
-    Module[{s2t, yt, at, deltaMh, pars},
+    Module[{s2t, yt, at, deltaMh, deltaMa, pars},
            s2t = Sin[2 ArcSin[sinTheta /. point]];
            yt = (Sqrt[2] mt/(v Sin[ArcTan[TanBeta]])) /. point;
            at = ((mst1^2 - mst2^2) s2t/(2 mt) - signMu Mu/TanBeta) /. point;
@@ -42,7 +42,10 @@ CalculatePointFromAnalyticExpr[point_] :=
            deltaMh = Simplify @ Re @ N[
                GetMSSMCPEvenHiggsLoopMassMatrix[
                    loopOrder -> {0,0,1}, parameters -> pars]];
-           {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]]}
+           deltaMa = Simplify @ Re @ N[
+               GetMSSMCPOddHiggsLoopMass[
+                   loopOrder -> {0,0,1}, parameters -> pars]];
+           {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]], deltaMa}
           ];
 
 CalculatePointNumerical[point_] :=
@@ -74,10 +77,30 @@ int calc_Sij(double* S11, double* S22, double* S12)
       &q2, &mu, &tb, &v2, &g3, &OS, S11, S22, S12);
 }
 
+int calc_A(double* A)
+{
+   double mt2 = sqr(" <> ToString[mt /. point] <> ");
+   double mg = " <> ToString[M3 /. point] <> ";
+   double mst12 = sqr(" <> ToString[mst1 /. point] <> ");
+   double mst22 = sqr(" <> ToString[mst2 /. point] <> ");
+   double st = " <> ToString[sinTheta /. point] <> ";
+   double ct = sqrt(1. - sqr(st));
+   double q2 = sqr(" <> ToString[Q /. point] <> ");
+   double mu = " <> ToString[signMu Mu /. point] <> ";
+   double tb = " <> ToString[TanBeta /. point] <> ";
+   double v2 = sqr(" <> ToString[v /. point] <> ");
+   double g3 = " <> ToString[g3 /. point] <> ";
+
+   return dszodd_(
+      &mt2, &mg, &mst12, &mst22, &st, &ct,
+      &q2, &mu, &tb, &v2, &g3, A);
+}
+
 int main(){
-   double S11 = 0., S22 = 0., S12 = 0.;
+   double S11 = 0., S22 = 0., S12 = 0., A = 0.;
    calc_Sij(&S11, &S22, &S12);
-   printf(\"{%g, %g, %g}\\n\", S11, S22, S12);
+   calc_A(&A);
+   printf(\"{%g, %g, %g, %g}\\n\", S11, S22, S12, A);
    return 0;
 }
 ";
@@ -89,7 +112,7 @@ int main(){
            ];
            If[exec === $Failed,
               Print["Error: cannot create executable"];
-              Return[{0,0,0}];
+              Return[{0,0,0,0}];
              ];
            ToExpression[
                StringReplace[
@@ -142,6 +165,9 @@ For[i = 1, i <= Length[points], i++,
     TestEquality[(mst1 /. re) =!= Indeterminate, True];
     TestEquality[(mst2 /. re) =!= Indeterminate, True];
     TestEquality[(sin2Theta /. re) =!= Indeterminate, True];
+
+    ex = GetMSSMCPOddHiggsLoopMass[loopOrder -> {0, 0, 1}, parameters -> points[[i]]];
+    TestEquality[ex =!= Indeterminate, True];
    ];
 
 Print["done"];
