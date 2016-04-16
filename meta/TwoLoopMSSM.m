@@ -360,14 +360,14 @@ fA[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
            diff = msqu - msqd;
            delta = mg^4 + mt^4 + msqu^2 - 2 (mg^2 mt^2 + mg^2 msqu + mt^2 msqu);
            (
-               + (16 msqu mg mt sin2Theta)/diff
+               + (16 msqu mg mt s2t)/diff
                - (Pi^2 mg (msqu + msqd))/(6 At)
                - 4 (mg^2 + mt^2) Log[msqu/Q^2]
                - (2 mg)/At (
                    + msqu (6 - 5 Log[msqu/Q^2])
                    + msqd (1 - Log[msqd/Q^2])
                  )
-               - (4 mg mt sin2Theta (3 msqu + msqd))/diff Log[msqu/Q^2]
+               - (4 mg mt s2t (3 msqu + msqd))/diff Log[msqu/Q^2]
                - mg/At (msqu Log[msqu/Q^2]^2 + msqd Log[msqd/Q^2]^2)
                + 2 (mg^2 + mt^2 - msqu) Log[mg^2 mt^2/Q^4] Log[msqu/Q^2]
                + 2 msqu (1 + mg/At) Log[mg^2/Q^2] Log[mt^2/Q^2]
@@ -375,15 +375,15 @@ fA[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
                    + (mg^2 - mt^2) Log[mg^2/mt^2]
                    + msqu Log[mg^2 mt^2/Q^4]
                  ) Log[msqu/Q^2]
-               + (2 mg mt sin2Theta)/diff (
+               + (2 mg mt s2t)/diff (
                    + 2 (mg^2 - mt^2) Log[mg^2/mt^2]
                    + (msqu + msqd) Log[mg^2 mt^2/Q^4]
                  ) Log[msqu/Q^2]
                - (
                    4 mt^2
                    + 2 delta/mg^2 (1 + mg/At)
-                   - 2 mt sin2Theta (2 delta + (mg^2 + mt^2 - msqu) diff)/(mg diff) Phi[mt^2, msqu, mg^2]
-                 )
+                   - 2 mt s2t (2 delta + (mg^2 + mt^2 - msqu) diff)/(mg diff)
+                 ) Phi[mt^2, msqu, mg^2]
            )
           ];
 
@@ -392,7 +392,7 @@ GetMSSMCPOddHiggsLoopMass2LAlphaTAlphaS[parameters_List] :=
     Module[{FA, FA1L, CF = 4/3, Nc = 3, h = 1/(16 Pi^2)},
            unit = g3^2 CF Nc h^2;
            FA1L = (mst1^2 (1 - Log[mst1^2/Q^2]) - mst2^2 (1 - Log[mst2^2/Q^2]));
-            FA = unit (
+           FA = unit (
                FA1L (
                    8 - sin2Theta^2 (
                        2
