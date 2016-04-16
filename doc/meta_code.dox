@@ -47,8 +47,8 @@ level in the \f$\overline{\text{MS}}\f$ and \f$\overline{\text{DR}}\f$
 schemes [hep-ph/0210258, hep-ph/9803493].
 
 <code>meta/TwoLoopMSSM.m</code> contains routines, which return the
-analytic 2-loop corrections to the Higgs mass matrices in the
-CP-conserving MSSM [arxiv:hep-ph/0105096].
+analytic 2-loop corrections to the Higgs masses in the CP-conserving
+MSSM [arxiv:hep-ph/0105096].
 
 \subsection threshold_corrections_impls Threshold corrections
 
