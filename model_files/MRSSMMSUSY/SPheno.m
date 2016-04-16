@@ -41,12 +41,14 @@ BoundaryHighScale = {
     {MuD, Ms},
     {MuU, Ms},
     {B[MuD], 0},
-    {B[MuU], 0}
+    {B[MuU], 0},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]}
 };
 
 BoundaryLowScaleInput = {
-    {vd, Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[TanBeta]]},
-    {vu, Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[TanBeta]]}
+    {vd, Sqrt[4 mz2/(g1^2+g2^2)]*Cos[ArcTan[vu/vd]]},
+    {vu, Sqrt[4 mz2/(g1^2+g2^2)]*Sin[ArcTan[vu/vd]]}
 };
 
 ListDecayParticles = Automatic;
