@@ -391,9 +391,9 @@ fA[mt_, mg_, msqu_, msqd_, s2t_, Q_] :=
 GetMSSMCPOddHiggsLoopMass2LAlphaTAlphaS[parameters_List] :=
     Module[{FA, FA1L, CF = 4/3, Nc = 3, h = 1/(16 Pi^2)},
            unit = g3^2 CF Nc h^2;
-           FA1L = Nc h (mst1^2 (1 - Log[mst1^2/Q^2]) - mst2^2 (1 - Log[mst2^2/Q^2]));
-           FA = unit (
-               Nc/h FA1L (
+           FA1L = (mst1^2 (1 - Log[mst1^2/Q^2]) - mst2^2 (1 - Log[mst2^2/Q^2]));
+            FA = unit (
+               FA1L (
                    8 - sin2Theta^2 (
                        2
                        - (mst1^2 + mst2^2)/(mst1^2 - mst2^2) Log[mst1^2 / mst2^2]
