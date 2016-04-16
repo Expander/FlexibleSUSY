@@ -15,8 +15,6 @@ set ylabel "m_t(M_S) / GeV"
 
 calc_mt(yt,v) = yt * v / sqrt(2)
 
-# TODO: check the following indices!!!!
-
 # 1: MS
 # 2: yt of MSSMtower
 # 3: yt of EFTtower
@@ -25,23 +23,25 @@ calc_mt(yt,v) = yt * v / sqrt(2)
 # 6: yt of SOFTSUSY
 # 7: yt of MSSMMuBMu/SPheno-like
 
-# 7 : MS
-# 8 : vu of MSSMtower
-# 9 : vu of EFTtower
-# 10: vu of MSSMMuBMu
-# 11: vu of HSSUSY
-# 12: vu of SOFTSUSY
+# 8 : MS
+# 9 : vu of MSSMtower
+# 10: vu of EFTtower
+# 11: vu of MSSMMuBMu
+# 12: vu of HSSUSY
+# 13: vu of SOFTSUSY
+# 14: vu of MSSMMuBMu/SPheno-like
 
-# 13: MS
-# 14: v of MSSMtower
-# 15: v of EFTtower
-# 16: v of MSSMMuBMu
-# 17: v of HSSUSY
-# 18: v of SOFTSUSY
+# 15: MS
+# 16: v of MSSMtower
+# 17: v of EFTtower
+# 18: v of MSSMMuBMu
+# 19: v of HSSUSY
+# 20: v of SOFTSUSY
+# 21: v of MSSMMuBMu/SPheno-like
 
 plot [:] [:] \
-     filename u ($1/1000):(calc_mt($2,$8)) t 'MSSM-tower/MSSM' w lines ls 1, \
-     filename u ($1/1000):(calc_mt($3,$15)) t 'MSSM-tower/SM' w lines ls 5, \
-     "< awk '{ if ($4 > 0) print }' ".filename u ($1/1000):(calc_mt($4,$10)) t 'MSSM 2L' w lines ls 3, \
-     filename u ($1/1000):(calc_mt($5,$17)) t 'HSSUSY 2L' w lines ls 2, \
-     filename u ($1/1000):(calc_mt($6,$18)) t 'SOFTSUSY 2L' w lines ls 4
+     filename u ($1/1000):(calc_mt($2,$9)) t 'MSSM-tower/MSSM' w lines ls 1, \
+     filename u ($1/1000):(calc_mt($3,$17)) t 'MSSM-tower/SM' w lines ls 5, \
+     "< awk '{ if ($4 > 0) print }' ".filename u ($1/1000):(calc_mt($4,$11)) t 'MSSM 2L' w lines ls 3, \
+     filename u ($1/1000):(calc_mt($5,$19)) t 'HSSUSY 2L' w lines ls 2, \
+     filename u ($1/1000):(calc_mt($6,$20)) t 'SOFTSUSY 2L' w lines ls 4
