@@ -71,7 +71,7 @@ Parameters:
 
 Begin["TwoLoopMSSM`Private`"];
 
-(* Eqs. (17)-(18) of arxiv:hep-ph/0105096 *)
+(* Eqs. (17), (19) of arxiv:hep-ph/0105096 *)
 CalculateMStop2[] :=
     Module[{mst2 = {0,0}, mL2, mR2, Xt, s2t},
            mL2 = mQ33^2 + mt^2;
@@ -80,7 +80,8 @@ CalculateMStop2[] :=
            (* Eq. (17) *)
            mst2[[1]] = 1/2 ((mL2 + mR2) + Sqrt[(mL2 - mR2)^2 + 4 Abs[Xt]^2]);
            mst2[[2]] = 1/2 ((mL2 + mR2) - Sqrt[(mL2 - mR2)^2 + 4 Abs[Xt]^2]);
-           s2t = 2 Abs[Xt] / (mst2[[1]] - mst2[[2]]); (* Eq. (18) *)
+           (* Eq. (19) *)
+           s2t = 2 mt (At + signMu Mu / TanBeta) / (mst2[[1]] - mst2[[2]]);
            {mst2[[1]], mst2[[2]], s2t}
           ];
 
