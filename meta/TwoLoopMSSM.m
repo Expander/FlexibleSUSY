@@ -71,7 +71,7 @@ Parameters:
 
 Begin["TwoLoopMSSM`Private`"];
 
-(* Eqs. (17) of arxiv:hep-ph/0105096 *)
+(* Eqs. (17)-(18) of arxiv:hep-ph/0105096 *)
 CalculateMStop2[] :=
     Module[{mst2 = {0,0}, mL2, mR2, Xt, s2t},
            mL2 = mQ33^2 + mt^2;
