@@ -9,6 +9,7 @@ At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
 M3factor=0.99999
 M3=
 AS="1.184000000e-01"
+AI="1.279440000e+02"
 MT="1.733400000e+02"
 MTmethod=0
 WRITE_EFT=0
@@ -144,6 +145,7 @@ Block FlexibleSUSY
    17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
    18   ${WRITE_EFT}         # write full model (0) / EFT (1)
 Block SMINPUTS               # Standard Model inputs
+    1   ${AI}                # alpha_em(MZ) SM MSbar
     2   ${GF}                # G_Fermi
     3   ${AS}                # alpha_s(MZ) SM MSbar
     4   ${MZ}                # MZ(pole)
@@ -235,6 +237,7 @@ Block MINPAR                 # Input parameters
     4   1.000000000e+00      # sign(mu)
 ${sminputs_tmpl}
 Block SMINPUTS               # Standard Model inputs
+    1   ${AI}                # alpha_em(MZ) SM MSbar
     2   ${GF}                # G_Fermi
     3   ${AS}                # alpha_s(MZ) SM MSbar
     4   ${MZ}                # MZ(pole)
@@ -299,6 +302,7 @@ Options:
   --stop=        end value (default: ${stop})
   --steps=       number of steps (default: ${steps})
   --step_size=   linear or log (default: ${step_size})
+  --AI=          alpha_em (default: ${AI})
   --AS=          alpha_s (default: ${AS})
   --GF           Fermi constant
   --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
@@ -329,6 +333,7 @@ if test $# -gt 0 ; then
             --stop=*)                stop=$optarg ;;
             --steps=*)               steps=$optarg ;;
             --step-size=*)           step_size=$optarg ;;
+            --AI=*)                  AI=$optarg ;;
             --AS=*)                  AS=$optarg ;;
             --GF=*)                  GF=$optarg ;;
             --M3factor=*)            M3factor=$optarg ;;
