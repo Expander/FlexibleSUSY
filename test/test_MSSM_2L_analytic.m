@@ -16,17 +16,20 @@ points = {
    {mt -> 175, M3 -> 2000, mst1 -> 1000, mst2 -> 1000.01, sinTheta -> 0  , Q -> 900, Mu ->   0, TanBeta -> 10, v -> 245, g3 -> 0.118, signMu -> 1}
 };
 
-randomPoints = {mt -> RandomReal[{100,200}],
-                M3 -> RandomReal[{100,10000}],
-                mst1 -> RandomReal[{100,10000}],
-                mst2 -> RandomReal[{100,10000}],
-                sinTheta -> RandomReal[{-1,1}],
-                Q -> RandomReal[{10,10000}],
-                Mu -> RandomReal[{0,10000}],
-                TanBeta -> RandomReal[{1,100}],
-                v -> RandomReal[{240,250}],
-                g3 -> RandomReal[{0.1,0.2}],
-                signMu -> RandomChoice[{-1,1}]}& /@ Table[i, {i,1,100}];
+randomPoints = BlockRandom[
+    SeedRandom[1];
+    {mt -> RandomReal[{100,200}],
+     M3 -> RandomReal[{100,10000}],
+     mst1 -> RandomReal[{100,10000}],
+     mst2 -> RandomReal[{100,10000}],
+     sinTheta -> RandomReal[{-1,1}],
+     Q -> RandomReal[{10,10000}],
+     Mu -> RandomReal[{0,10000}],
+     TanBeta -> RandomReal[{1,100}],
+     v -> RandomReal[{240,250}],
+     g3 -> RandomReal[{0.1,0.2}],
+     signMu -> RandomChoice[{-1,1}]}& /@ Table[i, {i,1,100}]
+];
 
 points = Join[points, randomPoints];
 
