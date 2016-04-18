@@ -15,6 +15,7 @@ MTmethod=0
 WRITE_EFT=0
 GF=0.0000116638
 MZ=91.1876
+BL=3
 
 dump_fs_slha_input_file=
 dump_fs_slha_output_file=
@@ -142,6 +143,7 @@ run_sg() {
 Block MODSEL                 # Select model
    12    ${MS}
 Block FlexibleSUSY
+    6   ${BL}                # beta-functions loop order
    17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
    18   ${WRITE_EFT}         # write full model (0) / EFT (1)
 Block SMINPUTS               # Standard Model inputs
@@ -304,6 +306,7 @@ Options:
   --step_size=   linear or log (default: ${step_size})
   --AI=          alpha_em (default: ${AI})
   --AS=          alpha_s (default: ${AS})
+  --BL=          beta-functions loop order (default: ${BL})
   --GF           Fermi constant
   --M3factor=    Gluino mass factor: M3 = M3factor * MS (default: ${M3factor})
   --MS=          M_SUSY (default: ${MS})
@@ -335,6 +338,7 @@ if test $# -gt 0 ; then
             --step-size=*)           step_size=$optarg ;;
             --AI=*)                  AI=$optarg ;;
             --AS=*)                  AS=$optarg ;;
+            --BL=*)                  BL=$optarg ;;
             --GF=*)                  GF=$optarg ;;
             --M3factor=*)            M3factor=$optarg ;;
             --MS=*)                  MS=$optarg ;;
