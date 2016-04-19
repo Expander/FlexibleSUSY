@@ -26,3 +26,22 @@ BOOST_AUTO_TEST_CASE( test_toMt_toQ )
 
    BOOST_CHECK(lowe_Mt == lowe_Q);
 }
+
+BOOST_AUTO_TEST_CASE( test_toMz_recall )
+{
+   QedQcd lowe_Mz;
+   lowe_Mz.setPoleMt(173.5);
+   lowe_Mz.setAlpha(ALPHAS, 0.118);
+   lowe_Mz.toMz();
+   QedQcd lowe_Mz_save(lowe_Mz);
+
+   BOOST_CHECK(lowe_Mz == lowe_Mz_save);
+
+   BOOST_MESSAGE(lowe_Mz);
+
+   lowe_Mz.toMz();
+
+   // BOOST_CHECK(lowe_Mz == lowe_Mz_save);
+
+   BOOST_MESSAGE(lowe_Mz);
+}
