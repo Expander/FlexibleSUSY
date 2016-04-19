@@ -106,6 +106,28 @@ PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
 
+(* Standard Model input parameters (SLHA input parameters) *)
+(* {parameter, {"block", entry}, type}                     *)
+SMINPUTS = {
+    {AlphaEMInvInput    , {"SMINPUTS",  1}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {GFermiInput        , {"SMINPUTS",  2}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {AlphaSInput        , {"SMINPUTS",  3}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MZPoleInput        , {"SMINPUTS",  4}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MbMbInput          , {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MTopPoleInput      , {"SMINPUTS",  6}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MTauPoleInput      , {"SMINPUTS",  7}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino3PoleInput, {"SMINPUTS",  8}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MWPoleInput        , {"SMINPUTS", 10}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MElectronPoleInput , {"SMINPUTS", 11}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino1PoleInput, {"SMINPUTS", 12}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MMuonPoleInput     , {"SMINPUTS", 13}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino2PoleInput, {"SMINPUTS", 14}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MDown2GeVInput     , {"SMINPUTS", 21}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MUp2GeVInput       , {"SMINPUTS", 22}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MStrange2GeVInput  , {"SMINPUTS", 23}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MCharm2GeVInput    , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
+};
+
 (* renormalization schemes *)
 DRbar;
 MSbar;
