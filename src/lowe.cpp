@@ -670,30 +670,32 @@ std::vector<std::string> QedQcd::display_input_parameter_names()
 
 bool operator ==(const QedQcd& a, const QedQcd& b)
 {
+   const double eps = 1e-10;
+
    return
-      a.displayMu() == b.displayMu() &&
-      a.displayLoops() == b.displayLoops() &&
-      a.displayThresholds() == b.displayThresholds() &&
-      a.displayAlpha(ALPHA) == b.displayAlpha(ALPHA) &&
-      a.displayAlpha(ALPHAS) == b.displayAlpha(ALPHAS) &&
-      a.displayMass(mUp) == b.displayMass(mUp) &&
-      a.displayMass(mCharm) == b.displayMass(mCharm) &&
-      a.displayMass(mTop) == b.displayMass(mTop) &&
-      a.displayMass(mDown) == b.displayMass(mDown) &&
-      a.displayMass(mStrange) == b.displayMass(mStrange) &&
-      a.displayMass(mBottom) == b.displayMass(mBottom) &&
-      a.displayMass(mElectron) == b.displayMass(mElectron) &&
-      a.displayMass(mMuon) == b.displayMass(mMuon) &&
-      a.displayMass(mTau) == b.displayMass(mTau) &&
-      a.displayNeutrinoPoleMass(1) == b.displayNeutrinoPoleMass(1) &&
-      a.displayNeutrinoPoleMass(2) == b.displayNeutrinoPoleMass(2) &&
-      a.displayNeutrinoPoleMass(3) == b.displayNeutrinoPoleMass(3) &&
-      a.displayPoleMt() == b.displayPoleMt() &&
-      a.displayPoleMb() == b.displayPoleMb() &&
-      a.displayPoleMtau() == b.displayPoleMtau() &&
-      a.displayPoleMW() == b.displayPoleMW() &&
-      a.displayPoleMZ() == b.displayPoleMZ() &&
-      a.displayFermiConstant() == b.displayFermiConstant();
+      std::fabs(a.displayMu() - b.displayMu()) < eps &&
+      std::fabs(a.displayLoops() - b.displayLoops()) < eps &&
+      std::fabs(a.displayThresholds() - b.displayThresholds()) < eps &&
+      std::fabs(a.displayAlpha(ALPHA) - b.displayAlpha(ALPHA)) < eps &&
+      std::fabs(a.displayAlpha(ALPHAS) - b.displayAlpha(ALPHAS)) < eps &&
+      std::fabs(a.displayMass(mUp) - b.displayMass(mUp)) < eps &&
+      std::fabs(a.displayMass(mCharm) - b.displayMass(mCharm)) < eps &&
+      std::fabs(a.displayMass(mTop) - b.displayMass(mTop)) < eps &&
+      std::fabs(a.displayMass(mDown) - b.displayMass(mDown)) < eps &&
+      std::fabs(a.displayMass(mStrange) - b.displayMass(mStrange)) < eps &&
+      std::fabs(a.displayMass(mBottom) - b.displayMass(mBottom)) < eps &&
+      std::fabs(a.displayMass(mElectron) - b.displayMass(mElectron)) < eps &&
+      std::fabs(a.displayMass(mMuon) - b.displayMass(mMuon)) < eps &&
+      std::fabs(a.displayMass(mTau) - b.displayMass(mTau)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(1) - b.displayNeutrinoPoleMass(1)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(2) - b.displayNeutrinoPoleMass(2)) < eps &&
+      std::fabs(a.displayNeutrinoPoleMass(3) - b.displayNeutrinoPoleMass(3)) < eps &&
+      std::fabs(a.displayPoleMt() - b.displayPoleMt()) < eps &&
+      std::fabs(a.displayPoleMb() - b.displayPoleMb()) < eps &&
+      std::fabs(a.displayPoleMtau() - b.displayPoleMtau()) < eps &&
+      std::fabs(a.displayPoleMW() - b.displayPoleMW()) < eps &&
+      std::fabs(a.displayPoleMZ() - b.displayPoleMZ()) < eps &&
+      std::fabs(a.displayFermiConstant() - b.displayFermiConstant()) < eps;
 }
 
 } // namespace softsusy
