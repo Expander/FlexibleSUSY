@@ -7,28 +7,7 @@
 
 using namespace softsusy;
 
-BOOST_AUTO_TEST_CASE( test_toMz_toQ )
-{
-   QedQcd lowe_MZ, lowe_Q;
-   lowe_MZ.toMz();
-   lowe_Q.to(lowe_MZ.displayPoleMZ());
-
-   BOOST_CHECK(lowe_MZ == lowe_Q);
-}
-
-BOOST_AUTO_TEST_CASE( test_toMt_toQ )
-{
-   QedQcd lowe_Mt, lowe_Q;
-   lowe_Mt.toMt();
-   lowe_Q.to(lowe_Mt.displayPoleMt());
-
-   BOOST_MESSAGE(lowe_Mt);
-   BOOST_MESSAGE(lowe_Q);
-
-   BOOST_CHECK(lowe_Mt == lowe_Q);
-}
-
-BOOST_AUTO_TEST_CASE( test_toMz_recall )
+BOOST_AUTO_TEST_CASE( test_to )
 {
    QedQcd lowe_Mz;
    lowe_Mz.setPoleMt(173.5);
@@ -36,7 +15,7 @@ BOOST_AUTO_TEST_CASE( test_toMz_recall )
    QedQcd lowe_Mz_new(lowe_Mz);
 
    lowe_Mz.toMz();
-   lowe_Mz_new.to2(lowe_Mz.displayPoleMZ());
+   lowe_Mz_new.to(lowe_Mz.displayPoleMZ());
 
    BOOST_CHECK_CLOSE(lowe_Mz.displayMbMb(), lowe_Mz_new.displayMbMb(), 1e-10);
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHA) , lowe_Mz_new.displayAlpha(ALPHA) , 1e-10);

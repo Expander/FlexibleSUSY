@@ -409,12 +409,14 @@ void QedQcd::toMz() {
 
 /**
  * Calculates all running parameters in the SM w/o top quark at Q.
+ * This function can be called multiple times, leading to the same
+ * result (in contrast to toMz()).
  *
  * @param scale target renormalization scale
  * @param precision_goal precision goal
  * @param max_iterations maximum number of iterations
  */
-void QedQcd::to2(double scale, double precision_goal, unsigned max_iterations) {
+void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    unsigned it = 0;
    int error = 0;
    bool converged = false;
@@ -482,13 +484,6 @@ void QedQcd::to2(double scale, double precision_goal, unsigned max_iterations) {
          " converge after " << max_iterations;
       throw ostr.str();
    }
-}
-
-// Takes QedQcd created at MZ and runs it to given scale
-void QedQcd::to(double q)
-{
-   toMz();
-   runto(q, 1.0e-5);
 }
 
 // This will calculate the three gauge couplings of the Standard Model at the
