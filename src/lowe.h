@@ -51,7 +51,7 @@ typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
 /// order of gauge couplings stored in QedQcd
 typedef enum {ALPHA=1, ALPHAS} leGauge;
 
-enum QedQcd_input_parmeters : int {
+enum QedQcd_input_parmeters : unsigned {
    alpha_em_MSbar_at_MZ,
    alpha_s_MSbar_at_MZ,
    GFermi,

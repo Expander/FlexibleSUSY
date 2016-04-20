@@ -30,7 +30,7 @@ static QedQcd *tempLe;
 QedQcd::QedQcd()
   : a(2)
   , mf(9)
-  , input()
+  , input(static_cast<unsigned>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
   , mbPole(PMBOTTOM)
   , ckm()
   , pmns()
@@ -42,7 +42,6 @@ QedQcd::QedQcd()
   mf(7) = MELECTRON; mf(8) = MMUON; mf(9) = MTAU;
   a(1) = ALPHAMZ;  a(2) = ALPHASMZ;
   mf(3) = getRunMtFromMz(PMTOP, ALPHASMZ);
-  input.conservativeResize(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
   input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
   input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
   input(MT_pole) = PMTOP;
