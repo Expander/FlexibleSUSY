@@ -21,16 +21,16 @@ BOOST_AUTO_TEST_CASE( test_to )
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHA) , lowe_Mz_new.displayAlpha(ALPHA) , 1e-10);
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHAS), lowe_Mz_new.displayAlpha(ALPHAS), 1e-10);
 
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mUp)      , lowe_Mz_new.displayMass(mUp)      , 5e-3);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mDown)    , lowe_Mz_new.displayMass(mDown)    , 5e-3);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mStrange) , lowe_Mz_new.displayMass(mStrange) , 5e-3);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mCharm)   , lowe_Mz_new.displayMass(mCharm)   , 5e-2);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mBottom)  , lowe_Mz_new.displayMass(mBottom)  , 3e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mUp)      , lowe_Mz_new.displayMass(mUp)      , 3.);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mDown)    , lowe_Mz_new.displayMass(mDown)    , 3.);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mStrange) , lowe_Mz_new.displayMass(mStrange) , 3.);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mCharm)   , lowe_Mz_new.displayMass(mCharm)   , 4.);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mBottom)  , lowe_Mz_new.displayMass(mBottom)  , 2.);
    BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mElectron), lowe_Mz_new.displayMass(mElectron), 2.);
    BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mMuon)    , lowe_Mz_new.displayMass(mMuon)    , 2.);
    BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mTau)     , lowe_Mz_new.displayMass(mTau)     , 2.);
 
-   BOOST_CHECK_CLOSE(lowe_Mz.displayPoleMb(), lowe_Mz_new.displayPoleMb(), 5e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayPoleMb(), lowe_Mz_new.displayPoleMb(), 0.5);
 
    BOOST_MESSAGE(lowe_Mz);
    BOOST_MESSAGE(lowe_Mz_new);
@@ -48,10 +48,7 @@ BOOST_AUTO_TEST_CASE( test_to_recall )
    lowe_Mz.setMu(100.);
    lowe_Mz_new.to(100.);
 
-   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.display_input(), lowe_Mz_new.display_input()), 5e-4);
-
-   BOOST_MESSAGE(lowe_Mz.display_input().transpose());
-   BOOST_MESSAGE(lowe_Mz_new.display_input().transpose());
+   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.display_input(), lowe_Mz_new.display_input()), 1e-10);
 
    BOOST_MESSAGE(lowe_Mz);
    BOOST_MESSAGE(lowe_Mz_new);
