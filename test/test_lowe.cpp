@@ -35,3 +35,24 @@ BOOST_AUTO_TEST_CASE( test_to )
    BOOST_MESSAGE(lowe_Mz);
    BOOST_MESSAGE(lowe_Mz_new);
 }
+
+BOOST_AUTO_TEST_CASE( test_to_recall )
+{
+   QedQcd lowe_Mz;
+   lowe_Mz.setPoleMt(173.5);
+   lowe_Mz.setAlpha(ALPHAS, 0.118);
+   lowe_Mz.setMu(lowe_Mz.displayPoleMZ());
+   lowe_Mz.to(100.);
+
+   QedQcd lowe_Mz_new(lowe_Mz);
+   lowe_Mz.setMu(100.);
+   lowe_Mz_new.to(100.);
+
+   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.display_input(), lowe_Mz_new.display_input()), 5e-4);
+
+   BOOST_MESSAGE(lowe_Mz.display_input().transpose());
+   BOOST_MESSAGE(lowe_Mz_new.display_input().transpose());
+
+   BOOST_MESSAGE(lowe_Mz);
+   BOOST_MESSAGE(lowe_Mz_new);
+}

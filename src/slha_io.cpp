@@ -520,6 +520,7 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 4:
       qedqcd.setPoleMZ(value);
+      qedqcd.setMu(value);
       softsusy::MZ = value;
       break;
    case 5:
@@ -555,15 +556,19 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 21:
       qedqcd.setMass(mDown, value);
+      qedqcd.setMd2GeV(value);
       break;
    case 22:
       qedqcd.setMass(mUp, value);
+      qedqcd.setMu2GeV(value);
       break;
    case 23:
       qedqcd.setMass(mStrange, value);
+      qedqcd.setMs2GeV(value);
       break;
    case 24:
       qedqcd.setMass(mCharm, value);
+      qedqcd.setMcMc(value);
       break;
    default:
       WARNING("Unrecognized entry in block SMINPUTS: " << key);

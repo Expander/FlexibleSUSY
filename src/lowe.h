@@ -53,6 +53,7 @@ typedef enum {ALPHA=1, ALPHAS} leGauge;
 enum QedQcd_input_parmeters : unsigned { alpha_em_MSbar_at_MZ, GFermi,
       alpha_s_MSbar_at_MZ, MZ_pole, mb_mb, MT_pole, MTau_pole, MMuon_pole, MElectron_pole, Mv3_pole,
       MW_pole, ME_pole, Mv1_pole, MM_pole, Mv2_pole, MD, MU, MS, MC,
+      mc_mc, Mu2GeVInput, Md2GeVInput, Ms2GeVInput,
       NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS};
 
 extern const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS];
@@ -77,6 +78,8 @@ private:
   double mwPole; ///< W boson pole mass
   double mzPole; ///< Z boson pole mass
   double gfermi; ///< Fermi constant
+  double mcMc; ///< mc(mc)
+  double mu2GeV, md2GeV, ms2GeV;
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
@@ -94,6 +97,10 @@ public:
   void setPoleMmuon(double m) { mmuonPole = m; } ///< set pole muon mass
   void setPoleMel(double m) { melPole = m; } ///< set pole electron mass
   void setMbMb(double mb)   { mbMb = mb;   }; ///< set mb(mb)
+  void setMcMc(double mc)   { mcMc = mc;   }  ///< set mc(mc)
+  void setMu2GeV(double mu) { mu2GeV = mu; } ///< set mu(2 GeV)
+  void setMd2GeV(double md) { md2GeV = md; } ///< set md(2 GeV)
+  void setMs2GeV(double ms) { ms2GeV = ms; } ///< set ms(2 GeV)
   void setPoleMW(double mw) { mwPole = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { mzPole = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
@@ -145,6 +152,14 @@ public:
   static std::vector<std::string> display_input_parameter_names();
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return mbMb; }
+  /// Returns mc(mc) MSbar
+  double displayMcMc() const { return mcMc; }
+  /// Returns mu(2 GeV)
+  double displayMu2GeV() const { return mu2GeV; }
+  /// Returns md(2 GeV)
+  double displayMd2GeV() const { return md2GeV; }
+  /// Returns ms(2 GeV)
+  double displayMs2GeV() const { return ms2GeV; }
   /// returns CKM parameters
   flexiblesusy::CKM_parameters displayCKM() const { return ckm; }
   /// Returns real CKM matrix
@@ -216,6 +231,7 @@ inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
    mtauPole(m.mtauPole), mmuonPole(m.mmuonPole), melPole(m.melPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
    ckm(m.ckm), pmns(m.pmns)
+   , mcMc(m.mcMc), mu2GeV(m.mu2GeV), md2GeV(m.md2GeV), ms2GeV(m.ms2GeV)
 {
   setPars(11); 
   setMu(m.displayMu());
