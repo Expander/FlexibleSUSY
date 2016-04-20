@@ -8,6 +8,8 @@
 
 #include "lowe.h"
 #include "ew_input.hpp"
+#include "wrappers.hpp"
+#include "error.hpp"
 
 namespace softsusy {
 
@@ -403,6 +405,83 @@ void QedQcd::toMz() {
   // Reset alphas to erase numerical integration errors.
   setAlpha(ALPHAS, alphasMZ);
   setAlpha(ALPHA, alphaMZ);
+}
+
+/**
+ * Calculates all running parameters in the SM w/o top quark at Q.
+ *
+ * @param scale target renormalization scale
+ * @param precision_goal precision goal
+ * @param max_iterations maximum number of iterations
+ */
+void QedQcd::to2(double scale, double precision_goal, unsigned max_iterations) {
+   unsigned it = 0;
+   int error = 0;
+   bool converged = false;
+   Eigen::ArrayXd qedqcd_old(display_input()), qedqcd_new(display_input());
+
+   // save user-defined values
+   const QedQcd saved(*this);
+
+   while (!converged && it < max_iterations) {
+      // set alpha_i(MZ)
+      error = runto(saved.displayPoleMZ(), precision_goal);
+      if (error)
+         throw flexiblesusy::NonPerturbativeRunningError(saved.displayPoleMZ());
+      setAlpha(ALPHA, saved.displayAlpha(ALPHA));
+      setAlpha(ALPHAS, saved.displayAlpha(ALPHAS));
+
+      // set mb(mb)
+      error = runto(saved.displayMbMb(), precision_goal);
+      if (error)
+         throw flexiblesusy::NonPerturbativeRunningError(saved.displayMbMb());
+      setMass(mBottom, saved.displayMbMb());
+      setPoleMb(extractPoleMb(displayAlpha(ALPHAS)));
+
+      // set mc(mc)
+      error = runto(saved.displayMass(mCharm), precision_goal);
+      if (error)
+         throw flexiblesusy::NonPerturbativeRunningError(saved.displayMass(mCharm));
+      setMass(mCharm, saved.displayMass(mCharm));
+
+      // set mu, md, ms at 2 GeV
+      error = runto(2.0, precision_goal);
+      if (error)
+         throw flexiblesusy::NonPerturbativeRunningError(2.0);
+      setMass(mUp, saved.displayMass(mUp));
+      setMass(mDown, saved.displayMass(mDown));
+      setMass(mStrange, saved.displayMass(mStrange));
+
+      // check convergence
+      error = runto(scale, precision_goal);
+      if (error)
+         throw flexiblesusy::NonPerturbativeRunningError(scale);
+      qedqcd_new = display_input();
+
+      converged = flexiblesusy::MaxRelDiff(qedqcd_old, qedqcd_new) < precision_goal;
+
+      qedqcd_old = qedqcd_new;
+
+      it++;
+   }
+
+   // set alpha_i(MZ) on last time
+   error = runto(saved.displayPoleMZ(), precision_goal);
+   if (error)
+      throw flexiblesusy::NonPerturbativeRunningError(saved.displayPoleMZ());
+   setAlpha(ALPHA, saved.displayAlpha(ALPHA));
+   setAlpha(ALPHAS, saved.displayAlpha(ALPHAS));
+
+   error = runto(scale, precision_goal);
+   if (error)
+      throw flexiblesusy::NonPerturbativeRunningError(scale);
+
+   if (!converged && max_iterations > 0) {
+      std::ostringstream ostr;
+      ostr << "Error: Iteration to determine SM(5) parameters did not"
+         " converge after " << max_iterations;
+      throw ostr.str();
+   }
 }
 
 // Takes QedQcd created at MZ and runs it to given scale

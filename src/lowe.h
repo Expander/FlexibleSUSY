@@ -184,6 +184,8 @@ public:
   void toMz();
   /// Evolves object to given scale
   void to(double);
+  /// Evolves object to given scale.  This implementation can be called multiple times
+  void to2(double, double tol = 1e-5, unsigned max_iterations = 20);
   /// This will calculate the three gauge couplings of the Standard Model at
   /// the scale m2.
   /// It's a simple one-loop calculation only and no
