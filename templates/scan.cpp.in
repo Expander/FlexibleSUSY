@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
    softsusy::QedQcd qedqcd;
 
    try {
-      qedqcd.toMz(); // run SM fermion masses to MZ
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
    } catch (const std::string& s) {
       ERROR(s);
       return EXIT_FAILURE;
