@@ -93,6 +93,15 @@ const DoubleVector QedQcd::display() const {
   return y;
 }
 
+void QedQcd::runto_safe(double scale, double eps)
+{
+   if (runto(scale, eps)) {
+      throw std::string("Error: Non-perturbative running to Q = ")
+         + flexiblesusy::ToString(scale)
+         + " during determination of the SM(5) parameters.";
+   }
+}
+
 //  Active flavours at energy mu
 int QedQcd::flavours(double mu) const {
   int k = 0;
@@ -426,57 +435,32 @@ void QedQcd::toMz() {
  */
 void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    unsigned it = 0;
-   int error = 0;
    bool converged = false;
    Eigen::ArrayXd qedqcd_old(display_input()), qedqcd_new(display_input());
 
    while (!converged && it < max_iterations) {
       // set alpha_i(MZ)
-      error = runto(displayPoleMZ(), precision_goal);
-      if (error) {
-         throw std::string("Error: Non-perturbative running to MZ = ")
-            + flexiblesusy::ToString(displayPoleMZ())
-            + " during determination of the SM(5) parameters.";
-      }
+      runto_safe(displayPoleMZ(), precision_goal);
       setAlpha(ALPHA, input(alpha_em_MSbar_at_MZ));
       setAlpha(ALPHAS, input(alpha_s_MSbar_at_MZ));
 
       // set mb(mb)
-      error = runto(displayMbMb(), precision_goal);
-      if (error) {
-         throw std::string("Error: Non-perturbative running to mb(mb) = ")
-            + flexiblesusy::ToString(displayMbMb())
-            + " during determination of the SM(5) parameters.";
-      }
+      runto_safe(displayMbMb(), precision_goal);
       setMass(mBottom, displayMbMb());
       setPoleMb(extractPoleMb(displayAlpha(ALPHAS)));
 
       // set mc(mc)
-      error = runto(displayMcMc(), precision_goal);
-      if (error) {
-         throw std::string("Error: Non-perturbative running to mc(mc) = ")
-            + flexiblesusy::ToString(displayMcMc())
-            + " during determination of the SM(5) parameters.";
-      }
+      runto_safe(displayMcMc(), precision_goal);
       setMass(mCharm, displayMcMc());
 
       // set mu, md, ms at 2 GeV
-      error = runto(2.0, precision_goal);
-      if (error) {
-         throw std::string("Error: Non-perturbative running to 2 GeV"
-                           " during determination of the SM(5) parameters.");
-      }
+      runto_safe(2.0, precision_goal);
       setMass(mUp, displayMu2GeV());
       setMass(mDown, displayMd2GeV());
       setMass(mStrange, displayMs2GeV());
 
       // check convergence
-      error = runto(scale, precision_goal);
-      if (error) {
-         throw std::string("Error: Non-perturbative running to Q = ")
-            + flexiblesusy::ToString(scale)
-            + " during determination of the SM(5) parameters.";
-      }
+      runto_safe(scale, precision_goal);
       qedqcd_new = display_input();
 
       converged = flexiblesusy::MaxRelDiff(qedqcd_old, qedqcd_new) < precision_goal;
@@ -487,21 +471,11 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    }
 
    // set alpha_i(MZ) on last time
-   error = runto(displayPoleMZ(), precision_goal);
-   if (error) {
-      throw std::string("Error: Non-perturbative running to MZ = ")
-         + flexiblesusy::ToString(displayPoleMZ())
-         + " during determination of the SM(5) parameters.";
-   }
+   runto_safe(displayPoleMZ(), precision_goal);
    setAlpha(ALPHA, input(alpha_em_MSbar_at_MZ));
    setAlpha(ALPHAS, input(alpha_s_MSbar_at_MZ));
 
-   error = runto(scale, precision_goal);
-   if (error) {
-      throw std::string("Error: Non-perturbative running to Q = ")
-         + flexiblesusy::ToString(scale)
-         + " during determination of the SM(5) parameters.";
-   }
+   runto_safe(scale, precision_goal);
 
    if (!converged && max_iterations > 0) {
       std::ostringstream ostr;

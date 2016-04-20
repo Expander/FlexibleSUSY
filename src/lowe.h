@@ -82,6 +82,7 @@ private:
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
   DoubleVector runSMGauge(double, const DoubleVector&);
+  void runto_safe(double, double); ///< throws if non-perturbative error occurs
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
