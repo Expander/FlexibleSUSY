@@ -305,9 +305,11 @@ template <class Derived>
 double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
                   const Eigen::MatrixBase<Derived>& b)
 {
-   typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
+   typename Eigen::MatrixBase<Derived>::PlainObject sumTol(a.rows());
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+   assert(a.rows() == b.rows());
+
+   for (int i = 0; i < a.rows(); i++)
       sumTol(i) = MaxRelDiff(a(i), b(i));
 
    return sumTol.maxCoeff();
