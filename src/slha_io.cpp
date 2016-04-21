@@ -352,6 +352,18 @@ void SLHA_io::set_block(const std::ostringstream& lines, Position position)
       data.push_back(block);
 }
 
+void SLHA_io::set_block(const std::string& lines, Position position)
+{
+   set_block(std::ostringstream(lines), position);
+}
+
+void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
+{
+   for (std::vector<std::string>::const_iterator it = blocks.begin(),
+           end = blocks.end(); it != end; it++)
+      set_block(*it, position);
+}
+
 /**
  * This function treats a given scalar as 1x1 matrix.  Such a case is
  * not defined in the SLHA standard, but we still handle it to avoid
