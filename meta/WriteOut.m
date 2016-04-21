@@ -12,6 +12,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 WriteExtraSLHAOutputBlock::usage="";
+CreateSLHAMassBlockStream::usage="creates ostringstream with masses";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
@@ -164,8 +165,8 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
-WriteSLHAMassBlock[massMatrices_List] :=
-    Module[{result, smMasses, susyMasses,
+CreateSLHAMassBlockStream[massMatrices_List, blockName_String:"MASS", streamName_String:"mass"] :=
+    Module[{smMasses, susyMasses,
             smMassesStr = "", susyMassesStr = ""},
            smMasses = Select[massMatrices, (IsSMParticle[TreeMasses`GetMassEigenstate[#]])&];
            (* filter out MW, because MW should always appear in the output *)
@@ -173,17 +174,18 @@ WriteSLHAMassBlock[massMatrices_List] :=
            susyMasses = Complement[massMatrices, smMasses];
            (smMassesStr = smMassesStr <> WriteSLHAMass[#])& /@ smMasses;
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
-           susyMassesStr = "mass << \"Block MASS\\n\"\n" <>
+           susyMassesStr = streamName <> " << \"Block " <> blockName <> "\\n\"\n" <>
                            TextFormatting`IndentText[susyMassesStr] <> ";\n\n";
            smMassesStr = "if (write_sm_masses) {\n" <>
-                         TextFormatting`IndentText["mass\n" <>
+                         TextFormatting`IndentText[streamName <> "\n" <>
                              TextFormatting`IndentText[smMassesStr] <> ";"] <>
                          "\n}\n\n";
-           result = "std::ostringstream mass;\n\n" <>
-                    susyMassesStr <> smMassesStr <>
-                    "slha_io.set_block(mass);\n";
-           Return[result];
+           "std::ostringstream " <> streamName <> ";\n\n" <> susyMassesStr <> smMassesStr
           ];
+
+WriteSLHAMassBlock[massMatrices_List, blockName_String:"MASS", streamName_String:"mass"] :=
+    CreateSLHAMassBlockStream[massMatrices, blockName, streamName] <>
+    "slha_io.set_block(" <> streamName <> ");\n";
 
 ConvertToRealInputParameter[parameter_, struct_String] :=
     struct <> CConversion`ToValidCSymbolString[parameter];
