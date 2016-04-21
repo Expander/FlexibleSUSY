@@ -444,15 +444,35 @@ Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
 }
 
-inline double Sqrt(double a)
+template <class T>
+T Sqrt(T a)
 {
    return std::sqrt(a);
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
+{
+   return m.unaryExpr(std::ptr_fun(Sqrt<Scalar>));
 }
 
 template <typename T>
 T Sqr(T a)
 {
    return a * a;
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.unaryExpr(std::ptr_fun(Sqr<Scalar>));
+}
+
+template <class T>
+std::vector<T> Sqr(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), &Sqr<T>);
+   return v;
 }
 
 #define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
@@ -527,6 +547,30 @@ template <typename T>
 std::string ToString(T a)
 {
    return boost::lexical_cast<std::string>(a);
+}
+
+template <class T>
+T Total(const std::vector<T>& v)
+{
+   return std::accumulate(v.begin(), v.end(), T(0));
+}
+
+template <class Scalar, int M, int N>
+Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
+{
+   if (v.empty()) {
+      Eigen::Array<Scalar,M,N> result(0,0);
+      result.setZero();
+      return result;
+   }
+
+   Eigen::Array<Scalar,M,N> result(v[0].rows(), v[0].cols());
+   result.setZero();
+
+   for (int i = 0; i < v.size(); i++)
+      result += v[i];
+
+   return result;
 }
 
 /// step function (0 for x < 0, 1 otherwise)
