@@ -26,6 +26,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <vector>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
@@ -40,14 +41,29 @@ static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
 static const bool True = true;
 
-inline double Abs(double z)
+template <typename T>
+T Abs(T a)
 {
-   return std::fabs(z);
+   return std::abs(a);
 }
 
-inline double Abs(const std::complex<double>& z)
+template <typename T>
+T Abs(const std::complex<T>& z)
 {
    return std::abs(z);
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.cwiseAbs();
+}
+
+template <class T>
+std::vector<T> Abs(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Abs(x); });
+   return v;
 }
 
 inline double AbsSqr(double z)
@@ -456,6 +472,13 @@ Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
    return m.unaryExpr(std::ptr_fun(Sqrt<Scalar>));
 }
 
+template <class T>
+std::vector<T> Sqrt(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqrt(x); });
+   return v;
+}
+
 template <typename T>
 T Sqr(T a)
 {
@@ -471,7 +494,7 @@ Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Sqr(std::vector<T> v)
 {
-   std::transform(v.begin(), v.end(), v.begin(), &Sqr<T>);
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqr(x); });
    return v;
 }
 
@@ -553,6 +576,12 @@ template <class T>
 T Total(const std::vector<T>& v)
 {
    return std::accumulate(v.begin(), v.end(), T(0));
+}
+
+template <typename Scalar, int M, int N>
+Scalar Total(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.sum();
 }
 
 template <class Scalar, int M, int N>
