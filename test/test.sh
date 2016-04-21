@@ -17,7 +17,7 @@ CHECK_EQUAL_FRACTION() {
 
     local scale=15
 
-    error=$(cat <<EOF | bc
+    local error=$(cat <<EOF | bc
 define abs(i) {
     if (i < 0) return (-i)
     return (i)
@@ -39,11 +39,11 @@ scale=${scale}
 mmin=min($num1,$num2)
 mmax=max($num1,$num2)
 
-(mmax - mmin) <= $frac * mmax
+(mmax - mmin) > $frac * mmax
 EOF
     )
 
-    if test "x$error" = "x0" ; then
+    if test "x$error" != "x0" ; then
         echo "Test failed: $num1 =r= $num2 with fraction $frac"
     fi
 
