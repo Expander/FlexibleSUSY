@@ -27,6 +27,7 @@ PROJECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 threeLoop::usage="";
+Sqr::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
@@ -798,8 +799,8 @@ RValueToCFormString[expr_] :=
                     SARAH`G0[p_^2, a__]              :> SARAH`G0[p, a],
                     SARAH`H0[p_^2, a__]              :> SARAH`H0[p, a] } /.
                     SARAH`A0[0]              -> 0 /.
-                    SARAH`Mass2[a_?NumberQ]  :> Global`Sqr[a] /.
-                    SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`M[a]] /.
+                    SARAH`Mass2[a_?NumberQ]  :> Sqr[a] /.
+                    SARAH`Mass2[a_]          :> Sqr[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`M[a_?NumberQ]   :> a /.
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
@@ -815,8 +816,8 @@ RValueToCFormString[expr_] :=
                     Rational[a_?NumericQ, b_?NumericQ] :> N[Rational[a,b]] /.
                     Power[a_,0.5]            :> Sqrt[a] /.
                     Power[a_,-0.5]           :> 1/Sqrt[a] /.
-                    Power[a_,2]              :> Global`Sqr[a] /.
-                    Power[a_,-2]             :> 1/Global`Sqr[a] /.
+                    Power[a_,2]              :> Sqr[a] /.
+                    Power[a_,-2]             :> 1/Sqr[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
