@@ -9,6 +9,13 @@ FlexibleSUSY-1.4.1 [not released yet]
  * Feature: For each model an example SLHA input file is generated,
    which is located at models/<model>/LesHouches.in.<model>_generated
 
+ * Change: The algorithm to determine the running fermion masses and
+   gauge couplings has been replaced by a more secure one.  The new
+   algorithm performs an iteration between 2 GeV and MZ to fix all
+   input parameters at their scale.  The new algorithm leads to
+   running 1st and 2nd generation quark masses, which differ from
+   SOFTSUSY by around 3%.
+
  * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
    M3^2 -> MSQ^2 / M3^2 in HSSUSY.
 
