@@ -26,8 +26,8 @@ Parameters:
 
 - corrections (optional): List of factors multiplied by each correction.
   (default: {1, 1})
-  #1: alpha_t * alpha_s
-  #2: alpha_t^2
+  #1: alpha_t * alpha_s (arxiv:hep-ph/0105096)
+  #2: alpha_t^2         (arxiv:hep-ph/0112177)
 
 - parameters (optional): List of internal replacement rules for
   parameters, useful when certain limits are considered (default: {}).
