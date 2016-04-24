@@ -376,6 +376,9 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaT[parameters_List, abbreviations_Li
     Module[{Mh},
            Mh = {{M11, M12},
                  {M12, M22}};
+           If[PossibleZeroQ[sin2Theta /. parameters],
+              Mh = Expand[Mh];
+             ];
            Mh //. {
                Nc -> 3,
                t -> mt^2,
