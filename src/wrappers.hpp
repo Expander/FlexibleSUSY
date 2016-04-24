@@ -26,6 +26,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
@@ -460,10 +461,16 @@ Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
 }
 
-template <class T>
+template <class T, typename = typename std::enable_if<std::is_floating_point<T>::value,T>::type>
 T Sqrt(T a)
 {
    return std::sqrt(a);
+}
+
+template <class T, typename = typename std::enable_if<std::is_integral<T>::value,T>::type>
+double Sqrt(T a)
+{
+   return std::sqrt(static_cast<double>(a));
 }
 
 template <typename Scalar, int M, int N>

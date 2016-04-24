@@ -381,6 +381,14 @@ BOOST_AUTO_TEST_CASE(test_Sqr_vector_Eigen_Array)
    Sqr(v);
 }
 
+BOOST_AUTO_TEST_CASE(test_Sqrt_overloads)
+{
+   BOOST_CHECK_EQUAL(Sqrt(2.f), std::sqrt(2.f));
+   BOOST_CHECK_EQUAL(Sqrt(2.) , std::sqrt(2.));
+   BOOST_CHECK_EQUAL(Sqrt(2.L), std::sqrt(2.L));
+   BOOST_CHECK_EQUAL(Sqrt(2)  , std::sqrt(2.));
+}
+
 BOOST_AUTO_TEST_CASE(test_Sqrt_vector)
 {
    std::vector<double> v(3);
