@@ -25,12 +25,18 @@ Parameters:
   (default: {1,1,1})
 
 - corrections (optional): List of factors multiplied by each correction.
-  (default: {1})
-  #1: alpha_t * alpha_s
+  (default: {1, 1})
+  #1: alpha_t * alpha_s (arxiv:hep-ph/0105096)
+  #2: alpha_t^2         (arxiv:hep-ph/0112177)
 
 - parameters (optional): List of internal replacement rules for
   parameters, useful when certain limits are considered (default: {}).
   Example:  parameters -> {At -> 0, sin2Theta -> 0}
+
+- abbreviations (optional): List of replacement rules to resolve
+  abbreviated symbols and functions (default:
+  {TwoLoopMSSM`Private`alphaT2Abbreviations}).
+  Example: abbreviations -> {} (* leave abbreviations *)
 
 To express the result by the stop mixing parameter Xt, call
 
@@ -61,13 +67,19 @@ Parameters:
 ";
 
 (* DR-bar parameters *)
-{ ht, Mu, mt, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu };
+{ ht, Mu, mt, mb, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu, BMu };
 
 (* Stop mass parameters *)
-{ sin2Theta, mst1, mst2 };
+{ sin2Theta, cos2Theta, mst1, mst2 };
+
+(* Sbottom mass parameters *)
+{ msb1, msb2 };
+
+(* abbreviated parameters *)
+{ mA, Xt, Yt, delta, Li2, lam, xp, xm, phi2, phi };
 
 (* options *)
-{ loopOrder, corrections, parameters };
+{ loopOrder, corrections, parameters, abbreviations };
 
 Begin["TwoLoopMSSM`Private`"];
 
@@ -339,6 +351,52 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[parameters_List] :=
            CreateMassMatrixCPEven[F1, F2, F3, DeltaF2, DeltaF3, parameters]
           ];
 
+Get[FileNameJoin[{"meta", "MSSM", "BDSZHiggs.m"}]];
+
+alphaT2Abbreviations = {
+    mA -> Sqrt[- signMu BMu (TanBeta + 1/TanBeta)],
+    Xt -> At + signMu Mu / TanBeta,
+    Yt -> At - signMu Mu TanBeta,
+    delta[x_,y_,z_] :> x^2 + y^2 + z^2 - 2 (x y + x z + y z),
+    Li2[x_] :> PolyLog[2,x],
+    lam[x_,y_,z_] :> Sqrt[(1 - x/z - y/z)^2 - 4 x y/z^2],
+    xp[x_,y_,z_] :> 1/2 (1 + x/z -y/z - lam[x,y,z]),
+    xm[x_,y_,z_] :> 1/2 (1 - x/z +y/z - lam[x,y,z]),
+    phi2[x_,y_,z_] :> (2 Log[xp[x,y,z]] Log[xm[x,y,z]]
+                       - Log[x/z]*Log[y/z]
+                       - 2 (Li2[xp[x,y,z]] + Li2[xm[x,y,z]])
+                       + Pi^2/3) / lam[x,y,z],
+    phi[x_,y_,z_] :> Which[x <= z && y <= z,     phi2[x,y,z],
+                           z <= x && y <= x, z/x phi2[z,y,x],
+                           z <= y && x <= y, z/y phi2[z,x,y]]
+};
+
+(* arxiv:hep-ph/0112177 *)
+GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaT[parameters_List, abbreviations_List] :=
+    Module[{Mh},
+           Mh = {{M11, M12},
+                 {M12, M22}};
+           If[PossibleZeroQ[sin2Theta /. parameters],
+              Mh = Expand[Mh];
+             ];
+           Mh //. {
+               Nc -> 3,
+               t -> mt^2,
+               A0 -> mA^2,
+               q -> Q^2,
+               Sqrt[mu2] -> signMu Mu,
+               mu2 -> Mu^2,
+               T1 -> mst1^2,
+               T2 -> mst2^2,
+               BL -> msb1^2,
+               BR -> msb2^2,
+               cb -> Cos[ArcTan[TanBeta]],
+               sb -> Sin[ArcTan[TanBeta]],
+               c2t -> cos2Theta,
+               s2t -> sin2Theta
+           } //. abbreviations
+          ];
+
 (* Eqs. (C1) of arxiv:hep-ph/0105096 *)
 CalculateMassCPOdd[FA_, parameters_List] :=
     Module[{result = 0},
@@ -411,15 +469,17 @@ GetMSSMCPOddHiggsLoopMass2LAlphaTAlphaS[parameters_List] :=
 Options[GetMSSMCPEvenHiggsLoopMassMatrix] = \
 Options[GetMSSMCPOddHiggsLoopMass] = {
     loopOrder -> {1,1,1},
-    corrections -> {1},
-    parameters -> {}
+    corrections -> {1,1},
+    parameters -> {},
+    abbreviations -> alphaT2Abbreviations
 };
 
 GetMSSMCPEvenHiggsLoopMassMatrix[OptionsPattern[]] :=
     (
         OptionValue[loopOrder][[1]] {{0,0}, {0,0}} +
         OptionValue[loopOrder][[2]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix1LAlphaTAlphaS[OptionValue[parameters]] +
-        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[OptionValue[parameters]]
+        OptionValue[loopOrder][[3]] OptionValue[corrections][[1]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaS[OptionValue[parameters]] +
+        OptionValue[loopOrder][[3]] OptionValue[corrections][[2]] GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaT[OptionValue[parameters], OptionValue[abbreviations]]
     ) /. OptionValue[parameters];
 
 GetMSSMCPOddHiggsLoopMass[OptionsPattern[]] :=

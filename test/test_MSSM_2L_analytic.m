@@ -44,10 +44,10 @@ CalculatePointFromAnalyticExpr[point_] :=
            ];
            deltaMh = Simplify @ Re @ N[
                GetMSSMCPEvenHiggsLoopMassMatrix[
-                   loopOrder -> {0,0,1}, parameters -> pars]];
+                   loopOrder -> {0,0,1}, parameters -> pars, corrections -> {1,0}]];
            deltaMa = Simplify @ Re @ N[
                GetMSSMCPOddHiggsLoopMass[
-                   loopOrder -> {0,0,1}, parameters -> pars]];
+                   loopOrder -> {0,0,1}, parameters -> pars, corrections -> {1,0}]];
            {deltaMh[[1, 1]], deltaMh[[2, 2]], deltaMh[[1, 2]], deltaMa}
           ];
 
@@ -159,7 +159,7 @@ points = {
 };
 
 For[i = 1, i <= Length[points], i++,
-    ex = GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0, 0, 1}, parameters -> points[[i]]];
+    ex = GetMSSMCPEvenHiggsLoopMassMatrix[loopOrder -> {0, 0, 1}, parameters -> points[[i]], corrections -> {1,0}];
     re = ReplaceStopMasses[parameters -> points[[i]]];
     TestEquality[ex[[1,1]] =!= Indeterminate, True];
     TestEquality[ex[[1,2]] =!= Indeterminate, True];
@@ -169,7 +169,7 @@ For[i = 1, i <= Length[points], i++,
     TestEquality[(mst2 /. re) =!= Indeterminate, True];
     TestEquality[(sin2Theta /. re) =!= Indeterminate, True];
 
-    ex = GetMSSMCPOddHiggsLoopMass[loopOrder -> {0, 0, 1}, parameters -> points[[i]]];
+    ex = GetMSSMCPOddHiggsLoopMass[loopOrder -> {0, 0, 1}, parameters -> points[[i]], corrections -> {1,0}];
     TestEquality[ex =!= Indeterminate, True];
    ];
 
