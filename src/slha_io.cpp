@@ -523,12 +523,14 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
    switch (key) {
    case 1:
       qedqcd.setAlpha(ALPHA, 1.0 / value);
+      qedqcd.setAlphaEmInput(1.0 / value);
       break;
    case 2:
       qedqcd.setFermiConstant(value);
       break;
    case 3:
       qedqcd.setAlpha(ALPHAS, value);
+      qedqcd.setAlphaSInput(value);
       break;
    case 4:
       qedqcd.setPoleMZ(value);

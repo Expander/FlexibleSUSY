@@ -107,10 +107,11 @@ public:
   /// sets a neutrino pole mass
   void setNeutrinoPoleMass(int i, double m) { input(Mv1_pole + i - 1) = m; }
   /// sets QED or QCD structure constant
-  void setAlpha(leGauge ai, double ap) {
-     a(ai) = ap;
-     input(alpha_em_MSbar_at_MZ + ai - 1) = ap;
-  }
+  void setAlpha(leGauge ai, double ap) { a(ai) = ap; }
+  /// set input value of alpha_em(MZ)
+  void setAlphaEmInput(double a) { input(alpha_em_MSbar_at_MZ) = a; }
+  /// set input value of alpha_s(MZ)
+  void setAlphaSInput(double a) { input(alpha_s_MSbar_at_MZ) = a; }
   /// sets CKM parameters (in the MS-bar scheme at MZ)
   void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
   /// sets PMNS parameters (in the MS-bar scheme at MZ)
@@ -144,6 +145,10 @@ public:
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
+  /// Returns input value alpha_em(MZ)
+  double displayAlphaEmInput() const { return input(alpha_em_MSbar_at_MZ); }
+  /// Returns input value alpha_s(MZ)
+  double displayAlphaSInput() const { return input(alpha_s_MSbar_at_MZ); }
   /// Returns Fermi constant
   double displayFermiConstant() const { return input(GFermi); }
   /// Obgligatory: returns vector of all running parameters

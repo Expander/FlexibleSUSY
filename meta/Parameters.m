@@ -1609,9 +1609,9 @@ FindSLHABlock[blockList_List, par_] :=
            foundBlocks[[1]]
           ];
 
-SetSMParameter[FlexibleSUSY`AlphaEMInvInput    , value_String, struct_String] := struct <> ".setAlpha(softsusy::ALPHA, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`AlphaEMInvInput    , value_String, struct_String] := struct <> ".setAlphaEmInput(1./(" <> value <> "))";
 SetSMParameter[FlexibleSUSY`GFermiInput        , value_String, struct_String] := struct <> ".setFermiConstant(" <> value <> ")";
-SetSMParameter[FlexibleSUSY`AlphaSInput        , value_String, struct_String] := struct <> ".setAlpha(softsusy::ALPHAS, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`AlphaSInput        , value_String, struct_String] := struct <> ".setAlphaSInput(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MZPoleInput        , value_String, struct_String] := struct <> ".setPoleMZ(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MbMbInput          , value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MTopPoleInput      , value_String, struct_String] := struct <> ".setPoleMt(" <> value <> ")";
