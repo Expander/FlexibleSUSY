@@ -10,6 +10,11 @@ __find_available_models()
     find $(dirname $0)/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -exec bash -c 'basename $(dirname $1)' modelname {} \; | sort -u
 }
 
+__find_created_models()
+{
+    find $(dirname $0)/models/ -mindepth 2 -type f -name module.mk -exec bash -c 'basename $(dirname $1)' modelname {} \; | sort -u
+}
+
 __find_available_addons()
 {
     find $(dirname $0)/addons/ -mindepth 1 -type d -name "*" -exec basename {} \; | sort -u
@@ -240,7 +245,7 @@ _configure()
 
     # handle --with-models=
     if [[ ${prev}${cur} == "--with-models=" || ${pprev}${prev} == "--with-models=" ]] ; then
-        local available_models=$(__find_available_models)
+        local available_models=$(__find_created_models)
         COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-models=" "$available_models") )
         return 0
     fi
