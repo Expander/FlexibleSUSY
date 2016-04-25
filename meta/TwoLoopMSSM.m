@@ -387,7 +387,7 @@ GetMSSMCPEvenHiggsLoopMassMatrix2LAlphaTAlphaT[parameters_List, abbreviations_Li
                t -> mt^2,
                A0 -> mA^2,
                q -> Q^2,
-               Sqrt[mu2] -> signMu Mu,
+               mu -> signMu Mu,
                mu2 -> Mu^2,
                T1 -> mst1^2,
                T2 -> mst2^2,

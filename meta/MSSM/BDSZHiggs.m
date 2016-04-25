@@ -1,13 +1,11 @@
 
 (* FORMULAE FOR THE TWO-LOOP O(at^2) CORRECTIONS TO THE HIGGS MASSES *)
 (*                                                                   *)
-(* WRITTEN BY P. SLAVICH (EMAIL: slavich@pd.infn.it).                *)
-(*                                                                   *)
-(* LAST UPDATE 13/12/2001.                                           *)  
+(* WRITTEN BY P. SLAVICH                                             *)
 (*                                                                   *)  
 (* BASED ON A. BRIGNOLE, G. DEGRASSI, P. SLAVICH AND F. ZWIRNER,     *)
 (*                                                                   *) 
-(*          HEP-PH/0112177.                                          *)
+(* HEP-PH/0112177.                                                   *)
 
 
 ct2 = (1+c2t)/2;st2=(1-c2t)/2;
@@ -420,8 +418,8 @@ DmuF3 = -Nc/4*(Log[T1/q]+Log[T2/q]-2)*(2-(T1+T2)/(T1-T2)*Log[T1/T2]);
 DAtF2 = -(3+Nc)/2*(Log[T1/q]^2-Log[T2/q]^2);
 DAtF3 = -(3+Nc)/2*(Log[T1/q]+Log[T2/q]-2)*(2-(T1+T2)/(T1-T2)*Log[T1/T2]);
 
-DM12 = ht^2*Nc*(s2t/4*Sqrt[mu2]*Sqrt[t]*(Log[T1/q]^2-Log[T2/q]^2)
-+s2t^2/8*Sqrt[mu2]*At*(Log[T1/q]+Log[T2/q]-2)*(2-(T1+T2)/(T1-T2)*Log[T1/T2]));
+DM12 = ht^2*Nc*(s2t/4*mu*Sqrt[t]*(Log[T1/q]^2-Log[T2/q]^2)
++s2t^2/8*mu*At*(Log[T1/q]+Log[T2/q]-2)*(2-(T1+T2)/(T1-T2)*Log[T1/T2]));
 
 DM22 = ht^2*Nc*(t*(Log[T1/q]^2+Log[T2/q]^2-2*Log[t/q]^2)
 +s2t*At*Sqrt[t]*(Log[T1/q]^2-Log[T2/q]^2)+
@@ -434,14 +432,14 @@ k = ht^2 Nc/(16 Pi^2)^2
 
 M11 = k * ht^2 * mu2 * s2t^2/2 * (F3 + 2*DmuF3);
 
-M12 = k * (ht^2 * At * Sqrt[mu2] * s2t^2/2 * (F3 + DmuF3 + DAtF3) + 
-       ht^2 * Sqrt[mu2] * Sqrt[t] * s2t * (F2 + DmuF2) + DM12);
+M12 = k * (ht^2 * At * mu * s2t^2/2 * (F3 + DmuF3 + DAtF3) + 
+       ht^2 * mu * Sqrt[t] * s2t * (F2 + DmuF2) + DM12);
 
 M22 = k * (ht^2 * At^2 * s2t^2/2 * (F3 + 2*DAtF3) +
        2 * ht^2 * At * Sqrt[t] * s2t * (F2 + DAtF2) +
        2 * ht^2 * t * F1 + DM22); 
 
-DMA = k * ht^2/sb/cb * Sqrt[mu2] * At /(T1-T2) * FA;
+DMA = k * ht^2/sb/cb * mu * At /(T1-T2) * FA;
 
 (* tools *)
 
