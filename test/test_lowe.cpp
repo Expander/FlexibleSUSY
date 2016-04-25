@@ -11,11 +11,12 @@ BOOST_AUTO_TEST_CASE( test_to )
 {
    QedQcd lowe_Mz;
    lowe_Mz.setPoleMt(173.5);
-   lowe_Mz.setAlpha(ALPHAS, 0.118);
+   lowe_Mz.setAlpha(ALPHAS, 0.118); // running alpha_s at current scale
+   lowe_Mz.setAlphaSInput(0.118);   // input alpha_s(MZ)
    QedQcd lowe_Mz_new(lowe_Mz);
 
-   lowe_Mz.toMz();
-   lowe_Mz_new.to(lowe_Mz.displayPoleMZ());
+   lowe_Mz.toMz(); // uses running alpha_s at current scale
+   lowe_Mz_new.to(lowe_Mz.displayPoleMZ()); // uses input alpha_s(MZ)
 
    BOOST_CHECK_CLOSE(lowe_Mz.displayMbMb(), lowe_Mz_new.displayMbMb(), 1e-10);
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHA) , lowe_Mz_new.displayAlpha(ALPHA) , 1e-10);
