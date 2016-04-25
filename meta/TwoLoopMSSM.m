@@ -29,6 +29,9 @@ Parameters:
   #1: alpha_t * alpha_s (arxiv:hep-ph/0105096)
   #2: alpha_t^2         (arxiv:hep-ph/0112177)
 
+  The expressions for the O(alpha_t^2) corrections
+  [arxiv:hep-ph/0112177] have been kindly provided by Pietro Slavich.
+
 - parameters (optional): List of internal replacement rules for
   parameters, useful when certain limits are considered (default: {}).
   Example:  parameters -> {At -> 0, sin2Theta -> 0}
