@@ -63,7 +63,7 @@ void setup_CMSSM_const(CMSSM_mass_eigenstates& model, const CMSSM_input_paramete
       Yd(Eigen::Matrix<double,3,3>::Zero()),
       Ye(Eigen::Matrix<double,3,3>::Zero()),
       mm0(Eigen::Matrix<double,3,3>::Zero());
-   Yu(2,2) = Electroweak_constants::mtoprun * root2 / (vev * sinBeta);
+   Yu(2,2) = Electroweak_constants::PMTOP   * root2 / (vev * sinBeta);
    Yd(2,2) = Electroweak_constants::mbrun   * root2 / (vev * cosBeta);
    Ye(2,2) = Electroweak_constants::mtau    * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
