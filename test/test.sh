@@ -50,3 +50,31 @@ EOF
 
     return $error
 }
+
+# returns minimum of two numbers
+min() {
+    local a=$(echo "$1" | sed -e 's/[eE]+*/*10^/')
+    local b=$(echo "$2" | sed -e 's/[eE]+*/*10^/')
+    cat <<EOF | bc -l
+define min(i,j) {
+    if (i < j) return i
+    return j
+}
+
+min($a,$b)
+EOF
+}
+
+# returns maximum of two numbers
+max() {
+    local a=$(echo "$1" | sed -e 's/[eE]+*/*10^/')
+    local b=$(echo "$2" | sed -e 's/[eE]+*/*10^/')
+    cat <<EOF | bc -l
+define max(i,j) {
+    if (i > j) return i
+    return j
+}
+
+max($a,$b)
+EOF
+}
