@@ -603,7 +603,7 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
    Eigen::Array<Scalar,M,N> result(v[0].rows(), v[0].cols());
    result.setZero();
 
-   for (int i = 0; i < v.size(); i++)
+   for (std::size_t i = 0; i < v.size(); i++)
       result += v[i];
 
    return result;
