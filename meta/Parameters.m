@@ -1568,6 +1568,9 @@ GetIntermediateOutputParameterDependencies[expr_] :=
         Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
     ];
 
+CreateInputParameterArrayGetter[{}] :=
+    "return Eigen::ArrayXd();\n";
+
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
             type, i, assignment = "", nAssignments = 0},
