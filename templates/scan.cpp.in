@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
       const bool error = problems.have_problem();
 
       cout << "  "
-           << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
+           << std::setw(12) << std::left << *it << ' '
            << std::setw(12) << std::left << higgs << ' '
            << std::setw(12) << std::left << error;
       if (error) {
