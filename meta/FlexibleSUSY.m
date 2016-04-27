@@ -1219,6 +1219,17 @@ WriteUserExample[inputParameters_List, files_List] :=
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
+                            "@setInputParameterTo[" ~~ num_ ~~ "," ~~ value__ ~~ "]@" /; IntegerQ[ToExpression[num]] :>
+                                 If[Parameters`GetInputParameters[] === {},
+                                    "",
+                                    IndentText[IndentText[
+                                        Parameters`SetInputParameter[
+                                            Parameters`GetInputParameters[][[ToExpression[num]]],
+                                            value,
+                                            "INPUTPARAMETER"
+                                        ]
+                                    ]]
+                                   ],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

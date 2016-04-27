@@ -30,6 +30,8 @@
 #include <iostream>
 #include <cstring>
 
+#define INPUTPARAMETER(p) input.p
+
 namespace flexiblesusy {
 
 void print_usage()
@@ -95,7 +97,7 @@ int main(int argc, char* argv[])
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
-      input.@InputParameter_1@ = *it;
+@setInputParameterTo[1,*it]@
 
       spectrum_generator.run(qedqcd, input);
 
