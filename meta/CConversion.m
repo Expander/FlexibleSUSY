@@ -933,6 +933,21 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
            Return[result];
           ];
 
+ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
+    Module[{var, expandedSums, result = ""},
+           var = CreateUniqueCVariable[];
+           expandedSums = ExpandSums[expr, var, type, initialValue];
+           result = expandedSums <> "\n" <>
+                    CConversion`CreateCType[type] <> " " <> variable <> " = " <>
+                    ToString[Fun] <> "(" <> var <>
+                    If[{rest} === {}, "", ","] <>
+                    Utils`StringJoinWithSeparator[RValueToCFormString /@ {rest}, ","] <>
+                    ");\n";
+           Return[result];
+          ];
+
 ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
