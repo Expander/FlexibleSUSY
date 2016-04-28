@@ -290,6 +290,11 @@ EOF
     echo $value
 }
 
+run_fh() {
+    local fh_dir="$1"
+    ./run_FeynHiggs.sh "$fh_dir" "${MS}" "${TB}" "${Xt}"
+}
+
 help() {
     cat <<EOF
 Usage: $0 [options]
@@ -354,7 +359,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno"
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -406,6 +411,10 @@ EOF
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
-    printf "%16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno"
+    FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/x86_64-Linux/bin")
+    MhFH=$(echo "$FHout" | awk '{ print $1 }')
+    DeltaMhFH=$(echo "$FHout" | awk '{ print $1 }')
+
+    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH"
 
 done
