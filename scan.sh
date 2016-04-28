@@ -359,7 +359,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs"
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -415,6 +415,10 @@ EOF
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
     DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
 
-    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH"
+    SUSYHDout=$(math -run "Q=${MS}; TB=${TB}; Xt=${Xt}; Get[\"run_SUSYHD.m\"]" 2>&1 >/dev/null)
+    MhSUSYHD=$(echo "$SUSYHDout" | awk '{ print $1 }')
+    DeltaMhSUSYHD=$(echo "$SUSYHDout" | awk '{ print $2 }')
+
+    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD"
 
 done
