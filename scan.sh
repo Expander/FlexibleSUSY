@@ -295,6 +295,22 @@ run_fh() {
     ./run_FeynHiggs.sh "$fh_dir" "${MS}" "${TB}" "${Xt}"
 }
 
+run_susyhd() {
+    local SHDout=
+    local Mh=
+    local DMh=
+
+    SHDout=$(math -run "Q=${MS}; TB=${TB}; Xt=${Xt}; Get[\"run_SUSYHD.m\"];" 2>&1 >/dev/null)
+    Mh=$(echo "$SHDout" | awk '{ print $1 }')
+    DMh=$(echo "$SHDout" | awk '{ print $2 }')
+
+    if [ "x$Mh" = "x0" ] ; then
+        echo "-   -"
+    else
+        echo "$Mh   $DMh"
+    fi
+}
+
 help() {
     cat <<EOF
 Usage: $0 [options]
@@ -415,7 +431,7 @@ EOF
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
     DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
 
-    SUSYHDout=$(math -run "Q=${MS}; TB=${TB}; Xt=${Xt}; Get[\"run_SUSYHD.m\"]" 2>&1 >/dev/null)
+    SUSYHDout=$(run_susyhd)
     MhSUSYHD=$(echo "$SUSYHDout" | awk '{ print $1 }')
     DeltaMhSUSYHD=$(echo "$SUSYHDout" | awk '{ print $2 }')
 
