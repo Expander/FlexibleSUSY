@@ -413,7 +413,7 @@ EOF
 
     FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/x86_64-Linux/bin")
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
-    DeltaMhFH=$(echo "$FHout" | awk '{ print $1 }')
+    DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
 
     printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH"
 
