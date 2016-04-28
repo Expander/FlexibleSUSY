@@ -19,7 +19,7 @@ FindMass2[masses_List, particle_] :=
                     " in masses list."];
               Return[0];
              ];
-           Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
+           Return[TreeMasses`ReplaceDependenciesReverse[massExpr[[1]]]];
           ];
 
 (*extracts squared tree-level mass of Z boson before mixing with additional Z`*)

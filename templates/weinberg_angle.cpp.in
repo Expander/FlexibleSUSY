@@ -34,6 +34,7 @@ namespace flexiblesusy {
 
 #define MODELPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
+#define DERIVEDPARAMETER(p) model->p()
 #define SINTHETAW sinThetaW
 #define RHOHATRATIO rhohat_ratio
 #define GFERMI gfermi
