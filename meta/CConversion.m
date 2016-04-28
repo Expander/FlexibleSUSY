@@ -939,7 +939,7 @@ ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
     Module[{var, expandedSums, result = ""},
            var = CreateUniqueCVariable[];
            expandedSums = ExpandSums[expr, var, type, initialValue];
-           result = expandedSums <> "\n" <>
+           result = expandedSums <>
                     CConversion`CreateCType[type] <> " " <> variable <> " = " <>
                     ToString[Fun] <> "(" <> var <>
                     If[{rest} === {}, "", ","] <>
