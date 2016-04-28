@@ -17,7 +17,6 @@ Xt="$1"
 fh="${fh_dir}/FeynHiggs"
 fh_table="${fh_dir}/table"
 fh_in=fh.in
-fh_out=fh.out
 
 At=$(echo "scale=16; $MS * $Xt + $MS / $TB" | bc -l)
 Au=$(echo "scale=16; $MS/$TB" | bc -l)
