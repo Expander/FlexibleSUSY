@@ -16,7 +16,7 @@ CreateInputParameterArraySetter::usage="";
 
 SetParameter::usage="set model parameter";
 SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
-SetInputParameter::usage="set input parameter";
+SetInputParameter::usage="set input parameter to value";
 AddInputParameters::usage="add an input parameter";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
@@ -1084,7 +1084,11 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
            If[IsInputParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               valueStr = CConversion`RValueToCFormString[value];
-              wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+              If[wrapper == "",
+                 parameterStr <> " = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+                 wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n"
+                ]
+              ,
               ""
              ]
           ];
@@ -1567,6 +1571,9 @@ GetIntermediateOutputParameterDependencies[expr_] :=
         GetAllOutputParameterDependenciesReplaced[expr],
         Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
     ];
+
+CreateInputParameterArrayGetter[{}] :=
+    "return Eigen::ArrayXd();\n";
 
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,

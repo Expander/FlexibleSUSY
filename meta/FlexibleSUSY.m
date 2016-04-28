@@ -504,12 +504,28 @@ GeneralReplacementRules[] :=
       "@perturbativityThreshold@" -> ToString[N[FlexibleSUSY`FSPerturbativityThreshold]],
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
-      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[Parameters`GetInputParameters[][[ToExpression[num]]]],
+      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[
+          If[Parameters`GetInputParameters[] === {},
+             "",
+             Parameters`GetInputParameters[][[ToExpression[num]]]
+            ]
+      ],
+      "@setInputParameterTo[" ~~ num_ ~~ "," ~~ value__ ~~ "]@" /; IntegerQ[ToExpression[num]] :>
+          If[Parameters`GetInputParameters[] === {},
+             "",
+             IndentText[IndentText[
+                 Parameters`SetInputParameter[
+                     Parameters`GetInputParameters[][[ToExpression[num]]],
+                     value,
+                     "INPUTPARAMETER"
+                 ]
+             ]]
+            ],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
-    }
+    };
 
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
