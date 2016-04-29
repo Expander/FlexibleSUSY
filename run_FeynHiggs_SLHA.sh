@@ -73,14 +73,18 @@ BLOCK EXTPAR
 EOF
 
 rm -f "${fh_out}"
+Mh=
+DMh=
 
 ${fh} "${fh_in}" 400203110 >/dev/null 2>&1
 
-Mh=$(awk -f utils/print_slha_block.awk -v block=MASS "${fh_out}" | \
-     awk -f utils/print_slha_block_entry.awk -v entries=25)
+if [ -e "${fh_out}" ] ; then
+    Mh=$(awk -f utils/print_slha_block.awk -v block=MASS "${fh_out}" | \
+                awk -f utils/print_slha_block_entry.awk -v entries=25)
 
-DMh=$(awk -f utils/print_slha_block.awk -v block=DMASS "${fh_out}" | \
-      awk -f utils/print_slha_block_entry.awk -v entries=25)
+    DMh=$(awk -f utils/print_slha_block.awk -v block=DMASS "${fh_out}" | \
+                 awk -f utils/print_slha_block_entry.awk -v entries=25)
+fi
 
 [ "x$Mh" = "x" ] && Mh=-
 [ "x$DMh" = "x" ] && DMh=-
