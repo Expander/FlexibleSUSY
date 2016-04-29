@@ -427,7 +427,7 @@ EOF
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
-    FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/x86_64-Linux/bin")
+    FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/build")
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
     DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
 
