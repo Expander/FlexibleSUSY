@@ -17,6 +17,7 @@ Xt="$1"
 fh="${fh_dir}/FeynHiggs"
 fh_table="${fh_dir}/table"
 fh_in=fh.in
+fh_out="${fh_in}.fh-001"
 
 At=$(echo "scale=16; $MS * $Xt + $MS / $TB" | bc -l)
 Au=$(echo "scale=16; $MS/$TB" | bc -l)
@@ -43,7 +44,7 @@ Block SMINPUTS               # Standard Model inputs
    22   2.400000000e-03      # mu(2 GeV) MS-bar
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
-BLOCK EXTPAR # Xt = 0
+BLOCK EXTPAR
          0     ${MS}   # Q
          1     ${MS}   # M1
          2     ${MS}   # M2
@@ -71,12 +72,14 @@ BLOCK EXTPAR # Xt = 0
         49     ${MS}   # MSD(3)
 EOF
 
+rm -f "${fh_out}"
+
 ${fh} "${fh_in}" 400203110 >/dev/null 2>&1
 
-Mh=$(awk -f utils/print_slha_block.awk -v block=MASS "${fh_in}.fh-001" | \
-       awk -f utils/print_slha_block_entry.awk -v entries=25)
+Mh=$(awk -f utils/print_slha_block.awk -v block=MASS "${fh_out}" | \
+     awk -f utils/print_slha_block_entry.awk -v entries=25)
 
-DMh=$(awk -f utils/print_slha_block.awk -v block=DMASS "${fh_in}.fh-001" | \
+DMh=$(awk -f utils/print_slha_block.awk -v block=DMASS "${fh_out}" | \
       awk -f utils/print_slha_block_entry.awk -v entries=25)
 
 [ "x$Mh" = "x" ] && Mh=-
