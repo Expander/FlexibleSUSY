@@ -6,6 +6,16 @@ FlexibleSUSY-1.4.1 [not released yet]
    Usage:
    . utils/install-bash_completions.bash
 
+ * Feature: For each model an example SLHA input file is generated,
+   which is located at models/<model>/LesHouches.in.<model>_generated
+
+ * Change: The algorithm to determine the running fermion masses and
+   gauge couplings has been replaced by a more secure one.  The new
+   algorithm performs an iteration between 2 GeV and MZ to fix all
+   input parameters at their scale.  The new algorithm leads to
+   running 1st and 2nd generation quark masses, which differ from
+   SOFTSUSY by around 3%.
+
  * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
    M3^2 -> MSQ^2 / M3^2 in HSSUSY.
 
@@ -15,6 +25,13 @@ FlexibleSUSY-1.4.1 [not released yet]
 
  * Bugfix (commit 077c5b9): Fixing check for SARAH installation with
    Mathematica 10.
+
+ * Bugfix (commit e9954d6): Fixing numerical instability of SOFTSUSY's
+   B0 and B22 functions for very heavy spectra and external small
+   momenta.
+
+ * Bugfix (commits bcb99bc - 8b5d87e): Fixing compilation error for
+   models which don't have input parameters.
 
 FlexibleSUSY-1.4.0 [March, 08 2016]
 

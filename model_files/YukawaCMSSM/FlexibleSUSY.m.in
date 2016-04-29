@@ -6,6 +6,7 @@ FSModelName = "@CLASSNAME@";
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
+           {4, Sign[\[Mu]]},
            {5, Azero}
          };
 

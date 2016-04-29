@@ -824,7 +824,7 @@ void Standard_model::initialise_from_input()
    const double scale = get_scale();
 
    // initial guess
-   qedqcd.toMz();
+   qedqcd.to(qedqcd.displayPoleMZ());
    initial_guess_for_parameters();
    run_to(qedqcd.displayPoleMZ());
 

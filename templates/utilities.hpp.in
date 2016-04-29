@@ -37,7 +37,7 @@ class QedQcd;
 
 namespace flexiblesusy {
 
-class @ModelName@_observables;
+struct @ModelName@_observables;
 class Physical_input;
 
 class @ModelName@_parameter_getter {

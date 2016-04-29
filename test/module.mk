@@ -358,7 +358,8 @@ endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		clean-$(MODNAME)-log \
-		execute-tests execute-meta-tests execute-compiled-tests
+		execute-tests execute-meta-tests execute-compiled-tests \
+		execute-shell-tests
 
 all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
 		@true
@@ -397,6 +398,8 @@ execute-meta-tests:
 endif
 
 execute-compiled-tests: $(TEST_EXE_LOG)
+
+execute-shell-tests: $(TEST_SH_LOG)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@

@@ -26,6 +26,8 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <type_traits>
+#include <vector>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
@@ -40,14 +42,29 @@ static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
 static const bool True = true;
 
-inline double Abs(double z)
+template <typename T>
+T Abs(T a)
 {
-   return std::fabs(z);
+   return std::abs(a);
 }
 
-inline double Abs(const std::complex<double>& z)
+template <typename T>
+T Abs(const std::complex<T>& z)
 {
    return std::abs(z);
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.cwiseAbs();
+}
+
+template <class T>
+std::vector<T> Abs(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Abs(x); });
+   return v;
 }
 
 inline double AbsSqr(double z)
@@ -305,15 +322,12 @@ template <class Derived>
 double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
                   const Eigen::MatrixBase<Derived>& b)
 {
-   typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
+   typename Eigen::MatrixBase<Derived>::PlainObject sumTol(a.rows());
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
-      const double max = std::max(a(i), b(i));
-      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - std::min(a(i), b(i)) / max);
-      else
-         sumTol(i) = 0.;
-   }
+   assert(a.rows() == b.rows());
+
+   for (int i = 0; i < a.rows(); i++)
+      sumTol(i) = MaxRelDiff(a(i), b(i));
 
    return sumTol.maxCoeff();
 }
@@ -447,15 +461,48 @@ Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
 }
 
-inline double Sqrt(double a)
+template <class T, typename = typename std::enable_if<std::is_floating_point<T>::value,T>::type>
+T Sqrt(T a)
 {
    return std::sqrt(a);
+}
+
+template <class T, typename = typename std::enable_if<std::is_integral<T>::value,T>::type>
+double Sqrt(T a)
+{
+   return std::sqrt(static_cast<double>(a));
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
+{
+   return m.unaryExpr(std::ptr_fun(Sqrt<Scalar>));
+}
+
+template <class T>
+std::vector<T> Sqrt(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqrt(x); });
+   return v;
 }
 
 template <typename T>
 T Sqr(T a)
 {
    return a * a;
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.unaryExpr(std::ptr_fun(Sqr<Scalar>));
+}
+
+template <class T>
+std::vector<T> Sqr(std::vector<T> v)
+{
+   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqr(x); });
+   return v;
 }
 
 #define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
@@ -530,6 +577,36 @@ template <typename T>
 std::string ToString(T a)
 {
    return boost::lexical_cast<std::string>(a);
+}
+
+template <class T>
+T Total(const std::vector<T>& v)
+{
+   return std::accumulate(v.begin(), v.end(), T(0));
+}
+
+template <typename Scalar, int M, int N>
+Scalar Total(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.sum();
+}
+
+template <class Scalar, int M, int N>
+Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
+{
+   if (v.empty()) {
+      Eigen::Array<Scalar,M,N> result(0,0);
+      result.setZero();
+      return result;
+   }
+
+   Eigen::Array<Scalar,M,N> result(v[0].rows(), v[0].cols());
+   result.setZero();
+
+   for (std::size_t i = 0; i < v.size(); i++)
+      result += v[i];
+
+   return result;
 }
 
 /// step function (0 for x < 0, 1 otherwise)

@@ -12,6 +12,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 WriteExtraSLHAOutputBlock::usage="";
+CreateSLHAMassBlockStream::usage="creates ostringstream with masses";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
@@ -38,6 +39,11 @@ ConvertSoftSquaredMassesToSLHA::usage="";
 
 CalculateCKMMatrix::usage="";
 CalculatePMNSMatrix::usage="";
+
+CreateInputBlockName::usage="Creates an SLHA input block name for a
+ given SLHA block name";
+
+CreateFormattedSLHABlocks::usage = "";
 
 Begin["`Private`"];
 
@@ -159,8 +165,8 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
-WriteSLHAMassBlock[massMatrices_List] :=
-    Module[{result, smMasses, susyMasses,
+CreateSLHAMassBlockStream[massMatrices_List, blockName_String:"MASS", streamName_String:"mass"] :=
+    Module[{smMasses, susyMasses,
             smMassesStr = "", susyMassesStr = ""},
            smMasses = Select[massMatrices, (IsSMParticle[TreeMasses`GetMassEigenstate[#]])&];
            (* filter out MW, because MW should always appear in the output *)
@@ -168,17 +174,18 @@ WriteSLHAMassBlock[massMatrices_List] :=
            susyMasses = Complement[massMatrices, smMasses];
            (smMassesStr = smMassesStr <> WriteSLHAMass[#])& /@ smMasses;
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
-           susyMassesStr = "mass << \"Block MASS\\n\"\n" <>
+           susyMassesStr = streamName <> " << \"Block " <> blockName <> "\\n\"\n" <>
                            TextFormatting`IndentText[susyMassesStr] <> ";\n\n";
            smMassesStr = "if (write_sm_masses) {\n" <>
-                         TextFormatting`IndentText["mass\n" <>
+                         TextFormatting`IndentText[streamName <> "\n" <>
                              TextFormatting`IndentText[smMassesStr] <> ";"] <>
                          "\n}\n\n";
-           result = "std::ostringstream mass;\n\n" <>
-                    susyMassesStr <> smMassesStr <>
-                    "slha_io.set_block(mass);\n";
-           Return[result];
+           "std::ostringstream " <> streamName <> ";\n\n" <> susyMassesStr <> smMassesStr
           ];
+
+WriteSLHAMassBlock[massMatrices_List, blockName_String:"MASS", streamName_String:"mass"] :=
+    CreateSLHAMassBlockStream[massMatrices, blockName, streamName] <>
+    "slha_io.set_block(" <> streamName <> ");\n";
 
 ConvertToRealInputParameter[parameter_, struct_String] :=
     struct <> CConversion`ToValidCSymbolString[parameter];
@@ -574,15 +581,9 @@ CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
 CreateInputBlockName[blockName_] :=
     ToString[blockName] <> "IN";
 
-ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
-    Module[{result = "", parameters, names, rules},
-           names = (#[[1]])& /@ lesHouchesInputParameters;
-           rules = Cases[lesHouchesInputParameters, {p_, block_, _} /; MemberQ[Parameters`GetModelParameters[],p] :> Rule[p,block]];
-           (* get block names of all les Houches input parameters (names) *)
-           parameters = Select[Join[GetSLHAModelParameters[],GetSLHAInputParameters[]], MemberQ[names,#[[1]]]&];
-           parameters = {#[[1]] /. rules,
-                         If[MemberQ[Parameters`GetModelParameters[],#[[1]]], CreateInputBlockName[#[[2]]], #[[2]]]}& /@ parameters;
-           (result = result <> ReadSLHAInputBlock[#])& /@ parameters;
+ReadLesHouchesInputParameters[slhaInputParameters_List] :=
+    Module[{result = ""},
+           (result = result <> ReadSLHAInputBlock[#])& /@ slhaInputParameters;
            Return[result];
           ];
 
@@ -1079,6 +1080,69 @@ GetGaugeCouplingNormalizationsDefs[gauge_List] :=
             Parameters`GetGUTNormalization[#[[4]]]
         ]& /@ gauge
     ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`ScalarType[_]}] :=
+    "   0   # " <> CConversion`RValueToCFormString[par] <> "\n";
+
+CreateFormattedSLHABlockEntry[{par_, (CConversion`ArrayType | CConversion`VectorType)[_,n_]}] :=
+    Module[{i, result = ""},
+           For[i = 1, i <= n, i++,
+               result = result <>
+                        "   " <> ToString[i] <> "   0   # " <>
+                        CConversion`RValueToCFormString[par[i]] <> "\n";
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`MatrixType[_,m_,n_]}] :=
+    Module[{i, k, result = ""},
+           For[i = 1, i <= m, i++,
+               For[k = 1, k <= n, k++,
+                   result = result <>
+                            "   " <> ToString[i] <> "   " <> ToString[k] <>
+                            "   0   # " <>
+                            CConversion`RValueToCFormString[par[i,k]] <> "\n";
+                  ];
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`TensorType[_,m_,n_,o_]}] :=
+    Module[{i, k, l, result = ""},
+           For[i = 1, i <= m, i++,
+               For[k = 1, k <= n, k++,
+                   For[l = 1, l <= o, l++,
+                       result = result <>
+                                "   " <> ToString[i] <> "   " <> ToString[k] <>
+                                "   " <> ToString[l] <> "   0   # " <>
+                                CConversion`RValueToCFormString[par[i,k,l]] <> "\n";
+                      ];
+                  ];
+              ];
+           result
+          ];
+
+CreateFormattedSLHABlockEntry[{par_, CConversion`TensorType[_,__]}] := "\n";
+
+CreateFormattedSLHABlockEntry[{par_, _, idx_}] :=
+    "   " <> ToString[idx] <> "   0   # " <> CConversion`RValueToCFormString[par] <> "\n";
+
+CreateFormattedSLHABlock[{block_, parameters_List}] :=
+    Module[{head = "Block " <> ToString[block] <> "\n", body},
+           body = StringJoin[CreateFormattedSLHABlockEntry /@ parameters];
+           head <> body
+          ];
+
+FindParametersInBlock[inputParameters_List, block_] :=
+    Join[Cases[inputParameters, {p_, block, t_} :> {p, t}],
+         Cases[inputParameters, {p_, {block, idx_}, t_} :> {p, t, idx}]];
+
+CreateFormattedSLHABlocks[inputPars_List] :=
+    Module[{blocks, sortForBlocks},
+           blocks = DeleteDuplicates @ Cases[inputPars, {_, {block_, _} | block_, ___} :> block];
+           sortForBlocks = {#, FindParametersInBlock[inputPars, #]}& /@ blocks;
+           StringJoin[CreateFormattedSLHABlock /@ sortForBlocks]
+          ];
 
 End[];
 

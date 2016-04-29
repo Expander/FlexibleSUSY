@@ -1,24 +1,28 @@
 BeginPackage["TwoLoopQCD`", {"SARAH`"}];
 
-GetDeltaMOverMQCDOneLoop::usage="Returns one-loop QCD contributions to
-Delta m_f/m_f in the given renormalization scheme.";
+GetDeltaMPoleOverMRunningQCDOneLoop::usage="Returns one-loop QCD
+contributions to Delta M_f/m_f in the given renormalization scheme.
+(M_f = pole mass, m_f = running mass)";
 
-GetDeltaMOverMQCDOneLoopDRbar::usage="Returns one-loop QCD contributions to
-Delta m_f/m_f in the DR-bar scheme.  Taken from hep-ph/0210258
-Eq. (58)";
+GetDeltaMPoleOverMRunningQCDOneLoopDRbar::usage="Returns one-loop QCD
+contributions to Delta M_f/m_f in the DR-bar scheme.  Taken from
+hep-ph/0210258 Eq. (58).  (M_f = pole mass, m_f = DR-bar mass)";
 
-GetDeltaMOverMQCDOneLoopMSbar::usage="Returns one-loop QCD contributions to
-Delta m_f/m_f in the MS-bar scheme.  Taken from hep-ph/9803493 Eq. (16)";
+GetDeltaMPoleOverMRunningQCDOneLoopMSbar::usage="Returns one-loop QCD
+contributions to Delta M_f/m_f in the MS-bar scheme.  Taken from
+hep-ph/9803493 Eq. (16).  (M_f = pole mass, m_f = MS-bar mass)";
 
-GetDeltaMOverMQCDTwoLoop::usage="Returns two-loop QCD contributions to
-Delta m_f/m_f in the given renormalization scheme.";
+GetDeltaMPoleOverMRunningQCDTwoLoop::usage="Returns two-loop QCD
+contributions to Delta M_f/m_f in the given renormalization scheme.
+(M_f = pole mass, m_f = running mass)";
 
-GetDeltaMOverMQCDTwoLoopDRbar::usage="Returns two-loop QCD contributions to
-Delta m_f/m_f in the DR-bar scheme.  Taken from hep-ph/0210258
-Eq. (60)-(61).";
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar::usage="Returns two-loop QCD
+contributions to Delta M_f/m_f in the DR-bar scheme.  Taken from
+hep-ph/0210258 Eq. (60)-(61).  (M_f = pole mass, m_f = DR-bar mass)";
 
-GetDeltaMOverMQCDTwoLoopMSbar::usage="Returns two-loop QCD contributions to
-Delta m_f/m_f in the MS-bar scheme.  Taken from hep-ph/9803493 Eq. (17).";
+GetDeltaMPoleOverMRunningQCDTwoLoopMSbar::usage="Returns two-loop QCD
+contributions to Delta M_f/m_f in the MS-bar scheme.  Taken from
+hep-ph/9803493 Eq. (17).  (M_f = pole mass, m_f = MS-bar mass)";
 
 Begin["`Private`"];
 
@@ -27,15 +31,15 @@ SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
 
 (* ******* two-loop ******* *)
 
-GetDeltaMOverMQCDTwoLoop[quark_, renScale_, renScheme_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoop[quark_, renScale_, renScheme_] :=
     Switch[renScheme,
-           FlexibleSUSY`DRbar, GetDeltaMOverMQCDTwoLoopDRbar[quark,renScale],
-           FlexibleSUSY`MSbar, GetDeltaMOverMQCDTwoLoopMSbar[quark,renScale],
+           FlexibleSUSY`DRbar, GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark,renScale],
+           FlexibleSUSY`MSbar, GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[quark,renScale],
            _, Message[SelectRenormalizationScheme::UnknownRenormalizationScheme, renScheme];
               Quit[1];
           ];
 
-GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, renScale_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, log, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -52,7 +56,7 @@ GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, renScale_] :=
            result
           ];
 
-GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, mt, log, logMt, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -72,9 +76,9 @@ GetDeltaMOverMQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] 
            result
           ];
 
-GetDeltaMOverMQCDTwoLoopDRbar[_, _] := 0;
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[_, _] := 0;
 
-GetDeltaMOverMQCDTwoLoopMSbar[quark_, renScale_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[quark_, renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, log,
             t = 1/2, Nf = 6, I31, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
@@ -94,15 +98,15 @@ GetDeltaMOverMQCDTwoLoopMSbar[quark_, renScale_] :=
 
 (* ******* one-loop ******* *)
 
-GetDeltaMOverMQCDOneLoop[quark_, renScale_, renScheme_] :=
+GetDeltaMPoleOverMRunningQCDOneLoop[quark_, renScale_, renScheme_] :=
     Switch[renScheme,
-           FlexibleSUSY`DRbar, GetDeltaMOverMQCDOneLoopDRbar[quark,renScale],
-           FlexibleSUSY`MSbar, GetDeltaMOverMQCDOneLoopMSbar[quark,renScale],
+           FlexibleSUSY`DRbar, GetDeltaMPoleOverMRunningQCDOneLoopDRbar[quark,renScale],
+           FlexibleSUSY`MSbar, GetDeltaMPoleOverMRunningQCDOneLoopMSbar[quark,renScale],
            _, Message[SelectRenormalizationScheme::UnknownRenormalizationScheme, renScheme];
               Quit[1];
           ];
 
-GetDeltaMOverMQCDOneLoopDRbar[quark_, renScale_] :=
+GetDeltaMPoleOverMRunningQCDOneLoopDRbar[quark_, renScale_] :=
     Module[{CF, colorPosition, alphaStrong, mf, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -112,7 +116,7 @@ GetDeltaMOverMQCDOneLoopDRbar[quark_, renScale_] :=
            result
           ];
 
-GetDeltaMOverMQCDOneLoopMSbar[quark_, renScale_] :=
+GetDeltaMPoleOverMRunningQCDOneLoopMSbar[quark_, renScale_] :=
     Module[{CF, colorPosition, alphaStrong, mf, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];

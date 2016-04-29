@@ -11,7 +11,7 @@ Start["SM"];
 Print["Testing 1L arxiv:hep-ph/9912391 vs. arxiv:hep-ph/9803493 ..."];
 
 m1 = M/(1 + 
-    h GetDeltaMOverMQCDOneLoopMSbar[TopQuark, Q]);
+    h GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q]);
 
 m1 = Simplify[Normal[Series[m1, {h, 0, 1}]] /. h -> 1];
 
@@ -22,8 +22,8 @@ TestEquality[Simplify[m1 - m2], 0];
 Print["Testing 2L arxiv:hep-ph/9912391 vs. arxiv:hep-ph/9803493 ..."];
 
 m1 = M/(1 + 
-    h GetDeltaMOverMQCDOneLoopMSbar[TopQuark, Q] + 
-    h^2 GetDeltaMOverMQCDTwoLoopMSbar[TopQuark, Q]);
+    h GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q] + 
+    h^2 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[TopQuark, Q]);
 
 m1 = Simplify[Normal[Series[m1, {h, 0, 2}]] /. h -> 1];
 
@@ -34,8 +34,8 @@ TestEquality[Simplify[m1 - m2], 0];
 Print["Testing 2L arxiv:hep-ph/9803493 vs. arxiv:hep-ph/9912391 ..."];
 
 M1 = m (1 +
-        h   GetDeltaMOverMQCDOneLoopMSbar[TopQuark, Q] +
-        h^2 GetDeltaMOverMQCDTwoLoopMSbar[TopQuark, Q]);
+        h   GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q] +
+        h^2 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[TopQuark, Q]);
 
 M2 = m / (GetMTopMSbarOverMTopPole[{1, 0, 0  , 0}] +
           GetMTopMSbarOverMTopPole[{0, h, 0  , 0}] +
@@ -97,8 +97,8 @@ M3L = Simplify[Coefficient[M3L, h^3], ass];
 (* pole mass up to 3L order *)
 M = Simplify[
     m[Q] (1 +
-          h^1 GetDeltaMOverMQCDOneLoopMSbar[TopQuark, Q] +
-          h^2 GetDeltaMOverMQCDTwoLoopMSbar[TopQuark, Q] +
+          h^1 GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q] +
+          h^2 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[TopQuark, Q] +
           h^3 M3L) /. gRules
     , ass];
 

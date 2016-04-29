@@ -41,8 +41,8 @@ namespace Electroweak_constants {
       const double MZ = 91.1876;
       const double Error_MZ = 0.0021; ///< uncertainty on MZ from PDG
       const double MW = 80.404;
-      const double MH = 125.9; ///< Higgs mass from PDG
-      const double Error_MH = 0.4; ///< uncertainty on MH from PDG
+      const double MH = 125.09; ///< Higgs mass from PDG (CMS and ATLAS combination)
+      const double Error_MH = 0.24; ///< uncertainty on MH from PDG - 0.11 (sys) and 0.21 stat combined in quadrature. 
       const double MUP = 2.4e-3; ///< default running quark mass from PDG
       const double MDOWN = 4.75e-3; ///< default running quark mass from PDG
       const double MSTRANGE = 0.104; ///< default running quark mass from PDG
@@ -54,14 +54,14 @@ namespace Electroweak_constants {
       const double MTAU = 1.77699; ///< default pole lepton mass from PDG
       const double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
       const double PMBOTTOM = 4.9; ///< default pole mass from PDG
-      const double aem = 1.0 / 127.916; // at MZ
+      const double aem = 1.0 / 127.94; // at MZ
       const double sinThetaW2 = 0.23122;
       const double sinThetaW = sqrt(sinThetaW2);
       const double cosThetaW2 = 1 - sinThetaW2;
       const double cosThetaW = sqrt(cosThetaW2);
       const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinThetaW2));
       const double alpha2 = aem / sinThetaW2;
-      const double alpha3 = 0.1184; // at MZ
+      const double alpha3 = 0.1185; // at MZ from PDG 2015 update
       const double e  = sqrt(4.0 * M_PI * aem);
       const double g1 = sqrt(4.0 * M_PI * alpha1);
       const double g2 = sqrt(4.0 * M_PI * alpha2);

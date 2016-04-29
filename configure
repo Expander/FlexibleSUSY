@@ -123,10 +123,10 @@ enable_meta="no"
 enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
 enable_silent="no"
-enable_sqlite=""
+enable_sqlite="automatic"
 enable_static_libs="yes"
 enable_threads="yes"
-enable_tsil=""
+enable_tsil="automatic"
 enable_verbose="no"
 
 # corresponding preprocessor define statements

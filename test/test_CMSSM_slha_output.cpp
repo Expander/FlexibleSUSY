@@ -110,10 +110,10 @@ void compare_block_gauge(const SLHAea::Coll& coll1, const SLHAea::Coll& coll2)
 
    // scale
    BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("Block").at(3)),
-                              SLHAea::to<double>(coll2.at("gauge").at("Block").at(3)), 7.5e-6);
+                              SLHAea::to<double>(coll2.at("gauge").at("Block").at(3)), 2e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("1").at(1)),
-                              SLHAea::to<double>(coll2.at("gauge").at("1").at(1)), 2.0e-7);
+                              SLHAea::to<double>(coll2.at("gauge").at("1").at(1)), 6.0e-7);
 
    BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("2").at(1)),
                               SLHAea::to<double>(coll2.at("gauge").at("2").at(1)), 8.0e-8);

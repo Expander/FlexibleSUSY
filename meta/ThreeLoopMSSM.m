@@ -1,6 +1,7 @@
 BeginPackage["ThreeLoopMSSM`", {"SARAH`", "Parameters`"}];
 
-BetaMSSM::usage = "beta functions of the MSSM from SUSYHD v1.0";
+BetaMSSM::usage = "beta functions of the MSSM from
+ http://www.liv.ac.uk/~dij/betas/allgennb.log";
 
 Begin["`Private`"];
 

@@ -106,6 +106,28 @@ PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
 
+(* Standard Model input parameters (SLHA input parameters) *)
+(* {parameter, {"block", entry}, type}                     *)
+SMINPUTS = {
+    {AlphaEMInvInput    , {"SMINPUTS",  1}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {GFermiInput        , {"SMINPUTS",  2}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {AlphaSInput        , {"SMINPUTS",  3}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MZPoleInput        , {"SMINPUTS",  4}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MbMbInput          , {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MTopPoleInput      , {"SMINPUTS",  6}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MTauPoleInput      , {"SMINPUTS",  7}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino3PoleInput, {"SMINPUTS",  8}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MWPoleInput        , {"SMINPUTS", 10}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MElectronPoleInput , {"SMINPUTS", 11}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino1PoleInput, {"SMINPUTS", 12}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MMuonPoleInput     , {"SMINPUTS", 13}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MNeutrino2PoleInput, {"SMINPUTS", 14}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MDown2GeVInput     , {"SMINPUTS", 21}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MUp2GeVInput       , {"SMINPUTS", 22}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MStrange2GeVInput  , {"SMINPUTS", 23}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MCharm2GeVInput    , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
+};
+
 (* renormalization schemes *)
 DRbar;
 MSbar;
@@ -482,12 +504,28 @@ GeneralReplacementRules[] :=
       "@perturbativityThreshold@" -> ToString[N[FlexibleSUSY`FSPerturbativityThreshold]],
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
-      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[Parameters`GetInputParameters[][[ToExpression[num]]]],
+      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[
+          If[Parameters`GetInputParameters[] === {},
+             "",
+             Parameters`GetInputParameters[][[ToExpression[num]]]
+            ]
+      ],
+      "@setInputParameterTo[" ~~ num_ ~~ "," ~~ value__ ~~ "]@" /; IntegerQ[ToExpression[num]] :>
+          If[Parameters`GetInputParameters[] === {},
+             "",
+             IndentText[IndentText[
+                 Parameters`SetInputParameter[
+                     Parameters`GetInputParameters[][[ToExpression[num]]],
+                     value,
+                     "INPUTPARAMETER"
+                 ]
+             ]]
+            ],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
-    }
+    };
 
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
@@ -556,12 +594,13 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set},
-          defineInputParameters = Constraint`DefineInputParameters[inputParameters];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[inputParameters];
-          printInputParameters = WriteOut`PrintInputParameters[inputParameters,"ostr"];
-          get = Parameters`CreateInputParameterArrayGetter[inputParameters];
-          set = Parameters`CreateInputParameterArraySetter[inputParameters];
+   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set, inputPars},
+          inputPars = {First[#], #[[3]]}& /@ inputParameters;
+          defineInputParameters = Constraint`DefineInputParameters[inputPars];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[inputPars];
+          printInputParameters = WriteOut`PrintInputParameters[inputPars,"ostr"];
+          get = Parameters`CreateInputParameterArrayGetter[inputPars];
+          set = Parameters`CreateInputParameterArraySetter[inputPars];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -1194,9 +1233,10 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions},
-           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
-           printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
+    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars},
+           inputPars = {First[#], #[[3]]}& /@ inputParameters;
+           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
+           printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
@@ -1211,6 +1251,15 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
+WriteSLHAInputFile[inputParameters_List, files_List] :=
+    Module[{formattedSLHAInputBlocks},
+           formattedSLHAInputBlocks = CreateFormattedSLHABlocks[inputParameters];
+           WriteOut`ReplaceInFiles[files,
+                          { "@formattedSLHAInputBlocks@" -> formattedSLHAInputBlocks,
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WriteMakefileModule[rgeFile_List, files_List] :=
     Module[{concatenatedFileList},
            concatenatedFileList = "\t" <> Utils`StringJoinWithSeparator[rgeFile, " \\\n\t"];
@@ -1220,11 +1269,10 @@ WriteMakefileModule[rgeFile_List, files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
-                    inputParameters_List,
-                    lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
-                    files_List] :=
+WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
+                    extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
+            minpar, extpar, extraSLHAInputParameters,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
@@ -1247,6 +1295,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
+           minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
+           extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
+           extraSLHAInputParameters = Complement[
+               inputParameters,
+               Cases[inputParameters, {_, {"MINPAR", _}, ___}],
+               Cases[inputParameters, {_, {"EXTPAR", _}, ___}]
+           ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
            particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
@@ -1264,7 +1319,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
-           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
+           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
@@ -1679,7 +1734,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
-            inputParameters (* list of 2-component lists of the form {name, type} *),
+            inputParameters (* list of 3-component lists of the form {name, block, type} *),
             haveEWSB = True,
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
@@ -1736,8 +1791,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
-           Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
+           (* collect input parameters from MINPAR and EXTPAR lists *)
+           inputParameters = Join[
+               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
+               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
+           ];
+
+           Parameters`SetInputParameters[First /@ inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",
@@ -1894,8 +1954,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
+                                                        {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+              Parameters`AddInputParameters[First /@ inputParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -1929,12 +1989,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determine type of extra input parameters *)
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
-           inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                     {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters,
-                                                     {#[[2]], #[[3]]}& /@ lesHouchesInputParameters];
-           Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
-
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
+
+           inputParameters = DeleteDuplicates @ Join[inputParameters,
+                                                     FlexibleSUSY`FSExtraInputParameters,
+                                                     {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ lesHouchesInputParameters];
+           Parameters`AddInputParameters[First /@ inputParameters];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
@@ -1971,11 +2031,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
                lesHouchesInputParameterReplacementRules;
-
-           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
-              lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
-                                               lesHouchesInputParameters];
-             ];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
@@ -2080,9 +2135,19 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
+              FindPhaseInInputParameters[inputPars_List, phase_] :=
+                  Module[{foundBlock},
+                         foundBlock = Cases[inputPars, {phase, block_, ___} :> block];
+                         If[foundBlock === {},
+                            Print["Error: ", phase, " is not defined as an input parameter!"];
+                            Print["   Please add ", phase, " to the MINPAR or EXTPAR input parameter list."];
+                            Quit[1];
+                           ];
+                         foundBlock[[1]]
+                        ];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#, GuessInputParameterType[#]}& /@ freePhases];
-              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
+                                                        {#, FindPhaseInInputParameters[inputParameters,#], GuessInputParameterType[#]}& /@ freePhases];
+              Parameters`AddInputParameters[First /@ inputParameters];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
@@ -2109,8 +2174,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.cpp"}]}
                                     }
                                    ];
-
-           lesHouchesInputParameters = Join[lesHouchesInputParameters, FlexibleSUSY`FSExtraInputParameters];
 
 	   On[Assert];
 
@@ -2176,8 +2239,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR, inputParameters,
-                               lesHouchesInputParameters, extraSLHAOutputBlocks,
+                               inputParameters, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],
@@ -2199,6 +2261,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "plot_rgflow.gnuplot.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
                            ];
+
+           Print["Creating example SLHA input file ..."];
+           WriteSLHAInputFile[inputParameters,
+                              {{FileNameJoin[{$flexiblesusyTemplateDir, "LesHouches.in"}],
+                                FileNameJoin[{FSOutputDir, "LesHouches.in." <> FlexibleSUSY`FSModelName <> "_generated"}]}}
+                             ];
 
            PrintHeadline["Creating constraints"];
            Print["Creating class for high-scale constraint ..."];

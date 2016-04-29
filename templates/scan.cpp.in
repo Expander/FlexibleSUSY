@@ -30,6 +30,8 @@
 #include <iostream>
 #include <cstring>
 
+#define INPUTPARAMETER(p) input.p
+
 namespace flexiblesusy {
 
 void print_usage()
@@ -73,7 +75,7 @@ int main(int argc, char* argv[])
    softsusy::QedQcd qedqcd;
 
    try {
-      qedqcd.toMz(); // run SM fermion masses to MZ
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
    } catch (const std::string& s) {
       ERROR(s);
       return EXIT_FAILURE;
@@ -95,7 +97,7 @@ int main(int argc, char* argv[])
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
-      input.@InputParameter_1@ = *it;
+@setInputParameterTo[1,*it]@
 
       spectrum_generator.run(qedqcd, input);
 
@@ -107,7 +109,7 @@ int main(int argc, char* argv[])
       const bool error = problems.have_problem();
 
       cout << "  "
-           << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
+           << std::setw(12) << std::left << *it << ' '
            << std::setw(12) << std::left << higgs << ' '
            << std::setw(12) << std::left << error;
       if (error) {

@@ -21,6 +21,7 @@
 
 #include <string>
 #include <iosfwd>
+#include <vector>
 #include <Eigen/Core>
 #include <boost/format.hpp>
 #include <boost/function.hpp>
@@ -186,6 +187,8 @@ public:
    // writing functions
    void set_data(const SLHAea::Coll& data_) { data = data_; }
    void set_block(const std::ostringstream&, Position position = back);
+   void set_block(const std::string&, Position position = back);
+   void set_blocks(const std::vector<std::string>&, Position position = back);
    void set_block(const std::string&, double, const std::string&, double scale = 0.);
    template<class Scalar, int M, int N>
    void set_block(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, N>&, const std::string&, double scale = 0.);

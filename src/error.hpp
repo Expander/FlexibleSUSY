@@ -54,7 +54,7 @@ public:
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
+      message << "NoConvergenceError: no convergence"
               << " after " << number_of_iterations << " iterations";
       return message.str();
    }
@@ -77,7 +77,7 @@ public:
    virtual ~NoSinThetaWConvergenceError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "RGFlow<Two_scale>::NoSinThetaWConvergenceError: no convergence"
+      message << "NoSinThetaWConvergenceError: no convergence"
               << " after " << number_of_iterations << " iterations "
               << " (sin(theta)=" << sin_theta << ")";
       return message.str();
