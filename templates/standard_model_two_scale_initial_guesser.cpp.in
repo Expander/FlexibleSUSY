@@ -18,11 +18,12 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_SM_two_scale_initial_guesser.hpp"
+#include "@ModelName@_standard_model_two_scale_initial_guesser.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "SM_two_scale_model.hpp"
-#include "@ModelName@_SM_two_scale_matching.hpp"
+#include "standard_model_two_scale_model.hpp"
+#include "@ModelName@_standard_model_two_scale_matching.hpp"
 #include "lowe.h"
+#include "error.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
@@ -38,12 +39,13 @@ namespace flexiblesusy {
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define MODEL model
 
-@ModelName@_SM_initial_guesser<Two_scale>::@ModelName@_SM_initial_guesser(
+@ModelName@_standard_model_initial_guesser<Two_scale>::@ModelName@_standard_model_initial_guesser(
    @ModelName@<Two_scale>* model_,
-   SM<Two_scale>* eft_,
+   standard_model::StandardModel<Two_scale>* eft_,
    const QedQcd& oneset_,
-   const SM_low_scale_constraint<Two_scale>& low_constraint_,
-   const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_
+   const standard_model::Standard_model_low_scale_constraint<Two_scale>& low_constraint_,
+   const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_,
+   const @ModelName@_high_scale_constraint<Two_scale>& high_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
@@ -61,12 +63,13 @@ namespace flexiblesusy {
    , running_precision(1.0e-3)
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
+   , high_constraint(high_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
           " @ModelName@<Two_scale> must not be zero");
 }
 
-@ModelName@_SM_initial_guesser<Two_scale>::~@ModelName@_SM_initial_guesser()
+@ModelName@_standard_model_initial_guesser<Two_scale>::~@ModelName@_standard_model_initial_guesser()
 {
 }
 
@@ -74,20 +77,24 @@ namespace flexiblesusy {
  * Guesses the DR-bar model parameters by calling
  * guess_susy_parameters() and guess_soft_parameters() .
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::guess()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::guess()
 {
    guess_eft_parameters();
    guess_model_parameters();
 }
 
 /**
- * Guesses the effective parameters (gauge, Yukawa couplings) at
+ * Guesses the SUSY parameters (gauge, Yukawa couplings) at
  * \f$m_\text{top}^\text{pole}\f$ from the Standard Model gauge
  * couplings and fermion masses.  Threshold corrections are ignored.
  * The user-defined initial guess at the low-scale
- * (InitialGuessAtLowScale) are ignored
+ * (InitialGuessAtLowScale) is applied here:
+ *
+ * \code{.cpp}
+@initialGuessAtLowScale@
+ * \endcode
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::guess_eft_parameters()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters()
 {
    QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
@@ -135,7 +142,7 @@ void @ModelName@_SM_initial_guesser<Two_scale>::guess_eft_parameters()
 
 }
 
-void @ModelName@_SM_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
 {
    calculate_@UpYukawa@_DRbar();
    calculate_@DownYukawa@_DRbar();
@@ -147,7 +154,7 @@ void @ModelName@_SM_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings
  * from the Standard Model up-type quark masses (ignoring threshold
  * corrections).
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
    Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
    topDRbar(0,0) = mu_guess;
@@ -162,7 +169,7 @@ void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
  * quarks from the Standard Model down-type quark masses (ignoring
  * threshold corrections).
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
    Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
    bottomDRbar(0,0) = md_guess;
@@ -177,7 +184,7 @@ void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
  * from the Standard Model down-type lepton masses (ignoring threshold
  * corrections).
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
    Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
    electronDRbar(0,0) = me_guess;
@@ -188,23 +195,34 @@ void @ModelName@_SM_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar
 }
 
 /**
- * Guesses the full model parameters.  At first it runs to the
- * guess of the SUSY-scale (SUSYScaleFirstGuess) and imposes the
- * SUSY scale initial guess and the
- * SUSY-scale constraint (SUSYScaleInput).  Afterwards, it solves the
- * EWSB conditions at the tree-level.
- * Finally the DR-bar mass spectrum is calculated.
+ * Guesses the full model parameters.  At first it runs the effective SM to the
+ * guess of the high-scale (SUSYScaleFirstGuess), and matches gauge and Yukawas
+ * to the full theory. Then, initial guess and constrints are imposed at this scale:
+ * \code{.cpp}
+@initialGuessAtSUSYScale@
+ * \endcode
+ * After that, the model is run to the high scale, initial guess and constraints
+ * are imposed (HighScaleInput):
+ *
+ * \code{.cpp}
+@initialGuessAtHighScale@
+ * \endcode
+ *
+ * Afterwards, it runs to the SUSY-scale guess (SUSYScaleFirstGuess) and
+ * solves the EWSB conditions at the tree-level.  Finally the DR-bar
+ * mass spectrum is calculated.
  */
-void @ModelName@_SM_initial_guesser<Two_scale>::guess_model_parameters()
+void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_parameters()
 {
    const double susy_scale_guess = susy_constraint.get_initial_scale_guess();
+   const double high_scale_guess = high_constraint.get_initial_scale_guess();
 
    model->set_scale(susy_scale_guess);
    eft->run_to(susy_scale_guess, running_precision);
    eft->calculate_DRbar_masses();
 
    //get gauge and Yukawa couplings from effective theory
-   @ModelName@_SM_Matching<Two_scale> matching;
+   @ModelName@_standard_model_Matching<Two_scale> matching;
    matching.set_models(eft, model);
    matching.set_constraint(&susy_constraint);
    matching.match_low_to_high_scale_model_tree_level();
@@ -216,6 +234,18 @@ void @ModelName@_SM_initial_guesser<Two_scale>::guess_model_parameters()
    // apply susy-scale constraint
    susy_constraint.set_model(model);
    susy_constraint.apply();
+
+   // run to high scale
+   model->run_to(high_scale_guess, running_precision);
+
+   // apply user-defined initial guess at the high scale
+@initialGuessAtHighScale@
+
+   // apply high-scale constraint
+   high_constraint.set_model(model);
+   high_constraint.apply();
+
+   model->run_to(susy_scale_guess, running_precision);
 
    // apply EWSB constraint
    model->solve_ewsb_tree_level();

@@ -21,8 +21,8 @@
 
 #include "two_scale_matching.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "SM_two_scale_model.hpp"
-#include "@ModelName@_SM_matching.hpp"
+#include "standard_model_two_scale_model.hpp"
+#include "@ModelName@_standard_model_matching.hpp"
 #include "error.hpp"
 #include "two_scale_constraint.hpp"
 
@@ -32,34 +32,34 @@ class Two_scale;
 class Two_scale_model;
 
 template <class T>
-class @ModelName@_SM_Matching;
+class @ModelName@_standard_model_Matching;
 
 template<>
-class @ModelName@_SM_Matching<Two_scale>: public Matching<Two_scale>
+class @ModelName@_standard_model_Matching<Two_scale>: public Matching<Two_scale>
 {
 public:
-   @ModelName@_SM_Matching(): constraint(0), eft(0), model(0) {}
+   @ModelName@_standard_model_Matching(): constraint(0), eft(0), model(0) {}
 
-   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_)
+   @ModelName@_standard_model_Matching(standard_model::StandardModel<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_)
       :constraint(constraint_), eft(low_), model(high_) {}
 
-   virtual ~@ModelName@_SM_Matching() {}
+   virtual ~@ModelName@_standard_model_Matching() {}
 
-   virtual double get_scale() const 
+   virtual double get_scale() const
    {
-   
+
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
-      
+
       return constraint->get_scale();
    }
-   
+
    void set_constraint(Constraint<Two_scale>* constraint_)
    {
       constraint = constraint_;
    }
 
    virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
-      eft = (SM<Two_scale>*) low;
+      eft = (standard_model::StandardModel<Two_scale>*) low;
       model = (@ModelName@<Two_scale>*) high;
    }
 
@@ -70,11 +70,11 @@ public:
 
       model->calculate_DRbar_masses();
       model->solve_ewsb_one_loop();
-      
+
       if(!model->get_thresholds())
-         @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
-      else 
-         @ModelName@_SM_matching::match_high_to_low_scale_model(*eft, *model);
+         standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
+      else
+         standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model(*(static_cast<standard_model::Standard_model*>(eft)), *model);
    }
 
    virtual void match_low_to_high_scale_model()
@@ -83,9 +83,9 @@ public:
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
       if(!model->get_thresholds())
-         @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+         standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
       else
-         @ModelName@_SM_matching::match_low_to_high_scale_model(*model, *eft);
+         standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *(static_cast<standard_model::Standard_model*>(eft)));
    }
 
    void match_high_to_low_scale_model_tree_level()
@@ -95,7 +95,7 @@ public:
 
       model->calculate_DRbar_masses();
 
-      @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
+      standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
    }
 
    void match_low_to_high_scale_model_tree_level()
@@ -103,12 +103,12 @@ public:
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
 
-      @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+      standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
    }
 
 private:
    @ModelName@<Two_scale>* model;
-   SM<Two_scale>* eft;
+   standard_model::StandardModel<Two_scale>* eft;
    Constraint<Two_scale>* constraint;
 };
 

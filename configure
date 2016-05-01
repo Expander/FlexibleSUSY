@@ -5,12 +5,12 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=2
-FLEXIBLESUSY_PATCH=4
+FLEXIBLESUSY_MINOR=4
+FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
-GM2CALC_VERSION="1.1.0"
+GM2CALC_VERSION="1.1.2"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -123,10 +123,10 @@ enable_meta="no"
 enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
 enable_silent="no"
-enable_sqlite="yes"
+enable_sqlite="automatic"
 enable_static_libs="yes"
 enable_threads="yes"
-enable_tsil="no"
+enable_tsil="automatic"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
@@ -137,7 +137,7 @@ DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
-DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
+DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
@@ -930,11 +930,6 @@ check_models() {
         fi
     fi
 
-    # test if SM is contained and add it if necessary
-    if contains_not "${MODELS}" "models/SM"; then
-        MODELS="models/SM $MODELS"
-    fi
-
     # check for Makefile module, start script and FlexibleSUSY model
     # file
     for m in ${MODELS}; do
@@ -1677,9 +1672,9 @@ check_sqlite_libs() {
     check_library "libsqlite3" "$sqlite_lib_dir" \
        "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: libsqlite3 not found."
-        message "   To disable sqlite3 support, use the --disable-sqlite option."
-        exit 1
+        message "Warning: libsqlite3 not found."
+        message "   Support for SQLite will be is disabled."
+        return 1
     else
         local SQLITELIBS_="-lsqlite3"
         if [ -z "$sqlite_lib_dir" ]; then
@@ -1689,6 +1684,7 @@ check_sqlite_libs() {
             SQLITELIBS="-L$sqlite_lib_dir $SQLITELIBS_"
         fi
     fi
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1696,13 +1692,25 @@ check_sqlite_incl() {
     check_header "sqlite3.h" "$sqlite_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        message "Error: sqlite.h not found in $sqlite_inc_dir $default_inc_paths."
-        message "   To disable sqlite3 support, use the --disable-sqlite option."
-        exit 1
+        message "Warning: sqlite.h not found in $sqlite_inc_dir $default_inc_paths."
+        message "   Support for SQLite will be is disabled."
+        return 1
     else
         # assume that the compiler will look in the default paths
         if [ -n "$sqlite_inc_dir" ]; then
             SQLITEFLAGS="-I$sqlite_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_sqlite() {
+    if test "x$enable_sqlite" != "xno" ; then
+        if check_sqlite_incl && check_sqlite_libs ; then
+            enable_sqlite=yes
+        else
+            enable_sqlite=no
         fi
     fi
 }
@@ -1712,8 +1720,9 @@ check_tsil_libs() {
     check_library "libtsil" "$tsil_lib_dir" \
        "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: libtsil not found."
-        exit 1
+        message "Warning: libtsil not found."
+        message "   Support for TSIL will be is disabled."
+        return 1
     else
         local TSILLIBS_="-ltsil"
         if [ -z "$tsil_lib_dir" ]; then
@@ -1723,6 +1732,7 @@ check_tsil_libs() {
             TSILLIBS="-L$tsil_lib_dir $TSILLIBS_"
         fi
     fi
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1730,12 +1740,25 @@ check_tsil_incl() {
     check_header "tsil.h" "$tsil_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        message "Error: tsil.h not found in $tsil_inc_dir $default_inc_paths."
-        exit 1
+        message "Warning: tsil.h not found in $tsil_inc_dir $default_inc_paths."
+        message "   Support for TSIL will be is disabled."
+        return 1
     else
         # assume that the compiler will look in the default paths
         if [ -n "$tsil_inc_dir" ]; then
             TSILFLAGS="-I$tsil_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_tsil() {
+    if test "x$enable_tsil" != "xno" ; then
+        if check_tsil_incl && check_tsil_libs ; then
+            enable_tsil=yes
+        else
+            enable_tsil=no
         fi
     fi
 }
@@ -1898,7 +1921,7 @@ check_sarah() {
     rm -f ${sarahconfig}
     "$MATH" <<EOF > /dev/null
 Needs["SARAH\`"];
-If[!ValueQ[SA\`Version], Quit[1]];
+If[!ValueQ[SA\`Version] || !StringQ[\$sarahDir], Quit[1]];
 Export["${sarahconfig}", SA\`Version, "String"];
 Quit[0];
 EOF
@@ -2068,7 +2091,11 @@ enable_defines() {
 
     if test "x${enable_tsil}" = "xyes" ; then
         DEFINE_ENABLE_TSIL="#define ENABLE_TSIL 1"
-        message "Enabling tsil"
+        message "Enabling TSIL"
+        logmsg "   ${DEFINE_ENABLE_TSIL}"
+    else
+        DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
+        message "Disabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     fi
 
@@ -2164,8 +2191,10 @@ EOF
 # END:   NOT EXPORTED ##########################################
 cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
+  sqlite            Enable SQLite (default: $enable_sqlite)
   static-libs       Create static libraries (default: $enable_static_libs)
   threads           Enable multi-threading (default: $enable_threads)
+  tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
 
 Package directories, compilation settings and model selection
@@ -2196,12 +2225,6 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
-  --with-optional-modules=  Load optional FlexibleSUSY modules
-                            (for example the \`test' or \`examples' module)
-  --with-sqlite-libdir=     Path to search for SQLite library
-  --with-sqlite-incdir=     Path to search for SQLite header
-  --with-tsil-libdir=       Path to search for TSIL library
-  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2212,6 +2235,12 @@ cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
+  --with-sqlite-libdir=     Path to search for SQLite library
+  --with-sqlite-incdir=     Path to search for SQLite header
+  --with-tsil-libdir=       Path to search for TSIL library
+  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 }
 
@@ -2354,14 +2383,8 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
     fi
-    if test "x$enable_sqlite" = "xyes"; then
-        check_sqlite_incl
-        check_sqlite_libs
-    fi
-    if test "x$enable_tsil" = "xyes"; then
-        check_tsil_incl
-        check_tsil_libs
-    fi
+    check_sqlite
+    check_tsil
     check_makelib
     check_random_number_generator
     check_std_threads

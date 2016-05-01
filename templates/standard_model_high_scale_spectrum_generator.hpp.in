@@ -18,26 +18,26 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_SPECTRUM_GENERATOR_H
-#define @ModelName@_SPECTRUM_GENERATOR_H
+#ifndef @ModelName@_STANDARD_MODEL_SPECTRUM_GENERATOR_H
+#define @ModelName@_STANDARD_MODEL_SPECTRUM_GENERATOR_H
 
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "SM_two_scale_low_scale_constraint.hpp"
+#include "standard_model_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
-#include "@ModelName@_SM_two_scale_initial_guesser.hpp"
+#include "@ModelName@_standard_model_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
-#include "@ModelName@_SM_matching.hpp"
+#include "@ModelName@_standard_model_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_SM_two_scale_matching.hpp"
+#include "@ModelName@_standard_model_two_scale_matching.hpp"
 
 #include "lowe.h"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
-#include "SM_two_scale_model.hpp"
+#include "standard_model_two_scale_model.hpp"
 #include "ew_input.hpp"
 
 #include <limits>
@@ -48,10 +48,10 @@ using namespace softsusy;
 #define MODELPARAMETER(p) model.get_##p()
 
 template <class T>
-class @ModelName@_SM_spectrum_generator
+class @ModelName@_standard_model_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
 public:
-   @ModelName@_SM_spectrum_generator()
+   @ModelName@_standard_model_spectrum_generator()
       : @ModelName@_spectrum_generator_interface<T>()
       , solver()
       , high_scale_constraint()
@@ -61,9 +61,9 @@ public:
       , susy_scale(0.)
       , low_scale(0.)
    {}
-   virtual ~@ModelName@_SM_spectrum_generator() {}
+   virtual ~@ModelName@_standard_model_spectrum_generator() {}
 
-   const SM<T>& get_eft() const { return eft; }
+   const standard_model::StandardModel<T>& get_eft() const { return eft; }
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
@@ -71,12 +71,12 @@ public:
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
 private:
-   SM<T> eft;
+   standard_model::StandardModel<T> eft;
    RGFlow<T> solver;
    @ModelName@_high_scale_constraint<T> high_scale_constraint;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   SM_low_scale_constraint<T>  low_scale_constraint;
-   @ModelName@_SM_Matching<T> matching;
+   standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
+   @ModelName@_standard_model_Matching<T> matching;
 
    double high_scale, susy_scale, low_scale;
 };
@@ -93,7 +93,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -144,7 +144,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    if (this->max_iterations > 0)
       convergence_tester.set_max_iterations(this->max_iterations);
 
-   @ModelName@_SM_initial_guesser<T> initial_guesser(&model, &eft, oneset,
+   @ModelName@_standard_model_initial_guesser<T> initial_guesser(&model, &eft, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
@@ -180,19 +180,19 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          eft.run_to(low_scale);
          low_scale_constraint.apply();
 
-         double const Mt = low_scale_constraint.get_sm_parameters().displayPoleMt(); 
-         if(susy_scale > Mt) 
+         double const Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
+         if(susy_scale > Mt)
          {
             eft.run_to(Mt);
-         } 
-         else 
+         }
+         else
          {
             eft.run_to(susy_scale);
          }
 
          eft.calculate_DRbar_masses();
          eft.solve_ewsb();
-         // eft.calculate_spectrum();  
+         // eft.calculate_spectrum();
          // does not work properly, find out why!
 
          eft.calculate_MVWp_pole();
@@ -213,7 +213,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
          this->model.get_physical().M@Electron@ = eft.get_physical().MFe;
       }
-      
+
       // copy calculated W pole mass
       model.get_physical().M@VectorW@
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
@@ -247,7 +247,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_SM_spectrum_generator<T>::write_running_couplings(
+void @ModelName@_standard_model_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);

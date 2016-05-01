@@ -18,16 +18,16 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_SM_matching.hpp"
+#include "@ModelName@_standard_model_matching.hpp"
 #include "wrappers.hpp"
 #include "two_scale_matching.hpp"
-#include "SM_mass_eigenstates.hpp"
+#include "standard_model.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 #include <cmath>
-#include "SM_info.hpp"
 #include "@ModelName@_info.hpp"
 
 namespace flexiblesusy {
+namespace standard_model {
 
 #define MODELPARAMETER(p) model.get_##p()
 #define SMPARAMETER(p) sm.get_##p()
@@ -36,7 +36,7 @@ namespace flexiblesusy {
 /**
  * matches Standardmodel from @ModelName@-Model at tree-level
  */
-void @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
   sm.run_to(model.get_scale());
   model.calculate_DRbar_masses();
@@ -48,7 +48,7 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model_tree_level(SM_mass_e
 /**
  * matches Lambda in SM from @ModelName@ by Higgs mass 1-loop pole mass matching
  */
-void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_standard_model_matching::match_high_to_low_scale_model(Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
    const auto model_pole_mass_order = model.get_pole_mass_loop_order();
    const auto sm_pole_mass_order = sm.get_pole_mass_loop_order();
@@ -80,13 +80,13 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates&
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at tree-level
  */
-void @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    sm.calculate_DRbar_masses();
    model.run_to(sm.get_scale());
-   model.set_@hyperchargeCoupling@(sm.get_g1()*SM_info::normalization_g1/@ModelName@_info::normalization_g1);
-   model.set_@leftCoupling@(sm.get_g2()*SM_info::normalization_g2/@ModelName@_info::normalization_g2);
-   model.set_@strongCoupling@(sm.get_g3()*SM_info::normalization_g3/@ModelName@_info::normalization_g3);
+   model.set_@hyperchargeCoupling@(sm.get_g1()*standard_model_info::normalization_g1/@ModelName@_info::normalization_g1);
+   model.set_@leftCoupling@(sm.get_g2()*standard_model_info::normalization_g2/@ModelName@_info::normalization_g2);
+   model.set_@strongCoupling@(sm.get_g3()*standard_model_info::normalization_g3/@ModelName@_info::normalization_g3);
 
    // 'vev' is regarded as keyword for user-definied matching
    const auto vev = sm.get_v();
@@ -112,7 +112,7 @@ void @ModelName@_SM_matching::match_low_to_high_scale_model_tree_level(@ModelNam
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at one-loop
  */
-void @ModelName@_SM_matching::match_low_to_high_scale_model(@ModelName@_mass_eigenstates& model, SM_mass_eigenstates& sm)
+void @ModelName@_standard_model_matching::match_low_to_high_scale_model(@ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
@@ -125,9 +125,9 @@ void @ModelName@_SM_matching::match_low_to_high_scale_model(@ModelName@_mass_eig
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
 
-   const double alpha_em = Sqr(sm.get_g1() * sm.get_g2() * SM_info::normalization_g1 * SM_info::normalization_g2)
-            /(4. * Pi * (Sqr(sm.get_g1()*SM_info::normalization_g1) + Sqr(sm.get_g2()*SM_info::normalization_g2)));
-   const double alpha_s  = Sqr(sm.get_g3() * SM_info::normalization_g3)/(4. * Pi);
+   const double alpha_em = Sqr(sm.get_g1() * sm.get_g2() * standard_model_info::normalization_g1 * standard_model_info::normalization_g2)
+            /(4. * Pi * (Sqr(sm.get_g1()*standard_model_info::normalization_g1) + Sqr(sm.get_g2()*standard_model_info::normalization_g2)));
+   const double alpha_s  = Sqr(sm.get_g3() * standard_model_info::normalization_g3)/(4. * Pi);
    const double currentScale = sm.get_scale();
 
 @gauge1Linit@
@@ -189,4 +189,5 @@ void @ModelName@_SM_matching::match_low_to_high_scale_model(@ModelName@_mass_eig
 
 }
 
-} //namespace flexiblesusy
+} // namespace standard_model
+} // namespace flexiblesusy

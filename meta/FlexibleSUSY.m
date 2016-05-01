@@ -1135,7 +1135,7 @@ WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, spectrumGen},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
-           spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_SM",
+           spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
                               CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
@@ -2150,10 +2150,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
                                      {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_initial_guesser.cpp"}]}
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_initial_guesser.cpp"}]}
                                     }
                                    ];
 
@@ -2207,12 +2207,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
             Print["Creating matching class ..."];
-            WriteMatchingClass[ {{FileNameJoin[{$flexiblesusyTemplateDir, "SM_matching.hpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_matching.hpp"}]},
-                                 {FileNameJoin[{$flexiblesusyTemplateDir, "SM_matching.cpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_matching.cpp"}]},
-                                 {FileNameJoin[{$flexiblesusyTemplateDir, "SM_two_scale_matching.hpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_matching.hpp"}]}}
+            WriteMatchingClass[ {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]},
+                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]}}
                               ];
 
            Print["Creating observables"];
@@ -2229,8 +2229,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "SM_" <> spectrumGeneratorInputFile}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_SM_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_" <> spectrumGeneratorInputFile}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_spectrum_generator.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],

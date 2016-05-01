@@ -330,7 +330,7 @@ search_default_model() {
 
     message -n "Searching for default SARAH model in $_file ... "
 
-    _sarah_model="`sed -n 's/FSDefaultSARAHModel *= *\([^;][^;]*\)/\1/p' < ${_file}`"
+    _sarah_model=$(sed -n 's/FSDefaultSARAHModel *= *\([^;][^;]*\)/\1/p' < ${_file} | tr -d '')
 
     if [ -z $_sarah_model ]; then
         message "not found"
@@ -489,7 +489,6 @@ sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
-    -e "s|@ABSBASEDIR@|$ABSBASEDIR|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"
 
@@ -518,8 +517,3 @@ for slha_in in $SLHA_input_files; do
     cp $model_file_dir/$slha_in $targetdir
     message "done"
 done
-
-if [ $name != SM ]; then
-   message "Creating SM as effective model ..."
-   /bin/sh $ABSBASEDIR/createmodel --name=SM --force
-fi
