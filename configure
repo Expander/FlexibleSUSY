@@ -16,7 +16,7 @@ GM2CALC_VERSION="1.1.2"
 BASEDIR=$(dirname $0)
 
 # absolute path to this script
-ABSBASEDIR=$(cd $BASEDIR; pwd)
+ABSBASEDIR=$(cd $BASEDIR; pwd | sed 's/ /\\\\ /g')
 
 # config directory
 CONFIGDIR="${BASEDIR}/config"
