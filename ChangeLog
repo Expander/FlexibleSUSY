@@ -33,6 +33,9 @@ FlexibleSUSY-1.4.1 [not released yet]
  * Bugfix (commits bcb99bc - 8b5d87e): Fixing compilation error for
    models which don't have input parameters.
 
+ * Bugfix (commits 637d099, 8b3a94f, 2e3a972): Fixing `make
+   install-src' in case the path to the FlexibleSUSY contains spaces.
+
 FlexibleSUSY-1.4.0 [March, 08 2016]
 
  * Feature: Allow the user to chose the loop order of the RGEs to be
