@@ -9,7 +9,7 @@ FLEXIBLESUSY_MINOR=4
 FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
-GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
+GIT_COMMIT="`git rev-parse HEAD 2> /dev/null || echo unknown`"
 GM2CALC_VERSION="1.1.2"
 
 # directory of this script
