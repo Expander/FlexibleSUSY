@@ -36,6 +36,13 @@ FlexibleSUSY-1.4.1 [not released yet]
  * Bugfix (commits 637d099, 8b3a94f, 2e3a972): Fixing `make
    install-src' in case the path to the FlexibleSUSY contains spaces.
 
+ * Bugfix (commits ced2072, 8bc8fdd): Adding support for further
+   debian-based multi-architecture linux distributions in the
+   configure script.
+
+ * Bugfix (commits 2b95522): Allow user to provide specific location
+   to libpthread using the --with-pthread-libdir= option.
+
 FlexibleSUSY-1.4.0 [March, 08 2016]
 
  * Feature: Allow the user to chose the loop order of the RGEs to be
