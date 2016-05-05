@@ -14,7 +14,6 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
-#include <boost/bind.hpp>
 
 using namespace softsusy;
 using namespace Eigen;
@@ -195,23 +194,6 @@ double bIntegral(int n1, double p, double m1, double m2, double mt) {
   return v(0) - 1.0;
 }
 
-// Returns real part of integral
-double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
-  using namespace flexiblesusy;
-
-  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-  const double eps = TOLERANCE * 1.0e-3;
-  ArrayXd v(1);
-  v(0) = 1.0;
-
-  runge_kutta::Derivs derivs = boost::bind(&dd_threadsave, _1, _2, n1, p, m1, m2, mt);
-
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
-                             runge_kutta::odeStepper);
-
-  return v(0) - 1.0;
-}
-
 double fB(const Complex & a) {
   /// First, special cases at problematic points
   const double x = a.real();
@@ -363,6 +345,14 @@ double b0_fast(double p, double m1, double m2, double q) {
   return ans;
 }
 
+double b1_general(double p, double m1, double m2, double q) {
+   const double m12 = sqr(m1);
+   const double m22 = sqr(m2);
+   const double p2 = sqr(p);
+
+   return -(a0(m1,q) - a0(m2,q) - (p2 - m22 + m12) * b0(p,m1,m2,q))/(2. * p2);
+}
+
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
 double b1(double p, double m1, double m2, double q) {
 #ifdef USE_LOOPTOOLS
@@ -394,7 +384,7 @@ double b1(double p, double m1, double m2, double q) {
 		 0.5 * (m12 + m22) / (m12 - m22)
 		 );
   } else {
-    ans = bIntegral_threadsave(1, p, m1, m2, q);
+    ans = b1_general(p, m1, m2, q);
   }
 
 #ifdef USE_LOOPTOOLS
