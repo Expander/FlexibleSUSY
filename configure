@@ -1018,7 +1018,7 @@ check_multiarch() {
 
     exists_in_path "lsb_release"
     if [ -n "$cmd" ] ; then
-        if lsb_release -d | grep -i 'ubuntu\|debian\|mint\|elementary' > /dev/null 2>&1; then
+        if lsb_release -d | grep -i 'debian\|deepin\|linux lite\|mint\|elementary\|ubuntu\|zorin' > /dev/null 2>&1; then
             linuxdist="multiarch"
         fi
     fi
