@@ -175,6 +175,7 @@ LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 OPTIONAL_MODULES=""
+pthread_lib_dir=""
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -1185,12 +1186,19 @@ check_std_threads() {
 
 #_____________________________________________________________________
 check_thread_libs() {
-    check_library "libpthread" "" "$default_lib_paths"
-    if [ -z "$found_lib" ]; then
-        message "Error: libpthread must be installed to enable multithreading!"
-        exit 1
+    # link libpthread only if $enable_threads = yes
+    # I'm assuming here, that no other library we link needs libpthread.
+    if [ "x$enable_threads" = "xyes" -o -n "$pthread_lib_dir" ] ; then
+        check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
+        if [ -z "$found_lib" ]; then
+            message "Error: libpthread must be installed to enable multithreading!"
+            exit 1
+        fi
+        THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+        if [ -n "$pthread_lib_dir" ]; then
+            THREADLIBS="-L$pthread_lib_dir $THREADLIBS"
+        fi
     fi
-    THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 }
 
 #_____________________________________________________________________
@@ -2218,6 +2226,7 @@ cat <<EOF
                             possible values: all <model1>,<model2>,...
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
+  --with-pthread-libdir=    Path to search for pthread library
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
   --with-tsil-libdir=       Path to search for TSIL library
@@ -2317,6 +2326,7 @@ if test $# -gt 0 ; then
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES=$(echo "$optarg" | tr ',' ' ') ;;
+            --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
