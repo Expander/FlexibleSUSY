@@ -35,9 +35,9 @@ BOOST_AUTO_TEST_CASE( test_bIntegral )
       const double mt = parameters[i].mt;
 
       const double b_ss = bIntegral(n, p, m1, m2, mt);
-      const double b_fs = b1_general(p, m1, m2, mt);
+      const double b_fs = bIntegral_threadsave(n, p, m1, m2, mt);
 
-      BOOST_CHECK_CLOSE(b_ss, b_fs, 3e-3);
+      BOOST_CHECK_EQUAL(b_ss, b_fs);
    }
 }
 

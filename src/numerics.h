@@ -54,8 +54,8 @@ double integrandThreshbn(double x);
 double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt);
 /// Returns real part of b function, less accurate than analytic expressions
 double bIntegral(int n, double p, double m1, double m2, double mt);
-/// Returns real part of b function
-double b1_general(double p, double m1, double m2, double q);
+/// Returns real part of b function, less accurate than analytic expressions (thread-save version)
+double bIntegral_threadsave(int n, double p, double m1, double m2, double mt);
 // CHECK: is this function to be public?
 // DoubleVector dd(double x, const DoubleVector & y);
 
