@@ -115,6 +115,7 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
    eft.set_number_of_ewsb_iterations(this->model.get_number_of_ewsb_iterations());
    eft.set_number_of_mass_iterations(this->model.get_number_of_mass_iterations());
+   eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();

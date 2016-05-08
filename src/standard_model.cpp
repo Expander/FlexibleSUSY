@@ -1355,21 +1355,37 @@ void Standard_model::calc_beta_traces(Beta_traces& traces) const
 {
    const unsigned loops = get_loops();
    if (loops > 0) {
+   
       traces.traceYdAdjYd = Re((Yd*Yd.adjoint()).trace());
       traces.traceYeAdjYe = Re((Ye*Ye.adjoint()).trace());
       traces.traceYuAdjYu = Re((Yu*Yu.adjoint()).trace());
-
-   }
-
-   if (loops > 1) {
+      
       traces.traceYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint())
-         .trace());
-      traces.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
          .trace());
       traces.traceYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint())
          .trace());
       traces.traceYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint())
          .trace());
+
+   }
+
+   if (loops > 1) {
+   
+      traces.traceYdAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint())
+         .trace());
+         
+      traces.traceYdAdjYdYdAdjYdYdAdjYd = Re((Yd*Yd.adjoint()*Yd*Yd.adjoint(
+         )*Yd*Yd.adjoint()).trace());
+      traces.traceYdAdjYdYdAdjYuYuAdjYd = Re((Yd*Yd.adjoint()*Yd*Yu.adjoint(
+         )*Yu*Yd.adjoint()).trace());
+      traces.traceYdAdjYuYuAdjYdYdAdjYd = Re((Yd*Yu.adjoint()*Yu*Yd.adjoint(
+         )*Yd*Yd.adjoint()).trace());
+      traces.traceYdAdjYuYuAdjYuYuAdjYd = Re((Yd*Yu.adjoint()*Yu*Yu.adjoint(
+         )*Yu*Yd.adjoint()).trace());
+      traces.traceYeAdjYeYeAdjYeYeAdjYe = Re((Ye*Ye.adjoint()*Ye*Ye.adjoint(
+         )*Ye*Ye.adjoint()).trace());
+      traces.traceYuAdjYuYuAdjYuYuAdjYu = Re((Yu*Yu.adjoint()*Yu*Yu.adjoint(
+         )*Yu*Yu.adjoint()).trace());
 
    }
 

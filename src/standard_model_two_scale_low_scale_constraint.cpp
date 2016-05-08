@@ -116,12 +116,12 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
 
-
    model->set_g1(new_g1);
    model->set_g2(new_g2);
    model->set_g3(new_g3);
 
    recalculate_mw_pole();
+
 }
 
 const Eigen::Matrix<std::complex<double>,3,3>& Standard_model_low_scale_constraint<Two_scale>::get_ckm()
