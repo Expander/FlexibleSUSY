@@ -1,3 +1,8 @@
+FlexibleSUSY-1.4.2 [May, 09 2016]
+
+ * Bugfix: Correcting handling of spaces in configure script if
+   /bin/sh is /bin/dash.
+
 FlexibleSUSY-1.4.1 [May, 09 2016]
 
  * Feature: Tab-completion for FlexibleSUSY's spectrum generators and
