@@ -848,7 +848,7 @@ check_algorithms() {
     fi
 
     checking_msg "RGE solver algorithms"
-    local algs=$(echo "$ALGORITHMS" | tr ',' ' ')
+    local algs="$(echo $ALGORITHMS | tr ',' ' ')"
     ALGORITHMS=""
     for a in ${algs}; do
         case "$a" in
@@ -865,7 +865,7 @@ check_algorithms() {
     done
 
     # strip whitespace
-    ALGORITHMS=$(echo "${ALGORITHMS}" | sed -e 's/^ *//' -e 's/ *$//')
+    ALGORITHMS="$(echo ${ALGORITHMS} | sed -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${ALGORITHMS})"
     logmsg "   Algorithms: ${ALGORITHMS}"
@@ -879,7 +879,7 @@ check_models() {
     fi
 
     checking_msg "models"
-    local models=$(echo "$MODELS" | tr ',' ' ')
+    local models="$(echo $MODELS | tr ',' ' ')"
     MODELS=""
     for a in ${models}; do
         case "$a" in
@@ -932,7 +932,7 @@ check_models() {
         fi
     done
 
-    local model_names=$(echo ${MODELS} | sed -e 's|models/||g' -e 's/^ *//' -e 's/ *$//')
+    local model_names="$(echo ${MODELS} | sed -e 's|models/||g' -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${model_names})"
     logmsg "   Models: ${MODELS}"
@@ -946,7 +946,7 @@ check_addons() {
     fi
 
     checking_msg "addons"
-    local addons=$(echo "$ADDONS" | tr ',' ' ')
+    local addons="$(echo $ADDONS | tr ',' ' ')"
     ADDONS=""
     for a in ${addons}; do
         case "$a" in
@@ -976,7 +976,7 @@ check_addons() {
         fi
     done
 
-    local addon_names=$(echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//')
+    local addon_names="$(echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//')"
 
     result "ok (${addon_names})"
     logmsg "   Addons: ${ADDONS}"
@@ -2325,7 +2325,7 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
-            --with-optional-modules=*) OPTIONAL_MODULES=$(echo "$optarg" | tr ',' ' ') ;;
+            --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
