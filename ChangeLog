@@ -19,7 +19,7 @@ FlexibleSUSY-1.4.1 [not released yet]
  * Bugfix (commit 59b867d): Avoid singularity in the limit MSU^2 /
    M3^2 -> MSQ^2 / M3^2 in HSSUSY.
 
- * Bugfix (commit f3864b8): Catch exception from SoftSUSY's QedQcd
+ * Bugfix (commit f3864b8): Catch exception from SOFTSUSY's QedQcd
    class which are triggered when the input value of Mt_pole is chosen
    to be smaller than MZ_pole.
 
@@ -320,7 +320,7 @@ FlexibleSUSY-1.3.0 [January, 08 2016]
 
  * Bugfix (commit 1b4fc20): Correcting W contribution in beta-function
    of alpha_em in the SM with 5 active quark flavours.
-   Imported from SoftSUSY (commit 0139daa).
+   Imported from SOFTSUSY (commit 0139daa).
 
  * Bugfix (commit d7dbeb6): Adding neutrino charge, Qv, to list of
    input parameters in the UMSSM.  This fixes a compilation error with
@@ -491,7 +491,7 @@ FlexibleSUSY-1.1.0 [May, 31 2015]
 
  * Feature: Calculation of DR-bar weak mixing angle from Fermi
    constant and Z pole mass.  The implementation is based on
-   expressions from SoftSUSY and works for the SM, MSSM, NMSSM and
+   expressions from SOFTSUSY and works for the SM, MSSM, NMSSM and
    their variants.  The method for the calculation of the weak mixing
    angle can be selected via the FSWeakMixingAngleInput variable in
    the FlexibleSUSY model file.
