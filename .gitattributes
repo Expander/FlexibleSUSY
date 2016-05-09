@@ -2,6 +2,8 @@
 .gitattributes                  export-ignore
 TODO                            export-ignore
 
+addons/test_*                   export-ignore
+
 doc/images                      export-ignore
 doc/release                     export-ignore
 doc/FlexibleFuture.txt          export-ignore
@@ -33,6 +35,7 @@ model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/MDM                 export-ignore
 model_files/minMSSM             export-ignore
+model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
 model_files/rootMSSM            export-ignore

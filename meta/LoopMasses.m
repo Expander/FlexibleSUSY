@@ -103,8 +103,8 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
            topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
            topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
            topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
-           qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-           qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
+           qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+           qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
 "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
 const double currentScale = get_scale();
@@ -456,7 +456,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
             eigenArrayType, mixingMatrixType, particleName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
             topTwoLoop = False, thirdGenMass, qcdCorrections = "",
-            qcdOneLoop, qcdTwoLoop, highestIdx, highestIdxStr
+            qcdOneLoop, qcdTwoLoop
            },
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -479,11 +479,9 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
               topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
               topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
-              highestIdx = dim - 1;
-              highestIdxStr = ToString[highestIdx];
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
-              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-              qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
+              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+              qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
               qcdCorrections = "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
 const double currentScale = get_scale();
@@ -513,7 +511,7 @@ if (add_2loop_corrections) {
                                   IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                              IndentText[
                                                 If[topTwoLoop,
-                                                   "if (i1 == " <> highestIdxStr <> " && i2 == " <> highestIdxStr <> ") {\n" <>
+                                                   "if (i1 == 2 && i2 == 2) {\n" <>
                                                    IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[topSelfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
                                                               "self_energy_PL(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
                                                               "self_energy_PR(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
@@ -534,8 +532,7 @@ if (add_2loop_corrections) {
                                   If[topTwoLoop,
                                      selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>
-                                     "delta_M(" <> highestIdxStr <> "," <> highestIdxStr <> ") -= " <>
-                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * (qcd_1l + qcd_2l);\n"
+                                     "delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l);\n"
                                      ,
                                      "const " <> selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n"
@@ -992,8 +989,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
                 ];
               body = "return 0.0;\n";
               ,
-              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-              qcdTwoLoop = N[Expand[(qcdOneLoop^2 - TwoLoopQCD`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
+              qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
+              qcdTwoLoop = N[Expand[(qcdOneLoop^2 - TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
               If[FlexibleSUSY`UseYukawa3LoopQCD === True &&
                  FlexibleSUSY`FSRenormalizationScheme =!= FlexibleSUSY`MSbar,
                  Print["Warning: UseYukawa3LoopQCD == True, but the renormalization scheme is not MSbar!"];

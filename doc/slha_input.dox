@@ -38,7 +38,7 @@ or the loop order of the pole mass calculation can be selected.
 
 index | description                          | possible values              | default value
 -----:|--------------------------------------|------------------------------|----------------
- 0    | RG running precision                 | any positive double          | 1.0e-4
+ 0    | precision goal                       | any positive double          | 1.0e-4
  1    | max. number of iterations            | any positive double          | 0 (= automatic)
  2    | BC solver                            | 0 (two-scale) or 1 (lattice) | 0 (= two-scale)
  3    | calculate SM pole masses             | 0 (no) or 1 (yes)            | 0 (= no)
@@ -55,6 +55,36 @@ index | description                          | possible values              | de
 14    | beta function zero threshold         | any positive double          | 1.0e-11
 15    | calculate observables                | 0 (no) or 1 (yes)            | 0 (= no)
 16    | force positive Majorana masses       | 0 (no) or 1 (yes)            | 0 (= no)
+
+
+### Precision goal ###
+
+FlexibleSUSY solves the given boundary value problem (BVP) by running
+all model parameters to each scale and imposing the corresponding
+boundary conditions until a convergent solution has been found or the
+maximum number of iterations has been reached.  In `FlexibleSUSY[0]`,
+precision goal of the BVP solver can be specified.  The precision goal
+determines
+
+- the precision of the numerical solution of the RGEs,
+
+- the precision of the numerical solution of the EWSB equations and
+
+- to test whether the BVP solver has found a convergent solution.
+
+
+### Maximum number of iterations ###
+
+FlexibleSUSY solves the given boundary value problem (BVP) by running
+to each scale and imposing the corresponding boundary conditions until
+a convergent solution has been found or the maximum number of
+iterations, \f$N_{\text{max.it.}}\f$, has been reached.  In
+`FlexibleSUSY[1]`, the maximum number of iterations
+\f$N_{\text{max.it.}}\f$ used to solve the BVP can be specified.  If
+\f$N_{\text{max.it.}}\f$ is set to `0`, the maximum number of
+iterations is set to \f[N_{\text{max.it.}} = -10 \log_{10}p,\f] where
+\f$p\f$ is the precision goal specified in `FlexibleSUSY[0]`.
+
 
 ### Threshold correction loop order ###
 

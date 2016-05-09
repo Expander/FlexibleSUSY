@@ -3,8 +3,7 @@
 # Check that Z pole mass is close to running Z mass
 
 BASEDIR=$(dirname $0)
-CONFIGDIR="${BASEDIR}/../config"
-print_block="${CONFIGDIR}/print_slha_block.awk"
+print_block="${BASEDIR}/../utils/print_slha_block.awk"
 
 blsm_input="$BASEDIR/../models/BLSMlightZp/LesHouches.in.BLSMlightZp"
 blsm_output="$BASEDIR/test_BLSMlightZp_ZZp_mixing.out.spc"

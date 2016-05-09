@@ -352,6 +352,18 @@ void SLHA_io::set_block(const std::ostringstream& lines, Position position)
       data.push_back(block);
 }
 
+void SLHA_io::set_block(const std::string& lines, Position position)
+{
+   set_block(std::ostringstream(lines), position);
+}
+
+void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
+{
+   for (std::vector<std::string>::const_iterator it = blocks.begin(),
+           end = blocks.end(); it != end; it++)
+      set_block(*it, position);
+}
+
 /**
  * This function treats a given scalar as 1x1 matrix.  Such a case is
  * not defined in the SLHA standard, but we still handle it to avoid
@@ -511,15 +523,18 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
    switch (key) {
    case 1:
       qedqcd.setAlpha(ALPHA, 1.0 / value);
+      qedqcd.setAlphaEmInput(1.0 / value);
       break;
    case 2:
       qedqcd.setFermiConstant(value);
       break;
    case 3:
       qedqcd.setAlpha(ALPHAS, value);
+      qedqcd.setAlphaSInput(value);
       break;
    case 4:
       qedqcd.setPoleMZ(value);
+      qedqcd.setMu(value);
       softsusy::MZ = value;
       break;
    case 5:
@@ -555,15 +570,19 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 21:
       qedqcd.setMass(mDown, value);
+      qedqcd.setMd2GeV(value);
       break;
    case 22:
       qedqcd.setMass(mUp, value);
+      qedqcd.setMu2GeV(value);
       break;
    case 23:
       qedqcd.setMass(mStrange, value);
+      qedqcd.setMs2GeV(value);
       break;
    case 24:
       qedqcd.setMass(mCharm, value);
+      qedqcd.setMcMc(value);
       break;
    default:
       WARNING("Unrecognized entry in block SMINPUTS: " << key);

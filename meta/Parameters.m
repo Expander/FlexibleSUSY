@@ -15,7 +15,8 @@ CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
 
 SetParameter::usage="set model parameter";
-SetInputParameter::usage="set input parameter";
+SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
+SetInputParameter::usage="set input parameter to value";
 AddInputParameters::usage="add an input parameter";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
@@ -130,6 +131,9 @@ given list of parameters are omitted from the output.";
 
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
+
+FindSLHABlock::usage = "returns SLHA input block name for given
+ parameter";
 
 Begin["`Private`"];
 
@@ -1038,8 +1042,13 @@ CreateParameterEnums[name_, CConversion`TensorType[CConversion`complexScalarCTyp
 CreateInputParameterEnum[inputParameters_List] :=
     Module[{i, par, type, name, result = ""},
            For[i = 1, i <= Length[inputParameters], i++,
+               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
+                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
+                        inputParameters[[i]]];
+                  Quit[1];
+                 ];
                par  = inputParameters[[i,1]];
-               type = inputParameters[[i,2]];
+               type = inputParameters[[i,3]];
                name = Parameters`CreateParameterEnums[par, type];
                If[i > 1, result = result <> ", ";];
                result = result <> name;
@@ -1054,8 +1063,13 @@ CreateInputParameterEnum[inputParameters_List] :=
 CreateInputParameterNames[inputParameters_List] :=
     Module[{i, par, type, name, result = ""},
            For[i = 1, i <= Length[inputParameters], i++,
+               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
+                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
+                        inputParameters[[i]]];
+                  Quit[1];
+                 ];
                par  = inputParameters[[i,1]];
-               type = inputParameters[[i,2]];
+               type = inputParameters[[i,3]];
                name = Parameters`CreateParameterNamesStr[par, type];
                If[i > 1, result = result <> ", ";];
                result = result <> name;
@@ -1070,7 +1084,11 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
            If[IsInputParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               valueStr = CConversion`RValueToCFormString[value];
-              wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+              If[wrapper == "",
+                 parameterStr <> " = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+                 wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n"
+                ]
+              ,
               ""
              ]
           ];
@@ -1467,8 +1485,8 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
            Switch[dim,
                   0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk, SARAH`BetaQijkl];,
                   1, dimPars = Join[SARAH`BetaMuij, SARAH`BetaTijk, SARAH`BetaMi, SARAH`BetaDGi, SARAH`BetaVEV];,
-                  2, dimPars = Join[SARAH`BetaLSi, SARAH`BetaBij, SARAH`Betam2ij];,
-                  3, dimPars = Join[SARAH`BetaLi];,
+                  2, dimPars = Join[SARAH`BetaLi, SARAH`BetaBij, SARAH`Betam2ij];,
+                  3, dimPars = Join[SARAH`BetaLSi];,
                   _,
                   Print["Error: GetModelParametersWithMassDimension: ", dim,
                         " is not a valid dimension"];
@@ -1554,6 +1572,9 @@ GetIntermediateOutputParameterDependencies[expr_] :=
         Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
     ];
 
+CreateInputParameterArrayGetter[{}] :=
+    "return Eigen::ArrayXd();\n";
+
 CreateInputParameterArrayGetter[inputParameters_List] :=
     Module[{get = "", paramCount = 0, name = "", par,
             type, i, assignment = "", nAssignments = 0},
@@ -1584,6 +1605,34 @@ CreateInputParameterArraySetter[inputParameters_List] :=
               ];
            Return[set];
           ];
+
+FindSLHABlock[blockList_List, par_] :=
+    Module[{foundBlocks},
+           foundBlocks = Cases[blockList, {par, block_, ___} :> block];
+           If[foundBlocks === {},
+              Print["Error: FindSLHABlock: no input block defined for parameter ", par];
+              Quit[1];
+             ];
+           foundBlocks[[1]]
+          ];
+
+SetSMParameter[FlexibleSUSY`AlphaEMInvInput    , value_String, struct_String] := struct <> ".setAlphaEmInput(1./(" <> value <> "))";
+SetSMParameter[FlexibleSUSY`GFermiInput        , value_String, struct_String] := struct <> ".setFermiConstant(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`AlphaSInput        , value_String, struct_String] := struct <> ".setAlphaSInput(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MZPoleInput        , value_String, struct_String] := struct <> ".setPoleMZ(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MbMbInput          , value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MTopPoleInput      , value_String, struct_String] := struct <> ".setPoleMt(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MTauPoleInput      , value_String, struct_String] := struct <> ".setPoleMtau(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MNeutrino3PoleInput, value_String, struct_String] := struct <> ".setNeutrinoPoleMass(3, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MWPoleInput        , value_String, struct_String] := struct <> ".setPoleMW(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MElectronPoleInput , value_String, struct_String] := struct <> ".setPoleMel(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MNeutrino1PoleInput, value_String, struct_String] := struct <> ".setNeutrinoPoleMass(1, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MMuonPoleInput     , value_String, struct_String] := struct <> ".setPoleMmuon(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MNeutrino2PoleInput, value_String, struct_String] := struct <> ".setNeutrinoPoleMass(2, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MDown2GeVInput     , value_String, struct_String] := struct <> ".setMass(softsusy::mDown, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MUp2GeVInput       , value_String, struct_String] := struct <> ".setMass(softsusy::mUp, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MStrange2GeVInput  , value_String, struct_String] := struct <> ".setMass(softsusy::mStrange, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MCharm2GeVInput    , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
 
 End[];
 

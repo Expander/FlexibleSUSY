@@ -64,12 +64,21 @@ translate = {
     W[m1_,m2_,mu_]               :> TCW[m1,m2,mu]
 };
 
+transposeYuks = {
+    Yu[i_,j_] :> Yu[j,i],
+    Yd[i_,j_] :> Yd[j,i],
+    Ye[i_,j_] :> Ye[j,i],
+    AuInput[i_,j_] :> AuInput[j,i],
+    AdInput[i_,j_] :> AdInput[j,i],
+    AeInput[i_,j_] :> AeInput[j,i]
+};
+
 (* flags to disable Higgsino + gaugino contributions *)
 hgthmdFlags = Join[{flagIno -> 0, flagInoZdd -> 0, flagInoZud -> 0, flagInoZuu -> 0},
                    GetTHDMThresholds1LFlags[]];
 
-deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}, flags -> hgthmdFlags] //. translate;
-deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}, flags -> hgthmdFlags] //. translate;
+deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}, flags -> hgthmdFlags] //. translate /. transposeYuks;
+deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}, flags -> hgthmdFlags] //. translate /. transposeYuks;
 
 HighScaleInput = {
     {g1d    , g2          },

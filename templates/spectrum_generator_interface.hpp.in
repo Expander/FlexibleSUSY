@@ -56,6 +56,7 @@ public:
    virtual ~@ModelName@_spectrum_generator_interface() {}
 
    const @ModelName@<T>& get_model() const { return model; }
+   @ModelName@<T>& get_model() { return model; }
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model.get_problems();
    }

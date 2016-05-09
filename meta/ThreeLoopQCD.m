@@ -21,13 +21,20 @@ respectively.  I.e. by setting factors to 0, different loop orders can
 be disabled.
 
 The second function argument is the symbol for the quark under
-consideration.  The default is SARAH`TopQuark.
+consideration.  The quark symbol is needed to obtain the Casimir
+operators which apper in the expressions of arxiv:hep-ph/9912391.  The
+default is SARAH`TopQuark.
 
 The third function argument is the symbol to be used for the
 renormalization scale.  The default is Q.
 
 The last two parameters are NH and NL, the number of heavy and light
 quarks, respectively.  The default is NH = 1, NL = 5.
+
+The full signature of function reads
+
+   GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1},
+                            quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5]
 ";
 
 Begin["`Private`"];

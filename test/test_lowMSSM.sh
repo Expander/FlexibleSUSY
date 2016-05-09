@@ -6,7 +6,7 @@
 # spectrums are the same.
 
 BASEDIR=$(dirname $0)
-CONFIGDIR=${BASEDIR}/../config
+UTILSDIR=${BASEDIR}/../utils
 
 mssm_input="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
 mssm_output="$BASEDIR/CMSSM.out.spc"
@@ -42,34 +42,34 @@ if test ! -x "$lowmssm_exe"; then
 fi
 
 remove_input_blocks() {
-    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SMINPUTS \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MINPAR \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=EXTPAR \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SPINFO \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSOFTIN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=HMIXIN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSQ2IN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSL2IN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSU2IN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSD2IN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSE2IN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TeIN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TuIN \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TdIN
+    $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SMINPUTS \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MINPAR \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=EXTPAR \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SPINFO \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSOFTIN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=HMIXIN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSQ2IN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSL2IN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSU2IN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSD2IN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=MSE2IN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=TeIN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=TuIN \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=TdIN
 }
 
 remove_mixing_matrix_blocks() {
-    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
+    $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=UMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=VMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=DSQMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SELMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SCALARMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=NMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=CHARGEMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=USQMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=SNUMIX \
+        | $awk_cmd -f $UTILSDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
 }
 
 # generate CMSSM point

@@ -103,7 +103,7 @@ ExtraSLHAOutputBlocks = {
             {2  , Re[\[Kappa]]    },
             {3  , Re[T[\[Lambda]] / \[Lambda]]},
             {4  , Re[T[\[Kappa]] / \[Kappa]]},
-            {5  , \[Lambda] vS / Sqrt[2] },
+            {5  , Re[\[Lambda]] vS / Sqrt[2] },
             {10 , ms2             },
             {11 , Im[\[Lambda]]   },
             {12 , Im[\[Kappa]]    },

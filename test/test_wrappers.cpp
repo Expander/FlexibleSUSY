@@ -299,3 +299,163 @@ BOOST_AUTO_TEST_CASE(test_Which)
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
 }
+
+BOOST_AUTO_TEST_CASE(test_MaxRelDiff)
+{
+   BOOST_CHECK_CLOSE(MaxRelDiff(0., 0.)  , 0. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., 0.)  , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., 0.) , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., -1.) , 2. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., -1.), 0. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1., -2.), 0.5, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(1., 2.), 0.5, 1e-10);
+
+   Eigen::Matrix<double,1,1> M1, M2;
+   M1(0) = 1.;
+   M2(0) = -1.;
+
+   BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2. , 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Abs_vector)
+{
+   std::vector<double> v(3);
+   v.at(0) = 1.;
+   v.at(1) = -1.;
+   v.at(2) = 0.;
+
+   std::vector<double> v_abs(Abs(v));
+   BOOST_CHECK_CLOSE(v_abs.at(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_abs.at(1), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_abs.at(2), 0., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Abs_Eigen_Array)
+{
+   Eigen::ArrayXd v(3);
+   v(0) = 1.;
+   v(1) = -1.;
+   v(2) = 0.;
+
+   Eigen::ArrayXd v_abs(Abs(v));
+   BOOST_CHECK_CLOSE(v_abs(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_abs(1), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_abs(2), 0., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Abs_vector_Eigen_Array)
+{
+   std::vector<Eigen::ArrayXd> v(3);
+   Abs(v);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqr_vector)
+{
+   std::vector<double> v(3);
+   v.at(0) = 1.;
+   v.at(1) = 2.;
+   v.at(2) = 3.;
+
+   std::vector<double> v_sqr(Sqr(v));
+   BOOST_CHECK_CLOSE(v_sqr.at(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqr.at(1), 4., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqr.at(2), 9., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqr_Eigen_Array)
+{
+   Eigen::ArrayXd v(3);
+   v(0) = 1.;
+   v(1) = 2.;
+   v(2) = 3.;
+
+   Eigen::ArrayXd v_sqr(Sqr(v));
+   BOOST_CHECK_CLOSE(v_sqr(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqr(1), 4., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqr(2), 9., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqr_vector_Eigen_Array)
+{
+   std::vector<Eigen::ArrayXd> v(3);
+   Sqr(v);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqrt_overloads)
+{
+   BOOST_CHECK_EQUAL(Sqrt(2.f), std::sqrt(2.f));
+   BOOST_CHECK_EQUAL(Sqrt(2.) , std::sqrt(2.));
+   BOOST_CHECK_EQUAL(Sqrt(2.L), std::sqrt(2.L));
+   BOOST_CHECK_EQUAL(Sqrt(2)  , std::sqrt(2.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqrt_vector)
+{
+   std::vector<double> v(3);
+   v.at(0) = 1.;
+   v.at(1) = 2.;
+   v.at(2) = 3.;
+
+   std::vector<double> v_sqrt(Sqrt(v));
+   BOOST_CHECK_CLOSE(v_sqrt.at(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqrt.at(1), std::sqrt(2.), 1e-10);
+   BOOST_CHECK_CLOSE(v_sqrt.at(2), std::sqrt(3.), 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqrt_Eigen_Array)
+{
+   Eigen::ArrayXd v(3);
+   v(0) = 1.;
+   v(1) = 2.;
+   v(2) = 3.;
+
+   Eigen::ArrayXd v_sqrt(Sqrt(v));
+   BOOST_CHECK_CLOSE(v_sqrt(0), 1., 1e-10);
+   BOOST_CHECK_CLOSE(v_sqrt(1), std::sqrt(2.), 1e-10);
+   BOOST_CHECK_CLOSE(v_sqrt(2), std::sqrt(3.), 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Sqrt_vector_Eigen_Array)
+{
+   std::vector<Eigen::ArrayXd> v(3);
+   Sqrt(v);
+}
+
+BOOST_AUTO_TEST_CASE(test_Total_vector)
+{
+   std::vector<double> v(3);
+   v.at(0) = 1.;
+   v.at(1) = 2.;
+   v.at(2) = 3.;
+
+   BOOST_CHECK_CLOSE(Total(v), 6., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Total_Array)
+{
+   Eigen::ArrayXd v(3);
+   v(0) = 1.;
+   v(1) = 2.;
+   v(2) = 3.;
+
+   BOOST_CHECK_CLOSE(Total(v), 6., 1e-10);
+}
+
+BOOST_AUTO_TEST_CASE(test_Total_vector_Array)
+{
+   std::vector<Eigen::ArrayXd> v(3);
+   Eigen::ArrayXd v1(2), v2(2), v3(2);
+   v1 << 1., 2.;
+   v2 << 1., 2.;
+   v3 << 1., 2.;
+
+   v.at(0) = v1;
+   v.at(1) = v2;
+   v.at(2) = v3;
+
+   Eigen::ArrayXd total(Total(v));
+
+   BOOST_CHECK_EQUAL(total.size(), 2);
+   BOOST_CHECK_CLOSE(total(0), 3., 1e-10);
+   BOOST_CHECK_CLOSE(total(1), 6., 1e-10);
+}

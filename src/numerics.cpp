@@ -164,16 +164,6 @@ Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
          - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
 }
 
-DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
-
-  const double eps = TOLERANCE * 1.0e-20;
-
-  DoubleVector dydx(1);
-  dydx(1) = -log(fabs(1 - t + eps)) / (t + eps);
-
-  return dydx;
-}
-
 namespace {
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
@@ -186,23 +176,6 @@ T divide_finite(T a, T b) {
 }
 
 } // anonymous namespace
-
-/*
-double dilog(double x) {
-  // Set global variables so that integration function can access them
-  double from = 0.0, to = x, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-
-  DoubleVector v(1); 
-  double eps = TOLERANCE * 1.0e-5;
-  v(1) = 1.0; 
-
-  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
-  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
-  integrateOdes(v, from, to, eps, guess, hmin, dilogarg, odeStepper); 
-  
-  return v(1) - 1.0;
-}
-*/
 
 // Returns real part of integral
 double bIntegral(int n1, double p, double m1, double m2, double mt) {
@@ -281,25 +254,25 @@ double b0(double p, double m1, double m2, double q) {
 
   const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
     
     Complex xPlus, xMinus;
 
-    xPlus = (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon))) /
-      (2. * sqr(p));
-    xMinus = 2. * (sqr(mMax) - iEpsilon) / 
-      (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon)));
+    xPlus = (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) /
+      (2. * pSq);
+    xMinus = 2. * (mMaxSq - iEpsilon) /
+      (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
+      const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
@@ -453,7 +426,7 @@ double b22(double p,  double m1, double m2, double q) {
   
   /// Decides level at which one switches to p=0 limit of calculations
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy

@@ -13,6 +13,10 @@ MINPAR = {
     {5, Azero}
 };
 
+EXTPAR = {
+    {1, Phase[\[Mu]]}
+};
+
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 RealParameters = { B[\[Mu]] };
