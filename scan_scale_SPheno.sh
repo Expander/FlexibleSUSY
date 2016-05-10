@@ -11,18 +11,19 @@ input="$1"
 shift
 output_fields="$1"
 shift
-mean_scale="$1"
+mean_scale=$(echo "$1" | sed -e 's/[eE]+*/*10^/')
+shift
 
 factor=2
-[ $# -ge 1 ] && {
-    shift
+[ "$#" -ge 1 ] && {
     factor="$1"
+    shift
 }
 
 steps=10
-[ $# -ge 1 ] && {
-    shift
+[ "$#" -ge 1 ] && {
     steps="$1"
+    shift
 }
 
 input_tmp="${input}.$$"
@@ -65,7 +66,7 @@ for i in $(seq 0 ${steps}); do
     rm -f "$output" "$input_tmp"
 
     scale=$(cat <<EOF | bc
-scale=15
+scale = 15
 start = ${mean_scale} / ${factor}
 stop  = ${mean_scale} * ${factor}
 start + (stop - start)*${i} / $steps
@@ -89,14 +90,15 @@ EOF
     }
 
     [ "x$value" != "x-" ] && {
-        min_value=$(min "$min_value" "$value")
-        max_value=$(max "$max_value" "$value")
+        min_value=$(min "$min_value" "$value" | sed -e 's/[eE]+*/*10^/')
+        max_value=$(max "$max_value" "$value" | sed -e 's/[eE]+*/*10^/')
     }
 done
 
 rm -f "$output" "$input_tmp"
 
 delta=$(cat <<EOF | bc
+scale = 15
 define abs(i) {
     if (i < 0) return (-i)
     return (i)
