@@ -52,6 +52,7 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates&
 {
    const auto model_pole_mass_order = model.get_pole_mass_loop_order();
    const auto sm_pole_mass_order = sm.get_pole_mass_loop_order();
+   const auto DeltaLambda = INPUTPARAMETER(DeltaLambda);
 
    model.set_pole_mass_loop_order(1);
    sm.set_pole_mass_loop_order(1);
@@ -65,7 +66,10 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates&
    sm.solve_ewsb_one_loop();
    sm.calculate_Mhh_pole();
 
-   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
+   const double MZ = (sm.get_physical().MVZ != 0. ? sm.get_physical().MVZ : sm.get_MVZ());
+
+   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v())
+                  + DeltaLambda*twoLoop*Log(MZ/model.get_scale()));
 
    model.set_pole_mass_loop_order(model_pole_mass_order);
    sm.set_pole_mass_loop_order(sm_pole_mass_order);
