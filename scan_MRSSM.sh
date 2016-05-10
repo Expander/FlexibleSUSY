@@ -8,8 +8,8 @@ Block HMIXIN
     302 -0.01             # LSU
     303 -0.01             # LTD
     304 -0.01             # LTU
-    201  1e2              # MuD
-    202  1e2              # MuU
+    201  1e3              # MuD
+    202  1e3              # MuU
 "
 
 slha_templ="
