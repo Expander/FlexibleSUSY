@@ -86,7 +86,7 @@ EOF
 
     [ -f "$output" ] && {
         value=$(awk -f utils/print_slha_block.awk -v block="${block}" "$output" | \
-                awk -f utils/print_slha_block_entry.awk -v entries="${entry}")
+                awk -f utils/print_slha_block_entry.awk -v entries="${entry}" | tail -n 1)
     }
 
     [ "x$value" != "x-" ] && {
