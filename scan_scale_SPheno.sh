@@ -96,4 +96,14 @@ done
 
 rm -f "$output" "$input_tmp"
 
-echo "$min_value    $max_value"
+delta=$(cat <<EOF | bc
+define abs(i) {
+    if (i < 0) return (-i)
+    return (i)
+}
+
+abs(${min_value} - ${max_value})
+EOF
+        )
+
+echo "$delta"
