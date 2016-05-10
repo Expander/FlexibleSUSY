@@ -192,6 +192,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_2L_FSlike.dat
 
 # calculate parametric uncertainty from alpha_s +- 0.0006
+echo "calculating parametric uncertainty from alpha_s"
 
 echo "$slha_templ_spheno_2L_AS_low" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2 \
@@ -213,6 +214,7 @@ paste scale_SPhenoMRSSM_TB-5_2L_AS_low.dat scale_SPhenoMRSSM_TB-5_2L_AS_high.dat
 rm -f scale_SPhenoMRSSM_TB-5_2L_AS_low.dat scale_SPhenoMRSSM_TB-5_2L_AS_high.dat
 
 # calculate parametric uncertainty from Mt +- 0.98 GeV
+echo "calculating parametric uncertainty from Mt"
 
 echo "$slha_templ_spheno_2L_Mt_low" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2 \
@@ -232,6 +234,20 @@ echo "$slha_templ_spheno_2L_Mt_high" | ./utils/scan-slha.sh \
 
 paste scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat > scale_SPhenoMRSSM_TB-5_2L_Mt_minmax.dat
 rm -f scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat
+
+# calculate parametric uncertainty from Q
+echo "calculating parametric uncertainty from Q"
+
+echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
+    --spectrum-generator=./SPhenoMRSSM2_uncertainty.sh \
+    --scan-range=MINPAR[1]=91~100000:$n_points \
+    --step-size=log \
+    --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
+    > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
+
+paste scale_SPhenoMRSSM_TB-5_2L.dat scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat > scale_SPhenoMRSSM_TB-5_2L.dat.$$
+mv scale_SPhenoMRSSM_TB-5_2L.dat.$$ scale_SPhenoMRSSM_TB-5_2L.dat
 
 plot_scale="
 set terminal pdfcairo
@@ -263,7 +279,8 @@ plot [:] [:] \
      'scale_SPhenoMRSSM_TB-5_1L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 1L FS-like' w lines ls 6, \
      'scale_SPhenoMRSSM_TB-5_2L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 2L FS-like' w lines ls 7, \
      'scale_SPhenoMRSSM_TB-5_2L_AS_minmax.dat' u (\$1/1000):(min(\$2,\$4)):(max(\$2,\$4)) t 'SPheno/MRSSM 2L alpha_s uncertainty' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_SPhenoMRSSM_TB-5_2L_Mt_minmax.dat' u (\$1/1000):(min(\$2,\$4)):(max(\$2,\$4)) t 'SPheno/MRSSM 2L M_t uncertainty' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3
+     'scale_SPhenoMRSSM_TB-5_2L_Mt_minmax.dat' u (\$1/1000):(min(\$2,\$4)):(max(\$2,\$4)) t 'SPheno/MRSSM 2L M_t uncertainty' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$4):(\$2+\$4) t 'SPheno/MRSSM 2L Q uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
