@@ -138,6 +138,20 @@ Block SMINPUTS               # Standard Model inputs
     6   174.320              # mtop(pole)
 "
 
+slha_templ_delta_low="
+${slha_templ}
+Block EXTPAR
+    101  -1    # DeltaLambdaASATAT
+    102  -1    # DeltaLambdaATATAT
+"
+
+slha_templ_delta_high="
+${slha_templ}
+Block EXTPAR
+    101   1    # DeltaLambdaASATAT
+    102   1    # DeltaLambdaATATAT
+"
+
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
@@ -240,18 +254,38 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
 
+# calculate parametric uncertainty from delta lambda +- 1
+echo "calculating parametric uncertainty from delta"
+
+echo "$slha_templ_delta_low" | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_delta_low.dat
+
+echo "$slha_templ_delta_high" | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_delta_high.dat
+
 paste scale_SPhenoMRSSM_TB-5_2L.dat \
       scale_SPhenoMRSSM_TB-5_2L_AS_low.dat \
       scale_SPhenoMRSSM_TB-5_2L_AS_high.dat \
       scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat \
       scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat \
       scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat \
+      scale_MRSSMtower_TB-5_delta_low.dat \
+      scale_MRSSMtower_TB-5_delta_high.dat \
       > scale_SPhenoMRSSM_TB-5_2L.dat.$$
 
 mv scale_SPhenoMRSSM_TB-5_2L.dat.$$ scale_SPhenoMRSSM_TB-5_2L.dat
 
 rm -f scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat
 rm -f scale_SPhenoMRSSM_TB-5_2L_AS_low.dat scale_SPhenoMRSSM_TB-5_2L_AS_high.dat
+rm -f scale_MRSSMtower_TB-5_delta_low.dat scale_MRSSMtower_TB-5_delta_high.dat
 rm -f scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
 
 plot_scale="
@@ -285,7 +319,8 @@ plot [:] [:] \
      'scale_SPhenoMRSSM_TB-5_2L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 2L FS-like' w lines ls 7, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$2,\$4)):(max(\$2,\$6)) t 'SPheno/MRSSM 2L alpha_s uncertainty' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$2,\$8)):(max(\$2,\$10)) t 'SPheno/MRSSM 2L M_t uncertainty' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$12):(\$2+\$12) t 'SPheno/MRSSM 2L Q uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3
+     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$12):(\$2+\$12) t 'SPheno/MRSSM 2L Q uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$14):(\$2+\$16) t 'SPheno/MRSSM 2L {/Symbol D}{/Symbol l} 2L uncertainty' w filledcurves ls 7 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
