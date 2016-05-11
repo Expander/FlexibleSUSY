@@ -195,7 +195,7 @@ EOF
     slha_output=$(echo "$slha_input" | $SG --slha-input-file=- 2>/dev/null)
 
     block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
-    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk")
+    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk" | tail -n 1)
 
     [ "x$value" = "x" ] && value="-"
 
@@ -277,7 +277,7 @@ EOF
 
     if [ -e SPheno.spc ] ; then
         block=$(awk -v block="$output_block" "$print_slha_block_awk" SPheno.spc)
-        value=$(echo "$block" | awk -v keys="$output_entry" "$print_block_entry_awk")
+        value=$(echo "$block" | awk -v keys="$output_entry" "$print_block_entry_awk" | tail -n 1)
     fi
 
     [ "x$value" = "x" ] && value="-"
@@ -352,7 +352,7 @@ EOF
     slha_output=$(echo "$slha_input" | $SG leshouches 2>/dev/null)
 
     block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
-    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk")
+    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk" | tail -n 1)
 
     [ "x$value" = "x" ] && value="-"
 

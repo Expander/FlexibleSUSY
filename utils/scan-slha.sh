@@ -254,13 +254,13 @@ for i in `seq 0 $steps`; do
     case "$step_size" in
         linear)
             value=$(cat <<EOF | bc
-scale=20
+scale=10
 $start + ($stop - $start)*${i} / $steps
 EOF
                  ) ;;
         log)
             value=$(cat <<EOF | bc -l
-scale=20
+scale=10
 e(l($start) + (l($stop) - l($start))*${i} / $steps)
 EOF
                  ) ;;
@@ -296,7 +296,7 @@ EOF
         block_entries=$(echo "$f" | awk -F '[][]' '{ print $2 }')
 
         # get data value
-        value=$(echo "$full_block" | awk -v keys="$block_entries" "$print_block_entry_awk")
+        value=$(echo "$full_block" | awk -v keys="$block_entries" "$print_block_entry_awk" | tail -n 1)
 
         if test "$check_present" -eq 1 ; then
             # check if entry exists
