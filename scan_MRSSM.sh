@@ -277,11 +277,16 @@ paste scale_SPhenoMRSSM_TB-5_2L.dat \
       scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat \
       scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat \
       scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat \
-      scale_MRSSMtower_TB-5_delta_low.dat \
-      scale_MRSSMtower_TB-5_delta_high.dat \
       > scale_SPhenoMRSSM_TB-5_2L.dat.$$
 
 mv scale_SPhenoMRSSM_TB-5_2L.dat.$$ scale_SPhenoMRSSM_TB-5_2L.dat
+
+paste scale_MRSSMtower_TB-5.dat \
+      scale_MRSSMtower_TB-5_delta_low.dat \
+      scale_MRSSMtower_TB-5_delta_high.dat \
+      > scale_MRSSMtower_TB-5.dat.$$
+
+mv scale_MRSSMtower_TB-5.dat.$$ scale_MRSSMtower_TB-5.dat
 
 rm -f scale_SPhenoMRSSM_TB-5_2L_Mt_low.dat scale_SPhenoMRSSM_TB-5_2L_Mt_high.dat
 rm -f scale_SPhenoMRSSM_TB-5_2L_AS_low.dat scale_SPhenoMRSSM_TB-5_2L_AS_high.dat
@@ -320,7 +325,7 @@ plot [:] [:] \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$2,\$4)):(max(\$2,\$6)) t 'SPheno/MRSSM 2L alpha_s uncertainty' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$2,\$8)):(max(\$2,\$10)) t 'SPheno/MRSSM 2L M_t uncertainty' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$12):(\$2+\$12) t 'SPheno/MRSSM 2L Q uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$14):(\$2+\$16) t 'SPheno/MRSSM 2L {/Symbol D}{/Symbol l} 2L uncertainty' w filledcurves ls 7 dt 1 lw 0 fs transparent solid 0.3
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))  t 'FS/MRSSM-tower {/Symbol D}{/Symbol l}^{(2)} uncertainty' w filledcurves ls 1 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
