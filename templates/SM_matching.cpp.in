@@ -69,11 +69,9 @@ void @ModelName@_SM_matching::match_high_to_low_scale_model(SM_mass_eigenstates&
    sm.solve_ewsb_one_loop();
    sm.calculate_Mhh_pole();
 
-   const double MZ = (sm.get_physical().MVZ != 0. ? sm.get_physical().MVZ : sm.get_MVZ());
-
    sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v())
-                  + DeltaLambdaASATAT*Sqr(g3)*Power(yt,4)*twoLoop*Log(MZ/model.get_scale())
-                  + DeltaLambdaATATAT*Power(yt,6)*twoLoop*Log(MZ/model.get_scale())
+                  + DeltaLambdaASATAT*Sqr(g3)*Power(yt,4)*twoLoop
+                  + DeltaLambdaATATAT*Power(yt,6)*twoLoop
                   );
 
    model.set_pole_mass_loop_order(model_pole_mass_order);
