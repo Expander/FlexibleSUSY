@@ -151,7 +151,8 @@ FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 FSFermiConstant;
 FSMassW;
 
-DeltaLambda;
+DeltaLambdaASATAT;
+DeltaLambdaATATAT;
 
 {FSHiggs, FSHyperchargeCoupling,
  FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
@@ -1735,8 +1736,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
            If[Head[SARAH`EXTPAR] === List,
-              AppendTo[SARAH`EXTPAR, {101, DeltaLambda}];,
-              SARAH`EXTPAR = {{101, DeltaLambda}};
+              AppendTo[SARAH`EXTPAR, {101, DeltaLambdaASATAT}];
+              AppendTo[SARAH`EXTPAR, {102, DeltaLambdaATATAT}];
+              ,
+              SARAH`EXTPAR = {
+                  {101, DeltaLambdaASATAT},
+                  {102, DeltaLambdaATATAT}
+              };
              ];
            inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
