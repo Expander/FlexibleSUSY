@@ -494,6 +494,9 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
    using namespace softsusy;
 
    switch (key) {
+   case 0:
+      qedqcd.setQHiggs(value);
+      break;
    case 1:
       qedqcd.setAlpha(ALPHA, 1.0 / value);
       break;

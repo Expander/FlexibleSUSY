@@ -76,6 +76,7 @@ private:
   double gfermi; ///< Fermi constant
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
+  double qhiggs; ///< scale at which Mh is calculated
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -106,6 +107,7 @@ public:
   void set(const DoubleVector &); 
   /// sets all input parameters
   void set_input(const Eigen::ArrayXd&);
+  void setQHiggs(double Q) { qhiggs = Q; }
   
   /// Display pole top mass
   double displayPoleMt() const { return mtPole; };
@@ -129,6 +131,7 @@ public:
   double displayAlpha(leGauge ai) const { return a.display(ai); };
   /// Returns Fermi constant
   double displayFermiConstant() const { return gfermi; }
+  double displayQHiggs() const { return qhiggs; }
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
   /// returns vector of all input parameters
@@ -207,7 +210,7 @@ double getRunMtFromMz(double poleMt, double asMZ);
 inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
    mtauPole(m.mtauPole), mmuonPole(m.mmuonPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
-   ckm(m.ckm), pmns(m.pmns)
+   ckm(m.ckm), pmns(m.pmns), qhiggs(0.)
 {
   setPars(11); 
   setMu(m.displayMu());

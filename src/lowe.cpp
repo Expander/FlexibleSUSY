@@ -30,6 +30,7 @@ QedQcd::QedQcd()
   , gfermi(flexiblesusy::Electroweak_constants::gfermi)
   , ckm()
   , pmns()
+  , qhiggs(0.)
 {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
@@ -58,6 +59,7 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mnu = m.mnu;
   ckm = m.ckm;
   pmns = m.pmns;
+  qhiggs = m.qhiggs;
   setLoops(m.displayLoops());
   setThresholds(m.displayThresholds());
   setMu(m.displayMu());
