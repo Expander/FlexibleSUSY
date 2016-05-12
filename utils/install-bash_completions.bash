@@ -167,6 +167,7 @@ _configure()
 --with-math-cmd=
 --with-models=
 --with-optional-modules=
+--with-pthread-libdir=
 --with-sqlite-libdir=
 --with-sqlite-incdir=
 --with-tsil-libdir=

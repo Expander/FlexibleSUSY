@@ -10,6 +10,9 @@ SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
 
+CalculateGaugeCouplings::MissingRelation = "Warning: Coupling `1` is not\
+ releated to `2` via DependenceNum: `1` = `3`"
+
 Begin["`Private`"];
 
 DRbarConversion[SARAH`U[1]] := 0;
@@ -587,6 +590,11 @@ qedqcd.setPoleMW(mw_pole);"
 
 RecalculateMWPole[_,_] := "";
 
+WarnIfFreeQ[coupling_, expr_, sym_] :=
+    If[FreeQ[expr, sym],
+       Message[CalculateGaugeCouplings::MissingRelation, coupling, sym, expr];
+      ];
+
 CalculateGaugeCouplings[] :=
     Module[{subst, g1Def, g2Def, g3Def, result},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
@@ -594,11 +602,19 @@ CalculateGaugeCouplings[] :=
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
                      SARAH`Weinberg            -> FlexibleSUSY`ThetaWDRbar };
            g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]);
            g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`leftCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`leftCoupling]);
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`strongCoupling]);
+           WarnIfFreeQ[SARAH`hyperchargeCoupling, g1Def, SARAH`electricCharge];
+           WarnIfFreeQ[SARAH`hyperchargeCoupling, g1Def, SARAH`Weinberg];
+           WarnIfFreeQ[SARAH`leftCoupling       , g2Def, SARAH`electricCharge];
+           WarnIfFreeQ[SARAH`leftCoupling       , g2Def, SARAH`Weinberg];
+           WarnIfFreeQ[SARAH`strongCoupling     , g3Def, Parameters`GetParameterFromDescription["Alpha Strong"]];
+           g1Def = g1Def /. subst;
+           g2Def = g2Def /. subst;
+           g3Def = g3Def /. subst;
            result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
                     "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
                     "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
