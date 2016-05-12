@@ -936,12 +936,11 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
 ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
-    Module[{var, expandedSums, result = ""},
+    Module[{var, result = ""},
            var = CreateUniqueCVariable[];
-           expandedSums = ExpandSums[expr, var, type, initialValue];
-           result = expandedSums <>
-                    CConversion`CreateCType[type] <> " " <> variable <> " = " <>
-                    ToString[Fun] <> "(" <> var <>
+           result = CConversion`CreateCType[type] <> " " <> var <> ";\n" <>
+                    ExpandSums[expr, var, type, initialValue] <>
+                    variable <> " = " <> ToString[Fun] <> "(" <> var <>
                     If[{rest} === {}, "", ","] <>
                     Utils`StringJoinWithSeparator[RValueToCFormString /@ {rest}, ","] <>
                     ");\n";
