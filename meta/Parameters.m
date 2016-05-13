@@ -100,7 +100,7 @@ FillInputParametersFromTuples::usage="";
 DecreaseIndexLiterals::usage="";
 IncreaseIndexLiterals::usage="";
 
-DecreaseSumIdices::usage="";
+DecreaseSumIndices::usage="";
 
 GetEffectiveMu::usage="";
 GetEffectiveMASqr::usage="";
@@ -1330,7 +1330,7 @@ DecreaseIndexLiterals[expr_] :=
 DecreaseIndexLiterals[expr_, heads_List] :=
     IncreaseIndexLiterals[expr, -1, heads];
 
-DecreaseSumIdices[expr_] :=
+DecreaseSumIndices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
 
 GetEffectiveMu[] :=

@@ -1962,7 +1962,7 @@ ExpressionToString[expr_, result_String] :=
                 ];
               exprStr = CConversion`ExpandSums[
                   Parameters`DecreaseIndexLiterals[
-                      Parameters`DecreaseSumIdices[expr]],
+                      Parameters`DecreaseSumIndices[expr]],
                   result, type, initalValue];
              ];
            exprStr
