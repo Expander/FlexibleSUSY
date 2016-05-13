@@ -153,6 +153,7 @@ FSMassW;
 
 DeltaLambdaASATAT;
 DeltaLambdaATATAT;
+QMatch;
 
 {FSHiggs, FSHyperchargeCoupling,
  FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
@@ -1738,10 +1739,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[Head[SARAH`EXTPAR] === List,
               AppendTo[SARAH`EXTPAR, {101, DeltaLambdaASATAT}];
               AppendTo[SARAH`EXTPAR, {102, DeltaLambdaATATAT}];
+              AppendTo[SARAH`EXTPAR, {103, QMatch}];
               ,
               SARAH`EXTPAR = {
                   {101, DeltaLambdaASATAT},
-                  {102, DeltaLambdaATATAT}
+                  {102, DeltaLambdaATATAT},
+                  {103, QMatch}
               };
              ];
            inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
