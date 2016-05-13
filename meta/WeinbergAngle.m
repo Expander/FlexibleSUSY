@@ -97,9 +97,9 @@ HiggsTopVertices[higgsName_] :=
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {}, indexRange = {1}];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
-           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[TreeMasses`GetUpQuark[{3}]], TreeMasses`GetUpQuark[{3}], higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]] //. SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}];
-           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}} /; (coeffPL/I * Susyno`LieGroups`conj[coeffPL/I] === coeffPR/I * Susyno`LieGroups`conj[coeffPR/I])
-                                 && !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, coeffPL/I}];
+           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[TreeMasses`GetUpQuark[{3}]], TreeMasses`GetUpQuark[{3}], higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]] (*//. SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}]*);
+           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}} /; (*(coeffPL/I * Susyno`LieGroups`conj[coeffPL/I] === coeffPR/I * Susyno`LieGroups`conj[coeffPR/I])
+                                 &&*) !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, coeffPL/I}];
            Return[higgsVertices];
           ];
 
@@ -120,8 +120,7 @@ deltaRhoHat2LoopSM[]:=
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
            expr = (alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2)(-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) + HiggsContributions2LoopSM[]) / (1 + PIZZTMZ / MZ^2);
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
-           result = result <> "deltaRhoHat2LoopSM = ";
-           result = result <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr]] <> ";";
+           result = result <> TreeMasses`ExpressionToString[expr, "deltaRhoHat2LoopSM"];
            Return[result];
           ];
 
@@ -132,8 +131,7 @@ deltaRHat2LoopSM[]:=
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
            expr = alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2))(2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) - HiggsContributions2LoopSM[] (1 - DELTARHAT1LOOP) RHOHATRATIO;
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
-           result = result <> "deltaRHat2LoopSM = ";
-           result = result <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr]] <> ";";
+           result = result <> TreeMasses`ExpressionToString[expr, "deltaRHat2LoopSM"];
            Return[result];
           ];
 
