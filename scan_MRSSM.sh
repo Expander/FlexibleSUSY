@@ -384,7 +384,7 @@ set ylabel 'M_h / GeV'
 min(x,y) = x < y ? x : y
 max(x,y) = x < y ? y : x
 
-plot [:] [:] \
+plot [0.09:] [:] \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
      'scale_MRSSMMSUSY_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
      'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM 1L SPheno-like' w lines ls 5, \
@@ -394,11 +394,11 @@ plot [:] [:] \
      'scale_SPhenoMRSSM_TB-5_2L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 2L FS-like' w lines ls 7, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))     t 'alpha_s uncertainty' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(min(\$8,\$10)):(max(\$8,\$10))   t 'M_t uncertainty' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$12):(\$2+\$12)             t 'scale uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):(\$2-\$12/2):(\$2+\$12/2)         t 'scale uncertainty' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))     t '' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$8,\$10)):(max(\$8,\$10))   t '' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$12,\$14)):(max(\$12,\$14)) t '{/Symbol D}{/Symbol l}^{(2)} uncertainty' w filledcurves ls 1 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$16):(\$2+\$16)             t '' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$16/2):(\$2+\$16/2)         t '' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
