@@ -38,10 +38,10 @@ template<>
 class @ModelName@_SM_Matching<Two_scale>: public Matching<Two_scale>
 {
 public:
-   @ModelName@_SM_Matching(): constraint(0), eft(0), model(0) {}
+   @ModelName@_SM_Matching(): constraint(0), eft(0), model(0), scale(0.) {}
 
-   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_)
-      :constraint(constraint_), eft(low_), model(high_) {}
+   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_, double scale_ = 0.)
+      :constraint(constraint_), eft(low_), model(high_), scale(scale_) {}
 
    virtual ~@ModelName@_SM_Matching() {}
 
@@ -50,6 +50,9 @@ public:
    
       if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
       
+      if (scale != 0.)
+         return scale;
+
       return constraint->get_scale();
    }
    
@@ -57,6 +60,8 @@ public:
    {
       constraint = constraint_;
    }
+
+   void set_scale(double scale_) { scale = scale_; }
 
    virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
       eft = (SM<Two_scale>*) low;
@@ -110,6 +115,7 @@ private:
    @ModelName@<Two_scale>* model;
    SM<Two_scale>* eft;
    Constraint<Two_scale>* constraint;
+   double scale;
 };
 
 } // namespace flexiblesusy
