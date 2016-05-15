@@ -20,10 +20,11 @@
 #define WRAPPERS_H
 
 #include <algorithm>
-#include <complex>
 #include <cmath>
+#include <complex>
 #include <functional>
 #include <limits>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <type_traits>
