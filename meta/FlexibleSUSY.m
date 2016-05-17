@@ -1271,7 +1271,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
-            particleNames = "", particleEnum = "", particleMultiplicity = "",
+            particleNames = "", particleEnum = "", particleMassEnum, particleMultiplicity = "",
             particleMixingEnum = "", particleMixingNames = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             inputParameterEnum = "", inputParameterNames = "",
@@ -1298,6 +1298,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                Cases[inputParameters, {_, {"EXTPAR", _}, ___}]
            ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
+           particleMassEnum   = TreeMasses`CreateParticleMassEnum[particles];
            particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
@@ -1331,6 +1332,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
+                            "@particleMassEnum@"   -> IndentText[WrapLines[particleMassEnum]],
                             "@particleMixingEnum@" -> IndentText[WrapLines[particleMixingEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
