@@ -319,6 +319,15 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_scale_uncertainty.dat
 
+echo "calculating parametric uncertainty from Q_match in the tower"
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_Qmatch_uncertainty.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat
+
 # calculate parametric uncertainty from delta lambda +- 1
 echo "calculating parametric uncertainty from delta in the tower"
 
