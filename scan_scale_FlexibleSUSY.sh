@@ -31,8 +31,10 @@ slha_input=$(cat ${input})
 block=$(echo "$output_fields" | awk -F [ '{ print $1 }')
 entry=$(echo "$output_fields" | awk -F '[][]' '{ print $2 }')
 
-min_value=100000000
-max_value=0
+min_value_init=100000000
+max_value_init=0
+min_value="$min_value_init"
+max_value="$max_value_init"
 
 # returns minimum of two numbers
 min() {
@@ -86,11 +88,18 @@ EOF
                        awk -f utils/print_slha_block_entry.awk -v entries="${entry}" | tail -n 1)
     }
 
-    [ "x$value" != "x-" ] && {
+    [ -n "$value" -a "x$value" != "x-" ] && {
         min_value=$(min "$min_value" "$value" | sed -e 's/[eE]+*/*10^/')
         max_value=$(max "$max_value" "$value" | sed -e 's/[eE]+*/*10^/')
     }
 done
+
+[ "x$min_value" = "x$min_value_init" -o "x$max_value" = "x$max_value_init" ] && {
+    min_value=0
+    max_value=0
+    echo "-"
+    exit 1
+}
 
 delta=$(cat <<EOF | bc
 scale = 15
