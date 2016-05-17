@@ -1,13 +1,15 @@
 #!/bin/sh
 
-[ $# -lt 4 ] && {
-    echo "Usage: $0 <spectrum-generator> <input> <output-fields> <mean-scale> [<factor>] [steps]"
+[ $# -lt 5 ] && {
+    echo "Usage: $0 <spectrum-generator> <input> <scan-fields> <output-fields> <mean-scale> [<factor>] [steps]"
     exit 1
 }
 
 sg="$1"
 shift
 input="$1"
+shift
+scan_fields="$1"
 shift
 output_fields="$1"
 shift
@@ -30,6 +32,8 @@ slha_input=$(cat ${input})
 
 block=$(echo "$output_fields" | awk -F [ '{ print $1 }')
 entry=$(echo "$output_fields" | awk -F '[][]' '{ print $2 }')
+scan_block=$(echo "$scan_fields" | awk -F [ '{ print $1 }')
+scan_entry=$(echo "$scan_fields" | awk -F '[][]' '{ print $2 }')
 
 min_value_init=100000000
 max_value_init=0
@@ -75,8 +79,8 @@ EOF
 
     output=$({ echo "$slha_input";
       cat <<EOF
-Block SMINPUTS
-   0  $scale   # renormalization scale
+Block ${scan_block}
+   ${scan_entry}  $scale   # renormalization scale
 EOF
              } | "$sg" --slha-input-file=- 2> /dev/null)
 

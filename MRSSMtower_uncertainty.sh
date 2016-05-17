@@ -33,7 +33,7 @@ mean_scale=$(echo "$slha_input" | \
 
 [ -z "$mean_scale" ] && mean_scale="173.34"
 
-delta=$(echo "$slha_input" | ./scan_scale_FlexibleSUSY.sh models/MRSSMtower/run_MRSSMtower.x - "${output_block}[${output_entry}]" "$mean_scale")
+delta=$(echo "$slha_input" | ./scan_scale_FlexibleSUSY.sh models/MRSSMtower/run_MRSSMtower.x - "${scale_block}[${scale_entry}]" "${output_block}[${output_entry}]" "$mean_scale")
 
 echo "$slha_input"
 cat <<EOF
