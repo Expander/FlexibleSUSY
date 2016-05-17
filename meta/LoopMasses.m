@@ -990,17 +990,20 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               ,
               qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
               qcdTwoLoop = N[Expand[- TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
+              body = "m_pole += twoLoop * m_pole * Power(g3,4) * input.DeltaMt;\n";
               If[dimParticle == 1,
                  treeLevelMassStr = name;
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
-                 body = "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
+                 body = body <>
+                 "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
                  "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n\n";
                  ,
                  treeLevelMassStr = name <> "(idx)";
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole, int idx) const\n{\n";
-                 body = "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
+                 body = body <>
+                 "const double p = MT_METHOD == 0 ? m_pole : " <> treeLevelMassStr <> ";\n" <>
                  "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n\n";
