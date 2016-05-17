@@ -971,6 +971,13 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
+GetMaxMass[p_] :=
+    If[GetDimension[p] == 1,
+       "m_max = std::max(m_max, " <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[p]] <> ");\n"
+       ,
+       "m_max = std::max(m_max, " <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[p]] <> ".maxCoeff());\n"
+      ];
+
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop,
@@ -990,7 +997,9 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
               ,
               qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme];
               qcdTwoLoop = N[Expand[- TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]]];
-              body = "m_pole += twoLoop * m_pole * Power(g3,4) * input.DeltaMt;\n";
+              body = "double m_max = 0.;\n" <>
+              StringJoin[GetMaxMass /@ GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates]] <> "\n" <>
+              "m_pole += twoLoop * m_pole * Power(g3,4) * input.DeltaMt * Sqr(Log(m_max/get_scale()));\n\n";
               If[dimParticle == 1,
                  treeLevelMassStr = name;
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
