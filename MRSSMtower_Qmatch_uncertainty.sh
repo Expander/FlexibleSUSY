@@ -28,8 +28,8 @@ fi
 slha_input=$(cat ${input})
 
 mean_scale=$(echo "$slha_input" | \
-                    awk -f utils/print_slha_block.awk -v block="$scale_block" | \
-                    awk -f utils/print_slha_block_entry.awk -v entries="$scale_entry" | tail -n 1)
+                    awk -f utils/print_slha_block.awk -v block="EXTPAR" | \
+                    awk -f utils/print_slha_block_entry.awk -v entries="0" | tail -n 1)
 
 [ -z "$mean_scale" ] && {
     echo "Error: mean scale not found in ${scale_block}[${scale_entry}] in the following input:" > /dev/stderr
