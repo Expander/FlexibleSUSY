@@ -191,6 +191,9 @@ CheckPoleMassesForTachyons::usage="";
 CreateHiggsMassGetters::usage="";
 CallPseudoscalarHiggsMassGetterFunction::usage="";
 
+GetRunningMassesVector::usage="";
+SetRunningMassesVector::usage="";
+
 GetCorrespondingVectorBosons::usage="returns list of vector bosons
 corresponding to a given goldstone boson";
 
@@ -2077,6 +2080,89 @@ CreatePhysicalArraySetter[masses_List, array_String] :=
            set = set <> assignment;
            paramCount += nAssignments;
            Return[set];
+          ];
+
+GetRunningMassesVector[p:FSMassMatrix[_,massESSymbols_List,_], idx_Integer, vec_String] :=
+    Module[{massMatrices, i, r, c, result = "", count = 0},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           For[i = 0, i < Length[massMatrices], i++,
+               {r, c} = GetRunningMassesVector[massMatrices[[i+1]],idx+i,vec];
+               count += c;
+               result = result <> r;
+              ];
+           {result, count}
+          ];
+
+GetRunningMassesVector[p:FSMassMatrix[___], idx_Integer, vec_String] :=
+    Module[{dim = GetDimension[GetMassEigenstate[p]], i, result = ""},
+           If[dim == 1,
+              result = vec <> "(" <> ToString[idx] <> ") = " <>
+              CConversion`ToValidCSymbolString[FlexibleSUSY`M[GetMassEigenstate[p]]] <> ";\n";
+              ,
+              For[i = 0, i < dim, i++,
+                  result = result <>
+                  vec <> "(" <> ToString[idx + i] <> ") = " <>
+                  CConversion`ToValidCSymbolString[FlexibleSUSY`M[GetMassEigenstate[p]]] <> "(" <> ToString[i] <> ");\n";
+                 ];
+             ];
+           {result, dim}
+          ];
+
+GetRunningMassesVector[massMatrices_List] :=
+    Module[{nMasses = CountNumberOfMasses[massMatrices], result = "", i, count = 0, c, r},
+           For[i = 0, i < Length[massMatrices], i++,
+               {r, c} = GetRunningMassesVector[massMatrices[[i+1]], count, "masses"];
+               count += c;
+               result = result <> r;
+              ];
+           If[count != nMasses,
+              Print["Error: count (", count , ") != nMasses (", nMasses, ")"];
+              Quit[1];
+             ];
+           "Eigen::ArrayXd masses(" <> ToString[nMasses] <> ");\n\n" <>
+           result <> "\n" <>
+           "return masses;"
+          ];
+
+SetRunningMassesVector[p:FSMassMatrix[_,massESSymbols_List,_], idx_Integer, vec_String] :=
+    Module[{massMatrices, i, r, c, result = "", count = 0},
+           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
+           For[i = 0, i < Length[massMatrices], i++,
+               {r, c} = SetRunningMassesVector[massMatrices[[i+1]],idx+i,vec];
+               count += c;
+               result = result <> r;
+              ];
+           {result, count}
+          ];
+
+SetRunningMassesVector[p:FSMassMatrix[___], idx_Integer, vec_String] :=
+    Module[{dim = GetDimension[GetMassEigenstate[p]], i, result = ""},
+           If[dim == 1,
+              result =
+              CConversion`ToValidCSymbolString[FlexibleSUSY`M[GetMassEigenstate[p]]] <> " = " <>
+              vec <> "(" <> ToString[idx] <> ");\n";
+              ,
+              For[i = 0, i < dim, i++,
+                  result = result <>
+                  CConversion`ToValidCSymbolString[FlexibleSUSY`M[GetMassEigenstate[p]]] <>
+                  "(" <> ToString[i] <> ") = " <> vec <> "(" <> ToString[idx + i] <> ");\n";
+                 ];
+             ];
+           {result, dim}
+          ];
+
+SetRunningMassesVector[massMatrices_List, vec_String:"masses"] :=
+    Module[{result = "", i, count = 0, c, r},
+           For[i = 0, i < Length[massMatrices], i++,
+               {r, c} = SetRunningMassesVector[massMatrices[[i+1]], count, vec];
+               count += c;
+               result = result <> r;
+              ];
+           If[count != CountNumberOfMasses[massMatrices],
+              Print["Error: count (", count , ") != nMasses (", CountNumberOfMasses[massMatrices], ")"];
+              Quit[1];
+             ];
+           result
           ];
 
 End[];
