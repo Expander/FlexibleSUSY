@@ -363,6 +363,7 @@ paste scale_MRSSMtower_TB-5.dat \
       scale_MRSSMtower_TB-5_delta_low.dat \
       scale_MRSSMtower_TB-5_delta_high.dat \
       scale_MRSSMtower_TB-5_scale_uncertainty.dat \
+      scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat \
       > scale_MRSSMtower_TB-5.dat.$$
 
 mv scale_MRSSMtower_TB-5.dat.$$ scale_MRSSMtower_TB-5.dat
@@ -407,7 +408,8 @@ plot [0.09:] [:] \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))     t '' w filledcurves ls 4 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$8,\$10)):(max(\$8,\$10))   t '' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$12,\$14)):(max(\$12,\$14)) t '{/Symbol D}{/Symbol l}^{(2)} uncertainty' w filledcurves ls 1 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$16/2):(\$2+\$16/2)         t '' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$16/2):(\$2+\$16/2)         t '' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$18/2):(\$2+\$18/2)         t '' w filledcurves ls 2 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
