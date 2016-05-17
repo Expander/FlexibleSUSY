@@ -138,6 +138,18 @@ Block SMINPUTS               # Standard Model inputs
     6   174.320              # mtop(pole)
 "
 
+slha_templ_spheno_2L_DeltaMt_low="
+${slha_templ_spheno_2L}
+Block EXTPAR
+    104   10                 # DeltaMt
+"
+
+slha_templ_spheno_2L_DeltaMt_high="
+${slha_templ_spheno_2L}
+Block EXTPAR
+    104   -10                # DeltaMt
+"
+
 slha_templ_delta_low="
 ${slha_templ}
 Block EXTPAR
@@ -299,6 +311,58 @@ echo "$slha_templ_Mt_high" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_Mt_high.dat
 
+echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM"
+
+{ echo "$slha_templ";
+  cat <<EOF
+Block EXTPAR
+   104  100  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_DeltaMt_high.dat
+
+{ echo "$slha_templ";
+  cat <<EOF
+Block EXTPAR
+   104  -100  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_DeltaMt_low.dat
+
+echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM SPheno-like"
+
+{ echo "$slha_templ_spheno_like";
+  cat <<EOF
+Block EXTPAR
+   104  100  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_SPheno-like_DeltaMt_high.dat
+
+{ echo "$slha_templ_spheno_like";
+  cat <<EOF
+Block EXTPAR
+   104  -100  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_SPheno-like_DeltaMt_low.dat
+
 # calculate parametric uncertainty from Q
 echo "calculating parametric uncertainty from Q in SPheno"
 
@@ -344,6 +408,20 @@ echo "$slha_templ_delta_high" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_delta_high.dat
+
+paste scale_MRSSMMSUSY_TB-5.dat \
+      scale_MRSSMMSUSY_TB-5_DeltaMt_low.dat \
+      scale_MRSSMMSUSY_TB-5_DeltaMt_high.dat \
+      > scale_MRSSMMSUSY_TB-5.dat.$$
+
+mv scale_MRSSMMSUSY_TB-5.dat.$$ scale_MRSSMMSUSY_TB-5.dat
+
+paste scale_MRSSMMSUSY_TB-5_SPheno-like.dat \
+      scale_MRSSMMSUSY_TB-5_SPheno-like_DeltaMt_low.dat \
+      scale_MRSSMMSUSY_TB-5_SPheno-like_DeltaMt_high.dat \
+      > scale_MRSSMMSUSY_TB-5_SPheno-like.dat.$$
+
+mv scale_MRSSMMSUSY_TB-5_SPheno-like.dat.$$ scale_MRSSMMSUSY_TB-5_SPheno-like.dat
 
 paste scale_SPhenoMRSSM_TB-5_2L.dat \
       scale_SPhenoMRSSM_TB-5_2L_AS_low.dat \
@@ -409,7 +487,9 @@ plot [0.09:] [:] \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$8,\$10)):(max(\$8,\$10))   t '' w filledcurves ls 5 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(min(\$12,\$14)):(max(\$12,\$14)) t '{/Symbol D}{/Symbol l}^{(2)} uncertainty' w filledcurves ls 1 dt 1 lw 0 fs transparent solid 0.3, \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$16/2):(\$2+\$16/2)         t '' w filledcurves ls 6 dt 1 lw 0 fs transparent solid 0.3, \
-     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$18/2):(\$2+\$18/2)         t '' w filledcurves ls 2 dt 1 lw 0 fs transparent solid 0.3
+     'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):(\$2-\$18/2):(\$2+\$18/2)         t 'Q_{match} uncertainty' w filledcurves ls 2 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_MRSSMMSUSY_TB-5.dat'             u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))     t '{/Symbol D}M_t uncertainty' w filledcurves ls 3 dt 1 lw 0 fs transparent solid 0.3, \
+     'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):(min(\$4,\$6)):(max(\$4,\$6))     t '' w filledcurves ls 3 dt 1 lw 0 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
