@@ -181,6 +181,88 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_parameter_enum )
          BOOST_CHECK_EQUAL(mssm.get_##p(i), p(i));                      \
    }                                                                    \
 
+#define TEST_PHYSICAL_SINGLET(p)                                        \
+   {                                                                    \
+      CMSSM<Two_scale> mssm;                                            \
+      BOOST_CHECK_EQUAL(mssm.get_physical().p, 0.0);                    \
+      Eigen::ArrayXd masses(mssm.get_physical().get_masses());          \
+      const double value = get_random();                                \
+      masses(CMSSM_info::p) = value;                                    \
+      mssm.get_physical().set_masses(masses);                           \
+      BOOST_CHECK_EQUAL(mssm.get_physical().p, value);                  \
+   }
+
+#define TEST_PHYSICAL_MULTIPLET_2(p)                                    \
+   {                                                                    \
+      CMSSM<Two_scale> mssm;                                            \
+      for (int i = 0; i < 2; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), 0.0);              \
+      Eigen::ArrayXd masses(mssm.get_physical().get_masses());          \
+      Eigen::Array<double,2,1> p;                                       \
+      for (int i = 0; i < 2; i++)                                       \
+         p(i) = get_random();                                           \
+      masses(CMSSM_info::p##_1) = p(0);                                 \
+      masses(CMSSM_info::p##_2) = p(1);                                 \
+      mssm.get_physical().set_masses(masses);                           \
+      for (int i = 0; i < 2; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), p(i));             \
+   }                                                                    \
+
+#define TEST_PHYSICAL_MULTIPLET_3(p)                                    \
+   {                                                                    \
+      CMSSM<Two_scale> mssm;                                            \
+      for (int i = 0; i < 3; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), 0.0);              \
+      Eigen::ArrayXd masses(mssm.get_physical().get_masses());          \
+      Eigen::Array<double,3,1> p;                                       \
+      for (int i = 0; i < 3; i++)                                       \
+         p(i) = get_random();                                           \
+      masses(CMSSM_info::p##_1) = p(0);                                 \
+      masses(CMSSM_info::p##_2) = p(1);                                 \
+      masses(CMSSM_info::p##_3) = p(2);                                 \
+      mssm.get_physical().set_masses(masses);                           \
+      for (int i = 0; i < 3; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), p(i));             \
+   }                                                                    \
+
+#define TEST_PHYSICAL_MULTIPLET_4(p)                                    \
+   {                                                                    \
+      CMSSM<Two_scale> mssm;                                            \
+      for (int i = 0; i < 4; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), 0.0);              \
+      Eigen::ArrayXd masses(mssm.get_physical().get_masses());          \
+      Eigen::Array<double,4,1> p;                                       \
+      for (int i = 0; i < 4; i++)                                       \
+         p(i) = get_random();                                           \
+      masses(CMSSM_info::p##_1) = p(0);                                 \
+      masses(CMSSM_info::p##_2) = p(1);                                 \
+      masses(CMSSM_info::p##_3) = p(2);                                 \
+      masses(CMSSM_info::p##_4) = p(3);                                 \
+      mssm.get_physical().set_masses(masses);                           \
+      for (int i = 0; i < 4; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), p(i));             \
+   }                                                                    \
+
+#define TEST_PHYSICAL_MULTIPLET_6(p)                                    \
+   {                                                                    \
+      CMSSM<Two_scale> mssm;                                            \
+      for (int i = 0; i < 6; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), 0.0);              \
+      Eigen::ArrayXd masses(mssm.get_physical().get_masses());          \
+      Eigen::Array<double,6,1> p;                                       \
+      for (int i = 0; i < 6; i++)                                       \
+         p(i) = get_random();                                           \
+      masses(CMSSM_info::p##_1) = p(0);                                 \
+      masses(CMSSM_info::p##_2) = p(1);                                 \
+      masses(CMSSM_info::p##_3) = p(2);                                 \
+      masses(CMSSM_info::p##_4) = p(3);                                 \
+      masses(CMSSM_info::p##_5) = p(4);                                 \
+      masses(CMSSM_info::p##_6) = p(5);                                 \
+      mssm.get_physical().set_masses(masses);                           \
+      for (int i = 0; i < 6; i++)                                       \
+         BOOST_CHECK_EQUAL(mssm.get_physical().p(i), p(i));             \
+   }                                                                    \
+
 BOOST_AUTO_TEST_CASE( test_CMSSM_mass_enum )
 {
    // This test checks that the order of the enum entries
@@ -223,4 +305,23 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_mass_enum )
    TEST_MULTIPLET_6(MSd);
    TEST_MULTIPLET_6(MSe);
    TEST_MULTIPLET_3(MSv);
+
+   TEST_PHYSICAL_SINGLET(MVP);
+   TEST_PHYSICAL_SINGLET(MVZ);
+   TEST_PHYSICAL_SINGLET(MVWm);
+   TEST_PHYSICAL_SINGLET(MVG);
+   TEST_PHYSICAL_SINGLET(MGlu);
+   TEST_PHYSICAL_MULTIPLET_2(Mhh);
+   TEST_PHYSICAL_MULTIPLET_2(MAh);
+   TEST_PHYSICAL_MULTIPLET_2(MHpm);
+   TEST_PHYSICAL_MULTIPLET_3(MFu);
+   TEST_PHYSICAL_MULTIPLET_3(MFd);
+   TEST_PHYSICAL_MULTIPLET_3(MFe);
+   TEST_PHYSICAL_MULTIPLET_3(MFv);
+   TEST_PHYSICAL_MULTIPLET_4(MChi);
+   TEST_PHYSICAL_MULTIPLET_2(MCha);
+   TEST_PHYSICAL_MULTIPLET_6(MSu);
+   TEST_PHYSICAL_MULTIPLET_6(MSd);
+   TEST_PHYSICAL_MULTIPLET_6(MSe);
+   TEST_PHYSICAL_MULTIPLET_3(MSv);
 }
