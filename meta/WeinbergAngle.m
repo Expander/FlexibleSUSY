@@ -93,13 +93,15 @@ Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Lengt
 
 (*returns coefficients of Higgs-top-top vertices*)
 HiggsTopVertices[higgsName_] :=
-    Module[{indexRange, indexList, higgsVertices},
+   Module[{indexRange, indexList, higgsVertices, rule},
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {}, indexRange = {1}];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
-           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[TreeMasses`GetUpQuark[{3}]], TreeMasses`GetUpQuark[{3}], higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]] (*//. SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}]*);
-           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}} /; (*(coeffPL/I * Susyno`LieGroups`conj[coeffPL/I] === coeffPR/I * Susyno`LieGroups`conj[coeffPR/I])
-                                 &&*) !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, coeffPL/I}];
+           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[TreeMasses`GetUpQuark[{3}]], TreeMasses`GetUpQuark[{3}], higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]];
+           rule = SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}];
+           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}}
+                                 /; ((coeffPL/I //. rule) * Susyno`LieGroups`conj[coeffPL/I //. rule] === (coeffPR/I //. rule) * Susyno`LieGroups`conj[coeffPR/I //. rule])
+                                    && !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, coeffPL/I}];
            Return[higgsVertices];
           ];
 
