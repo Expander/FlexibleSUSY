@@ -909,7 +909,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
-            getDRbarMassesVector = "", setDRbarMassesVector = "",
             checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
@@ -1061,8 +1060,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
-           getDRbarMassesVector         = TreeMasses`GetRunningMassesVector[massMatrices];
-           setDRbarMassesVector         = TreeMasses`SetRunningMassesVector[massMatrices];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
@@ -1086,8 +1083,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@reorderDRbarMasses@"     -> IndentText[reorderDRbarMasses],
                             "@reorderPoleMasses@"      -> IndentText[reorderPoleMasses],
-                            "@getDRbarMassesVector@"   -> IndentText[getDRbarMassesVector],
-                            "@setDRbarMassesVector@"   -> IndentText[setDRbarMassesVector],
                             "@checkPoleMassesForTachyons@" -> IndentText[checkPoleMassesForTachyons],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],

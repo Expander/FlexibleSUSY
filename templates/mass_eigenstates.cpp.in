@@ -653,14 +653,14 @@ void CLASSNAME::clear()
    problems.clear();
 }
 
-void CLASSNAME::set_DRbar_masses(const Eigen::ArrayXd& masses)
+void CLASSNAME::set_DRbar_masses(const Eigen::ArrayXd& pars)
 {
-@setDRbarMassesVector@
+@setMasses@
 }
 
 Eigen::ArrayXd CLASSNAME::get_DRbar_masses() const
 {
-@getDRbarMassesVector@
+@getMasses@
 }
 
 std::string CLASSNAME::name() const
