@@ -239,11 +239,13 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
    if (number_of_loops > 0)
       deltaRhoHat1Loop = 1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz));
 
-   double deltaRhoHat2LoopSM = 0.;
+   std::complex<double> deltaRhoHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
 @deltaRhoHat2LoopSM@   }
 
-   const double deltaRhoHat = deltaRhoHat1Loop + deltaRhoHat2LoopSM;
+   const double deltaRhoHat2LoopSMreal = std::real(deltaRhoHat2LoopSM);
+
+   const double deltaRhoHat = deltaRhoHat1Loop + deltaRhoHat2LoopSMreal;
 
    return deltaRhoHat;
 }
@@ -273,11 +275,13 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, do
    if (number_of_loops > 0)
       deltaRHat1Loop = rhohat_ratio * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
 
-   double deltaRHat2LoopSM = 0.;
+   std::complex<double> deltaRHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
 @deltaRHat2LoopSM@   }
 
-   const double deltaRHat = deltaRHat1Loop + deltaRHat2LoopSM;
+   const double deltaRHat2LoopSMreal = std::real(deltaRHat2LoopSM);
+
+   const double deltaRHat = deltaRHat1Loop + deltaRHat2LoopSMreal;
 
    return deltaRHat;
 }
