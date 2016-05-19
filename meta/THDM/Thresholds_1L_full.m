@@ -64,13 +64,13 @@ Begin["THDMThresholds1L`Private`"];
 
 GetTHDMThresholds1LFlags[] := {
     flagSferm    ->  1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd -> -1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
+    flagSfermZdd ->  1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
     flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
-    flagSfermZuu -> -1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
+    flagSfermZuu ->  1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
     flagIno      ->  1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
+    flagInoZdd   ->  1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
     flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
-    flagInoZuu   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
+    flagInoZuu   ->  1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
     flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
 };
 
@@ -415,8 +415,8 @@ GetTHDMThresholds1LLoopFunctions[] := {
        ],
 
     DB0[m1_, m2_] :> If[PossibleZeroQ[m1 - m2],
-       1/(6*m2^2),
-       (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
+       -1/(6*m2^2),
+       -(m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
        ],
 
     C0[m1_, m2_, m3_] :> Which[
@@ -469,10 +469,10 @@ GetTHDMThresholds1LLoopFunctions[] := {
        ),
 
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
-       2/3 - 2 Log[mu^2/m2^2],
-       (- 2 Log[mu^2/m1^2]
-        - Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
-        - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
+       -2/3 + 2 Log[mu^2/m2^2],
+       (+ 2 Log[mu^2/m1^2]
+        + Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
+        + (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
        ]
 };
 
