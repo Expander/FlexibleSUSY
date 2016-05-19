@@ -57,8 +57,12 @@ GetTHDMThresholds1LFlags::usage = "Returns list of replacement rules
  for the flags which mark the different contributions.";
 
 GetTHDMThresholds1LLoopFunctions::usage = "Returns list of replacement
- rules for the loop functions defined in Eq. (130)-(131) of
- arxiv:0901.2065.";
+ rules for the loop functions defined in Eq. (B16)-(B17) of
+ Phys. Rev. D 84 (2011) 034030.
+
+ Note: The loop functions B0' and W in Eq. (130) arxiv:0901.2065v1
+ carry the wrong global sign.
+";
 
 Begin["THDMThresholds1L`Private`"];
 
