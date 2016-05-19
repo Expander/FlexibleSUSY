@@ -10,8 +10,7 @@ EndPackage[];
 {B0, DB0, C0, D0, D2tilde, D4tilde, W};
 
 (* flags *)
-{ flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
-  flagInoZdd, flagInoZud, flagInoZuu, flagdg };
+{ flagSferm, flagIno, flagZdd, flagZud, flagZuu, flagdg };
 
 (* options *)
 { coefficients, flags, loopFunctions, loopOrder, sumHead };
@@ -68,13 +67,10 @@ Begin["THDMThresholds1L`Private`"];
 
 GetTHDMThresholds1LFlags[] := {
     flagSferm    ->  1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd ->  1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
-    flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
-    flagSfermZuu ->  1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
     flagIno      ->  1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd   ->  1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
-    flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
-    flagInoZuu   ->  1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
+    flagZdd      ->  1, (* Enable/disable field renormalization Zdd *)
+    flagZud      ->  0, (* Enable/disable field renormalization Zud *)
+    flagZuu      ->  1, (* Enable/disable field renormalization Zuu *)
     flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
 };
 
@@ -484,9 +480,9 @@ GetTHDMThresholds1LLoopFunctions[] := {
 
 dgY := -dZB/2 flagdg;
 dg2 := -dZW/2 flagdg;
-dZdd := flagSfermZdd dZddSferm + flagInoZdd dZddIno;
-dZud := flagSfermZud dZudSferm + flagInoZud dZudIno;
-dZuu := flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
+dZdd := flagSferm flagZdd dZddSferm + flagIno flagZdd dZddIno;
+dZud := flagSferm flagZud dZudSferm + flagIno flagZud dZudIno;
+dZuu := flagSferm flagZuu dZuuSferm + flagIno flagZuu dZuuIno;
 (* Eq. (117) *)
 dZW := Module[{i},
     g2^2 kappa/6 (
