@@ -728,7 +728,7 @@ lamBar[[6]] = lamHat[[6]] +
     loopOrder1 (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    loopOrder1 ((g2^2 + gY^2)/4 dZud);
+    loopOrder1 ((g2^2 + gY^2)/4 Conjugate[dZud]);
 
 Options[GetTHDMThresholds1L] = {
     coefficients -> GetTHDMThresholds1LCoefficients[],
