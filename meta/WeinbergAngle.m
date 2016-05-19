@@ -93,11 +93,12 @@ Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Lengt
 
 (*returns coefficients of Higgs-top-top vertices*)
 HiggsTopVertices[higgsName_] :=
-   Module[{indexRange, indexList, higgsVertices, rule},
+    Module[{indexRange, indexList, topQuark, higgsVertices, rule},
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {}, indexRange = {1}];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
-           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[TreeMasses`GetUpQuark[{3}]], TreeMasses`GetUpQuark[{3}], higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]];
+           topQuark = Level[TreeMasses`GetUpQuark[{3}], {Boole[ListQ[TreeMasses`GetUpQuark[{3}]]]}][[1]];
+           higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[topQuark], topQuark, higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]];
            rule = SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}];
            higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}}
                                  /; ((coeffPL/I //. rule) * Susyno`LieGroups`conj[coeffPL/I //. rule] === (coeffPR/I //. rule) * Susyno`LieGroups`conj[coeffPR/I //. rule])
