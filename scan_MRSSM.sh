@@ -466,9 +466,12 @@ mv scale_MRSSMtower_TB-5.dat.$$ scale_MRSSMtower_TB-5.dat
 # rm -f scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
 
 plot_scale="
-set terminal pdfcairo
+set terminal pdfcairo size 5in,3.5in
+set tmargin 4
+set border back
 set output 'scale_MRSSM.pdf'
-set key box bottom right width -2
+#set key box top left width -2
+set key box top left width -2 at graph 0.01, graph 1.2 opaque
 set logscale x
 set grid
 
