@@ -33,15 +33,16 @@ plot [0.091:] [60:140] \
      'scale_MSSM.dat' u (\$1/1000):4 t 'FlexibleSUSY/MSSM' w lines ls 3, \
      'scale_MSSM.dat' u (\$1/1000):5 t 'FlexibleSUSY/HSSUSY' w lines ls 2, \
      'scale_MSSM.dat' u (\$1/1000):6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
-     'scale_MSSM.dat' u (\$1/1000):7 t 'FlexibleSUSY/MSSM SPheno-like' w lines ls 5, \
-     'scale_MSSM.dat' u (\$1/1000):12 t 'SPheno/MSSM' w lines ls 6, \
-     'scale_MSSM.dat' u (\$1/1000):13 t 'SPheno/MSSM FS-like' w lines ls 7, \
-     'scale_MSSM.dat' u (\$1/1000):14 t 'FlexibleSUSY/MSSM yt(MS)' w points ls 12, \
-     'scale_MSSM.dat' u (\$1/1000):15 t 'FlexibleSUSY/MSSM yt(MS) SPheno-like' w points ls 13, \
+     'scale_MSSM.dat' u (\$1/1000):12 t 'SPheno 3.3.8' w lines ls 6, \
+     'scale_MSSM.dat' u (\$1/1000):14 t 'FlexibleSUSY/MSSM m_t(M_S)' w points ls 12, \
+     'scale_MSSM.dat' u (\$1/1000):15 t 'FlexibleSUSY/MSSM m_t(M_S) SPheno-like' w points ls 13, \
      'scale_MSSM.dat' u (\$1/1000):8 t 'FeynHiggs 2.11.3' w lines ls 8, \
      'scale_MSSM.dat' u (\$1/1000):(\$8-\$9):(\$8+\$9) t 'FeynHiggs uncertainty' w filledcurves ls 9 fs transparent solid 0.3, \
      'scale_MSSM.dat' u (\$1/1000):10 t 'SUSYHD 1.0.2' w lines ls 10, \
      'scale_MSSM.dat' u (\$1/1000):(\$10-\$11):(\$10+\$11) t 'SUSYHD uncertainty' w filledcurves ls 11 fs transparent solid 0.3
+
+#     'scale_MSSM.dat' u (\$1/1000):7 t 'FlexibleSUSY/MSSM SPheno-like' w lines ls 5, \
+#     'scale_MSSM.dat' u (\$1/1000):13 t 'SPheno/MSSM FS-like' w lines ls 7, \
 "
 
 echo "$plot_scale" | gnuplot
