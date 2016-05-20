@@ -209,6 +209,20 @@ echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMMSUSY_TB-5_SPheno-like.dat
 
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSYYuatMS/run_MRSSMMSUSYYuatMS.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSYYuatMS_TB-5.dat
+
+echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MRSSMMSUSYYuatMS/run_MRSSMMSUSYYuatMS.x \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSYYuatMS_TB-5_SPheno-like.dat
+
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2 \
     --scan-range=MINPAR[1]=91~100000:$n_points \
@@ -465,6 +479,11 @@ set style line 4 lt 1 dt 3 lw 2 lc rgb '#FFBF00'
 set style line 5 lt 1 dt 5 lw 2 lc rgb '#FF00FF'
 set style line 6 lt 1 dt 6 lw 2 lc rgb '#00FFFF'
 set style line 7 lt 1 dt 7 lw 2 lc rgb '#000000'
+set style line 8 lt 1 dt 4 lw 2 lc rgb '#00FF00'
+set style line 9 lt 1 dt 1 lw 0 lc rgb '#00FF00'
+set style line 10 lt 1 dt 2 lw 2 lc rgb '#9C4C17'
+set style line 12 lt 1 dt 8 lw 1 lc rgb '#000000' pt 1
+set style line 13 lt 1 dt 9 lw 1 lc rgb '#000000' pt 2
 
 set xlabel 'M_S / TeV'
 set ylabel 'M_h / GeV'
@@ -472,10 +491,12 @@ set ylabel 'M_h / GeV'
 min(x,y) = x < y ? x : y
 max(x,y) = x < y ? y : x
 
-plot [0.09:] [:] \
+plot [:] [:] \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
      'scale_MRSSMMSUSY_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
      'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM 1L SPheno-like' w lines ls 5, \
+     'scale_MRSSMMSUSYYuatMS_TB-5.dat'       u (\$1/1000):2 t 'FS/MRSSM m_t(M_S)' w points ls 12, \
+     'scale_MRSSMMSUSYYuatMS_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM m_t(M_S) SPheno-like' w points ls 13, \
      'scale_SPhenoMRSSM_TB-5_1L.dat'         u (\$1/1000):2 t 'SPheno/MRSSM 1L' w lines ls 2, \
      'scale_SPhenoMRSSM_TB-5_2L.dat'         u (\$1/1000):2 t 'SPheno/MRSSM 2L' w lines ls 4, \
      'scale_SPhenoMRSSM_TB-5_1L_FSlike.dat'  u (\$1/1000):2 t 'SPheno/MRSSM 1L FS-like' w lines ls 6, \
