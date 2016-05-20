@@ -1024,7 +1024,7 @@ check_multiarch() {
     fi
 
     if test "x$linuxdist" = "xmultiarch"; then
-        if $(which dpkg-architecture > /dev/null 2>&1) ; then
+        if type dpkg-architecture > /dev/null 2>&1 ; then
             if $(dpkg-architecture -qDEB_HOST_MULTIARCH > /dev/null 2>&1) ; then
                 checking_msg "dpkg-architecture"
                 debmultiarch=$(dpkg-architecture -qDEB_HOST_MULTIARCH 2> /dev/null)
