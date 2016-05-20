@@ -1,12 +1,18 @@
 
 BeginPackage["WeinbergAngle`", {"SARAH`", "CConversion`", "Parameters`", "TreeMasses`"}];
 
+GetBottomMass::usage="";
+GetTopMass::usage="";
+
 ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 deltaRhoHat2LoopSM::usage="";
 deltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
 
 Begin["`Private`"];
+
+GetBottomMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
+GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
 
 FindMassZ2[masses_List] :=
     FindMass2[masses, SARAH`VectorZ];

@@ -32,6 +32,7 @@
 
 namespace flexiblesusy {
 
+#define MODEL model
 #define MODELPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define DERIVEDPARAMETER(p) model->p()
@@ -587,7 +588,7 @@ double @ModelName@_weinberg_angle::rho_2(double r)
 double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@(double p)
 {
    const double mt      = sm_parameters.mt_pole;
-   const double mtDRbar = model->get_M@TopQuark@(2);
+   const double mtDRbar = @GetTopMass@;
    const double pizzt   = Re(model->self_energy_@VectorZ@(p));
 
    double pizzt_corrected = pizzt;
@@ -611,7 +612,7 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@(double p)
 double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@(double p)
 {
    const double mt      = sm_parameters.mt_pole;
-   const double mtDRbar = model->get_M@TopQuark@(2);
+   const double mtDRbar = @GetTopMass@;
    const double piwwt   = Re(model->self_energy_@VectorW@(p));
 
    double piwwt_corrected = piwwt;
@@ -664,7 +665,7 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_top(double p,
 double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@_top(double p, double mt)
 {
    const double q  = model->get_scale();
-   const double mb = model->get_M@BottomQuark@(2);
+   const double mb = @GetBottomMass@;
    const double Nc = 3.0;
    const double g2 = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
 

@@ -737,6 +737,8 @@ WriteWeinbergAngleClass[files_List] :=
                  { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRhoHat2LoopSM[]]]],
                    "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRHat2LoopSM[]]]],
                    "@RhoHatTree@"         -> IndentText[IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]]],
+                   "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
+                   "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];

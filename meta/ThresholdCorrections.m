@@ -5,6 +5,7 @@ CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
 CalculateThetaW::usage="";
+GetParameter::usage="";
 RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
