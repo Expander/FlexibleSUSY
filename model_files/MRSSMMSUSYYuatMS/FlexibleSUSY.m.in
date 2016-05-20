@@ -1,5 +1,5 @@
 
-FSModelName = "MRSSMMSUSY";
+FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MRSSM;
 AutomaticInputAtMSUSY = False;
