@@ -24,6 +24,7 @@
 #include "@ModelName@_susy_scale_constraint.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
+#include "lowe.h"
 
 namespace flexiblesusy {
 
@@ -36,11 +37,13 @@ template<>
 class @ModelName@_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_susy_scale_constraint();
-   @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*);
+   @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*, const softsusy::QedQcd&);
    virtual ~@ModelName@_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
+   const softsusy::QedQcd& get_sm_parameters() const;
+   void set_sm_parameters(const softsusy::QedQcd&);
 
    void clear();
    double get_initial_scale_guess() const;
@@ -55,6 +58,11 @@ private:
    double scale;
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
+   softsusy::QedQcd qedqcd;
+
+   void calculate_@UpYukawa@_DRbar();
+   void calculate_@DownYukawa@_DRbar();
+   void calculate_@ElectronYukawa@_DRbar();
 };
 
 } // namespace flexiblesusy

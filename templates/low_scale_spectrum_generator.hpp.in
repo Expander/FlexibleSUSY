@@ -106,6 +106,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    low_scale_constraint .set_model(&model);
 
    low_scale_constraint .set_sm_parameters(qedqcd);
+   susy_scale_constraint.set_sm_parameters(qedqcd);
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
