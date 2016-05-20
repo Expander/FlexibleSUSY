@@ -37,10 +37,10 @@ Setup a FlexibleSUSY model
 
 See `./createmodel --help` for more details.  Afterwards there will be
 
-- a model directory models/<model>/
-- a makefile module models/<model>/module.mk
-- a Mathematica start script models/<model>/start.m
-- and a FlexibleSUSY model file models/<model>/FlexibleSUSY.m
+- a model directory <code>models/\<model\>/</code>
+- a makefile module <code>models/\<model\>/module.mk</code>
+- a Mathematica start script <code>models/\<model\>/start.m</code>
+- and a FlexibleSUSY model file <code>models/\<model\>/FlexibleSUSY.m</code>
 
 To modify the model details (input parameters, boundary conditions,
 etc.), please edit the FlexibleSUSY model file

@@ -115,6 +115,7 @@ Root_finder<dimension>::Root_finder()
  * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
+ * @param solver_type_ GSL multiroot solver type
  */
 template <std::size_t dimension>
 Root_finder<dimension>::Root_finder(
