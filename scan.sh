@@ -450,7 +450,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like"
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like" "MSSMMuBMuYuatMS" "MSSMMuBMuYuatMSSPheno"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -498,6 +498,14 @@ EOF
 
     WRITE_EFT=0
     MTmethod=0
+    MhMSSMMuBMuYuatMS=$(run_sg "models/MSSMMuBMuYuatMS/run_MSSMMuBMuYuatMS.x")
+
+    WRITE_EFT=0
+    MTmethod=1
+    MhMSSMMuBMuYuatMSSPheno=$(run_sg "models/MSSMMuBMuYuatMS/run_MSSMMuBMuYuatMS.x")
+
+    WRITE_EFT=0
+    MTmethod=0
     MhHSSUSY=$(run_sg "models/HSSUSY/run_HSSUSY.x")
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
@@ -513,6 +521,6 @@ EOF
     MhSPheno=$(run_spheno "./SPhenoMSSM")
     MhSPhenoHacked=$(run_spheno "./SPhenoMSSM_FlexibleSUSY_like")
 
-    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked"
+    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked" "$MhMSSMMuBMuYuatMS" "$MhMSSMMuBMuYuatMSSPheno"
 
 done
