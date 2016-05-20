@@ -466,12 +466,12 @@ mv scale_MRSSMtower_TB-5.dat.$$ scale_MRSSMtower_TB-5.dat
 # rm -f scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
 
 plot_scale="
-set terminal pdfcairo size 5in,3.5in
-set tmargin 4
+set terminal pdfcairo size 5in,4in
+set tmargin 7
 set border back
-set output 'scale_MRSSM.pdf'
+set output 'scale_MRSSM_uncertainty.pdf'
 #set key box top left width -2
-set key box top left width -2 at graph 0.01, graph 1.2 opaque
+set key box top left width -2 at graph 0.01, graph 1.35 opaque
 set logscale x
 set grid
 
@@ -494,7 +494,7 @@ set ylabel 'M_h / GeV'
 min(x,y) = x < y ? x : y
 max(x,y) = x < y ? y : x
 
-plot [:] [:] \
+plot [0.1:] [:] \
      'scale_MRSSMtower_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM-tower' w lines ls 1, \
      'scale_MRSSMMSUSY_TB-5.dat'             u (\$1/1000):2 t 'FS/MRSSM 1L' w lines ls 3, \
      'scale_MRSSMMSUSY_TB-5_SPheno-like.dat' u (\$1/1000):2 t 'FS/MRSSM 1L SPheno-like' w lines ls 5, \
