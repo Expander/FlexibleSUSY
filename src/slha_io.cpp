@@ -190,7 +190,7 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
  * Fill struct of extra physical input parameters from SLHA object
  * (FlexibleSUSYInput block)
  *
- * @param settings struct of physical input parameters
+ * @param input struct of physical input parameters
  */
 void SLHA_io::fill(Physical_input& input) const
 {

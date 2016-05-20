@@ -27,6 +27,7 @@ namespace flexiblesusy {
 
 namespace @ModelName@_info {
 @particleEnum@
+@particleMassEnum@
 @parameterEnum@
 @particleMixingEnum@
 @inputParameterEnum@

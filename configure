@@ -285,7 +285,7 @@ log_package_information() {
 
 #_____________________________________________________________________
 guess_machine_word_size() {
-    local chip=$(uname -m | tr '[A-Z]' '[a-z]')
+    local chip="$(uname -m | tr '[A-Z]' '[a-z]')"
     case "$chip" in
         *32|i[36]86)
              machine_word_size="32"; return 0 ;;
@@ -1024,7 +1024,7 @@ check_multiarch() {
     fi
 
     if test "x$linuxdist" = "xmultiarch"; then
-        if $(which dpkg-architecture > /dev/null 2>&1) ; then
+        if type dpkg-architecture > /dev/null 2>&1 ; then
             if $(dpkg-architecture -qDEB_HOST_MULTIARCH > /dev/null 2>&1) ; then
                 checking_msg "dpkg-architecture"
                 debmultiarch=$(dpkg-architecture -qDEB_HOST_MULTIARCH 2> /dev/null)
@@ -2089,7 +2089,7 @@ enable_defines() {
     fi
 
     for a in ${ADDONS}; do
-        local addon_name=$(basename ${a})
+        local addon_name="$(basename ${a})"
         DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
     done
 }

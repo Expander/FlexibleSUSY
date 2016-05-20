@@ -2,7 +2,7 @@
 \page addons Addons
 \tableofcontents
 
-\section addons Addons
+\section addons_sec Addons
 
 A FlexibleSUSY addon is a program or library, which uses parts of the
 FlexibleSUSY libraries or the generated models.  An addon can be
