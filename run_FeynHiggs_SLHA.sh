@@ -15,13 +15,61 @@ shift
 Xt="$1"
 
 fh="${fh_dir}/FeynHiggs"
-fh_table="${fh_dir}/table"
 fh_in=fh.in
 fh_out="${fh_in}.fh-001"
 
+# calculate At for Mu = MS
 At=$(echo "scale=16; $MS * $Xt + $MS / $TB" | bc -l)
-Au=$(echo "scale=16; $MS/$TB" | bc -l)
+# calculate Ab for Mu = MS and Xb = 0
 Ab=$(echo "scale=16; $MS * $TB" | bc -l)
+
+print_slha_block_awk='
+BEGIN {
+   is_block = 0
+   if (block == "") {
+      print "Error: block name not defined"
+      print "   Please define the block name with -v block=<block-name>"
+      exit 1
+   }
+}
+{
+   pattern     = "^block[[:blank:]]*" tolower(block) "([^[:graph:]].*)?$"
+   not_pattern = "^block[[:blank:]]*.*$"
+
+   if (tolower($0) ~ pattern) {
+      is_block = 1
+   } else if (tolower($0) ~ not_pattern) {
+      is_block = 0
+   }
+
+   if (is_block)
+      print $0
+}
+'
+
+print_slha_block_entry_awk='
+BEGIN {
+   if (entries == "") {
+      print "Error: entries not defined"
+      print "   Please define the block entries with -v entries=<entries> ."
+      print "   Multiple entries can be given using : as separator."
+      exit 1
+   }
+
+   len = split(entries,k,":");
+}
+{
+  matches = 1;
+
+  for (i in k) {
+     if ($(i) != k[i])
+        matches = 0
+  }
+
+  if (matches == 1)
+     print $(len + 1)
+}
+'
 
 cat <<EOF > "${fh_in}"
 Block MINPAR                 # Input parameters
@@ -79,11 +127,11 @@ DMh=
 ${fh} "${fh_in}" 400203110 >/dev/null 2>&1
 
 if [ -e "${fh_out}" ] ; then
-    Mh=$(awk -f utils/print_slha_block.awk -v block=MASS "${fh_out}" | \
-                awk -f utils/print_slha_block_entry.awk -v entries=25)
+    Mh=$(awk -v block=MASS "${print_slha_block_awk}" "${fh_out}" | \
+         awk -v entries=25 "${print_slha_block_entry_awk}")
 
-    DMh=$(awk -f utils/print_slha_block.awk -v block=DMASS "${fh_out}" | \
-                 awk -f utils/print_slha_block_entry.awk -v entries=25)
+    DMh=$(awk -v block=DMASS "${print_slha_block_awk}" "${fh_out}" | \
+          awk -v entries=25 "${print_slha_block_entry_awk}")
 fi
 
 [ "x$Mh" = "x" ] && Mh=-
