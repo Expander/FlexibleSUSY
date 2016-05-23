@@ -69,6 +69,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | mt_method                        | 0 (FlexibleSUSY), 1 (SPheno) | 0 (= FlexibleSUSY) |
  * | write_eft                        | 0 (no), 1 (yes)              | 0 (= write full model) |
+ * | mf_0L_matching                   | 0 (1L), 1 (tree-level)       | 0 (= 1L matching of mf) |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -91,6 +92,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_observables]            = 0;
    values[mt_method]                        = 0;
    values[write_eft]                        = 0;
+   values[mf_0L_matching]                   = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
@@ -103,6 +105,7 @@ Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() con
    two_loop_corrections.top_qcd         = get(top_2loop_corrections_qcd);
    two_loop_corrections.higgs_log       = get(higgs_log_resum);
    two_loop_corrections.mt_method       = get(mt_method);
+   two_loop_corrections.mf_0L_matching  = get(mf_0L_matching);
 
    return two_loop_corrections;
 }

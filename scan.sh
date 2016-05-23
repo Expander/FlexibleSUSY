@@ -13,6 +13,7 @@ AI="1.279440000e+02"
 MT="1.733400000e+02"
 MTmethod=0
 WRITE_EFT=0
+MF_TL_MATCHING=0
 GF=0.0000116638
 MZ=91.1876
 BL=3
@@ -70,6 +71,9 @@ Block FlexibleSUSY
    14   1                    # Higgs logarithmic resummation
    15   1.000000000e-11      # beta-function zero threshold
    16   0                    # calculate observables (a_muon, ...)
+   17   0                    # Mt methog (0 = FS)
+   18   0                    # print EFT parameters
+   19   0                    # mf matching loop order (0 = 1L, 1 = 0L)
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
@@ -146,6 +150,7 @@ Block FlexibleSUSY
     6   ${BL}                # beta-functions loop order
    17   ${MTmethod}          # mt calculation (0 = FlexibleSUSY, 1 = SPheno)
    18   ${WRITE_EFT}         # write full model (0) / EFT (1)
+   19   ${MF_TL_MATCHING}    # mf tree-level matching
 Block SMINPUTS               # Standard Model inputs
     1   ${AI}                # alpha_em(MZ) SM MSbar
     2   ${GF}                # G_Fermi
@@ -450,7 +455,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like" "MSSMMuBMuYuatMS" "MSSMMuBMuYuatMSSPheno"
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like" "MSSMMuBMuYuatMS" "MSSMMuBMuYuatMSSPheno" "MSSMtower(yt(MS)^0L)"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -482,30 +487,42 @@ EOF
     # run the spectrum generators
     WRITE_EFT=0
     MTmethod=0
+    MF_TL_MATCHING=0
     MhMSSMtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
+
+    WRITE_EFT=0
+    MTmethod=0
+    MF_TL_MATCHING=1
+    MhMSSMtowerTLMF=$(run_sg "models/MSSMtower/run_MSSMtower.x")
 
     WRITE_EFT=1
     MTmethod=0
+    MF_TL_MATCHING=0
     MhEFTtower=$(run_sg "models/MSSMtower/run_MSSMtower.x")
 
     WRITE_EFT=0
     MTmethod=0
+    MF_TL_MATCHING=0
     MhMSSMMuBMu=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
 
     WRITE_EFT=0
     MTmethod=1
+    MF_TL_MATCHING=0
     MhMSSMMuBMuSPheno=$(run_sg "models/MSSMMuBMu/run_MSSMMuBMu.x")
 
     WRITE_EFT=0
     MTmethod=0
+    MF_TL_MATCHING=0
     MhMSSMMuBMuYuatMS=$(run_sg "models/MSSMMuBMuYuatMS/run_MSSMMuBMuYuatMS.x")
 
     WRITE_EFT=0
     MTmethod=1
+    MF_TL_MATCHING=0
     MhMSSMMuBMuYuatMSSPheno=$(run_sg "models/MSSMMuBMuYuatMS/run_MSSMMuBMuYuatMS.x")
 
     WRITE_EFT=0
     MTmethod=0
+    MF_TL_MATCHING=0
     MhHSSUSY=$(run_sg "models/HSSUSY/run_HSSUSY.x")
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
@@ -521,6 +538,6 @@ EOF
     MhSPheno=$(run_spheno "./SPhenoMSSM")
     MhSPhenoHacked=$(run_spheno "./SPhenoMSSM_FlexibleSUSY_like")
 
-    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked" "$MhMSSMMuBMuYuatMS" "$MhMSSMMuBMuYuatMSSPheno"
+    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked" "$MhMSSMMuBMuYuatMS" "$MhMSSMMuBMuYuatMSSPheno" "$MhMSSMtowerTLMF"
 
 done

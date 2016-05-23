@@ -37,11 +37,13 @@ struct Two_loop_corrections {
       , top_qcd(true)
       , higgs_log(0)
       , mt_method(0)
+      , mf_0L_matching(false)
       {}
    bool higgs_at_as, higgs_ab_as, higgs_at_at, higgs_atau_atau;
    bool top_qcd;
    int higgs_log;
    int mt_method;
+   bool mf_0L_matching;
 };
 
 } // namespace flexiblesusy

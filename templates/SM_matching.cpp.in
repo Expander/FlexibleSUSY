@@ -169,11 +169,16 @@ void @ModelName@_SM_matching::match_low_to_high_scale_model(@ModelName@_mass_eig
    else
       model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
 
-   for( unsigned gen = 0; gen < 3; gen++)
-   {
-      topDRbar(gen, gen)      = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
-      bottomDRbar(gen, gen)   = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
-      electronDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
+   if (model.get_two_loop_corrections().mf_0L_matching) {
+      topDRbar.diagonal()      = sm.get_MFu();
+      bottomDRbar.diagonal()   = sm.get_MFd();
+      electronDRbar.diagonal() = sm.get_MFe();
+   } else {
+      for(unsigned gen = 0; gen < 3; gen++) {
+         topDRbar(gen, gen)      = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
+         bottomDRbar(gen, gen)   = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
+         electronDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
+      }
    }
 
    // define and apply 1L-matched gauge parameters

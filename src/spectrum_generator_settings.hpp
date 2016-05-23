@@ -53,6 +53,7 @@ public:
       calculate_observables, ///< [16] calculate observables (a_muon, ...)
       mt_method,             ///< [17] mt calculation method
       write_eft,             ///< [18] write EFT output, instead of full model
+      mf_0L_matching,        ///< [19] loop order for matching of mf
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
