@@ -60,9 +60,6 @@ Abs(M_2) $MS
 Arg(M_2) 0
 Abs(M_3) $MS
 Arg(M_3) 0
-Qtau $MS
-Qt   $MS
-Qb   $MS
 scalefactor 1
 EOF
 
