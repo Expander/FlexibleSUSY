@@ -1,21 +1,136 @@
 start=-3.5
 stop=3.5
 n_points=60
+TB=5
+MS=2000
 
-for MS in 91.1876 200 300 400 500 1000 2000 10000 100000
-do
-    ./scan.sh --parameter=Xt \
-              --start=$start \
-              --stop=$stop \
-              --steps=$n_points \
-              --step-size=linear \
-              --TB=5 \
-              --MS=${MS} \
-        | tee xt_TB-5_MS-${MS}.dat
+slha_templ="
+Block FlexibleSUSY
+    0   1.000000000e-05      # precision goal
+    1   1000                 # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   1                    # calculate SM pole masses
+    4   2                    # pole mass loop order
+    5   2                    # EWSB loop order
+    6   3                    # beta-functions loop order
+    7   2                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   12   1                    # force output
+   13   1                    # Top quark 2-loop corrections QCD
+   14   1                    # Higgs logarithmic resummation
+   15   1.000000000e-11      # beta-function zero threshold
+   16   0                    # calculate observables (a_muon, ...)
+   17   0                    # Mt methog (0 = FS)
+   18   0                    # print EFT parameters
+   19   0                    # mf matching loop order (0 = 1L, 1 = 0L)
+Block SMINPUTS               # Standard Model inputs
+    0   173.34               # Q_higgs
+    1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
+    2   1.166380000e-05      # G_Fermi
+    3   1.184000000e-01      # alpha_s(MZ) SM MSbar
+    4   9.118760000e+01      # MZ(pole)
+    5   4.180000000e+00      # mb(mb) SM MSbar
+    6   1.733400000e+02      # mtop(pole)
+    7   1.777000000e+00      # mtau(pole)
+    8   0.000000000e+00      # mnu3(pole)
+    9   80.384               # MW pole
+   11   5.109989020e-04      # melectron(pole)
+   12   0.000000000e+00      # mnu1(pole)
+   13   1.056583570e-01      # mmuon(pole)
+   14   0.000000000e+00      # mnu2(pole)
+   21   4.750000000e-03      # md(2 GeV) MS-bar
+   22   2.400000000e-03      # mu(2 GeV) MS-bar
+   23   1.040000000e-01      # ms(2 GeV) MS-bar
+   24   1.270000000e+00      # mc(mc) MS-bar
+Block MINPAR                 # Input parameters
+    4   1                    # SignMu
+Block EXTPAR
+    0   2000                 # Qmatch
+Block Ms
+    ${MS}                    # SUSY scale
+Block TanBeta
+    ${TB}                    # tan(Beta) at the SUSY scale
+Block Xtt
+    0                        # Xt / Ms
+"
+
+slha_templ_delta_low="
+${slha_templ}
+Block EXTPAR
+    101  -384    # DeltaLambdaASATAT
+    102  -384    # DeltaLambdaATATAT
+"
+
+slha_templ_delta_high="
+${slha_templ}
+Block EXTPAR
+    101   554.667    # DeltaLambdaASATAT
+    102   554.667    # DeltaLambdaATATAT
+"
+
+echo "calculating Mh(Xt)"
+./scan.sh --parameter=Xt \
+          --start=$start \
+          --stop=$stop \
+          --steps=$n_points \
+          --step-size=linear \
+          --TB=${TB} \
+          --MS=${MS} \
+    | tee xt_TB-${TB}_MS-${MS}.dat
+
+
+echo "calculating parametric uncertainty from Q in the tower"
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        > xt_MSSMtower_TB-${TB}_scale_uncertainty.dat
+
+echo "calculating parametric uncertainty from Q_match in the tower"
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        > xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat
+
+echo "calculating parametric uncertainty from delta in the tower"
+
+echo "$slha_templ_delta_low" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        > xt_MSSMtower_TB-${TB}_delta_low.dat
+
+echo "$slha_templ_delta_high" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        > xt_MSSMtower_TB-${TB}_delta_high.dat
+
+paste xt_MSSMtower_TB-${TB}_scale_uncertainty.dat \
+      xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat \
+      xt_MSSMtower_TB-${TB}_delta_low.dat \
+      xt_MSSMtower_TB-${TB}_delta_high.dat \
+      > xt_MSSMtower_TB-${TB}.dat.$$
+
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s\n" \
+       "MS" "Q uncert." "MS" "Qmatch uncert." "MS" "lambda(2L) low" "MS" "lambda(2L) high" \
+       > xt_MSSMtower_TB-${TB}_uncertainties.dat
+
+cat xt_MSSMtower_TB-${TB}.dat.$$ >> xt_MSSMtower_TB-${TB}_uncertainties.dat
 
     plot_scale="
 set terminal pdfcairo
-set output 'xt_TB-5_MS-${MS}.pdf'
+set output 'xt_TB-${TB}_MS-${MS}.pdf'
 set key box top center width -2
 set grid
 
@@ -34,7 +149,7 @@ set style line 11 lt 1 dt 1 lw 0 lc rgb '#9C4C17'
 set xlabel 'X_t / M_S'
 set ylabel 'M_h / GeV'
 
-filename = 'xt_TB-5_MS-${MS}.dat'
+filename = 'xt_TB-${TB}_MS-${MS}.dat'
 
 plot [:] [:] \
      filename u 1:2 t 'FS/MSSM-tower' w lines ls 1, \
@@ -46,5 +161,4 @@ plot [:] [:] \
      filename u 1:10 t 'SUSYHD 1.0.2' w lines ls 10
 "
 
-    echo "$plot_scale" | gnuplot
-done
+echo "$plot_scale" | gnuplot
