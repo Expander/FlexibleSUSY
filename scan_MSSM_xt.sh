@@ -176,6 +176,10 @@ plot [:] [:] \
      filename u 1:2 t 'FS/MSSM-tower' w lines ls 1, \
      filename u 1:4 t 'FS/MSSM' w lines ls 3, \
      filename u 1:5 t 'FS/HSSUSY' w lines ls 2, \
+     filename u 1:6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
+     filename u 1:7 t 'FS/MSSM SPheno-like' w lines ls 5, \
+     filename u 1:8 t 'FeynHiggs 2.11.3' w lines ls 8, \
+     filename u 1:10 t 'SUSYHD 1.0.2' w lines ls 10, \
      filename u 1:12 t 'SPheno 3.3.8' w lines ls 6, \
      filename u 1:14 t 'FS/MSSM m_t(M_S)' w points ls 12, \
      filename u 1:15 t 'FS/MSSM m_t(M_S) SPheno-like' w points ls 13, \
@@ -184,10 +188,6 @@ plot [:] [:] \
      filename2 u 1:(\$2-\$6/2):(\$2+\$6/2) t '{/Symbol D} Q_{match}' w filledcurves ls 5 fs transparent solid 0.3, \
      filename2 u 1:(min(\$8,\$10)):(max(\$8,\$10)) t '{/Symbol D} {/Symbol l}^{(2)}' w filledcurves ls 10 fs transparent solid 0.3
 
-#      filename u 1:6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
-#      filename u 1:7 t 'FS/MSSM SPheno-like' w lines ls 5, \
-#      filename u 1:8 t 'FeynHiggs 2.11.3' w lines ls 8, \
-#      filename u 1:10 t 'SUSYHD 1.0.2' w lines ls 10
 "
 
 echo "$plot_scale" | gnuplot
