@@ -48,7 +48,7 @@ Block SMINPUTS               # Standard Model inputs
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
-    0   2000                 # Qmatch
+    0   ${MS}                # Qmatch
 Block Ms
     ${MS}                    # SUSY scale
 Block TanBeta
@@ -89,7 +89,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        > xt_MSSMtower_TB-${TB}_scale_uncertainty.dat
+        | tee xt_MSSMtower_TB-${TB}_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from Q_match in the tower"
 
@@ -98,7 +98,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        > xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat
+        | tee xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat
 
 echo "calculating parametric uncertainty from delta in the tower"
 
@@ -107,14 +107,14 @@ echo "$slha_templ_delta_low" | \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        > xt_MSSMtower_TB-${TB}_delta_low.dat
+        | tee xt_MSSMtower_TB-${TB}_delta_low.dat
 
 echo "$slha_templ_delta_high" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        > xt_MSSMtower_TB-${TB}_delta_high.dat
+        | tee xt_MSSMtower_TB-${TB}_delta_high.dat
 
 paste xt_MSSMtower_TB-${TB}_scale_uncertainty.dat \
       xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat \
