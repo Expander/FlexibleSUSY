@@ -7,7 +7,7 @@ MS=2000
 slha_templ="
 Block FlexibleSUSY
     0   1.000000000e-05      # precision goal
-    1   1000                 # max. iterations (0 = automatic)
+    1   100                  # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   1                    # calculate SM pole masses
     4   2                    # pole mass loop order
