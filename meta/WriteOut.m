@@ -10,6 +10,7 @@ WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
+WriteSLHAPhasesBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 WriteExtraSLHAOutputBlock::usage="";
 CreateSLHAMassBlockStream::usage="creates ostringstream with masses";
@@ -244,6 +245,11 @@ GetSLHAModelParameters[] :=
 GetSLHAInputParameters[] :=
     DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
                        MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
+                {_,None}];
+
+GetSLHAPhases[] :=
+    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+                       MemberQ[Parameters`GetPhases[],#[[1]]]&],
                 {_,None}];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String, setter_String:"set_block"] :=
@@ -489,7 +495,8 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            (* print unnormalized hypercharge gauge coupling *)
            If[par === SARAH`hyperchargeCoupling,
@@ -510,7 +517,8 @@ WriteSLHABlockEntry[{par_}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            commentStr = If[comment == "", parStr, comment];
            (* result *)
@@ -557,6 +565,14 @@ WriteSLHAModelParametersBlocks[] :=
            blocks = SortBlocks[modelParameters];
            (result = result <> WriteSLHABlock[#])& /@ blocks;
            Return[result];
+          ];
+
+WriteSLHAPhasesBlocks[] :=
+    Module[{result = "", phases, blocks},
+           phases = GetSLHAPhases[];
+           blocks = SortBlocks[phases];
+           (result = result <> WriteSLHABlock[#])& /@ blocks;
+           Return[result]
           ];
 
 GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`NoScale] := "";
