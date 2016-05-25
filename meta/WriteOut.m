@@ -464,7 +464,8 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
@@ -480,7 +481,8 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
