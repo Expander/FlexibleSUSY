@@ -311,12 +311,38 @@ LesHouchesNameToFront[{parameter_, {lh_,idx_}}] :=
 LesHouchesNameToFront[{parameter_, lh_}] :=
     {lh, parameter};
 
+SplitRealAndImagPartBlocks[{block_, parameter_?Parameters`IsRealParameter}] := {{block, parameter}};
+
+SplitRealAndImagPartBlocks[{block_, parameter_}] :=
+    {{block, Re[parameter]}, {CreateImaginaryPartBlockName[block], Im[parameter]}};
+
+SplitRealAndImagPartBlocks[{block_, tuples_List}] :=
+    Module[{complexPars, realPars, result},
+           complexPars = Select[tuples, Parameters`IsComplexParameter[#[[1]]]&];
+           If[complexPars =!= {},
+              realPars = (If[Parameters`IsRealParameter[#[[1]]],
+                             {#[[1]], #[[2]]},
+                             {Re[#[[1]]], #[[2]]}])& /@ tuples;
+              complexPars = {Im[#[[1]]], #[[2]]}& /@ complexPars;
+              result = {{block, realPars},
+                        {CreateImaginaryPartBlockName[block], complexPars}};,
+              result = {{block, tuples}};
+             ];
+           result
+          ];
+
+SplitRealAndImagPartBlocks[{block_, {parameter_ /; Head[parameter] =!= List}}] :=
+    If[Parameters`IsRealParameter[parameter],
+       {{block, {parameter}}},
+       {{block, {Re[parameter]}}, {CreateImaginaryPartBlockName[block], {Im[parameter]}}}
+      ];
+
 SortBlocks[modelParameters_List] :=
     Module[{reformed, allBlocks, collected},
            reformed = LesHouchesNameToFront /@ modelParameters;
            allBlocks = DeleteDuplicates[Transpose[reformed][[1]]];
            collected = {#, Cases[reformed, {#, a_} :> a]}& /@ allBlocks;
-           Return[collected];
+           Flatten[SplitRealAndImagPartBlocks /@ collected, 1]
           ];
 
 CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
@@ -513,6 +539,12 @@ WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
            Return[result];
           ];
 
+WriteSLHABlock[{blockName_, Re[parameter_]}, scale_String:"model.get_scale()"] :=
+    WriteSLHABlock[{blockName, parameter}, scale];
+
+WriteSLHABlock[{blockName_, Im[parameter_]}, scale_String:"model.get_scale()"] :=
+    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale, "set_block_imag"];
+
 WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
     WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale];
 
@@ -580,6 +612,9 @@ CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
 
 CreateInputBlockName[blockName_] :=
     ToString[blockName] <> "IN";
+
+CreateImaginaryPartBlockName[blockName_] :=
+    "IM" <> ToString[blockName];
 
 ReadLesHouchesInputParameters[slhaInputParameters_List] :=
     Module[{result = ""},
