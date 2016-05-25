@@ -459,3 +459,61 @@ BOOST_AUTO_TEST_CASE(test_Total_vector_Array)
    BOOST_CHECK_CLOSE(total(0), 3., 1e-10);
    BOOST_CHECK_CLOSE(total(1), 6., 1e-10);
 }
+
+BOOST_AUTO_TEST_CASE(test_Re_scalars)
+{
+   BOOST_CHECK_EQUAL(Re(2.), 2.);
+   BOOST_CHECK_EQUAL(Re(std::complex<double>(1., 0.)), 1.);
+   BOOST_CHECK_EQUAL(Re(std::complex<double>(0., 3.)), 0.);
+}
+
+BOOST_AUTO_TEST_CASE(test_Re_Eigen_Matrix)
+{
+   Eigen::Matrix<double,2,2> m1;
+   Eigen::Matrix<std::complex<double>,2,2> m2;
+
+   m1 << 1.0, 2.0, -3.0, 1.0;
+   m2 << std::complex<double>(1., 2.), std::complex<double>(-2., 1.),
+      std::complex<double>(0., 0.), std::complex<double>(2., 0.);
+
+   Eigen::Matrix<double,2,2> re1(Re(m1));
+   Eigen::Matrix<double,2,2> re2(Re(m2));
+
+   BOOST_CHECK_EQUAL(re1(0,0), 1.0);
+   BOOST_CHECK_EQUAL(re1(0,1), 2.0);
+   BOOST_CHECK_EQUAL(re1(1,0), -3.0);
+   BOOST_CHECK_EQUAL(re1(1,1), 1.0);
+   BOOST_CHECK_EQUAL(re2(0,0), 1.0);
+   BOOST_CHECK_EQUAL(re2(0,1), -2.0);
+   BOOST_CHECK_EQUAL(re2(1,0), 0.);
+   BOOST_CHECK_EQUAL(re2(1,1), 2.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_Im_scalars)
+{
+   BOOST_CHECK_EQUAL(Im(2.), 0.);
+   BOOST_CHECK_EQUAL(Im(std::complex<double>(-3, 5.)), 5.);
+   BOOST_CHECK_EQUAL(Im(std::complex<double>(3., 0.)), 0.);
+}
+
+BOOST_AUTO_TEST_CASE(test_Im_Eigen_Matrix)
+{
+   Eigen::Matrix<double,2,2> m1;
+   Eigen::Matrix<std::complex<double>,2,2> m2;
+
+   m1 << 1.0, 2.0, 3.0, 4.0;
+   m2 << std::complex<double>(1., -2.), std::complex<double>(-2., 1.),
+      std::complex<double>(0., 0.), std::complex<double>(0., 10.);
+
+   Eigen::Matrix<double,2,2> im1(Im(m1));
+   Eigen::Matrix<double,2,2> im2(Im(m2));
+
+   BOOST_CHECK_EQUAL(im1(0,0), 0.);
+   BOOST_CHECK_EQUAL(im1(0,1), 0.);
+   BOOST_CHECK_EQUAL(im1(1,0), 0.);
+   BOOST_CHECK_EQUAL(im1(1,1), 0.);
+   BOOST_CHECK_EQUAL(im2(0,0), -2.0);
+   BOOST_CHECK_EQUAL(im2(0,1), 1.0);
+   BOOST_CHECK_EQUAL(im2(1,0), 0.);
+   BOOST_CHECK_EQUAL(im2(1,1), 10.0);
+}
