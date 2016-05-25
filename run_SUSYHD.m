@@ -1,4 +1,5 @@
 Needs["SUSYHD`"];
+SetSMparameters[MtPole, AlphaS];
 scale=Q;
 tanBeta=TB;
 Xtt=Xt;

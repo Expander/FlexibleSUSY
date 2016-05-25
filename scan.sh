@@ -8,13 +8,13 @@ MS=100000
 At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
 M3factor=0.99999
 M3=
-AS="1.184000000e-01"
+AS="0.1184"
 AI="1.279440000e+02"
-MT="1.733400000e+02"
+MT="173.34"
 MTmethod=0
 WRITE_EFT=0
 MF_TL_MATCHING=0
-GF=0.0000116638
+GF=0.000011663787
 MZ=91.1876
 BL=3
 
@@ -32,7 +32,7 @@ step_size=linear
 sminputs_tmpl="\
 Block SMINPUTS               # Standard Model inputs
     1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
-    2   1.166380000e-05      # G_Fermi
+    2   1.166378700e-05      # G_Fermi
     3   1.184000000e-01      # alpha_s(MZ) SM MSbar
     4   9.118760000e+01      # MZ(pole)
     5   4.180000000e+00      # mb(mb) SM MSbar
@@ -380,7 +380,7 @@ run_susyhd() {
     local Mh=
     local DMh=
 
-    SHDout=$(math -run "Q=${MS}; TB=${TB}; Xt=${Xt}; Get[\"run_SUSYHD.m\"];" 2>&1 >/dev/null)
+    SHDout=$(math -run "MtPole=${MT}; AlphaS=${AS}; Q=${MS}; TB=${TB}; Xt=${Xt}; Get[\"run_SUSYHD.m\"];" 2>&1 >/dev/null)
     Mh=$(echo "$SHDout" | awk '{ print $1 }')
     DMh=$(echo "$SHDout" | awk '{ print $2 }')
 
