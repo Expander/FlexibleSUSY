@@ -200,6 +200,8 @@ public:
    void set_block_imag(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, 1>&, const std::string&, double scale = 0.);
    template <class Derived>
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
+   template <class Derived>
+   void set_block_imag(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::ComplexMatrix&, const std::string&, double scale = 0.);
    void set_sminputs(const softsusy::QedQcd&);
@@ -413,6 +415,34 @@ void SLHA_io::set_block(const std::string& name,
          for (int k = 1; k <= cols; ++k) {
             ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
                % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
+         }
+      }
+   }
+
+   set_block(ss);
+}
+
+template <class Derived>
+void SLHA_io::set_block_imag(const std::string& name,
+                             const Eigen::MatrixBase<Derived>& matrix,
+                             const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_SCALE(scale);
+   ss << '\n';
+
+   const int rows = matrix.rows();
+   const int cols = matrix.cols();
+   for (int i = 1; i <= rows; ++i) {
+      if (cols == 1) {
+         ss << boost::format(vector_formatter) % i % Im(matrix(i-1,0))
+            % ("Im(" + symbol + "(" + ToString(i) + "))");
+      } else {
+         for (int k = 1; k <= cols; ++k) {
+            ss << boost::format(mixing_matrix_formatter) % i % k % Im(matrix(i-1,k-1))
+               % ("Im(" + symbol + "(" + ToString(i) + "," + ToString(k) + "))");
          }
       }
    }
