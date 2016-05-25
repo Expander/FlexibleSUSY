@@ -1,3 +1,9 @@
+FlexibleSUSY-1.4.3 [not released yet]
+
+ * Feature: Write phases to SLHA output if a SLHA output block is
+   defined for them in the SARAH model file.
+   Thanks to Dylan Harries.
+
 FlexibleSUSY-1.4.2 [May, 09 2016]
 
  * Bugfix: Correcting handling of spaces in configure script if
