@@ -154,14 +154,14 @@ slha_templ_delta_low="
 ${slha_templ}
 Block EXTPAR
     101  -384    # DeltaLambdaASATAT
-    102  -384    # DeltaLambdaATATAT
+    102  -1893   # DeltaLambdaATATAT
 "
 
 slha_templ_delta_high="
 ${slha_templ}
 Block EXTPAR
     101   554.667    # DeltaLambdaASATAT
-    102   554.667    # DeltaLambdaATATAT
+    102   489        # DeltaLambdaATATAT
 "
 
 slha_templ_AS_low="
