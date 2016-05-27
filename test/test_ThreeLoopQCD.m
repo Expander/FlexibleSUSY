@@ -29,7 +29,7 @@ m1 = Simplify[Normal[Series[m1, {h, 0, 2}]] /. h -> 1];
 
 m2 = M GetMTopMSbarOverMTopPole[{1, 1, 1, 0}];
 
-TestEquality[Simplify[m1 - m2], 0];
+TestEquality[Simplify[(m1 - m2) /. Log[x_/Q^2] :> -Log[Q^2/x]], 0];
 
 Print["Testing 2L arxiv:hep-ph/9803493 vs. arxiv:hep-ph/9912391 ..."];
 
@@ -43,7 +43,7 @@ M2 = m / (GetMTopMSbarOverMTopPole[{1, 0, 0  , 0}] +
 
 M2 = Simplify[Normal[Series[M2, {h, 0, 2}]]];
 
-TestEquality[Simplify[(M1 - M2) /. h -> 1], 0];
+TestEquality[Simplify[(M1 - M2) /. h -> 1 /. Log[x_/Q^2] :> -Log[Q^2/x]], 0];
 
 Print["Testing 3L renormalization scale invariance ..."];
 
