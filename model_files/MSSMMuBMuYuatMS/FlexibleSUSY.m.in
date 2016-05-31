@@ -9,10 +9,6 @@ MINPAR = {
     {4, Sign[\[Mu]]}
 };
 
-EXTPAR = {
-    {3, M3Input}
-};
-
 FSExtraInputParameters = {
     {TanBeta, TanBeta, {1}},
     {Ms, Ms, {1}},
@@ -29,7 +25,7 @@ SUSYScaleInput = {
 {Yu, Automatic},
 {MassB, Ms},
 {MassWB, Ms},
-{MassG, M3Input},
+{MassG, Ms},
 {mq2, ZEROMATRIX[3,3]},
 {mu2, ZEROMATRIX[3,3]},
 {md2, ZEROMATRIX[3,3]},
@@ -67,7 +63,7 @@ InitialGuessAtLowScale = {
 {Ye, Automatic},
 {MassB, Ms},
 {MassWB, Ms},
-{MassG, M3Input},
+{MassG, Ms},
 {mq2, ZEROMATRIX[3,3]},
 {mu2, ZEROMATRIX[3,3]},
 {md2, ZEROMATRIX[3,3]},
