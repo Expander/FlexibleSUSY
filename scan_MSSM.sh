@@ -92,6 +92,46 @@ paste scale_MSSMMuBMu_TB-5.dat \
       scale_MSSMMuBMu_TB-5_DeltaMt_high.dat \
       > scale_MSSMMuBMu_TB-5_DeltaMt.dat
 
+echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=Ms[],MASS[25] \
+    > scale_MSSMtower_TB-5.dat
+
+{ echo "$slha_templ";
+cat <<EOF
+Block EXTPAR
+    101  -314.485   # DeltaLambdaASATAT
+    102  -6.04726   # DeltaLambdaATATAT
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=Ms[],MASS[25] \
+    > scale_MSSMtower_TB-5_DeltaLambda_low.dat
+
+{ echo "$slha_templ";
+cat <<EOF
+Block EXTPAR
+    101   230.518    # DeltaLambdaASATAT
+    102   489.358    # DeltaLambdaATATAT
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=Ms[],MASS[25] \
+    > scale_MSSMtower_TB-5_DeltaLambda_high.dat
+
+paste scale_MSSMtower_TB-5.dat \
+      scale_MSSMtower_TB-5_DeltaLambda_low.dat \
+      scale_MSSMtower_TB-5_DeltaLambda_high.dat \
+      > scale_MSSMtower_TB-5_DeltaLambda.dat
+
 plot_scale="
 set terminal pdfcairo
 set output 'scale_MSSM.pdf'
