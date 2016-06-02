@@ -43,6 +43,7 @@ Block EXTPAR                 # Input parameters
     6   173.34               # MEWSB
     7   0                    # At(MSUSY)
    25   10                   # TanBeta(MSUSY)
+  100   2
 Block MSQ2IN
   1  1     1.00000000E+06   # mq2(1,1)
   2  2     1.00000000E+06   # mq2(2,2)
