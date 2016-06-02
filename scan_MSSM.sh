@@ -66,7 +66,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  100  # DeltaMt
+   104  20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
@@ -78,7 +78,7 @@ EOF
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  -100  # DeltaMt
+   104  -20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \

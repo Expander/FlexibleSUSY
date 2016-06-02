@@ -330,7 +330,7 @@ echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM"
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  100  # DeltaMt
+   104  20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
@@ -342,7 +342,7 @@ EOF
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  -100  # DeltaMt
+   104  -20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
@@ -356,7 +356,7 @@ echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM SPhe
 { echo "$slha_templ_spheno_like";
   cat <<EOF
 Block EXTPAR
-   104  100  # DeltaMt
+   104  20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
@@ -368,7 +368,7 @@ EOF
 { echo "$slha_templ_spheno_like";
   cat <<EOF
 Block EXTPAR
-   104  -100  # DeltaMt
+   104  -20.4  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
