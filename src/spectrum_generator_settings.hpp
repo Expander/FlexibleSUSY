@@ -62,6 +62,7 @@ public:
    void reset();               ///< resets all settings to their defaults
 
    Two_loop_corrections get_two_loop_corrections() const;
+   void set_two_loop_corrections(const Two_loop_corrections&);
 
 private:
    double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings
