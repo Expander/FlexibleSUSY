@@ -51,6 +51,7 @@ public:
       beta_zero_threshold,   ///< [14] beta function zero threshold
       calculate_observables, ///< [15] calculate observables (a_muon, ...)
       force_positive_masses, ///< [16] force positive masses of majoran fermions
+      pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

@@ -148,7 +148,11 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
 
-      model.run_to(susy_scale);
+      const double mass_scale =
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+
+      model.run_to(mass_scale);
       model.solve_ewsb();
       model.calculate_spectrum();
 

@@ -67,6 +67,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | force_positive_masses            | 0 (no) or 1 (yes)            | 0 (= no)        |
+ * | pole_mass_scale                  | any positive double          | 0 (= SUSY scale)|
  */
 void Spectrum_generator_settings::reset()
 {
@@ -87,6 +88,7 @@ void Spectrum_generator_settings::reset()
    values[beta_zero_threshold]              = 1.0e-11;
    values[calculate_observables]            = 0;
    values[force_positive_masses]            = 0;
+   values[pole_mass_scale]                  = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
