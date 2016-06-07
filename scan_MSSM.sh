@@ -92,6 +92,15 @@ paste scale_MSSMMuBMu_TB-5.dat \
       scale_MSSMMuBMu_TB-5_DeltaMt_high.dat \
       > scale_MSSMMuBMu_TB-5_DeltaMt.dat
 
+echo "calculate Q uncertainty"
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MSSMMuBMu_uncertainty.sh \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=MS[],MASS[25] \
+    | tee scale_MSSMMuBMu_TB-5_scale_uncertainty.dat
+
 echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \

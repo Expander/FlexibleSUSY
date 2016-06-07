@@ -108,12 +108,3 @@ EOF
     --step-size=log \
     --output=MS[],MASS[25],Yu[3:3] \
     | tee scale_MSSMtower_TB-5_yt_EFT.dat
-
-echo "calculate Q uncertainty"
-
-echo "$slha_templ" | ./utils/scan-slha.sh \
-    --spectrum-generator=./MSSMMuBMu_uncertainty.sh \
-    --scan-range=MS[]=91~100000:$n_points \
-    --step-size=log \
-    --output=MS[],MASS[25] \
-    | tee scale_MSSMMuBMu_TB-5_scale_uncertainty.dat
