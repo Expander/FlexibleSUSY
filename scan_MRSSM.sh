@@ -330,7 +330,7 @@ echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM"
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  20.4  # DeltaMt
+   104  100  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
@@ -342,7 +342,7 @@ EOF
 { echo "$slha_templ";
   cat <<EOF
 Block EXTPAR
-   104  -20.4  # DeltaMt
+   104  -100  # DeltaMt
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
@@ -350,6 +350,15 @@ EOF
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMMSUSY_TB-5_DeltaMt_low.dat
+
+echo "calculating parametric uncertainty from Q in FlexibleSUSY/MRSSM"
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMMSUSY_uncertainty.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MRSSM SPheno-like"
 
@@ -426,6 +435,7 @@ echo "$slha_templ_delta_high" | ./utils/scan-slha.sh \
 paste scale_MRSSMMSUSY_TB-5.dat \
       scale_MRSSMMSUSY_TB-5_DeltaMt_low.dat \
       scale_MRSSMMSUSY_TB-5_DeltaMt_high.dat \
+      scale_MRSSMMSUSY_TB-5_scale_uncertainty.dat \
       > scale_MRSSMMSUSY_TB-5.dat.$$
 
 mv scale_MRSSMMSUSY_TB-5.dat.$$ scale_MRSSMMSUSY_TB-5.dat
