@@ -2,8 +2,9 @@ start=-3.5
 stop=3.5
 n_points=60
 TB=5
-MS=2000
 
+for MS in 1000 2000 10000
+do
 slha_templ="
 Block FlexibleSUSY
     0   1.000000000e-05      # precision goal
@@ -89,7 +90,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_scale_uncertainty.dat
+        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from Q_match in the tower"
 
@@ -98,7 +99,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat
+        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat
 
 echo "calculating parametric uncertainty from delta in the tower"
 
@@ -107,28 +108,28 @@ echo "$slha_templ_delta_low" | \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_delta_low.dat
+        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat
 
 echo "$slha_templ_delta_high" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_delta_high.dat
+        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat
 
 printf "# %14s %16s\n" \
        "MS" "Mh" \
-       > xt_MSSMtower_TB-${TB}_Mh.dat
+       > xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
 
 awk '{ if ($1 !~ "#") { printf "%16s %16s\n", $1, $2 } }' xt_TB-${TB}_MS-${MS}.dat \
-    >> xt_MSSMtower_TB-${TB}_Mh.dat
+    >> xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
 
-paste xt_MSSMtower_TB-${TB}_Mh.dat \
-      xt_MSSMtower_TB-${TB}_scale_uncertainty.dat \
-      xt_MSSMtower_TB-${TB}_Qmatch_uncertainty.dat \
-      xt_MSSMtower_TB-${TB}_delta_low.dat \
-      xt_MSSMtower_TB-${TB}_delta_high.dat \
-      > xt_MSSMtower_TB-${TB}.dat.$$
+paste xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat \
+      xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat \
+      xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat \
+      xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat \
+      xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat \
+      > xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$
 
 printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
        "MS" "Mh" \
@@ -136,9 +137,9 @@ printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
        "MS" "Qmatch uncert." \
        "MS" "lambda(2L) low" \
        "MS" "lambda(2L) high" \
-       > xt_MSSMtower_TB-${TB}_uncertainties.dat
+       > xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
 
-cat xt_MSSMtower_TB-${TB}.dat.$$ >> xt_MSSMtower_TB-${TB}_uncertainties.dat
+cat xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$ >> xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
 
     plot_scale="
 set terminal pdfcairo enhanced size 5in,4in
@@ -170,7 +171,7 @@ min(x,y) = x < y ? x : y
 max(x,y) = x < y ? y : x
 
 filename = 'xt_TB-${TB}_MS-${MS}.dat'
-filename2 = 'xt_MSSMtower_TB-${TB}_uncertainties.dat'
+filename2 = 'xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat'
 
 plot [:] [:] \
      filename u 1:2 t 'FS/MSSM-tower' w lines ls 1, \
@@ -191,3 +192,5 @@ plot [:] [:] \
 "
 
 echo "$plot_scale" | gnuplot
+
+done

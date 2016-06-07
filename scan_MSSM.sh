@@ -2,7 +2,10 @@ start=91.1876
 stop=100000
 n_points=60
 
-./scan.sh --parameter=MS --start=$start --stop=$stop --steps=$n_points --step-size=log --TB=5 --Xt=0 | tee scale_MSSM.dat
+for Xt in 0 2.44949 -2.44949
+do
+
+./scan.sh --parameter=MS --start=$start --stop=$stop --steps=$n_points --step-size=log --TB=5 --Xt="${Xt}" | tee scale_MSSM_TB-5_Xt-${Xt}.dat
 
 slha_templ="
 Block MODSEL                 # Select model
@@ -51,7 +54,7 @@ Block MINPAR                 # Input parameters
 Block TanBeta
     5                        # tan(Beta) at the SUSY scale
 Block Xtt
-    0                        # Xt / Ms
+    ${Xt}                    # Xt / Ms
 "
 
 echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MSSM"
@@ -61,7 +64,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    > scale_MSSMMuBMu_TB-5.dat
+    > scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat
 
 { echo "$slha_templ";
   cat <<EOF
@@ -73,7 +76,7 @@ EOF
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    > scale_MSSMMuBMu_TB-5_DeltaMt_high.dat
+    > scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_high.dat
 
 { echo "$slha_templ";
   cat <<EOF
@@ -85,12 +88,12 @@ EOF
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    > scale_MSSMMuBMu_TB-5_DeltaMt_low.dat
+    > scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_low.dat
 
-paste scale_MSSMMuBMu_TB-5.dat \
-      scale_MSSMMuBMu_TB-5_DeltaMt_low.dat \
-      scale_MSSMMuBMu_TB-5_DeltaMt_high.dat \
-      > scale_MSSMMuBMu_TB-5_DeltaMt.dat
+paste scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
+      scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_low.dat \
+      scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_high.dat \
+      > scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt.dat
 
 echo "calculate Q uncertainty"
 
@@ -99,11 +102,21 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    | tee scale_MSSMMuBMu_TB-5_scale_uncertainty.dat.$$
+    | tee scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$
 
-paste scale_MSSMMuBMu_TB-5.dat \
-      scale_MSSMMuBMu_TB-5_scale_uncertainty.dat.$$ \
-      > scale_MSSMMuBMu_TB-5_scale_uncertainty.dat
+echo "calculating uncertainty from Q_match in the tower"
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+    | tee scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty.dat
+
+paste scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
+      scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$ \
+      > scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat
 
 echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
 
@@ -112,7 +125,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
-    > scale_MSSMtower_TB-5.dat
+    > scale_MSSMtower_TB-5_Xt-${Xt}.dat
 
 { echo "$slha_templ";
 cat <<EOF
@@ -125,7 +138,7 @@ EOF
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
-    > scale_MSSMtower_TB-5_DeltaLambda_low.dat
+    > scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_low.dat
 
 { echo "$slha_templ";
 cat <<EOF
@@ -138,16 +151,16 @@ EOF
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
-    > scale_MSSMtower_TB-5_DeltaLambda_high.dat
+    > scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_high.dat
 
-paste scale_MSSMtower_TB-5.dat \
-      scale_MSSMtower_TB-5_DeltaLambda_low.dat \
-      scale_MSSMtower_TB-5_DeltaLambda_high.dat \
-      > scale_MSSMtower_TB-5_DeltaLambda.dat
+paste scale_MSSMtower_TB-5_Xt-${Xt}.dat \
+      scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_low.dat \
+      scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_high.dat \
+      > scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda.dat
 
 plot_scale="
 set terminal pdfcairo
-set output 'scale_MSSM.pdf'
+set output 'scale_MSSM_TB-5_Xt-${Xt}.pdf'
 set key box bottom right width -4
 set logscale x
 set grid
@@ -171,21 +184,22 @@ set xlabel 'M_S / TeV'
 set ylabel 'M_h / GeV'
 
 plot [0.091:] [60:140] \
-     'scale_MSSM.dat' u (\$1/1000):2 t 'FlexibleSUSY/MSSM-tower' w lines ls 1, \
-     'scale_MSSM.dat' u (\$1/1000):4 t 'FlexibleSUSY/MSSM' w lines ls 3, \
-     'scale_MSSM.dat' u (\$1/1000):5 t 'FlexibleSUSY/HSSUSY' w lines ls 2, \
-     'scale_MSSM.dat' u (\$1/1000):6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
-     'scale_MSSM.dat' u (\$1/1000):12 t 'SPheno 3.3.8' w lines ls 6, \
-     'scale_MSSM.dat' u (\$1/1000):14 t 'FlexibleSUSY/MSSM m_t(M_S)' w points ls 12, \
-     'scale_MSSM.dat' u (\$1/1000):15 t 'FlexibleSUSY/MSSM m_t(M_S) SPheno-like' w points ls 13, \
-     'scale_MSSM.dat' u (\$1/1000):8 t 'FeynHiggs 2.11.3' w lines ls 8, \
-     'scale_MSSM.dat' u (\$1/1000):(\$8-\$9):(\$8+\$9) t 'FeynHiggs uncertainty' w filledcurves ls 9 fs transparent solid 0.3, \
-     'scale_MSSM.dat' u (\$1/1000):10 t 'SUSYHD 1.0.2' w lines ls 10, \
-     'scale_MSSM.dat' u (\$1/1000):(\$10-\$11):(\$10+\$11) t 'SUSYHD uncertainty' w filledcurves ls 11 fs transparent solid 0.3, \
-     'scale_MSSM.dat' u (\$1/1000):16 t 'FlexibleSUSY/MSSM-tower (0L y_t(M_S))' w points ls 14
-
-#     'scale_MSSM.dat' u (\$1/1000):7 t 'FlexibleSUSY/MSSM SPheno-like' w lines ls 5, \
-#     'scale_MSSM.dat' u (\$1/1000):13 t 'SPheno/MSSM FS-like' w lines ls 7, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):2 t 'FlexibleSUSY/MSSM-tower' w lines ls 1, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):4 t 'FlexibleSUSY/MSSM' w lines ls 3, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):5 t 'FlexibleSUSY/HSSUSY' w lines ls 2, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):12 t 'SPheno 3.3.8' w lines ls 6, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):14 t 'FlexibleSUSY/MSSM m_t(M_S)' w points ls 12, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):15 t 'FlexibleSUSY/MSSM m_t(M_S) SPheno-like' w points ls 13, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):8 t 'FeynHiggs 2.11.3' w lines ls 8, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):(\$8-\$9):(\$8+\$9) t 'FeynHiggs uncertainty' w filledcurves ls 9 fs transparent solid 0.3, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):10 t 'SUSYHD 1.0.2' w lines ls 10, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):(\$10-\$11):(\$10+\$11) t 'SUSYHD uncertainty' w filledcurves ls 11 fs transparent solid 0.3, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):16 t 'FlexibleSUSY/MSSM-tower (0L y_t(M_S))' w points ls 14
+#    'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):7 t 'FlexibleSUSY/MSSM SPheno-like' w lines ls 5, \
+#    'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):13 t 'SPheno/MSSM FS-like' w lines ls 7, \
 "
 
 echo "$plot_scale" | gnuplot
+
+done
