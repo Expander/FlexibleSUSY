@@ -18,6 +18,7 @@ Block FlexibleSUSY
    14   1.000000000e-11      # beta-function zero threshold
    15   1                    # calculate observables (a_muon, ...)
    16   0                    # force positive majorana masses
+   17   0                    # pole mass renormalization scale (0 = SUSY scale)
 Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole
