@@ -153,7 +153,11 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
 
-      model.run_to(susy_scale);
+      double Q_higgs = low_scale_constraint.get_sm_parameters().displayQHiggs();
+      if (Q_higgs == 0.)
+         Q_higgs = susy_scale;
+
+      model.run_to(Q_higgs);
       model.solve_ewsb();
       model.calculate_spectrum();
 
