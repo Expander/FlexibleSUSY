@@ -99,7 +99,11 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=MS[]=91~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    | tee scale_MSSMMuBMu_TB-5_scale_uncertainty.dat
+    | tee scale_MSSMMuBMu_TB-5_scale_uncertainty.dat.$$
+
+paste scale_MSSMMuBMu_TB-5.dat \
+      scale_MSSMMuBMu_TB-5_scale_uncertainty.dat.$$ \
+      > scale_MSSMMuBMu_TB-5_scale_uncertainty.dat
 
 echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
 
