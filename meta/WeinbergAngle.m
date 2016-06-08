@@ -100,6 +100,7 @@ Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Lengt
 (*returns coefficients of Higgs-top-top vertices*)
 HiggsTopVertices[higgsName_] :=
     Module[{indexRange, indexList, topQuark, higgsVertices, rule},
+           If[FreeQ[TreeMasses`GetParticles[], higgsName] || TreeMasses`GetDimensionWithoutGoldstones[higgsName] == 0, Return[{}]];
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {}, indexRange = {1}];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
