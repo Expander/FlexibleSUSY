@@ -1,6 +1,9 @@
 
 BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
+{ FSModelParameters, FSInputParameters, FSOutputParameters,
+  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters };
+
 FindSymbolDef::usage="";
 
 CreateSetAssignment::usage="";
@@ -131,6 +134,9 @@ given list of parameters are omitted from the output.";
 
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
+
+FindAllParametersClassified::usage = "returns list of all parameters
+ contained in the given expression, classified by their meaning.";
 
 FindSLHABlock::usage = "returns SLHA input block name for given
  parameter";
@@ -1208,26 +1214,46 @@ PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
 
-CreateLocalConstRefs[expr_] :=
-    Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
+FindAllParametersClassified[expr_] :=
+    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
+            inputPars, modelPars, outputPars,
             poleMasses, phases, depNum, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
                    ]]];
-           symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                         };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           poleMasses = DeleteDuplicates[Flatten[poleMasses]];
-           inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
            depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
+           {
+               FSModelParameters -> modelPars,
+               FSInputParameters -> inputPars,
+               FSOutputParameters -> outputPars,
+               FSPhysicalOutputParameters -> poleMasses,
+               FSPhases -> phases,
+               FSDerivedParameters -> depNum
+           }
+          ];
+
+CreateLocalConstRefs[expr_] :=
+    Module[{result = "", pars, inputSymbols, modelPars, outputPars,
+            poleMasses, phases, depNum},
+           pars = FindAllParametersClassified[expr];
+           Print["pars = ", pars];
+           inputSymbols = FSInputParameters /. pars;
+           modelPars    = FSModelParameters /. pars;
+           outputPars   = FSOutputParameters /. pars;
+           phases       = FSPhases /. pars;
+           depNum       = FSDerivedParameters /. pars;
+           poleMasses   = FSPhysicalOutputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
@@ -1238,36 +1264,25 @@ CreateLocalConstRefs[expr_] :=
           ];
 
 CreateLocalConstRefsForPhysicalParameters[expr_] :=
-    Module[{result = "", symbols, outputPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, {0,Infinity}],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-                     };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           outputPars = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+    Module[{result = "", pars, outputPars},
+           pars = FindAllParametersClassified[expr];
+           outputPars = FSOutputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"PHYSICAL"])& /@ outputPars;
            Return[result];
           ];
 
 CreateLocalConstRefsForBetas[expr_] :=
-    Module[{result = "", symbols, modelPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, {0,Infinity}] };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+    Module[{result = "", pars, modelPars},
+           pars = FindAllParametersClassified[expr];
+           modelPars = FSModelParameters /. pars;
            (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
            Return[result];
           ];
 
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
-    Module[{result = "", symbols, inputPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = Cases[compactExpr, _Symbol, {0,Infinity}];
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+    Module[{result = "", pars, inputPars},
+           pars = FindAllParametersClassified[expr];
+           inputPars = FSInputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
            Return[result];
           ];

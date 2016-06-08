@@ -1286,9 +1286,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
-            writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
-            writeSLHAExtparBlock = "", readLesHouchesInputParameters,
-            writeExtraSLHAOutputBlock = "",
+            writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
+            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
+            readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
@@ -1328,6 +1328,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
+           writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
@@ -1359,6 +1360,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
+                            "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],

@@ -1,3 +1,16 @@
+FlexibleSUSY-1.4.3 [not released yet]
+
+ * Feature: Write phases to SLHA output if a SLHA output block is
+   defined for them in the SARAH model file.
+   Thanks to Dylan Harries.
+
+ * Feature: Allow the user to calculate the pole masses at a fixed
+   renormalisation scale at run-time, which is different from the one
+   set by the SUSYScale model file variable.  The fixed
+   renormalisation scale can be given via the FlexibleSUSY[17] entry
+   in the SLHA input.  FlexibleSUSY[17] is equivalent to
+   SPhenoInput[33] in SPheno.
+
 FlexibleSUSY-1.4.2 [May, 09 2016]
 
  * Bugfix: Correcting handling of spaces in configure script if

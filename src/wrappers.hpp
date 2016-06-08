@@ -416,6 +416,22 @@ inline double Im(const std::complex<double>& x)
    return std::imag(x);
 }
 
+template<int M, int N>
+Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>& x)
+{
+   return Eigen::Matrix<double,M,N>::Zero();
+}
+
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Im(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.imag();
+}
+
 namespace {
    struct CompareAbs_d {
       bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
