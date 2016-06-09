@@ -86,6 +86,8 @@ private:
    void convert_soft_squared_masses_to_slha();
 };
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_slha<Two_scale>& model);
+
 } // namespace flexiblesusy
 
 #undef PHYSICAL_SLHA

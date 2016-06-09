@@ -147,4 +147,10 @@ void CLASSNAME::set_convert_masses_to_slha(bool flag)
    convert_masses_to_slha = flag;
 }
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_slha<Two_scale>& model)
+{
+   model.print(ostr);
+   return ostr;
+}
+
 } // namespace flexiblesusy
