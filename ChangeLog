@@ -11,6 +11,10 @@ FlexibleSUSY-1.4.3 [not released yet]
    in the SLHA input.  FlexibleSUSY[17] is equivalent to
    SPhenoInput[33] in SPheno.
 
+ * Bugfix (commit 9a2d576): Fix compilation error due to ambiguous
+   overload of operator<< .
+   Thanks to Dylan Harries.
+
 FlexibleSUSY-1.4.2 [May, 09 2016]
 
  * Bugfix: Correcting handling of spaces in configure script if
