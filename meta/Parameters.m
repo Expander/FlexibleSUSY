@@ -1247,7 +1247,6 @@ CreateLocalConstRefs[expr_] :=
     Module[{result = "", pars, inputSymbols, modelPars, outputPars,
             poleMasses, phases, depNum},
            pars = FindAllParametersClassified[expr];
-           Print["pars = ", pars];
            inputSymbols = FSInputParameters /. pars;
            modelPars    = FSModelParameters /. pars;
            outputPars   = FSOutputParameters /. pars;
