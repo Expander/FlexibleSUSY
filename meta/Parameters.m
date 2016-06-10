@@ -280,6 +280,7 @@ IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
+IsRealParameter[FlexibleSUSY`M[_]] := True;
 
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
