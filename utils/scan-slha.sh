@@ -110,7 +110,7 @@ Options:
   --spectrum-generator= Spectrum generator executable
   --step-size=          the step size (linear or log)
   --type=               Spectrum generator type (default: ${sg_type})
-                        Possible values: FlexibleSUSY SPheno
+                        Possible values: FlexibleSUSY SOFTSUSY SPheno SuSpect
   --help,-h             Print this help message
 
 Examples:
@@ -141,7 +141,15 @@ run_flexiblesusy() {
     local sg="$1"
     local input="$2"
 
-    echo "$input" | $sg --slha-input-file=- 2>/dev/null
+    echo "$input" | "$sg" --slha-input-file=- 2>/dev/null
+}
+
+#_____________________________________________________________________
+run_softsusy() {
+    local sg="$1"
+    local input="$2"
+
+    echo "$input" | "$sg" leshouches 2>/dev/null
 }
 
 #_____________________________________________________________________
@@ -154,7 +162,7 @@ run_spheno() {
     rm -f "$tmp_out" "$tmp_in"
     echo "$input" > "$tmp_in"
 
-    $sg "$tmp_in" "$tmp_out" > /dev/null 2>&1
+    "$sg" "$tmp_in" "$tmp_out" > /dev/null 2>&1
 
     if test "x$?" = "x0" -a -f "$tmp_out" ; then
         cat "$tmp_out"
@@ -166,6 +174,25 @@ run_spheno() {
 }
 
 #_____________________________________________________________________
+run_suspect() {
+    local sg="$1"
+    local input="$2"
+    local tmp_in="suspect2_lha.in"
+    local tmp_out="suspect2_lha.out"
+
+    rm -f "$tmp_out" "$tmp_in"
+    echo "$input" > "$tmp_in"
+
+    "$sg" "$tmp_in" "$tmp_out" > /dev/null 2>&1
+
+    if test "x$?" = "x0" -a -f "$tmp_out" ; then
+        cat "$tmp_out"
+    fi
+
+    rm -f "$tmp_out" "$tmp_in" "suspect2.out"
+}
+
+#_____________________________________________________________________
 run_sg() {
     local type="$1"
     local sg="$2"
@@ -174,7 +201,9 @@ run_sg() {
 
     case "$type" in
         FlexibleSUSY) func=run_flexiblesusy ;;
+        SOFTSUSY)     func=run_softsusy ;;
         SPheno)       func=run_spheno ;;
+        SuSpect)      func=run_suspect ;;
         *)
             echo "Error: unknown spectrum generator type: $type"
             exit 1
@@ -211,6 +240,9 @@ test -z "$slha_input_file" -o -e "$slha_input_file" || \
     { echo "Error: input file $slha_input_file not found." ; exit 1; }
 
 slha_input=`cat ${slha_input_file}`
+
+# substitute ~ by $HOME
+spectrum_generator=$(echo "$spectrum_generator" | sed 's|~|'"${HOME}"'|g')
 
 if test ! -x "$spectrum_generator"; then
     echo "Error: spectrum generator executable $spectrum_generator not found."
