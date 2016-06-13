@@ -141,7 +141,7 @@ run_flexiblesusy() {
     local sg="$1"
     local input="$2"
 
-    echo "$input" | $sg --slha-input-file=- 2>/dev/null
+    echo "$input" | "$sg" --slha-input-file=- 2>/dev/null
 }
 
 #_____________________________________________________________________
@@ -149,7 +149,7 @@ run_softsusy() {
     local sg="$1"
     local input="$2"
 
-    echo "$input" | $sg leshouches 2>/dev/null
+    echo "$input" | "$sg" leshouches 2>/dev/null
 }
 
 #_____________________________________________________________________
@@ -162,7 +162,7 @@ run_spheno() {
     rm -f "$tmp_out" "$tmp_in"
     echo "$input" > "$tmp_in"
 
-    $sg "$tmp_in" "$tmp_out" > /dev/null 2>&1
+    "$sg" "$tmp_in" "$tmp_out" > /dev/null 2>&1
 
     if test "x$?" = "x0" -a -f "$tmp_out" ; then
         cat "$tmp_out"
