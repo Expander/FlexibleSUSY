@@ -731,11 +731,11 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
                  } ];
           ];
 
-WriteWeinbergAngleClass[files_List] :=
+WriteWeinbergAngleClass[massMatrices_List, files_List] :=
    Module[{},
           WriteOut`ReplaceInFiles[files,
-                 { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRhoHat2LoopSM[]]]],
-                   "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRHat2LoopSM[]]]],
+                 { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRhoHat2LoopSM[massMatrices]]]],
+                   "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`deltaRHat2LoopSM[massMatrices]]]],
                    "@RhoHatTree@"         -> IndentText[IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]]],
                    "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
@@ -2235,7 +2235,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       ];
 
            Print["Creating class for calculation of weinberg angle ..."];
-           WriteWeinbergAngleClass[
+           WriteWeinbergAngleClass[massMatrices,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],

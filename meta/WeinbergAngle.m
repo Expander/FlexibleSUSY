@@ -114,9 +114,12 @@ HiggsTopVertices[higgsName_] :=
           ];
 
 (*generalize Higgs dependent part of (C.5) and (C.6) in hep-ph/9606211 analogous to (C.9) and (C.10)*)
-HiggsContributions2LoopSM[] :=
-    Module[{higgsVEVlist, higgsDep},
+HiggsContributions2LoopSM[massMatrices_List] :=
+    Module[{higgsMatrices, higgsVEVlist, higgsDep},
            If[!ValueQ[SARAH`VEVSM], Print["Error: SM like Higgs vev does not exist."]; Return[0];];
+           higgsMatrices = Select[massMatrices, !FreeQ[#, SARAH`HiggsBoson] || !FreeQ[#, SARAH`PseudoScalar] &][[All, 1]];
+           If[!(And @@ Parameters`IsRealParameter /@ Parameters`FindAllParameters[higgsMatrices]) || (Parameters`FSPhases /. Parameters`FindAllParametersClassified[higgsMatrices]) =!= {},
+              Print["Warning: CP violation in Higgs sector"]; Return[0];];
            higgsVEVlist = Cases[Parameters`GetDependenceSPhenoRules[], RuleDelayed[SARAH`VEVSM, repr_] :> repr];
            If[higgsVEVlist === {}, higgsVEVlist = {SARAH`VEVSM}];
            higgsDep = Abs[#[[2]]]^2 RHO2[FlexibleSUSY`M[#[[1]]]/MT] &;
@@ -124,22 +127,22 @@ HiggsContributions2LoopSM[] :=
           ];
 
 (*formula according to (C.6) from hep-ph/9606211*)
-deltaRhoHat2LoopSM[]:=
+deltaRhoHat2LoopSM[massMatrices_List]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = (alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2)(-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) + HiggsContributions2LoopSM[]) / (1 + PIZZTMZ / MZ^2);
+           expr = (alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2)(-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) + HiggsContributions2LoopSM[massMatrices]) / (1 + PIZZTMZ / MZ^2);
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> TreeMasses`ExpressionToString[expr, "deltaRhoHat2LoopSM"];
            Return[result];
           ];
 
 (*formula according to (C.5) from hep-ph/9606211*)
-deltaRHat2LoopSM[]:=
+deltaRHat2LoopSM[massMatrices_List]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2))(2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) - HiggsContributions2LoopSM[] (1 - DELTARHAT1LOOP) RHOHATRATIO;
+           expr = alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2))(2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) - HiggsContributions2LoopSM[massMatrices] (1 - DELTARHAT1LOOP) RHOHATRATIO;
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> TreeMasses`ExpressionToString[expr, "deltaRHat2LoopSM"];
            Return[result];
