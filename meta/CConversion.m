@@ -753,6 +753,15 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
     Format["(" <> ToString[CForm[HoldForm[x]]] <> ")*(" <>
            ToString[CForm[HoldForm[y]]] <> ").transpose()", OutputForm];
 
+(* Finds all Greek symbols in an expression.
+   Note: All arguments of Which and If are evaluated.
+ *)
+FindGreekSymbols[expr_] :=
+    Block[{Which, If},
+          DeleteDuplicates @ Select[
+              Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True], GreekQ]
+         ];
+
 (* Converts an expression to CForm and expands SARAH symbols
  *
  *   MatMul[A]      ->   A
@@ -767,11 +776,8 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
 RValueToCFormString[expr_String] := expr;
 
 RValueToCFormString[expr_] :=
-    Module[{times, result, symbols, greekSymbols, greekSymbolsRules,
-            conjSimplification = {}},
-           symbols = Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True];
-           greekSymbols = DeleteDuplicates @ Select[symbols, GreekQ];
-           greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
+    Module[{times, result, greekSymbolsRules, conjSimplification = {}},
+           greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ FindGreekSymbols[expr];
            (* create complicated conj simplification rules only when needed *)
            If[!FreeQ[expr, Susyno`LieGroups`conj] || !FreeQ[expr, SARAH`Conj],
               conjSimplification = {
