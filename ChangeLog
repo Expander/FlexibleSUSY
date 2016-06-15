@@ -15,6 +15,10 @@ FlexibleSUSY-1.4.3 [not released yet]
    overload of operator<< .
    Thanks to Dylan Harries.
 
+ * Bugfix (commits fc748be, 9654a52): Fix compilation in case Greek
+   Symbols appear in If[] or Which[] functions in the model file.
+   Thanks to Dylan Harries.
+
 FlexibleSUSY-1.4.2 [May, 09 2016]
 
  * Bugfix: Correcting handling of spaces in configure script if
