@@ -785,8 +785,7 @@ RValueToCFormString[expr_] :=
                   Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z
               };
              ];
-           result = expr /.
-                    greekSymbolsRules /.
+           result = Block[{Which, If}, expr /. greekSymbolsRules] /.
                     SARAH`Mass -> FlexibleSUSY`M //. {
                     SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
                     SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
