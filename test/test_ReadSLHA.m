@@ -54,7 +54,7 @@ Block EXTPAR                 # Input parameters
 Block EXTPAR
     0   1.1
     1   2.2
-Block X
+Block V
     1   10.1
     2   20.2
     3   a
@@ -68,7 +68,7 @@ Block M
 pars = {
     {Qin  , ScalarType[realScalarCType]      , {EXTPAR, 0}},
     {QEWSB, ScalarType[realScalarCType]      , {EXTPAR, 1}},
-    {V    , VectorType[realScalarCType, 3]   , X},
+    {V    , VectorType[realScalarCType, 3]   , V},
     {M    , MatrixType[realScalarCType, 3, 3], M}
 };
 
