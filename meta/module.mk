@@ -61,6 +61,7 @@ META_SRC     := \
 		$(DIR)/Observables.m \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
+		$(DIR)/ReadSLHA.m \
 		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
 		$(DIR)/TestSuite.m \
