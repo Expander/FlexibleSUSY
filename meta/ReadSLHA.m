@@ -1,4 +1,4 @@
-BeginPackage["ReadSLHA`"];
+BeginPackage["ReadSLHA`", {"CConversion`"}];
 
 ReadSLHAFile::usage="reads SLHA file and returns list of input and
  output parameters";
