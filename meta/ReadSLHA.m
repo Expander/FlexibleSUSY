@@ -89,6 +89,49 @@ ReadMatrixFromBlock[block_String, dim1_, dim2_] :=
            matrix
           ];
 
+ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_] :=
+    Module[{tensor = Table[0, {i,1,dim1}, {j,1,dim2}, {k,1,dim3}], line = "",
+            value, index1, index2, index3, values,
+            stream = StringToStream[block]},
+           While[(line = Read[stream, String]) =!= EndOfFile,
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,j,k,v}];
+                 If[values =!= {},
+                    {index1, index2, index3, value} = First[values];
+                    index1 = ToExpression[index1];
+                    index2 = ToExpression[index2];
+                    index3 = ToExpression[index3];
+                    value  = ToExpression[value];
+                    If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && NumberQ[value],
+                       tensor[[index1, index2, index3]] = value;
+                      ];
+                   ];
+                ];
+           tensor
+          ];
+
+ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_, dim4_] :=
+    Module[{tensor = Table[0, {i,1,dim1}, {j,1,dim2}, {k,1,dim3}, {l,1,dim4}], line = "",
+            value, index1, index2, index3, index4, values,
+            stream = StringToStream[block]},
+           While[(line = Read[stream, String]) =!= EndOfFile,
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ l:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,j,k,l,v}];
+                 If[values =!= {},
+                    {index1, index2, index3, index4, value} = First[values];
+                    index1 = ToExpression[index1];
+                    index2 = ToExpression[index2];
+                    index3 = ToExpression[index3];
+                    index4 = ToExpression[index4];
+                    value  = ToExpression[value];
+                    If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && IntegerQ[index4] && NumberQ[value],
+                       tensor[[index1, index2, index3, index4]] = value;
+                      ];
+                   ];
+                ];
+           tensor
+          ];
+
+ReadParameter::cmplxtype = "Cannot read variable `1` of complex type `2`.";
+
 ReadParameter[stream_, par_, CConversion`ScalarType[CConversion`realScalarCType], {block_, idx_}] :=
     ReadIndexFromBlock[ReadBlock[stream, ToString[block]], idx];
 
@@ -97,6 +140,12 @@ ReadParameter[stream_, par_, CConversion`VectorType[CConversion`realScalarCType,
 
 ReadParameter[stream_, par_, CConversion`MatrixType[CConversion`realScalarCType, dim1_, dim2_], block_] :=
     ReadMatrixFromBlock[ReadBlock[stream, ToString[block]], dim1, dim2];
+
+ReadParameter[stream_, par_, CConversion`TensorType[CConversion`realScalarCType, dims__], block_] :=
+    ReadTensorFromBlock[ReadBlock[stream, ToString[block]], dims];
+
+ReadParameter[_, par_, type:(_[CConversion`complexScalarCType, ___]), _] :=
+    (Message[ReadParameter::cmplxtype, par, type]; $Failed);
 
 ReadParameter[stream_, {par_, type_, block_}] :=
     par -> ReadParameter[stream, par, type, block];

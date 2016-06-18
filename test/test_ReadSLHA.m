@@ -63,13 +63,26 @@ Block M
     1 2  1
     2 2  20.2
     3 3  30.3
+Block T3
+    1 1 1  10.1
+    2 2 2  20.2
+    3 3 3  30.3
+Block T4
+    1 1 1 1  10.1
+    2 2 2 2  20.2
+    3 3 3 3  30.3
+Block C
+    1
 ";
 
 pars = {
-    {Qin  , ScalarType[realScalarCType]      , {EXTPAR, 0}},
-    {QEWSB, ScalarType[realScalarCType]      , {EXTPAR, 1}},
-    {V    , VectorType[realScalarCType, 3]   , V},
-    {M    , MatrixType[realScalarCType, 3, 3], M}
+    {Qin  , ScalarType[realScalarCType]            , {EXTPAR, 0}},
+    {QEWSB, ScalarType[realScalarCType]            , {EXTPAR, 1}},
+    {V    , VectorType[realScalarCType, 3]         , V},
+    {M    , MatrixType[realScalarCType, 3, 3]      , M},
+    {T3   , TensorType[realScalarCType, 3, 3, 3]   , T3},
+    {T4   , TensorType[realScalarCType, 3, 3, 3, 3], T4},
+    {C    , ScalarType[complexScalarCType]         , C}
 };
 
 values = ReadSLHAString[slha, pars];
@@ -78,6 +91,17 @@ TestEquality[Qin /. values, 1.1];
 TestEquality[QEWSB /. values, 2.2];
 TestEquality[V /. values, {10.1, 20.2, 0}];
 TestEquality[M /. values, {{10.1, 1, 0}, {0, 20.2, 0}, {0, 0, 30.3}}];
+TestEquality[T3 /. values, {{{10.1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+                            {{0, 0, 0}, {0, 20.2, 0}, {0, 0, 0}},
+                            {{0, 0, 0}, {0, 0, 0}, {0, 0, 30.3}}}];
+
+t4 = Table[0, {i,1,3}, {j,1,3}, {k,1,3}, {l,1,3}];
+t4[[1,1,1,1]] = 10.1;
+t4[[2,2,2,2]] = 20.2;
+t4[[3,3,3,3]] = 30.3;
+
+TestEquality[T4 /. values, t4];
+TestEquality[C /. values, $Failed];
 
 Print[""];
 
