@@ -71,18 +71,15 @@ Block T4
     1 1 1 1  10.1
     2 2 2 2  20.2
     3 3 3 3  30.3
-Block C
-    1
 ";
 
 pars = {
-    {Qin  , ScalarType[realScalarCType]            , {EXTPAR, 0}},
-    {QEWSB, ScalarType[realScalarCType]            , {EXTPAR, 1}},
-    {V    , VectorType[realScalarCType, 3]         , V},
-    {M    , MatrixType[realScalarCType, 3, 3]      , M},
-    {T3   , TensorType[realScalarCType, 3, 3, 3]   , T3},
-    {T4   , TensorType[realScalarCType, 3, 3, 3, 3], T4},
-    {C    , ScalarType[complexScalarCType]         , C}
+    {Qin  , {0}            , {EXTPAR, 0}},
+    {QEWSB, {0}            , {EXTPAR, 1}},
+    {V    , {3}            , V},
+    {M    , {3, 3}         , M},
+    {T3   , {3, 3, 3}      , T3},
+    {T4   , {3, 3, 3, 3}   , T4}
 };
 
 values = ReadSLHAString[slha, pars];
@@ -101,7 +98,6 @@ t4[[2,2,2,2]] = 20.2;
 t4[[3,3,3,3]] = 30.3;
 
 TestEquality[T4 /. values, t4];
-TestEquality[C /. values, $Failed];
 
 Print[""];
 

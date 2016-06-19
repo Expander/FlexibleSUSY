@@ -1,4 +1,4 @@
-BeginPackage["ReadSLHA`", {"CConversion`"}];
+BeginPackage["ReadSLHA`"];
 
 ReadSLHAFile::usage="reads SLHA file and returns list of input and
  output parameters";
@@ -130,22 +130,17 @@ ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_, dim4_] :=
            tensor
           ];
 
-ReadParameter::cmplxtype = "Cannot read variable `1` of complex type `2`.";
-
-ReadParameter[stream_, par_, CConversion`ScalarType[CConversion`realScalarCType], {block_, idx_}] :=
+ReadParameter[stream_, par_, {} | {0|1} | 0 | 1, {block_, idx_}] :=
     ReadIndexFromBlock[ReadBlock[stream, ToString[block]], idx];
 
-ReadParameter[stream_, par_, CConversion`VectorType[CConversion`realScalarCType, dim_], block_] :=
+ReadParameter[stream_, par_, {dim_}, block_] :=
     ReadVectorFromBlock[ReadBlock[stream, ToString[block]], dim];
 
-ReadParameter[stream_, par_, CConversion`MatrixType[CConversion`realScalarCType, dim1_, dim2_], block_] :=
+ReadParameter[stream_, par_, {dim1_, dim2_}, block_] :=
     ReadMatrixFromBlock[ReadBlock[stream, ToString[block]], dim1, dim2];
 
-ReadParameter[stream_, par_, CConversion`TensorType[CConversion`realScalarCType, dims__], block_] :=
+ReadParameter[stream_, par_, {dims__}, block_] :=
     ReadTensorFromBlock[ReadBlock[stream, ToString[block]], dims];
-
-ReadParameter[_, par_, type:(_[CConversion`complexScalarCType, ___]), _] :=
-    (Message[ReadParameter::cmplxtype, par, type]; $Failed);
 
 ReadParameter[stream_, {par_, type_, block_}] :=
     par -> ReadParameter[stream, par, type, block];
@@ -157,9 +152,10 @@ ReadParameter[stream_, {par_, type_, block_}] :=
  #3 is the block / entry in the SLHA input
 
  parameters = {
-    {Qin, ScalarType[realScalarCType], {EXTPAR, 0}},
-    {m0 , ScalarType[realScalarCType], {MINPAR, 1}},
-    {Yu , MatrixType[realScalarCType, 3, 3], YuIN}
+    {Qin, {0}   , {EXTPAR, 0}},
+    {m0 , {0}   , {MINPAR, 1}},
+    {k  , {3}   , KappaIn},
+    {Yu , {3, 3}, YuIN}
  };
  *)
 ReadSLHAStream[stream_, parameters_List] :=
