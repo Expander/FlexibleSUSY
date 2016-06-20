@@ -62,7 +62,8 @@ public:
          for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
             masses.push_back(
                std::string("M") + particle_names[i] +
-               (particle_multiplicities[i] == 1 ? "" : "(" + std::to_string(m) + ")"));
+               (particle_multiplicities[i] == 1 ? "" : "("
+                + std::to_string(static_cast<unsigned long long>(m)) + ")"));
          }
       }
       return masses;
