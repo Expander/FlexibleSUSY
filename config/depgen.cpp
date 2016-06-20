@@ -92,13 +92,13 @@ private:
 
 /// deletes duplicate elements from a vector (preseves order)
 template <typename Predicate>
-std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
+std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec,
+                                           Predicate& pred)
 {
    std::vector<std::string> unique_vector;
-   Predicate pred;
 
    depgen::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
-                   std::ref(pred));
+                   pred);
 
    return unique_vector;
 }
@@ -358,12 +358,15 @@ int main(int argc, const char* argv[])
 
    paths.insert(paths.begin(), directory(file_name));
    paths.push_back(".");
-   paths = delete_duplicates<Is_not_duplicate>(paths);
+   Is_not_duplicate is_not_dup;
+   paths = delete_duplicates(paths, is_not_dup);
 
    // search for header inclusions (remove duplicate headers)
+   Is_not_duplicate_ignore_path is_not_dup_ign_path;
    std::vector<std::string> dependencies
-      = delete_duplicates<Is_not_duplicate_ignore_path>(
-           search_includes(file_name, paths, ignore_non_existing));
+      = delete_duplicates(
+           search_includes(file_name, paths, ignore_non_existing),
+           is_not_dup_ign_path);
 
    // add file name to dependency list
    std::vector<std::string> dependencies_and_main(dependencies);
