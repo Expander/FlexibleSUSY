@@ -19,6 +19,9 @@ FlexibleSUSY-1.4.3 [not released yet]
    Symbols appear in If[] or Which[] functions in the model file.
    Thanks to Dylan Harries.
 
+ * Bugfix: Fix compilation with g++ 4.4.7.
+   Thanks to Dylan Harries.
+
 FlexibleSUSY-1.4.2 [May, 09 2016]
 
  * Bugfix: Correcting handling of spaces in configure script if
