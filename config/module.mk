@@ -2,6 +2,7 @@ DIR          := config
 MODNAME      := config
 FCC          := $(DIR)/fcc
 FXX          := $(DIR)/f++
+MCC          := $(DIR)/mcc
 
 CONFIG_HDR := \
 		$(DIR)/config.h

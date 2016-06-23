@@ -89,6 +89,8 @@ ALLSRC   :=
 ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
+# the modules add MathLink exectuables to this variable
+ALLML    :=
 # the modules add test executables to this variable
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
@@ -116,7 +118,7 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 # README file
 README_FILE := README
 
-.PHONY:  all allsrc allexec alllib alltest clean-executables \
+.PHONY:  all allsrc allexec alllib allml alltest clean-executables \
 	 clean clean-dep clean-obj depend distclean showbuild tag \
 	 release-tag release-head
 
@@ -126,6 +128,9 @@ all:     allsrc
 endif
 ifeq ($(ENABLE_COMPILE),yes)
 all:     alllib allexec
+endif
+ifeq ($(ENABLE_META)-$(ENABLE_COMPILE),yes-yes)
+all:     allml
 endif
 
 ifeq ($(INSTALL_DIR),)
@@ -179,6 +184,7 @@ endif
 allsrc:   $(ALLSRC)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
+allml:    $(ALLML)
 alltest:  $(ALLTST)
 
 clean-dep:
@@ -200,7 +206,7 @@ depend:  $(ALLDEP)
 	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
 clean-executables:
-	-rm -f $(ALLEXE)
+	-rm -f $(ALLEXE) $(ALLML)
 
 distclean::
 	-rm -f Makefile
