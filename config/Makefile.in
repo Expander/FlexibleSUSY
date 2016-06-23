@@ -143,6 +143,7 @@ endif
 endif
 
 include config/abspathx.mk
+include config/libsyntax.mk
 include $(patsubst %, %/module.mk, $(MODULES))
 
 ifneq ($(MAKECMDGOALS),clean)
