@@ -91,7 +91,7 @@ int FSSetSMInputParameters@ModelName@(
     double md2GeV,
     double mu2GeV,
     double ms2GeV,
-    double mc2GeV,
+    double mcmc,
     double alphaEm0,
     double Mh
 )
@@ -125,7 +125,7 @@ int FSSetSMInputParameters@ModelName@(
    qedqcd.setMu2GeV(mu2GeV);
    qedqcd.setMass(softsusy::mStrange, ms2GeV);
    qedqcd.setMs2GeV(ms2GeV);
-   qedqcd.setMass(softsusy::mCharm, mc2GeV);
+   qedqcd.setMass(softsusy::mCharm, mcmc);
    qedqcd.setMcMc(mc2GeV);
 
    physical_input.set(Physical_input::alpha_em_0, alphaEm0);

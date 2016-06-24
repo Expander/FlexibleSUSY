@@ -28,7 +28,7 @@
     OptionValue[md2GeV],
     OptionValue[mu2GeV],
     OptionValue[ms2GeV],
-    OptionValue[mc2GeV],
+    OptionValue[mcmc],
     OptionValue[alphaEm0],
     OptionValue[Mh],
     OptionValue[CKM],
@@ -56,7 +56,7 @@
     md2GeV -> 0.00475,      (* SMINPUTS[21] *)
     mu2GeV -> 0.0024,       (* SMINPUTS[22] *)
     ms2GeV -> 0.104,        (* SMINPUTS[23] *)
-    mc2GeV -> 1.27,         (* SMINPUTS[24] *)
+    mcmc -> 1.27,           (* SMINPUTS[24] *)
     alphaEm0 -> 1/137.035999074,
     Mh -> 125.09,
     CKM -> IdentityMatrix[3],
