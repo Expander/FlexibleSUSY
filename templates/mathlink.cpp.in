@@ -1,0 +1,115 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_physical.hpp"
+#include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
+
+#include "spectrum_generator_settings.hpp"
+#include "lowe.h"
+
+#include "mathlink.h"
+
+#include <sstream>
+
+using namespace flexiblesusy;
+typedef Two_scale algorithm_type;
+
+@ModelName@_input_parameters input;
+softsusy::QedQcd qedqcd;
+Spectrum_generator_settings spectrum_generator_settings;
+double parameter_output_scale = 0.;
+
+/******************************************************************/
+
+void put_error_output()
+{
+   MLPutFunction(stdlink, "List", 0);
+   MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+void put_error_message(const std::string& function_name,
+                       const std::string& message_tag,
+                       const std::string& message_str)
+{
+   MLPutFunction(stdlink, "CompoundExpression", 2);
+   MLPutFunction(stdlink, "Message", 2);
+   MLPutFunction(stdlink, "MessageName", 2);
+   MLPutSymbol(stdlink, function_name.c_str());
+   MLPutString(stdlink, message_tag.c_str());
+   MLPutString(stdlink, message_str.c_str());
+}
+
+/******************************************************************/
+
+void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
+{
+   put_error_output();
+}
+
+/******************************************************************/
+
+extern "C" {
+
+void FSCalculateSpectrum@ModelName@()
+{
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ());
+   } catch (const std::string& s) {
+      put_error_message("FSCalculateSpectrum@ModelName@", "error", s);
+      put_error_output();
+      return;
+   }
+
+   @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
+   spectrum_generator.set_settings(spectrum_generator_settings);
+   spectrum_generator.set_parameter_output_scale(parameter_output_scale);
+   spectrum_generator.run(qedqcd, input);
+
+   // convert to SLHA
+   const @ModelName@_slha<algorithm_type> model(
+      spectrum_generator.get_model(),
+      spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
+
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+      = spectrum_generator.get_problems();
+
+   // output
+   if (!problems.have_problem() ||
+       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
+      put_spectrum(model);
+   } else {
+      std::ostringstream msg;
+      problems.print_problems(msg);
+      put_error_message("FSCalculateSpectrum@ModelName@", "error", msg.str());
+      put_error_output();
+   }
+}
+
+} // extern "C"
+
+int main(int argc, char *argv[])
+{
+   return MLMain(argc, argv);
+}

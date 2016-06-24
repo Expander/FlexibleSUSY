@@ -1,0 +1,19 @@
+:Evaluate: BeginPackage["FlexibleSUSY`@ModelName@`"]
+
+:Evaluate: FSCalculateSpectrum@ModelName@::usage = "Calculates the pole mass spectrum, given the input parameters set via FSSetInputParameters@ModelName@[].";
+:Evaluate: FSCalculateSpectrum@ModelName@::error = "`1`";
+:Evaluate: FSCalculateSpectrum@ModelName@::warning = "`1`";
+
+:Evaluate: Begin["`Private`"]
+
+:Begin:
+:Function: FSCalculateSpectrum@ModelName@
+:Pattern: FSCalculateSpectrum@ModelName@[]
+:Arguments: {}
+:ArgumentTypes: {}
+:ReturnType: Manual
+:End:
+
+:Evaluate: End[]
+
+:Evaluate: EndPackage[]

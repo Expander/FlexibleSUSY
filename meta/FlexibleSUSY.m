@@ -1234,6 +1234,13 @@ WriteUserExample[inputParameters_List, files_List] :=
                           } ];
           ];
 
+WriteMathLink[inputParameters_List, files_List] :=
+    Module[{},
+           WriteOut`ReplaceInFiles[files,
+                          { Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WritePlotScripts[files_List] :=
     Module[{},
            WriteOut`ReplaceInFiles[files,
@@ -2402,6 +2409,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "scan.cpp.in"}],
                               FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
                             }];
+
+           WriteMathLink[inputParameters,
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mathlink.cpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.tm.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mathlink.tm"}]}
+                         }];
 
            PrintHeadline["FlexibleSUSY has finished"];
           ];
