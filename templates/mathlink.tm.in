@@ -1,4 +1,5 @@
 :Evaluate: BeginPackage["FlexibleSUSY`@ModelName@`"]
+:Evaluate: EndPackage[]
 
 :Evaluate: {alphaEmMZ, GF, alphaSMZ, MZ, mbmb,  Mt, Mtau,
        Mv3, MW, Me, Mv1, Mm, Mv2, md2GeV, mu2GeV, ms2GeV,
@@ -24,7 +25,7 @@
 :Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
 :Evaluate: FS@ModelName@CalculateSpectrum::warning = "`1`";
 
-:Evaluate: Begin["`Private`"]
+:Evaluate: Begin["FlexibleSUSY`@ModelName@`Private`"]
 
 :Begin:
 :Function: FS@ModelName@GetSettings
@@ -159,5 +160,3 @@
 :End:
 
 :Evaluate: End[]
-
-:Evaluate: EndPackage[]
