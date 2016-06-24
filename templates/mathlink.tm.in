@@ -18,6 +18,8 @@
 :Evaluate: FS@ModelName@GetSettings::usage = "Returns the settings for the @ModelName@ model spectrum generator.";
 :Evaluate: FS@ModelName@SetSettings::usage = "Sets the settings for the @ModelName@ model spectrum generator.";
 
+:Evaluate: FS@ModelName@GetInputParameters::usage = "Returns the current set of input parameters of the @ModelName@.";
+
 :Evaluate: FS@ModelName@CalculateSpectrum::usage = "Calculates the pole mass spectrum, given the input parameters set via FS@ModelName@SetInputParameters[].";
 :Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
 :Evaluate: FS@ModelName@CalculateSpectrum::warning = "`1`";
@@ -139,6 +141,14 @@
     Mh -> 125.09,
     CKM -> IdentityMatrix[3],
     PMNS -> IdentityMatrix[3] }
+
+:Begin:
+:Function: FS@ModelName@GetInputParameters
+:Pattern: FS@ModelName@GetInputParameters[]
+:Arguments: {}
+:ArgumentTypes: {}
+:ReturnType: Manual
+:End:
 
 :Begin:
 :Function: FS@ModelName@CalculateSpectrum

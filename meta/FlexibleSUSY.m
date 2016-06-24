@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FSMathLink`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -1235,9 +1235,13 @@ WriteUserExample[inputParameters_List, files_List] :=
           ];
 
 WriteMathLink[inputParameters_List, files_List] :=
-    Module[{},
+    Module[{numberOfInputParameters, putInputParameters},
+           numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputParameters];
+           putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
            WriteOut`ReplaceInFiles[files,
-                          { Sequence @@ GeneralReplacementRules[]
+                          { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
+                            "@putInputParameters@" -> IndentText[putInputParameters],
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 

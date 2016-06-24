@@ -33,6 +33,8 @@
 
 #include <sstream>
 
+#define INPUTPARAMETER(p) input.p
+
 using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
 
@@ -237,6 +239,17 @@ int FS@ModelName@SetSMInputParameters(
    // read CKM and PMNS matrices
 
    return 0;
+}
+
+/******************************************************************/
+
+void FS@ModelName@GetInputParameters()
+{
+   MLPutFunction(stdlink, "List", @numberOfInputParameters@);
+
+@putInputParameters@
+
+   MLEndPacket(stdlink);
 }
 
 /******************************************************************/
