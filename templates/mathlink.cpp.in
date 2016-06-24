@@ -126,7 +126,7 @@ int FSSetSMInputParameters@ModelName@(
    qedqcd.setMass(softsusy::mStrange, ms2GeV);
    qedqcd.setMs2GeV(ms2GeV);
    qedqcd.setMass(softsusy::mCharm, mcmc);
-   qedqcd.setMcMc(mc2GeV);
+   qedqcd.setMcMc(mcmc);
 
    physical_input.set(Physical_input::alpha_em_0, alphaEm0);
    physical_input.set(Physical_input::mh_pole, Mh);
