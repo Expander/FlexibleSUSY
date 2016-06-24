@@ -20,6 +20,7 @@
 :Evaluate: FS@ModelName@SetSettings::usage = "Sets the settings for the @ModelName@ model spectrum generator.";
 
 :Evaluate: FS@ModelName@GetInputParameters::usage = "Returns the current set of input parameters of the @ModelName@.";
+:Evaluate: FS@ModelName@SetInputParameters::usage = "Sets input parameters of the @ModelName@.";
 
 :Evaluate: FS@ModelName@CalculateSpectrum::usage = "Calculates the pole mass spectrum, given the input parameters set via FS@ModelName@SetInputParameters[].";
 :Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
@@ -150,6 +151,16 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Begin:
+:Function: FS@ModelName@SetInputParameters
+:Pattern: FS@ModelName@SetInputParameters[OptionsPattern[]]
+:Arguments: { @setInputParameterArguments@ }
+:ArgumentTypes: { @setInputParameterArgumentTypes@ }
+:ReturnType: Integer
+:End:
+
+:Evaluate: Options[FS@ModelName@SetInputParameters] = { @setInputParameterDefaultArguments@ }
 
 :Begin:
 :Function: FS@ModelName@CalculateSpectrum

@@ -254,6 +254,15 @@ void FS@ModelName@GetInputParameters()
 
 /******************************************************************/
 
+int FS@ModelName@SetInputParameters()
+{
+@setInputParameters@
+
+   return 0;
+}
+
+/******************************************************************/
+
 void FS@ModelName@CalculateSpectrum()
 {
    try {
