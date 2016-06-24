@@ -24,6 +24,7 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
 
+#include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 
@@ -34,10 +35,13 @@
 using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
 
-@ModelName@_input_parameters input;
-softsusy::QedQcd qedqcd;
+@ModelName@_input_parameters input; ///< model input parameters
+Physical_input physical_input;      ///< extra non-SLHA physical input
+softsusy::QedQcd qedqcd;            ///< SLHA physical input
 Spectrum_generator_settings spectrum_generator_settings;
-double parameter_output_scale = 0.;
+double parameter_output_scale = 0.; ///< output scale for running parameters
+
+extern "C" {
 
 /******************************************************************/
 
@@ -70,7 +74,69 @@ void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
 
 /******************************************************************/
 
-extern "C" {
+int FSSetSMInputParameters@ModelName@(
+    double alphaEmMZ,
+    double GF,
+    double alphaSMZ,
+    double MZ,
+    double mbmb,
+    double Mt,
+    double Mtau,
+    double Mv3,
+    double MW,
+    double Me,
+    double Mv1,
+    double Mm,
+    double Mv2,
+    double md2GeV,
+    double mu2GeV,
+    double ms2GeV,
+    double mc2GeV,
+    double alphaEm0,
+    double Mh
+)
+{
+   qedqcd = softsusy::QedQcd();
+
+   qedqcd.setAlpha(softsusy::ALPHA, alphaEmMZ);
+   qedqcd.setAlphaEmInput(alphaEmMZ);
+   qedqcd.setFermiConstant(GF);
+   qedqcd.setAlpha(softsusy::ALPHAS, alphaSMZ);
+   qedqcd.setAlphaSInput(alphaSMZ);
+   qedqcd.setPoleMZ(MZ);
+   qedqcd.setMu(MZ);
+   softsusy::MZ = MZ;
+   qedqcd.setMass(softsusy::mBottom, mbmb);
+   qedqcd.setMbMb(mbmb);
+   qedqcd.setPoleMt(Mt);
+   qedqcd.setMass(softsusy::mTau, Mtau);
+   qedqcd.setPoleMtau(Mtau);
+   qedqcd.setNeutrinoPoleMass(3, Mv3);
+   qedqcd.setPoleMW(MW);
+   qedqcd.setMass(softsusy::mElectron, Me);
+   qedqcd.setPoleMel(Me);
+   qedqcd.setNeutrinoPoleMass(1, Mv1);
+   qedqcd.setMass(softsusy::mMuon, Mm);
+   qedqcd.setPoleMmuon(Mm);
+   qedqcd.setNeutrinoPoleMass(2, Mv2);
+   qedqcd.setMass(softsusy::mDown, md2GeV);
+   qedqcd.setMd2GeV(md2GeV);
+   qedqcd.setMass(softsusy::mUp, mu2GeV);
+   qedqcd.setMu2GeV(mu2GeV);
+   qedqcd.setMass(softsusy::mStrange, ms2GeV);
+   qedqcd.setMs2GeV(ms2GeV);
+   qedqcd.setMass(softsusy::mCharm, mc2GeV);
+   qedqcd.setMcMc(mc2GeV);
+
+   physical_input.set(Physical_input::alpha_em_0, alphaEm0);
+   physical_input.set(Physical_input::mh_pole, Mh);
+
+   // read CKM and PMNS matrices
+
+   return 0;
+}
+
+/******************************************************************/
 
 void FSCalculateSpectrum@ModelName@()
 {
@@ -106,6 +172,8 @@ void FSCalculateSpectrum@ModelName@()
       put_error_output();
    }
 }
+
+/******************************************************************/
 
 } // extern "C"
 
