@@ -1647,7 +1647,7 @@ SetSMParameter[FlexibleSUSY`MNeutrino2PoleInput, value_String, struct_String] :=
 SetSMParameter[FlexibleSUSY`MDown2GeVInput     , value_String, struct_String] := struct <> ".setMass(softsusy::mDown, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MUp2GeVInput       , value_String, struct_String] := struct <> ".setMass(softsusy::mUp, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MStrange2GeVInput  , value_String, struct_String] := struct <> ".setMass(softsusy::mStrange, " <> value <> ")";
-SetSMParameter[FlexibleSUSY`MCharm2GeVInput    , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MCharmMCharm       , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
 
 End[];
 

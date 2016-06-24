@@ -125,7 +125,7 @@ SMINPUTS = {
     {MDown2GeVInput     , {"SMINPUTS", 21}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MUp2GeVInput       , {"SMINPUTS", 22}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MStrange2GeVInput  , {"SMINPUTS", 23}, CConversion`ScalarType[CConversion`realScalarCType]},
-    {MCharm2GeVInput    , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
+    {MCharmMCharm       , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
 };
 
 (* renormalization schemes *)
