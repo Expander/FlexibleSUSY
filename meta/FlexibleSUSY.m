@@ -113,7 +113,7 @@ SMINPUTS = {
     {GFermiInput        , {"SMINPUTS",  2}, CConversion`ScalarType[CConversion`realScalarCType]},
     {AlphaSInput        , {"SMINPUTS",  3}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MZPoleInput        , {"SMINPUTS",  4}, CConversion`ScalarType[CConversion`realScalarCType]},
-    {MbMbInput          , {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MBottomMbottomInput, {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MTopPoleInput      , {"SMINPUTS",  6}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MTauPoleInput      , {"SMINPUTS",  7}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MNeutrino3PoleInput, {"SMINPUTS",  8}, CConversion`ScalarType[CConversion`realScalarCType]},
