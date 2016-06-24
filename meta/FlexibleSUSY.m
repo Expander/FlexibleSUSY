@@ -1236,16 +1236,17 @@ WriteUserExample[inputParameters_List, files_List] :=
 
 WriteMathLink[inputParameters_List, files_List] :=
     Module[{numberOfInputParameters, putInputParameters,
-            setInputParameterDefaultArguments},
+            setInputParameterDefaultArguments, setInputParameterArgumentTypes},
            numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputParameters];
            putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputParameters];
+           setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputParameters];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@putInputParameters@" -> IndentText[putInputParameters],
                             "@setInputParameters@" -> "",
                             "@setInputParameterArguments@" -> "",
-                            "@setInputParameterArgumentTypes@" -> "",
+                            "@setInputParameterArgumentTypes@" -> IndentText[setInputParameterArgumentTypes],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
