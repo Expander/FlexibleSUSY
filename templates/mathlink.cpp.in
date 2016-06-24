@@ -75,7 +75,77 @@ void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
 
 /******************************************************************/
 
-int FSGetSMInputParameters@ModelName@()
+void FS@ModelName@GetSettings()
+{
+   MLPutFunction(stdlink, "List", 17);
+
+   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::precision), "precisionGoal");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_output), "forceOutput");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
+   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
+   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
+   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
+   MLPutRuleToReal(stdlink, parameter_output_scale, "parameterOutputScale");
+
+   MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+int FS@ModelName@SetSettings(
+   double precision_goal_,
+   int max_iterations_,
+   int calculate_sm_masses_,
+   int pole_mass_loop_order_,
+   int ewsb_loop_order_,
+   int beta_loop_order_,
+   int threshold_corrections_loop_order_,
+   int higgs_2loop_correction_at_as_,
+   int higgs_2loop_correction_ab_as_,
+   int higgs_2loop_correction_at_at_,
+   int higgs_2loop_correction_atau_atau_,
+   int force_output_,
+   int top_2loop_corrections_qcd_,
+   double beta_zero_threshold_,
+   int force_positive_masses_,
+   double pole_mass_scale_,
+   double parameter_output_scale_
+)
+{
+   spectrum_generator_settings.set(Spectrum_generator_settings::precision, precision_goal_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::max_iterations, max_iterations_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::calculate_sm_masses, calculate_sm_masses_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::pole_mass_loop_order, pole_mass_loop_order_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::ewsb_loop_order, ewsb_loop_order_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::beta_loop_order, beta_loop_order_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, threshold_corrections_loop_order_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, higgs_2loop_correction_at_as_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, higgs_2loop_correction_ab_as_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, higgs_2loop_correction_at_at_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, higgs_2loop_correction_atau_atau_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::force_output, force_output_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::top_2loop_corrections_qcd, top_2loop_corrections_qcd_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::beta_zero_threshold, beta_zero_threshold_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::force_positive_masses, force_positive_masses_);
+   spectrum_generator_settings.set(Spectrum_generator_settings::pole_mass_scale, pole_mass_scale_);
+   parameter_output_scale = parameter_output_scale_;
+
+   return 0;
+}
+
+/******************************************************************/
+
+void FS@ModelName@GetSMInputParameters()
 {
    MLPutFunction(stdlink, "List", 19);
 
@@ -107,7 +177,7 @@ int FSGetSMInputParameters@ModelName@()
 
 /******************************************************************/
 
-int FSSetSMInputParameters@ModelName@(
+int FS@ModelName@SetSMInputParameters(
     double alphaEmMZ,
     double GF,
     double alphaSMZ,
@@ -171,12 +241,12 @@ int FSSetSMInputParameters@ModelName@(
 
 /******************************************************************/
 
-void FSCalculateSpectrum@ModelName@()
+void FS@ModelName@CalculateSpectrum()
 {
    try {
       qedqcd.to(qedqcd.displayPoleMZ());
    } catch (const std::string& s) {
-      put_error_message("FSCalculateSpectrum@ModelName@", "error", s);
+      put_error_message("FS@ModelName@CalculateSpectrum", "error", s);
       put_error_output();
       return;
    }
@@ -201,7 +271,7 @@ void FSCalculateSpectrum@ModelName@()
    } else {
       std::ostringstream msg;
       problems.print_problems(msg);
-      put_error_message("FSCalculateSpectrum@ModelName@", "error", msg.str());
+      put_error_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
       put_error_output();
    }
 }

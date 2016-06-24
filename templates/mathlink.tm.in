@@ -4,26 +4,91 @@
        Mv3, MW, Me, Mv1, Mm, Mv2, md2GeV, mu2GeV, ms2GeV,
        mcmc, alphaEm0, Mh, CKM, PMNS}
 
-:Evaluate: FSGetSMInputParameters@ModelName@::usage = "Returns the Standard Model parameters for the @ModelName@ model.";
-:Evaluate: FSSetSMInputParameters@ModelName@::usage = "Sets the Standard Model parameters for the @ModelName@ model.";
+:Evaluate: { precisionGoal, maxIterations,
+      calculateStandardModelMasses, poleMassLoopOrder, ewsbLoopOrder,
+      betaFunctionLoopOrder, thresholdCorrectionsLoopOrder,
+      higgs2loopCorrectionAtAs, higgs2loopCorrectionAbAs,
+      higgs2loopCorrectionAtAt, higgs2loopCorrectionAtauAtau,
+      forceOutput, top2loopCorrectionsQCD, betaZeroThreshold,
+      forcePositiveMasses, poleMassScale, parameterOutputScale }
 
-:Evaluate: FSCalculateSpectrum@ModelName@::usage = "Calculates the pole mass spectrum, given the input parameters set via FSSetInputParameters@ModelName@[].";
-:Evaluate: FSCalculateSpectrum@ModelName@::error = "`1`";
-:Evaluate: FSCalculateSpectrum@ModelName@::warning = "`1`";
+:Evaluate: FS@ModelName@GetSMInputParameters::usage = "Returns the Standard Model parameters for the @ModelName@ model.";
+:Evaluate: FS@ModelName@SetSMInputParameters::usage = "Sets the Standard Model parameters for the @ModelName@ model.";
+
+:Evaluate: FS@ModelName@GetSettings::usage = "Returns the settings for the @ModelName@ model spectrum generator.";
+:Evaluate: FS@ModelName@SetSettings::usage = "Sets the settings for the @ModelName@ model spectrum generator.";
+
+:Evaluate: FS@ModelName@CalculateSpectrum::usage = "Calculates the pole mass spectrum, given the input parameters set via FS@ModelName@SetInputParameters[].";
+:Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
+:Evaluate: FS@ModelName@CalculateSpectrum::warning = "`1`";
 
 :Evaluate: Begin["`Private`"]
 
 :Begin:
-:Function: FSGetSMInputParameters@ModelName@
-:Pattern: FSGetSMInputParameters@ModelName@[]
+:Function: FS@ModelName@GetSettings
+:Pattern: FS@ModelName@GetSettings[]
 :Arguments: {}
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
 
 :Begin:
-:Function: FSSetSMInputParameters@ModelName@
-:Pattern: FSSetSMInputParameters@ModelName@[OptionsPattern[]]
+:Function: FS@ModelName@SetSettings
+:Pattern: FS@ModelName@SetSettings[OptionsPattern[]]
+:Arguments: {
+      OptionValue[precisionGoal],
+      OptionValue[maxIterations],
+      OptionValue[calculateStandardModelMasses],
+      OptionValue[poleMassLoopOrder],
+      OptionValue[ewsbLoopOrder],
+      OptionValue[betaFunctionLoopOrder],
+      OptionValue[thresholdCorrectionsLoopOrder],
+      OptionValue[higgs2loopCorrectionAtAs],
+      OptionValue[higgs2loopCorrectionAbAs],
+      OptionValue[higgs2loopCorrectionAtAt],
+      OptionValue[higgs2loopCorrectionAtauAtau],
+      OptionValue[forceOutput],
+      OptionValue[top2loopCorrectionsQCD],
+      OptionValue[betaZeroThreshold],
+      OptionValue[forcePositiveMasses],
+      OptionValue[poleMassScale],
+      OptionValue[parameterOutputScale] }
+:ArgumentTypes: {
+   Real, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer,
+   Integer, Integer, Integer, Real, Integer, Real, Real }
+:ReturnType: Integer
+:End:
+
+:Evaluate: Options[FS@ModelName@SetSettings] = {
+      precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
+      maxIterations -> 0,                (* FlexibleSUSY[1] *)
+      calculateStandardModelMasses -> 0, (* FlexibleSUSY[3] *)
+      poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
+      ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
+      betaFunctionLoopOrder -> 2,        (* FlexibleSUSY[6] *)
+      thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
+      higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+      higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+      higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+      higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+      forceOutput -> 0,                  (* FlexibleSUSY[12] *)
+      top2loopCorrectionsQCD -> 1,       (* FlexibleSUSY[13] *)
+      betaZeroThreshold -> 1.*^-11,      (* FlexibleSUSY[14] *)
+      forcePositiveMasses -> 0,          (* FlexibleSUSY[16] *)
+      poleMassScale -> 0,                (* FlexibleSUSY[17] *)
+      parameterOutputScale -> 0 }
+
+:Begin:
+:Function: FS@ModelName@GetSMInputParameters
+:Pattern: FS@ModelName@GetSMInputParameters[]
+:Arguments: {}
+:ArgumentTypes: {}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: FS@ModelName@SetSMInputParameters
+:Pattern: FS@ModelName@SetSMInputParameters[OptionsPattern[]]
 :Arguments: {
     OptionValue[alphaEmMZ],
     OptionValue[GF],
@@ -52,7 +117,7 @@
 :ReturnType: Integer
 :End:
 
-:Evaluate: Options[FSSetSMInputParameters@ModelName@] = {
+:Evaluate: Options[FS@ModelName@SetSMInputParameters] = {
     alphaEmMZ -> 1/127.916, (* SMINPUTS[1] *)
     GF -> 1.16637*^-5,      (* SMINPUTS[2] *)
     alphaSMZ -> 0.1184,     (* SMINPUTS[3] *)
@@ -76,8 +141,8 @@
     PMNS -> IdentityMatrix[3] }
 
 :Begin:
-:Function: FSCalculateSpectrum@ModelName@
-:Pattern: FSCalculateSpectrum@ModelName@[]
+:Function: FS@ModelName@CalculateSpectrum
+:Pattern: FS@ModelName@CalculateSpectrum[]
 :Arguments: {}
 :ArgumentTypes: {}
 :ReturnType: Manual
