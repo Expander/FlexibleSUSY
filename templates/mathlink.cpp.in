@@ -29,6 +29,7 @@
 #include "lowe.h"
 
 #include "mathlink.h"
+#include "mathlink_macros.hpp"
 
 #include <sstream>
 
@@ -70,6 +71,38 @@ void put_error_message(const std::string& function_name,
 void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
 {
    put_error_output();
+}
+
+/******************************************************************/
+
+int FSGetSMInputParameters@ModelName@()
+{
+   MLPutFunction(stdlink, "List", 19);
+
+   MLPutRuleToReal(stdlink, qedqcd.displayAlphaEmInput(), "alphaEmMZ");
+   MLPutRuleToReal(stdlink, qedqcd.displayFermiConstant(), "GF");
+   MLPutRuleToReal(stdlink, qedqcd.displayAlphaSInput(), "alphaSMZ");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMZ(), "MZ");
+   MLPutRuleToReal(stdlink, qedqcd.displayMbMb(), "mbmb");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMt(), "Mt");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMtau(), "Mtau");
+   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(3), "Mv3");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMW(), "MW");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMel(), "Me");
+   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(1), "Mv1");
+   MLPutRuleToReal(stdlink, qedqcd.displayPoleMmuon(), "Mm");
+   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(2), "Mv2");
+   MLPutRuleToReal(stdlink, qedqcd.displayMd2GeV(), "md2GeV");
+   MLPutRuleToReal(stdlink, qedqcd.displayMu2GeV(), "mu2GeV");
+   MLPutRuleToReal(stdlink, qedqcd.displayMs2GeV(), "ms2GeV");
+   MLPutRuleToReal(stdlink, qedqcd.displayMcMc(), "mcmc");
+
+   MLPutRuleToReal(stdlink, physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
+   MLPutRuleToReal(stdlink, physical_input.get(Physical_input::mh_pole), "Mh");
+
+   // put CKM and PMNS matrices
+
+   MLEndPacket(stdlink);
 }
 
 /******************************************************************/

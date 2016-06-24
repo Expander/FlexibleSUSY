@@ -1,5 +1,10 @@
 :Evaluate: BeginPackage["FlexibleSUSY`@ModelName@`"]
 
+:Evaluate: {alphaEmMZ, GF, alphaSMZ, MZ, mbmb,  Mt, Mtau,
+       Mv3, MW, Me, Mv1, Mm, Mv2, md2GeV, mu2GeV, ms2GeV,
+       mcmc, alphaEm0, Mh, CKM, PMNS}
+
+:Evaluate: FSGetSMInputParameters@ModelName@::usage = "Returns the Standard Model parameters for the @ModelName@ model.";
 :Evaluate: FSSetSMInputParameters@ModelName@::usage = "Sets the Standard Model parameters for the @ModelName@ model.";
 
 :Evaluate: FSCalculateSpectrum@ModelName@::usage = "Calculates the pole mass spectrum, given the input parameters set via FSSetInputParameters@ModelName@[].";
@@ -7,6 +12,14 @@
 :Evaluate: FSCalculateSpectrum@ModelName@::warning = "`1`";
 
 :Evaluate: Begin["`Private`"]
+
+:Begin:
+:Function: FSGetSMInputParameters@ModelName@
+:Pattern: FSGetSMInputParameters@ModelName@[]
+:Arguments: {}
+:ArgumentTypes: {}
+:ReturnType: Manual
+:End:
 
 :Begin:
 :Function: FSSetSMInputParameters@ModelName@
