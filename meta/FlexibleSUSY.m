@@ -1239,6 +1239,7 @@ WriteMathLink[inputParameters_List, files_List] :=
             setInputParameterDefaultArguments, setInputParameterArgumentTypes},
            numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputParameters];
            putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
+           setInputParameters = FSMathLink`SetInputParametersFromArguments[inputParameters];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputParameters];
            setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputParameters];
            setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputParameters];
@@ -1246,7 +1247,7 @@ WriteMathLink[inputParameters_List, files_List] :=
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@putInputParameters@" -> IndentText[putInputParameters],
-                            "@setInputParameters@" -> "",
+                            "@setInputParameters@" -> IndentText[setInputParameters],
                             "@setInputParameterArgumentCTypes@" -> IndentText[setInputParameterArgumentCTypes],
                             "@setInputParameterArguments@" -> IndentText[setInputParameterArguments],
                             "@setInputParameterArgumentTypes@" -> IndentText[setInputParameterArgumentTypes],
