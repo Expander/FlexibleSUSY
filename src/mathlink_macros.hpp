@@ -37,6 +37,10 @@ void MLPutComplex(MLINK link, double re, double im)
    MLPutRule(link, (name));          \
    MLPutReal(link, (v))
 
+#define MLPutRuleToComplex(link,v,name) \
+   MLPutRule(link, (name));             \
+   MLPutComplex(link, std::real(v), std::imag(v))
+
 #define MLPutRuleToInteger(link,v,name)         \
    MLPutRule(link, (name));                     \
    MLPutInteger(link, (v))
@@ -79,12 +83,11 @@ void MLPutComplex(MLINK link, double re, double im)
 
 /* put complex eigen types */
 
-#define MLPutComplexEigenArray(link,v,dim)                 \
-   do {                                                 \
-      double v_[dim];                                   \
-      for (unsigned i = 0; i < dim; i++)                \
-         v_[i] = v(i);                                  \
-      MLPutComplexList(link, v_, dim);                     \
+#define MLPutComplexEigenArray(link,v,dim)                       \
+   do {                                                          \
+      MLPutFunction(link, "List", dim);                          \
+      for (unsigned i = 0; i < dim; i++)                         \
+         MLPutComplex(link, std::real(v(i)), std::imag(v(i)));   \
    } while (0)
 
 #define MLPutComplexEigenVector(link,v,dim)                \
