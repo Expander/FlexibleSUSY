@@ -121,8 +121,7 @@ int FS@ModelName@SetSettings(
    double beta_zero_threshold_,
    int force_positive_masses_,
    double pole_mass_scale_,
-   double parameter_output_scale_
-)
+   double parameter_output_scale_)
 {
    spectrum_generator_settings.set(Spectrum_generator_settings::precision, precision_goal_);
    spectrum_generator_settings.set(Spectrum_generator_settings::max_iterations, max_iterations_);
@@ -180,26 +179,25 @@ void FS@ModelName@GetSMInputParameters()
 /******************************************************************/
 
 int FS@ModelName@SetSMInputParameters(
-    double alphaEmMZ,
-    double GF,
-    double alphaSMZ,
-    double MZ,
-    double mbmb,
-    double Mt,
-    double Mtau,
-    double Mv3,
-    double MW,
-    double Me,
-    double Mv1,
-    double Mm,
-    double Mv2,
-    double md2GeV,
-    double mu2GeV,
-    double ms2GeV,
-    double mcmc,
-    double alphaEm0,
-    double Mh
-)
+   double alphaEmMZ,
+   double GF,
+   double alphaSMZ,
+   double MZ,
+   double mbmb,
+   double Mt,
+   double Mtau,
+   double Mv3,
+   double MW,
+   double Me,
+   double Mv1,
+   double Mm,
+   double Mv2,
+   double md2GeV,
+   double mu2GeV,
+   double ms2GeV,
+   double mcmc,
+   double alphaEm0,
+   double Mh)
 {
    qedqcd = softsusy::QedQcd();
 
