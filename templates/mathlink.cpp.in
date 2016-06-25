@@ -254,7 +254,8 @@ void FS@ModelName@GetInputParameters()
 
 /******************************************************************/
 
-int FS@ModelName@SetInputParameters()
+int FS@ModelName@SetInputParameters(
+@setInputParameterArgumentCTypes@)
 {
 @setInputParameters@
 

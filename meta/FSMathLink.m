@@ -4,6 +4,7 @@ GetNumberOfInputParameterRules::usage = "";
 PutInputParameters::usage = "";
 SetInputParameterDefaultArguments::usage = "";
 SetInputParameterArgumentTypes::usage = "";
+SetInputParameterArgumentCTypes::usage = "";
 SetInputParameterArguments::usage = "";
 
 Begin["`Private`"];
@@ -68,15 +69,21 @@ SetInputParameterDefaultArgument[{par_, _, CConversion`TensorType[_,dims__]}] :=
 SetInputParameterDefaultArguments[inputPars_List] :=
     Utils`StringJoinWithSeparator[ToString[SetInputParameterDefaultArgument[#]]& /@ inputPars, ",\n"];
 
-ParAndType[par_, CConversion`realScalarCType   ] := {HoldForm[OptionValue[par]], Real};
-ParAndType[par_, CConversion`complexScalarCType] := Sequence[{HoldForm[Re[OptionValue[par]]], Real},
-                                                             {HoldForm[Im[OptionValue[par]]], Real}];
-ParAndType[par_, CConversion`integerScalarCType] := {HoldForm[OptionValue[par]], Integer};
+ConcatIndices[idx__] := StringJoin[ToString /@ {idx}];
 
-ParAndType[par_, CConversion`realScalarCType, idx__   ] := {HoldForm[OptionValue[par][[idx]]], Real};
-ParAndType[par_, CConversion`complexScalarCType, idx__] := Sequence[{HoldForm[Re[OptionValue[par][[idx]]]], Real},
-                                                                    {HoldForm[Im[OptionValue[par][[idx]]]], Real}];
-ParAndType[par_, CConversion`integerScalarCType, idx__] := {HoldForm[OptionValue[par][[idx]]], Integer};
+ParAndType[par_, CConversion`realScalarCType   ] := {HoldForm[OptionValue[par]], Real, "double " <> CConversion`ToValidCSymbolString[par]};
+ParAndType[par_, CConversion`complexScalarCType] := Sequence[{HoldForm[Re[OptionValue[par]]], Real, "double " <> CConversion`ToValidCSymbolString[par]},
+                                                             {HoldForm[Im[OptionValue[par]]], Real, "double " <> CConversion`ToValidCSymbolString[par]}];
+ParAndType[par_, CConversion`integerScalarCType] := {HoldForm[OptionValue[par]], Integer, "int " <> CConversion`ToValidCSymbolString[par]};
+
+ParAndType[par_, CConversion`realScalarCType, idx__   ] := {HoldForm[OptionValue[par][[idx]]], Real,
+                                                            "double " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]};
+ParAndType[par_, CConversion`complexScalarCType, idx__] := Sequence[{HoldForm[Re[OptionValue[par][[idx]]]], Real,
+                                                                     "double " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]},
+                                                                    {HoldForm[Im[OptionValue[par][[idx]]]], Real,
+                                                                     "double " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]}];
+ParAndType[par_, CConversion`integerScalarCType, idx__] := {HoldForm[OptionValue[par][[idx]]], Integer,
+                                                            "int " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]};
 
 SetInputParameterArgumentsAndType[{par_, _, CConversion`ScalarType[st_]}] := {ParAndType[CConversion`ToValidCSymbol[par], st]};
 
@@ -104,11 +111,14 @@ SetInputParameterArgumentsAndType[{par_, _, CConversion`TensorType[st_, dim1_, d
 SetInputParameterArgumentsAndTypes[inputPars_List] :=
     Join @@ SetInputParameterArgumentsAndType /@ inputPars;
 
+SetInputParameterArguments[inputPars_List] :=
+    Utils`StringJoinWithSeparator[ToString[#[[1]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
+
 SetInputParameterArgumentTypes[inputPars_List] :=
     Utils`StringJoinWithSeparator[ToString[#[[2]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
 
-SetInputParameterArguments[inputPars_List] :=
-    Utils`StringJoinWithSeparator[ToString[#[[1]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
+SetInputParameterArgumentCTypes[inputPars_List] :=
+    Utils`StringJoinWithSeparator[ToString[#[[3]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
 
 End[];
 

@@ -1241,11 +1241,13 @@ WriteMathLink[inputParameters_List, files_List] :=
            putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputParameters];
            setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputParameters];
+           setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputParameters];
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputParameters];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@putInputParameters@" -> IndentText[putInputParameters],
                             "@setInputParameters@" -> "",
+                            "@setInputParameterArgumentCTypes@" -> IndentText[setInputParameterArgumentCTypes],
                             "@setInputParameterArguments@" -> IndentText[setInputParameterArguments],
                             "@setInputParameterArgumentTypes@" -> IndentText[setInputParameterArgumentTypes],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
