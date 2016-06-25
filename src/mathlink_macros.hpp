@@ -20,6 +20,7 @@
 
 #include <complex>
 #include <string>
+#include <vector>
 #include <Eigen/Core>
 
 #define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
@@ -103,29 +104,17 @@ void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
 
 /********************* put rules to types *********************/
 
-void MLPutRule(MLINK link, const std::string& name)
+void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
 {
    MLPutFunction(link, "Rule", 2);
-   MLPutSymbol(link, name.c_str());
-}
-
-void MLPutRule(MLINK link, const std::string& name, const std::string& head)
-{
-   MLPutFunction(link, "Rule", 2);
-   MLPutFunction(link, head.c_str(), 1);
+   for (std::size_t i = 0; i < heads.size(); i++)
+      MLPutFunction(link, heads[i].c_str(), 1);
    MLPutSymbol(link, name.c_str());
 }
 
 template <class T>
-void MLPutRuleTo(MLINK link, T t, const std::string& name)
+void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std::string>& heads = {})
 {
-   MLPutRule(link, name);
-   MLPut(link, t);
-}
-
-template <class T>
-void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::string& head)
-{
-   MLPutRule(link, name, head);
+   MLPutRule(link, name, heads);
    MLPut(link, t);
 }

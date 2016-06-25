@@ -139,19 +139,33 @@ SetInputParameterArgumentCTypes[inputPars_List] :=
 GetNumberOfSpectrumEntries[pars_List] :=
     Length[pars];
 
-HeadStr[FlexibleSUSY`Pole[par_]] := ", \"Pole\"";
-HeadStr[par_] := "";
+(* returns all heads of a nested expression of the form f[g[h[x]]] -> {f,g,h} *)
+GetHeads[h_[p___]] := Join[{h}, GetHeads[p]];
+GetHeads[p___] := {};
 
-ToVaildOutputParStr[FlexibleSUSY`Pole[par_]] := CConversion`ToValidCSymbolString[par];
+HeadStr[par_] :=
+    Module[{heads = ToString /@ GetHeads[par]},
+           If[heads === {}, "",
+              ", {\"" <> Utils`StringJoinWithSeparator[heads, "\", \""] <> "\"}"
+             ]
+          ];
+
+ToVaildOutputParStr[FlexibleSUSY`Pole[par_]] := ToVaildOutputParStr[par]; (* Pole[x] is not a valid parameter name *)
+ToVaildOutputParStr[p:FlexibleSUSY`M[_]] := CConversion`ToValidCSymbolString[p];
 ToVaildOutputParStr[FlexibleSUSY`SCALE] := "scale";
 ToVaildOutputParStr[par_] := CConversion`ToValidCSymbolString[par];
+
+WithoutHeads[_[par_]] := WithoutHeads[par];
+WithoutHeads[par_] := par;
 
 GetMacroFor[FlexibleSUSY`Pole[par_]] := "PHYSICALPARAMETER";
 GetMacroFor[par_] := "MODELPARAMETER";
 
 PutParameter[par_, _, link_String] :=
-    Module[{parStr = ToVaildOutputParStr[par]},
-           "MLPutRuleTo(" <> link <> ", " <> GetMacroFor[par] <> "(" <> parStr <> "), \"" <> parStr <> "\"" <> HeadStr[par] <> ");\n"
+    Module[{parStr = ToVaildOutputParStr[par],
+            parWithoutHeads = CConversion`ToValidCSymbolString[WithoutHeads[par]]},
+           "MLPutRuleTo(" <> link <> ", " <> GetMacroFor[par] <> "(" <> parStr <>
+           "), \"" <> parWithoutHeads <> "\"" <> HeadStr[par] <> ");\n"
           ];
 
 PutParameter[par_, link_String] :=
