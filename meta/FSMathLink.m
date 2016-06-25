@@ -150,6 +150,12 @@ HeadStr[par_] :=
              ]
           ];
 
+ToUTF8String[s_] :=
+    StringJoin[("\\u0" <> IntegerString[#,16])& /@ ToCharacterCode[ToString[s]]];
+
+ToVaildWolframSymbolString[par_?CConversion`GreekQ] := ToUTF8String[par];
+ToVaildWolframSymbolString[par_] := ToString[par];
+
 ToVaildOutputParStr[FlexibleSUSY`Pole[par_]] := ToVaildOutputParStr[par]; (* Pole[x] is not a valid parameter name *)
 ToVaildOutputParStr[p:FlexibleSUSY`M[_]] := CConversion`ToValidCSymbolString[p];
 ToVaildOutputParStr[FlexibleSUSY`SCALE] := "scale";
@@ -163,7 +169,7 @@ GetMacroFor[par_] := "MODELPARAMETER";
 
 PutParameter[par_, _, link_String] :=
     Module[{parStr = ToVaildOutputParStr[par],
-            parWithoutHeads = CConversion`ToValidCSymbolString[WithoutHeads[par]]},
+            parWithoutHeads = ToVaildWolframSymbolString[WithoutHeads[par]]},
            "MLPutRuleTo(" <> link <> ", " <> GetMacroFor[par] <> "(" <> parStr <>
            "), \"" <> parWithoutHeads <> "\"" <> HeadStr[par] <> ");\n"
           ];
