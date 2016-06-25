@@ -53,8 +53,7 @@ extern "C" {
 
 void put_error_output()
 {
-   MLPutFunction(stdlink, "List", 0);
-   MLEndPacket(stdlink);
+   MLPutSymbol(stdlink, "$Failed");
 }
 
 /******************************************************************/
