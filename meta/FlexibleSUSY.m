@@ -1249,6 +1249,7 @@ WriteMathLink[inputParameters_List, files_List] :=
            setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputPars];
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
            outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
+           outPars = Join[outPars, FlexibleSUSY`Pole /@ outPars];
            numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
            putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
            WriteOut`ReplaceInFiles[files,

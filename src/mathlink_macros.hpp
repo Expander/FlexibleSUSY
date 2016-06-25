@@ -136,3 +136,58 @@ void MLPutComplex(MLINK link, double re, double im)
 #define MLPutRuleToComplexEigenMatrix(link,v,name,dim1,dim2)    \
    MLPutRule(link, name);                                       \
    MLPutComplexEigenMatrix(link,v,dim1,dim2)
+
+/*********** put rules to symbol with an additional head ***********/
+
+/* rules to fundamental types */
+
+#define MLPutRuleToHead(link,name,head)         \
+   MLPutFunction(link, "Rule", 2);              \
+   MLPutFunction(link, (head), 1);              \
+   MLPutSymbol(link, (name))
+
+#define MLPutRuleToHeadReal(link,v,name,head)   \
+   MLPutRuleToHead(link, (name), (head));       \
+   MLPutReal(link, (v))
+
+#define MLPutRuleToHeadComplex(link,v,name,head)        \
+   MLPutRuleToHead(link, (name), (head));               \
+   MLPutComplex(link, std::real(v), std::imag(v))
+
+#define MLPutRuleToHeadInteger(link,v,name,head)        \
+   MLPutRuleToHead(link, (name), (head));               \
+   MLPutInteger(link, (v))
+
+#define MLPutRuleToHeadRealList(link,v,name,dim,head)   \
+   MLPutRuleToHead(link, (name), (head));               \
+   MLPutRealList(link, v, dim)
+
+#define MLPutRuleToHeadRealMatrix(link,v,name,dim1,dim2,head)   \
+   MLPutRuleToHead(link, (name), (head));                       \
+   MLPutRealMatrix(link,v,dim1,dim2);
+
+/* rules to Eigent types */
+
+#define MLPutRuleToHeadRealEigenArray(link,v,name,dim,head)     \
+   MLPutRuleToHead(link, (name), (head));                       \
+   MLPutRealEigenArray(link,v,dim)
+
+#define MLPutRuleToHeadRealEigenVector(link,v,name,dim,head)    \
+   MLPutRuleToHead(link, (name), (head));                       \
+   MLPutRealEigenVector(link,v,dim)
+
+#define MLPutRuleToHeadRealEigenMatrix(link,v,name,dim1,dim2,head)      \
+   MLPutRuleToHead(link, (name), (head));                               \
+   MLPutRealEigenMatrix(link,v,dim1,dim2)
+
+#define MLPutRuleToHeadComplexEigenArray(link,v,name,dim,head)  \
+   MLPutRuleToHead(link, (name), (head));                       \
+   MLPutComplexEigenArray(link,v,dim)
+
+#define MLPutRuleToHeadComplexEigenVector(link,v,name,dim,head) \
+   MLPutRuleToHead(link, (name), (head));                       \
+   MLPutComplexEigenVector(link,v,dim)
+
+#define MLPutRuleToHeadComplexEigenMatrix(link,v,name,dim1,dim2,head)   \
+   MLPutRuleToHead(link, (name), (head));                               \
+   MLPutComplexEigenMatrix(link,v,dim1,dim2)

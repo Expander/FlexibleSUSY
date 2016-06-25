@@ -172,40 +172,55 @@ SetInputParameterArgumentCTypes[inputPars_List] :=
 GetNumberOfSpectrumEntries[pars_List] :=
     Length[pars];
 
-PutParameter[par_, CConversion`ScalarType[st_], link_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "MLPutRuleTo" <> ScalarTypeName[st] <> "(" <> link <> ", " <>
-           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\");\n"
+HeadOpt[FlexibleSUSY`Pole[par_]] := "Head";
+HeadOpt[par_] := "";
+
+HeadStr[FlexibleSUSY`Pole[par_]] := ", \"Pole\"";
+HeadStr[par_] := "";
+
+ToVaildOutputParStr[FlexibleSUSY`Pole[par_]] := CConversion`ToValidCSymbolString[par];
+ToVaildOutputParStr[par_] := CConversion`ToValidCSymbolString[par];
+
+WrapMLAround[par_, CConversion`ScalarType[st_], str_String] :=
+    "MLPutRuleTo" <> HeadOpt[par] <> ScalarTypeName[st] <> "(" <> str <> HeadStr[par] <> ");\n";
+
+WrapMLAround[par_, CConversion`ArrayType[st_,__], str_String] :=
+    "MLPutRuleTo" <> HeadOpt[par] <> ScalarTypeName[st] <> "EigenArray(" <> str <> HeadStr[par] <> ");\n";
+
+WrapMLAround[par_, CConversion`VectorType[st_,__], str_String] :=
+    "MLPutRuleTo" <> HeadOpt[par] <> ScalarTypeName[st] <> "EigenVector(" <> str <> HeadStr[par] <> ");\n";
+
+WrapMLAround[par_, CConversion`MatrixType[st_,__], str_String] :=
+    "MLPutRuleTo" <> HeadOpt[par] <> ScalarTypeName[st] <> "EigenMatrix(" <> str <> HeadStr[par] <> ");\n";
+
+WrapMLAround[par_, CConversion`TensorType[st_,__], str_String] :=
+    "MLPutRuleTo" <> HeadOpt[par] <> ScalarTypeName[st] <> "EigenTensor(" <> str <> HeadStr[par] <> ");\n";
+
+GetMacroFor[FlexibleSUSY`Pole[par_]] := "PHYSICALPARAMETER";
+GetMacroFor[par_] := "MODELPARAMETER";
+
+PutParameter[par_, t:CConversion`ScalarType[st_], link_String] :=
+    Module[{parStr = ToVaildOutputParStr[par]},
+           WrapMLAround[par, t, link <> ", " <> GetMacroFor[par] <> "(" <> parStr <> "), \"" <> parStr <> "\""]
           ];
 
-PutParameter[par_, CConversion`ArrayType[st_,dim_], link_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenArray(" <> link <> ", " <>
-           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
+PutParameter[par_, t:(CConversion`ArrayType | CConversion`VectorType)[st_,dim_], link_String] :=
+    Module[{parStr = ToVaildOutputParStr[par]},
+           WrapMLAround[par, t, link <> ", " <> GetMacroFor[par] <> "(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim]]
           ];
 
-PutParameter[par_, CConversion`VectorType[st_,dim_], link_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenVector(" <> link <> ", " <>
-           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
+PutParameter[par_, t:CConversion`MatrixType[st_,dim1_,dim2_], link_String] :=
+    Module[{parStr = ToVaildOutputParStr[par]},
+           WrapMLAround[par, t, link <> ", " <> GetMacroFor[par] <> "(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim1] <> ", " <> ToString[dim2]]
           ];
 
-PutParameter[par_, CConversion`MatrixType[st_,dim1_,dim2_], link_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenMatrix(" <> link <> ", " <>
-           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
-           ToString[dim1] <> ", " <> ToString[dim2] <> ");\n"
-          ];
-
-PutParameter[par_, CConversion`TensorType[st_,dims__], link_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenTensor(" <> link <> ", " <>
-           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
-           Utils`StringJoinWithSeparator[ToString /@ {dims}, ", "] <> ");\n"
+PutParameter[par_, t:CConversion`TensorType[st_,dims__], link_String] :=
+    Module[{parStr = ToVaildOutputParStr[par]},
+           WrapMLAround[par, t, link <> ", " <> GetMacroFor[par] <> "(" <> parStr <> "), \"" <> parStr <> "\", " <> Utils`StringJoinWithSeparator[ToString /@ {dims}, ", "]]
           ];
 
 PutParameter[par_, link_String] :=
-    PutParameter[par, Parameters`GetType[par], link];
+    PutParameter[par, Parameters`GetType[par /. FlexibleSUSY`Pole -> Identity], link];
 
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];

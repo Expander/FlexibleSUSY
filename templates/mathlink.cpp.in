@@ -35,7 +35,8 @@
 #include <sstream>
 
 #define INPUTPARAMETER(p) input.p
-#define OUTPUTPARAMETER(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
+#define PHYSICALPARAMETER(p) model.get_physical().p
 
 using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
