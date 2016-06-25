@@ -13,6 +13,9 @@ complexScalarCType::usage="represents a complex scalar C type";
 
 ToRealType::usage="converts a given type to a type with real elements";
 
+GreekQ::usage = "Returns true if the given symbol contains one or more
+ greek letters.";
+
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
