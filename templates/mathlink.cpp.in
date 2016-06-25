@@ -117,6 +117,15 @@ int FS@ModelName@SetSettings(
    double pole_mass_scale_,
    double parameter_output_scale_)
 {
+   if (pole_mass_loop_order_ != ewsb_loop_order_) {
+      put_error_message(
+         "FS@ModelName@SetSettings", "warning",
+         "poleMassLoopOrder (" + ToString(pole_mass_loop_order_) + ") != "
+         + "ewsbLoopOrder (" + ToString(ewsb_loop_order_) + ")!"
+         " Loop corrections might be taken into account in an inconsistent"
+         " way!");
+   }
+
    spectrum_generator_settings.set(Spectrum_generator_settings::precision, precision_goal_);
    spectrum_generator_settings.set(Spectrum_generator_settings::max_iterations, max_iterations_);
    spectrum_generator_settings.set(Spectrum_generator_settings::calculate_sm_masses, calculate_sm_masses_);
