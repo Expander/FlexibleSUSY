@@ -119,8 +119,8 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 README_FILE := README
 
 .PHONY:  all allsrc allexec alllib allml alltest clean-executables \
-	 clean clean-dep clean-obj depend distclean showbuild tag \
-	 release-tag release-head
+	 clean clean-dep clean-obj depend distclean mathlink \
+	 release-tag release-head showbuild tag
 
 all:
 ifeq ($(ENABLE_META),yes)
@@ -213,6 +213,9 @@ distclean::
 	-rm -f $(FSCONFIG)
 	-rm -f $(SARAH_DEP_GEN)
 	-rm -f config.boost config.log config.math config.sarah config.status
+
+mathlink: allml
+	@true
 
 showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
