@@ -22,6 +22,8 @@ BlockStarts[str_String] :=
     StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ Whitespace ~~ ___,
                  IgnoreCase -> True];
 
+floatRegex = "[+\-]?(?:0|[1-9]*)(?:\\.[0-9]*)?(?:[eE][+\-]?[0-9]+)?";
+
 ReadBlock[stream_, blockName_String] :=
     Module[{line = "", block = "", inBlock = True},
            SetStreamPosition[stream, 0];
@@ -42,9 +44,9 @@ ReadIndexFromBlock[block_String, idx_] :=
     Module[{value = 0, values, line = "", val,
             stream = StringToStream[block], idxStr = ToString[idx]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ idxStr ~~ Whitespace ~~ v:NumberString :> v];
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ idxStr ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> v];
                  If[values =!= {},
-                    val = ToExpression[First[values]];
+                    val = ToExpression[StringReplace[First[values], {"E"|"e" -> "*10^"}]];
                     If[NumberQ[val],
                        value = val;
                       ];
@@ -57,11 +59,11 @@ ReadVectorFromBlock[block_String, dim_] :=
     Module[{vector = Table[0, {i,1,dim}], line = "", value, index, values, 
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,v}];
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,v}];
                  If[values =!= {},
                     {index, value} = First[values];
                     index = ToExpression[index];
-                    value = ToExpression[value];
+                    value = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
                     If[IntegerQ[index] && NumberQ[value],
                        vector[[index]] = value;
                       ];
@@ -75,12 +77,12 @@ ReadMatrixFromBlock[block_String, dim1_, dim2_] :=
             value, index1, index2, values, 
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,j,v}];
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,v}];
                  If[values =!= {},
                     {index1, index2, value} = First[values];
                     index1 = ToExpression[index1];
                     index2 = ToExpression[index2];
-                    value  = ToExpression[value];
+                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
                     If[IntegerQ[index1] && IntegerQ[index2] && NumberQ[value],
                        matrix[[index1, index2]] = value;
                       ];
@@ -94,13 +96,13 @@ ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_] :=
             value, index1, index2, index3, values,
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,j,k,v}];
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,k,v}];
                  If[values =!= {},
                     {index1, index2, index3, value} = First[values];
                     index1 = ToExpression[index1];
                     index2 = ToExpression[index2];
                     index3 = ToExpression[index3];
-                    value  = ToExpression[value];
+                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
                     If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && NumberQ[value],
                        tensor[[index1, index2, index3]] = value;
                       ];
@@ -114,14 +116,14 @@ ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_, dim4_] :=
             value, index1, index2, index3, index4, values,
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ l:DigitCharacter.. ~~ Whitespace ~~ v:NumberString :> {i,j,k,l,v}];
+                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ l:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,k,l,v}];
                  If[values =!= {},
                     {index1, index2, index3, index4, value} = First[values];
                     index1 = ToExpression[index1];
                     index2 = ToExpression[index2];
                     index3 = ToExpression[index3];
                     index4 = ToExpression[index4];
-                    value  = ToExpression[value];
+                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
                     If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && IntegerQ[index4] && NumberQ[value],
                        tensor[[index1, index2, index3, index4]] = value;
                       ];
