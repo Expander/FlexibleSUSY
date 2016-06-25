@@ -22,32 +22,32 @@ ScalarTypeName[st_] :=
            CConversion`integerScalarCType, "Integer"
           ];
 
-PutInputParameter[{par_, _, CConversion`ScalarType[st_]}, linkName_String] :=
+PutInputParameter[{par_, CConversion`ScalarType[st_]}, linkName_String] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "MLPutRuleTo" <> ScalarTypeName[st] <> "(" <> linkName <> ", " <>
            "INPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\");\n"
           ];
 
-PutInputParameter[{par_, _, CConversion`ArrayType[st_,dim_]}, linkName_String] :=
+PutInputParameter[{par_, CConversion`ArrayType[st_,dim_]}, linkName_String] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenArray(" <> linkName <> ", " <>
            "INPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
           ];
 
-PutInputParameter[{par_, _, CConversion`VectorType[st_,dim_]}, linkName_String] :=
+PutInputParameter[{par_, CConversion`VectorType[st_,dim_]}, linkName_String] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenVector(" <> linkName <> ", " <>
            "INPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
           ];
 
-PutInputParameter[{par_, _, CConversion`MatrixType[st_,dim1_,dim2_]}, linkName_String] :=
+PutInputParameter[{par_, CConversion`MatrixType[st_,dim1_,dim2_]}, linkName_String] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenMatrix(" <> linkName <> ", " <>
            "INPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
            ToString[dim1] <> ", " <> ToString[dim2] <> ");\n"
           ];
 
-PutInputParameter[{par_, _, CConversion`TensorType[st_,dims__]}, linkName_String] :=
+PutInputParameter[{par_, CConversion`TensorType[st_,dims__]}, linkName_String] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenTensor(" <> linkName <> ", " <>
            "INPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
@@ -61,18 +61,18 @@ CreateComponent[parStr_String, CConversion`integerScalarCType] := parStr;
 CreateComponent[parStr_String, CConversion`realScalarCType] := parStr;
 CreateComponent[parStr_String, CConversion`complexScalarCType] := "std::complex<double>(Re" <> parStr <> ", Im" <> parStr <> ")";
 
-SetInputParameterFromArguments[{par_, _, CConversion`ScalarType[st_]}] :=
+SetInputParameterFromArguments[{par_, CConversion`ScalarType[st_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            "INPUTPARAMETER(" <> parStr <> ") = " <> CreateComponent[parStr, st] <> ";\n"
           ];
 
-SetInputParameterFromArguments[{par_, _, (CConversion`ArrayType | CConversion`VectorType)[st_,dim_]}] :=
+SetInputParameterFromArguments[{par_, (CConversion`ArrayType | CConversion`VectorType)[st_,dim_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            StringJoin[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#-1] <> ")) = " <>
                        CreateComponent[parStr <> "_" <> ToString[#], st] <> ";\n")& /@ Table[i, {i,1,dim}]]
           ];
 
-SetInputParameterFromArguments[{par_, _, CConversion`MatrixType[st_,dim1_,dim2_]}] :=
+SetInputParameterFromArguments[{par_, CConversion`MatrixType[st_,dim1_,dim2_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> ")) = " <>
                                      CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2], st] <> ";\n")&,
@@ -80,7 +80,7 @@ SetInputParameterFromArguments[{par_, _, CConversion`MatrixType[st_,dim1_,dim2_]
                                     Table[j, {j, 1, dim2}]], 1]]
           ];
 
-SetInputParameterFromArguments[{par_, _, CConversion`TensorType[st_,dim1_,dim2_,dim3_]}] :=
+SetInputParameterFromArguments[{par_, CConversion`TensorType[st_,dim1_,dim2_,dim3_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> "," <> ToString[#3-1] <> ")) = " <>
                                      CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2] <> ToString[#3], st] <> ";\n")&,
@@ -89,7 +89,7 @@ SetInputParameterFromArguments[{par_, _, CConversion`TensorType[st_,dim1_,dim2_,
                                     Table[k, {k, 1, dim3}]], 2]]
           ];
 
-SetInputParameterFromArguments[{par_, _, CConversion`TensorType[st_,dim1_,dim2_,dim3_,dim4_]}] :=
+SetInputParameterFromArguments[{par_, CConversion`TensorType[st_,dim1_,dim2_,dim3_,dim4_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
            StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> "," <> ToString[#3-1] <> "," <> ToString[#4-1] <> ")) = " <>
                                      CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2] <> ToString[#3] <> ToString[#4], st] <> ";\n")&,
@@ -102,16 +102,16 @@ SetInputParameterFromArguments[{par_, _, CConversion`TensorType[st_,dim1_,dim2_,
 SetInputParametersFromArguments[inputPars_List] :=
     StringJoin[SetInputParameterFromArguments /@ inputPars];
 
-SetInputParameterDefaultArgument[{par_, _, CConversion`ScalarType[_]}] :=
+SetInputParameterDefaultArgument[{par_, CConversion`ScalarType[_]}] :=
     CConversion`ToValidCSymbol[par] -> 0;
 
-SetInputParameterDefaultArgument[{par_, _, (CConversion`ArrayType | CConversion`VectorType)[_,dim_]}] :=
+SetInputParameterDefaultArgument[{par_, (CConversion`ArrayType | CConversion`VectorType)[_,dim_]}] :=
     CConversion`ToValidCSymbol[par] -> Table[0, {dim}];
 
-SetInputParameterDefaultArgument[{par_, _, CConversion`MatrixType[_,dim1_,dim2_]}] :=
+SetInputParameterDefaultArgument[{par_, CConversion`MatrixType[_,dim1_,dim2_]}] :=
     CConversion`ToValidCSymbol[par] -> Table[0, {dim1}, {dim2}];
 
-SetInputParameterDefaultArgument[{par_, _, CConversion`TensorType[_,dims__]}] :=
+SetInputParameterDefaultArgument[{par_, CConversion`TensorType[_,dims__]}] :=
     CConversion`ToValidCSymbol[par] -> Table[0, Evaluate[Sequence @@ ({#}& /@ {dims})]];
 
 SetInputParameterDefaultArguments[inputPars_List] :=
@@ -133,24 +133,24 @@ ParAndType[par_, CConversion`complexScalarCType, idx__] := Sequence[{HoldForm[Re
 ParAndType[par_, CConversion`integerScalarCType, idx__] := {HoldForm[OptionValue[par][[idx]]], Integer,
                                                             "int " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]};
 
-SetInputParameterArgumentsAndType[{par_, _, CConversion`ScalarType[st_]}] :=
+SetInputParameterArgumentsAndType[{par_, CConversion`ScalarType[st_]}] :=
     {ParAndType[CConversion`ToValidCSymbol[par], st]};
 
-SetInputParameterArgumentsAndType[{par_, _, (CConversion`ArrayType | CConversion`VectorType)[st_, dim_]}] :=
+SetInputParameterArgumentsAndType[{par_, (CConversion`ArrayType | CConversion`VectorType)[st_, dim_]}] :=
     Table[ParAndType[CConversion`ToValidCSymbol[par], st, i], {i, 1, dim}];
 
-SetInputParameterArgumentsAndType[{par_, _, CConversion`MatrixType[st_, dim1_, dim2_]}] :=
+SetInputParameterArgumentsAndType[{par_, CConversion`MatrixType[st_, dim1_, dim2_]}] :=
     Flatten[Outer[ParAndType[CConversion`ToValidCSymbol[par], st, #1, #2] &,
                   Table[i, {i, 1, dim1}],
                   Table[j, {j, 1, dim2}]], 1];
 
-SetInputParameterArgumentsAndType[{par_, _, CConversion`TensorType[st_, dim1_, dim2_, dim3_]}] :=
+SetInputParameterArgumentsAndType[{par_, CConversion`TensorType[st_, dim1_, dim2_, dim3_]}] :=
     Flatten[Outer[ParAndType[CConversion`ToValidCSymbol[par], st, #1, #2, #] &,
                   Table[i, {i, 1, dim1}],
                   Table[j, {j, 1, dim2}],
                   Table[k, {k, 1, dim3}]], 2];
 
-SetInputParameterArgumentsAndType[{par_, _, CConversion`TensorType[st_, dim1_, dim2_, dim3_, dim4_]}] :=
+SetInputParameterArgumentsAndType[{par_, CConversion`TensorType[st_, dim1_, dim2_, dim3_, dim4_]}] :=
     Flatten[Outer[ParAndType[CConversion`ToValidCSymbol[par], st, #1, #2, #3, #4] &,
                   Table[i, {i, 1, dim1}],
                   Table[j, {j, 1, dim2}],
@@ -204,9 +204,8 @@ PutParameter[par_, CConversion`TensorType[st_,dims__], link_String] :=
            Utils`StringJoinWithSeparator[ToString /@ {dims}, ", "] <> ");\n"
           ];
 
-PutParameter[par_, link_String] := (
-    Print["type of ", par, " = ", Parameters`GetType[par]];
-    PutParameter[par, Parameters`GetType[par], link]);
+PutParameter[par_, link_String] :=
+    PutParameter[par, Parameters`GetType[par], link];
 
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];

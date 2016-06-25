@@ -1239,14 +1239,15 @@ WriteMathLink[inputParameters_List, files_List] :=
             setInputParameterDefaultArguments, setInputParameterArgumentTypes,
             setInputParameterArgumentCTypes, setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
-            outPars},
-           numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputParameters];
-           putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
-           setInputParameters = FSMathLink`SetInputParametersFromArguments[inputParameters];
-           setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputParameters];
-           setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputParameters];
-           setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputParameters];
-           setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputParameters];
+            inputPars, outPars},
+           inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
+           numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputPars];
+           putInputParameters = FSMathLink`PutInputParameters[inputPars, "stdlink"];
+           setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
+           setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
+           setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputPars];
+           setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputPars];
+           setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
            outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
            numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
            putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
