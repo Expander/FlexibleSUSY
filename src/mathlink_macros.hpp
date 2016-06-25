@@ -16,6 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#include "mathlink.h"
+
 #define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
 /********************* put types *********************/
