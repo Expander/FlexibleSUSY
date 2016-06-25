@@ -13,18 +13,22 @@
       forceOutput, top2loopCorrectionsQCD, betaZeroThreshold,
       forcePositiveMasses, poleMassScale, parameterOutputScale }
 
-:Evaluate: FS@ModelName@GetSMInputParameters::usage = "Returns the Standard Model parameters for the @ModelName@ model.";
-:Evaluate: FS@ModelName@SetSMInputParameters::usage = "Sets the Standard Model parameters for the @ModelName@ model.";
+:Evaluate: @listOfInputParameters@
+:Evaluate: @listOfModelParameters@
+:Evaluate: @listOfOutputParameters@
+
+:Evaluate: FS@ModelName@GetSMInputParameters::usage = "Returns the Standard Model parameters used as input for the @ModelName@.";
+:Evaluate: FS@ModelName@SetSMInputParameters::usage = "Sets the Standard Model parameters for the @ModelName@: {alphaEmMZ, GF, alphaSMZ, MZ, mbmb,  Mt, Mtau, Mv3, MW, Me, Mv1, Mm, Mv2, md2GeV, mu2GeV, ms2GeV, mcmc, alphaEm0, Mh, CKM, PMNS}.  Unspecified Standard Model parameters are set to their default values.  See Options[FS@ModelName@SetSMInputParameters] for the default values.";
 
 :Evaluate: FS@ModelName@GetSettings::usage = "Returns the settings for the @ModelName@ model spectrum generator.";
-:Evaluate: FS@ModelName@SetSettings::usage = "Sets the settings for the @ModelName@ model spectrum generator.";
+:Evaluate: FS@ModelName@SetSettings::usage = "Sets the settings for the @ModelName@ model spectrum generator: { precisionGoal, maxIterations, calculateStandardModelMasses, poleMassLoopOrder, ewsbLoopOrder, betaFunctionLoopOrder, thresholdCorrectionsLoopOrder, higgs2loopCorrectionAtAs, higgs2loopCorrectionAbAs, higgs2loopCorrectionAtAt, higgs2loopCorrectionAtauAtau, forceOutput, top2loopCorrectionsQCD, betaZeroThreshold, forcePositiveMasses, poleMassScale, parameterOutputScale }.  Unspecified settings parameters are set to their default values.  See Options[FS@ModelName@SetSettings] for the default values.";
 :Evaluate: FS@ModelName@SetSettings::error = "`1`";
 :Evaluate: FS@ModelName@SetSettings::warning = "`1`";
 
-:Evaluate: FS@ModelName@GetInputParameters::usage = "Returns the current set of input parameters of the @ModelName@.";
-:Evaluate: FS@ModelName@SetInputParameters::usage = "Sets input parameters of the @ModelName@.";
+:Evaluate: FS@ModelName@GetInputParameters::usage = "Returns the values of the input parameters of the @ModelName@.";
+:Evaluate: FS@ModelName@SetInputParameters::usage = "Sets all input parameters of the @ModelName@: @listOfInputParameters@.  Unspecified parameters are set to their default values.  See Options[FS@ModelName@SetInputParameters] for the default values.";
 
-:Evaluate: FS@ModelName@CalculateSpectrum::usage = "Calculates the pole mass spectrum, given the input parameters set via FS@ModelName@SetInputParameters[].";
+:Evaluate: FS@ModelName@CalculateSpectrum::usage = "Calculates the pole mass spectrum, using the current settings and input parameters.";
 :Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
 :Evaluate: FS@ModelName@CalculateSpectrum::warning = "`1`";
 

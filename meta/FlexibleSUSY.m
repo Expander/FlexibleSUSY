@@ -1239,6 +1239,7 @@ WriteMathLink[inputParameters_List, files_List] :=
             setInputParameterDefaultArguments, setInputParameterArgumentTypes,
             setInputParameterArgumentCTypes, setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
+            listOfInputParameters, listOfModelParameters, listOfOutputParameters,
             inputPars, outPars},
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
            numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputPars];
@@ -1250,6 +1251,9 @@ WriteMathLink[inputParameters_List, files_List] :=
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
            outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
            outPars = Join[outPars, FlexibleSUSY`Pole /@ outPars, Parameters`GetModelParameters[], {FlexibleSUSY`SCALE}];
+           listOfInputParameters = ToString[First /@ inputParameters];
+           listOfOutputParameters = ToString[outPars];
+           listOfModelParameters = ToString[Parameters`GetModelParameters[]];
            numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
            putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
            WriteOut`ReplaceInFiles[files,
@@ -1262,6 +1266,9 @@ WriteMathLink[inputParameters_List, files_List] :=
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
                             "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
                             "@putSpectrum@" -> IndentText[putSpectrum],
+                            "@listOfInputParameters@" -> listOfInputParameters,
+                            "@listOfModelParameters@" -> listOfModelParameters,
+                            "@listOfOutputParameters@" -> listOfOutputParameters,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
