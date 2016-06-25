@@ -432,7 +432,7 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?Num
     CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
 GetType[FlexibleSUSY`M[sym_]] :=
-    GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+    GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
