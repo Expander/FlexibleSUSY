@@ -292,7 +292,6 @@ void FS@ModelName@CalculateSpectrum()
    spectrum_generator.set_parameter_output_scale(parameter_output_scale);
    spectrum_generator.run(qedqcd, input);
 
-   // convert to SLHA
    const @ModelName@_slha<algorithm_type> model(
       spectrum_generator.get_model(),
       spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
@@ -300,14 +299,22 @@ void FS@ModelName@CalculateSpectrum()
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
-   // output
+   if (problems.have_problem()) {
+      std::ostringstream msg;
+      problems.print_problems(msg);
+      put_error_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
+   }
+
+   if (problems.have_warning()) {
+      std::ostringstream msg;
+      problems.print_warnings(msg);
+      put_error_message("FS@ModelName@CalculateSpectrum", "warning", msg.str());
+   }
+
    if (!problems.have_problem() ||
        spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
       put_spectrum(model);
    } else {
-      std::ostringstream msg;
-      problems.print_problems(msg);
-      put_error_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
       put_error_output();
    }
 }
