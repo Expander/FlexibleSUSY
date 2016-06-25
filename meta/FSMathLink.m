@@ -179,6 +179,7 @@ HeadStr[FlexibleSUSY`Pole[par_]] := ", \"Pole\"";
 HeadStr[par_] := "";
 
 ToVaildOutputParStr[FlexibleSUSY`Pole[par_]] := CConversion`ToValidCSymbolString[par];
+ToVaildOutputParStr[FlexibleSUSY`SCALE] := "scale";
 ToVaildOutputParStr[par_] := CConversion`ToValidCSymbolString[par];
 
 WrapMLAround[par_, CConversion`ScalarType[st_], str_String] :=
