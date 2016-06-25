@@ -77,23 +77,23 @@ void FS@ModelName@GetSettings()
 {
    MLPutFunction(stdlink, "List", 17);
 
-   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::precision), "precisionGoal");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_output), "forceOutput");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
-   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
-   MLPutRuleToInteger(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
-   MLPutRuleToReal(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
-   MLPutRuleToReal(stdlink, parameter_output_scale, "parameterOutputScale");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::precision), "precisionGoal");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_output), "forceOutput");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
+   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
+   MLPutRuleTo(stdlink, parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(stdlink);
 }
@@ -155,26 +155,26 @@ void FS@ModelName@GetSMInputParameters()
 {
    MLPutFunction(stdlink, "List", 19);
 
-   MLPutRuleToReal(stdlink, qedqcd.displayAlphaEmInput(), "alphaEmMZ");
-   MLPutRuleToReal(stdlink, qedqcd.displayFermiConstant(), "GF");
-   MLPutRuleToReal(stdlink, qedqcd.displayAlphaSInput(), "alphaSMZ");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMZ(), "MZ");
-   MLPutRuleToReal(stdlink, qedqcd.displayMbMb(), "mbmb");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMt(), "Mt");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMtau(), "Mtau");
-   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(3), "Mv3");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMW(), "MW");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMel(), "Me");
-   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(1), "Mv1");
-   MLPutRuleToReal(stdlink, qedqcd.displayPoleMmuon(), "Mm");
-   MLPutRuleToReal(stdlink, qedqcd.displayNeutrinoPoleMass(2), "Mv2");
-   MLPutRuleToReal(stdlink, qedqcd.displayMd2GeV(), "md2GeV");
-   MLPutRuleToReal(stdlink, qedqcd.displayMu2GeV(), "mu2GeV");
-   MLPutRuleToReal(stdlink, qedqcd.displayMs2GeV(), "ms2GeV");
-   MLPutRuleToReal(stdlink, qedqcd.displayMcMc(), "mcmc");
+   MLPutRuleTo(stdlink, qedqcd.displayAlphaEmInput(), "alphaEmMZ");
+   MLPutRuleTo(stdlink, qedqcd.displayFermiConstant(), "GF");
+   MLPutRuleTo(stdlink, qedqcd.displayAlphaSInput(), "alphaSMZ");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMZ(), "MZ");
+   MLPutRuleTo(stdlink, qedqcd.displayMbMb(), "mbmb");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMt(), "Mt");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMtau(), "Mtau");
+   MLPutRuleTo(stdlink, qedqcd.displayNeutrinoPoleMass(3), "Mv3");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMW(), "MW");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMel(), "Me");
+   MLPutRuleTo(stdlink, qedqcd.displayNeutrinoPoleMass(1), "Mv1");
+   MLPutRuleTo(stdlink, qedqcd.displayPoleMmuon(), "Mm");
+   MLPutRuleTo(stdlink, qedqcd.displayNeutrinoPoleMass(2), "Mv2");
+   MLPutRuleTo(stdlink, qedqcd.displayMd2GeV(), "md2GeV");
+   MLPutRuleTo(stdlink, qedqcd.displayMu2GeV(), "mu2GeV");
+   MLPutRuleTo(stdlink, qedqcd.displayMs2GeV(), "ms2GeV");
+   MLPutRuleTo(stdlink, qedqcd.displayMcMc(), "mcmc");
 
-   MLPutRuleToReal(stdlink, physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
-   MLPutRuleToReal(stdlink, physical_input.get(Physical_input::mh_pole), "Mh");
+   MLPutRuleTo(stdlink, physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
+   MLPutRuleTo(stdlink, physical_input.get(Physical_input::mh_pole), "Mh");
 
    // put CKM and PMNS matrices
 
