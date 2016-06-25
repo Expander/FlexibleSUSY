@@ -1,12 +1,14 @@
 BeginPackage["FSMathLink`", {"CConversion`", "Parameters`", "TreeMasses`", "Utils`"}];
 
 GetNumberOfInputParameterRules::usage = "";
+GetNumberOfSpectrumEntries::usage = "";
 PutInputParameters::usage = "";
 SetInputParametersFromArguments::usage = "";
 SetInputParameterDefaultArguments::usage = "";
 SetInputParameterArgumentTypes::usage = "";
 SetInputParameterArgumentCTypes::usage = "";
 SetInputParameterArguments::usage = "";
+PutSpectrum::usage = "";
 
 Begin["`Private`"];
 
@@ -166,6 +168,48 @@ SetInputParameterArgumentTypes[inputPars_List] :=
 
 SetInputParameterArgumentCTypes[inputPars_List] :=
     Utils`StringJoinWithSeparator[ToString[#[[3]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
+
+GetNumberOfSpectrumEntries[pars_List] :=
+    Length[pars];
+
+PutParameter[par_, CConversion`ScalarType[st_], link_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "MLPutRuleTo" <> ScalarTypeName[st] <> "(" <> link <> ", " <>
+           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\");\n"
+          ];
+
+PutParameter[par_, CConversion`ArrayType[st_,dim_], link_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenArray(" <> link <> ", " <>
+           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
+          ];
+
+PutParameter[par_, CConversion`VectorType[st_,dim_], link_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenVector(" <> link <> ", " <>
+           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <> ToString[dim] <> ");\n"
+          ];
+
+PutParameter[par_, CConversion`MatrixType[st_,dim1_,dim2_], link_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenMatrix(" <> link <> ", " <>
+           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
+           ToString[dim1] <> ", " <> ToString[dim2] <> ");\n"
+          ];
+
+PutParameter[par_, CConversion`TensorType[st_,dims__], link_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "MLPutRuleTo" <> ScalarTypeName[st] <> "EigenTensor(" <> link <> ", " <>
+           "OUTPUTPARAMETER(" <> parStr <> "), \"" <> parStr <> "\", " <>
+           Utils`StringJoinWithSeparator[ToString /@ {dims}, ", "] <> ");\n"
+          ];
+
+PutParameter[par_, link_String] := (
+    Print["type of ", par, " = ", Parameters`GetType[par]];
+    PutParameter[par, Parameters`GetType[par], link]);
+
+PutSpectrum[pars_List, link_String] :=
+    StringJoin[PutParameter[#,link]& /@ pars];
 
 End[];
 

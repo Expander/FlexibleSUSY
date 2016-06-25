@@ -1236,7 +1236,10 @@ WriteUserExample[inputParameters_List, files_List] :=
 
 WriteMathLink[inputParameters_List, files_List] :=
     Module[{numberOfInputParameters, putInputParameters,
-            setInputParameterDefaultArguments, setInputParameterArgumentTypes},
+            setInputParameterDefaultArguments, setInputParameterArgumentTypes,
+            setInputParameterArgumentCTypes, setInputParameterArguments,
+            numberOfSpectrumEntries, putSpectrum, setInputParameters,
+            outPars},
            numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputParameters];
            putInputParameters = FSMathLink`PutInputParameters[inputParameters, "stdlink"];
            setInputParameters = FSMathLink`SetInputParametersFromArguments[inputParameters];
@@ -1244,6 +1247,9 @@ WriteMathLink[inputParameters_List, files_List] :=
            setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputParameters];
            setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputParameters];
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputParameters];
+           outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
+           numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
+           putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@putInputParameters@" -> IndentText[putInputParameters],
@@ -1252,6 +1258,8 @@ WriteMathLink[inputParameters_List, files_List] :=
                             "@setInputParameterArguments@" -> IndentText[setInputParameterArguments],
                             "@setInputParameterArgumentTypes@" -> IndentText[setInputParameterArgumentTypes],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
+                            "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
+                            "@putSpectrum@" -> IndentText[putSpectrum],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

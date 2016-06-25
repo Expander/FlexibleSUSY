@@ -34,6 +34,7 @@
 #include <sstream>
 
 #define INPUTPARAMETER(p) input.p
+#define OUTPUTPARAMETER(p) model.get_physical().p
 
 using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
@@ -66,13 +67,6 @@ void put_error_message(const std::string& function_name,
    MLPutSymbol(stdlink, function_name.c_str());
    MLPutString(stdlink, message_tag.c_str());
    MLPutString(stdlink, message_str.c_str());
-}
-
-/******************************************************************/
-
-void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
-{
-   put_error_output();
 }
 
 /******************************************************************/
@@ -258,6 +252,17 @@ int FS@ModelName@SetInputParameters(
 @setInputParameters@
 
    return 0;
+}
+
+/******************************************************************/
+
+void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
+{
+   MLPutFunction(stdlink, "List", @numberOfSpectrumEntries@);
+
+@putSpectrum@
+
+   MLEndPacket(stdlink);
 }
 
 /******************************************************************/
