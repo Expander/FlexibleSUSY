@@ -1,0 +1,291 @@
+/**
+\page mathlink Mathematica interface
+\tableofcontents
+
+FlexibleSUSY can be called from within Mathematica using MathLink.  In
+order to build the MathLink executable, FlexibleSUSY must be
+configured with `--enable-meta` (enabled by default).  For each model
+the MathLink executable can be found in
+`<code>models/<model>/<model>.mx</code>`, where <model> is the model
+name.
+
+__Example__ for the CMSSM:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+
+(* set spectrum generator options
+   see FSCMSSMGetSettings[] for all default options. *)
+FSCMSSMSetSettings[precisionGoal -> 1.*^-4];
+
+(* set Standard Model input parameters
+   see FSCMSSMGetSMInputParameters[] for all default values
+   of the SM parameters *)
+FSCMSSMSetSMInputParameters[Mt -> 173.3];
+
+(* set CMSSM input parameters
+   see FSCMSSMGetInputParameters[] for all default values
+   of the CMSSM input parameters *)
+FSCMSSMSetInputParameters[
+   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+
+(* calculate pole mass spectrum *)
+FSCMSSMCalculateSpectrum[]
+~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__FS<model>SetSettings__: For each `<model>`, the
+`FS<model>SetSettings[]` function sets all spectrum generator options
+at once.  Unspecified parameters are set to their default values.  All
+available options (and their default values) can be listed using the
+`FS<model>GetSettings[]` function.
+
+__Example__:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+FSCMSSMSetSettings[precisionGoal -> 1.*^-5, betaFunctionLoopOrder -> 3];
+FSCMSSMGetSettings[]
+~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ precisionGoal -> 0.00001,
+  maxIterations -> 0,
+  calculateStandardModelMasses -> 0,
+  poleMassLoopOrder -> 2,
+  ewsbLoopOrder -> 2,
+  betaFunctionLoopOrder -> 3,
+  thresholdCorrectionsLoopOrder -> 2,
+  higgs2loopCorrectionAtAs -> 1,
+  higgs2loopCorrectionAbAs -> 1,
+  higgs2loopCorrectionAtAt -> 1,
+  higgs2loopCorrectionAtauAtau -> 1,
+  forceOutput -> 0,
+  top2loopCorrectionsQCD -> 1,
+  betaZeroThreshold -> 1.*10^-11,
+  forcePositiveMasses -> 0,
+  poleMassScale -> 0.,
+  parameterOutputScale -> 0. }
+~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__FS<model>SetSMInputParameters__: For each `<model>`, the
+`FS<model>SetSMInputParameters[]` function sets all Standard Model
+parameters at once.  Unspecified parameters are set to their default
+values.  All available Standard Model input parameters (and their
+default values) can be listed using the
+`FS<model>GetSMInputParameters[]` function.
+
+__Example__:
+
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+FSCMSSMSetSMInputParameters[Mt -> 173.34];
+FSCMSSMGetSMInputParameters[]
+~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ alphaEmMZ -> 0.00781763, (* alpha_em(MZ) in the SM(5), MS-bar *)
+  GF -> 0.0000116637,      (* Fermi constant *)
+  alphaSMZ -> 0.1184,      (* alpha_s(MZ) in the SM(5), MS-bar *)
+  MZ -> 91.1876,           (* Z pole mass *)
+  mbmb -> 4.18,            (* MS-bar bottom mass at Q = mb *)
+  Mt -> 173.34,            (* top pole mass *)
+  Mtau -> 1.777,           (* tau pole mass *)
+  Mv3 -> 0.,               (* 3rd heaviest neutrino mass *)
+  MW -> 80.385,            (* W pole mass *)
+  Me -> 0.000510999,       (* electron pole mass *)
+  Mv1 -> 0.,               (* 1st neutrino mass *)
+  Mm -> 0.105658,          (* muon pole masss *)
+  Mv2 -> 0.,               (* 2nd neutrino mass *)
+  md2GeV -> 0.00475,       (* MS-bar down quark mass at Q = 2 GeV *)
+  mu2GeV -> 0.0024,        (* MS-bar up quark mass at Q = 2 GeV *)
+  ms2GeV -> 0.104,         (* MS-bar strange quark mass at Q = 2 GeV *)
+  mcmc -> 1.27,            (* MS-bar charm quark mass at Q = mc *)
+  alphaEm0 -> 0.00729735,  (* alpha_em in the Thompson limit *)
+  Mh -> 125.09 }           (* Higgs pole mass *)
+~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__FS<model>SetInputParameters__: For each `<model>`, the
+`FS<model>SetInputParameters[]` function sets all model input
+parameters at once.  Unspecified parameters are set to their default
+values (usually zero).  All available input parameters (and their
+default values) can be listed using the
+`FS<model>GetSMInputParameters[]` function.
+
+__Example__:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+FSCMSSMSetInputParameters[m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1];
+FSCMSSMGetInputParameters[]
+~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ m0 -> 125.,
+  m12 -> 500.,
+  TanBeta -> 10.,
+  SignMu -> 1,
+  Azero -> 0. }
+~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__FS<model>CalculateSpectrum__: For each `<model>`, the
+`FS<model>CalculateSpectrum[]` function solves the boundary value
+problem and calculates the pole mass spectrum.  The function uses the
+
+- spectrum generator settings (set via the `FS<model>SetSettings[]`
+  function)
+
+- Standard Model input parameters (set via the
+  `FS<model>SetSMInputParameters[]` function)
+
+- Model input parameters (set via the `FS<model>SetInputParameters[]`
+  function).
+
+The function returns all running model parameters at the parameter
+output scale (either the SUSY scale or the scale set via
+`FSCMSSMSetSettings[parameterOutputScale -> 1000.]`) and the running
+masses at the same scale.  The running masses are denoted by `M[p]`
+where `p` is the particle name.  The parameter output scale appears in
+the returned list with the symbol `SCALE`.  The calculated pole masses
+are denoted by `Pole[M[p]]`, respectively.  The mixing matrices which
+correspond to the pole masses are denoted by `Pole[Z]`, where Z is the
+name of the mixing matrix.
+
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+FSCMSSMSetInputParameters[
+   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+FSCMSSMCalculateSpectrum[];
+~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{M[VG] -> 0., M[Glu] -> 1117.18, M[Fv] -> {0., 0., 0.},
+ M[Sd] -> {942.251, 977.989, 980.297, 980.3, 1023.94, 1023.94},
+ M[Sv] -> {347.371, 348.42, 348.424},
+ M[Su] -> {782.7, 983.889, 983.894, 987.561, 1021., 1021.},
+ M[Se] -> {219.073, 226.223, 226.248, 356.971, 356.976, 358.335},
+ M[hh] -> {88.1593, 732.573}, M[Ah] -> {90.0927, 732.337},
+ M[Hpm] -> {78.4808, 736.531},
+ M[Chi] -> {207.439, 376.528, 633.944, 647.755},
+ M[Cha] -> {376.365, 647.464},
+ M[Fe] -> {0.000520523, 0.107628, 1.81042},
+ M[Fd] -> {0.00243143, 0.0532355, 2.32379},
+ M[Fu] -> {0.00122119, 0.549091, 147.438}, M[VWm] -> 78.4808,
+ M[VP] -> 0., M[VZ] -> 90.0927,
+ ZD -> {{0., 0., -0.965619, 0., 0., -0.259961}, {0., 0., 0.259961, 0.,
+     0., -0.965619}, {0., -0.00456672, 0., 0., -0.99999,
+    0.}, {0.000208583, 0., 0., 1., 0., 0.}, {0., -0.99999, 0., 0.,
+    0.00456672, 0.}, {1., 0., 0., -0.000208583, 0., 0.}},
+ ZV -> {{0., 0., 1.}, {0., 1., 0.}, {1., 0., 0.}},
+ ZU -> {{0., 0., 0.430138, 0., 0., 0.902763}, {0., 0.00896415, 0., 0.,
+     0.99996, 0.}, {0.000019939, 0., 0., 1., 0., 0.}, {0., 0.,
+    0.902763, 0., 0., -0.430138}, {1., 0., 0., -0.000019939, 0.,
+    0.}, {0., 0.99996, 0., 0., -0.00896415, 0.}},
+ ZE -> {{0., 0., 0.145606, 0., 0., 0.989343}, {0., -0.00903329, 0.,
+    0., -0.999959, 0.}, {0.0000436949, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000436949, 0., 0.}, {0., -0.999959, 0., 0., 0.00903329,
+    0.}, {0., 0., 0.989343, 0., 0., -0.145606}},
+ ZH -> {{0.105881, 0.994379}, {0.994379, -0.105881}},
+ ZA -> {{-0.102825, 0.994699}, {0.994699, 0.102825}},
+ ZP -> {{-0.102825, 0.994699}, {0.994699, 0.102825}},
+ ZN -> {{-0.995744, 0.018728, -0.0832596, 0.0348113}, {0.0389752,
+    0.971833, -0.194009, 0.127995}, {0. - 0.0331609 I,
+    0. + 0.0485202 I, 0. + 0.703592 I,
+    0. + 0.70817 I}, {0.0766551, -0.229862, -0.678518, 0.69347}},
+ UM -> {{0.960661, -0.277725}, {0.277725, 0.960661}},
+ UP -> {{0.983012, -0.183543}, {0.183543, 0.983012}},
+ ZEL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZER -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZDL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZDR -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZUL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZUR -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZZ -> {{-0.871112, 0.491084}, {-0.491084, -0.871112}},
+ Pole[M[VG]] -> 0., Pole[M[Glu]] -> 1151.38,
+ Pole[M[Fv]] -> {0., 0., 0.},
+ Pole[M[Sd]] -> {970.999, 1012.32, 1015.42, 1015.42, 1059.73,
+   1059.73}, Pole[M[Sv]] -> {351.491, 352.69, 352.694},
+ Pole[M[Su]] -> {809.283, 1015.61, 1018.71, 1019.46, 1056.91,
+   1056.91},
+ Pole[M[Se]] -> {222.482, 229.821, 229.847, 361.599, 361.604,
+   362.781}, Pole[M[hh]] -> {114.781, 719.259},
+ Pole[M[Ah]] -> {88.5742, 718.986},
+ Pole[M[Hpm]] -> {77.7605, 723.723},
+ Pole[M[Chi]] -> {204.267, 385.936, 636.143, 649.77},
+ Pole[M[Cha]] -> {385.949, 650.096}, Pole[M[Fe]] -> {0., 0., 0.},
+ Pole[M[Fd]] -> {0., 0., 0.}, Pole[M[Fu]] -> {0., 0., 0.},
+ Pole[M[VWm]] -> 80.3924, Pole[M[VP]] -> 0., Pole[M[VZ]] -> 0.,
+ Pole[ZD] -> {{0., 0., -0.977566, 0., 0., -0.210631}, {0., 0.,
+    0.210631, 0., 0., -0.977566}, {0., -0.0045424, 0., 0., -0.99999,
+    0.}, {0.000207472, 0., 0., 1., 0., 0.}, {0., -0.99999, 0., 0.,
+    0.0045424, 0.}, {1., 0., 0., -0.000207472, 0., 0.}},
+ Pole[ZV] -> {{0., 0., 1.}, {0., 1., 0.}, {1., 0., 0.}},
+ Pole[ZU] -> {{0., 0., 0.427999, 0., 0., 0.903779}, {0., 0., 0.903779,
+     0., 0., -0.427999}, {0., 0.00911132, 0., 0., 0.999958,
+    0.}, {0.0000202664, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000202664, 0., 0.}, {0., 0.999958, 0., 0., -0.00911132,
+    0.}}, Pole[
+   ZE] -> {{0., 0., 0.144271, 0., 3.02431*10^-15,
+    0.989538}, {0., -0.00895024, 2.08714*10^-14, 0., -0.99996,
+    0.}, {0.0000432932, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000432932, 0., 0.}, {0., -0.99996, -1.86811*10^-16, 0.,
+    0.00895024, 0.}, {0., 0., -0.989538, 0., -2.06711*10^-14,
+    0.144271}},
+ Pole[ZH] -> {{0.106581, 0.994304}, {0.994304, -0.106581}},
+ Pole[ZA] -> {{-0.0989827, 0.995089}, {0.995089, 0.0989827}},
+ Pole[ZP] -> {{-0.0995943, 0.995028}, {0.995028, 0.0995943}},
+ Pole[ZN] -> {{-0.995819, 0.0174686, -0.082821,
+    0.0343646}, {0.0380335, 0.970567, -0.197841,
+    0.131955}, {0. - 0.0332126 I, 0. + 0.0483916 I, 0. + 0.703447 I,
+    0. + 0.70832 I}, {0.0761299, -0.235272, -0.677615, 0.692596}},
+ Pole[UM] -> {{0.95912, -0.283001}, {0.283001, 0.95912}},
+ Pole[UP] -> {{0.981917, -0.189314}, {0.189314, 0.981917}},
+ Pole[ZEL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZER] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZDL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZDR] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZUL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZUR] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZZ] -> {{0., 0.}, {0., 0.}},
+ Yd -> {{0.000136987, 0., 0.}, {0., 0.0029993, 0.}, {0., 0.,
+    0.130923}},
+ Ye -> {{0.0000293264, 0., 0.}, {0., 0.00606377, 0.}, {0., 0.,
+    0.102}},
+ Yu -> {{7.1123*10^-6, 0., 0.}, {0., 0.00319794, 0.}, {0., 0.,
+    0.858685}}, \[Mu] -> 630.611, g1 -> 0.467953, g2 -> 0.642978,
+ g3 -> 1.06483, vd -> 25.1013, vu -> 242.823,
+ T[Yd] -> {{-0.192259, 0., 0.}, {0., -4.20945, 0.}, {0.,
+    0., -171.869}},
+ T[Ye] -> {{-0.00878455, 0., 0.}, {0., -1.81633, 0.}, {0.,
+    0., -30.3818}},
+ T[Yu] -> {{-0.00817412, 0., 0.}, {0., -3.67535, 0.}, {0.,
+    0., -764.191}}, B[\[Mu]] -> 54854.6,
+ mq2 -> {{1.04513*10^6, 0., 0.}, {0., 1.04512*10^6, 0.}, {0., 0.,
+    889135.}},
+ ml2 -> {{125372., 0., 0.}, {0., 125369., 0.}, {0., 0., 124639.}},
+ mHd2 -> 109915., mHu2 -> -385101.,
+ md2 -> {{960350., 0., 0.}, {0., 960345., 0.}, {0., 0., 951180.}},
+ mu2 -> {{969326., 0., 0.}, {0., 969321., 0.}, {0., 0., 659257.}},
+ me2 -> {{49272.2, 0., 0.}, {0., 49266.9, 0.}, {0., 0., 47778.5}},
+ MassB -> 209.358, MassWB -> 388.421, MassG -> 1117.18,
+ SCALE -> 879.186}
+~~~~~~~~~~~~~~~~~~~~
+
+*/

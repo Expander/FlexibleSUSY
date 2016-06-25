@@ -37,6 +37,7 @@ To run the NMSSM spectrum generator, run
 - @ref model_file_options
 - @ref slha_input_fields
 - @ref addons
+- @ref mathlink
 - @ref documentation
 - @ref package
 - @ref utilities

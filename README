@@ -348,6 +348,38 @@ the above example) and an executable (addons/<addon>/run.x in the
 above example).
 
 
+Mathematica interface
+=====================
+
+FlexibleSUSY can be called from within Mathematica using MathLink.  In
+order to build the MathLink executable, FlexibleSUSY must be
+configured with --enable-meta (enabled by default).  For each model
+the MathLink executable can be found in models/<model>/<model>.mx ,
+where <model> is the model name.
+
+Example for the CMSSM:
+
+  Install["models/CMSSM/CMSSM.mx"];
+
+  (* set spectrum generator options
+     see FSCMSSMGetSettings[] for all default options. *)
+  FSCMSSMSetSettings[precisionGoal -> 1.*^-4];
+
+  (* set Standard Model input parameters
+     see FSCMSSMGetSMInputParameters[] for all default values
+     of the SM parameters *)
+  FSCMSSMSetSMInputParameters[Mt -> 173.3];
+
+  (* set CMSSM input parameters
+     see FSCMSSMGetInputParameters[] for all default values
+     of the CMSSM input parameters *)
+  FSCMSSMSetInputParameters[
+     m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+
+  (* calculate pole mass spectrum *)
+  FSCMSSMCalculateSpectrum[]
+
+
 Cleaning
 ========
 
