@@ -18,6 +18,10 @@
 
 #define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
 
+/********************* put types *********************/
+
+/* put fundamental types */
+
 void MLPutComplex(MLINK link, double re, double im)
 {
    if (im == 0.) {
@@ -29,35 +33,11 @@ void MLPutComplex(MLINK link, double re, double im)
    }
 }
 
-#define MLPutRule(link,name)                    \
-   MLPutFunction(link, "Rule", 2);              \
-   MLPutSymbol(link, (name))
-
-#define MLPutRuleToReal(link,v,name) \
-   MLPutRule(link, (name));          \
-   MLPutReal(link, (v))
-
-#define MLPutRuleToComplex(link,v,name) \
-   MLPutRule(link, (name));             \
-   MLPutComplex(link, std::real(v), std::imag(v))
-
-#define MLPutRuleToInteger(link,v,name)         \
-   MLPutRule(link, (name));                     \
-   MLPutInteger(link, (v))
-
 #define MLPutRealMatrix(link,v,dim1,dim2)                  \
   do {                                                     \
     long dims[] = { dim1, dim2 };                          \
     MLPutDoubleArray(link, v, dims, NULL, NELEMS(dims));   \
   } while (0)
-
-#define MLPutRuleToRealList(link,v,name,dim)    \
-   MLPutRule(link, name); \
-   MLPutRealList(link, v, dim)
-
-#define MLPutRuleToRealMatrix(link,v,name,dim1, dim2)  \
-   MLPutRule(link, name); \
-   MLPutRealMatrix(link,v,dim1,dim2);
 
 /* put real eigen types */
 
@@ -102,6 +82,34 @@ void MLPutComplex(MLINK link, double re, double im)
             MLPutComplex(link, std::real(M(i,k)), std::imag(M(i,k)));   \
       }                                                                 \
    } while (0)
+
+/********************* put rules *********************/
+
+/* rules to fundamental types */
+
+#define MLPutRule(link,name)                    \
+   MLPutFunction(link, "Rule", 2);              \
+   MLPutSymbol(link, (name))
+
+#define MLPutRuleToReal(link,v,name) \
+   MLPutRule(link, (name));          \
+   MLPutReal(link, (v))
+
+#define MLPutRuleToComplex(link,v,name) \
+   MLPutRule(link, (name));             \
+   MLPutComplex(link, std::real(v), std::imag(v))
+
+#define MLPutRuleToInteger(link,v,name)         \
+   MLPutRule(link, (name));                     \
+   MLPutInteger(link, (v))
+
+#define MLPutRuleToRealList(link,v,name,dim)    \
+   MLPutRule(link, name); \
+   MLPutRealList(link, v, dim)
+
+#define MLPutRuleToRealMatrix(link,v,name,dim1, dim2)  \
+   MLPutRule(link, name); \
+   MLPutRealMatrix(link,v,dim1,dim2);
 
 /* rules to Eigent types */
 
