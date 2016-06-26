@@ -46,6 +46,7 @@ FSCMSSMSetInputParameters[
     m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
 
 specML = FSCMSSMCalculateSpectrum[];
+obsML = FSCMSSMCalculateObservables[];
 
 inputFile = "test/test_CMSSM_mathlink.in.spc";
 outputFile = "test/test_CMSSM_mathlink.out.spc";
@@ -76,7 +77,13 @@ parameters = {
     {vu, {0}, {HMIX, 103}},
     {vd, {0}, {HMIX, 102}},
     {Mu, {0}, {HMIX, 1}},
-    {BMu, {0}, {HMIX, 101}}
+    {BMu, {0}, {HMIX, 101}},
+    {CpHPP1, {0}, {EFFHIGGSCOUPLINGS, 25, 22, 22}},
+    {CpHPP2, {0}, {EFFHIGGSCOUPLINGS, 35, 22, 22}},
+    {CpHGG1, {0}, {EFFHIGGSCOUPLINGS, 25, 21, 21}},
+    {CpHGG2, {0}, {EFFHIGGSCOUPLINGS, 35, 21, 21}},
+    {CpAPP, {0}, {EFFHIGGSCOUPLINGS, 36, 22, 22}},
+    {CpAGG, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}}
 };
 
 slhaData = ReadSLHAString[slhaStr, parameters];
@@ -94,7 +101,7 @@ TestCloseRel[a_List, b_List, rel_?NumericQ] :=
 
 TestCloseRel[a___] := (
     Print["FAIL: ", {a}];
-    TestEquality[0,1];)
+    TestEquality[0,1]);
 
 TestCloseRel[g1 * Sqrt[5/3] /. slhaData, g1 /. specML, delta];
 TestCloseRel[g2 /. slhaData, g2 /. specML, delta];
@@ -116,5 +123,12 @@ TestCloseRel[vu /. slhaData, vu /. specML, delta];
 TestCloseRel[vd /. slhaData, vd /. specML, delta];
 TestCloseRel[Mu /. slhaData, \[Mu] /. specML, delta];
 TestCloseRel[BMu /. slhaData, B[\[Mu]] /. specML, delta];
+
+delta = 1*^-6;
+
+TestCloseRel[{CpHPP1, CpHPP2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsPhotonPhoton /. obsML], delta];
+TestCloseRel[{CpHGG1, CpHGG2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGluonGluon] /. obsML, delta];
+TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton  /. obsML], delta];
+TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
 
 PrintTestSummary[];
