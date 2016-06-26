@@ -44,13 +44,17 @@ ComposeFixedRegEx[idx__] :=
     StringExpression[StartOfString, Whitespace,
                      Sequence @@ (StringExpression[ToString[#], Whitespace]& /@ {idx})];
 
+ToWolframExpr[str_String] :=
+    ToExpression[StringReplace[str, {"E"|"e" -> "*10^", "=" -> ""}]];
+
 ReadIndexFromBlock[block_String, idx___] :=
     Module[{value = 0, values, line = "", val,
             stream = StringToStream[block], patt = ComposeFixedRegEx[idx]},
            While[(line = Read[stream, String]) =!= EndOfFile,
+                 If[BlockStarts[line], Continue[]];
                  values = StringCases[line, patt ~~ v:RegularExpression[floatRegex] :> v];
                  If[values =!= {},
-                    val = ToExpression[StringReplace[First[values], {"E"|"e" -> "*10^"}]];
+                    val = ToWolframExpr[First[values]];
                     If[NumberQ[val],
                        value = val;
                       ];
@@ -67,15 +71,13 @@ IsIndex[indices__] := IsIndex[{indices}];
 WithinRange[i_Integer, dim_Integer] := i >= 1 && i <= dim;
 WithinRange[idx_List, dim_List] := Length[idx] == Length[dim] && (And @@ MapThread[WithinRange, {idx, dim}]);
 
-ToWolframExpr[str_String] :=
-    ToExpression[StringReplace[str, {"E"|"e" -> "*10^"}]];
-
 ReadMatrixFromBlock[block_String, dims__] :=
     Module[{matrix = Array[0&, {dims}],
             ndims = Length[{dims}],
             line = "", values, indices, value,
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
+                 If[BlockStarts[line], Continue[]];
                  values = StringSplit[line];
                  If[Length[values] > ndims,
                     indices = ToWolframExpr /@ Take[values, ndims];
