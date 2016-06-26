@@ -131,4 +131,20 @@ TestCloseRel[{CpHGG1, CpHGG2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGlu
 TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton  /. obsML], delta];
 TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
 
+Print["Check re-calculation of spectrum yields the same"];
+
+CalcMh[TB_] :=
+    Module[{spec},
+           FSCMSSMSetInputParameters[m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0];
+           spec = FSCMSSMCalculateSpectrum[];
+           If[spec === $Failed, 0,
+              (Pole[M[hh]] /. spec)[[1]]
+             ]
+          ];
+
+Mhh1 = CalcMh[45];
+Mhh2 = CalcMh[45];
+
+TestEquality[Mhh1, Mhh2];
+
 PrintTestSummary[];
