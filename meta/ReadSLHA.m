@@ -22,7 +22,7 @@ BlockStarts[str_String] :=
     StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ Whitespace ~~ ___,
                  IgnoreCase -> True];
 
-floatRegex = "[+\-]?(?:0|[1-9]*)(?:\\.[0-9]*)?(?:[eE][+\-]?[0-9]+)?";
+floatRegex = "[+\-]?(?:[0-9]*)(?:\\.[0-9]*)?(?:[eE][+\-]?[0-9]+)?";
 
 ReadBlock[stream_, blockName_String] :=
     Module[{line = "", block = "", inBlock = True},
