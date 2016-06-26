@@ -33,6 +33,9 @@ FSCMSSMSetInputParameters[
 
 (* calculate pole mass spectrum *)
 FSCMSSMCalculateSpectrum[]
+
+(* calculate further observables *)
+FSCMSSMCalculateObservables[]
 ~~~~~~~~~~~~~~~~~~~~
 
 _____________________________________________________________________
@@ -184,7 +187,7 @@ name of the mixing matrix.
 Install["models/CMSSM/CMSSM.mx"];
 FSCMSSMSetInputParameters[
    m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
-FSCMSSMCalculateSpectrum[];
+FSCMSSMCalculateSpectrum[]
 ~~~~~~~~~~~~~~~~~~~~
 
 Output:
@@ -300,6 +303,50 @@ Output:
  me2 -> {{49272.2, 0., 0.}, {0., 49266.9, 0.}, {0., 0., 47778.5}},
  MassB -> 209.358, MassWB -> 388.421, MassG -> 1117.18,
  SCALE -> 879.186}
+~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__FS<model>CalculateObservables__: For each `<model>`, the
+`FS<model>CalculateObservables[]` function calculates further
+observables, such as effective Higgs couplings to two photons or
+gluons.
+
+Note: The observables to be calculated must be specified in the model
+file in the `ExtraSLHAOutputBlocks`.  Available observables are:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+FlexibleSUSYObservable`aMuonGM2Calc
+FlexibleSUSYObservable`aMuonGM2CalcUncertainty
+FlexibleSUSYObservable`CpHiggsPhotonPhoton
+FlexibleSUSYObservable`CpHiggsGluonGluon
+FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton
+FlexibleSUSYObservable`CpPseudoScalarGluonGluon
+~~~~~~~~~~~~~~~~~~~~
+
+Note: The `FS<model>CalculateObservables[]` function assumes, that the
+pole mass spectrum has been calculated before, using the
+`FS<model>CalculateSpectrum[]` function.
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Install["models/CMSSM/CMSSM.mx"];
+FSCMSSMSetInputParameters[
+   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+FSCMSSMCalculateSpectrum[];
+FSCMSSMCalculateObservables[]
+~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ FlexibleSUSYObservable`CpHiggsPhotonPhoton ->
+    {0.0000296409 - 2.1245*10^-7 I, 7.82123*10^-7 + 9.1076*10^-7 I},
+  FlexibleSUSYObservable`CpHiggsGluonGluon ->
+    {-0.0000670724 - 2.65658*10^-6 I, 2.72135*10^-6 + 4.91993*10^-6 I},
+  FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ->
+    1.05105*10^-6 - 8.33068*10^-7 I,
+  FlexibleSUSYObservable`CpPseudoScalarGluonGluon ->
+    6.71448*10^-6 + 8.41625*10^-7 I }
 ~~~~~~~~~~~~~~~~~~~~
 
 */

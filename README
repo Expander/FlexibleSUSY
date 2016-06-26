@@ -379,6 +379,9 @@ Example for the CMSSM:
   (* calculate pole mass spectrum *)
   FSCMSSMCalculateSpectrum[]
 
+  (* calculate further observables *)
+  FSCMSSMCalculateObservables[]
+
 
 Cleaning
 ========
