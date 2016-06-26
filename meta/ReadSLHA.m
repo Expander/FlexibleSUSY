@@ -158,10 +158,11 @@ ReadParameter[stream_, {par_, type_, block_}] :=
  #3 is the block / entry in the SLHA input
 
  parameters = {
-    {Qin, {0}   , {EXTPAR, 0}},
-    {m0 , {0}   , {MINPAR, 1}},
-    {k  , {3}   , KappaIn},
-    {Yu , {3, 3}, YuIN}
+    {Qin  , {0}   , {EXTPAR, 0}},
+    {m0   , {0}   , {MINPAR, 1}},
+    {CpHPP, {0}   , {EFFHIGGSCOUPLINGS, 25, 22, 22}},
+    {k    , {3}   , KappaIn},
+    {Yu   , {3, 3}, YuIN}
  };
  *)
 ReadSLHAStream[stream_, parameters_List] :=
