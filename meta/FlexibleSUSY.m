@@ -1234,13 +1234,14 @@ WriteUserExample[inputParameters_List, files_List] :=
                           } ];
           ];
 
-WriteMathLink[inputParameters_List, files_List] :=
+WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{numberOfInputParameters, putInputParameters,
             setInputParameterDefaultArguments, setInputParameterArgumentTypes,
             setInputParameterArgumentCTypes, setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
+            numberOfObservables, putObservables,
             listOfInputParameters, listOfModelParameters, listOfOutputParameters,
-            inputPars, outPars},
+            inputPars, outPars, requestedObservables},
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
            numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputPars];
            putInputParameters = FSMathLink`PutInputParameters[inputPars, "stdlink"];
@@ -1256,6 +1257,10 @@ WriteMathLink[inputParameters_List, files_List] :=
            listOfModelParameters = ToString[Parameters`GetModelParameters[]];
            numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
            putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
+           (* get observables *)
+           requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
+           numberOfObservables = Length[requestedObservables];
+           putObservables = FSMathLink`PutObservables[requestedObservables, "stdlink"];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@putInputParameters@" -> IndentText[putInputParameters],
@@ -1266,6 +1271,8 @@ WriteMathLink[inputParameters_List, files_List] :=
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
                             "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
                             "@putSpectrum@" -> IndentText[putSpectrum],
+                            "@numberOfObservables@" -> ToString[numberOfObservables],
+                            "@putObservables@" -> IndentText[putObservables],
                             "@listOfInputParameters@" -> listOfInputParameters,
                             "@listOfModelParameters@" -> listOfModelParameters,
                             "@listOfOutputParameters@" -> listOfOutputParameters,
@@ -2443,7 +2450,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             }];
 
            Print["Creating MathLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
-           WriteMathLink[inputParameters,
+           WriteMathLink[inputParameters, extraSLHAOutputBlocks,
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mathlink.cpp"}]},
                           {FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.tm.in"}],

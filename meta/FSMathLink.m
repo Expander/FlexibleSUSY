@@ -1,4 +1,4 @@
-BeginPackage["FSMathLink`", {"CConversion`", "Parameters`", "TreeMasses`", "Utils`"}];
+BeginPackage["FSMathLink`", {"CConversion`", "Parameters`", "Observables`", "Utils`"}];
 
 GetNumberOfInputParameterRules::usage = "";
 GetNumberOfSpectrumEntries::usage = "";
@@ -9,6 +9,7 @@ SetInputParameterArgumentTypes::usage = "";
 SetInputParameterArgumentCTypes::usage = "";
 SetInputParameterArguments::usage = "";
 PutSpectrum::usage = "";
+PutObservables::usage = "";
 
 Begin["`Private`"];
 
@@ -179,6 +180,13 @@ PutParameter[par_, link_String] :=
 
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];
+
+PutObservable[obs_, type_, link_String] :=
+    "MLPutRuleTo(" <> link <> ", OBSERVABLE(" <> Observables`GetObservableName[obs] <>
+    "), \"" <> ToString[obs] <> "\");\n";
+
+PutObservables[obs_List, link_String] :=
+    StringJoin[PutObservable[#, Observables`GetObservableType[#], link]& /@ obs];
 
 End[];
 

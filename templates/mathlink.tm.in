@@ -32,6 +32,10 @@
 :Evaluate: FS@ModelName@CalculateSpectrum::error = "`1`";
 :Evaluate: FS@ModelName@CalculateSpectrum::warning = "`1`";
 
+:Evaluate: FS@ModelName@CalculateObservables::usage = "Calculates effective Higgs couplings and (g-2), using the current settings and input parameters and the current pole mass spectrum.  Important note: FS@ModelName@CalculateSpectrum[] must be called before this function can be called!";
+:Evaluate: FS@ModelName@CalculateObservables::error = "`1`";
+:Evaluate: FS@ModelName@CalculateObservables::warning = "`1`";
+
 :Evaluate: Begin["FlexibleSUSY`@ModelName@`Private`"]
 
 :Begin:
@@ -171,6 +175,14 @@
 :Begin:
 :Function: FS@ModelName@CalculateSpectrum
 :Pattern: FS@ModelName@CalculateSpectrum[]
+:Arguments: {}
+:ArgumentTypes: {}
+:ReturnType: Manual
+:End:
+
+:Begin:
+:Function: FS@ModelName@CalculateObservables
+:Pattern: FS@ModelName@CalculateObservables[]
 :Arguments: {}
 :ArgumentTypes: {}
 :ReturnType: Manual
