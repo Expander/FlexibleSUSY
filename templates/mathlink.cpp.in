@@ -46,6 +46,7 @@ Physical_input physical_input;      ///< extra non-SLHA physical input
 softsusy::QedQcd qedqcd;            ///< SLHA physical input
 Spectrum_generator_settings spectrum_generator_settings;
 double parameter_output_scale = 0.; ///< output scale for running parameters
+@ModelName@_slha<algorithm_type> model; ///< running parameters and pole masses
 
 extern "C" {
 
@@ -292,7 +293,7 @@ void FS@ModelName@CalculateSpectrum()
    spectrum_generator.set_parameter_output_scale(parameter_output_scale);
    spectrum_generator.run(qedqcd, input);
 
-   const @ModelName@_slha<algorithm_type> model(
+   model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
       spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
 
