@@ -61,9 +61,9 @@ void put_error_output()
 
 /******************************************************************/
 
-void put_error_message(const std::string& function_name,
-                       const std::string& message_tag,
-                       const std::string& message_str)
+void put_message(const std::string& function_name,
+                 const std::string& message_tag,
+                 const std::string& message_str)
 {
    MLPutFunction(stdlink, "CompoundExpression", 2);
    MLPutFunction(stdlink, "Message", 2);
@@ -122,7 +122,7 @@ int FS@ModelName@SetSettings(
    double parameter_output_scale_)
 {
    if (pole_mass_loop_order_ != ewsb_loop_order_) {
-      put_error_message(
+      put_message(
          "FS@ModelName@SetSettings", "warning",
          "poleMassLoopOrder (" + ToString(pole_mass_loop_order_) + ") != "
          + "ewsbLoopOrder (" + ToString(ewsb_loop_order_) + ")!"
@@ -296,7 +296,7 @@ void FS@ModelName@CalculateSpectrum()
    try {
       qedqcd.to(qedqcd.displayPoleMZ());
    } catch (const std::string& s) {
-      put_error_message("FS@ModelName@CalculateSpectrum", "error", s);
+      put_message("FS@ModelName@CalculateSpectrum", "error", s);
       put_error_output();
       return;
    }
@@ -316,13 +316,13 @@ void FS@ModelName@CalculateSpectrum()
    if (problems.have_problem()) {
       std::ostringstream msg;
       problems.print_problems(msg);
-      put_error_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
+      put_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
    }
 
    if (problems.have_warning()) {
       std::ostringstream msg;
       problems.print_warnings(msg);
-      put_error_message("FS@ModelName@CalculateSpectrum", "warning", msg.str());
+      put_message("FS@ModelName@CalculateSpectrum", "warning", msg.str());
    }
 
    if (!problems.have_problem() ||
@@ -338,10 +338,10 @@ void FS@ModelName@CalculateSpectrum()
 void FS@ModelName@CalculateObservables()
 {
    if (model.get_scale() == 0.) {
-      put_error_message(
+      put_message(
          "FS@ModelName@CalculateObservables", "warning",
          "Renormalization scale is 0.  Did you run "
-         "FS@ModelName@CalculateSpectrum()?");
+         "FS@ModelName@CalculateSpectrum[]?");
    }
 
    try {
@@ -350,7 +350,7 @@ void FS@ModelName@CalculateObservables()
 
       put_observables(observables);
    } catch (const flexiblesusy::Error& e) {
-      put_error_message("FS@ModelName@CalculateObservables", "error", e.what());
+      put_message("FS@ModelName@CalculateObservables", "error", e.what());
       put_error_output();
    }
 }
