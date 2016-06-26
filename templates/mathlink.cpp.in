@@ -344,10 +344,15 @@ void FS@ModelName@CalculateObservables()
          "FS@ModelName@CalculateSpectrum()?");
    }
 
-   @ModelName@_observables observables(
-      calculate_observables(model, qedqcd, physical_input));
+   try {
+      @ModelName@_observables observables(
+         calculate_observables(model, qedqcd, physical_input));
 
-   put_observables(observables);
+      put_observables(observables);
+   } catch (const flexiblesusy::Error& e) {
+      put_error_message("FS@ModelName@CalculateObservables", "error", e.what());
+      put_error_output();
+   }
 }
 
 /******************************************************************/
