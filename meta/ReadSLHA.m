@@ -59,94 +59,40 @@ ReadIndexFromBlock[block_String, idx___] :=
            value
           ];
 
-ReadVectorFromBlock[block_String, dim_] :=
-    Module[{vector = Table[0, {i,1,dim}], line = "", value, index, values, 
-            stream = StringToStream[block]},
-           While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,v}];
-                 If[values =!= {},
-                    {index, value} = First[values];
-                    index = ToExpression[index];
-                    value = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
-                    If[IntegerQ[index] && NumberQ[value],
-                       vector[[index]] = value;
-                      ];
-                   ];
-                ];
-           vector
-          ];
+IsIndex[i_?IntegerQ] := True;
+IsIndex[_] := False;
+IsIndex[indices_List] := And @@ (IsIndex /@ indices);
+IsIndex[indices__] := IsIndex[{indices}];
 
-ReadMatrixFromBlock[block_String, dim1_, dim2_] :=
-    Module[{matrix = Table[0, {i,1,dim1}, {j,1,dim2}], line = "",
-            value, index1, index2, values, 
+WithinRange[i_Integer, dim_Integer] := i >= 1 && i <= dim;
+WithinRange[idx_List, dim_List] := Length[idx] == Length[dim] && (And @@ MapThread[WithinRange, {idx, dim}]);
+
+ToWolframExpr[str_String] :=
+    ToExpression[StringReplace[str, {"E"|"e" -> "*10^"}]];
+
+ReadMatrixFromBlock[block_String, dims__] :=
+    Module[{matrix = Array[0&, {dims}],
+            ndims = Length[{dims}],
+            line = "", values, indices, value,
             stream = StringToStream[block]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,v}];
-                 If[values =!= {},
-                    {index1, index2, value} = First[values];
-                    index1 = ToExpression[index1];
-                    index2 = ToExpression[index2];
-                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
-                    If[IntegerQ[index1] && IntegerQ[index2] && NumberQ[value],
-                       matrix[[index1, index2]] = value;
+                 values = StringSplit[line];
+                 If[Length[values] > ndims,
+                    indices = ToWolframExpr /@ Take[values, ndims];
+                    value = ToWolframExpr[values[[ndims + 1]]];
+                    If[IsIndex[indices] && NumberQ[value] && WithinRange[indices, {dims}],
+                       matrix[[Sequence @@ indices]] = value;
                       ];
                    ];
                 ];
            matrix
           ];
 
-ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_] :=
-    Module[{tensor = Table[0, {i,1,dim1}, {j,1,dim2}, {k,1,dim3}], line = "",
-            value, index1, index2, index3, values,
-            stream = StringToStream[block]},
-           While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,k,v}];
-                 If[values =!= {},
-                    {index1, index2, index3, value} = First[values];
-                    index1 = ToExpression[index1];
-                    index2 = ToExpression[index2];
-                    index3 = ToExpression[index3];
-                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
-                    If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && NumberQ[value],
-                       tensor[[index1, index2, index3]] = value;
-                      ];
-                   ];
-                ];
-           tensor
-          ];
-
-ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_, dim4_] :=
-    Module[{tensor = Table[0, {i,1,dim1}, {j,1,dim2}, {k,1,dim3}, {l,1,dim4}], line = "",
-            value, index1, index2, index3, index4, values,
-            stream = StringToStream[block]},
-           While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ i:DigitCharacter.. ~~ Whitespace ~~ j:DigitCharacter.. ~~ Whitespace ~~ k:DigitCharacter.. ~~ Whitespace ~~ l:DigitCharacter.. ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> {i,j,k,l,v}];
-                 If[values =!= {},
-                    {index1, index2, index3, index4, value} = First[values];
-                    index1 = ToExpression[index1];
-                    index2 = ToExpression[index2];
-                    index3 = ToExpression[index3];
-                    index4 = ToExpression[index4];
-                    value  = ToExpression[StringReplace[value, {"E"|"e" -> "*10^"}]];
-                    If[IntegerQ[index1] && IntegerQ[index2] && IntegerQ[index3] && IntegerQ[index4] && NumberQ[value],
-                       tensor[[index1, index2, index3, index4]] = value;
-                      ];
-                   ];
-                ];
-           tensor
-          ];
-
 ReadParameter[stream_, par_, {} | {0|1} | 0 | 1, {block_, idx___}] :=
     ReadIndexFromBlock[ReadBlock[stream, ToString[block]], idx];
 
-ReadParameter[stream_, par_, {dim_}, block_] :=
-    ReadVectorFromBlock[ReadBlock[stream, ToString[block]], dim];
-
-ReadParameter[stream_, par_, {dim1_, dim2_}, block_] :=
-    ReadMatrixFromBlock[ReadBlock[stream, ToString[block]], dim1, dim2];
-
 ReadParameter[stream_, par_, {dims__}, block_] :=
-    ReadTensorFromBlock[ReadBlock[stream, ToString[block]], dims];
+    ReadMatrixFromBlock[ReadBlock[stream, ToString[block]], dims];
 
 ReadParameter[stream_, {par_, type_, block_}] :=
     par -> ReadParameter[stream, par, type, block];
