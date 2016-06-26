@@ -40,11 +40,15 @@ ReadBlock[stream_, blockName_String] :=
            block
           ];
 
-ReadIndexFromBlock[block_String, idx_] :=
+ComposeFixedRegEx[idx__] :=
+    StringExpression[StartOfString, Whitespace,
+                     Sequence @@ (StringExpression[ToString[#], Whitespace]& /@ {idx})];
+
+ReadIndexFromBlock[block_String, idx___] :=
     Module[{value = 0, values, line = "", val,
-            stream = StringToStream[block], idxStr = ToString[idx]},
+            stream = StringToStream[block], patt = ComposeFixedRegEx[idx]},
            While[(line = Read[stream, String]) =!= EndOfFile,
-                 values = StringCases[line, StartOfString ~~ Whitespace ~~ idxStr ~~ Whitespace ~~ v:RegularExpression[floatRegex] :> v];
+                 values = StringCases[line, patt ~~ v:RegularExpression[floatRegex] :> v];
                  If[values =!= {},
                     val = ToExpression[StringReplace[First[values], {"E"|"e" -> "*10^"}]];
                     If[NumberQ[val],
@@ -132,7 +136,7 @@ ReadTensorFromBlock[block_String, dim1_, dim2_, dim3_, dim4_] :=
            tensor
           ];
 
-ReadParameter[stream_, par_, {} | {0|1} | 0 | 1, {block_, idx_}] :=
+ReadParameter[stream_, par_, {} | {0|1} | 0 | 1, {block_, idx___}] :=
     ReadIndexFromBlock[ReadBlock[stream, ToString[block]], idx];
 
 ReadParameter[stream_, par_, {dim_}, block_] :=
