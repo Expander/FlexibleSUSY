@@ -79,7 +79,8 @@ pars = {
     {V    , {3}            , V},
     {M    , {3, 3}         , M},
     {T3   , {3, 3, 3}      , T3},
-    {T4   , {3, 3, 3, 3}   , T4}
+    {T4   , {3, 3, 3, 3}   , T4},
+    {Ts   , {0}            , {T4, 2, 2, 2, 2}}
 };
 
 values = ReadSLHAString[slha, pars];
@@ -98,6 +99,7 @@ t4[[2,2,2,2]] = 20.2;
 t4[[3,3,3,3]] = 30.3;
 
 TestEquality[T4 /. values, t4];
+TestEquality[Ts /. values, 20.2];
 
 Print[""];
 
