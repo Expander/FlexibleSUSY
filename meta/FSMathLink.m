@@ -70,17 +70,8 @@ SetInputParameterFromArguments[{par_, CConversion`TensorType[st_,dim1_,dim2_,dim
 SetInputParametersFromArguments[inputPars_List] :=
     StringJoin[SetInputParameterFromArguments /@ inputPars];
 
-SetInputParameterDefaultArgument[{par_, CConversion`ScalarType[_]}] :=
-    CConversion`ToValidCSymbol[par] -> 0;
-
-SetInputParameterDefaultArgument[{par_, (CConversion`ArrayType | CConversion`VectorType)[_,dim_]}] :=
-    CConversion`ToValidCSymbol[par] -> Table[0, {dim}];
-
-SetInputParameterDefaultArgument[{par_, CConversion`MatrixType[_,dim1_,dim2_]}] :=
-    CConversion`ToValidCSymbol[par] -> Table[0, {dim1}, {dim2}];
-
-SetInputParameterDefaultArgument[{par_, CConversion`TensorType[_,dims__]}] :=
-    CConversion`ToValidCSymbol[par] -> Table[0, Evaluate[Sequence @@ ({#}& /@ {dims})]];
+SetInputParameterDefaultArgument[{par_, _[_,dims___]}] :=
+    CConversion`ToValidCSymbol[par] -> Array[0&, {dims}];
 
 SetInputParameterDefaultArguments[inputPars_List] :=
     Utils`StringJoinWithSeparator[ToString[SetInputParameterDefaultArgument[#]]& /@ inputPars, ",\n"];
