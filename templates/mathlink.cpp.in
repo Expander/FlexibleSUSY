@@ -293,8 +293,10 @@ void put_observables(const @ModelName@_observables& observables)
 
 void FS@ModelName@CalculateSpectrum()
 {
+   softsusy::QedQcd qedqcd_(qedqcd);
+
    try {
-      qedqcd.to(qedqcd.displayPoleMZ());
+      qedqcd_.to(qedqcd_.displayPoleMZ());
    } catch (const std::string& s) {
       put_message("FS@ModelName@CalculateSpectrum", "error", s);
       put_error_output();
@@ -304,7 +306,7 @@ void FS@ModelName@CalculateSpectrum()
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
    spectrum_generator.set_parameter_output_scale(parameter_output_scale);
-   spectrum_generator.run(qedqcd, input);
+   spectrum_generator.run(qedqcd_, input);
 
    model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
