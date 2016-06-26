@@ -2,6 +2,8 @@ Needs["TestSuite`", "TestSuite.m"];
 Get["ReadSLHA`", "ReadSLHA.m"];
 Install["models/CMSSM/CMSSM.mx"];
 
+Print["Comparing SLHA output to MathLink output"];
+
 FSCMSSMSetSettings[
     precisionGoal -> 0.0001,
     maxIterations -> 0,
