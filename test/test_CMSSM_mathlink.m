@@ -1,5 +1,5 @@
 Needs["TestSuite`", "TestSuite.m"];
-Get["ReadSLHA`", "ReadSLHA.m"];
+Needs["ReadSLHA`", "ReadSLHA.m"];
 Install["models/CMSSM/CMSSM.mx"];
 
 Print["Comparing SLHA output to MathLink output"];
