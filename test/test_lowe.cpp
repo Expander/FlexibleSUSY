@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "wrappers.hpp"
 #include "lowe.h"
+#include "conversion.hpp"
 
 using namespace softsusy;
 
@@ -50,6 +51,8 @@ BOOST_AUTO_TEST_CASE( test_to_recall )
    lowe_Mz_new.to(100.);
 
    BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.display_input(), lowe_Mz_new.display_input()), 1e-10);
+   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(flexiblesusy::ToEigenArray(lowe_Mz.display()),
+                                           flexiblesusy::ToEigenArray(lowe_Mz_new.display())), 1e-10);
 
    BOOST_MESSAGE(lowe_Mz);
    BOOST_MESSAGE(lowe_Mz_new);
