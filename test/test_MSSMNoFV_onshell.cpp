@@ -8,7 +8,7 @@
 #include "wrappers.hpp"
 #include "MSSMNoFV_onshell.hpp"
 #include "ew_input.hpp"
-#include "error.hpp"
+#include "gm2_error.hpp"
 
 using namespace flexiblesusy;
 using namespace gm2calc;
@@ -38,9 +38,9 @@ void setup(MSSMNoFV_onshell_mass_eigenstates& model)
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
    Eigen::Matrix<double,3,3> mm0_offset(mm0);
-   mm0_offset(0,0) = 100;
-   mm0_offset(1,1) = 110;
-   mm0_offset(2,2) = 120;
+   mm0_offset(0,0) = Sqr(100.);
+   mm0_offset(1,1) = Sqr(110.);
+   mm0_offset(2,2) = Sqr(120.);
 
    model.set_scale(1000);
    model.set_g1(Electroweak_constants::g1);
@@ -101,7 +101,8 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
 
    try {
       osmodel.convert_to_onshell();
-   } catch (const Error& e) {
+   } catch (const gm2calc::Error& e) {
+      BOOST_MESSAGE(osmodel);
       BOOST_FAIL(e.what());
    }
 

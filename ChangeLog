@@ -11,6 +11,8 @@ FlexibleSUSY-1.4.3 [not released yet]
    in the SLHA input.  FlexibleSUSY[17] is equivalent to
    SPhenoInput[33] in SPheno.
 
+ * Feature: Updated to GM2Calc 1.2.0.
+
  * Bugfix (commit 9a2d576): Fix compilation error due to ambiguous
    overload of operator<< .
    Thanks to Dylan Harries.
