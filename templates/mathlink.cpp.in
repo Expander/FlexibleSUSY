@@ -86,6 +86,8 @@ void MLstdout(int pfd[2])
       MLNextPacket(stdlink);
       MLNewPacket(stdlink);
    }
+
+   free(buf);
 }
 
 /******************************************************************/
