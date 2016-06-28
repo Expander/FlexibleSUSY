@@ -4,12 +4,8 @@
 
 \section flexiblesusy_mathematica_interface FlexibleSUSY's Mathematica interface
 
-FlexibleSUSY can be called from within Mathematica using the MathLink
-interface.  In order to build the MathLink executable, FlexibleSUSY
-must be configured with `--enable-meta` (enabled by default).  For
-each model the MathLink executable can be found in
-`<code>models/<model>/<model>.mx</code>`, where <model> is the model
-name.
+The FlexibleSUSY-generated spectrum generators can be called from
+within Mathematica using the MathLink interface.
 
 \subsection math_interface_quick_start Quick start for the CMSSM
 
@@ -38,10 +34,24 @@ FSCMSSMCalculateSpectrum[]
 FSCMSSMCalculateObservables[]
 ~~~~~~~~~~~~~~~~~~~~
 
-\subsection math_interface_defs Mathematica interface functions
+\subsection math_interface_defs Using the Mathematica interface functions
 
-To use FlexibleSUSY's Mathematica interface, first, the MathLink
-executable must be installed using the `Install[]` command.
+\subsubsection math_interface_build Building the MathLink executable
+
+In order to build the MathLink executable, FlexibleSUSY must be
+configured with `--enable-meta` (enabled by default).
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+./configure --with-models=CMSSM
+make
+~~~~~~~~~~~~~~~~~~~~
+
+The MathLink executable can be found in `models/<model>/<model>.mx`,
+where `<model>` is the model name.  In order to use FlexibleSUSY's
+generated `<model>` spectrum generator at the Mathematica level, the
+MathLink executable must be installed using the `Install[]` command.
 
 _Example_:
 
@@ -346,7 +356,7 @@ _Output_:
     6.71448*10^-6 + 8.41625*10^-7 I }
 ~~~~~~~~~~~~~~~~~~~~
 
-\section redirecting_msg_output Redirecting info messages to a file
+\subsection redirecting_msg_output Redirecting info messages to a file
 
 When FlexibleSUSY is configured with `--enable-verbose`, a lot of
 additional debug output is written to `stdout` and `stderr` if
