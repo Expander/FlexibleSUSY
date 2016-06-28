@@ -79,12 +79,17 @@ void MLstdout(int pfd[2])
    } while (n > 0);
 
    if (len) {
-      MLPutFunction(stdlink, "EvaluatePacket", 1);
-      MLPutFunction(stdlink, "FSmsg", 1);
-      MLPutByteString(stdlink, buf, len - 1);
-      MLEndPacket(stdlink);
-      MLNextPacket(stdlink);
-      MLNewPacket(stdlink);
+      // send each line in a separate message
+      std::istringstream istr(std::string(reinterpret_cast<const char*>(buf), len));
+      std::string line;
+      while (std::getline(istr, line)) {
+         MLPutFunction(stdlink, "EvaluatePacket", 1);
+         MLPutFunction(stdlink, "FSmsg", 1);
+         MLPutString(stdlink, line.c_str());
+         MLEndPacket(stdlink);
+         MLNextPacket(stdlink);
+         MLNewPacket(stdlink);
+      }
    }
 
    free(buf);
