@@ -33,7 +33,14 @@
 #include "mathlink.h"
 #include "mathlink_macros.hpp"
 
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
 #include <sstream>
+#include <thread>
+
+#include <fcntl.h>
+#include <unistd.h>
 
 #define INPUTPARAMETER(p) input.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -50,7 +57,66 @@ Spectrum_generator_settings spectrum_generator_settings;
 double parameter_output_scale = 0.; ///< output scale for running parameters
 @ModelName@_slha<algorithm_type> model; ///< running parameters and pole masses
 
+int stdout_orig, stderr_orig, stdout_pipe[2];
+std::thread thr;
+
 extern "C" {
+
+/******************************************************************/
+
+void MLstdout(int pfd[2])
+{
+   const int fd = pfd[0];
+   unsigned char* buf = NULL;
+   std::size_t size = 0;
+   const std::size_t unit = 10240;
+   std::size_t len = 0, n;
+
+   do {
+      if (size - len < 128)
+         buf = static_cast<unsigned char*>(std::realloc(buf, size += unit));
+      len += n = read(fd, buf + len, size - len);
+   } while (n > 0);
+
+   if (len) {
+      MLPutFunction(stdlink, "EvaluatePacket", 1);
+      MLPutFunction(stdlink, "FSmsg", 1);
+      MLPutByteString(stdlink, buf, len - 1);
+      MLEndPacket(stdlink);
+      MLNextPacket(stdlink);
+      MLNewPacket(stdlink);
+   }
+}
+
+/******************************************************************/
+
+void BeginRedirect()
+{
+   try {
+      if (pipe(stdout_pipe) != -1)
+         thr = std::thread(MLstdout, stdout_pipe);
+   } catch (const std::exception& e) {
+      std::cerr << "Error: could not create thread for redirection"
+         " of stdout.  Redirecting stdout to stderr." << std::endl;
+      stdout_pipe[1] = 2;
+   }
+
+   dup2(stdout_pipe[1], 1);
+   dup2(stdout_pipe[1], 2);
+   close(stdout_pipe[1]);
+}
+
+/******************************************************************/
+
+void EndRedirect()
+{
+   fflush(stdout);
+   dup2(stdout_orig, 1);
+   dup2(stderr_orig, 2);
+
+   if (thr.joinable())
+      thr.join();
+}
 
 /******************************************************************/
 
@@ -293,6 +359,8 @@ void put_observables(const @ModelName@_observables& observables)
 
 void FS@ModelName@CalculateSpectrum()
 {
+   BeginRedirect();
+
    softsusy::QedQcd qedqcd_(qedqcd);
 
    try {
@@ -314,6 +382,8 @@ void FS@ModelName@CalculateSpectrum()
 
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
+
+   EndRedirect();
 
    if (problems.have_problem()) {
       std::ostringstream msg;
@@ -347,8 +417,12 @@ void FS@ModelName@CalculateObservables()
    }
 
    try {
+      BeginRedirect();
+
       @ModelName@_observables observables(
          calculate_observables(model, qedqcd, physical_input));
+
+      EndRedirect();
 
       put_observables(observables);
    } catch (const flexiblesusy::Error& e) {
@@ -363,5 +437,13 @@ void FS@ModelName@CalculateObservables()
 
 int main(int argc, char *argv[])
 {
+   int fd;
+
+   do fd = open("/dev/null", O_WRONLY); while (fd <= 2);
+   close(fd);
+
+   stdout_orig = dup(1);
+   stderr_orig = dup(2);
+
    return MLMain(argc, argv);
 }
