@@ -448,6 +448,7 @@ int main(int argc, char *argv[])
 {
    int fd;
 
+   // make sure a pipe will not overlap with 0, 1, 2
    do fd = open("/dev/null", O_WRONLY); while (fd <= 2);
    close(fd);
 
