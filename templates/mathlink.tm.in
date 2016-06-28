@@ -36,8 +36,8 @@
 :Evaluate: FS@ModelName@CalculateObservables::error = "`1`";
 :Evaluate: FS@ModelName@CalculateObservables::warning = "`1`";
 
-:Evaluate: FlexibleSUSY::info = "`1`";
-:Evaluate: FSmsg[s_] := Message[FlexibleSUSY::info, s];
+:Evaluate: FS@ModelName@::info = "`1`";
+:Evaluate: FS@ModelName@Message[s_] := Message[FS@ModelName@::info, s];
 
 :Evaluate: Begin["FlexibleSUSY`@ModelName@`Private`"]
 

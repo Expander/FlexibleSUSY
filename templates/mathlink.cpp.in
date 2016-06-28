@@ -84,7 +84,7 @@ void redirect_stdout(int pfd[2])
       std::string line;
       while (std::getline(istr, line)) {
          MLPutFunction(stdlink, "EvaluatePacket", 1);
-         MLPutFunction(stdlink, "FSmsg", 1);
+         MLPutFunction(stdlink, "FS@ModelName@Message", 1);
          MLPutString(stdlink, line.c_str());
          MLEndPacket(stdlink);
          MLNextPacket(stdlink);
