@@ -53,7 +53,7 @@ typedef Two_scale algorithm_type;
 @ModelName@_input_parameters input; ///< model input parameters
 Physical_input physical_input;      ///< extra non-SLHA physical input
 softsusy::QedQcd qedqcd;            ///< SLHA physical input
-Spectrum_generator_settings spectrum_generator_settings;
+Spectrum_generator_settings settings;
 double parameter_output_scale = 0.; ///< output scale for running parameters
 @ModelName@_slha<algorithm_type> model; ///< running parameters and pole masses
 
@@ -176,22 +176,22 @@ void FS@ModelName@GetSettings()
 {
    MLPutFunction(stdlink, "List", 17);
 
-   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::precision), "precisionGoal");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::force_output), "forceOutput");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
-   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
-   MLPutRuleTo(stdlink, (int)spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
-   MLPutRuleTo(stdlink, spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
+   MLPutRuleTo(stdlink, settings.get(Spectrum_generator_settings::precision), "precisionGoal");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::force_output), "forceOutput");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
+   MLPutRuleTo(stdlink, settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
+   MLPutRuleTo(stdlink, (int)settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
+   MLPutRuleTo(stdlink, settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
    MLPutRuleTo(stdlink, parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(stdlink);
@@ -227,22 +227,22 @@ int FS@ModelName@SetSettings(
          " way!");
    }
 
-   spectrum_generator_settings.set(Spectrum_generator_settings::precision, precision_goal_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::max_iterations, max_iterations_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::calculate_sm_masses, calculate_sm_masses_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::pole_mass_loop_order, pole_mass_loop_order_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::ewsb_loop_order, ewsb_loop_order_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::beta_loop_order, beta_loop_order_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, threshold_corrections_loop_order_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, higgs_2loop_correction_at_as_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, higgs_2loop_correction_ab_as_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, higgs_2loop_correction_at_at_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, higgs_2loop_correction_atau_atau_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::force_output, force_output_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::top_2loop_corrections_qcd, top_2loop_corrections_qcd_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::beta_zero_threshold, beta_zero_threshold_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::force_positive_masses, force_positive_masses_);
-   spectrum_generator_settings.set(Spectrum_generator_settings::pole_mass_scale, pole_mass_scale_);
+   settings.set(Spectrum_generator_settings::precision, precision_goal_);
+   settings.set(Spectrum_generator_settings::max_iterations, max_iterations_);
+   settings.set(Spectrum_generator_settings::calculate_sm_masses, calculate_sm_masses_);
+   settings.set(Spectrum_generator_settings::pole_mass_loop_order, pole_mass_loop_order_);
+   settings.set(Spectrum_generator_settings::ewsb_loop_order, ewsb_loop_order_);
+   settings.set(Spectrum_generator_settings::beta_loop_order, beta_loop_order_);
+   settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, threshold_corrections_loop_order_);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, higgs_2loop_correction_at_as_);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, higgs_2loop_correction_ab_as_);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, higgs_2loop_correction_at_at_);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, higgs_2loop_correction_atau_atau_);
+   settings.set(Spectrum_generator_settings::force_output, force_output_);
+   settings.set(Spectrum_generator_settings::top_2loop_corrections_qcd, top_2loop_corrections_qcd_);
+   settings.set(Spectrum_generator_settings::beta_zero_threshold, beta_zero_threshold_);
+   settings.set(Spectrum_generator_settings::force_positive_masses, force_positive_masses_);
+   settings.set(Spectrum_generator_settings::pole_mass_scale, pole_mass_scale_);
    parameter_output_scale = parameter_output_scale_;
 
    return 0;
@@ -381,13 +381,13 @@ void FS@ModelName@CalculateSpectrum()
    }
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
-   spectrum_generator.set_settings(spectrum_generator_settings);
+   spectrum_generator.set_settings(settings);
    spectrum_generator.set_parameter_output_scale(parameter_output_scale);
    spectrum_generator.run(qedqcd_, input);
 
    model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
-      spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
+      settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
 
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
@@ -407,7 +407,7 @@ void FS@ModelName@CalculateSpectrum()
    }
 
    if (!problems.have_problem() ||
-       spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
+       settings.get(Spectrum_generator_settings::force_output)) {
       put_spectrum(model);
    } else {
       put_error_output();
