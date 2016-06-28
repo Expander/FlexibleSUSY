@@ -57,14 +57,14 @@ Spectrum_generator_settings spectrum_generator_settings;
 double parameter_output_scale = 0.; ///< output scale for running parameters
 @ModelName@_slha<algorithm_type> model; ///< running parameters and pole masses
 
-int stdout_orig, stderr_orig, stdout_pipe[2];
-std::thread thr;
-
-extern "C" {
+int stdout_orig;                    ///< original file descriptor for stdout
+int stderr_orig;                    ///< original file descriptor for stderr
+int stdout_pipe[2];                 ///< pipe where stdout/stderr is redirected to
+std::thread stdout_thread;          ///< thread redirecting stdout
 
 /******************************************************************/
 
-void MLstdout(int pfd[2])
+void redirect_stdout(int pfd[2])
 {
    const int fd = pfd[0];
    unsigned char* buf = NULL;
@@ -97,11 +97,11 @@ void MLstdout(int pfd[2])
 
 /******************************************************************/
 
-void BeginRedirect()
+void begin_redirect()
 {
    try {
       if (pipe(stdout_pipe) != -1)
-         thr = std::thread(MLstdout, stdout_pipe);
+         stdout_thread = std::thread(redirect_stdout, stdout_pipe);
    } catch (const std::exception& e) {
       std::cerr << "Error: could not create thread for redirection"
          " of stdout.  Redirecting stdout to stderr." << std::endl;
@@ -115,14 +115,14 @@ void BeginRedirect()
 
 /******************************************************************/
 
-void EndRedirect()
+void end_redirect()
 {
    fflush(stdout);
    dup2(stdout_orig, 1);
    dup2(stderr_orig, 2);
 
-   if (thr.joinable())
-      thr.join();
+   if (stdout_thread.joinable())
+      stdout_thread.join();
 }
 
 /******************************************************************/
@@ -145,6 +145,30 @@ void put_message(const std::string& function_name,
    MLPutString(stdlink, message_tag.c_str());
    MLPutString(stdlink, message_str.c_str());
 }
+
+/******************************************************************/
+
+void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
+{
+   MLPutFunction(stdlink, "List", @numberOfSpectrumEntries@);
+
+@putSpectrum@
+
+   MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+void put_observables(const @ModelName@_observables& observables)
+{
+   MLPutFunction(stdlink, "List", @numberOfObservables@);
+
+@putObservables@
+
+   MLEndPacket(stdlink);
+}
+
+extern "C" {
 
 /******************************************************************/
 
@@ -342,31 +366,9 @@ int FS@ModelName@SetInputParameters(
 
 /******************************************************************/
 
-void put_spectrum(const @ModelName@_slha<algorithm_type>& model)
-{
-   MLPutFunction(stdlink, "List", @numberOfSpectrumEntries@);
-
-@putSpectrum@
-
-   MLEndPacket(stdlink);
-}
-
-/******************************************************************/
-
-void put_observables(const @ModelName@_observables& observables)
-{
-   MLPutFunction(stdlink, "List", @numberOfObservables@);
-
-@putObservables@
-
-   MLEndPacket(stdlink);
-}
-
-/******************************************************************/
-
 void FS@ModelName@CalculateSpectrum()
 {
-   BeginRedirect();
+   begin_redirect();
 
    softsusy::QedQcd qedqcd_(qedqcd);
 
@@ -390,7 +392,7 @@ void FS@ModelName@CalculateSpectrum()
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
-   EndRedirect();
+   end_redirect();
 
    if (problems.have_problem()) {
       std::ostringstream msg;
@@ -424,12 +426,12 @@ void FS@ModelName@CalculateObservables()
    }
 
    try {
-      BeginRedirect();
+      begin_redirect();
 
       @ModelName@_observables observables(
          calculate_observables(model, qedqcd, physical_input));
 
-      EndRedirect();
+      end_redirect();
 
       put_observables(observables);
    } catch (const flexiblesusy::Error& e) {
