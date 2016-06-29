@@ -28,7 +28,7 @@ Block FlexibleSUSY
    18   0                    # print EFT parameters
    19   0                    # mf matching loop order (0 = 1L, 1 = 0L)
 Block SMINPUTS               # Standard Model inputs
-    0   173.34               # Q_higgs
+#    0   173.34               # Q_higgs
     1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166380000e-05      # G_Fermi
     3   1.184000000e-01      # alpha_s(MZ) SM MSbar
@@ -82,6 +82,43 @@ echo "calculating Mh(Xt)"
           --MS=${MS} \
     | tee xt_TB-${TB}_MS-${MS}.dat
 
+
+echo "calculate DeltaMt uncertainty in the MSSM"
+
+{ echo "$slha_templ";
+  cat <<EOF
+Block EXTPAR
+   104  20.4  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+        --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat
+
+{ echo "$slha_templ";
+  cat <<EOF
+Block EXTPAR
+   104  -20.4  # DeltaMt
+EOF
+} | ./utils/scan-slha.sh \
+        --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat
+
+paste xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat \
+      xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat \
+      > xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt.dat
+
+echo "calculate Q uncertainty in the MSSM"
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMMuBMu_uncertainty.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from Q in the tower"
 
