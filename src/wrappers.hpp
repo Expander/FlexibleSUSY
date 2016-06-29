@@ -20,10 +20,11 @@
 #define WRAPPERS_H
 
 #include <algorithm>
-#include <complex>
 #include <cmath>
+#include <complex>
 #include <functional>
 #include <limits>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -63,7 +64,9 @@ Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Abs(std::vector<T> v)
 {
-   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Abs(x); });
+   for (typename std::vector<T>::iterator it = v.begin(),
+           end = v.end(); it != end; ++it)
+      *it = Abs(*it);
    return v;
 }
 
@@ -415,6 +418,22 @@ inline double Im(const std::complex<double>& x)
    return std::imag(x);
 }
 
+template<int M, int N>
+Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>& x)
+{
+   return Eigen::Matrix<double,M,N>::Zero();
+}
+
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Im(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.imag();
+}
+
 namespace {
    struct CompareAbs_d {
       bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
@@ -482,7 +501,9 @@ Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
 template <class T>
 std::vector<T> Sqrt(std::vector<T> v)
 {
-   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqrt(x); });
+   for (typename std::vector<T>::iterator it = v.begin(),
+           end = v.end(); it != end; ++it)
+      *it = Sqrt(*it);
    return v;
 }
 
@@ -501,7 +522,9 @@ Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Sqr(std::vector<T> v)
 {
-   std::transform(v.begin(), v.end(), v.begin(), [](T x) { return Sqr(x); });
+   for (typename std::vector<T>::iterator it = v.begin(),
+           end = v.end(); it != end; ++it)
+      *it = Sqr(*it);
    return v;
 }
 

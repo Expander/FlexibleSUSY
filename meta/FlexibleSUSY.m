@@ -113,7 +113,7 @@ SMINPUTS = {
     {GFermiInput        , {"SMINPUTS",  2}, CConversion`ScalarType[CConversion`realScalarCType]},
     {AlphaSInput        , {"SMINPUTS",  3}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MZPoleInput        , {"SMINPUTS",  4}, CConversion`ScalarType[CConversion`realScalarCType]},
-    {MbMbInput          , {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
+    {MBottomMbottomInput, {"SMINPUTS",  5}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MTopPoleInput      , {"SMINPUTS",  6}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MTauPoleInput      , {"SMINPUTS",  7}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MNeutrino3PoleInput, {"SMINPUTS",  8}, CConversion`ScalarType[CConversion`realScalarCType]},
@@ -125,7 +125,7 @@ SMINPUTS = {
     {MDown2GeVInput     , {"SMINPUTS", 21}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MUp2GeVInput       , {"SMINPUTS", 22}, CConversion`ScalarType[CConversion`realScalarCType]},
     {MStrange2GeVInput  , {"SMINPUTS", 23}, CConversion`ScalarType[CConversion`realScalarCType]},
-    {MCharm2GeVInput    , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
+    {MCharmMCharm       , {"SMINPUTS", 24}, CConversion`ScalarType[CConversion`realScalarCType]}
 };
 
 (* renormalization schemes *)
@@ -1266,7 +1266,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
-            particleNames = "", particleEnum = "", particleMultiplicity = "",
+            particleNames = "", particleEnum = "", particleMassEnum, particleMultiplicity = "",
             particleMixingEnum = "", particleMixingNames = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             inputParameterEnum = "", inputParameterNames = "",
@@ -1274,9 +1274,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
-            writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
-            writeSLHAExtparBlock = "", readLesHouchesInputParameters,
-            writeExtraSLHAOutputBlock = "",
+            writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
+            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
+            readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
@@ -1293,6 +1293,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                Cases[inputParameters, {_, {"EXTPAR", _}, ___}]
            ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
+           particleMassEnum   = TreeMasses`CreateParticleMassEnum[particles];
            particleMixingEnum = TreeMasses`CreateParticleMixingEnum[massMatrices];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
@@ -1315,6 +1316,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
+           writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
@@ -1326,6 +1328,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
+                            "@particleMassEnum@"   -> IndentText[WrapLines[particleMassEnum]],
                             "@particleMixingEnum@" -> IndentText[WrapLines[particleMixingEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
@@ -1345,6 +1348,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
+                            "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],

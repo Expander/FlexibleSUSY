@@ -428,7 +428,7 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = type <> " result;\n\n" <>
-                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr], TreeMasses`GetParticles[]] /.
+                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
                              vertexRules /.
                              a_[List[i__]] :> a[i] /.
                              ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.

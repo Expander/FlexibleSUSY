@@ -114,6 +114,7 @@ Minimizer<dimension>::Minimizer()
  * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
+ * @param solver_type_ GSL multimin minimizer type
  */
 template <std::size_t dimension>
 Minimizer<dimension>::Minimizer(

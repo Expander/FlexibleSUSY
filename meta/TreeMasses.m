@@ -24,6 +24,8 @@ CreateParticleMixingNames::usage="creates a list of the mixing matrix element na
 
 CreateParticleEnum::usage="creates an enum of the particles";
 
+CreateParticleMassEnum::usage="creates an enum of the particle masses";
+
 CreateParticleMixingEnum::usage="creates enum with mixing matrices";
 
 CreateParticleMultiplicity::usage="creates array of the particle
@@ -839,6 +841,30 @@ CreateParticleEnum[particles_List] :=
            If[Length[particles] > 0, result = result <> ", ";];
            result = result <> "NUMBER_OF_PARTICLES";
            result = "enum Particles : unsigned {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleMassEnum[particles_List] :=
+    Module[{i, par, name, result = "", d, dim},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               name = CConversion`ToValidCSymbolString[FlexibleSUSY`M[par]];
+               dim = GetDimension[par];
+               If[dim == 1,
+                  If[i > 1, result = result <> ", ";];
+                  result = result <> name;
+                  ,
+                  For[d = 1, d <= dim, d++,
+                      If[i > 1 || d > 1, result = result <> ", ";];
+                      result = result <> name <> "_" <> ToString[d];
+                     ];
+                 ];
+              ];
+           (* append enum state for the number of particles *)
+           If[Length[particles] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_MASSES";
+           result = "enum Masses : unsigned {" <>
                     result <> "};\n";
            Return[result];
           ];
@@ -1962,7 +1988,7 @@ ExpressionToString[expr_, result_String] :=
                 ];
               exprStr = CConversion`ExpandSums[
                   Parameters`DecreaseIndexLiterals[
-                      Parameters`DecreaseSumIdices[expr]],
+                      Parameters`DecreaseSumIndices[expr]],
                   result, type, initalValue];
              ];
            exprStr

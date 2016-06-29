@@ -1,3 +1,7 @@
+Needs["TestSuite`", "TestSuite.m"];
+Needs["ReadSLHA`", "ReadSLHA.m"];
+
+slha = "
 Block MODSEL                 # Select model
 #   12    1000                # parameter output scale (GeV)
 Block FlexibleSUSY
@@ -19,6 +23,8 @@ Block FlexibleSUSY
    15   0                    # calculate observables (a_muon, ...)
    16   0                    # force positive majorana masses
    17   0                    # pole mass renormalization scale (0 = SUSY scale)
+   17   0                    # calculate parametric uncertainties
+   17   1                    # calculate parametric uncertainties
 Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole
@@ -45,3 +51,56 @@ Block MINPAR                 # Input parameters
 Block EXTPAR                 # Input parameters
     0   1000                 # input scale Qin
     1   173.34               # scale QEWSB
+Block EXTPAR
+    0   1.1
+    1   2.2
+Block V
+    1   10.1
+    2   20.2
+    3   a
+Block M
+    1 1  10.1
+    1 2  1
+    2 2  20.2
+    3 3  30.3
+Block T3
+    1 1 1  10.1
+    2 2 2  20.2
+    3 3 3  30.3
+Block T4
+    1 1 1 1  10.1
+    2 2 2 2  20.2
+    3 3 3 3  30.3
+";
+
+pars = {
+    {Qin  , {0}            , {EXTPAR, 0}},
+    {QEWSB, {0}            , {EXTPAR, 1}},
+    {V    , {3}            , V},
+    {M    , {3, 3}         , M},
+    {T3   , {3, 3, 3}      , T3},
+    {T4   , {3, 3, 3, 3}   , T4},
+    {Ts   , {0}            , {T4, 2, 2, 2, 2}}
+};
+
+values = ReadSLHAString[slha, pars];
+
+TestEquality[Qin /. values, 1.1];
+TestEquality[QEWSB /. values, 2.2];
+TestEquality[V /. values, {10.1, 20.2, 0}];
+TestEquality[M /. values, {{10.1, 1, 0}, {0, 20.2, 0}, {0, 0, 30.3}}];
+TestEquality[T3 /. values, {{{10.1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+                            {{0, 0, 0}, {0, 20.2, 0}, {0, 0, 0}},
+                            {{0, 0, 0}, {0, 0, 0}, {0, 0, 30.3}}}];
+
+t4 = Table[0, {i,1,3}, {j,1,3}, {k,1,3}, {l,1,3}];
+t4[[1,1,1,1]] = 10.1;
+t4[[2,2,2,2]] = 20.2;
+t4[[3,3,3,3]] = 30.3;
+
+TestEquality[T4 /. values, t4];
+TestEquality[Ts /. values, 20.2];
+
+Print[""];
+
+PrintTestSummary[];

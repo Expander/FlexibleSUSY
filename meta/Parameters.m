@@ -1,6 +1,9 @@
 
 BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
+{ FSModelParameters, FSInputParameters, FSOutputParameters,
+  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters };
+
 FindSymbolDef::usage="";
 
 CreateSetAssignment::usage="";
@@ -100,7 +103,7 @@ FillInputParametersFromTuples::usage="";
 DecreaseIndexLiterals::usage="";
 IncreaseIndexLiterals::usage="";
 
-DecreaseSumIdices::usage="";
+DecreaseSumIndices::usage="";
 
 GetEffectiveMu::usage="";
 GetEffectiveMASqr::usage="";
@@ -131,6 +134,9 @@ given list of parameters are omitted from the output.";
 
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
+
+FindAllParametersClassified::usage = "returns list of all parameters
+ contained in the given expression, classified by their meaning.";
 
 FindSLHABlock::usage = "returns SLHA input block name for given
  parameter";
@@ -274,6 +280,7 @@ IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
+IsRealParameter[FlexibleSUSY`M[_]] := True;
 
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
@@ -425,7 +432,7 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?Num
     CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
 GetType[FlexibleSUSY`M[sym_]] :=
-    GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+    GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
@@ -1208,26 +1215,45 @@ PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
 
-CreateLocalConstRefs[expr_] :=
-    Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
+FindAllParametersClassified[expr_] :=
+    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
+            inputPars, modelPars, outputPars,
             poleMasses, phases, depNum, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
                    ]]];
-           symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                         };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           poleMasses = DeleteDuplicates[Flatten[poleMasses]];
-           inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
            depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
+           {
+               FSModelParameters -> modelPars,
+               FSInputParameters -> inputPars,
+               FSOutputParameters -> outputPars,
+               FSPhysicalOutputParameters -> poleMasses,
+               FSPhases -> phases,
+               FSDerivedParameters -> depNum
+           }
+          ];
+
+CreateLocalConstRefs[expr_] :=
+    Module[{result = "", pars, inputSymbols, modelPars, outputPars,
+            poleMasses, phases, depNum},
+           pars = FindAllParametersClassified[expr];
+           inputSymbols = FSInputParameters /. pars;
+           modelPars    = FSModelParameters /. pars;
+           outputPars   = FSOutputParameters /. pars;
+           phases       = FSPhases /. pars;
+           depNum       = FSDerivedParameters /. pars;
+           poleMasses   = FSPhysicalOutputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
@@ -1238,36 +1264,25 @@ CreateLocalConstRefs[expr_] :=
           ];
 
 CreateLocalConstRefsForPhysicalParameters[expr_] :=
-    Module[{result = "", symbols, outputPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, {0,Infinity}],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-                     };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           outputPars = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+    Module[{result = "", pars, outputPars},
+           pars = FindAllParametersClassified[expr];
+           outputPars = FSOutputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"PHYSICAL"])& /@ outputPars;
            Return[result];
           ];
 
 CreateLocalConstRefsForBetas[expr_] :=
-    Module[{result = "", symbols, modelPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, {0,Infinity}] };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+    Module[{result = "", pars, modelPars},
+           pars = FindAllParametersClassified[expr];
+           modelPars = FSModelParameters /. pars;
            (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
            Return[result];
           ];
 
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
-    Module[{result = "", symbols, inputPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = Cases[compactExpr, _Symbol, {0,Infinity}];
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+    Module[{result = "", pars, inputPars},
+           pars = FindAllParametersClassified[expr];
+           inputPars = FSInputParameters /. pars;
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
            Return[result];
           ];
@@ -1330,7 +1345,7 @@ DecreaseIndexLiterals[expr_] :=
 DecreaseIndexLiterals[expr_, heads_List] :=
     IncreaseIndexLiterals[expr, -1, heads];
 
-DecreaseSumIdices[expr_] :=
+DecreaseSumIndices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
 
 GetEffectiveMu[] :=
@@ -1620,7 +1635,7 @@ SetSMParameter[FlexibleSUSY`AlphaEMInvInput    , value_String, struct_String] :=
 SetSMParameter[FlexibleSUSY`GFermiInput        , value_String, struct_String] := struct <> ".setFermiConstant(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`AlphaSInput        , value_String, struct_String] := struct <> ".setAlphaSInput(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MZPoleInput        , value_String, struct_String] := struct <> ".setPoleMZ(" <> value <> ")";
-SetSMParameter[FlexibleSUSY`MbMbInput          , value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MBottomMbottomInput, value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MTopPoleInput      , value_String, struct_String] := struct <> ".setPoleMt(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MTauPoleInput      , value_String, struct_String] := struct <> ".setPoleMtau(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MNeutrino3PoleInput, value_String, struct_String] := struct <> ".setNeutrinoPoleMass(3, " <> value <> ")";
@@ -1632,7 +1647,7 @@ SetSMParameter[FlexibleSUSY`MNeutrino2PoleInput, value_String, struct_String] :=
 SetSMParameter[FlexibleSUSY`MDown2GeVInput     , value_String, struct_String] := struct <> ".setMass(softsusy::mDown, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MUp2GeVInput       , value_String, struct_String] := struct <> ".setMass(softsusy::mUp, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MStrange2GeVInput  , value_String, struct_String] := struct <> ".setMass(softsusy::mStrange, " <> value <> ")";
-SetSMParameter[FlexibleSUSY`MCharm2GeVInput    , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MCharmMCharm       , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
 
 End[];
 

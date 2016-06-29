@@ -10,8 +10,7 @@ EndPackage[];
 {B0, DB0, C0, D0, D2tilde, D4tilde, W};
 
 (* flags *)
-{ flagSferm, flagSfermZdd, flagSfermZud, flagSfermZuu, flagIno,
-  flagInoZdd, flagInoZud, flagInoZuu, flagdg };
+{ flagSferm, flagIno, flagZdd, flagZud, flagZuu, flagdg };
 
 (* options *)
 { coefficients, flags, loopFunctions, loopOrder, sumHead };
@@ -57,20 +56,21 @@ GetTHDMThresholds1LFlags::usage = "Returns list of replacement rules
  for the flags which mark the different contributions.";
 
 GetTHDMThresholds1LLoopFunctions::usage = "Returns list of replacement
- rules for the loop functions defined in Eq. (130)-(131) of
- arxiv:0901.2065.";
+ rules for the loop functions defined in Eq. (B16)-(B17) of
+ Phys. Rev. D 84 (2011) 034030.
+
+ Note: The loop functions B0' and W in Eq. (130) arxiv:0901.2065v1
+ carry the wrong global sign.
+";
 
 Begin["THDMThresholds1L`Private`"];
 
 GetTHDMThresholds1LFlags[] := {
     flagSferm    ->  1, (* Enable/disable sfermion contribution *)
-    flagSfermZdd -> -1, (* Enable/disable sfermion contribution in field renormalization Zdd *)
-    flagSfermZud ->  0, (* Enable/disable sfermion contribution in field renormalization Zud *)
-    flagSfermZuu -> -1, (* Enable/disable sfermion contribution in field renormalization Zuu *)
     flagIno      ->  1, (* Enable/disable gaugino + Higgsino contribution *)
-    flagInoZdd   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zdd *)
-    flagInoZud   ->  0, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zud *)
-    flagInoZuu   -> -1, (* Enable/disable gaugino + Higgsino contribution in field renormalization Zuu *)
+    flagZdd      ->  1, (* Enable/disable field renormalization Zdd *)
+    flagZud      ->  0, (* Enable/disable field renormalization Zud *)
+    flagZuu      ->  1, (* Enable/disable field renormalization Zuu *)
     flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
 };
 
@@ -415,8 +415,8 @@ GetTHDMThresholds1LLoopFunctions[] := {
        ],
 
     DB0[m1_, m2_] :> If[PossibleZeroQ[m1 - m2],
-       1/(6*m2^2),
-       (m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
+       -1/(6*m2^2),
+       -(m1^4 - m2^4 + 2 m1^2 m2^2 Log[m2^2/m1^2])/(2 (m1^2 - m2^2)^3)
        ],
 
     C0[m1_, m2_, m3_] :> Which[
@@ -469,10 +469,10 @@ GetTHDMThresholds1LLoopFunctions[] := {
        ),
 
     W[m1_, m2_, mu_] :> If[PossibleZeroQ[m1 - m2],
-       2/3 - 2 Log[mu^2/m2^2],
-       (- 2 Log[mu^2/m1^2]
-        - Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
-        - (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
+       -2/3 + 2 Log[mu^2/m2^2],
+       (+ 2 Log[mu^2/m1^2]
+        + Log[m2^2/m1^2] (2 m2^6 - 6 m1^2 m2^4)/(m1^2 - m2^2)^3
+        + (m1^4 - 6 m2^2 m1^2 + m2^4)/(m1^2 - m2^2)^2)
        ]
 };
 
@@ -480,9 +480,9 @@ GetTHDMThresholds1LLoopFunctions[] := {
 
 dgY := -dZB/2 flagdg;
 dg2 := -dZW/2 flagdg;
-dZdd := flagSfermZdd dZddSferm + flagInoZdd dZddIno;
-dZud := flagSfermZud dZudSferm + flagInoZud dZudIno;
-dZuu := flagSfermZuu dZuuSferm + flagInoZuu dZuuIno;
+dZdd := flagSferm flagZdd dZddSferm + flagIno flagZdd dZddIno;
+dZud := flagSferm flagZud dZudSferm + flagIno flagZud dZudIno;
+dZuu := flagSferm flagZuu dZuuSferm + flagIno flagZuu dZuuIno;
 (* Eq. (117) *)
 dZW := Module[{i},
     g2^2 kappa/6 (
@@ -728,7 +728,7 @@ lamBar[[6]] = lamHat[[6]] +
     loopOrder1 (-(g2^2 + gY^2)/4 Conjugate[dZud]);
 
 lamBar[[7]] = lamHat[[7]] +
-    loopOrder1 ((g2^2 + gY^2)/4 dZud);
+    loopOrder1 ((g2^2 + gY^2)/4 Conjugate[dZud]);
 
 Options[GetTHDMThresholds1L] = {
     coefficients -> GetTHDMThresholds1LCoefficients[],

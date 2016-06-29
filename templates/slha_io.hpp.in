@@ -165,6 +165,7 @@ template <class T>
 void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
 {
 @writeSLHAModelParametersBlocks@
+@writeSLHAPhasesBlocks@
 }
 
 /**

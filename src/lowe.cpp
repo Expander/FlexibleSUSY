@@ -7,6 +7,7 @@
 */
 
 #include "lowe.h"
+#include "conversion.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
@@ -255,6 +256,7 @@ void QedQcd::massBeta(DoubleVector & x) const {
     x(i) = (qcd + qed / 3.0) * mf.display(i);
   for (i=7;i<=9;i++)   // leptons
     x(i) = 3.0 * qed * mf.display(i);
+
   // switch off relevant beta functions
   if (displayThresholds() > 0)
     for(i=1;i<=9;i++) if (displayMu() < displayMass().display(i)) x(i) = 0.0;
@@ -435,7 +437,7 @@ void QedQcd::toMz() {
 void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    unsigned it = 0;
    bool converged = false;
-   Eigen::ArrayXd qedqcd_old(display_input()), qedqcd_new(display_input());
+   DoubleVector qedqcd_old(display()), qedqcd_new(display());
 
    while (!converged && it < max_iterations) {
       // set alpha_i(MZ)
@@ -458,11 +460,18 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
       setMass(mDown, displayMd2GeV());
       setMass(mStrange, displayMs2GeV());
 
+      // set me, mm, ml at 2 GeV
+      setMass(mElectron, displayPoleMel());
+      setMass(mMuon, displayPoleMmuon());
+      setMass(mTau, displayPoleMtau());
+
       // check convergence
       runto_safe(scale, precision_goal);
-      qedqcd_new = display_input();
+      qedqcd_new = display();
 
-      converged = flexiblesusy::MaxRelDiff(qedqcd_old, qedqcd_new) < precision_goal;
+      converged = flexiblesusy::MaxRelDiff(
+         flexiblesusy::ToEigenArray(qedqcd_old),
+         flexiblesusy::ToEigenArray(qedqcd_new)) < precision_goal;
 
       qedqcd_old = qedqcd_new;
 

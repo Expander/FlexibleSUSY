@@ -10,6 +10,7 @@ WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
+WriteSLHAPhasesBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 WriteExtraSLHAOutputBlock::usage="";
 CreateSLHAMassBlockStream::usage="creates ostringstream with masses";
@@ -246,6 +247,11 @@ GetSLHAInputParameters[] :=
                        MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
+GetSLHAPhases[] :=
+    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+                       MemberQ[Parameters`GetPhases[],#[[1]]]&],
+                {_,None}];
+
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String, setter_String:"set_block"] :=
     Module[{str, strSLHA, lhs, wrapper},
            If[SARAH`getDimParameters[mixingMatrix] === {} ||
@@ -311,12 +317,38 @@ LesHouchesNameToFront[{parameter_, {lh_,idx_}}] :=
 LesHouchesNameToFront[{parameter_, lh_}] :=
     {lh, parameter};
 
+SplitRealAndImagPartBlocks[{block_, parameter_?Parameters`IsRealParameter}] := {{block, parameter}};
+
+SplitRealAndImagPartBlocks[{block_, parameter_}] :=
+    {{block, Re[parameter]}, {CreateImaginaryPartBlockName[block], Im[parameter]}};
+
+SplitRealAndImagPartBlocks[{block_, tuples_List}] :=
+    Module[{complexPars, realPars, result},
+           complexPars = Select[tuples, Parameters`IsComplexParameter[#[[1]]]&];
+           If[complexPars =!= {},
+              realPars = (If[Parameters`IsRealParameter[#[[1]]],
+                             {#[[1]], #[[2]]},
+                             {Re[#[[1]]], #[[2]]}])& /@ tuples;
+              complexPars = {Im[#[[1]]], #[[2]]}& /@ complexPars;
+              result = {{block, realPars},
+                        {CreateImaginaryPartBlockName[block], complexPars}};,
+              result = {{block, tuples}};
+             ];
+           result
+          ];
+
+SplitRealAndImagPartBlocks[{block_, {parameter_ /; Head[parameter] =!= List}}] :=
+    If[Parameters`IsRealParameter[parameter],
+       {{block, {parameter}}},
+       {{block, {Re[parameter]}}, {CreateImaginaryPartBlockName[block], {Im[parameter]}}}
+      ];
+
 SortBlocks[modelParameters_List] :=
     Module[{reformed, allBlocks, collected},
            reformed = LesHouchesNameToFront /@ modelParameters;
            allBlocks = DeleteDuplicates[Transpose[reformed][[1]]];
            collected = {#, Cases[reformed, {#, a_} :> a]}& /@ allBlocks;
-           Return[collected];
+           Flatten[SplitRealAndImagPartBlocks /@ collected, 1]
           ];
 
 CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
@@ -432,7 +464,8 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
@@ -448,7 +481,8 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
@@ -463,7 +497,8 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            (* print unnormalized hypercharge gauge coupling *)
            If[par === SARAH`hyperchargeCoupling,
@@ -484,7 +519,8 @@ WriteSLHABlockEntry[{par_}, comment_String:""] :=
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                     Parameters`GetOutputParameters[]],
+                                                     Parameters`GetOutputParameters[],
+                                                     Parameters`GetPhases[]],
                                            Global`MODELPARAMETER]];
            commentStr = If[comment == "", parStr, comment];
            (* result *)
@@ -513,6 +549,12 @@ WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
            Return[result];
           ];
 
+WriteSLHABlock[{blockName_, Re[parameter_]}, scale_String:"model.get_scale()"] :=
+    WriteSLHABlock[{blockName, parameter}, scale];
+
+WriteSLHABlock[{blockName_, Im[parameter_]}, scale_String:"model.get_scale()"] :=
+    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale, "set_block_imag"];
+
 WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
     WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale];
 
@@ -525,6 +567,14 @@ WriteSLHAModelParametersBlocks[] :=
            blocks = SortBlocks[modelParameters];
            (result = result <> WriteSLHABlock[#])& /@ blocks;
            Return[result];
+          ];
+
+WriteSLHAPhasesBlocks[] :=
+    Module[{result = "", phases, blocks},
+           phases = GetSLHAPhases[];
+           blocks = SortBlocks[phases];
+           (result = result <> WriteSLHABlock[#])& /@ blocks;
+           Return[result]
           ];
 
 GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`NoScale] := "";
@@ -581,6 +631,9 @@ CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
 CreateInputBlockName[blockName_] :=
     ToString[blockName] <> "IN";
 
+CreateImaginaryPartBlockName[blockName_] :=
+    "IM" <> ToString[blockName];
+
 ReadLesHouchesInputParameters[slhaInputParameters_List] :=
     Module[{result = ""},
            (result = result <> ReadSLHAInputBlock[#])& /@ slhaInputParameters;
@@ -612,11 +665,12 @@ ReadSLHAOutputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
          ];
 
 ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
-    Module[{paramStr, blockNameStr},
+    Module[{typeStr, paramStr, blockNameStr},
+           typeStr = CConversion`CreateCType[Parameters`GetType[parameter]];
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
-               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               typeStr <> " " <> paramStr <> ";\n" <>
                "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
                paramStr <> ");\n" <>
                "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>
