@@ -2,7 +2,8 @@ start=91.1876
 stop=100000
 n_points=60
 
-for Xt in 0 2.44949 -2.44949
+# for Xt in 0 2.44949 -2.44949
+for Xt in 0 2 -2
 do
 
 ./scan.sh --parameter=MS --start=$start --stop=$stop --steps=$n_points --step-size=log --TB=5 --Xt="${Xt}" | tee scale_MSSM_TB-5_Xt-${Xt}.dat
@@ -23,7 +24,7 @@ Block FlexibleSUSY
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
-   12   0                    # force output
+   12   1                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1                    # Higgs logarithmic resummation
    15   1.000000000e-11      # beta-function zero threshold
@@ -94,6 +95,16 @@ paste scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
       scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_low.dat \
       scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_high.dat \
       > scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt.dat
+
+echo "uncertainty from Q in the tower"
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+        | tee scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat
 
 echo "calculate Q uncertainty"
 
@@ -195,7 +206,8 @@ plot [0.091:] [60:140] \
      'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):(\$8-\$9):(\$8+\$9) t 'FeynHiggs uncertainty' w filledcurves ls 9 fs transparent solid 0.3, \
      'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):10 t 'SUSYHD 1.0.2' w lines ls 10, \
      'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):(\$10-\$11):(\$10+\$11) t 'SUSYHD uncertainty' w filledcurves ls 11 fs transparent solid 0.3, \
-     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):16 t 'FlexibleSUSY/MSSM-tower (0L y_t(M_S))' w points ls 14
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):16 t 'FlexibleSUSY/MSSM-tower (0L y_t(M_S))' w points ls 14, \
+     'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):17 t 'SuSpect 2.43' w lines ls 15
 #    'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):7 t 'FlexibleSUSY/MSSM SPheno-like' w lines ls 5, \
 #    'scale_MSSM_TB-5_Xt-${Xt}.dat' u (\$1/1000):13 t 'SPheno/MSSM FS-like' w lines ls 7, \
 "
