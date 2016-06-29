@@ -66,7 +66,7 @@ Block FlexibleSUSY
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
-   12   0                    # force output
+   12   1                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1                    # Higgs logarithmic resummation
    15   1.000000000e-11      # beta-function zero threshold
@@ -370,6 +370,94 @@ EOF
     echo $value
 }
 
+run_suspect() {
+    local SG="$1"
+    local MS2=$(echo "scale=5; ${MS}^2" | bc)
+    local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
+    local Ab=$(echo "scale=10; ${TB} * ${MS}" | bc)
+    local Atau=$(echo "scale=10; ${TB} * ${MS}" | bc)
+    local MA="$MS"
+    local slha_output=
+    local block=
+    local value=
+    local slha_input=
+    local output_block=$(echo "${output}" | cut -d'-' -f1)
+    local output_entry=$(echo "${output}" | cut -d'-' -f2)
+    local tmp_in="suspect2_lha.in"
+    local tmp_out="suspect2_lha.out"
+
+    rm -f "$tmp_out" "$tmp_in"
+
+    cat <<EOF > "$tmp_in"
+Block MODSEL                 # Select model
+    1    0                   # general
+Block SU_ALGO
+     2    21  # 2-loop RGE (defaut, 1-loop RGE is: 11 instead)
+     3    0   # 1: g_1(gut) = g_2(gut) consistently calculated from input
+#  (other possibility is 0: High scale input =HIGH in block EXTPAR below)
+     4    2   # RGE accuracy: 1: moderate, 2: accurate (but slower)  
+     6    0   #  1: M_Hu, M_Hd input (default in constrained models)
+#   (other possibility 0: MA_pole, MU(EWSB) input instead)
+     7    2   #  choice for sparticles masses rad. corr. (=/= h):
+#   2 ->all (recommended, defaut); 1->no R.C. in squarks & gauginos.
+     8    0   # 1 (defaut): EWSB scale=(mt_L*mt_R)^(1/2) 
+#   (Or = 0: arbitrary EWSB scale: give EWSB in Block EXTPAR below) 
+     9    2   # Final spectrum accuracy: 1 -> 1% acc.; 2 -> 0.01 % acc.(defaut)
+     10   2   # Higgs boson masses rad. corr. calculation options: 
+     11   0   # Higher order Higgs 'scheme' choice in rad. corr. at mZ:
+Block MINPAR                 # Input parameters
+    4   1                    # sign(mu)
+${sminputs_tmpl}Block SMINPUTS               # Standard Model inputs
+    1   ${AI}                # alpha_em(MZ) SM MSbar
+    2   ${GF}                # G_Fermi
+    3   ${AS}                # alpha_s(MZ) SM MSbar
+    4   ${MZ}                # MZ(pole)
+    6   ${MT}                # mtop(pole)
+BLOCK EXTPAR
+         0     ${MS}   # Q
+         1     ${MS}   # M1
+         2     ${MS}   # M2
+         3     ${M3}   # M3
+        11     ${At}   # At
+        12     ${Ab}   # Ab
+        13     ${Atau} # Atau
+        23     ${MS}   # MUE
+        26     ${MA}   # MA0
+        25     ${TB}   # TB
+        31     ${MS}   # MSL(1)
+        32     ${MS}   # MSL(2)
+        33     ${MS}   # MSL(3)
+        34     ${MS}   # MSE(1)
+        35     ${MS}   # MSE(2)
+        36     ${MS}   # MSE(3)
+        41     ${MS}   # MSQ(1)
+        42     ${MS}   # MSQ(2)
+        43     ${MS}   # MSQ(3)
+        44     ${MS}   # MSU(1)
+        45     ${MS}   # MSU(2)
+        46     ${MS}   # MSU(3)
+        47     ${MS}   # MSD(1)
+        48     ${MS}   # MSD(2)
+        49     ${MS}   # MSD(3)
+EOF
+
+    # run the SuSpect spectrum generator
+    "$SG" "$tmp_in" "$tmp_out" > /dev/null 2>&1
+
+    if test "x$?" = "x0" -a -f "$tmp_out" ; then
+        slha_output=$(cat "$tmp_out")
+    fi
+
+    rm -f "$tmp_out" "$tmp_in" "suspect2.out"
+
+    block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
+    value=$(echo "$block"       | awk -v keys="$output_entry" "$print_block_entry_awk" | tail -n 1)
+
+    [ "x$value" = "x" ] && value="-"
+
+    echo $value
+}
+
 run_fh() {
     local fh_dir="$1"
     ./run_FeynHiggs_SLHA.sh "$fh_dir" "${MS}" "${TB}" "${Xt}"
@@ -455,7 +543,7 @@ if test $# -gt 0 ; then
 fi
 
 printf "# MS = ${MS}, TanBeta = ${TB}, Xt = ${Xt}\n"
-printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like" "MSSMMuBMuYuatMS" "MSSMMuBMuYuatMSSPheno" "MSSMtower(yt(MS)^0L)"
+printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$parameter" "MSSMtower" "EFTtower" "MSSMMuBMu" "HSSUSY" "Softsusy" "MSSMMuBMuSPheno" "FeynHiggs" "DeltaFeynHiggs" "SUSYHD" "DeltaSUSYHD" "SPheno" "SPheno FS-like" "MSSMMuBMuYuatMS" "MSSMMuBMuYuatMSSPheno" "MSSMtower(yt(MS)^0L)" "SuSpect 2.43"
 
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
@@ -527,6 +615,8 @@ EOF
 
     MhSoftsusy=$(run_ss "${HOME}/packages/softsusy-3.6.2/softpoint.x")
 
+    MhSuSpect=$(run_suspect "${HOME}/packages/suspect-2.43/a.out")
+
     FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/build")
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
     DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
@@ -538,6 +628,6 @@ EOF
     MhSPheno=$(run_spheno "./SPhenoMSSM")
     MhSPhenoHacked=$(run_spheno "./SPhenoMSSM_FlexibleSUSY_like")
 
-    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked" "$MhMSSMMuBMuYuatMS" "$MhMSSMMuBMuYuatMSSPheno" "$MhMSSMtowerTLMF"
+    printf "%16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" "$value" "$MhMSSMtower" "$MhEFTtower" "$MhMSSMMuBMu" "$MhHSSUSY" "$MhSoftsusy" "$MhMSSMMuBMuSPheno" "$MhFH" "$DeltaMhFH" "$MhSUSYHD" "$DeltaMhSUSYHD" "$MhSPheno" "$MhSPhenoHacked" "$MhMSSMMuBMuYuatMS" "$MhMSSMMuBMuYuatMSSPheno" "$MhMSSMtowerTLMF" "$MhSuSpect"
 
 done
