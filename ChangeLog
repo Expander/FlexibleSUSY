@@ -1,4 +1,4 @@
-FlexibleSUSY-1.4.3 [not released yet]
+FlexibleSUSY-1.5.0 [June, 29 2016]
 
  * Feature: Write phases to SLHA output if a SLHA output block is
    defined for them in the SARAH model file.
