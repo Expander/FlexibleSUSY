@@ -23,8 +23,6 @@
 #include <vector>
 #include <Eigen/Core>
 
-#define NELEMS(x) (sizeof(x) / sizeof((x)[0]))
-
 /********************* put types *********************/
 
 void MLPut(MLINK link, int c)
@@ -73,7 +71,7 @@ void MLPut(MLINK link, const Eigen::Matrix<double,M,N>& m)
          mat[i][k] = m(i, k);
 
    long dims[] = { M, N };
-   MLPutDoubleArray(link, (double*)mat, dims, NULL, NELEMS(dims));
+   MLPutDoubleArray(link, (double*)mat, dims, NULL, 2);
 }
 
 template <int M>
