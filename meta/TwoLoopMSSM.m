@@ -69,6 +69,24 @@ Parameters:
   Example: parameters -> {At -> 0, sin2Theta -> 0}
 ";
 
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar::usage = "Returns two-loop
+ SUSY-QCD contributions (from squarks and gluino) to Delta M_f/m_f in
+ the MSSM in DR-bar scheme.  Taken from hep-ph/0210258 Eq. (59), (62).
+ (mst[i] = i'th running stop mass, mg = gluino DR-bar mass, Q =
+ ren. scale).
+
+Parameters:
+
+- loopOrder (optional): List of factors multiplied by each loop order.
+  #1: 1-loop level
+  #2: 2-loop level
+  Default: loopOrder -> {1,1}
+
+- parameters (optional): List of internal replacement rules for
+  parameters
+  Default: parameters -> { sin2Theta -> 2 mq Xt/(mst[1]^2 - mst[2]^2) }
+";
+
 (* DR-bar parameters *)
 { ht, Mu, mt, mb, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu, BMu };
 
@@ -83,6 +101,9 @@ Parameters:
 
 (* options *)
 { loopOrder, corrections, parameters, abbreviations };
+
+(* DR-bar parameters for Delta M_t / m_t *)
+{ mg, mst, MSUSY }
 
 Begin["TwoLoopMSSM`Private`"];
 
@@ -504,5 +525,41 @@ ReplaceStopMasses[OptionsPattern[]] :=
                sin2Theta -> mstop[[3]]
            }
           ];
+
+(* hep-ph/0210258, Eq. (59) *)
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar1L[] :=
+    With[{CF = 4/3, as = g3^2/(4 Pi), diff1 = mst[1]^2/(mst[1]^2 - mg^2),
+          diff2 = mst[2]^2/(mst[2]^2 - mg^2), mq = mt},
+         CF as/(8 Pi) (
+             -3 + diff1 + diff2 + 2 Log[mg^2/Q^2]
+             + diff1 (2 - diff1 - 2 sin2Theta mg/mq) Log[mst[1]^2/mg^2]
+             + diff2 (2 - diff2 + 2 sin2Theta mg/mq) Log[mst[2]^2/mg^2]
+         )
+        ];
+
+(* hep-ph/0210258, Eq. (62) *)
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[] :=
+    With[{CF = 4/3, CA = 3, as = g3^2/(4 Pi), mq = mt, aq = Xt, M = MSUSY},
+         CF (as/(4 Pi))^2 (
+             47/3 + 20 Log[M^2/Q^2] + 6 Log[M^2/Q^2] Log[M^2/mq^2]
+             + CF (23/24 - 13/6 Log[M^2/Q^2] + 1/2 Log[M^2/Q^2]^2 -
+                   3 Log[M^2/Q^2] Log[mq^2/Q^2])
+             + CA (175/72 + 41/6 Log[M^2/Q^2] - 1/2 Log[M^2/Q^2]^2 -
+                   2 Log[M^2/Q^2] Log[mq^2/Q^2])
+             + aq/M (-4 - 8 Log[M^2/Q^2])
+             + CF aq/M (7/3 - 11/3 Log[M^2/Q^2] + 3 Log[mq^2/Q^2])
+             + CA aq/M (-8/3 + 4 Log[M^2/Q^2])
+         )
+        ];
+
+Options[GetDeltaMPoleOverMRunningMSSMSQCDDRbar] = {
+    loopOrder -> {1, 1},
+    parameters -> { sin2Theta -> 2 mt Xt/(mst[1]^2 - mst[2]^2) }
+};
+
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar[OptionsPattern[]] := (
+    OptionValue[loopOrder][[1]] GetDeltaMPoleOverMRunningMSSMSQCDDRbar1L[] +
+    OptionValue[loopOrder][[2]] GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[]
+    ) /. OptionValue[parameters];
 
 End[];
