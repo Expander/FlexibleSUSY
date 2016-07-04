@@ -221,7 +221,7 @@ InvertMassRelation[fermion_, yukawa_] :=
               massMatrix = SARAH`MassMatrix[fermion];
              ];
            dim = Length[massMatrix];
-           If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
+           If[massMatrix === Table[0, {dim}, {dim}],
               Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
              ];
            polynom = Factor[massMatrix /. List -> Plus];

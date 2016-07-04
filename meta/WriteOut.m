@@ -665,11 +665,12 @@ ReadSLHAOutputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
          ];
 
 ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
-    Module[{paramStr, blockNameStr},
+    Module[{typeStr, paramStr, blockNameStr},
+           typeStr = CConversion`CreateCType[Parameters`GetType[parameter]];
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
-               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               typeStr <> " " <> paramStr <> ";\n" <>
                "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
                paramStr <> ");\n" <>
                "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>

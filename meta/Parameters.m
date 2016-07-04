@@ -432,7 +432,7 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?Num
     CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
 GetType[FlexibleSUSY`M[sym_]] :=
-    GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+    GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
@@ -1635,7 +1635,7 @@ SetSMParameter[FlexibleSUSY`AlphaEMInvInput    , value_String, struct_String] :=
 SetSMParameter[FlexibleSUSY`GFermiInput        , value_String, struct_String] := struct <> ".setFermiConstant(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`AlphaSInput        , value_String, struct_String] := struct <> ".setAlphaSInput(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MZPoleInput        , value_String, struct_String] := struct <> ".setPoleMZ(" <> value <> ")";
-SetSMParameter[FlexibleSUSY`MbMbInput          , value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
+SetSMParameter[FlexibleSUSY`MBottomMbottomInput, value_String, struct_String] := struct <> ".setMbMb(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MTopPoleInput      , value_String, struct_String] := struct <> ".setPoleMt(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MTauPoleInput      , value_String, struct_String] := struct <> ".setPoleMtau(" <> value <> ")";
 SetSMParameter[FlexibleSUSY`MNeutrino3PoleInput, value_String, struct_String] := struct <> ".setNeutrinoPoleMass(3, " <> value <> ")";
@@ -1647,7 +1647,7 @@ SetSMParameter[FlexibleSUSY`MNeutrino2PoleInput, value_String, struct_String] :=
 SetSMParameter[FlexibleSUSY`MDown2GeVInput     , value_String, struct_String] := struct <> ".setMass(softsusy::mDown, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MUp2GeVInput       , value_String, struct_String] := struct <> ".setMass(softsusy::mUp, " <> value <> ")";
 SetSMParameter[FlexibleSUSY`MStrange2GeVInput  , value_String, struct_String] := struct <> ".setMass(softsusy::mStrange, " <> value <> ")";
-SetSMParameter[FlexibleSUSY`MCharm2GeVInput    , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
+SetSMParameter[FlexibleSUSY`MCharmMCharm       , value_String, struct_String] := struct <> ".setMass(softsusy::mCharm, " <> value <> ")";
 
 End[];
 
