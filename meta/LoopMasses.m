@@ -402,7 +402,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
 double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
-if (pole_mass_loop_order > 1)
+if (pole_mass_loop_order > 1) {
 " <> IndentText["\
 self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
 for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
@@ -411,7 +411,7 @@ for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
       problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
    }
 }
-"] <> "\
+"] <> "}
 ";
                    ];
                 ];
