@@ -642,15 +642,15 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
               ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
           };
           calculateDRbarMasses = {
-              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "topDRbar"     , "qedqcd.displayMass(softsusy::mUp)"      ],
-              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "topDRbar"     , "qedqcd.displayMass(softsusy::mCharm)"   ],
-              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "topDRbar"     , "qedqcd.displayPoleMt()"                 ],
-              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mDown)"    ],
-              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mStrange)" ],
-              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "bottomDRbar"  , "qedqcd.displayMass(softsusy::mBottom)"  ],
-              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "electronDRbar", "qedqcd.displayMass(softsusy::mElectron)"],
-              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "electronDRbar", "qedqcd.displayMass(softsusy::mMuon)"    ],
-              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "electronDRbar", "qedqcd.displayMass(softsusy::mTau)"     ],
+              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "upQuarksDRbar", "qedqcd.displayMass(softsusy::mUp)"      ],
+              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "upQuarksDRbar", "qedqcd.displayMass(softsusy::mCharm)"   ],
+              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "upQuarksDRbar", "qedqcd.displayPoleMt()"                 ],
+              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mDown)"    ],
+              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mStrange)" ],
+              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mBottom)"  ],
+              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mElectron)"],
+              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mMuon)"    ],
+              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mTau)"     ],
               LoopMasses`CallCalculateDRbarMass["Electron Neutrino", "Neutrinos"  , 1, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(1)"      ],
               LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(2)"      ],
               LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(3)"      ]
@@ -1844,6 +1844,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
            susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
 
+           (* backwards compatibility replacements in constraints *)
+           backwardsCompatRules = {
+               Global`topDRbar      -> Global`upQuarksDRbar,
+               Global`bottomDRbar   -> Global`downQuarksDRbar,
+               Global`electronDRbar -> Global`downLeptonsDRbar
+           };
+           FlexibleSUSY`LowScaleInput  = FlexibleSUSY`LowScaleInput  /. backwardsCompatRules;
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
+
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
                                Parameters`StripSARAHIndicesRules[1] /.
@@ -1852,9 +1864,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                Parameters`StripSARAHIndicesRules[4];
            allIndexReplacementRules = Join[
                Parameters`CreateIndexReplacementRules[allParameters],
-               {Global`topDRbar[i_,j_]      :> Global`topDRbar[i-1,j-1],
-                Global`bottomDRbar[i_,j_]   :> Global`bottomDRbar[i-1,j-1],
-                Global`electronDRbar[i_,j_] :> Global`electronDRbar[i-1,j-1]}
+               {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
+                Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
+                Global`downLeptonsDRbar[i_,j_] :> Global`downLeptonsDRbar[i-1,j-1]}
            ];
            Parameters`SetModelParameters[allParameters];
            DebugPrint["model parameters: ", allParameters];

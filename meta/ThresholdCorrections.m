@@ -235,13 +235,13 @@ InvertMassRelation[fermion_, yukawa_] :=
           ];
 
 SetDRbarYukawaCouplingTop[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`topDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`upQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingBottom[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`bottomDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`downQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingElectron[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`downLeptonsDRbar, settings];
 
 SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
     Module[{y, f = setting},
