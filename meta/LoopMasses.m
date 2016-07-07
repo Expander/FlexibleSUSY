@@ -88,10 +88,10 @@ Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
     "const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[selfEnergyFunctionS  <> "(p)",type] <> ";\n" <>
     "const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[selfEnergyFunctionPL <> "(p)",type] <> ";\n" <>
     "const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[selfEnergyFunctionPR <> "(p)",type] <> ";\n" <>
-    "const auto M_1loop = " <> massMatrixName <>
+    "const auto M_loop = " <> massMatrixName <>
     " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n" <>
     "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <>
-    "calculate_singlet_mass(M_1loop);\n";
+    "calculate_singlet_mass(M_loop);\n";
 
 Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
               _String, _String, _String, momentum_String, type_] :=
@@ -121,10 +121,10 @@ const double p = " <> momentum <> ";
 const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[topSelfEnergyFunctionS  <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p)",type] <> ";
-const auto M_1loop = " <> massMatrixName <> "\
+const auto M_loop = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
  - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n
-PHYSICAL(" <> massName <> ") = calculate_singlet_mass(M_1loop);\n"
+PHYSICAL(" <> massName <> ") = calculate_singlet_mass(M_loop);\n"
           ];
 
 Do1DimVector[particleName_String, massName_String, massMatrixName_String,
@@ -180,7 +180,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                                  ] <>
                        "}\n" <>
                        If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
-                       "const " <> selfEnergyMatrixCType <>" M_1loop(" <> massMatrixStr <>
+                       "const " <> selfEnergyMatrixCType <>" M_loop(" <> massMatrixStr <>
                        "() - self_energy" <>
                        If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n";
               If[Head[mixingMatrix] === List,
@@ -188,13 +188,13 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           TreeMasses`CallDiagonalizeHermitianFunction[
-                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")"];
                 ];
               result = result <>
@@ -261,11 +261,11 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
               If[IsMajoranaFermion[particle],
                  result = result <>
                           "const " <> selfEnergyMatrixCType <>
-                          " M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n";
+                          " M_loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n";
                  ,
                  result = result <>
                           "const " <> selfEnergyMatrixCType <>
-                          " M_1loop(M_tree + delta_M);\n";
+                          " M_loop(M_tree + delta_M);\n";
                 ];
               If[Head[mixingMatrix] === List,
                  (* two mixing matrixs => SVD *)
@@ -273,13 +273,13 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           TreeMasses`CallDiagonalizeSymmetricFunction[
-                              particle, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              particle, "M_loop", "PHYSICAL(" <> massName <> ")",
                               "PHYSICAL(" <> U <> ")"];
                 ];
               ,
@@ -359,7 +359,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Vtemp = "mix_" <> V;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ", " <> Vtemp <> ";\n" <>
                             TreeMasses`CallSVDFunction[
-                                particle, "M_1loop", "eigen_values",
+                                particle, "M_loop", "eigen_values",
                                 Utemp, Vtemp] <> "\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n" <>
                             "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ") {\n" <>
@@ -371,7 +371,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ";\n" <>
                             TreeMasses`CallDiagonalizeHermitianFunction[
-                                particle, "M_1loop", "eigen_values",
+                                particle, "M_loop", "eigen_values",
                                 Utemp] <> "\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n";
               If[mixingMatrix =!= Null,
@@ -433,7 +433,7 @@ for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
                                   "}\n" <>
                                   addTwoLoopHiggsContributions <> "\n" <>
                                   If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
-                                  "const " <> selfEnergyMatrixCType <> " M_1loop(M_tree - self_energy" <>
+                                  "const " <> selfEnergyMatrixCType <> " M_loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
                                   eigenArrayType <> " eigen_values;\n" <>
                                   diagSnippet
@@ -540,10 +540,10 @@ if (add_2loop_corrections) {
                                  ];
               If[IsMajoranaFermion[particle],
                  result = result <>
-                          IndentText["const " <> selfEnergyMatrixCType <> " M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n"];
+                          IndentText["const " <> selfEnergyMatrixCType <> " M_loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n"];
                  ,
                  result = result <>
-                          IndentText["const " <> selfEnergyMatrixCType <> " M_1loop(M_tree + delta_M);\n"];
+                          IndentText["const " <> selfEnergyMatrixCType <> " M_loop(M_tree + delta_M);\n"];
                 ];
               result = result <>
                        IndentText[eigenArrayType <> " eigen_values;\n"];
@@ -556,7 +556,7 @@ if (add_2loop_corrections) {
                                      "decltype(" <> V <> ") mix_" <> V <> ";\n"];
                  result = result <>
                           TreeMasses`CallSVDFunction[
-                              particle, "M_1loop", "eigen_values",
+                              particle, "M_loop", "eigen_values",
                               "mix_" <> U, "mix_" <> V];
                  result = result <>
                           IndentText["if (es == 0) {\n" <>
@@ -570,7 +570,7 @@ if (add_2loop_corrections) {
                     result = result <>
                              IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
                                         TreeMasses`CallDiagonalizeSymmetricFunction[
-                                            particle, "M_1loop", "eigen_values",
+                                            particle, "M_loop", "eigen_values",
                                             "mix_" <> U] <>
                                         "if (es == 0)\n" <>
                                         IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
@@ -580,7 +580,7 @@ if (add_2loop_corrections) {
                     result = result <>
                              IndentText[mixingMatrixType <> " mix_" <> U <> ";\n" <>
                                         TreeMasses`CallDiagonalizeSymmetricFunction[
-                                            particle, "M_1loop", "eigen_values",
+                                            particle, "M_loop", "eigen_values",
                                             "mix_" <> U]];
                    ];
                 ];
