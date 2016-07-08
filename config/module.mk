@@ -44,9 +44,11 @@ $(FXX): $(FCC)
 	-rm -f $@
 	ln -s $(notdir $<) $@
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -63,10 +65,13 @@ endif
 clean-$(MODNAME)-dep:
 		@true
 
+clean-$(MODNAME)-lib:
+		@true
+
 clean-$(MODNAME)-obj:
 		-rm -f $(DEPGEN_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(DEPGEN_EXE)
 		-rm -f $(FXX)
 
@@ -83,6 +88,6 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DEPGEN_EXE): $(DEPGEN_OBJ)
-		$(CXX) -o $@ $^
+		$(CXX) -o $@ $^ $(LDLIBS)
 
 ALLEXE += $(DEPGEN_EXE)

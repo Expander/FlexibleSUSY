@@ -65,6 +65,7 @@ doc-html: $(INDEX_PAGE)
 doc-man: $(MAN_PAGE)
 
 all-$(MODNAME): doc-html doc-man doc-pdf
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::

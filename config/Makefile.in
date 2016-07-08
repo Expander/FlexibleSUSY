@@ -119,7 +119,7 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 README_FILE := README
 
 .PHONY:  all allsrc allexec alllib allml alltest clean-executables \
-	 clean clean-dep clean-obj depend distclean mathlink \
+	 clean clean-dep clean-lib clean-obj depend distclean mathlink \
 	 release-tag release-head showbuild tag
 
 all:
@@ -189,6 +189,12 @@ alltest:  $(ALLTST)
 clean-dep:
 	-rm -f $(ALLDEP)
 
+clean-executables:
+	-rm -f $(ALLEXE) $(ALLML)
+
+clean-lib:
+	-rm -f $(ALLLIB)
+
 depend:  clean-dep
 depend:  $(ALLDEP)
 
@@ -203,9 +209,6 @@ depend:  $(ALLDEP)
 
 %.d: %.F | $(DEPGEN)
 	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
-
-clean-executables:
-	-rm -f $(ALLEXE) $(ALLML)
 
 distclean::
 	-rm -f Makefile

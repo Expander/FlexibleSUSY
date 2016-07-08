@@ -23,14 +23,14 @@ BOOST_AUTO_TEST_CASE( test_to )
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHA) , lowe_Mz_new.displayAlpha(ALPHA) , 1e-10);
    BOOST_CHECK_CLOSE(lowe_Mz.displayAlpha(ALPHAS), lowe_Mz_new.displayAlpha(ALPHAS), 1e-10);
 
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mUp)      , lowe_Mz_new.displayMass(mUp)      , 3.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mDown)    , lowe_Mz_new.displayMass(mDown)    , 3.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mStrange) , lowe_Mz_new.displayMass(mStrange) , 3.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mCharm)   , lowe_Mz_new.displayMass(mCharm)   , 4.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mBottom)  , lowe_Mz_new.displayMass(mBottom)  , 2.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mElectron), lowe_Mz_new.displayMass(mElectron), 2.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mMuon)    , lowe_Mz_new.displayMass(mMuon)    , 2.);
-   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mTau)     , lowe_Mz_new.displayMass(mTau)     , 2.);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mUp)      , lowe_Mz_new.displayMass(mUp)      , 1e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mDown)    , lowe_Mz_new.displayMass(mDown)    , 1e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mStrange) , lowe_Mz_new.displayMass(mStrange) , 1e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mCharm)   , lowe_Mz_new.displayMass(mCharm)   , 5e-2);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mBottom)  , lowe_Mz_new.displayMass(mBottom)  , 0.5);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mElectron), lowe_Mz_new.displayMass(mElectron), 0.5);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mMuon)    , lowe_Mz_new.displayMass(mMuon)    , 0.5);
+   BOOST_CHECK_CLOSE(lowe_Mz.displayMass(mTau)     , lowe_Mz_new.displayMass(mTau)     , 0.5);
 
    BOOST_CHECK_CLOSE(lowe_Mz.displayPoleMb(), lowe_Mz_new.displayPoleMb(), 0.5);
 

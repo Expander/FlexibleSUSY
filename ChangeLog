@@ -1,4 +1,9 @@
-FlexibleSUSY-1.4.3 [not released yet]
+FlexibleSUSY-1.6.0 [not released yet]
+
+ * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
+   funcion in parameter regions with p << m1,m2 and m1 close to m2.
+
+FlexibleSUSY-1.5.0 [June, 29 2016]
 
  * Feature: Write phases to SLHA output if a SLHA output block is
    defined for them in the SARAH model file.
@@ -23,6 +28,12 @@ FlexibleSUSY-1.4.3 [not released yet]
 
  * Bugfix: Fix compilation with g++ 4.4.7.
    Thanks to Dylan Harries.
+
+ * Bugfix (commit 6f5e38e): Correcting convergence criterion in the
+   iteration which determines the 1st and 2nd generation running
+   fermion masses in the SM(5) at the low-energy scale.  After this
+   correction, the running 1st and 2nd generation SM(5) fermion masses
+   differ from SOFTSUSY by less than 0.5% at the electroweak scale.
 
 FlexibleSUSY-1.4.2 [May, 09 2016]
 

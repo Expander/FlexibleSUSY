@@ -356,16 +356,20 @@ $(DIR)/test_pv_softsusy.x  : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_S
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		clean-$(MODNAME)-log \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-log \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
 		execute-tests execute-meta-tests execute-compiled-tests \
 		execute-shell-tests
 
-all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
+all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_LOG)
 		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(TEST_DEP)
 		-rm -f $(LIBTEST_DEP)
+
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBTEST)
 
 clean-$(MODNAME)-obj:
 		-rm -f $(TEST_OBJ)
@@ -375,8 +379,7 @@ clean-$(MODNAME)-log:
 		-rm -f $(TEST_LOG)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-                  clean-$(MODNAME)-log
-		-rm -f $(LIBTEST)
+                  clean-$(MODNAME)-lib clean-$(MODNAME)-log
 		-rm -f $(TEST_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
