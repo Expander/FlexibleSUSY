@@ -240,6 +240,8 @@ remove model-specific files:
 
      make clean-<model>-dep # deletes .d files
 
+     make clean-<model>-lib # deletes library
+
      make clean-<model>-obj # deletes .o files
 
      make clean-<model>-src # deletes generated files

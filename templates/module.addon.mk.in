@@ -40,12 +40,19 @@ LIB@ADDON@     := \
 LIB@ADDON@_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)
 
-.PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		 clean-$(MODNAME)-src distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj clean-$(MODNAME)-src \
+		distclean-$(MODNAME)
+
+all-$(MODNAME): $(LIB@ADDON@) $(EXE@ADDON@_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIB@ADDON@_DEP)
 		-rm -f $(EXE@ADDON@_DEP)
+
+clean-$(MODNAME)-lib:
+		-rm -f $(LIB@ADDON@)
 
 clean-$(MODNAME)-obj:
 		-rm -f $(LIB@ADDON@_OBJ)
@@ -59,8 +66,7 @@ clean-$(MODNAME)-src:
 clean-$(MODNAME): clean-$(MODNAME)-src
 # END:   NOT EXPORTED ##########################################
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIB@ADDON@)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXE@ADDON@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)

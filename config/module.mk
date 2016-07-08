@@ -36,9 +36,11 @@ FLEXIBLESUSY_GIT_COMMIT_FILE := \
 REMOVE_EXPORT_MARKERS := \
 		$(DIR)/remove_export_markers.sh
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME):
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -55,10 +57,13 @@ endif
 clean-$(MODNAME)-dep:
 		@true
 
+clean-$(MODNAME)-lib:
+		@true
+
 clean-$(MODNAME)-obj:
 		-rm -f $(DEPGEN_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(DEPGEN_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)

@@ -141,9 +141,11 @@ LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFLEXI)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -156,11 +158,14 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFLEXI_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFLEXI)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFLEXI_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFLEXI)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
