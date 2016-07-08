@@ -103,7 +103,7 @@ $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAG
 $(LIBGM2Calc): $(LIBGM2Calc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI)
+$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^)
 
 ALLDEP += $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP)
