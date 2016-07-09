@@ -1,0 +1,9 @@
+lib@ModelName@ = FileNameJoin[{Directory[], "models", "@ModelName@", "@ModelName@_librarylink.so"}];
+
+FS@ModelName@OpenHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {}, Integer];
+FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", {Integer}, Void];
+FS@ModelName@CloseHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CloseHandle", {Integer}, Void];
+
+handle = FS@ModelName@OpenHandle[];
+FS@ModelName@CalculateSpectrum[handle];
+FS@ModelName@CloseHandle[handle];

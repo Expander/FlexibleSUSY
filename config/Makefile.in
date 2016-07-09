@@ -89,8 +89,8 @@ ALLSRC   :=
 ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
-# the modules add MathLink exectuables to this variable
-ALLML    :=
+# the modules add LibraryLink libraries to this variable
+ALLLL    :=
 # the modules add test executables to this variable
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
@@ -115,11 +115,14 @@ INSTALL_STRIPPED := config/install_stripped.sh
 # thereby enabling FlexibleSUSY to run on Cygwin
 CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 
+# script which finds Mathematica's include paths
+MATH_INC_PATHS := config/mathematica_include_paths.sh
+
 # README file
 README_FILE := README
 
-.PHONY:  all allsrc allexec alllib allml alltest clean-executables \
-	 clean clean-dep clean-lib clean-obj depend distclean mathlink \
+.PHONY:  all allsrc allexec alllib allll alltest clean-executables \
+	 clean clean-dep clean-lib clean-obj depend distclean librarylink \
 	 release-tag release-head showbuild tag
 
 all:
@@ -130,7 +133,7 @@ ifeq ($(ENABLE_COMPILE),yes)
 all:     alllib allexec
 endif
 ifeq ($(ENABLE_META)-$(ENABLE_COMPILE),yes-yes)
-all:     allml
+all:     allll
 endif
 
 ifeq ($(INSTALL_DIR),)
@@ -183,14 +186,14 @@ endif
 allsrc:   $(ALLSRC)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
-allml:    $(ALLML)
+allll:    $(ALLLL)
 alltest:  $(ALLTST)
 
 clean-dep:
 	-rm -f $(ALLDEP)
 
 clean-executables:
-	-rm -f $(ALLEXE) $(ALLML)
+	-rm -f $(ALLEXE) $(ALLLL)
 
 clean-lib:
 	-rm -f $(ALLLIB)
@@ -216,7 +219,7 @@ distclean::
 	-rm -f $(SARAH_DEP_GEN)
 	-rm -f config.boost config.log config.math config.sarah config.status
 
-mathlink: allml
+librarylink: allll
 	@true
 
 showbuild:

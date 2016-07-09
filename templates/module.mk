@@ -14,8 +14,8 @@ TEMPLATES    := \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/input_parameters.cpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
-		$(DIR)/mathlink.cpp.in \
-		$(DIR)/mathlink.tm.in \
+		$(DIR)/librarylink.cpp.in \
+		$(DIR)/librarylink.m.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model_slha.hpp.in \
 		$(DIR)/observables.hpp.in \

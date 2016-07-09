@@ -2461,12 +2461,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
                             }];
 
-           Print["Creating MathLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
+           Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
            WriteMathLink[inputParameters, extraSLHAOutputBlocks,
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.cpp.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mathlink.cpp"}]},
-                          {FileNameJoin[{$flexiblesusyTemplateDir, "mathlink.tm.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mathlink.tm"}]}
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.cpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.m.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]}
                          }];
 
            PrintHeadline["FlexibleSUSY has finished"];

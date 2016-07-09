@@ -1,8 +1,5 @@
 DIR          := config
 MODNAME      := config
-FCC          := $(DIR)/fcc
-FXX          := $(DIR)/f++
-MCC          := $(DIR)/mcc
 
 CONFIG_HDR := \
 		$(DIR)/config.h
@@ -40,10 +37,6 @@ FLEXIBLESUSY_GIT_COMMIT_FILE := \
 REMOVE_EXPORT_MARKERS := \
 		$(DIR)/remove_export_markers.sh
 
-$(FXX): $(FCC)
-	-rm -f $@
-	ln -s $(notdir $<) $@
-
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
 		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
@@ -73,7 +66,6 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(DEPGEN_EXE)
-		-rm -f $(FXX)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(CONFIG_HDR)
