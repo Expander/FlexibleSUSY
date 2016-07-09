@@ -140,7 +140,7 @@ Model_data fill(double* pars, mint npars)
 {
    Model_data data;
 
-   const mint n_settings = 17, n_sm_parameters = 0;
+   const mint n_settings = 17, n_sm_parameters = 19;
    const mint n_total = n_settings + n_sm_parameters;
 
    if (npars != n_total) {
@@ -168,6 +168,40 @@ Model_data fill(double* pars, mint npars)
    data.settings.set(Spectrum_generator_settings::force_positive_masses, pars[c++]);
    data.settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
    data.parameter_output_scale = pars[c++];
+
+   data.qedqcd = softsusy::QedQcd();
+
+   data.qedqcd.setAlpha(softsusy::ALPHA, pars[c]);
+   data.qedqcd.setAlphaEmInput(pars[c++]);
+   data.qedqcd.setFermiConstant(pars[c++]);
+   data.qedqcd.setAlpha(softsusy::ALPHAS, pars[c]);
+   data.qedqcd.setAlphaSInput(pars[c++]);
+   data.qedqcd.setPoleMZ(pars[c]);
+   data.qedqcd.setMu(pars[c++]);
+   data.qedqcd.setMass(softsusy::mBottom, pars[c]);
+   data.qedqcd.setMbMb(pars[c++]);
+   data.qedqcd.setPoleMt(pars[c++]);
+   data.qedqcd.setMass(softsusy::mTau, pars[c]);
+   data.qedqcd.setPoleMtau(pars[c++]);
+   data.qedqcd.setNeutrinoPoleMass(3, pars[c++]);
+   data.qedqcd.setPoleMW(pars[c++]);
+   data.qedqcd.setMass(softsusy::mElectron, pars[c]);
+   data.qedqcd.setPoleMel(pars[c++]);
+   data.qedqcd.setNeutrinoPoleMass(1, pars[c++]);
+   data.qedqcd.setMass(softsusy::mMuon, pars[c]);
+   data.qedqcd.setPoleMmuon(pars[c++]);
+   data.qedqcd.setNeutrinoPoleMass(2, pars[c++]);
+   data.qedqcd.setMass(softsusy::mDown, pars[c]);
+   data.qedqcd.setMd2GeV(pars[c++]);
+   data.qedqcd.setMass(softsusy::mUp, pars[c]);
+   data.qedqcd.setMu2GeV(pars[c++]);
+   data.qedqcd.setMass(softsusy::mStrange, pars[c]);
+   data.qedqcd.setMs2GeV(pars[c++]);
+   data.qedqcd.setMass(softsusy::mCharm, pars[c]);
+   data.qedqcd.setMcMc(pars[c++]);
+
+   data.physical_input.set(Physical_input::alpha_em_0, pars[c++]);
+   data.physical_input.set(Physical_input::mh_pole, pars[c++]);
 
    if (npars != c) {
       std::cerr << "Error: Bug: number of given input parameters (" << npars

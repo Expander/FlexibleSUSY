@@ -24,13 +24,37 @@ fsDefaultSettings = {
       parameterOutputScale -> 0          (* MODSEL[12] *)
 };
 
+fsDefaultSMParameters = {
+    alphaEmMZ -> 1/127.916, (* SMINPUTS[1] *)
+    GF -> 1.16637*^-5,      (* SMINPUTS[2] *)
+    alphaSMZ -> 0.1184,     (* SMINPUTS[3] *)
+    MZ -> 91.1876,          (* SMINPUTS[4] *)
+    mbmb -> 4.18,           (* SMINPUTS[5] *)
+    Mt -> 173.34,           (* SMINPUTS[6] *)
+    Mtau -> 1.777,          (* SMINPUTS[7] *)
+    Mv3 -> 0,               (* SMINPUTS[8] *)
+    MW -> 80.385,           (* SMINPUTS[9] *)
+    Me -> 0.000510998902,   (* SMINPUTS[11] *)
+    Mv1 -> 0,               (* SMINPUTS[12] *)
+    Mm -> 0.1056583715,     (* SMINPUTS[13] *)
+    Mv2 -> 0,               (* SMINPUTS[14] *)
+    md2GeV -> 0.00475,      (* SMINPUTS[21] *)
+    mu2GeV -> 0.0024,       (* SMINPUTS[22] *)
+    ms2GeV -> 0.104,        (* SMINPUTS[23] *)
+    mcmc -> 1.27,           (* SMINPUTS[24] *)
+    alphaEm0 -> 1/137.035999074,
+    Mh -> 125.09
+};
+
 Options[FS@ModelName@OpenHandle] = {
-    fsSettings -> fsDefaultSettings
+    fsSettings -> fsDefaultSettings,
+    fsSMParameters -> fsDefaultSMParameters
 };
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
     FS@ModelName@OpenHandleLib[
         {
+            (* spectrum generator settings *)
             precisionGoal /. OptionValue[fsSettings],
             maxIterations /. OptionValue[fsSettings],
             calculateStandardModelMasses /. OptionValue[fsSettings],
@@ -47,9 +71,30 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             betaZeroThreshold /. OptionValue[fsSettings],
             forcePositiveMasses /. OptionValue[fsSettings],
             poleMassScale /. OptionValue[fsSettings],
-            parameterOutputScale /. OptionValue[fsSettings]
+            parameterOutputScale /. OptionValue[fsSettings],
+
+            (* Standard Model input parameters *)
+            alphaEmMZ /. OptionValue[fsSMParameters],
+            GF /. OptionValue[fsSMParameters],
+            alphaSMZ /. OptionValue[fsSMParameters],
+            MZ /. OptionValue[fsSMParameters],
+            mbmb /. OptionValue[fsSMParameters],
+            Mt /. OptionValue[fsSMParameters],
+            Mtau /. OptionValue[fsSMParameters],
+            Mv3 /. OptionValue[fsSMParameters],
+            MW /. OptionValue[fsSMParameters],
+            Me /. OptionValue[fsSMParameters],
+            Mv1 /. OptionValue[fsSMParameters],
+            Mm /. OptionValue[fsSMParameters],
+            Mv2 /. OptionValue[fsSMParameters],
+            md2GeV /. OptionValue[fsSMParameters],
+            mu2GeV /. OptionValue[fsSMParameters],
+            ms2GeV /. OptionValue[fsSMParameters],
+            mcmc /. OptionValue[fsSMParameters],
+            alphaEm0 /. OptionValue[fsSMParameters],
+            Mh /. OptionValue[fsSMParameters]
         }
-    ];
+];
 
 handle = FS@ModelName@OpenHandle[];
 FS@ModelName@CalculateSpectrum[handle];
