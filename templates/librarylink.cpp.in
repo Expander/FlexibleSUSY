@@ -25,6 +25,7 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
 
+#include "error.hpp"
 #include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -34,15 +35,10 @@
 #include "mathlink_macros.hpp"
 #include "WolframLibrary.h"
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
 #include <map>
-#include <sstream>
-#include <thread>
-
-#include <fcntl.h>
-#include <unistd.h>
+#include <mutex>
+#include <string>
 
 #define INPUTPARAMETER(p) input.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -53,6 +49,18 @@ using namespace flexiblesusy;
 
 typedef Two_scale algorithm_type;
 typedef mint Handle_id;
+
+namespace flexiblesusy {
+class EUnknownHandle : public Error {
+public:
+   explicit EUnknownHandle(Handle_id hid_) : hid(hid_) {}
+   virtual ~EUnknownHandle() {}
+   virtual std::string what() const {
+      return "Unknown handle: " + ToString(hid);
+   }
+   Handle_id hid;
+};
+}
 
 struct Model_data {
    Model_data();
@@ -85,8 +93,29 @@ static Handle_id used_ids = 0;
 /// mutex to lock global variables
 std::mutex mtx;
 
-#define LOCK_MUTEX() mtx.lock()
-#define UNLOCK_MUTEX() mtx.unlock()
+#define LOCK_MUTEX() std::lock_guard<std::mutex> __lg(mtx)
+
+/******************************************************************/
+
+Handle_id get_id()
+{
+   LOCK_MUTEX();
+   return used_ids++;
+}
+
+/******************************************************************/
+
+Model_data find_data(Handle_id hid)
+{
+   LOCK_MUTEX();
+
+   const Handle_map::iterator handle = handles.find(hid);
+
+   if (handle == handles.end())
+      throw EUnknownHandle(hid);
+
+   return handle->second;
+}
 
 /******************************************************************/
 
@@ -245,12 +274,12 @@ DLLEXPORT int FS@ModelName@OpenHandle(
    const Model_data data = fill(libData->MTensor_getRealData(pars),
                                 libData->MTensor_getDimensions(pars)[0]);
 
-   LOCK_MUTEX();
+   const Handle_id hid = get_id();
 
-   const Handle_id hid = used_ids++;
-   handles.emplace(hid, data);
-
-   UNLOCK_MUTEX();
+   {
+      LOCK_MUTEX();
+      handles.emplace(hid, data);
+   }
 
    std::cout << "handle " << hid << " created" << std::endl;
 
@@ -269,16 +298,16 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
    const Handle_id hid = MArgument_getInteger(Args[0]);
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   const Handle_map::iterator handle = handles.find(hid);
+      const Handle_map::iterator handle = handles.find(hid);
 
-   if (handle != handles.end()) {
-      std::cout << "removing handle " << hid << std::endl;
-      handles.erase(handle);
+      if (handle != handles.end()) {
+         std::cout << "removing handle " << hid << std::endl;
+         handles.erase(handle);
+      }
    }
-
-   UNLOCK_MUTEX();
 
    return LIBRARY_NO_ERROR;
 }
@@ -293,27 +322,21 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 
    const Handle_id hid = MArgument_getInteger(Args[0]);
 
-   LOCK_MUTEX();
+   try {
+      Model_data data = find_data(hid);
 
-   const Handle_map::iterator handle = handles.find(hid);
+      calculate_spectrum(data);
+      // put spectrum here
+      std::cout << "Mhh = " << data.model.get_physical().Mhh << std::endl;
 
-   if (handle == handles.end()) {
-      std::cout << "unknown handle: " << hid << std::endl;
-      UNLOCK_MUTEX();
+      {
+         LOCK_MUTEX();
+         handles[hid] = data;
+      }
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;
    }
-
-   Model_data data = handle->second;
-
-   UNLOCK_MUTEX();
-
-   calculate_spectrum(data);
-   // put spectrum here
-   std::cout << "Mhh = " << data.model.get_physical().Mhh << std::endl;
-
-   LOCK_MUTEX();
-   handles[hid] = data;
-   UNLOCK_MUTEX();
 
    return LIBRARY_NO_ERROR;
 }
