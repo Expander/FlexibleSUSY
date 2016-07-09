@@ -154,9 +154,9 @@ looptools_lib_dir=""
 looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-std=c++11 -O2"
+CXXFLAGS="-std=c++11 -O2 -fPIC"
 CFLAGS="-O2"
-FFLAGS="-O2"
+FFLAGS="-O2 -fPIC"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
@@ -173,6 +173,7 @@ INSTALL_DIR=""
 BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
+MAKESHAREDLIB="gcc -shared -o"
 MATH="math"
 OPTIONAL_MODULES=""
 pthread_lib_dir=""
@@ -1434,16 +1435,14 @@ check_cxxflags() {
         fi
     fi
 
-    if test "x$enable_static_libs" = "xno" ; then
-        # check if -fPIC is in CXXFLAGS
-        case "${CXX}" in
-            g++*|clang++*|icpc*)
-                if contains_not "${CXXFLAGS}" "-fPIC" ; then
-                    message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
-                    CXXFLAGS="${CXXFLAGS} -fPIC"
-                fi ;;
-        esac
-    fi
+    # check if -fPIC is in CXXFLAGS
+    case "${CXX}" in
+        g++*|clang++*|icpc*)
+            if contains_not "${CXXFLAGS}" "-fPIC" ; then
+                message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
+                CXXFLAGS="${CXXFLAGS} -fPIC"
+            fi ;;
+    esac
 
     case "$operating_system" in
     CYGWIN_NT*)
@@ -1542,16 +1541,14 @@ check_fflags() {
             ;;
     esac
 
-    if test "x$enable_static_libs" = "xno" ; then
-        # check if -fPIC is in FFLAGS
-        case "${FC}" in
-            gfortran*|ifort*)
-                if contains_not "${FFLAGS}" "-fPIC" ; then
-                    message "   Warning: could not find -fPIC in FFLAGS, appending it"
-                    FFLAGS="${FFLAGS} -fPIC"
-                fi ;;
-        esac
-    fi
+    # check if -fPIC is in FFLAGS
+    case "${FC}" in
+        gfortran*|ifort*)
+            if contains_not "${FFLAGS}" "-fPIC" ; then
+                message "   Warning: could not find -fPIC in FFLAGS, appending it"
+                FFLAGS="${FFLAGS} -fPIC"
+            fi ;;
+    esac
 }
 
 #_____________________________________________________________________
@@ -1831,6 +1828,23 @@ check_makelib() {
         result "not found"
         message "Error: A program which builds libraries must be installed!"
         message "   Use --with-make-lib-cmd= to specify the library creator program to be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_make_shared_lib() {
+    checking_msg "build shared library command $MAKESHAREDLIB"
+    # strip arguments from the actual command
+    makelib_cmd=$(echo "$MAKESHAREDLIB" | awk '{ print $1; }')
+
+    exists_in_path "$makelib_cmd"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A program which builds shared libraries must be installed!"
+        message "   Use --with-make-shared-lib-cmd= to specify the program to be used."
         exit 1
     else
         result "found $cmd"
@@ -2149,6 +2163,7 @@ replace_markers() {
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
 	-e "s|@MAKELIB@|$MAKELIB|"         \
+	-e "s|@MAKESHAREDLIB@|$MAKESHAREDLIB|"    \
 	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
 	-e "s|@MATH@|$MATH|"               \
 	-e "s|@LIBEXT@|$LIBEXT|"
@@ -2214,6 +2229,7 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
+  --with-make-shared-lib-cmd= Command to make shared library (default: $MAKESHAREDLIB)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2323,6 +2339,7 @@ if test $# -gt 0 ; then
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
+            --with-make-shared-lib-cmd=*) MAKESHAREDLIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
@@ -2391,6 +2408,10 @@ if test "x${enable_meta}" = "xyes"; then
     esac
 fi
 
+if test "x${enable_compile}" = "xyes" -a "x${enable_meta}" = "xyes"; then
+    check_make_shared_lib
+fi
+
 check_models
 check_addons
 
@@ -2440,6 +2461,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
     -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@MAKESHAREDLIB@|$MAKESHAREDLIB|"  \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \

@@ -53,6 +53,7 @@ FC                 := @FC@
 FFLAGS             := @FFLAGS@
 FLIBS              := @FLIBS@
 MAKELIB            := @MAKELIB@
+MAKESHAREDLIB      := @MAKESHAREDLIB@
 LDFLAGS            := @LDFLAGS@
 LDLIBS             := @LDLIBS@
 LIBEXT             := @LIBEXT@
