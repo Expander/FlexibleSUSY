@@ -253,7 +253,7 @@ $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(ML@CLASSNAME@_DEP) $(LIB@CLASSNAME
 endif
 
 $(ML@CLASSNAME@_OBJ) $(ML@CLASSNAME@_LIB): \
-	CPPFLAGS += $(shell $(MATH_INC_PATHS) -I --librarylink --mathlink)
+	CPPFLAGS += $(shell $(MATH_INC_PATHS) --math-cmd="$(MATH)" -I --librarylink --mathlink)
 
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MAKELIB) $@ $^
