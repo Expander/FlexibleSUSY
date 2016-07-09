@@ -88,68 +88,6 @@ std::mutex mtx;
 #define LOCK_MUTEX() mtx.lock()
 #define UNLOCK_MUTEX() mtx.unlock()
 
-extern "C" {
-
-/******************************************************************/
-
-DLLEXPORT mint WolframLibrary_getVersion()
-{
-   return WolframLibraryVersion;
-}
-
-/******************************************************************/
-
-DLLEXPORT int WolframLibrary_initialize(WolframLibraryData libData)
-{
-   return LIBRARY_NO_ERROR;
-}
-
-/******************************************************************/
-
-DLLEXPORT int FS@ModelName@OpenHandle(
-   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
-{
-   Model_data data;
-   // TODO: fill data
-
-   LOCK_MUTEX();
-
-   const Handle_id hid = used_ids++;
-   handles.emplace(hid, data);
-
-   UNLOCK_MUTEX();
-
-   std::cout << "handle " << hid << " created" << std::endl;
-
-   MArgument_setInteger(Res, hid);
-
-   return LIBRARY_NO_ERROR;
-}
-
-/******************************************************************/
-
-DLLEXPORT int FS@ModelName@CloseHandle(
-   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
-{
-   if (Argc != 1)
-      return LIBRARY_TYPE_ERROR;
-
-   const Handle_id hid = MArgument_getInteger(Args[0]);
-
-   LOCK_MUTEX();
-
-   const Handle_map::iterator handle = handles.find(hid);
-
-   if (handle != handles.end()) {
-      std::cout << "removing handle " << hid << std::endl;
-      handles.erase(handle);
-   }
-
-   UNLOCK_MUTEX();
-
-   return LIBRARY_NO_ERROR;
-}
-
 /******************************************************************/
 
 void calculate_spectrum(Model_data& data)
@@ -194,6 +132,121 @@ void calculate_spectrum(Model_data& data)
    } else {
       // put_error_output();
    }
+}
+
+/******************************************************************/
+
+Model_data fill(double* pars, mint npars)
+{
+   Model_data data;
+
+   const mint n_settings = 17, n_sm_parameters = 0;
+   const mint n_total = n_settings + n_sm_parameters;
+
+   if (npars != n_total) {
+      std::cerr << "Error in fill(): not enough arguments: " << npars
+                << ".  Expected: " << n_total << std::endl;
+      return data;
+   }
+
+   mint c = 0; // counter
+
+   data.settings.set(Spectrum_generator_settings::precision, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::max_iterations, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::calculate_sm_masses, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::pole_mass_loop_order, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::ewsb_loop_order, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::beta_loop_order, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::force_output, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::top_2loop_corrections_qcd, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::beta_zero_threshold, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::force_positive_masses, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
+   data.parameter_output_scale = pars[c++];
+
+   if (npars != c) {
+      std::cerr << "Error: Bug: number of given input parameters (" << npars
+                << ") does not match number of set input parameters (" << c
+                << ")." << std::endl;
+   }
+
+   return data;
+}
+
+extern "C" {
+
+/******************************************************************/
+
+DLLEXPORT mint WolframLibrary_getVersion()
+{
+   return WolframLibraryVersion;
+}
+
+/******************************************************************/
+
+DLLEXPORT int WolframLibrary_initialize(WolframLibraryData libData)
+{
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@OpenHandle(
+   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
+{
+   if (Argc != 1)
+      return LIBRARY_TYPE_ERROR;
+
+   MTensor pars = MArgument_getMTensor(Args[0]);
+
+   if (libData->MTensor_getType(pars) != MType_Real ||
+       libData->MTensor_getRank(pars) != 1)
+      return LIBRARY_TYPE_ERROR;
+
+   const Model_data data = fill(libData->MTensor_getRealData(pars),
+                                libData->MTensor_getDimensions(pars)[0]);
+
+   LOCK_MUTEX();
+
+   const Handle_id hid = used_ids++;
+   handles.emplace(hid, data);
+
+   UNLOCK_MUTEX();
+
+   std::cout << "handle " << hid << " created" << std::endl;
+
+   MArgument_setInteger(Res, hid);
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@CloseHandle(
+   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
+{
+   if (Argc != 1)
+      return LIBRARY_TYPE_ERROR;
+
+   const Handle_id hid = MArgument_getInteger(Args[0]);
+
+   LOCK_MUTEX();
+
+   const Handle_map::iterator handle = handles.find(hid);
+
+   if (handle != handles.end()) {
+      std::cout << "removing handle " << hid << std::endl;
+      handles.erase(handle);
+   }
+
+   UNLOCK_MUTEX();
+
+   return LIBRARY_NO_ERROR;
 }
 
 /******************************************************************/

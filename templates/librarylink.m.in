@@ -1,8 +1,55 @@
 lib@ModelName@ = FileNameJoin[{Directory[], "models", "@ModelName@", "@ModelName@_librarylink.so"}];
 
-FS@ModelName@OpenHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {}, Integer];
+FS@ModelName@OpenHandleLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {{Real,1}}, Integer];
 FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", {Integer}, Void];
 FS@ModelName@CloseHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CloseHandle", {Integer}, Void];
+
+fsDefaultSettings = {
+      precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
+      maxIterations -> 0,                (* FlexibleSUSY[1] *)
+      calculateStandardModelMasses -> 0, (* FlexibleSUSY[3] *)
+      poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
+      ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
+      betaFunctionLoopOrder -> 2,        (* FlexibleSUSY[6] *)
+      thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
+      higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+      higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+      higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+      higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+      forceOutput -> 0,                  (* FlexibleSUSY[12] *)
+      top2loopCorrectionsQCD -> 1,       (* FlexibleSUSY[13] *)
+      betaZeroThreshold -> 1.*^-11,      (* FlexibleSUSY[14] *)
+      forcePositiveMasses -> 0,          (* FlexibleSUSY[16] *)
+      poleMassScale -> 0,                (* FlexibleSUSY[17] *)
+      parameterOutputScale -> 0          (* MODSEL[12] *)
+};
+
+Options[FS@ModelName@OpenHandle] = {
+    fsSettings -> fsDefaultSettings
+};
+
+FS@ModelName@OpenHandle[OptionsPattern[]] :=
+    FS@ModelName@OpenHandleLib[
+        {
+            precisionGoal /. OptionValue[fsSettings],
+            maxIterations /. OptionValue[fsSettings],
+            calculateStandardModelMasses /. OptionValue[fsSettings],
+            poleMassLoopOrder /. OptionValue[fsSettings],
+            ewsbLoopOrder /. OptionValue[fsSettings],
+            betaFunctionLoopOrder /. OptionValue[fsSettings],
+            thresholdCorrectionsLoopOrder /. OptionValue[fsSettings],
+            higgs2loopCorrectionAtAs /. OptionValue[fsSettings],
+            higgs2loopCorrectionAbAs /. OptionValue[fsSettings],
+            higgs2loopCorrectionAtAt /. OptionValue[fsSettings],
+            higgs2loopCorrectionAtauAtau /. OptionValue[fsSettings],
+            forceOutput /. OptionValue[fsSettings],
+            top2loopCorrectionsQCD /. OptionValue[fsSettings],
+            betaZeroThreshold /. OptionValue[fsSettings],
+            forcePositiveMasses /. OptionValue[fsSettings],
+            poleMassScale /. OptionValue[fsSettings],
+            parameterOutputScale /. OptionValue[fsSettings]
+        }
+    ];
 
 handle = FS@ModelName@OpenHandle[];
 FS@ModelName@CalculateSpectrum[handle];
