@@ -69,7 +69,7 @@ Options[FS@ModelName@OpenHandle] = {
 };
 
 FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fs@ModelName@InputParameters) -> s_List, r___] :=
-    FSSMOpenHandle[a, Sequence @@ s, r];
+    FS@ModelName@OpenHandle[a, Sequence @@ s, r];
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
     FS@ModelName@OpenHandleLib[
