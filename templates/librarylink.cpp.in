@@ -133,6 +133,38 @@ Model_data find_data(Handle_id hid)
 
 /******************************************************************/
 
+void put_sm_input_parameters(const Model_data& data, MLINK link)
+{
+   MLPutFunction(link, "List", 19);
+
+   MLPutRuleTo(link, data.qedqcd.displayAlphaEmInput(), "alphaEmMZ");
+   MLPutRuleTo(link, data.qedqcd.displayFermiConstant(), "GF");
+   MLPutRuleTo(link, data.qedqcd.displayAlphaSInput(), "alphaSMZ");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMZ(), "MZ");
+   MLPutRuleTo(link, data.qedqcd.displayMbMb(), "mbmb");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMt(), "Mt");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMtau(), "Mtau");
+   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(3), "Mv3");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMW(), "MW");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMel(), "Me");
+   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(1), "Mv1");
+   MLPutRuleTo(link, data.qedqcd.displayPoleMmuon(), "Mm");
+   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(2), "Mv2");
+   MLPutRuleTo(link, data.qedqcd.displayMd2GeV(), "md2GeV");
+   MLPutRuleTo(link, data.qedqcd.displayMu2GeV(), "mu2GeV");
+   MLPutRuleTo(link, data.qedqcd.displayMs2GeV(), "ms2GeV");
+   MLPutRuleTo(link, data.qedqcd.displayMcMc(), "mcmc");
+
+   MLPutRuleTo(link, data.physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
+   MLPutRuleTo(link, data.physical_input.get(Physical_input::mh_pole), "Mh");
+
+   // put CKM and PMNS matrices
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void calculate_spectrum(Model_data& data)
 {
    softsusy::QedQcd qedqcd(data.qedqcd);
@@ -264,6 +296,31 @@ DLLEXPORT mint WolframLibrary_getVersion()
 
 DLLEXPORT int WolframLibrary_initialize(WolframLibraryData libData)
 {
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData libData, MLINK link)
+{
+   long argc;
+   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
+      std::cerr << "Error: FS@ModelName@GetSMInputParameters expects 1"
+         " argument (" << argc << " given)." << std::endl;
+      return LIBRARY_TYPE_ERROR;
+   }
+
+   Handle_id hid;
+   MLGetLongInteger(link, &hid);
+
+   try {
+      const Model_data data = find_data(hid);
+      put_sm_input_parameters(data, link);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
+   }
+
    return LIBRARY_NO_ERROR;
 }
 
