@@ -192,6 +192,17 @@ void put_sm_input_parameters(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
+void put_input_parameters(const Model_data& data, MLINK link)
+{
+   MLPutFunction(stdlink, "List", @numberOfInputParameterRules@);
+
+@putInputParameters@
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void calculate_spectrum(Model_data& data)
 {
    softsusy::QedQcd qedqcd(data.qedqcd);
@@ -368,6 +379,31 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData libData, MLIN
    try {
       const Model_data data = find_data(hid);
       put_sm_input_parameters(data, link);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData libData, MLINK link)
+{
+   long argc;
+   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
+      std::cerr << "Error: FS@ModelName@GetInputParameters expects 1"
+         " argument (" << argc << " given)." << std::endl;
+      return LIBRARY_TYPE_ERROR;
+   }
+
+   Handle_id hid;
+   MLGetLongInteger(link, &hid);
+
+   try {
+      const Model_data data = find_data(hid);
+      put_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;

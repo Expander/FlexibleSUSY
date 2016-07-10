@@ -1246,7 +1246,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
            numberOfInputParameters = Total[CConversion`CountNumberOfEntries[#[[2]]]& /@ inputPars];
            numberOfInputParameterRules = FSMathLink`GetNumberOfInputParameterRules[inputPars];
-           putInputParameters = FSMathLink`PutInputParameters[inputPars, "stdlink"];
+           putInputParameters = FSMathLink`PutInputParameters[inputPars, "link"];
            setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
            setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputPars];
@@ -1264,6 +1264,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            putObservables = FSMathLink`PutObservables[requestedObservables, "stdlink"];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
+                            "@numberOfInputParameterRules@" -> ToString[numberOfInputParameterRules],
                             "@putInputParameters@" -> IndentText[putInputParameters],
                             "@setInputParameters@" -> IndentText[setInputParameters],
                             "@setInputParameterArgumentCTypes@" -> IndentText[setInputParameterArgumentCTypes],

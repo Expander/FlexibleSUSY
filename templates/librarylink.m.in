@@ -1,7 +1,8 @@
 lib@ModelName@ = FileNameJoin[{Directory[], "models", "@ModelName@", "@ModelName@_librarylink.so"}];
 
-FS@ModelName@GetSMInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSMInputParameters", LinkObject, LinkObject];
 FS@ModelName@GetSettings = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSettings", LinkObject, LinkObject];
+FS@ModelName@GetSMInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSMInputParameters", LinkObject, LinkObject];
+FS@ModelName@GetInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetInputParameters", LinkObject, LinkObject];
 
 FS@ModelName@OpenHandleLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {{Real,1}}, Integer];
 FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", {Integer}, Void];
@@ -113,5 +114,6 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
 handle = FS@ModelName@OpenHandle[];
 Print[FS@ModelName@GetSettings[handle]];
 Print[FS@ModelName@GetSMInputParameters[handle]];
+Print[FS@ModelName@GetInputParameters[handle]];
 FS@ModelName@CalculateSpectrum[handle];
 FS@ModelName@CloseHandle[handle];
