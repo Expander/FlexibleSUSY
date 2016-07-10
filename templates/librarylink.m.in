@@ -5,8 +5,10 @@ FS@ModelName@GetSMInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@Mode
 FS@ModelName@GetInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetInputParameters", LinkObject, LinkObject];
 
 FS@ModelName@OpenHandleLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {{Real,1}}, Integer];
-FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", LinkObject, LinkObject];
 FS@ModelName@CloseHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CloseHandle", {Integer}, Void];
+
+FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", LinkObject, LinkObject];
+FS@ModelName@CalculateObservables = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateObservables", LinkObject, LinkObject];
 
 FS@ModelName@CalculateSpectrum::error = "`1`";
 FS@ModelName@CalculateSpectrum::warning = "`1`";
@@ -121,5 +123,6 @@ handle = FS@ModelName@OpenHandle[];
 Print[FS@ModelName@GetSettings[handle]];
 Print[FS@ModelName@GetSMInputParameters[handle]];
 Print[FS@ModelName@GetInputParameters[handle]];
-FS@ModelName@CalculateSpectrum[handle];
+Print[FS@ModelName@CalculateSpectrum[handle]];
+Print[FS@ModelName@CalculateObservables[handle]];
 FS@ModelName@CloseHandle[handle];

@@ -244,6 +244,17 @@ void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
 
 /******************************************************************/
 
+void put_observables(const @ModelName@_observables& observables, MLINK link)
+{
+   MLPutFunction(link, "List", @numberOfObservables@);
+
+@putObservables@
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void check_spectrum(const Model_data& data, MLINK link)
 {
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
@@ -479,8 +490,6 @@ DLLEXPORT int FS@ModelName@OpenHandle(
          handles.emplace(hid, data);
       }
 
-      std::cout << "handle " << hid << " created" << std::endl;
-
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -493,7 +502,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 /******************************************************************/
 
 DLLEXPORT int FS@ModelName@CloseHandle(
-   WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument Res)
+   WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument /* Res */)
 {
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
@@ -505,10 +514,8 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
       const Handle_map::iterator handle = handles.find(hid);
 
-      if (handle != handles.end()) {
-         std::cout << "removing handle " << hid << std::endl;
+      if (handle != handles.end())
          handles.erase(handle);
-      }
    }
 
    return LIBRARY_NO_ERROR;
@@ -541,7 +548,42 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
          handles[hid] = data;
       }
    } catch (const flexiblesusy::Error& e) {
-      std::cerr << e.what() << std::endl;
+      put_error_output(link);
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@CalculateObservables(
+   WolframLibraryData /* libData */, MLINK link)
+{
+   long argc;
+   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
+      std::cerr << "Error: FS@ModelName@CalculateSpectrum expects 1"
+         " argument (" << argc << " given)." << std::endl;
+      return LIBRARY_TYPE_ERROR;
+   }
+
+   Handle_id hid;
+   MLGetLongInteger(link, &hid);
+
+   try {
+      Model_data data = find_data(hid);
+
+      if (data.model.get_scale() == 0.) {
+         put_message(link,
+            "FS@ModelName@CalculateObservables", "warning",
+            "Renormalization scale is 0.  Did you run "
+            "FS@ModelName@CalculateSpectrum[]?");
+      }
+
+      @ModelName@_observables observables(
+         calculate_observables(data.model, data.qedqcd, data.physical_input));
+      put_observables(observables, link);
+   } catch (const flexiblesusy::Error& e) {
+      put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
       put_error_output(link);
    }
 
