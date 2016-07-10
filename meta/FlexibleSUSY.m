@@ -1238,7 +1238,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{numberOfInputParameters, numberOfInputParameterRules,
             putInputParameters,
             setInputParameterDefaultArguments,
-            setInputParameterArgumentCTypes, setInputParameterArguments,
+            setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
             numberOfObservables, putObservables,
             listOfInputParameters, listOfModelParameters, listOfOutputParameters,
@@ -1249,7 +1249,6 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            putInputParameters = FSMathLink`PutInputParameters[inputPars, "link"];
            setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
-           setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputPars];
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
            outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
            outPars = Join[outPars, FlexibleSUSY`Pole /@ outPars, Parameters`GetModelParameters[], {FlexibleSUSY`SCALE}];
@@ -1267,7 +1266,6 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
                             "@numberOfInputParameterRules@" -> ToString[numberOfInputParameterRules],
                             "@putInputParameters@" -> IndentText[putInputParameters],
                             "@setInputParameters@" -> IndentText[setInputParameters],
-                            "@setInputParameterArgumentCTypes@" -> IndentText[setInputParameterArgumentCTypes],
                             "@setInputParameterArguments@" -> IndentText[setInputParameterArguments, 12],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
                             "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],

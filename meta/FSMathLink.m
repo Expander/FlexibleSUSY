@@ -5,8 +5,6 @@ GetNumberOfSpectrumEntries::usage = "";
 PutInputParameters::usage = "";
 SetInputParametersFromArguments::usage = "";
 SetInputParameterDefaultArguments::usage = "";
-SetInputParameterArgumentTypes::usage = "";
-SetInputParameterArgumentCTypes::usage = "";
 SetInputParameterArguments::usage = "";
 PutSpectrum::usage = "";
 PutObservables::usage = "";
@@ -79,19 +77,15 @@ SetInputParameterDefaultArguments[inputPars_List] :=
 
 ConcatIndices[idx__] := StringJoin[ToString /@ {idx}];
 
-ParAndType[par_, CConversion`realScalarCType   ] := {HoldForm[OptionValue[par]], Real, "double " <> CConversion`ToValidCSymbolString[par]};
-ParAndType[par_, CConversion`complexScalarCType] := Sequence[{HoldForm[Re[OptionValue[par]]], Real, "double Re" <> CConversion`ToValidCSymbolString[par]},
-                                                             {HoldForm[Im[OptionValue[par]]], Real, "double Im" <> CConversion`ToValidCSymbolString[par]}];
-ParAndType[par_, CConversion`integerScalarCType] := {HoldForm[OptionValue[par]], Integer, "int " <> CConversion`ToValidCSymbolString[par]};
+ParAndType[par_, CConversion`realScalarCType   ] := {HoldForm[OptionValue[par]], Real};
+ParAndType[par_, CConversion`complexScalarCType] := Sequence[{HoldForm[Re[OptionValue[par]]], Real},
+                                                             {HoldForm[Im[OptionValue[par]]], Real}];
+ParAndType[par_, CConversion`integerScalarCType] := {HoldForm[OptionValue[par]], Integer};
 
-ParAndType[par_, CConversion`realScalarCType, idx__   ] := {HoldForm[OptionValue[par][[idx]]], Real,
-                                                            "double " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]};
-ParAndType[par_, CConversion`complexScalarCType, idx__] := Sequence[{HoldForm[Re[OptionValue[par][[idx]]]], Real,
-                                                                     "double Re" <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]},
-                                                                    {HoldForm[Im[OptionValue[par][[idx]]]], Real,
-                                                                     "double Im" <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]}];
-ParAndType[par_, CConversion`integerScalarCType, idx__] := {HoldForm[OptionValue[par][[idx]]], Integer,
-                                                            "int " <> CConversion`ToValidCSymbolString[par] <> "_" <> ConcatIndices[idx]};
+ParAndType[par_, CConversion`realScalarCType, idx__   ] := {HoldForm[OptionValue[par][[idx]]], Real};
+ParAndType[par_, CConversion`complexScalarCType, idx__] := Sequence[{HoldForm[Re[OptionValue[par][[idx]]]], Real},
+                                                                    {HoldForm[Im[OptionValue[par][[idx]]]], Real}];
+ParAndType[par_, CConversion`integerScalarCType, idx__] := {HoldForm[OptionValue[par][[idx]]], Integer};
 
 SetInputParameterArgumentsAndType[{par_, CConversion`ScalarType[st_]}] :=
     {ParAndType[CConversion`ToValidCSymbol[par], st]};
@@ -122,12 +116,6 @@ SetInputParameterArgumentsAndTypes[inputPars_List] :=
 
 SetInputParameterArguments[inputPars_List] :=
     Utils`StringJoinWithSeparator[ToString[#[[1]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
-
-SetInputParameterArgumentTypes[inputPars_List] :=
-    Utils`StringJoinWithSeparator[ToString[#[[2]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
-
-SetInputParameterArgumentCTypes[inputPars_List] :=
-    Utils`StringJoinWithSeparator[ToString[#[[3]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
 
 GetNumberOfSpectrumEntries[pars_List] :=
     Length[pars];
