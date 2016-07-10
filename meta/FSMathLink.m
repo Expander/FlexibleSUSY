@@ -25,46 +25,47 @@ PutInputParameter[{par_, _}, linkName_String] :=
 PutInputParameters[inputPars_List, linkName_String] :=
     StringJoin[PutInputParameter[#, linkName]& /@ inputPars];
 
-CreateComponent[parStr_String, CConversion`integerScalarCType] := parStr;
-CreateComponent[parStr_String, CConversion`realScalarCType] := parStr;
-CreateComponent[parStr_String, CConversion`complexScalarCType] := "std::complex<double>(Re" <> parStr <> ", Im" <> parStr <> ")";
+CreateComponent[CConversion`realScalarCType | CConversion`integerScalarCType, pars_String:"pars", count_String:"c"] :=
+    pars <> "[" <> count <> "++];\n";
+CreateComponent[CConversion`complexScalarCType, pars_String:"pars", count_String:"c"] :=
+    "std::complex<double>(" <> pars <> "[" <> count <> "], " <> pars <> "[" <> count <> "+1]); " <> count <> " += 2;\n";
 
 SetInputParameterFromArguments[{par_, CConversion`ScalarType[st_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "INPUTPARAMETER(" <> parStr <> ") = " <> CreateComponent[parStr, st] <> ";\n"
+           "INPUTPARAMETER(" <> parStr <> ") = " <> CreateComponent[st]
           ];
 
 SetInputParameterFromArguments[{par_, (CConversion`ArrayType | CConversion`VectorType)[st_,dim_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           StringJoin[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#-1] <> ")) = " <>
-                       CreateComponent[parStr <> "_" <> ToString[#], st] <> ";\n")& /@ Table[i, {i,1,dim}]]
+           StringJoin[("INPUTPARAMETER(" <> parStr <> "(" <> # <> ")) = " <>
+                       CreateComponent[st])& /@ Table[ToString[i], {i, 0, dim-1}]]
           ];
 
 SetInputParameterFromArguments[{par_, CConversion`MatrixType[st_,dim1_,dim2_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> ")) = " <>
-                                     CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2], st] <> ";\n")&,
-                                    Table[i, {i, 1, dim1}],
-                                    Table[j, {j, 1, dim2}]], 1]]
+           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> #1 <> "," <> #2 <> ")) = " <>
+                                     CreateComponent[st])&,
+                                    Table[ToString[i], {i, 0, dim1-1}],
+                                    Table[ToString[j], {j, 0, dim2-1}]], 1]]
           ];
 
 SetInputParameterFromArguments[{par_, CConversion`TensorType[st_,dim1_,dim2_,dim3_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> "," <> ToString[#3-1] <> ")) = " <>
-                                     CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2] <> ToString[#3], st] <> ";\n")&,
-                                    Table[i, {i, 1, dim1}],
-                                    Table[j, {j, 1, dim2}],
-                                    Table[k, {k, 1, dim3}]], 2]]
+           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> #1 <> "," <> #2 <> "," <> #3 <> ")) = " <>
+                                     CreateComponent[st])&,
+                                    Table[ToString[i], {i, 0, dim1-1}],
+                                    Table[ToString[j], {j, 0, dim2-1}],
+                                    Table[ToString[k], {k, 0, dim3-1}]], 2]]
           ];
 
 SetInputParameterFromArguments[{par_, CConversion`TensorType[st_,dim1_,dim2_,dim3_,dim4_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> ToString[#1-1] <> "," <> ToString[#2-1] <> "," <> ToString[#3-1] <> "," <> ToString[#4-1] <> ")) = " <>
-                                     CreateComponent[parStr <> "_" <> ToString[#1] <> ToString[#2] <> ToString[#3] <> ToString[#4], st] <> ";\n")&,
-                                    Table[i, {i, 1, dim1}],
-                                    Table[j, {j, 1, dim2}],
-                                    Table[k, {k, 1, dim3}],
-                                    Table[l, {l, 1, dim4}]], 3]]
+           StringJoin[Flatten[Outer[("INPUTPARAMETER(" <> parStr <> "(" <> #1 <> "," <> #2 <> "," <> #3 <> "," <> #4 <> ")) = " <>
+                                     CreateComponent[st])&,
+                                    Table[ToString[i], {i, 0, dim1-1}],
+                                    Table[ToString[j], {j, 0, dim2-1}],
+                                    Table[ToString[k], {k, 0, dim3-1}],
+                                    Table[ToString[l], {l, 0, dim4-1}]], 3]]
           ];
 
 SetInputParametersFromArguments[inputPars_List] :=

@@ -40,7 +40,7 @@
 #include <mutex>
 #include <string>
 
-#define INPUTPARAMETER(p) input.p
+#define INPUTPARAMETER(p) data.input.p
 #define MODELPARAMETER(p) model.get_##p()
 #define PHYSICALPARAMETER(p) model.get_physical().p
 #define OBSERVABLE(o) observables.o
@@ -231,6 +231,8 @@ Model_data fill(double* pars, mint npars)
 
    data.physical_input.set(Physical_input::alpha_em_0, pars[c++]);
    data.physical_input.set(Physical_input::mh_pole, pars[c++]);
+
+@setInputParameters@
 
    if (npars != c) {
       std::cerr << "Error: Bug: number of given input parameters (" << npars
