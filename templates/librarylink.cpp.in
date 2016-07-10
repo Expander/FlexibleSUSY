@@ -38,6 +38,7 @@
 #include <iostream>
 #include <map>
 #include <mutex>
+#include <sstream>
 #include <string>
 
 #define INPUTPARAMETER(p) data.input.p
@@ -60,9 +61,7 @@ public:
    }
    Handle_id hid;
 };
-}
 
-namespace flexiblesusy {
 class EWrongNumberOfParameters : public Error {
 public:
    explicit EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
@@ -74,7 +73,16 @@ public:
    }
    unsigned pars, expected;
 };
-}
+
+class EInvalidSpectrum : public Error {
+public:
+   explicit EInvalidSpectrum() {}
+   virtual ~EInvalidSpectrum() {}
+   virtual std::string what() const { return "Invalid spectrum"; }
+};
+
+
+} // namespace flexiblesusy
 
 struct Model_data {
    Model_data();
@@ -129,6 +137,28 @@ Model_data find_data(Handle_id hid)
       throw EUnknownHandle(hid);
 
    return handle->second;
+}
+
+/******************************************************************/
+
+void put_error_output(MLINK link)
+{
+   MLPutSymbol(link, "$Failed");
+}
+
+/******************************************************************/
+
+void put_message(MLINK link,
+                 const std::string& function_name,
+                 const std::string& message_tag,
+                 const std::string& message_str)
+{
+   MLPutFunction(link, "CompoundExpression", 2);
+   MLPutFunction(link, "Message", 2);
+   MLPutFunction(link, "MessageName", 2);
+   MLPutSymbol(link, function_name.c_str());
+   MLPutString(link, message_tag.c_str());
+   MLPutString(link, message_str.c_str());
 }
 
 /******************************************************************/
@@ -203,16 +233,50 @@ void put_input_parameters(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-void calculate_spectrum(Model_data& data)
+void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
+{
+   MLPutFunction(link, "List", @numberOfSpectrumEntries@);
+
+@putSpectrum@
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
+void check_spectrum(const Model_data& data, MLINK link)
+{
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+      = data.model.get_problems();
+
+   if (problems.have_problem()) {
+      std::ostringstream msg;
+      problems.print_problems(msg);
+      put_message(link, "FS@ModelName@CalculateSpectrum", "error", msg.str());
+   }
+
+   if (problems.have_warning()) {
+      std::ostringstream msg;
+      problems.print_warnings(msg);
+      put_message(link, "FS@ModelName@CalculateSpectrum", "warning", msg.str());
+   }
+
+   if (problems.have_problem() &&
+       !data.settings.get(Spectrum_generator_settings::force_output))
+      throw EInvalidSpectrum();
+}
+
+/******************************************************************/
+
+void calculate_spectrum(Model_data& data, MLINK link)
 {
    softsusy::QedQcd qedqcd(data.qedqcd);
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ());
    } catch (const std::string& s) {
-      // put_message("FS@ModelName@CalculateSpectrum", "error", s);
-      // put_error_output();
-      return;
+      put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
+      throw EInvalidSpectrum();
    }
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
@@ -223,28 +287,6 @@ void calculate_spectrum(Model_data& data)
    data.model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
       data.settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
-
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-      = spectrum_generator.get_problems();
-
-   if (problems.have_problem()) {
-      std::ostringstream msg;
-      problems.print_problems(msg);
-      // put_message("FS@ModelName@CalculateSpectrum", "error", msg.str());
-   }
-
-   if (problems.have_warning()) {
-      std::ostringstream msg;
-      problems.print_warnings(msg);
-      // put_message("FS@ModelName@CalculateSpectrum", "warning", msg.str());
-   }
-
-   if (!problems.have_problem() ||
-       data.settings.get(Spectrum_generator_settings::force_output)) {
-      // put_spectrum(data.model);
-   } else {
-      // put_error_output();
-   }
 }
 
 /******************************************************************/
@@ -356,7 +398,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
       put_settings(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
-      return LIBRARY_FUNCTION_ERROR;
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;
@@ -381,7 +423,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
       put_sm_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
-      return LIBRARY_FUNCTION_ERROR;
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;
@@ -406,7 +448,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
       put_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
-      return LIBRARY_FUNCTION_ERROR;
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;
@@ -475,19 +517,24 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 /******************************************************************/
 
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
-   WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument Res)
+   WolframLibraryData /* libData */, MLINK link)
 {
-   if (Argc != 1)
+   long argc;
+   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
+      std::cerr << "Error: FS@ModelName@CalculateSpectrum expects 1"
+         " argument (" << argc << " given)." << std::endl;
       return LIBRARY_TYPE_ERROR;
+   }
 
-   const Handle_id hid = MArgument_getInteger(Args[0]);
+   Handle_id hid;
+   MLGetLongInteger(link, &hid);
 
    try {
       Model_data data = find_data(hid);
 
-      calculate_spectrum(data);
-      // put spectrum here
-      std::cout << "Mhh = " << data.model.get_physical().Mhh << std::endl;
+      calculate_spectrum(data, link);
+      check_spectrum(data, link);
+      put_spectrum(data.model, link);
 
       {
          LOCK_MUTEX();
@@ -495,7 +542,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       }
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
-      return LIBRARY_FUNCTION_ERROR;
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;

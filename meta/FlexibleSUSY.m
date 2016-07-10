@@ -1257,11 +1257,11 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            listOfOutputParameters = ToString[outPars];
            listOfModelParameters = ToString[Parameters`GetModelParameters[]];
            numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
-           putSpectrum = FSMathLink`PutSpectrum[outPars, "stdlink"];
+           putSpectrum = FSMathLink`PutSpectrum[outPars, "link"];
            (* get observables *)
            requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
            numberOfObservables = Length[requestedObservables];
-           putObservables = FSMathLink`PutObservables[requestedObservables, "stdlink"];
+           putObservables = FSMathLink`PutObservables[requestedObservables, "link"];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@numberOfInputParameterRules@" -> ToString[numberOfInputParameterRules],
