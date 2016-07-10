@@ -332,8 +332,6 @@ Model_data fill(double* pars, mint npars)
    data.settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
    data.parameter_output_scale = pars[c++];
 
-   data.qedqcd = softsusy::QedQcd();
-
    data.qedqcd.setAlpha(softsusy::ALPHA, pars[c]);
    data.qedqcd.setAlphaEmInput(pars[c++]);
    data.qedqcd.setFermiConstant(pars[c++]);
