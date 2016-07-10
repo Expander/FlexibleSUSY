@@ -118,7 +118,7 @@ std::mutex mtx;
 
 /******************************************************************/
 
-Handle_id get_new_id()
+Handle_id get_new_handle()
 {
    LOCK_MUTEX();
    return used_ids++;
@@ -140,7 +140,7 @@ Model_data find_data(Handle_id hid)
 
 /******************************************************************/
 
-Handle_id get_id_from(MLINK link)
+static Handle_id get_handle_from(MLINK link)
 {
    Handle_id hid;
 
@@ -152,7 +152,34 @@ Handle_id get_id_from(MLINK link)
 
 /******************************************************************/
 
-void put_error_output(MLINK link)
+static long number_of_args(MLINK link)
+{
+   long argc;
+   MLCheckFunction(link, "List", &argc);
+
+   return argc;
+}
+
+/******************************************************************/
+
+bool check_number_of_args(MLINK link, unsigned number_of_arguments,
+                          const std::string& function_name)
+{
+   const long n_given = number_of_args(link);
+   const bool ok = n_given == number_of_arguments;
+
+   if (!ok) {
+      std::cerr << "Error: " << function_name << " expects "
+                << ToString(number_of_arguments) << " argument ("
+                << n_given << " given)." << std::endl;
+   }
+
+   return ok;
+}
+
+/******************************************************************/
+
+static void put_error_output(MLINK link)
 {
    MLPutSymbol(link, "$Failed");
 }
@@ -403,14 +430,10 @@ DLLEXPORT int WolframLibrary_initialize(WolframLibraryData /* libData */)
 
 DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK link)
 {
-   long argc;
-   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
-      std::cerr << "Error: FS@ModelName@GetSettings expects 1"
-         " argument (" << argc << " given)." << std::endl;
+   if (!check_number_of_args(link, 1, "FS@ModelName@GetSettings"))
       return LIBRARY_TYPE_ERROR;
-   }
 
-   const Handle_id hid = get_id_from(link);
+   const Handle_id hid = get_handle_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -427,14 +450,10 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
 
 DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
-   long argc;
-   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
-      std::cerr << "Error: FS@ModelName@GetSMInputParameters expects 1"
-         " argument (" << argc << " given)." << std::endl;
+   if (!check_number_of_args(link, 1, "FS@ModelName@GetSMInputParameters"))
       return LIBRARY_TYPE_ERROR;
-   }
 
-   const Handle_id hid = get_id_from(link);
+   const Handle_id hid = get_handle_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -451,14 +470,10 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
 
 DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
-   long argc;
-   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
-      std::cerr << "Error: FS@ModelName@GetInputParameters expects 1"
-         " argument (" << argc << " given)." << std::endl;
+   if (!check_number_of_args(link, 1, "FS@ModelName@GetInputParameters"))
       return LIBRARY_TYPE_ERROR;
-   }
 
-   const Handle_id hid = get_id_from(link);
+   const Handle_id hid = get_handle_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -489,7 +504,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       const Model_data data = fill(libData->MTensor_getRealData(pars),
                                    libData->MTensor_getDimensions(pars)[0]);
 
-      const Handle_id hid = get_new_id();
+      const Handle_id hid = get_new_handle();
 
       {
          LOCK_MUTEX();
@@ -532,14 +547,10 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
    WolframLibraryData /* libData */, MLINK link)
 {
-   long argc;
-   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
-      std::cerr << "Error: FS@ModelName@CalculateSpectrum expects 1"
-         " argument (" << argc << " given)." << std::endl;
+   if (!check_number_of_args(link, 1, "FS@ModelName@CalculateSpectrum"))
       return LIBRARY_TYPE_ERROR;
-   }
 
-   const Handle_id hid = get_id_from(link);
+   const Handle_id hid = get_handle_from(link);
 
    try {
       Model_data data = find_data(hid);
@@ -564,14 +575,10 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 DLLEXPORT int FS@ModelName@CalculateObservables(
    WolframLibraryData /* libData */, MLINK link)
 {
-   long argc;
-   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
-      std::cerr << "Error: FS@ModelName@CalculateSpectrum expects 1"
-         " argument (" << argc << " given)." << std::endl;
+   if (!check_number_of_args(link, 1, "FS@ModelName@CalculateObservables"))
       return LIBRARY_TYPE_ERROR;
-   }
 
-   const Handle_id hid = get_id_from(link);
+   const Handle_id hid = get_handle_from(link);
 
    try {
       Model_data data = find_data(hid);
