@@ -17,7 +17,7 @@ Get["models/CMSSM/CMSSM_librarylink.m"];
 handle = FSCMSSMOpenHandle[
   fsSettings -> { precisionGoal -> 1.*^-4 },
   fsSMParameters -> { Mt -> 173.3 },
-  fsCMSSMInputParameters -> {
+  fsModelParameters -> {
       m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 
@@ -64,7 +64,7 @@ First, a handle to the model must be created using the
 
 - the spectrum generator settings via the `fsSettings` variable
 - the Standard Model input parameters via the `fsSMParameters` variable
-- the model input parameters via the `fs<model>InputParameters` variable
+- the model input parameters via the `fsModelParameters` variable
 
 _Example_:
 
@@ -73,7 +73,7 @@ Get["models/CMSSM/CMSSM_librarylink.m"];
 handle = FSCMSSMOpenHandle[
   fsSettings -> { precisionGoal -> 1.*^-4 },
   fsSMParameters -> { Mt -> 173.3 },
-  fsCMSSMInputParameters -> {
+  fsModelParameters -> {
       m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 FSCMSSMGetSettings[handle]
@@ -175,7 +175,7 @@ _Example_:
 ~~~~~~~~~~~~~~~~~~~~{.m}
 Get["models/CMSSM/CMSSM_librarylink.m"];
 handle = FSCMSSMOpenHandle[
-  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
 ];
 FSCMSSMGetInputParameters[handle]
 ~~~~~~~~~~~~~~~~~~~~
@@ -211,7 +211,7 @@ the mixing matrix.
 ~~~~~~~~~~~~~~~~~~~~{.m}
 Get["models/CMSSM/CMSSM_librarylink.m"];
 handle = FSCMSSMOpenHandle[
-  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
 ];
 FSCMSSMCalculateSpectrum[handle]
 ~~~~~~~~~~~~~~~~~~~~
@@ -356,7 +356,7 @@ that the pole mass spectrum has been calculated before, using the
 ~~~~~~~~~~~~~~~~~~~~{.m}
 Get["models/CMSSM/CMSSM_librarylink.m"];
 handle = FSCMSSMOpenHandle[
-  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
 ];
 FSCMSSMCalculateSpectrum[handle]
 FSCMSSMCalculateObservables[handle]

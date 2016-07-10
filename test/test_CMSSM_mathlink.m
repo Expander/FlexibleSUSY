@@ -48,7 +48,7 @@ smInputs = {
 handle = FSCMSSMOpenHandle[
     fsSettings -> settings,
     fsSMParameters -> smInputs,
-    fsCMSSMInputParameters -> {
+    fsModelParameters -> {
         m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 
@@ -147,7 +147,7 @@ CalcMh[TB_] :=
            handle = FSCMSSMOpenHandle[
                fsSettings -> settings,
                fsSMParameters -> smInputs,
-               fsCMSSMInputParameters -> {
+               fsModelParameters -> {
                    m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0 }
            ];
            spec = FSCMSSMCalculateSpectrum[handle];

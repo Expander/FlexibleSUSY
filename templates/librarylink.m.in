@@ -68,7 +68,7 @@ Options[FS@ModelName@OpenHandle] = {
     Sequence @@ fs@ModelName@DefaultInputParameters
 };
 
-FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fs@ModelName@InputParameters) -> s_List, r___] :=
+FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List, r___] :=
     FS@ModelName@OpenHandle[a, Sequence @@ s, r];
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
@@ -118,11 +118,3 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
 @setInputParameterArguments@
         }
 ];
-
-handle = FS@ModelName@OpenHandle[];
-Print[FS@ModelName@GetSettings[handle]];
-Print[FS@ModelName@GetSMInputParameters[handle]];
-Print[FS@ModelName@GetInputParameters[handle]];
-Print[FS@ModelName@CalculateSpectrum[handle]];
-Print[FS@ModelName@CalculateObservables[handle]];
-FS@ModelName@CloseHandle[handle];
