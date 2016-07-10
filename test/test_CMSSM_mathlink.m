@@ -1,10 +1,11 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["ReadSLHA`", "ReadSLHA.m"];
-Install["models/CMSSM/CMSSM.mx"];
+
+Get["models/CMSSM/CMSSM_librarylink.m"];
 
 Print["Comparing SLHA output to MathLink output"];
 
-FSCMSSMSetSettings[
+settings = {
     precisionGoal -> 0.0001,
     maxIterations -> 0,
     calculateStandardModelMasses -> 0,
@@ -22,9 +23,9 @@ FSCMSSMSetSettings[
     forcePositiveMasses -> 0,
     poleMassScale -> 0.,
     parameterOutputScale -> 0.
-];
+};
 
-FSCMSSMSetSMInputParameters[
+smInputs = {
     alphaEmMZ -> 1./127.934,
     GF -> 0.0000116637,
     alphaSMZ -> 0.1176,
@@ -42,13 +43,19 @@ FSCMSSMSetSMInputParameters[
     mu2GeV -> 0.0024,
     ms2GeV -> 0.104,
     mcmc -> 1.27
+};
+
+handle = FSCMSSMOpenHandle[
+    fsSettings -> settings,
+    fsSMParameters -> smInputs,
+    fsCMSSMInputParameters -> {
+        m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 
-FSCMSSMSetInputParameters[
-    m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+specML = FSCMSSMCalculateSpectrum[handle];
+obsML = FSCMSSMCalculateObservables[handle];
 
-specML = FSCMSSMCalculateSpectrum[];
-obsML = FSCMSSMCalculateObservables[];
+FSCMSSMCloseHandle[handle];
 
 inputFile = "test/test_CMSSM_mathlink.in.spc";
 outputFile = "test/test_CMSSM_mathlink.out.spc";
@@ -136,9 +143,15 @@ TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonG
 Print["Check re-calculation of spectrum yields the same"];
 
 CalcMh[TB_] :=
-    Module[{spec},
-           FSCMSSMSetInputParameters[m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0];
-           spec = FSCMSSMCalculateSpectrum[];
+    Module[{spec, handle},
+           handle = FSCMSSMOpenHandle[
+               fsSettings -> settings,
+               fsSMParameters -> smInputs,
+               fsCMSSMInputParameters -> {
+                   m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0 }
+           ];
+           spec = FSCMSSMCalculateSpectrum[handle];
+           FSCMSSMCloseHandle[handle];
            If[spec === $Failed, 0,
               (Pole[M[hh]] /. spec)[[1]]
              ]
