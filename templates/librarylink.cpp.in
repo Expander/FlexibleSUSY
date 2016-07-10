@@ -81,7 +81,6 @@ public:
    virtual std::string what() const { return "Invalid spectrum"; }
 };
 
-
 } // namespace flexiblesusy
 
 struct Model_data {
