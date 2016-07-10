@@ -169,8 +169,8 @@ Model_data fill(double* pars, mint npars)
 {
    Model_data data;
 
-   const mint n_settings = 17, n_sm_parameters = 19;
-   const mint n_total = n_settings + n_sm_parameters;
+   const mint n_settings = 17, n_sm_parameters = 19, n_input_pars = @numberOfInputParameters@;
+   const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (npars != n_total) {
       std::cerr << "Error in fill(): not enough arguments: " << npars

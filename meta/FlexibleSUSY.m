@@ -1235,7 +1235,8 @@ WriteUserExample[inputParameters_List, files_List] :=
           ];
 
 WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
-    Module[{numberOfInputParameters, putInputParameters,
+    Module[{numberOfInputParameters, numberOfInputParameterRules,
+            putInputParameters,
             setInputParameterDefaultArguments,
             setInputParameterArgumentCTypes, setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
@@ -1243,7 +1244,8 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
             listOfInputParameters, listOfModelParameters, listOfOutputParameters,
             inputPars, outPars, requestedObservables},
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
-           numberOfInputParameters = FSMathLink`GetNumberOfInputParameterRules[inputPars];
+           numberOfInputParameters = Total[CConversion`CountNumberOfEntries[#[[2]]]& /@ inputPars];
+           numberOfInputParameterRules = FSMathLink`GetNumberOfInputParameterRules[inputPars];
            putInputParameters = FSMathLink`PutInputParameters[inputPars, "stdlink"];
            setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
