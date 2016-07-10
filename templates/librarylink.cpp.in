@@ -133,6 +133,33 @@ Model_data find_data(Handle_id hid)
 
 /******************************************************************/
 
+void put_settings(const Model_data& data, MLINK link)
+{
+   MLPutFunction(link, "List", 17);
+
+   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::precision), "precisionGoal");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::calculate_sm_masses), "calculateStandardModelMasses");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::pole_mass_loop_order), "poleMassLoopOrder");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::ewsb_loop_order), "ewsbLoopOrder");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::beta_loop_order), "betaFunctionLoopOrder");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::threshold_corrections_loop_order), "thresholdCorrectionsLoopOrder");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as), "higgs2loopCorrectionAtAs");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as), "higgs2loopCorrectionAbAs");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::force_output), "forceOutput");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
+   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
+   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
+   MLPutRuleTo(link, data.parameter_output_scale, "parameterOutputScale");
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void put_sm_input_parameters(const Model_data& data, MLINK link)
 {
    MLPutFunction(link, "List", 19);
@@ -296,6 +323,31 @@ DLLEXPORT mint WolframLibrary_getVersion()
 
 DLLEXPORT int WolframLibrary_initialize(WolframLibraryData libData)
 {
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData libData, MLINK link)
+{
+   long argc;
+   if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
+      std::cerr << "Error: FS@ModelName@GetSettings expects 1"
+         " argument (" << argc << " given)." << std::endl;
+      return LIBRARY_TYPE_ERROR;
+   }
+
+   Handle_id hid;
+   MLGetLongInteger(link, &hid);
+
+   try {
+      const Model_data data = find_data(hid);
+      put_settings(data, link);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
+   }
+
    return LIBRARY_NO_ERROR;
 }
 
