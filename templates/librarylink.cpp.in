@@ -194,7 +194,7 @@ void put_sm_input_parameters(const Model_data& data, MLINK link)
 
 void put_input_parameters(const Model_data& data, MLINK link)
 {
-   MLPutFunction(stdlink, "List", @numberOfInputParameterRules@);
+   MLPutFunction(link, "List", @numberOfInputParameterRules@);
 
 @putInputParameters@
 
@@ -332,14 +332,14 @@ DLLEXPORT mint WolframLibrary_getVersion()
 
 /******************************************************************/
 
-DLLEXPORT int WolframLibrary_initialize(WolframLibraryData libData)
+DLLEXPORT int WolframLibrary_initialize(WolframLibraryData /* libData */)
 {
    return LIBRARY_NO_ERROR;
 }
 
 /******************************************************************/
 
-DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData libData, MLINK link)
+DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK link)
 {
    long argc;
    if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
@@ -364,7 +364,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData libData, MLINK link)
 
 /******************************************************************/
 
-DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData libData, MLINK link)
+DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
    long argc;
    if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
@@ -389,7 +389,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData libData, MLIN
 
 /******************************************************************/
 
-DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData libData, MLINK link)
+DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
    long argc;
    if (MLCheckFunction(link, "List", &argc) == 0 || argc != 1) {
@@ -451,7 +451,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 /******************************************************************/
 
 DLLEXPORT int FS@ModelName@CloseHandle(
-   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
+   WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument Res)
 {
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
@@ -475,7 +475,7 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 /******************************************************************/
 
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
-   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
+   WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument Res)
 {
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
