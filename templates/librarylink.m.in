@@ -47,52 +47,55 @@ fsDefaultSMParameters = {
 };
 
 Options[FS@ModelName@OpenHandle] = {
-    fsSettings -> fsDefaultSettings,
-    fsSMParameters -> fsDefaultSMParameters
+    Sequence @@ fsDefaultSettings,
+    Sequence @@ fsDefaultSMParameters
 };
+
+FSSMOpenHandle[a___, (fsSettings | fsSMParameters) -> s_List, r___] :=
+    FSSMOpenHandle[a, Sequence @@ s, r];
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
     FS@ModelName@OpenHandleLib[
         {
             (* spectrum generator settings *)
-            precisionGoal /. OptionValue[fsSettings],
-            maxIterations /. OptionValue[fsSettings],
-            calculateStandardModelMasses /. OptionValue[fsSettings],
-            poleMassLoopOrder /. OptionValue[fsSettings],
-            ewsbLoopOrder /. OptionValue[fsSettings],
-            betaFunctionLoopOrder /. OptionValue[fsSettings],
-            thresholdCorrectionsLoopOrder /. OptionValue[fsSettings],
-            higgs2loopCorrectionAtAs /. OptionValue[fsSettings],
-            higgs2loopCorrectionAbAs /. OptionValue[fsSettings],
-            higgs2loopCorrectionAtAt /. OptionValue[fsSettings],
-            higgs2loopCorrectionAtauAtau /. OptionValue[fsSettings],
-            forceOutput /. OptionValue[fsSettings],
-            top2loopCorrectionsQCD /. OptionValue[fsSettings],
-            betaZeroThreshold /. OptionValue[fsSettings],
-            forcePositiveMasses /. OptionValue[fsSettings],
-            poleMassScale /. OptionValue[fsSettings],
-            parameterOutputScale /. OptionValue[fsSettings],
+            OptionValue[precisionGoal],
+            OptionValue[maxIterations],
+            OptionValue[calculateStandardModelMasses],
+            OptionValue[poleMassLoopOrder],
+            OptionValue[ewsbLoopOrder],
+            OptionValue[betaFunctionLoopOrder],
+            OptionValue[thresholdCorrectionsLoopOrder],
+            OptionValue[higgs2loopCorrectionAtAs],
+            OptionValue[higgs2loopCorrectionAbAs],
+            OptionValue[higgs2loopCorrectionAtAt],
+            OptionValue[higgs2loopCorrectionAtauAtau],
+            OptionValue[forceOutput],
+            OptionValue[top2loopCorrectionsQCD],
+            OptionValue[betaZeroThreshold],
+            OptionValue[forcePositiveMasses],
+            OptionValue[poleMassScale],
+            OptionValue[parameterOutputScale],
 
             (* Standard Model input parameters *)
-            alphaEmMZ /. OptionValue[fsSMParameters],
-            GF /. OptionValue[fsSMParameters],
-            alphaSMZ /. OptionValue[fsSMParameters],
-            MZ /. OptionValue[fsSMParameters],
-            mbmb /. OptionValue[fsSMParameters],
-            Mt /. OptionValue[fsSMParameters],
-            Mtau /. OptionValue[fsSMParameters],
-            Mv3 /. OptionValue[fsSMParameters],
-            MW /. OptionValue[fsSMParameters],
-            Me /. OptionValue[fsSMParameters],
-            Mv1 /. OptionValue[fsSMParameters],
-            Mm /. OptionValue[fsSMParameters],
-            Mv2 /. OptionValue[fsSMParameters],
-            md2GeV /. OptionValue[fsSMParameters],
-            mu2GeV /. OptionValue[fsSMParameters],
-            ms2GeV /. OptionValue[fsSMParameters],
-            mcmc /. OptionValue[fsSMParameters],
-            alphaEm0 /. OptionValue[fsSMParameters],
-            Mh /. OptionValue[fsSMParameters]
+            OptionValue[alphaEmMZ],
+            OptionValue[GF],
+            OptionValue[alphaSMZ],
+            OptionValue[MZ],
+            OptionValue[mbmb],
+            OptionValue[Mt],
+            OptionValue[Mtau],
+            OptionValue[Mv3],
+            OptionValue[MW],
+            OptionValue[Me],
+            OptionValue[Mv1],
+            OptionValue[Mm],
+            OptionValue[Mv2],
+            OptionValue[md2GeV],
+            OptionValue[mu2GeV],
+            OptionValue[ms2GeV],
+            OptionValue[mcmc],
+            OptionValue[alphaEm0],
+            OptionValue[Mh]
         }
 ];
 
