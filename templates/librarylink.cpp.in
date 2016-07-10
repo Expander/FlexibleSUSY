@@ -118,7 +118,7 @@ std::mutex mtx;
 
 /******************************************************************/
 
-Handle_id get_id()
+Handle_id get_new_id()
 {
    LOCK_MUTEX();
    return used_ids++;
@@ -136,6 +136,18 @@ Model_data find_data(Handle_id hid)
       throw EUnknownHandle(hid);
 
    return handle->second;
+}
+
+/******************************************************************/
+
+Handle_id get_id_from(MLINK link)
+{
+   Handle_id hid;
+
+   // Handle_id is a typedef for mint and mint is a typedef for long
+   MLGetLongInteger(link, &hid);
+
+   return hid;
 }
 
 /******************************************************************/
@@ -398,8 +410,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
       return LIBRARY_TYPE_ERROR;
    }
 
-   Handle_id hid;
-   MLGetLongInteger(link, &hid);
+   const Handle_id hid = get_id_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -423,8 +434,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
       return LIBRARY_TYPE_ERROR;
    }
 
-   Handle_id hid;
-   MLGetLongInteger(link, &hid);
+   const Handle_id hid = get_id_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -448,8 +458,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
       return LIBRARY_TYPE_ERROR;
    }
 
-   Handle_id hid;
-   MLGetLongInteger(link, &hid);
+   const Handle_id hid = get_id_from(link);
 
    try {
       const Model_data data = find_data(hid);
@@ -480,7 +489,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       const Model_data data = fill(libData->MTensor_getRealData(pars),
                                    libData->MTensor_getDimensions(pars)[0]);
 
-      const Handle_id hid = get_id();
+      const Handle_id hid = get_new_id();
 
       {
          LOCK_MUTEX();
@@ -530,8 +539,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       return LIBRARY_TYPE_ERROR;
    }
 
-   Handle_id hid;
-   MLGetLongInteger(link, &hid);
+   const Handle_id hid = get_id_from(link);
 
    try {
       Model_data data = find_data(hid);
@@ -563,8 +571,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
       return LIBRARY_TYPE_ERROR;
    }
 
-   Handle_id hid;
-   MLGetLongInteger(link, &hid);
+   const Handle_id hid = get_id_from(link);
 
    try {
       Model_data data = find_data(hid);
@@ -576,7 +583,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
             "FS@ModelName@CalculateSpectrum[]?");
       }
 
-      @ModelName@_observables observables(
+      const @ModelName@_observables observables(
          calculate_observables(data.model, data.qedqcd, data.physical_input));
       put_observables(observables, link);
    } catch (const flexiblesusy::Error& e) {
