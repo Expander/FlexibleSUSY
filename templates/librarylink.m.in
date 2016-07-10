@@ -46,12 +46,17 @@ fsDefaultSMParameters = {
     Mh -> 125.09
 };
 
-Options[FS@ModelName@OpenHandle] = {
-    Sequence @@ fsDefaultSettings,
-    Sequence @@ fsDefaultSMParameters
+fs@ModelName@DefaultInputParameters = {
+@setInputParameterDefaultArguments@
 };
 
-FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters) -> s_List, r___] :=
+Options[FS@ModelName@OpenHandle] = {
+    Sequence @@ fsDefaultSettings,
+    Sequence @@ fsDefaultSMParameters,
+    Sequence @@ fs@ModelName@DefaultInputParameters
+};
+
+FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fs@ModelName@InputParameters) -> s_List, r___] :=
     FSSMOpenHandle[a, Sequence @@ s, r];
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
@@ -95,7 +100,10 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[ms2GeV],
             OptionValue[mcmc],
             OptionValue[alphaEm0],
-            OptionValue[Mh]
+            OptionValue[Mh],
+
+            (* @ModelName@ input parameters *)
+@setInputParameterArguments@
         }
 ];
 

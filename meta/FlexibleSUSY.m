@@ -1236,7 +1236,7 @@ WriteUserExample[inputParameters_List, files_List] :=
 
 WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{numberOfInputParameters, putInputParameters,
-            setInputParameterDefaultArguments, setInputParameterArgumentTypes,
+            setInputParameterDefaultArguments,
             setInputParameterArgumentCTypes, setInputParameterArguments,
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
             numberOfObservables, putObservables,
@@ -1247,7 +1247,6 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            putInputParameters = FSMathLink`PutInputParameters[inputPars, "stdlink"];
            setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
            setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
-           setInputParameterArgumentTypes = FSMathLink`SetInputParameterArgumentTypes[inputPars];
            setInputParameterArgumentCTypes = FSMathLink`SetInputParameterArgumentCTypes[inputPars];
            setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
            outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
@@ -1266,8 +1265,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
                             "@putInputParameters@" -> IndentText[putInputParameters],
                             "@setInputParameters@" -> IndentText[setInputParameters],
                             "@setInputParameterArgumentCTypes@" -> IndentText[setInputParameterArgumentCTypes],
-                            "@setInputParameterArguments@" -> IndentText[setInputParameterArguments],
-                            "@setInputParameterArgumentTypes@" -> IndentText[setInputParameterArgumentTypes],
+                            "@setInputParameterArguments@" -> IndentText[setInputParameterArguments, 12],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
                             "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
                             "@putSpectrum@" -> IndentText[putSpectrum],
