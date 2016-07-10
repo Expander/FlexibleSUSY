@@ -62,6 +62,20 @@ public:
 };
 }
 
+namespace flexiblesusy {
+class EWrongNumberOfParameters : public Error {
+public:
+   explicit EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
+      : pars(pars_), expected(expected_) {}
+   virtual ~EWrongNumberOfParameters() {}
+   virtual std::string what() const {
+      return "Wrong number of arguments: " + ToString(pars)
+         + ".  Expected: " + ToString(expected);
+   }
+   unsigned pars, expected;
+};
+}
+
 struct Model_data {
    Model_data();
 
@@ -172,11 +186,8 @@ Model_data fill(double* pars, mint npars)
    const mint n_settings = 17, n_sm_parameters = 19, n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
-   if (npars != n_total) {
-      std::cerr << "Error in fill(): not enough arguments: " << npars
-                << ".  Expected: " << n_total << std::endl;
-      return data;
-   }
+   if (npars != n_total)
+      throw EWrongNumberOfParameters(npars, n_total);
 
    mint c = 0; // counter
 
@@ -234,11 +245,8 @@ Model_data fill(double* pars, mint npars)
 
 @setInputParameters@
 
-   if (npars != c) {
-      std::cerr << "Error: Bug: number of given input parameters (" << npars
-                << ") does not match number of set input parameters (" << c
-                << ")." << std::endl;
-   }
+   if (npars != c)
+      throw EWrongNumberOfParameters(npars, c);
 
    return data;
 }
@@ -273,19 +281,24 @@ DLLEXPORT int FS@ModelName@OpenHandle(
        libData->MTensor_getRank(pars) != 1)
       return LIBRARY_TYPE_ERROR;
 
-   const Model_data data = fill(libData->MTensor_getRealData(pars),
-                                libData->MTensor_getDimensions(pars)[0]);
+   try {
+      const Model_data data = fill(libData->MTensor_getRealData(pars),
+                                   libData->MTensor_getDimensions(pars)[0]);
 
-   const Handle_id hid = get_id();
+      const Handle_id hid = get_id();
 
-   {
-      LOCK_MUTEX();
-      handles.emplace(hid, data);
+      {
+         LOCK_MUTEX();
+         handles.emplace(hid, data);
+      }
+
+      std::cout << "handle " << hid << " created" << std::endl;
+
+      MArgument_setInteger(Res, hid);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
    }
-
-   std::cout << "handle " << hid << " created" << std::endl;
-
-   MArgument_setInteger(Res, hid);
 
    return LIBRARY_NO_ERROR;
 }
