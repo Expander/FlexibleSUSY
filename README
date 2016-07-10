@@ -351,36 +351,34 @@ above example).
 Mathematica interface
 =====================
 
-FlexibleSUSY can be called from within Mathematica using MathLink.  In
-order to build the MathLink executable, FlexibleSUSY must be
-configured with --enable-meta (enabled by default).  For each model
-the MathLink executable can be found in models/<model>/<model>.mx ,
-where <model> is the model name.
+FlexibleSUSY can be called from within Mathematica using Wolfram's
+LibraryLink.  In order to build the LibraryLink-compatible library,
+FlexibleSUSY must be configured with --enable-meta (enabled by
+default).  For each model the LibraryLink library can be found in
+models/<model>/<model>_librarylink.so, where <model> is the model
+name.
 
 Example for the CMSSM:
 
-  Install["models/CMSSM/CMSSM.mx"];
+  Get["models/CMSSM/CMSSM_librarylink.m"];
 
-  (* set spectrum generator options
-     see FSCMSSMGetSettings[] for all default options. *)
-  FSCMSSMSetSettings[precisionGoal -> 1.*^-4];
-
-  (* set Standard Model input parameters
-     see FSCMSSMGetSMInputParameters[] for all default values
-     of the SM parameters *)
-  FSCMSSMSetSMInputParameters[Mt -> 173.3];
-
-  (* set CMSSM input parameters
-     see FSCMSSMGetInputParameters[] for all default values
-     of the CMSSM input parameters *)
-  FSCMSSMSetInputParameters[
-     m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+  (* Create a handle to a model given the input parameters.
+     See Options[FS@ModelName@OpenHandle] for all default options. *)
+  handle = FSCMSSMOpenHandle[
+    fsSettings -> { precisionGoal -> 1.*^-4 },
+    fsSMParameters -> { Mt -> 173.3 },
+    fsCMSSMInputParameters -> {
+        m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+  ];
 
   (* calculate pole mass spectrum *)
-  FSCMSSMCalculateSpectrum[]
+  FSCMSSMCalculateSpectrum[handle]
 
   (* calculate further observables *)
-  FSCMSSMCalculateObservables[]
+  FSCMSSMCalculateObservables[handle]
+
+  (* close the model handle *)
+  FSCMSSMCloseHandle[handle];
 
 
 Cleaning
