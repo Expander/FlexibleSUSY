@@ -51,7 +51,7 @@ Options[FS@ModelName@OpenHandle] = {
     Sequence @@ fsDefaultSMParameters
 };
 
-FSSMOpenHandle[a___, (fsSettings | fsSMParameters) -> s_List, r___] :=
+FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters) -> s_List, r___] :=
     FSSMOpenHandle[a, Sequence @@ s, r];
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
