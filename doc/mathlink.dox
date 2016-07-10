@@ -5,40 +5,37 @@
 \section flexiblesusy_mathematica_interface FlexibleSUSY's Mathematica interface
 
 The FlexibleSUSY-generated spectrum generators can be called from
-within Mathematica using the MathLink interface.
+within Mathematica using Wolfram's LibraryLink interface.
 
 \subsection math_interface_quick_start Quick start for the CMSSM
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
+Get["models/CMSSM/CMSSM_librarylink.m"];
 
-(* set spectrum generator options
-   see FSCMSSMGetSettings[] for all default options. *)
-FSCMSSMSetSettings[precisionGoal -> 1.*^-4];
-
-(* set Standard Model input parameters
-   see FSCMSSMGetSMInputParameters[] for all default values
-   of the SM parameters *)
-FSCMSSMSetSMInputParameters[Mt -> 173.3];
-
-(* set CMSSM input parameters
-   see FSCMSSMGetInputParameters[] for all default values
-   of the CMSSM input parameters *)
-FSCMSSMSetInputParameters[
-   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
+(* Create a handle to a model given the input parameters.
+   See Options[FSCMSSMOpenHandle] for all default options. *)
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsCMSSMInputParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
 
 (* calculate pole mass spectrum *)
-FSCMSSMCalculateSpectrum[]
+FSCMSSMCalculateSpectrum[handle]
 
 (* calculate further observables *)
-FSCMSSMCalculateObservables[]
+FSCMSSMCalculateObservables[handle]
+
+(* close the model handle *)
+FSCMSSMCloseHandle[handle];
 ~~~~~~~~~~~~~~~~~~~~
 
 \subsection math_interface_defs Using the Mathematica interface functions
 
-\subsubsection math_interface_build Building the MathLink executable
+\subsubsection math_interface_build Building the LibraryLink library
 
-In order to build the MathLink executable, FlexibleSUSY must be
+In order to build the LibraryLink library, FlexibleSUSY must be
 configured with `--enable-meta` (enabled by default).
 
 _Example_:
@@ -48,33 +45,67 @@ _Example_:
 make
 ~~~~~~~~~~~~~~~~~~~~
 
-The MathLink executable can be found in `models/<model>/<model>.mx`,
-where `<model>` is the model name.  In order to use FlexibleSUSY's
-generated `<model>` spectrum generator at the Mathematica level, the
-MathLink executable must be installed using the `Install[]` command.
+The LibraryLink library can be found in
+`models/<model>/<model>_librarylink.so`, where `<model>` is the model
+name.  In order to use FlexibleSUSY's generated `<model>` spectrum
+generator at the Mathematica level, the library functions must be
+loaded using the `models/<model>/<model>_librarylink.m` script.
 
 _Example_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
+Get["models/CMSSM/CMSSM_librarylink.m"];
 ~~~~~~~~~~~~~~~~~~~~
 
-\subsubsection FS_model_SetSettings FS<model>SetSettings
+\subsubsection FS_model_OpenHandle FS<model>OpenHandle
 
-For each `<model>`, the `FS<model>SetSettings[]` function sets all
-spectrum generator options at once.  Unspecified parameters are set to
-their default values.  All available options (and their default
-values) can be listed using the `FS<model>GetSettings[]` function.
+First, a handle to the model must be created using the
+`FS<model>OpenHandle[]` function.  The function takes as arguments
 
-Please refer to @ref FlexibleSUSY_config for more information on the
-spectrum generator settings.
+- the spectrum generator settings via the `fsSettings` variable
+- the Standard Model input parameters via the `fsSMParameters` variable
+- the model input parameters via the `fs<model>InputParameters` variable
 
 _Example_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-FSCMSSMSetSettings[precisionGoal -> 1.*^-5, betaFunctionLoopOrder -> 3];
-FSCMSSMGetSettings[]
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsCMSSMInputParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+FSCMSSMGetSettings[handle]
+FSCMSSMGetSMInputParameters[handle]
+FSCMSSMGetInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+The `FS<model>OpenHandle[]` fixes all settings and input parameters at
+once.  Unspecified parameters are set to their default values.  The
+default values are stored in the variables `fsDefaultSettings`,
+`fsDefaultSMParameters` and `fs<model>DefaultInputParameters`:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+Print[fsDefaultSettings];
+Print[fsDefaultSMParameters];
+Print[fsCMSSMDefaultInputParameters];
+~~~~~~~~~~~~~~~~~~~~
+
+The settings associated to a `handle` can be listed using the
+`FS<model>GetSettings[]` function.  Please refer to @ref
+FlexibleSUSY_config for more information on the spectrum generator
+settings.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-5, betaFunctionLoopOrder -> 3 }
+];
+FSCMSSMGetSettings[handle]
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
@@ -99,20 +130,17 @@ _Output_:
   parameterOutputScale -> 0. }
 ~~~~~~~~~~~~~~~~~~~~
 
-\subsubsection FS_model_SetSMInputParameters FS<model>SetSMInputParameters
-
-For each `<model>`, the `FS<model>SetSMInputParameters[]` function
-sets all Standard Model parameters at once.  Unspecified parameters
-are set to their default values.  All available Standard Model input
-parameters (and their default values) can be listed using the
-`FS<model>GetSMInputParameters[]` function.
+The Standard Model input parameters associated to a `handle` can be
+listed using the `FS<model>GetSMInputParameters[]` function.
 
 _Example_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-FSCMSSMSetSMInputParameters[Mt -> 173.34];
-FSCMSSMGetSMInputParameters[]
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSMParameters -> { Mt -> 173.34 }
+];
+FSCMSSMGetSMInputParameters[handle]
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
@@ -139,20 +167,17 @@ _Output_:
   Mh -> 125.09 }           (* Higgs pole mass *)
 ~~~~~~~~~~~~~~~~~~~~
 
-\subsubsection FS_model_SetInputParameters FS<model>SetInputParameters
-
-For each `<model>`, the `FS<model>SetInputParameters[]` function sets
-all model input parameters at once.  Unspecified parameters are set to
-their default values (usually zero).  All available input parameters
-(and their default values) can be listed using the
-`FS<model>GetSMInputParameters[]` function.
+The model input parameters associated to a `handle` can be listed
+using the `FS<model>GetInputParameters[]` function.
 
 _Example_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-FSCMSSMSetInputParameters[m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1];
-FSCMSSMGetInputParameters[]
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMGetInputParameters[handle]
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
@@ -167,35 +192,28 @@ _Output_:
 
 \subsubsection FS_model_CalculateSpectrum FS<model>CalculateSpectrum
 
-For each `<model>`, the `FS<model>CalculateSpectrum[]` function solves
-the boundary value problem and calculates the pole mass spectrum.  The
-function uses the
-
-- spectrum generator settings (set via the `FS<model>SetSettings[]`
-  function)
-
-- Standard Model input parameters (set via the
-  `FS<model>SetSMInputParameters[]` function)
-
-- Model input parameters (set via the `FS<model>SetInputParameters[]`
-  function).
+For each `<model>`, the `FS<model>CalculateSpectrum[handle]` function
+solves the boundary value problem and calculates the pole mass
+spectrum.  The function takes a model handle as arguments, referring
+to the settings and input parameters
 
 The function returns all running model parameters at the parameter
-output scale (either the SUSY scale or the scale set via
-`FSCMSSMSetSettings[parameterOutputScale -> 1000.]`) and the running
-masses at the same scale.  The running masses are denoted by `M[p]`
-where `p` is the particle name.  The parameter output scale appears in
-the returned list with the symbol `SCALE`.  The calculated pole masses
-are denoted by `Pole[M[p]]`, respectively.  The mixing matrices which
-correspond to the pole masses are denoted by `Pole[Z]`, where Z is the
-name of the mixing matrix.
+output scale (either the SUSY scale or the scale set via `fsSettings
+-> { parameterOutputScale -> 1000. }`) and the running masses at the
+same scale.  The running masses are denoted by `M[p]` where `p` is the
+particle name.  The parameter output scale appears in the returned
+list with the symbol `SCALE`.  The calculated pole masses are denoted
+by `Pole[M[p]]`, respectively.  The mixing matrices which correspond
+to the pole masses are denoted by `Pole[Z]`, where Z is the name of
+the mixing matrix.
 
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-FSCMSSMSetInputParameters[
-   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
-FSCMSSMCalculateSpectrum[]
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMCalculateSpectrum[handle]
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
@@ -315,9 +333,9 @@ _Output_:
 
 \subsubsection FS_model_CalculateObservables FS<model>CalculateObservables
 
-For each `<model>`, the `FS<model>CalculateObservables[]` function
-calculates further observables, such as effective Higgs couplings to
-two photons or gluons.
+For each `<model>`, the `FS<model>CalculateObservables[handle]`
+function calculates further observables, such as effective Higgs
+couplings to two photons or gluons.
 
 Note: The observables to be calculated must be specified in the model
 file in the `ExtraSLHAOutputBlocks`.  Available observables are:
@@ -331,16 +349,17 @@ FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton
 FlexibleSUSYObservable`CpPseudoScalarGluonGluon
 ~~~~~~~~~~~~~~~~~~~~
 
-Note: The `FS<model>CalculateObservables[]` function assumes, that the
-pole mass spectrum has been calculated before, using the
-`FS<model>CalculateSpectrum[]` function.
+Note: The `FS<model>CalculateObservables[handle]` function assumes,
+that the pole mass spectrum has been calculated before, using the
+`FS<model>CalculateSpectrum[handle]` function.
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-FSCMSSMSetInputParameters[
-   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
-FSCMSSMCalculateSpectrum[];
-FSCMSSMCalculateObservables[]
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsCMSSMInputParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMCalculateSpectrum[handle]
+FSCMSSMCalculateObservables[handle]
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
@@ -354,43 +373,6 @@ _Output_:
     1.05105*10^-6 - 8.33068*10^-7 I,
   FlexibleSUSYObservable`CpPseudoScalarGluonGluon ->
     6.71448*10^-6 + 8.41625*10^-7 I }
-~~~~~~~~~~~~~~~~~~~~
-
-\subsection redirecting_msg_output Redirecting info messages to a file
-
-When FlexibleSUSY is configured with `--enable-verbose`, a lot of
-additional debug output is written to `stdout` and `stderr` if
-FlexibleSUSY is used at the command line.  When the Mathematica
-interface is used, this output is redirected to the notebook and
-printed if form of messages of type `FS<model>::info`, where `<model>`
-is the model name.
-
-By default, no more than three messages of the same type are witten to
-the notebook.  In order to write all messages to the notebook, set
-
-    Off[Global::stop];
-
-The function, which writes the messages is called
-`FS<model>Message` and is defined as
-
-    FS<model>Message[s_] := Message[FS<model>::info, s]
-
-where `s` is the message string.  If one would like to write the
-messages to a file, the function can be re-defined to
-
-    FS<model>Message[s_] := WriteString["info.txt", s <> "\n"];
-
-_Example_:
-
-~~~~~~~~~~~~~~~~~~~~{.m}
-Install["models/CMSSM/CMSSM.mx"];
-
-(* write all messages to "info.txt" *)
-FSCMSSMMessage[s_] := WriteString["info.txt", s <> "\n"];
-
-FSCMSSMSetInputParameters[
-   m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0];
-FSCMSSMCalculateSpectrum[];
 ~~~~~~~~~~~~~~~~~~~~
 
 */

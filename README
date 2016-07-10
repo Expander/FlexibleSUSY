@@ -363,7 +363,7 @@ Example for the CMSSM:
   Get["models/CMSSM/CMSSM_librarylink.m"];
 
   (* Create a handle to a model given the input parameters.
-     See Options[FS@ModelName@OpenHandle] for all default options. *)
+     See Options[FSCMSSMOpenHandle] for all default options. *)
   handle = FSCMSSMOpenHandle[
     fsSettings -> { precisionGoal -> 1.*^-4 },
     fsSMParameters -> { Mt -> 173.3 },
