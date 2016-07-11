@@ -210,7 +210,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
 #ifdef ENABLE_VERBOSE
-   printf("\tMinimization status = %s\n", gsl_strerror(status));
+   std::cout << "\tMinimization status = " << gsl_strerror(status) << '\n';
 #endif
 
    // save minimum point and function value
