@@ -120,4 +120,21 @@ void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std
    MLPut(link, t);
 }
 
+/********************* get types *********************/
+
+void MLGet(MLINK link, int *c)
+{
+   MLGetInteger(link, c);
+}
+
+void MLGet(MLINK link, long *c)
+{
+   MLGetLongInteger(link, c);
+}
+
+void MLGet(MLINK link, short *c)
+{
+   MLGetShortInteger(link, c);
+}
+
 #endif // MATHLINK_MACROS_H
