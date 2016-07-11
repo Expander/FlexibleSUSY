@@ -115,7 +115,14 @@ public:
 } // namespace flexiblesusy
 
 struct Model_data {
-   Model_data();
+   Model_data()
+      : input()
+      , physical_input()
+      , qedqcd()
+      , settings()
+      , parameter_output_scale(0.)
+      , model()
+   {}
 
    @ModelName@_input_parameters input;     ///< model input parameters
    Physical_input physical_input;          ///< extra non-SLHA physical input
@@ -124,16 +131,6 @@ struct Model_data {
    double parameter_output_scale;          ///< output scale for running parameters
    @ModelName@_slha<algorithm_type> model; ///< running parameters and pole masses
 };
-
-Model_data::Model_data()
-   : input()
-   , physical_input()
-   , qedqcd()
-   , settings()
-   , parameter_output_scale(0.)
-   , model()
-{
-}
 
 /// current handles
 typedef std::map<Handle_id, Model_data> Handle_map;
