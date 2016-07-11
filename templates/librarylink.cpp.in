@@ -136,9 +136,6 @@ struct Model_data {
 typedef std::map<Handle_id, Model_data> Handle_map;
 Handle_map handles;
 
-/// used handle numbers
-static Handle_id used_ids = 0;
-
 /// mutex to lock global variables
 std::mutex mtx;
 
@@ -148,6 +145,7 @@ std::mutex mtx;
 
 Handle_id get_new_handle()
 {
+   static Handle_id used_ids = 0;
    LOCK_MUTEX();
    return used_ids++;
 }
