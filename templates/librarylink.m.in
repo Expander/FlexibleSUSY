@@ -16,6 +16,9 @@ FS@ModelName@CalculateSpectrum::warning = "`1`";
 FS@ModelName@CalculateObservables::error = "`1`";
 FS@ModelName@CalculateObservables::warning = "`1`";
 
+FS@ModelName@::info = "`1`";
+FS@ModelName@Message[s_] := Message[FS@ModelName@::info, s];
+
 fsDefaultSettings = {
       precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
       maxIterations -> 0,                (* FlexibleSUSY[1] *)

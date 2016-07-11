@@ -51,6 +51,37 @@ using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
 typedef mint Handle_id;
 
+class Cout_redirect {
+public:
+   explicit Cout_redirect(MLINK link_)
+      : link(link_)
+      , buffer()
+      , old_cout(std::cout.rdbuf(buffer.rdbuf()))
+      , old_cerr(std::cerr.rdbuf(buffer.rdbuf()))
+      {}
+
+   ~Cout_redirect() {
+      std::cout.rdbuf(old_cout);
+      std::cerr.rdbuf(old_cerr);
+      flush();
+   }
+
+private:
+   MLINK link;               ///< redirect to this link
+   std::stringstream buffer; ///< buffer caching stdout
+   std::streambuf* old_cout; ///< original stdout buffer
+   std::streambuf* old_cerr; ///< original stderr buffer
+
+   void flush() {
+      std::string line;
+      while (std::getline(buffer, line)) {
+         MLPutFunction(link, "CompoundExpression", 2);
+         MLPutFunction(link, "FS@ModelName@Message", 1);
+         MLPutString(link, line.c_str());
+      }
+   }
+};
+
 namespace flexiblesusy {
 class EUnknownHandle : public Error {
 public:
@@ -555,7 +586,11 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    try {
       Model_data data = find_data(hid);
 
-      calculate_spectrum(data, link);
+      {
+         Cout_redirect crd(link);
+         calculate_spectrum(data, link);
+      }
+
       check_spectrum(data, link);
       put_spectrum(data.model, link);
 
@@ -590,6 +625,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
             "FS@ModelName@CalculateSpectrum[]?");
       }
 
+      Cout_redirect crd(link);
       const @ModelName@_observables observables(
          calculate_observables(data.model, data.qedqcd, data.physical_input));
       put_observables(observables, link);
