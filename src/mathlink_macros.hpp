@@ -16,6 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#ifndef MATHLINK_MACROS_H
+#define MATHLINK_MACROS_H
+
 #include "mathlink.h"
 
 #include <complex>
@@ -116,3 +119,5 @@ void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std
    MLPutRule(link, name, heads);
    MLPut(link, t);
 }
+
+#endif // MATHLINK_MACROS_H
