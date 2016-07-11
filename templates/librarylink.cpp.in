@@ -170,8 +170,9 @@ static Handle_id get_handle_from(MLINK link)
 {
    Handle_id hid;
 
-   // Handle_id is a typedef for mint and mint is a typedef for long
-   MLGetLongInteger(link, &hid);
+   // Handle_id is a typedef for mint and mint is a typedef for
+   // (long) (long) int depending on platform and Mathematica version
+   MLGet(link, &hid);
 
    return hid;
 }
