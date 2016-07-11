@@ -95,7 +95,7 @@ public:
 
 class EWrongNumberOfParameters : public Error {
 public:
-   explicit EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
+   EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
       : pars(pars_), expected(expected_) {}
    virtual ~EWrongNumberOfParameters() {}
    virtual std::string what() const {
@@ -107,7 +107,7 @@ public:
 
 class EInvalidSpectrum : public Error {
 public:
-   explicit EInvalidSpectrum() {}
+   EInvalidSpectrum() {}
    virtual ~EInvalidSpectrum() {}
    virtual std::string what() const { return "Invalid spectrum"; }
 };
