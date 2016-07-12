@@ -37,7 +37,6 @@
 
 #include <iostream>
 #include <map>
-#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -136,17 +135,11 @@ struct Model_data {
 typedef std::map<Handle_id, Model_data> Handle_map;
 Handle_map handles;
 
-/// mutex to lock global variables
-std::mutex mtx;
-
-#define LOCK_MUTEX() std::lock_guard<std::mutex> __lg(mtx)
-
 /******************************************************************/
 
 Handle_id get_new_handle()
 {
    static Handle_id used_ids = 0;
-   LOCK_MUTEX();
    return used_ids++;
 }
 
@@ -154,8 +147,6 @@ Handle_id get_new_handle()
 
 Model_data find_data(Handle_id hid)
 {
-   LOCK_MUTEX();
-
    const Handle_map::iterator handle = handles.find(hid);
 
    if (handle == handles.end())
@@ -535,10 +526,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 
       const Handle_id hid = get_new_handle();
 
-      {
-         LOCK_MUTEX();
-         handles.emplace(hid, data);
-      }
+      handles.emplace(hid, data);
 
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
@@ -559,14 +547,10 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
    const Handle_id hid = MArgument_getInteger(Args[0]);
 
-   {
-      LOCK_MUTEX();
+   const Handle_map::iterator handle = handles.find(hid);
 
-      const Handle_map::iterator handle = handles.find(hid);
-
-      if (handle != handles.end())
-         handles.erase(handle);
-   }
+   if (handle != handles.end())
+      handles.erase(handle);
 
    return LIBRARY_NO_ERROR;
 }
@@ -592,10 +576,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       check_spectrum(data, link);
       put_spectrum(data.model, link);
 
-      {
-         LOCK_MUTEX();
-         handles[hid] = data;
-      }
+      handles[hid] = data;
    } catch (const flexiblesusy::Error& e) {
       put_error_output(link);
    }
