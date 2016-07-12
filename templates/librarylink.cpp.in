@@ -179,10 +179,12 @@ static Handle_id get_handle_from(MLINK link)
 
 /******************************************************************/
 
-static long number_of_args(MLINK link)
+static long number_of_args(MLINK link, const std::string& head)
 {
    long argc;
-   MLCheckFunction(link, "List", &argc);
+
+   if (!MLCheckFunction(link, head.c_str(), &argc))
+      std::cerr << "Error: argument is not a " << head << std::endl;
 
    return argc;
 }
@@ -192,7 +194,7 @@ static long number_of_args(MLINK link)
 bool check_number_of_args(MLINK link, unsigned number_of_arguments,
                           const std::string& function_name)
 {
-   const long n_given = number_of_args(link);
+   const long n_given = number_of_args(link, "List");
    const bool ok = n_given == number_of_arguments;
 
    if (!ok) {
