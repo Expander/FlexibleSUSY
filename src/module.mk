@@ -1,5 +1,5 @@
 DIR          := src
-MODNAME      := flexisusy
+MODNAME      := src
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -137,7 +137,7 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFLEXI     := $(DIR)/libflexisusy$(LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
