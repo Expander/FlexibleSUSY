@@ -17,7 +17,8 @@ STANDALONE_DIR := \
 		$(DIR)/standalone-rge \
 		$(DIR)/tower
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(EXAMPLES_EXE)
 		@true
@@ -25,10 +26,13 @@ all-$(MODNAME): $(EXAMPLES_EXE)
 clean-$(MODNAME)-dep:
 		-rm -f $(EXAMPLES_DEP)
 
+clean-$(MODNAME)-lib:
+		@true
+
 clean-$(MODNAME)-obj:
 		-rm -f $(EXAMPLES_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXAMPLES_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)

@@ -43,12 +43,19 @@ LIBtest_call_tsil     := \
 LIBtest_call_tsil_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)
 
-.PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		 clean-$(MODNAME)-src distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj clean-$(MODNAME)-src \
+		distclean-$(MODNAME)
+
+all-$(MODNAME): $(LIBtest_call_tsil) $(EXEtest_call_tsil_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBtest_call_tsil_DEP)
 		-rm -f $(EXEtest_call_tsil_DEP)
+
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBtest_call_tsil)
 
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBtest_call_tsil_OBJ)
@@ -62,8 +69,7 @@ clean-$(MODNAME)-src:
 clean-$(MODNAME): clean-$(MODNAME)-src
 # END:   NOT EXPORTED ##########################################
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBtest_call_tsil)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXEtest_call_tsil_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)

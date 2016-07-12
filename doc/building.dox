@@ -225,6 +225,10 @@ object files, libraries or executables:
 
      make clean-dep  # deletes all .d files
 
+     make clean-executables # deletes all .x files
+
+     make clean-lib  # deletes all libraries
+
      make clean-obj  # deletes all .o files
 
 For each model `<model>` or addon there are specific clean targets to
@@ -235,6 +239,8 @@ remove model-specific files:
      make distclean-<model> # same as `make clean-<model>'
 
      make clean-<model>-dep # deletes .d files
+
+     make clean-<model>-lib # deletes library
 
      make clean-<model>-obj # deletes .o files
 

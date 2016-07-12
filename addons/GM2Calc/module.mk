@@ -68,22 +68,29 @@ LIBGM2Calc     := \
 
 LIBGM2Calc_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
+
+all-$(MODNAME): $(LIBGM2Calc) $(EXEGM2Calc_EXE)
+		@true
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBGM2Calc_DEP)
 		-rm -f $(EXEGM2Calc_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBGM2Calc)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBGM2Calc_OBJ)
 		-rm -f $(EXEGM2Calc_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBGM2Calc)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXEGM2Calc_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -103,7 +110,7 @@ $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAG
 $(LIBGM2Calc): $(LIBGM2Calc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI)
+$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^)
 
 ALLDEP += $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP)

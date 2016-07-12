@@ -927,23 +927,23 @@ void Standard_model::initial_guess_for_parameters()
 
    v = Re(Electroweak_constants::vev);
 
-   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0) = mu_guess;
-   topDRbar(1,1) = mc_guess;
-   topDRbar(2,2) = mt_guess;
-   Yu = -((1.4142135623730951*topDRbar) / v).transpose();
+   Eigen::Matrix<double,3,3> upQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
+   upQuarksDRbar(0,0) = mu_guess;
+   upQuarksDRbar(1,1) = mc_guess;
+   upQuarksDRbar(2,2) = mt_guess;
+   Yu = -((1.4142135623730951*upQuarksDRbar) / v).transpose();
 
-   Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
-   bottomDRbar(0,0) = md_guess;
-   bottomDRbar(1,1) = ms_guess;
-   bottomDRbar(2,2) = mb_guess;
-   Yd = ((1.4142135623730951*bottomDRbar)/v).transpose();
+   Eigen::Matrix<double,3,3> downQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
+   downQuarksDRbar(0,0) = md_guess;
+   downQuarksDRbar(1,1) = ms_guess;
+   downQuarksDRbar(2,2) = mb_guess;
+   Yd = ((1.4142135623730951*downQuarksDRbar)/v).transpose();
 
-   Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   electronDRbar(0,0) = me_guess;
-   electronDRbar(1,1) = mm_guess;
-   electronDRbar(2,2) = mtau_guess;
-   Ye = ((1.4142135623730951*electronDRbar)/v).transpose();
+   Eigen::Matrix<double,3,3> downLeptonsDRbar(Eigen::Matrix<double,3,3>::Zero());
+   downLeptonsDRbar(0,0) = me_guess;
+   downLeptonsDRbar(1,1) = mm_guess;
+   downLeptonsDRbar(2,2) = mtau_guess;
+   Ye = ((1.4142135623730951*downLeptonsDRbar)/v).transpose();
 
    Lambdax = Sqr(MH) / Sqr(v);
 
@@ -1045,46 +1045,46 @@ double Standard_model::calculate_theta_w(double alpha_em_drbar)
 
 void Standard_model::calculate_Yu_DRbar()
 {
-   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
-   topDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
-   topDRbar(2,2)      = qedqcd.displayPoleMt();
+   Eigen::Matrix<double,3,3> upQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
+   upQuarksDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
+   upQuarksDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
+   upQuarksDRbar(2,2)      = qedqcd.displayPoleMt();
 
    if (get_thresholds()) {
-      topDRbar(2,2) = calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
+      upQuarksDRbar(2,2) = calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
    }
 
-   Yu = -((1.4142135623730951*topDRbar)/v).transpose();
+   Yu = -((1.4142135623730951*upQuarksDRbar)/v).transpose();
 }
 
 void Standard_model::calculate_Yd_DRbar()
 {
-   Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
-   bottomDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
-   bottomDRbar(1,1)   = qedqcd.displayMass(softsusy::mStrange);
-   bottomDRbar(2,2)   = qedqcd.displayMass(softsusy::mBottom);
+   Eigen::Matrix<double,3,3> downQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
+   downQuarksDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
+   downQuarksDRbar(1,1)   = qedqcd.displayMass(softsusy::mStrange);
+   downQuarksDRbar(2,2)   = qedqcd.displayMass(softsusy::mBottom);
 
    if (get_thresholds()) {
-      bottomDRbar(2,2) = calculate_MFd_DRbar(qedqcd.displayMass(softsusy::mBottom), 2);
+      downQuarksDRbar(2,2) = calculate_MFd_DRbar(qedqcd.displayMass(softsusy::mBottom), 2);
    }
 
-   Yd = ((1.4142135623730951*bottomDRbar)/v).transpose();
+   Yd = ((1.4142135623730951*downQuarksDRbar)/v).transpose();
 }
 
 void Standard_model::calculate_Ye_DRbar()
 {
-   Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   electronDRbar(0,0) = qedqcd.displayPoleMel();
-   electronDRbar(1,1) = qedqcd.displayPoleMmuon();
-   electronDRbar(2,2) = qedqcd.displayPoleMtau();
+   Eigen::Matrix<double,3,3> downLeptonsDRbar(Eigen::Matrix<double,3,3>::Zero());
+   downLeptonsDRbar(0,0) = qedqcd.displayPoleMel();
+   downLeptonsDRbar(1,1) = qedqcd.displayPoleMmuon();
+   downLeptonsDRbar(2,2) = qedqcd.displayPoleMtau();
 
    if (get_thresholds()) {
-      electronDRbar(0,0) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mElectron), 0);
-      electronDRbar(1,1) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mMuon), 1);
-      electronDRbar(2,2) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mTau), 2);
+      downLeptonsDRbar(0,0) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mElectron), 0);
+      downLeptonsDRbar(1,1) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mMuon), 1);
+      downLeptonsDRbar(2,2) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mTau), 2);
    }
 
-   Ye = ((1.4142135623730951*electronDRbar)/v).transpose();
+   Ye = ((1.4142135623730951*downLeptonsDRbar)/v).transpose();
 
 }
 

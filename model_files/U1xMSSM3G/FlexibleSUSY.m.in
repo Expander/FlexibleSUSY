@@ -138,13 +138,13 @@ LowScaleInput = {
     {Temporary[gX1], 0},
     {vd, vDRbar Cos[ArcTan[TanBeta]]},
     {vu, vDRbar Sin[ArcTan[TanBeta]]},
-    {Yu[1,1], Sqrt[2] topDRbar[1,1] / vu},
-    {Yu[2,2], Sqrt[2] topDRbar[2,2] / vu},
-    {Yu[3,3], Sqrt[2] topDRbar[3,3] / vu},
+    {Yu[1,1], Sqrt[2] upQuarksDRbar[1,1] / vu},
+    {Yu[2,2], Sqrt[2] upQuarksDRbar[2,2] / vu},
+    {Yu[3,3], Sqrt[2] upQuarksDRbar[3,3] / vu},
     {Yd, Automatic},
-    {Ye[1,1], Sqrt[2] electronDRbar[1,1] / vd},
-    {Ye[2,2], Sqrt[2] electronDRbar[2,2] / vd},
-    {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vd}
+    {Ye[1,1], Sqrt[2] downLeptonsDRbar[1,1] / vd},
+    {Ye[2,2], Sqrt[2] downLeptonsDRbar[2,2] / vd},
+    {Ye[3,3], Sqrt[2] downLeptonsDRbar[3,3] / vd}
 };
 
 
@@ -164,13 +164,13 @@ InitialGuessAtLowScale = {
     {L[lw], 0},		       
     {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
     {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
-    {Yu[1,1], Sqrt[2] topDRbar[1,1] / vu},
-    {Yu[2,2], Sqrt[2] topDRbar[2,2] / vu},
-    {Yu[3,3], Sqrt[2] topDRbar[3,3] / vu},
+    {Yu[1,1], Sqrt[2] upQuarksDRbar[1,1] / vu},
+    {Yu[2,2], Sqrt[2] upQuarksDRbar[2,2] / vu},
+    {Yu[3,3], Sqrt[2] upQuarksDRbar[3,3] / vu},
     {Yd, Automatic},
-    {Ye[1,1], Sqrt[2] electronDRbar[1,1] / vd},
-    {Ye[2,2], Sqrt[2] electronDRbar[2,2] / vd},
-    {Ye[3,3], Sqrt[2] electronDRbar[3,3] / vd}
+    {Ye[1,1], Sqrt[2] downLeptonsDRbar[1,1] / vd},
+    {Ye[2,2], Sqrt[2] downLeptonsDRbar[2,2] / vd},
+    {Ye[3,3], Sqrt[2] downLeptonsDRbar[3,3] / vd}
 };
 
 
