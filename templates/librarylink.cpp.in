@@ -604,9 +604,14 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
             "FS@ModelName@CalculateSpectrum[]?");
       }
 
-      Cout_redirect crd(link);
-      const @ModelName@_observables observables(
-         calculate_observables(data.model, data.qedqcd, data.physical_input));
+      @ModelName@_observables observables;
+
+      {
+         Cout_redirect crd(link);
+         observables =
+            calculate_observables(data.model, data.qedqcd, data.physical_input);
+      }
+
       put_observables(observables, link);
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
