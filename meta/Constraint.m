@@ -375,10 +375,16 @@ CalculateScale[expr_, scaleName_String] :=
            Return[result];
           ];
 
+CreateBetasForParsIn[expr_] :=
+    Module[{pars},
+           pars = Parameters`FSModelParameters /. Parameters`FindAllParametersClassified[expr];
+           Global`BETA /@ pars
+          ];
+
 CalculateScale[expr_Equal, scaleName_String] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[expr];
-           result = result <> Parameters`CreateLocalConstRefsForBetas[expr];
+           result = result <> Parameters`CreateLocalConstRefsForBetas[CreateBetasForParsIn[expr]];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];

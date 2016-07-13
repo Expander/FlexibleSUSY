@@ -1273,7 +1273,8 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
 
 CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", pars, modelPars},
-           pars = FindAllParametersClassified[expr];
+           pars = Cases[expr, Global`BETA[p_] | Global`BETA[p_][___] :> p, {0, Infinity}];
+           pars = FindAllParametersClassified[pars];
            modelPars = FSModelParameters /. pars;
            (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
            Return[result];
