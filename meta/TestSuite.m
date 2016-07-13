@@ -2,6 +2,7 @@
 BeginPackage["TestSuite`"];
 
 TestEquality::usage="tests equality of two expressions";
+TestCloseRel::usage="tests relative numerical difference."
 TestNonEquality::usage="tests inequality of two expressions";
 TestCPPCode::usage="tests a C/C++ code snippet for an expected
 result";
@@ -81,6 +82,19 @@ RunCPPProgram[{preface_String, expr_String}, fileName_String:"tmp.cpp"] :=
            DeleteFile[{"a.out", "a.out.log", fileName}];
            Return[{output, code}];
           ];
+
+TestCloseRel[a_?NumericQ, b_?NumericQ, rel_?NumericQ] :=
+    If[Abs[a] < rel,
+       TestEquality[Abs[a - b] < rel, True],
+       TestEquality[Abs[(a - b)/a] < rel, True]
+      ];
+
+TestCloseRel[a_List, b_List, rel_?NumericQ] :=
+    MapThread[TestCloseRel[#1,#2,rel]&, {Flatten[a], Flatten[b]}];
+
+TestCloseRel[a___] := (
+    Print["FAIL: ", {a}];
+    TestEquality[0,1]);
 
 End[];
 

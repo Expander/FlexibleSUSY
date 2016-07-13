@@ -99,19 +99,6 @@ slhaData = ReadSLHAString[slhaStr, parameters];
 
 delta = 1*^-8;
 
-TestCloseRel[a_?NumericQ, b_?NumericQ, rel_?NumericQ] :=
-    If[Abs[a] < rel,
-       TestEquality[Abs[a - b] < rel, True],
-       TestEquality[Abs[(a - b)/a] < rel, True]
-      ];
-
-TestCloseRel[a_List, b_List, rel_?NumericQ] :=
-    MapThread[TestCloseRel[#1,#2,rel]&, {Flatten[a], Flatten[b]}];
-
-TestCloseRel[a___] := (
-    Print["FAIL: ", {a}];
-    TestEquality[0,1]);
-
 TestCloseRel[g1 * Sqrt[5/3] /. slhaData, g1 /. specML, delta];
 TestCloseRel[g2 /. slhaData, g2 /. specML, delta];
 TestCloseRel[g3 /. slhaData, g3 /. specML, delta];
