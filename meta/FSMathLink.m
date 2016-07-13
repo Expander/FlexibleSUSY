@@ -114,8 +114,10 @@ SetInputParameterArgumentsAndType[{par_, CConversion`TensorType[st_, dim1_, dim2
 SetInputParameterArgumentsAndTypes[inputPars_List] :=
     Join @@ SetInputParameterArgumentsAndType /@ inputPars;
 
+SetInputParameterArguments[{}] := "";
+
 SetInputParameterArguments[inputPars_List] :=
-    Utils`StringJoinWithSeparator[ToString[#[[1]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
+    ",\n" <> Utils`StringJoinWithSeparator[ToString[#[[1]]]& /@ SetInputParameterArgumentsAndTypes[inputPars], ",\n"];
 
 GetNumberOfSpectrumEntries[pars_List] :=
     Length[pars];

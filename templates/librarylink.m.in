@@ -115,7 +115,7 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[ms2GeV],
             OptionValue[mcmc],
             OptionValue[alphaEm0],
-            OptionValue[Mh],
+            OptionValue[Mh]
 
             (* @ModelName@ input parameters *)
 @setInputParameterArguments@
