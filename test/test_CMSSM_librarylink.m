@@ -57,8 +57,8 @@ obsML = FSCMSSMCalculateObservables[handle];
 
 FSCMSSMCloseHandle[handle];
 
-inputFile = "test/test_CMSSM_mathlink.in.spc";
-outputFile = "test/test_CMSSM_mathlink.out.spc";
+inputFile = "test/test_CMSSM_librarylink.in.spc";
+outputFile = "test/test_CMSSM_librarylink.out.spc";
 cmd = "models/CMSSM/run_CMSSM.x --slha-input-file=" <> inputFile <>
     " --slha-output-file=" <> outputFile;
 

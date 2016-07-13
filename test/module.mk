@@ -324,7 +324,7 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
 TEST_META += \
 		$(DIR)/test_CMSSM_3loop_beta.m \
-		$(DIR)/test_CMSSM_mathlink.m
+		$(DIR)/test_CMSSM_librarylink.m
 endif
 
 TEST_OBJ := \
