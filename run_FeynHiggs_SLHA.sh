@@ -124,7 +124,7 @@ rm -f "${fh_out}"
 Mh=
 DMh=
 
-${fh} "${fh_in}" 400203110 >/dev/null 2>&1
+${fh} "${fh_in}" 4002023110 >/dev/null 2>&1
 
 if [ -e "${fh_out}" ] ; then
     Mh=$(awk -v block=MASS "${print_slha_block_awk}" "${fh_out}" | \

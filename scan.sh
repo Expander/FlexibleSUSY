@@ -617,7 +617,7 @@ EOF
 
     MhSuSpect=$(run_suspect "${HOME}/packages/suspect-2.43/a.out")
 
-    FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.11.3/build")
+    FHout=$(run_fh "${HOME}/packages/FeynHiggs-2.12.0/build")
     MhFH=$(echo "$FHout" | awk '{ print $1 }')
     DeltaMhFH=$(echo "$FHout" | awk '{ print $2 }')
 
