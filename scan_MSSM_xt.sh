@@ -3,8 +3,13 @@ stop=3.5
 n_points=60
 TB=5
 
-for MS in 1000 2000 10000
+DIR=${OUTPUT_DIR:-.}
+
+for MS in 1000 2000 10000 30000
 do
+
+echo "Running with MS = ${MS} (saving in ${DIR})"
+
 slha_templ="
 Block FlexibleSUSY
     0   1.000000000e-05      # precision goal
@@ -80,7 +85,7 @@ echo "calculating Mh(Xt)"
           --step-size=linear \
           --TB=${TB} \
           --MS=${MS} \
-    | tee xt_TB-${TB}_MS-${MS}.dat
+    | tee "${DIR}"/xt_TB-${TB}_MS-${MS}.dat
 
 
 echo "calculate DeltaMt uncertainty in the MSSM"
@@ -94,7 +99,7 @@ EOF
         --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat
+        | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat
 
 { echo "$slha_templ";
   cat <<EOF
@@ -105,11 +110,11 @@ EOF
         --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat
+        | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat
 
-paste xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat \
-      xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat \
-      > xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt.dat
+paste "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_low.dat \
+      "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt_high.dat \
+      > "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_DeltaMt.dat
 
 echo "calculate Q uncertainty in the MSSM"
 
@@ -118,7 +123,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMMuBMu_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty.dat
+        | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from Q in the tower"
 
@@ -127,7 +132,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
 echo "calculating parametric uncertainty from Q_match in the tower"
 
@@ -136,7 +141,7 @@ echo "$slha_templ" | \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat
 
 echo "calculating parametric uncertainty from delta in the tower"
 
@@ -145,28 +150,29 @@ echo "$slha_templ_delta_low" | \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat
 
 echo "$slha_templ_delta_high" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
-        | tee xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat
 
 printf "# %14s %16s\n" \
        "MS" "Mh" \
-       > xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
+       > "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
 
-awk '{ if ($1 !~ "#") { printf "%16s %16s\n", $1, $2 } }' xt_TB-${TB}_MS-${MS}.dat \
-    >> xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
+awk '{ if ($1 !~ "#") { printf "%16s %16s\n", $1, $2 } }' \
+    "${DIR}"/xt_TB-${TB}_MS-${MS}.dat \
+    >> "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat
 
-paste xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat \
-      xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat \
-      xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat \
-      xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat \
-      xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat \
-      > xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$
+paste "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Mh.dat \
+      "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat \
+      "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat \
+      "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_delta_low.dat \
+      "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_delta_high.dat \
+      > "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$
 
 printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
        "MS" "Mh" \
@@ -174,17 +180,17 @@ printf "# %14s %16s %16s %16s %16s %16s %16s %16s %16s %16s\n" \
        "MS" "Qmatch uncert." \
        "MS" "lambda(2L) low" \
        "MS" "lambda(2L) high" \
-       > xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
+       > "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
 
-cat xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$ >> xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
+cat "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}.dat.$$ \
+    >> "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat
 
     plot_scale="
-set terminal pdfcairo enhanced size 5in,4in
-set output 'xt_TB-${TB}_MS-${MS}.pdf'
-set key box top center width -2 at graph 0.5, graph 1.4 opaque
+set terminal pdfcairo enhanced size 5in,3.4in
+set output '${DIR}/xt_TB-${TB}_MS-${MS}.pdf'
+set key box bottom right width -2
 set border back
 set grid
-set tmargin 8
 
 set style line 1 lt 1 dt 1 lw 2 lc rgb '#FF0000'
 set style line 2 lt 1 dt 2 lw 2 lc rgb '#0000FF'
@@ -207,25 +213,27 @@ set ylabel 'M_h / GeV'
 min(x,y) = x < y ? x : y
 max(x,y) = x < y ? y : x
 
-filename = 'xt_TB-${TB}_MS-${MS}.dat'
-filename2 = 'xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat'
+filename = '${DIR}/xt_TB-${TB}_MS-${MS}.dat'
+filename2 = '${DIR}/xt_MSSMtower_TB-${TB}_MS-${MS}_uncertainties.dat'
 
-plot [:] [:] \
-     filename u 1:2 t 'FS/MSSM-tower' w lines ls 1, \
-     filename u 1:4 t 'FS/MSSM' w lines ls 3, \
-     filename u 1:5 t 'FS/HSSUSY' w lines ls 2, \
+plot [-3.5:3.5] [:] \
+     filename u 1:2 t 'FlexibleSUSY/MSSM-tower' w lines ls 1, \
+     filename u 1:4 t 'FlexibleSUSY/MSSM' w lines ls 3, \
+     filename u 1:5 t 'FlexibleSUSY/HSSUSY' w lines ls 2, \
      filename u 1:6 t 'SOFTSUSY 3.6.2' w lines ls 4, \
-     filename u 1:7 t 'FS/MSSM SPheno-like' w lines ls 5, \
      filename u 1:8 t 'FeynHiggs 2.11.3' w lines ls 8, \
+     filename u 1:(\$8-\$9):(\$8+\$9) t '' w filledcurves ls 9 fs transparent solid 0.3, \
      filename u 1:10 t 'SUSYHD 1.0.2' w lines ls 10, \
+     filename u 1:(\$10-\$11):(\$10+\$11) t '' w filledcurves ls 11 fs transparent solid 0.3, \
      filename u 1:12 t 'SPheno 3.3.8' w lines ls 6, \
-     filename u 1:14 t 'FS/MSSM m_t(M_S)' w points ls 12, \
-     filename u 1:15 t 'FS/MSSM m_t(M_S) SPheno-like' w points ls 13, \
-     filename u 1:16 t 'FS/MSSM-tower (0L y_t(M_S))' w lines ls 14, \
-     filename2 u 1:(\$2-\$4/2):(\$2+\$4/2) t '{/Symbol D} Q' w filledcurves ls 7 fs transparent solid 0.3, \
-     filename2 u 1:(\$2-\$6/2):(\$2+\$6/2) t '{/Symbol D} Q_{match}' w filledcurves ls 5 fs transparent solid 0.3, \
-     filename2 u 1:(min(\$8,\$10)):(max(\$8,\$10)) t '{/Symbol D} {/Symbol l}^{(2)}' w filledcurves ls 10 fs transparent solid 0.3
-
+     filename u 1:17 t 'SuSpect 2.43' w lines ls 5, \
+#    filename u 1:7 t 'FS/MSSM SPheno-like' w lines ls 5, \
+#    filename u 1:14 t 'FS/MSSM m_t(M_S)' w points ls 12, \
+#    filename u 1:15 t 'FS/MSSM m_t(M_S) SPheno-like' w points ls 13, \
+#    filename u 1:16 t 'FS/MSSM-tower (0L y_t(M_S))' w lines ls 14, \
+#    filename2 u 1:(\$2-\$4/2):(\$2+\$4/2) t '{/Symbol D} Q' w filledcurves ls 7 fs transparent solid 0.3, \
+#    filename2 u 1:(\$2-\$6/2):(\$2+\$6/2) t '{/Symbol D} Q_{match}' w filledcurves ls 5 fs transparent solid 0.3, \
+#    filename2 u 1:(min(\$8,\$10)):(max(\$8,\$10)) t '{/Symbol D} {/Symbol l}^{(2)}' w filledcurves ls 10 fs transparent solid 0.3
 "
 
 echo "$plot_scale" | gnuplot
