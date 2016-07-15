@@ -1,7 +1,12 @@
+Flexiblesusy-1.5.2 [not released yet]
+
+ * Bugfix (commit a5342eb): Avoid non-portable use of sed in
+   createmodel.  This fixes `make install-src' on Mac.
+
 Flexiblesusy-1.5.1 [July, 12 2017]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
-   funcion in parameter regions with p << m1,m2 and m1 close to m2.
+   function in parameter regions with p << m1,m2 and m1 close to m2.
 
  * Bugfix (commit fc6d509): Fix makefile bug in the tarball by
    shipping all .m files that appear in the list of dependencies for
