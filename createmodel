@@ -481,8 +481,9 @@ set -- $(find $model_file_dir -type f -iname LesHouches.in\* -not -iname \*~ -ex
 SLHA_input_files="$*"
 
 SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
-    sed -e 's/ / \\\\\\n/g;' \
-        -e 's,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
+    sed -e 's/ / \\\\\\n/g' \
+        -e 's,^\(.\),		$(DIR)/\1,' \
+        -e 's,\\n\(.\),\\n		$(DIR)/\1,g')
 
 message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
