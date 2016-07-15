@@ -119,35 +119,37 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMtower_TB-5.dat
+    > scale_MRSSMtower_TB-5.dat &
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSY_TB-5.dat
+    > scale_MRSSMMSUSY_TB-5.dat &
 
 echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSY/run_MRSSMMSUSY.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSY_TB-5_SPheno-like.dat
+    > scale_MRSSMMSUSY_TB-5_SPheno-like.dat &
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSYYuatMS/run_MRSSMMSUSYYuatMS.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSYYuatMS_TB-5.dat
+    > scale_MRSSMMSUSYYuatMS_TB-5.dat &
+
+wait
 
 echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMMSUSYYuatMS/run_MRSSMMSUSYYuatMS.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSYYuatMS_TB-5_SPheno-like.dat
+    > scale_MRSSMMSUSYYuatMS_TB-5_SPheno-like.dat &
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2 \
@@ -155,7 +157,7 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
     --type=SPheno \
-    > scale_SPhenoMRSSM_TB-5_1L.dat
+    > scale_SPhenoMRSSM_TB-5_1L.dat &
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2 \
@@ -163,7 +165,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
     --type=SPheno \
-    > scale_SPhenoMRSSM_TB-5_2L.dat
+    > scale_SPhenoMRSSM_TB-5_2L.dat &
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
@@ -171,7 +173,9 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
     --type=SPheno \
-    > scale_SPhenoMRSSM_TB-5_1L_FSlike.dat
+    > scale_SPhenoMRSSM_TB-5_1L_FSlike.dat &
+
+wait
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
@@ -179,7 +183,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
     --type=SPheno \
-    > scale_SPhenoMRSSM_TB-5_2L_FSlike.dat
+    > scale_SPhenoMRSSM_TB-5_2L_FSlike.dat &
 
 echo "calculating parametric uncertainty from Q in FlexibleSUSY/MRSSM"
 
@@ -188,7 +192,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMMSUSY_TB-5_scale_uncertainty.dat
+    > scale_MRSSMMSUSY_TB-5_scale_uncertainty.dat &
 
 # calculate parametric uncertainty from Q
 echo "calculating parametric uncertainty from Q in SPheno"
@@ -199,7 +203,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
     --type=SPheno \
-    > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat
+    > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat &
 
 echo "calculating parametric uncertainty from Q in the tower"
 
@@ -208,7 +212,9 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMtower_TB-5_scale_uncertainty.dat
+    > scale_MRSSMtower_TB-5_scale_uncertainty.dat &
+
+wait
 
 echo "calculating parametric uncertainty from Q_match in the tower"
 
@@ -217,7 +223,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat
+    > scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat &
 
 echo "run MRSSM-tower with yt(0L)"
 
@@ -231,7 +237,9 @@ EOF
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
-    > scale_MRSSMtower_TB-5_yt-0L.dat
+    > scale_MRSSMtower_TB-5_yt-0L.dat &
+
+wait
 
 plot_scale="
 set terminal pdfcairo size 5in,4in
