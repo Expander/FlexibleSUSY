@@ -227,7 +227,7 @@ Block FlexibleSUSY
    19   1    # mf tree-level matching
 EOF
 } | ./utils/scan-slha.sh \
-    --spectrum-generator=./MRSSMtower_Qmatch_uncertainty.sh \
+    --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
     --scan-range=EXTPAR[0]=91~100000:$n_points \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
