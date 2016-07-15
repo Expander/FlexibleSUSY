@@ -44,7 +44,9 @@ SUSYScaleInput = {
     {MuD   , SARAH`LHInput[MuD]},
     {MuU   , SARAH`LHInput[MuU]},
     {B[MuD], 0},
-    {B[MuU], 0}
+    {B[MuU], 0},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtSUSYScale = {
