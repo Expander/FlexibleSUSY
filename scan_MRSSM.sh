@@ -219,6 +219,20 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat
 
+echo "run MRSSM-tower with yt(0L)"
+
+{ echo "$slha_templ";
+  cat <<EOF
+Block FlexibleSUSY
+   19   1    # mf tree-level matching
+EOF
+} | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_Qmatch_uncertainty.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_yt-0L.dat
+
 plot_scale="
 set terminal pdfcairo size 5in,4in
 set tmargin 7
