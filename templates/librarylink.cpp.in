@@ -160,11 +160,10 @@ Handle_id get_new_handle()
    if (handles.size() >= max_handles)
       throw ENotEnoughFreeHandles(handles.size());
 
-   Handle_id hid;
+   Handle_id hid = 0;
 
-   for (hid = std::numeric_limits<Handle_id>::min();
-        hid <= std::numeric_limits<Handle_id>::max() &&
-           (handles.find(hid) != handles.end()); hid++);
+   while (handles.find(hid) != handles.end())
+      hid++;
 
    return hid;
 }
