@@ -812,9 +812,6 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
-                    (* TODO: remove the following 2 lines: *)
-                    a_[Susyno`LieGroups`i1] :> a /.
-                    a_[Susyno`LieGroups`i1, SARAH`i2] :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
                     Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.
