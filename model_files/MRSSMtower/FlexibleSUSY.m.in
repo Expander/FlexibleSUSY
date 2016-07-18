@@ -11,7 +11,8 @@ MINPAR = {
 };
 
 EXTPAR = {
-    {0, Ms}
+    {0, Ms},
+    {200, sf}
 };
 
 EWSBOutputParameters = { mHd2, mHu2, vS, vT };
@@ -27,11 +28,11 @@ SUSYScaleInput = {
     {md2, UNITMATRIX[3] Ms^2},
     {ml2, UNITMATRIX[3] Ms^2},
     {me2, UNITMATRIX[3] Ms^2},
-    {mS2, Ms^2},
-    {mT2, Ms^2},
-    {moc2  , Ms^2},
-    {mRd2  , Ms^2},
-    {mRu2  , Ms^2},
+    {mS2, sf Ms^2},
+    {mT2, sf Ms^2},
+    {moc2  , sf Ms^2},
+    {mRd2  , sf Ms^2},
+    {mRu2  , sf Ms^2},
     {\[Mu], 0},
     {B[\[Mu]], Ms^2/(TanBeta + 1/TanBeta)},
     {LamSD , SARAH`LHInput[LamSD]},
