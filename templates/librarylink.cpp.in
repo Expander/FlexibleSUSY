@@ -32,7 +32,7 @@
 #include "wrappers.hpp"
 
 #include "mathlink.h"
-#include "mathlink_macros.hpp"
+#include "mathlink_utils.hpp"
 #include "WolframLibrary.h"
 
 #include <iostream>

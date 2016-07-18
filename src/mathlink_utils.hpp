@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MATHLINK_MACROS_H
-#define MATHLINK_MACROS_H
+#ifndef MATHLINK_UTILS_H
+#define MATHLINK_UTILS_H
 
 #include "mathlink.h"
 
