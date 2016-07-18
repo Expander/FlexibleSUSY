@@ -36,6 +36,7 @@
 #include "WolframLibrary.h"
 
 #include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <string>
@@ -92,6 +93,18 @@ public:
    Handle_id hid;
 };
 
+class ENotEnoughFreeHandles : public Error {
+public:
+   explicit ENotEnoughFreeHandles(std::size_t max_handles_)
+      : max_handles(max_handles_) {}
+   virtual ~ENotEnoughFreeHandles() {}
+   virtual std::string what() const {
+      return "Maximum number of open handles reached: "
+         + ToString(max_handles) + ".  Please close some handles!";
+   }
+   std::size_t max_handles;
+};
+
 class EWrongNumberOfParameters : public Error {
 public:
    EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
@@ -139,8 +152,21 @@ Handle_map handles;
 
 Handle_id get_new_handle()
 {
-   static Handle_id used_ids = 0;
-   return used_ids++;
+   const std::size_t max_handles =
+      std::numeric_limits<Handle_id>::is_signed ?
+      2 * std::numeric_limits<Handle_id>::max() + 1 :
+      std::numeric_limits<Handle_id>::max() + 1;
+
+   if (handles.size() >= max_handles)
+      throw ENotEnoughFreeHandles(handles.size());
+
+   Handle_id hid;
+
+   for (hid = std::numeric_limits<Handle_id>::min();
+        hid <= std::numeric_limits<Handle_id>::max() &&
+           (handles.find(hid) != handles.end()); hid++);
+
+   return hid;
 }
 
 /******************************************************************/
