@@ -3,11 +3,13 @@ n_points=60
 parameter_point="
 Block MINPAR
     3    5                # TanBeta
+Block EXTPAR
+  200    10               # sf
 Block HMIXIN
     301 -0.01             # LSD
     302 -0.01             # LSU
-    303 -0.01             # LTD
-    304 -0.01             # LTU
+    303 -0.5              # LTD
+    304 -0.5              # LTU
     201  1e3              # MuD
     202  1e3              # MuU
 "
@@ -113,6 +115,8 @@ ${slha_templ_spheno_1L}
 Block SPhenoInput   # SPheno specific input 
     7   0              # Skip 2-loop Higgs corrections 
 "
+
+echo "running vanilla MRSSM SGs ..."
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MRSSMtower/run_MRSSMtower.x \
