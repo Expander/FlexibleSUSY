@@ -1203,7 +1203,8 @@ RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
 
 RemoveProtectedHeads[expr_] :=
     expr /. { FlexibleSUSY`LowEnergyConstant[__] -> FlexibleSUSY`LowEnergyConstant[],
-              FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[] };
+              FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[],
+              FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[]};
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
@@ -1271,13 +1272,22 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
            Return[result];
           ];
 
+DefineLocalConstCopyForBeta[{par_, -1}] :=
+    DefineLocalConstCopy[par, "BETAPARAMETER", "beta_"];
+
+DefineLocalConstCopyForBeta[{par_, loops_}] :=
+    Module[{lstr = ToString[loops], parStr = ToValidCSymbolString[par]},
+           "const auto BETA1(" <> lstr <> "," <> parStr <>
+           ") = BETAPARAMETER1(" <> lstr <> "," <> parStr <> ");\n"
+          ];
+
 CreateLocalConstRefsForBetas[expr_] :=
-    Module[{result = "", pars, modelPars},
-           pars = Cases[expr, Global`BETA[p_] | Global`BETA[p_][___] :> p, {0, Infinity}];
-           pars = FindAllParametersClassified[pars];
-           modelPars = FSModelParameters /. pars;
-           (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
-           Return[result];
+    Module[{result = "", exprFull, pars},
+           (* add index to beta function for current loop level *)
+           exprFull = expr /. FlexibleSUSY`BETA[p_] :> FlexibleSUSY`BETA[-1,p];
+           pars = DeleteDuplicates @ \
+                  Cases[exprFull, FlexibleSUSY`BETA[l_,p_] | FlexibleSUSY`BETA[l_,p_][___] :> {p,l}, {0, Infinity}];
+           StringJoin[DefineLocalConstCopyForBeta /@ pars]
           ];
 
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=

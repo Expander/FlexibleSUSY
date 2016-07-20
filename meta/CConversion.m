@@ -810,6 +810,7 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
+                    FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
                     SARAH`Delta[a_,a_]       -> 1 /.

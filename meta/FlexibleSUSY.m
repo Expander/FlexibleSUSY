@@ -52,6 +52,7 @@ MediumPrecision::usage="";
 HighPrecision::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
+BETA::usage = "Head for beta functions"
 FSModelName;
 FSOutputDir = ""; (* directory for generated code *)
 FSLesHouchesList;
