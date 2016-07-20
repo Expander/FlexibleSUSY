@@ -43,7 +43,7 @@ const int @ModelName@_susy_parameters::numberOfParameters;
 }
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(
-   double scale_, double loops_, double thresholds_,
+   double scale_, unsigned loops_, unsigned thresholds_,
    const @ModelName@_input_parameters& input_
    @cCtorParameterList@
 )
