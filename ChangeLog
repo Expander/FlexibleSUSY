@@ -1,5 +1,17 @@
 Flexiblesusy-1.5.2 [not released yet]
 
+ * Feature (commit 4e9ef56): Allow user to access the beta-functions
+   of the model parameters on the r.h.s. of the constraints.  BETA[p]
+   represents the beta function of the parameter p using the loop
+   level given in the SLHA input.  BETA[l,p] represents the l-loop
+   beta function of the parameter p.
+
+   Example in the SM:
+
+   HighScaleInput = {
+       {\[Lambda], BETA[g1] + BETA[g2] + BETA[1,Yu][3,3]}
+   };
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
