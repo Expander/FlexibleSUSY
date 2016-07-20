@@ -70,6 +70,14 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
                     @betaParameterList@);
 }
 
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(unsigned loops) const
+{
+   @ModelName@_susy_parameters p(*this);
+   p.set_loops(loops);
+
+   return p.calc_beta();
+}
+
 void @ModelName@_susy_parameters::clear()
 {
    reset();

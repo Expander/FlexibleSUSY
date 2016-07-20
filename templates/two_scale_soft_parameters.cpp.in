@@ -64,6 +64,14 @@ Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
    return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
 }
 
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta(unsigned loops) const
+{
+   @ModelName@_soft_parameters p(*this);
+   p.set_loops(loops);
+
+   return p.calc_beta();
+}
+
 void @ModelName@_soft_parameters::clear()
 {
    @ModelName@_susy_parameters::clear();

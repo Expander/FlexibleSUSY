@@ -50,6 +50,7 @@ public:
    void set_input_parameters(const @ModelName@_input_parameters&);
 
    @ModelName@_susy_parameters calc_beta() const;
+   @ModelName@_susy_parameters calc_beta(unsigned) const;
    virtual void clear();
 
 @setter@
