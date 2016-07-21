@@ -157,9 +157,9 @@ looptools_lib_dir=""
 looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-std=c++11 -O2 -fPIC"
+CXXFLAGS="-std=c++11 -O2"
 CFLAGS="-O2"
-FFLAGS="-O2 -fPIC"
+FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
@@ -1455,14 +1455,16 @@ check_cxxflags() {
         fi
     fi
 
-    # check if -fPIC is in CXXFLAGS
-    case "${CXX}" in
-        g++*|clang++*|icpc*)
-            if contains_not "${CXXFLAGS}" "-fPIC" ; then
-                message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
-                CXXFLAGS="${CXXFLAGS} -fPIC"
-            fi ;;
-    esac
+    if [ "x$enable_shared_libs" = "xyes" -o "x$enable_librarylink" = "xyes" ] ; then
+        # check if -fPIC is in CXXFLAGS
+        case "${CXX}" in
+            g++*|clang++*|icpc*)
+                if contains_not "${CXXFLAGS}" "-fPIC" ; then
+                    message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
+                    CXXFLAGS="${CXXFLAGS} -fPIC"
+                fi ;;
+        esac
+    fi
 
     case "$operating_system" in
     CYGWIN_NT*)
@@ -1562,13 +1564,15 @@ check_fflags() {
     esac
 
     # check if -fPIC is in FFLAGS
-    case "${FC}" in
-        gfortran*|ifort*)
-            if contains_not "${FFLAGS}" "-fPIC" ; then
-                message "   Warning: could not find -fPIC in FFLAGS, appending it"
-                FFLAGS="${FFLAGS} -fPIC"
-            fi ;;
-    esac
+    if [ "x$enable_shared_libs" = "xyes" -o "x$enable_librarylink" = "xyes" ] ; then
+        case "${FC}" in
+            gfortran*|ifort*)
+                if contains_not "${FFLAGS}" "-fPIC" ; then
+                    message "   Warning: could not find -fPIC in FFLAGS, appending it"
+                    FFLAGS="${FFLAGS} -fPIC"
+                fi ;;
+        esac
+    fi
 }
 
 #_____________________________________________________________________
@@ -2396,6 +2400,7 @@ check_install_dir
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
+    check_librarylink
     check_cxx
     check_cxx_compiler_type
     check_cxx_compiler_version
@@ -2443,7 +2448,6 @@ fi
 
 check_models
 check_addons
-check_librarylink
 
 enable_defines
 
