@@ -250,7 +250,7 @@ Example (using g++ on Debian Jessie):
 
    $ ./configure --with-models=CMSSM \
      --with-ldflags="-static" \
-     --with-ldlibs="-lquadmath"
+     --with-ldlibs="-lquadmath -ldl"
 
 This will create a standalone executable which does not depend on
 dynamic libraries.

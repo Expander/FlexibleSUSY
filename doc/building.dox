@@ -206,7 +206,7 @@ specified in the variable `LDLIBS`.
 
 Example (using `g++` on Debian Jessie):
 
-    ./configure --with-models=CMSSM --with-ldflags="-static" --with-ldlibs="-lquadmath"
+    ./configure --with-models=CMSSM --with-ldflags="-static" --with-ldlibs="-lquadmath -ldl"
 
 This will create a standalone executable which does not depend on
 dynamic libraries.
