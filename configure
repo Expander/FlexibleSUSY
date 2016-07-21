@@ -96,6 +96,7 @@ options="                    \
    enable_debug              \
    enable_mass_error_check   \
    enable_fflite             \
+   enable_librarylink        \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
@@ -117,6 +118,7 @@ enable_colors="no"
 enable_debug=""
 enable_mass_error_check="no"
 enable_fflite="no"
+enable_librarylink="automatic"
 enable_looptools="no"
 enable_meta="no"
 # BEGIN: NOT EXPORTED ##########################################
@@ -134,6 +136,7 @@ DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
 DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
+DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
@@ -989,6 +992,18 @@ check_addons() {
 }
 
 #_____________________________________________________________________
+check_librarylink() {
+    if [ "x$enable_librarylink" = "xautomatic" ] ; then
+        # check requirements for LibraryLink
+        if [ "x${enable_compile}" = "xyes" -a "x${enable_meta}" = "xyes" ] ; then
+            enable_librarylink=yes
+        else
+            enable_librarylink=no
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_platform() {
     # checks which platform we have
 
@@ -1589,7 +1604,7 @@ check_linking() {
         MODULE_MAKE_LIB_CMD="$SHARED_LIB_CMD"
     fi
 
-    # LibaryLink lib must always be shared
+    # LibraryLink lib must always be shared
     LIBLNK_LIBEXT="$SHARED_LIB_EXT"
     LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
 }
@@ -2035,6 +2050,16 @@ enable_defines() {
     fi
     logmsg "   ${DEFINE_ENABLE_FFLITE}"
 
+    if test "x$enable_librarylink" = "xyes" ; then
+        DEFINE_ENABLE_LIBRARYLINK="#define ENABLE_LIBRARYLINK 1"
+        message "Enabling LibraryLink"
+        logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
+    else
+        DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
+        message "Disabling LibraryLink"
+        logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
+    fi
+
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
         message "Enabling usage of LoopTools"
@@ -2145,6 +2170,7 @@ replace_markers() {
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
+	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
@@ -2188,6 +2214,7 @@ enable/disable options, prefix with either --enable- or --disable-
   debug             Debug messages and assertions (no default)
   mass-error-check  Check mass eigenvalue precision (default: $enable_mass_error_check)
   fflite            Use fflite to compute the loop functions (default: $enable_fflite)
+  librarylink       Build LibraryLink library for Mathematica interface (default: $enable_librarylink)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
@@ -2416,6 +2443,7 @@ fi
 
 check_models
 check_addons
+check_librarylink
 
 enable_defines
 
@@ -2506,6 +2534,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
     -e "s|@DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@|$DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
+    -e "s|@DEFINE_ENABLE_LIBRARYLINK@|$DEFINE_ENABLE_LIBRARYLINK|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
