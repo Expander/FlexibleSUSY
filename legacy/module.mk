@@ -21,7 +21,7 @@ LIBLEGACY_OBJ := \
 LIBLEGACY_DEP := \
 		$(LIBLEGACY_OBJ:.o=.d)
 
-LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBLEGACY     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBLEGACY_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -60,7 +60,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(LIBLEGACY): $(LIBLEGACY_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 # add boost and eigen flags for the test object files and dependencies
 $(LIBLEGACY_OBJ) $(LIBLEGACY_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)

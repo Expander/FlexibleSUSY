@@ -38,7 +38,7 @@ LIBFFLITE_OBJ := \
 LIBFFLITE_DEP := \
 		$(LIBFFLITE_OBJ:.o=.d)
 
-LIBFFLITE     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFFLITE     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBFFLITE_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -77,7 +77,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(LIBFFLITE): $(LIBFFLITE_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ifeq ($(ENABLE_FFLITE),yes)
 ALLDEP += $(LIBFFLITE_DEP)

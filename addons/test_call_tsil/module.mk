@@ -38,7 +38,7 @@ EXEtest_call_tsil_EXE := \
 		$(patsubst %.f, %.x, $(filter %.f, $(EXEtest_call_tsil_SRC)))
 
 LIBtest_call_tsil     := \
-		$(DIR)/lib$(MODNAME)$(LIBEXT)
+		$(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBtest_call_tsil_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)
@@ -100,7 +100,7 @@ $(LIBtest_call_tsil_DEP) $(EXEtest_call_tsil_DEP) $(LIBtest_call_tsil_OBJ) $(EXE
 endif
 
 $(LIBtest_call_tsil): $(LIBtest_call_tsil_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(EXEtest_call_tsil_EXE): $(EXEtest_call_tsil_OBJ) $(LIBtest_call_tsil) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS)

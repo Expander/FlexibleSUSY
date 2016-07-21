@@ -171,15 +171,17 @@ GSLLIBS=""
 INSTALL_DIR=""
 BLASLIBS=""
 LAPACKLIBS=""
-MAKELIB="ar cru"
-MAKESHAREDLIB="gcc -shared -o"
 MATH="math"
 OPTIONAL_MODULES=""
 pthread_lib_dir=""
 STATIC_LIB_EXT=".a"
+STATIC_LIB_CMD="ar cru"
 SHARED_LIB_EXT=".so"
+SHARED_LIB_CMD="$CC -shared -o"
 MODULE_LIBEXT="$STATIC_LIB_EXT"
+MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
 LIBLNK_LIBEXT="$SHARED_LIB_EXT"
+LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -1581,12 +1583,15 @@ check_fortran_libs() {
 check_linking() {
     if [ "x$enable_static_libs" = xyes ] ; then
         MODULE_LIBEXT="$STATIC_LIB_EXT"
+        MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
     else
         MODULE_LIBEXT="$SHARED_LIB_EXT"
+        MODULE_MAKE_LIB_CMD="$SHARED_LIB_CMD"
     fi
 
     # LibaryLink lib must always be shared
     LIBLNK_LIBEXT="$SHARED_LIB_EXT"
+    LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
 }
 
 #_____________________________________________________________________
@@ -1823,26 +1828,16 @@ check_lapack_libs() {
 }
 
 #_____________________________________________________________________
-check_makelib() {
-    checking_msg "build library command $MAKELIB"
+check_static_lib_cmd() {
+    checking_msg "build static library command $STATIC_LIB_CMD"
     # strip arguments from the actual command
-    makelib_cmd=$(echo "$MAKELIB" | awk '{ print $1; }')
-
-    # check if $makelib_cmd can create shared libraries
-    if test "x$enable_static_libs" = "xno" ; then
-        if test "x$makelib_cmd" = "xar" ; then
-            message ""
-            message "   Error: $makelib_cmd cannot be used to create shared libraries!"
-            message "   Please use --with-make-lib-cmd=\"gcc -shared -o\" or something similar."
-            exit 1
-        fi
-    fi
+    makelib_cmd=$(echo "$STATIC_LIB_CMD" | awk '{ print $1; }')
 
     exists_in_path "$makelib_cmd"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Error: A program which builds libraries must be installed!"
-        message "   Use --with-make-lib-cmd= to specify the library creator program to be used."
+        message "Error: A program which builds static libraries must be installed!"
+        message "   Use --with-static-lib-cmd= to specify the program to be used."
         exit 1
     else
         result "found $cmd"
@@ -1850,16 +1845,16 @@ check_makelib() {
 }
 
 #_____________________________________________________________________
-check_make_shared_lib() {
-    checking_msg "build shared library command $MAKESHAREDLIB"
+check_shared_lib_cmd() {
+    checking_msg "build shared library command $SHARED_LIB_CMD"
     # strip arguments from the actual command
-    makelib_cmd=$(echo "$MAKESHAREDLIB" | awk '{ print $1; }')
+    makelib_cmd=$(echo "$SHARED_LIB_CMD" | awk '{ print $1; }')
 
     exists_in_path "$makelib_cmd"
     if [ -z "$cmd" ] ; then
         result "not found"
         message "Error: A program which builds shared libraries must be installed!"
-        message "   Use --with-make-shared-lib-cmd= to specify the program to be used."
+        message "   Use --with-shared-lib-cmd= to specify the program to be used."
         exit 1
     else
         result "found $cmd"
@@ -2168,12 +2163,12 @@ replace_markers() {
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
-	-e "s|@MAKELIB@|$MAKELIB|"         \
-	-e "s|@MAKESHAREDLIB@|$MAKESHAREDLIB|"    \
 	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
 	-e "s|@MATH@|$MATH|"               \
 	-e "s|@MODULE_LIBEXT@|$MODULE_LIBEXT|"  \
-	-e "s|@LIBLNK_LIBEXT@|$LIBLNK_LIBEXT|"
+	-e "s|@MODULE_MAKE_LIB_CMD@|$MODULE_MAKE_LIB_CMD|" \
+	-e "s|@LIBLNK_LIBEXT@|$LIBLNK_LIBEXT|"  \
+	-e "s|@LIBLNK_MAKE_LIB_CMD@|$LIBLNK_MAKE_LIB_CMD|"
 }
 
 #_____________________________________________________________________
@@ -2234,8 +2229,6 @@ Package directories, compilation settings and model selection
   --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
-  --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
-  --with-make-shared-lib-cmd= Command to make shared library (default: $MAKESHAREDLIB)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2249,9 +2242,11 @@ cat <<EOF
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
   --with-pthread-libdir=    Path to search for pthread library
+  --with-shared-lib-cmd=    Command to make shared library (default: $SHARED_LIB_CMD)
   --with-shared-lib-ext=    File extension for shared library (default: $SHARED_LIB_EXT)
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
+  --with-static-lib-cmd=    Command to make static library (default: $STATIC_LIB_CMD)
   --with-static-lib-ext=    File extension for static library (default: $STATIC_LIB_EXT)
   --with-tsil-libdir=       Path to search for TSIL library
   --with-tsil-incdir=       Path to search for TSIL header
@@ -2345,15 +2340,15 @@ if test $# -gt 0 ; then
             --with-ldlibs=*)         LDLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
-            --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
-            --with-make-shared-lib-cmd=*) MAKESHAREDLIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
+            --with-shared-lib-cmd=*) SHARED_LIB_CMD=$optarg ;;
             --with-shared-lib-ext=*) SHARED_LIB_EXT=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
+            --with-static-lib-cmd=*) STATIC_LIB_CMD=$optarg ;;
             --with-static-lib-ext=*) STATIC_LIB_EXT=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
@@ -2403,7 +2398,8 @@ if test "x${enable_compile}" = "xyes"; then
     fi
     check_sqlite
     check_tsil
-    check_makelib
+    check_static_lib_cmd
+    check_shared_lib_cmd
     check_random_number_generator
     check_std_threads
     check_thread_libs
@@ -2416,10 +2412,6 @@ if test "x${enable_meta}" = "xyes"; then
     case "$operating_system" in
 	CYGWIN_NT*) check_cygpath ;;
     esac
-fi
-
-if test "x${enable_compile}" = "xyes" -a "x${enable_meta}" = "xyes"; then
-    check_make_shared_lib
 fi
 
 check_models
@@ -2465,15 +2457,16 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@LDFLAGS@|$LDFLAGS|"         \
     -e "s|@LDLIBS@|$LDLIBS|"           \
+    -e "s|@LIBLNK_MAKE_LIB_CMD@|$LIBLNK_MAKE_LIB_CMD|" \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@SQLITELIBS@|$SQLITELIBS|"   \
     -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
-    -e "s|@MAKELIB@|$MAKELIB|"         \
-    -e "s|@MAKESHAREDLIB@|$MAKESHAREDLIB|"  \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
+    -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|" \
+    -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     < $FSCONFIG_TMPL > $FSCONFIG
 
