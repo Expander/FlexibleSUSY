@@ -99,7 +99,7 @@ options="                    \
    enable_librarylink        \
    enable_looptools          \
    enable_silent             \
-   enable_static_libs        \
+   enable_shared_libs        \
    enable_sqlite             \
    enable_threads            \
    enable_tsil               \
@@ -126,7 +126,7 @@ enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
 enable_silent="no"
 enable_sqlite="automatic"
-enable_static_libs="yes"
+enable_shared_libs="no"
 enable_threads="yes"
 enable_tsil="automatic"
 enable_verbose="no"
@@ -1596,12 +1596,12 @@ check_fortran_libs() {
 
 #_____________________________________________________________________
 check_linking() {
-    if [ "x$enable_static_libs" = xyes ] ; then
-        MODULE_LIBEXT="$STATIC_LIB_EXT"
-        MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
-    else
+    if [ "x$enable_shared_libs" = xyes ] ; then
         MODULE_LIBEXT="$SHARED_LIB_EXT"
         MODULE_MAKE_LIB_CMD="$SHARED_LIB_CMD"
+    else
+        MODULE_LIBEXT="$STATIC_LIB_EXT"
+        MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
     fi
 
     # LibraryLink lib must always be shared
@@ -2189,7 +2189,7 @@ replace_markers() {
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
-	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
+	-e "s|@ENABLE_SHARED_LIBS@|$enable_shared_libs|" \
 	-e "s|@MATH@|$MATH|"               \
 	-e "s|@MODULE_LIBEXT@|$MODULE_LIBEXT|"  \
 	-e "s|@MODULE_MAKE_LIB_CMD@|$MODULE_MAKE_LIB_CMD|" \
@@ -2225,7 +2225,7 @@ EOF
 cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
-  static-libs       Create static libraries (default: $enable_static_libs)
+  shared-libs       Create shared libraries (default: $enable_shared_libs)
   threads           Enable multi-threading (default: $enable_threads)
   tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
