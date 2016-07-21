@@ -212,18 +212,18 @@ Dynamic libraries
 If you want to create dynamic libraries (instead of static libraries)
 you have to pass all the following options to the ./configure script
 
-   --disable-static-libs
-   --with-lib-ext=".so"
-   --with-make-lib-cmd="gcc -shared -o"
+   --enable-shared-libs
+   --with-shared-lib-ext=".so"
+   --with-shared-lib-cmd="gcc -shared -o"
 
 When using Intel compilers, replace `gcc' by `icc' or `icpc'.
 
 Example:
 
    $ ./configure --with-models=MSSM,NMSSM \
-     --disable-static-libs \
-     --with-lib-ext=".so" \
-     --with-make-lib-cmd="gcc -shared -o"
+     --enable-shared-libs \
+     --with-shared-lib-ext=".so" \
+     --with-shared-lib-cmd="gcc -shared -o"
 
 Important remark:
 
