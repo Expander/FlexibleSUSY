@@ -57,6 +57,16 @@ fsDefaultSMParameters = {
     mu2GeV -> 0.0024,       (* SMINPUTS[22] *)
     ms2GeV -> 0.104,        (* SMINPUTS[23] *)
     mcmc -> 1.27,           (* SMINPUTS[24] *)
+    CKMTheta12 -> 0,
+    CKMTheta13 -> 0,
+    CKMTheta23 -> 0,
+    CKMDelta -> 0,
+    PMNSTheta12 -> 0,
+    PMNSTheta13 -> 0,
+    PMNSTheta23 -> 0,
+    PMNSDelta -> 0,
+    PMNSAlpha1 -> 0,
+    PMNSAlpha2 -> 0,
     alphaEm0 -> 1/137.035999074,
     Mh -> 125.09
 };
@@ -114,6 +124,16 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[mu2GeV],
             OptionValue[ms2GeV],
             OptionValue[mcmc],
+            OptionValue[CKMTheta12],
+            OptionValue[CKMTheta13],
+            OptionValue[CKMTheta23],
+            OptionValue[CKMDelta],
+            OptionValue[PMNSTheta12],
+            OptionValue[PMNSTheta13],
+            OptionValue[PMNSTheta23],
+            OptionValue[PMNSDelta],
+            OptionValue[PMNSAlpha1],
+            OptionValue[PMNSAlpha2],
             OptionValue[alphaEm0],
             OptionValue[Mh]
 

@@ -295,10 +295,22 @@ void put_sm_input_parameters(const Model_data& data, MLINK link)
    MLPutRuleTo(link, data.qedqcd.displayMs2GeV(), "ms2GeV");
    MLPutRuleTo(link, data.qedqcd.displayMcMc(), "mcmc");
 
+   const flexiblesusy::CKM_parameters ckm(data.qedqcd.displayCKM());
+   MLPutRuleTo(link, ckm.theta_12, "CKMTheta12");
+   MLPutRuleTo(link, ckm.theta_13, "CKMTheta13");
+   MLPutRuleTo(link, ckm.theta_23, "CKMTheta23");
+   MLPutRuleTo(link, ckm.delta   , "CKMDelta");
+
+   const flexiblesusy::PMNS_parameters pmns(data.qedqcd.displayPMNS());
+   MLPutRuleTo(link, pmns.theta_12, "PMNSTheta12");
+   MLPutRuleTo(link, pmns.theta_13, "PMNSTheta13");
+   MLPutRuleTo(link, pmns.theta_23, "PMNSTheta23");
+   MLPutRuleTo(link, pmns.delta   , "PMNSDelta");
+   MLPutRuleTo(link, pmns.alpha_1 , "PMNSAlpha1");
+   MLPutRuleTo(link, pmns.alpha_2 , "PMNSAlpha2");
+
    MLPutRuleTo(link, data.physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
    MLPutRuleTo(link, data.physical_input.get(Physical_input::mh_pole), "Mh");
-
-   // put CKM and PMNS matrices
 
    MLEndPacket(link);
 }
@@ -389,7 +401,7 @@ Model_data fill(double* pars, mint npars)
 {
    Model_data data;
 
-   const mint n_settings = 17, n_sm_parameters = 19, n_input_pars = @numberOfInputParameters@;
+   const mint n_settings = 17, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (npars != n_total)
@@ -443,6 +455,26 @@ Model_data fill(double* pars, mint npars)
    data.qedqcd.setMs2GeV(pars[c++]);
    data.qedqcd.setMass(softsusy::mCharm, pars[c]);
    data.qedqcd.setMcMc(pars[c++]);
+
+   {
+      flexiblesusy::CKM_parameters ckm;
+      ckm.theta_12 = pars[c++];
+      ckm.theta_13 = pars[c++];
+      ckm.theta_23 = pars[c++];
+      ckm.delta    = pars[c++];
+      data.qedqcd.setCKM(ckm);
+   }
+
+   {
+      flexiblesusy::PMNS_parameters pmns;
+      pmns.theta_12 = pars[c++];
+      pmns.theta_13 = pars[c++];
+      pmns.theta_23 = pars[c++];
+      pmns.delta    = pars[c++];
+      pmns.alpha_1  = pars[c++];
+      pmns.alpha_2  = pars[c++];
+      data.qedqcd.setPMNS(pmns);
+   }
 
    data.physical_input.set(Physical_input::alpha_em_0, pars[c++]);
    data.physical_input.set(Physical_input::mh_pole, pars[c++]);
