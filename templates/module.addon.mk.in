@@ -35,7 +35,7 @@ EXE@ADDON@_EXE := \
 		$(patsubst %.f, %.x, $(filter %.f, $(EXE@ADDON@_SRC)))
 
 LIB@ADDON@     := \
-		$(DIR)/lib$(MODNAME)$(LIBEXT)
+		$(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIB@ADDON@_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)

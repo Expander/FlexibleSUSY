@@ -8,7 +8,7 @@ ENABLE_FFLITE    := @ENABLE_FFLITE@
 ENABLE_LOOPTOOLS := @ENABLE_LOOPTOOLS@
 ENABLE_THREADS   := @ENABLE_THREADS@
 
-LIBEXT          := @LIBEXT@
+MODULE_LIBEXT   := @MODULE_LIBEXT@
 
 MODEL           := MSSM
 
@@ -23,10 +23,10 @@ INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
 INCLEGACY       := -I$(LEGACYDIR)
 INCFFLITE       := -I$(FFLITEDIR)
-LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(LIBEXT)
-LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(LIBEXT)
-LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
-LIBFFLITE       := $(FFLITEDIR)/libfflite$(LIBEXT)
+LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
+LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
+LIBLEGACY       := $(LEGACYDIR)/liblegacy$(MODULE_LIBEXT)
+LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
@@ -149,7 +149,6 @@ showbuild:
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
-	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
@@ -160,6 +159,7 @@ showbuild:
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "MODULE_LIBEXT      = $(MODULE_LIBEXT)"
 	@echo "SQLITELIBS         = $(SQLITELIBS)"
 	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
