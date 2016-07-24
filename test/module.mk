@@ -276,6 +276,11 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-HSSUSY --with-MSSMtower --with-MSSMMuBMu),yes yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower.sh
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
