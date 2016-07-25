@@ -36,19 +36,21 @@ namespace standard_model {
 /**
  * matches Standardmodel from @ModelName@-Model at tree-level
  */
-void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(Standard_model& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(
+   Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
-  sm.run_to(model.get_scale());
-  model.calculate_DRbar_masses();
-  sm.set_Lambdax(Sqr(model.get_M@HiggsBoson()_0@/sm.get_v()));
-  sm.calculate_DRbar_masses();
+   sm.run_to(model.get_scale());
+   model.calculate_DRbar_masses();
+   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson()_0@/sm.get_v()));
+   sm.calculate_DRbar_masses();
 }
 
 
 /**
  * matches Lambda in SM from @ModelName@ by Higgs mass 1-loop pole mass matching
  */
-void @ModelName@_standard_model_matching::match_high_to_low_scale_model(Standard_model& sm, @ModelName@_mass_eigenstates& model)
+void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
+   Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
    const auto model_pole_mass_order = model.get_pole_mass_loop_order();
    const auto sm_pole_mass_order = sm.get_pole_mass_loop_order();
@@ -80,7 +82,8 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(Standard
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at tree-level
  */
-void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates& model, Standard_model& sm)
+void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(
+   @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    sm.calculate_DRbar_masses();
    model.run_to(sm.get_scale());
@@ -97,8 +100,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
    Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> electronDRbar = ZEROMATRIX(3,3);
 
-   for(unsigned gen = 0; gen < 3; gen++)
-   {
+   for (unsigned gen = 0; gen < 3; gen++) {
       topDRbar(gen, gen)      = sm.get_MFu(gen);
       bottomDRbar(gen, gen)   = sm.get_MFd(gen);
       electronDRbar(gen, gen) = sm.get_MFe(gen);
@@ -112,7 +114,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 /**
  * matches gauge and Yukawa couplings from SM to @ModelName@ at one-loop
  */
-void @ModelName@_standard_model_matching::match_low_to_high_scale_model(@ModelName@_mass_eigenstates& model, Standard_model& sm)
+void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
+   @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
@@ -148,30 +151,29 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(@ModelNa
    sm.calculate_MVWp_pole();
    sm.calculate_MVZ_pole();
 
-   // one-loop matched masses
-   const double MW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW()_0@);
-   const double MZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ()_0@);
+   // running W, Z masses (via 1L matching)
+   const double mW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW()_0@);
+   const double mZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ()_0@);
 
-   if (MZ2_1L < 0.)
+   if (mZ2_1L < 0.)
       model.get_problems().flag_tachyon(@ModelName@_info::@VectorZ@);
    else
       model.get_problems().unflag_tachyon(@ModelName@_info::@VectorZ@);
 
-   if (MW2_1L < 0.)
+   if (mW2_1L < 0.)
       model.get_problems().flag_tachyon(@ModelName@_info::@VectorW@);
    else
       model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
 
-   for( unsigned gen = 0; gen < 3; gen++)
-   {
+   for (unsigned gen = 0; gen < 3; gen++) {
       topDRbar(gen, gen)      = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
       bottomDRbar(gen, gen)   = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
       electronDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
    }
 
    // define and apply 1L-matched gauge parameters
-   const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * MZ2_1L / MW2_1L) / @ModelName@_info::normalization_g1;
-   const double g2_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) / (1. - MW2_1L/MZ2_1L)) / @ModelName@_info::normalization_g2;
+   const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_g1;
+   const double g2_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) / (1. - mW2_1L/mZ2_1L)) / @ModelName@_info::normalization_g2;
    const double g3_1L = AbsSqrt(4. * Pi * alpha_s * (1. + delta_alpha_s)) / @ModelName@_info::normalization_g3;
 
    model.set_@hyperchargeCoupling@(g1_1L);
@@ -179,14 +181,13 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(@ModelNa
    model.set_@strongCoupling@(g3_1L);
 
    // 'vev' is a keyword for user-defined matching
-   const double vev = 2. * AbsSqrt(MZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
+   const double vev = 2. * AbsSqrt(mZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
 
 @applyUserMatching@
 @setYukawas@
 
    model.calculate_DRbar_masses();
    model.solve_ewsb();
-
 }
 
 } // namespace standard_model

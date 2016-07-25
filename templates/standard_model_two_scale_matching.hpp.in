@@ -45,16 +45,13 @@ public:
 
    virtual ~@ModelName@_standard_model_Matching() {}
 
-   virtual double get_scale() const
-   {
-
-      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
-
+   virtual double get_scale() const {
+      if (!constraint)
+         throw SetupError("Constraint pointer in matching class is NULL!");
       return constraint->get_scale();
    }
 
-   void set_constraint(Constraint<Two_scale>* constraint_)
-   {
+   void set_constraint(Constraint<Two_scale>* constraint_) {
       constraint = constraint_;
    }
 
@@ -63,45 +60,49 @@ public:
       model = (@ModelName@<Two_scale>*) high;
    }
 
-   virtual void match_high_to_low_scale_model()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
+   virtual void match_high_to_low_scale_model() {
+      if (!model || !eft)
+         throw SetupError("Model pointer in matching class is NULL!");
+      if (!constraint)
+         throw SetupError("Constraint pointer in matching class is NULL!");
 
       model->calculate_DRbar_masses();
       model->solve_ewsb_one_loop();
 
-      if(!model->get_thresholds())
+      if (!model->get_thresholds())
          standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
       else
          standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model(*(static_cast<standard_model::Standard_model*>(eft)), *model);
    }
 
-   virtual void match_low_to_high_scale_model()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
+   virtual void match_low_to_high_scale_model() {
+      if (!model || !eft)
+         throw SetupError("Model pointer in matching class is NULL!");
+      if (!constraint)
+         throw SetupError("Constraint pointer in matching class is NULL!");
 
-      if(!model->get_thresholds())
+      if (!model->get_thresholds())
          standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
       else
          standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *(static_cast<standard_model::Standard_model*>(eft)));
    }
 
-   void match_high_to_low_scale_model_tree_level()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
+   void match_high_to_low_scale_model_tree_level() {
+      if (!model || !eft)
+         throw SetupError("Model pointer in matching class is NULL!");
+      if (!constraint)
+         throw SetupError("Constraint pointer in matching class is NULL!");
 
       model->calculate_DRbar_masses();
 
       standard_model::@ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
    }
 
-   void match_low_to_high_scale_model_tree_level()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-      if(!constraint) throw SetupError("Constraint pointer in matching class is NULL!");
+   void match_low_to_high_scale_model_tree_level() {
+      if (!model || !eft)
+         throw SetupError("Model pointer in matching class is NULL!");
+      if (!constraint)
+         throw SetupError("Constraint pointer in matching class is NULL!");
 
       standard_model::@ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
    }
@@ -113,4 +114,5 @@ private:
 };
 
 } // namespace flexiblesusy
+
 #endif

@@ -27,14 +27,13 @@
 namespace flexiblesusy {
 namespace standard_model {
 
-
 /**
  * @class standard_model_two_scale_matching
  * @brief provides matching conditions from Model to Standard Model and reverse
  */
 class @ModelName@_standard_model_matching
 {
-  public:
+public:
    static void match_high_to_low_scale_model_tree_level(Standard_model&, @ModelName@_mass_eigenstates&);
    static void match_high_to_low_scale_model(Standard_model&, @ModelName@_mass_eigenstates&);
    static void match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates&, Standard_model&);
@@ -44,4 +43,5 @@ class @ModelName@_standard_model_matching
 
 } // namespace standard_model
 } // namespace flexiblesusy
+
 #endif
