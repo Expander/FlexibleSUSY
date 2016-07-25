@@ -41,6 +41,7 @@ model_files/complexMSSM         export-ignore
 model_files/cCMSSM              export-ignore
 model_files/CMSSMCPV            export-ignore
 model_files/NMSSMCPV            export-ignore
+model_files/SMtower             export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
