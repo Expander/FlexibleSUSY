@@ -97,9 +97,8 @@ Block FlexibleSUSY
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
    12   1                    # force output
    13   1                    # Top quark 2-loop corrections QCD
-   14   1                    # Higgs logarithmic resummation
-   15   1.000000000e-11      # beta-function zero threshold
-   16   0                    # calculate observables (a_muon, ...)
+   14   1.000000000e-11      # beta-function zero threshold
+   15   0                    # calculate observables (a_muon, ...)
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu

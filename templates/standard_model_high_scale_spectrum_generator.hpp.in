@@ -174,22 +174,15 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
       model.calculate_spectrum();
 
       // start logarithmic resummation
-      if (model.get_two_loop_corrections().higgs_log)
       {
-         model.run_to(susy_scale);
          matching.match_high_to_low_scale_model();
          eft.run_to(low_scale);
          low_scale_constraint.apply();
 
          double const Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-         if(susy_scale > Mt)
-         {
-            eft.run_to(Mt);
-         }
-         else
-         {
-            eft.run_to(susy_scale);
-         }
+         const double Q_higgs = susy_scale > Mt ? Mt : susy_scale;
+
+         eft.run_to(Q_higgs);
 
          eft.calculate_DRbar_masses();
          eft.solve_ewsb();
