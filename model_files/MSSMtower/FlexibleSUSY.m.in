@@ -42,6 +42,9 @@ SUSYScaleInput = {
 };
 
 InitialGuessAtSUSYScale = {
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
     {MassB, Ms},
     {MassWB, Ms},
     {MassG, Ms},

@@ -32,12 +32,12 @@ LowScaleInput = {
     FSSolveEWSBFor[EWSBOutputParameters]
 };
 
-InitialGuessAtLowScale = {
+InitialGuessAtSUSYScale = {
     {v, LowEnergyConstant[vev]},
     {Yu, Automatic},
     {Yd, Automatic},
     {Ye, Automatic}
-};
+}
 
 SUSYScaleMatching = {
     {v, vev}
