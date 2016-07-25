@@ -77,7 +77,7 @@ InitialGuessAtSUSYScale = {};
 InitialGuessAtHighScale = {};
 OnlyLowEnergyFlexibleSUSY = False;
 SMTower = False;
-SUSYScaleUserMatching={};
+SUSYScaleMatching={};
 AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
@@ -833,9 +833,9 @@ ApplyUserMatching[arg___] := (
 
 WriteMatchingClass[files_List] :=
     Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
-        If[SMTower && Head[SUSYScaleUserMatching] === List,
-           userMatching = Parameters`CreateLocalConstRefs[Rest /@ SUSYScaleUserMatching] <>
-                          Utils`StringJoinWithSeparator[ApplyUserMatching /@ SUSYScaleUserMatching, "\n"];
+        If[SMTower && Head[SUSYScaleMatching] === List,
+           userMatching = Parameters`CreateLocalConstRefs[Rest /@ SUSYScaleMatching] <>
+                          Utils`StringJoinWithSeparator[ApplyUserMatching /@ SUSYScaleMatching, "\n"];
           ];
         WriteOut`ReplaceInFiles[files,
                        { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
@@ -1144,9 +1144,9 @@ WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, spectrumGen},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
-           spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
-                              CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
-                              CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
+           spectrumGen = If[SMTower === True,
+                            CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
+                            CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
@@ -1521,17 +1521,16 @@ LoadModelFile[file_String] :=
              ];
           ];
 
+(* TODO: remove automatic setting of gauge and Yukawa couplings from here *)
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Module[{fixedParameters, autoInput},
-           autoInput = { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling };
-           If[FlexibleSUSY`SMTower,
-           autoInput = Join[autoInput, {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
-                            #[[1]] & /@ SUSYScaleUserMatching
-                           ];
-           ];
-           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
-                                          autoInput]]];
+           autoInput = { SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling };
+           If[FlexibleSUSY`SMTower === True,
+              autoInput = Join[autoInput, {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+                               First /@ SUSYScaleMatching
+                              ];
+             ];
+           fixedParameters = DeleteDuplicates[Flatten[Join[fixed, autoInput]]];
            Complement[parameters, fixedParameters]
           ];
 
@@ -1768,35 +1767,33 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
-           Constraint`SanityCheck[Join[ If[SMTower, FlexibleSUSY`InitialGuessAtSUSYScale,
-                                                                 FlexibleSUSY`InitialGuessAtLowScale,
-                                                                 FlexibleSUSY`InitialGuessAtLowScale],
+           Constraint`SanityCheck[Join[If[SMTower === True,
+                                          FlexibleSUSY`InitialGuessAtSUSYScale,
+                                          FlexibleSUSY`InitialGuessAtLowScale],
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
 
            (* add EWSB constraint to SUSY-scale constraint if not set *)
-           If[FlexibleSUSY`SMTower,
-            If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
-                     FlexibleSUSY`FSSolveEWSBFor[___]],
-               AppendTo[FlexibleSUSY`SUSYScaleInput,
-                        FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]
-                        ];
+           If[FlexibleSUSY`SMTower === True,
+              If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                       FlexibleSUSY`FSSolveEWSBFor[___]],
+                 AppendTo[FlexibleSUSY`SUSYScaleInput,
+                          FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
+                ];
+              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]];
+              ,
+              If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                       FlexibleSUSY`FSSolveEWSBFor[___]],
+                 AppendTo[FlexibleSUSY`SUSYScaleInput,
+                          FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
                ];
-            fixedParameters = Join[ Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
-                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
-                                    ];,
-            If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
-                     FlexibleSUSY`FSSolveEWSBFor[___]],
-               AppendTo[FlexibleSUSY`SUSYScaleInput,
-                        FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]
-                        ];
-               ];
-            fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
-                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
-                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
-                                    ];
+              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]];
              ];
+
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[allParameters, fixedParameters];
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
               FlexibleSUSY`AutomaticInputAtMSUSY =!= True,

@@ -2,6 +2,7 @@
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
+OnlyLowEnergyFlexibleSUSY = True;
 
 (* CMSSM input parameters *)
 
@@ -22,99 +23,55 @@ SUSYScale = Ms;
 SUSYScaleFirstGuess = Ms;
 
 SUSYScaleInput = {
-{MassB, Ms},
-{MassWB, Ms},
-{MassG, Ms},
-{mq2, ZEROMATRIX[3,3]},
-{mu2, ZEROMATRIX[3,3]},
-{md2, ZEROMATRIX[3,3]},
-{ml2, ZEROMATRIX[3,3]},
-{me2, ZEROMATRIX[3,3]},
-{mq2[1,1], Sqr[Ms]},
-{mu2[1,1], Sqr[Ms]},
-{md2[1,1], Sqr[Ms]},
-{ml2[1,1], Sqr[Ms]},
-{me2[1,1], Sqr[Ms]},
-{mq2[2,2], Sqr[Ms]},
-{mu2[2,2], Sqr[Ms]},
-{md2[2,2], Sqr[Ms]},
-{ml2[2,2], Sqr[Ms]},
-{me2[2,2], Sqr[Ms]},
-{mq2[3,3], Sqr[Ms]},
-{mu2[3,3], Sqr[Ms]},
-{md2[3,3], Sqr[Ms]},
-{ml2[3,3], Sqr[Ms]},
-{me2[3,3], Sqr[Ms]},
-{\[Mu], Ms},
-{B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
-{T[Yu], \[Mu]/TanBeta Yu},
-{T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye},
-{T[Yu][3,3], (1/TanBeta + Xtt) Yu[3,3] Ms},
-{vd, vu / TanBeta}
+    {MassB, Ms},
+    {MassWB, Ms},
+    {MassG, Ms},
+    {mq2, UNITMATRIX[3] Ms^2},
+    {mu2, UNITMATRIX[3] Ms^2},
+    {md2, UNITMATRIX[3] Ms^2},
+    {ml2, UNITMATRIX[3] Ms^2},
+    {me2, UNITMATRIX[3] Ms^2},
+    {\[Mu], Ms},
+    {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
+    {T[Yu], \[Mu]/TanBeta Yu},
+    {T[Yd], \[Mu] TanBeta Yd},
+    {T[Ye], \[Mu] TanBeta Ye},
+    {T[Yu][3,3], (1/TanBeta + Xtt) Yu[3,3] Ms},
+    {vd, vu / TanBeta}
 };
 
 InitialGuessAtLowScale = {
-{vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
-{vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
-{Yu, Automatic},
-{Yd, Automatic},
-{Ye, Automatic},
-{MassB, Ms},
-{MassWB, Ms},
-{MassG, Ms},
-{mq2, ZEROMATRIX[3,3]},
-{mu2, ZEROMATRIX[3,3]},
-{md2, ZEROMATRIX[3,3]},
-{ml2, ZEROMATRIX[3,3]},
-{me2, ZEROMATRIX[3,3]},
-{mq2[1,1], Sqr[Ms]},
-{mu2[1,1], Sqr[Ms]},
-{md2[1,1], Sqr[Ms]},
-{ml2[1,1], Sqr[Ms]},
-{me2[1,1], Sqr[Ms]},
-{mq2[2,2], Sqr[Ms]},
-{mu2[2,2], Sqr[Ms]},
-{md2[2,2], Sqr[Ms]},
-{ml2[2,2], Sqr[Ms]},
-{me2[2,2], Sqr[Ms]},
-{mq2[3,3], Sqr[Ms]},
-{mu2[3,3], Sqr[Ms]},
-{md2[3,3], Sqr[Ms]},
-{ml2[3,3], Sqr[Ms]},
-{me2[3,3], Sqr[Ms]},
-{\[Mu], Ms},
-{B[\[Mu]], Sqr[Ms]/(TanBeta + 1./TanBeta)},
-{T[Yu], MODELPARAMETER[Yu] Ms/TanBeta},
-{T[Yd], MODELPARAMETER[Yd] Ms TanBeta},
-{T[Ye], MODELPARAMETER[Ye] Ms TanBeta},
-{T[Yu][3,3], (1/TanBeta + Xtt) Ms }
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {MassB, Ms},
+    {MassWB, Ms},
+    {MassG, Ms},
+    {mq2, UNITMATRIX[3] Ms^2},
+    {mu2, UNITMATRIX[3] Ms^2},
+    {md2, UNITMATRIX[3] Ms^2},
+    {ml2, UNITMATRIX[3] Ms^2},
+    {me2, UNITMATRIX[3] Ms^2},
+    {\[Mu], Ms},
+    {B[\[Mu]], Sqr[Ms]/(TanBeta + 1./TanBeta)},
+    {T[Yu], MODELPARAMETER[Yu] Ms/TanBeta},
+    {T[Yd], MODELPARAMETER[Yd] Ms TanBeta},
+    {T[Ye], MODELPARAMETER[Ye] Ms TanBeta},
+    {T[Yu][3,3], (1/TanBeta + Xtt) Ms }
 };
-
-LowScaleInput = {
-{Yu, Automatic},
-{Yd, Automatic},
-{Ye, Automatic},
-{vu, Sqrt[4 Sqr[MZDRbar] / (g2^2 + 3/5 g1^2) - Sqr[vd]]}
-};
-
-(* InitialGuessAtLowScale is ignored if SMTower is true *)
-
-SUSYScaleUserMatching = {
-{vu, vev Sin[ArcTan[INPUTPARAMETER[TanBeta]]]},
-{vd, vev Cos[ArcTan[INPUTPARAMETER[TanBeta]]]}
-};
-
-(* vev is a keyword in SUSYScaleUserMatching, describing SM VEV matched into full theory *)
 
 LowScale = LowEnergyConstant[MZ];
 
-SMTower = False;
-
-OnlyLowEnergyFlexibleSUSY = True;
-
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
+LowScaleInput = {
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic},
+    {vu, Sqrt[4 MZDRbar^2 / (g2^2 + GUTNormalization[g1]^2 g1^2) - vd^2]}
+};
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];

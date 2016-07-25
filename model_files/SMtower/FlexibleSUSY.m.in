@@ -39,7 +39,7 @@ InitialGuessAtLowScale = {
     {Ye, Automatic}
 };
 
-SUSYScaleUserMatching = {
+SUSYScaleMatching = {
     {v, vev}
 };
 
