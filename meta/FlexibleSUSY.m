@@ -822,32 +822,34 @@ CreateVEVToTadpoleAssociation[] :=
 GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
+ApplyUserMatching[{par_, value_}] :=
+    "model.set_" <> CConversion`ToValidCSymbolString[par] <>
+    "(" <> CConversion`RValueToCFormString[value] <> ");";
+
+ApplyUserMatching[arg___] := (
+    Print["Error: Invalid setting: ", InputForm[arg]];
+    ""
+);
+
 WriteMatchingClass[files_List] :=
     Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
-        If[SMTower,
-           If[Length[SUSYScaleUserMatching] > 0,
-              For[i = 1, i <= Length[SUSYScaleUserMatching], i++,
-                 userMatching = userMatching <> "model.set_" <> CConversion`ToValidCSymbolString[SUSYScaleUserMatching[[i,1]]]
-                                <> "(" <> CConversion`RValueToCFormString[SUSYScaleUserMatching[[i, 2]]]
-                                <> ");\n";
-              ];
-           ];
+        If[SMTower && Head[SUSYScaleUserMatching] === List,
+           userMatching = Parameters`CreateLocalConstRefs[Rest /@ SUSYScaleUserMatching] <>
+                          Utils`StringJoinWithSeparator[ApplyUserMatching /@ SUSYScaleUserMatching, "\n"];
+          ];
+        WriteOut`ReplaceInFiles[files,
+                       { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
+                                                                    ThresholdCorrections`CalculateColorCoupling[scheme] +
+                                                                    ThresholdCorrections`CalculateElectromagneticCoupling[scheme]]]],
+                         "@alphaS1Lmatching@"  ->  IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
+                                                                        CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
+                         "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
+                                                                        CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
+                         "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
+                         "@applyUserMatching@" -> IndentText[WrapLines[userMatching]],
+                         Sequence @@ GeneralReplacementRules[]
+                       } ];
         ];
-        WriteOut`ReplaceInFiles[files, {
-          "@gauge1Linit@"       -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
-                                                                    ThresholdCorrections`CalculateColorCoupling[scheme]
-                                                                  + ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
-                                                                  ]]],
-          "@alphaS1Lmatching@"  ->  IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
-                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
-          "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
-                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
-          "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
-          "@applyUserMatching@" -> IndentText[WrapLines[userMatching]],
-          Sequence @@ GeneralReplacementRules[]}
-                               ];
-             ];
-
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
