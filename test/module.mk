@@ -276,6 +276,11 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-CMSSMMuBMutower --with-CMSSMMuBMu),yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMMuBMutower.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-HSSUSY --with-MSSMtower --with-MSSMMuBMu),yes yes yes)
 TEST_SH += \
 		$(DIR)/test_MSSMtower.sh
