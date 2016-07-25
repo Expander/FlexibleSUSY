@@ -26,8 +26,9 @@
 #include <cmath>
 #include "@ModelName@_info.hpp"
 
+using namespace flexiblesusy::standard_model;
+
 namespace flexiblesusy {
-namespace standard_model {
 
 #define MODELPARAMETER(p) model.get_##p()
 #define SMPARAMETER(p) sm.get_##p()
@@ -197,5 +198,4 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    model.solve_ewsb();
 }
 
-} // namespace standard_model
 } // namespace flexiblesusy
