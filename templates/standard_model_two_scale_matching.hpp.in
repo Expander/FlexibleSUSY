@@ -70,9 +70,9 @@ public:
       model->solve_ewsb_one_loop();
 
       if (!model->get_thresholds())
-         @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
+         @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
       else
-         @ModelName@_standard_model_matching::match_high_to_low_scale_model(*(static_cast<standard_model::Standard_model*>(eft)), *model);
+         @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model);
    }
 
    virtual void match_low_to_high_scale_model() {
@@ -82,9 +82,9 @@ public:
          throw SetupError("Constraint pointer in matching class is NULL!");
 
       if (!model->get_thresholds())
-         @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
+         @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
       else
-         @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *(static_cast<standard_model::Standard_model*>(eft)));
+         @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft);
    }
 
    void match_high_to_low_scale_model_tree_level() {
@@ -95,7 +95,7 @@ public:
 
       model->calculate_DRbar_masses();
 
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*(static_cast<standard_model::Standard_model*>(eft)), *model);
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
    }
 
    void match_low_to_high_scale_model_tree_level() {
@@ -104,7 +104,7 @@ public:
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
 
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *(static_cast<standard_model::Standard_model*>(eft)));
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
    }
 
 private:
