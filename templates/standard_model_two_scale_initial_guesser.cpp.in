@@ -229,7 +229,9 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_paramete
 
 
    // apply susy-scale first guess
+   {
 @initialGuessAtSUSYScale@
+   }
 
    // apply susy-scale constraint
    susy_constraint.set_model(model);
@@ -239,7 +241,9 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_paramete
    model->run_to(high_scale_guess, running_precision);
 
    // apply user-defined initial guess at the high scale
+   {
 @initialGuessAtHighScale@
+   }
 
    // apply high-scale constraint
    high_constraint.set_model(model);
