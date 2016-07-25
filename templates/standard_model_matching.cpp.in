@@ -34,7 +34,8 @@ namespace standard_model {
 #define INPUTPARAMETER(p) model.get_input().p
 
 /**
- * matches Standardmodel from @ModelName@-Model at tree-level
+ * Calculates \f$\lambda(Q)\f$ at the tree level from the lightest
+ * CP-even Higgs boson mass of the @ModelName@.
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(
    Standard_model& sm, @ModelName@_mass_eigenstates& model)
@@ -47,7 +48,9 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_lev
 
 
 /**
- * matches Lambda in SM from @ModelName@ by Higgs mass 1-loop pole mass matching
+ * Calculates \f$\lambda(Q)\f$ at the 1-loop level from the lightest
+ * CP-even Higgs boson mass of the @ModelName@ by requiring that the
+ * 1-loop Higgs pole masses are equal in both models.
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    Standard_model& sm, @ModelName@_mass_eigenstates& model)
@@ -80,7 +83,9 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 }
 
 /**
- * matches gauge and Yukawa couplings from SM to @ModelName@ at tree-level
+ * Calculates the gauge and Yukawa couplings and the SM-like VEV in
+ * the @ModelName@ at the tree level from the known Standard Model
+ * couplings and the SM vev.
  */
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
@@ -112,7 +117,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 }
 
 /**
- * matches gauge and Yukawa couplings from SM to @ModelName@ at one-loop
+ * Calculates the gauge and Yukawa couplings and the SM-like VEV in
+ * the @ModelName@ at the 1-loop level from the known Standard Model
+ * couplings and the SM vev.
  */
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
