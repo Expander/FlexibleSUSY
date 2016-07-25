@@ -819,10 +819,11 @@ CreateVEVToTadpoleAssociation[] :=
            {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
           ];
 
+GetRenormalizationScheme[] :=
+    If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
+
 WriteMatchingClass[files_List] :=
-    Module[ {scheme, userMatching},
-		scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
-        userMatching="";
+    Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
         If[SMTower,
            If[Length[SUSYScaleUserMatching] > 0,
               For[i = 1, i <= Length[SUSYScaleUserMatching], i++,
@@ -1669,8 +1670,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
 
-           FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
-                                                     FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
+           FlexibleSUSY`FSRenormalizationScheme = GetRenormalizationScheme[];
 
            (* adapt SARAH`Conj to our needs *)
            (* Clear[Conj]; *)

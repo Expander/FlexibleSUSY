@@ -40,7 +40,7 @@ scale=${scale}
 mmin=min($num1,$num2)
 mmax=max($num1,$num2)
 
-(mmax - mmin) <= $frac * mmax
+(mmax - mmin) > $frac * mmax
 EOF
     )
 
