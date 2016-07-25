@@ -281,6 +281,11 @@ TEST_SH += \
 		$(DIR)/test_MSSMtower.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-SM --with-SMtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_SMtower.sh
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
