@@ -65,9 +65,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    , AlphaS(0.)
    , EDRbar(0.)
    , ThetaWDRbar(0.)
-   , new_g1(0.)
-   , new_g2(0.)
-   , new_g3(0.)
    , self_energy_w_at_mw(0.)
    , threshold_corrections_loop_order(1)
 {
@@ -85,9 +82,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    : Constraint<Two_scale>()
    , model(model_)
    , qedqcd(qedqcd_)
-   , new_g1(0.)
-   , new_g2(0.)
-   , new_g3(0.)
    , self_energy_w_at_mw(0.)
 {
    initialize();
@@ -109,10 +103,6 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
 
    calculate_threshold_corrections();
 
-   new_g1 = 1.2909944487358056*EDRbar*Sec(ThetaWDRbar);
-   new_g2 = EDRbar*Csc(ThetaWDRbar);
-   new_g3 = 3.5449077018110318*Sqrt(AlphaS);
-
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
 
@@ -121,9 +111,9 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    model->calculate_Yd_DRbar();
    model->calculate_Ye_DRbar();
 
-   model->set_g1(new_g1);
-   model->set_g2(new_g2);
-   model->set_g3(new_g3);
+   model->set_g1(1.2909944487358056*EDRbar*Sec(ThetaWDRbar));
+   model->set_g2(EDRbar*Csc(ThetaWDRbar));
+   model->set_g3(3.5449077018110318*Sqrt(AlphaS));
 
    model->recalculate_mw_pole();
 }
@@ -174,9 +164,6 @@ void Standard_model_low_scale_constraint<Two_scale>::clear()
    AlphaS = 0.;
    EDRbar = 0.;
    ThetaWDRbar = 0.;
-   new_g1 = 0.;
-   new_g2 = 0.;
-   new_g3 = 0.;
    self_energy_w_at_mw = 0.;
 }
 
@@ -193,9 +180,6 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
    AlphaS = 0.;
    EDRbar = 0.;
    ThetaWDRbar = 0.;
-   new_g1 = 0.;
-   new_g2 = 0.;
-   new_g3 = 0.;
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
    self_energy_w_at_mw = 0.;

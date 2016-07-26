@@ -65,7 +65,6 @@ private:
    double AlphaS;
    double EDRbar;
    double ThetaWDRbar;
-   double new_g1, new_g2, new_g3;
    double self_energy_w_at_mw;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
