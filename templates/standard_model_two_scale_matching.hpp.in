@@ -56,8 +56,8 @@ public:
    }
 
    virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
-      eft = (standard_model::StandardModel<Two_scale>*) low;
-      model = (@ModelName@<Two_scale>*) high;
+      eft = cast_model<standard_model::StandardModel<Two_scale>*>(low);
+      model = cast_model<@ModelName@<Two_scale>*>(high);
    }
 
    virtual void match_high_to_low_scale_model() {
