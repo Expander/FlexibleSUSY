@@ -37,10 +37,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
 		$(DIR)/standard_model_physical.cpp \
-		$(DIR)/standard_model_slha_io.cpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
-		$(DIR)/standard_model_two_scale_model_slha.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -106,10 +104,8 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model.hpp \
 		$(DIR)/standard_model_low_scale_constraint.hpp \
 		$(DIR)/standard_model_physical.hpp \
-		$(DIR)/standard_model_slha_io.hpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
 		$(DIR)/standard_model_two_scale_model.hpp \
-		$(DIR)/standard_model_two_scale_model_slha.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
