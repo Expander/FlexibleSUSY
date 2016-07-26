@@ -41,11 +41,6 @@ HighScaleInput = {
 };
 
 InitialGuessAtHighScale = {
-    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
-    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
-    {Yu, Automatic},
-    {Yd, Automatic},
-    {Ye, Automatic},
     {T[Ye], Azero*Ye},
     {T[Yd], Azero*Yd},
     {T[Yu], Azero*Yu},
