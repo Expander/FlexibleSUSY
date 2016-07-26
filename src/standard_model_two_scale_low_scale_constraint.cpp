@@ -276,16 +276,7 @@ double Standard_model_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "calculate_delta_alpha_em(): model pointer is zero");
 
-   const double currentScale = model->get_scale();
-   const auto MFu = MODELPARAMETER(MFu);
-
-   const double delta_alpha_em_SM = -0.28294212105225836*alphaEm*FiniteLog(Abs(
-      MFu(2)/currentScale));
-
-   const double delta_alpha_em = 0;
-
-   return delta_alpha_em + delta_alpha_em_SM;
-
+   return model->calculate_delta_alpha_em(alphaEm);
 }
 
 double Standard_model_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(double alphaS) const
@@ -293,16 +284,7 @@ double Standard_model_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(d
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "calculate_delta_alpha_s(): model pointer is zero");
 
-   const double currentScale = model->get_scale();
-   const auto MFu = MODELPARAMETER(MFu);
-
-   const double delta_alpha_s_SM = -0.1061032953945969*alphaS*FiniteLog(Abs(MFu
-      (2)/currentScale));
-
-   const double delta_alpha_s = 0;
-
-   return delta_alpha_s + delta_alpha_s_SM;
-
+   return model->calculate_delta_alpha_s(alphaS);
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
