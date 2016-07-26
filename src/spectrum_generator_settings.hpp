@@ -53,6 +53,7 @@ public:
       force_positive_masses, ///< [16] force positive masses of majoran fermions
       pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
       eft_pole_mass_scale,   ///< [18] renormalization scale at which the pole masses are calculated in the EFT
+      eft_matching_scale,    ///< [19] renormalization scale at which the EFT is matched to the full model
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
