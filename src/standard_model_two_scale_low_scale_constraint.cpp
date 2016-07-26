@@ -56,7 +56,6 @@ namespace standard_model {
 Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint()
    : Constraint<Two_scale>()
    , scale(0.)
-   , initial_scale_guess(0.)
    , model(0)
    , qedqcd()
    , ckm()
@@ -96,7 +95,6 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    assert(model && "Error: Standard_model_low_scale_constraint::apply():"
           " model pointer must not be zero");
 
-   update_scale();
    qedqcd.runto(scale, 1.0e-5);
    model->set_low_energy_data(qedqcd);
    model->calculate_DRbar_masses();
@@ -133,11 +131,6 @@ double Standard_model_low_scale_constraint<Two_scale>::get_scale() const
    return scale;
 }
 
-double Standard_model_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
-{
-   return initial_scale_guess;
-}
-
 void Standard_model_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<StandardModel<Two_scale>*>(model_);
@@ -157,7 +150,6 @@ const softsusy::QedQcd& Standard_model_low_scale_constraint<Two_scale>::get_sm_p
 void Standard_model_low_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
-   initial_scale_guess = 0.;
    model = NULL;
    qedqcd = softsusy::QedQcd();
    MZDRbar = 0.;
@@ -172,10 +164,7 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "initialize(): model pointer is zero.");
 
-   initial_scale_guess = MZPole;
-
-   scale = initial_scale_guess;
-
+   scale = MZPole;
    MZDRbar = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
@@ -183,11 +172,6 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
    self_energy_w_at_mw = 0.;
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::update_scale()
-{
-   scale = MZPole;
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_corrections()

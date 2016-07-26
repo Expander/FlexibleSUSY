@@ -47,7 +47,6 @@ public:
    void clear();
    const Eigen::Matrix<std::complex<double>,3,3>& get_ckm();
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns();
-   double get_initial_scale_guess() const;
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const;
    void set_sm_parameters(const softsusy::QedQcd&);
@@ -55,7 +54,6 @@ public:
 
 private:
    double scale;
-   double initial_scale_guess;
    StandardModel<Two_scale>* model;
    softsusy::QedQcd qedqcd;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
@@ -69,7 +67,6 @@ private:
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_threshold_corrections();
-   void update_scale();
 };
 
 } // namespace standard_model
