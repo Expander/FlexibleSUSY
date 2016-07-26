@@ -106,7 +106,12 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    qedqcd.runto(scale, 1.0e-5);
    model->set_low_energy_data(qedqcd);
    model->calculate_DRbar_masses();
-   calculate_DRbar_gauge_couplings();
+
+   calculate_threshold_corrections();
+
+   new_g1 = 1.2909944487358056*EDRbar*Sec(ThetaWDRbar);
+   new_g2 = EDRbar*Csc(ThetaWDRbar);
+   new_g3 = 3.5449077018110318*Sqrt(AlphaS);
 
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
@@ -198,12 +203,7 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
 
 void Standard_model_low_scale_constraint<Two_scale>::update_scale()
 {
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "update_scale(): model pointer is zero.");
-
    scale = MZPole;
-
-
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
@@ -242,27 +242,6 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_correct
    AlphaS = alpha_s_drbar;
    EDRbar = e_drbar;
    ThetaWDRbar = model->calculate_theta_w(alpha_em_drbar);
-}
-
-double Standard_model_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_theta_w(): model pointer is zero");
-
-   return model->calculate_theta_w(alpha_em_drbar);
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_DRbar_gauge_couplings(): model pointer is zero");
-
-   calculate_threshold_corrections();
-
-   new_g1 = 1.2909944487358056*EDRbar*Sec(ThetaWDRbar);
-   new_g2 = EDRbar*Csc(ThetaWDRbar);
-   new_g3 = 3.5449077018110318*Sqrt(AlphaS);
-
 }
 
 } // namespace standard_model

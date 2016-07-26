@@ -69,9 +69,7 @@ private:
    double self_energy_w_at_mw;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
-   double calculate_theta_w(double);
    void calculate_threshold_corrections();
-   void calculate_DRbar_gauge_couplings();
    void update_scale();
 };
 
