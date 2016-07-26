@@ -196,21 +196,12 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
 
          eft.run_to(Q_higgs);
 
+         // 1L computation of pole mass spectrum in the SM
          eft.calculate_DRbar_masses();
-         eft.solve_ewsb();
-         // eft.calculate_spectrum();
-         // does not work properly, find out why!
-
-         eft.calculate_MVWp_pole();
-         eft.calculate_MVZ_pole();
-         eft.calculate_MFu_pole();
-         eft.calculate_MFd_pole();
-         eft.calculate_MFe_pole();
-
-         // since Higgs mass matching is locked to 1-loop, so is this calculation
          eft.set_pole_mass_loop_order(1);
-         eft.solve_ewsb_one_loop();
-         eft.calculate_Mhh_pole();
+         eft.set_ewsb_loop_order(1);
+         eft.solve_ewsb();
+         eft.calculate_spectrum();
 
          this->model.get_physical().M@HiggsBoson_0@ = eft.get_physical().Mhh;
          this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
