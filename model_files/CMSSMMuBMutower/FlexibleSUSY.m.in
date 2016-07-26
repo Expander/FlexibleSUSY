@@ -41,26 +41,7 @@ HighScaleInput = {
     {MassG, m12}
 };
 
-InitialGuessAtSUSYScale = InitialGuessAtHighScale = {
-    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
-    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
-    {Yu, Automatic},
-    {Yd, Automatic},
-    {Ye, Automatic},
-    {T[Ye], Azero*Ye},
-    {T[Yd], Azero*Yd},
-    {T[Yu], Azero*Yu},
-    {\[Mu], MuInput},
-    {B[\[Mu]], BInput},
-    {mq2, UNITMATRIX[3] m0^2},
-    {ml2, UNITMATRIX[3] m0^2},
-    {md2, UNITMATRIX[3] m0^2},
-    {mu2, UNITMATRIX[3] m0^2},
-    {me2, UNITMATRIX[3] m0^2},
-    {MassB, m12},
-    {MassWB,m12},
-    {MassG,m12}
-};
+InitialGuessAtSUSYScale = InitialGuessAtHighScale = HighScaleInput;
 
 (* InitialGuessAtLowScale is ignored if SMTower is true *)
 (* vev is a keyword in SUSYScaleMatching, describing SM-like VEV in the full theory *)
