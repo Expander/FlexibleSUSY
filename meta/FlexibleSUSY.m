@@ -883,20 +883,10 @@ CreateVEVToTadpoleAssociation[] :=
 GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
-ApplyUserMatching[{par_, value_}] :=
-    "model.set_" <> CConversion`ToValidCSymbolString[par] <>
-    "(" <> CConversion`RValueToCFormString[value] <> ");";
-
-ApplyUserMatching[arg___] := (
-    Print["Error: Invalid setting: ", InputForm[arg]];
-    ""
-);
-
-WriteMatchingClass[files_List] :=
+WriteMatchingClass[susyScaleMatching_List, files_List] :=
     Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
-        If[SMTower && Head[SUSYScaleMatching] === List,
-           userMatching = Parameters`CreateLocalConstRefs[Rest /@ SUSYScaleMatching] <>
-                          Utils`StringJoinWithSeparator[ApplyUserMatching /@ SUSYScaleMatching, "\n"];
+        If[SMTower && Head[susyScaleMatching] === List,
+           userMatching = Constraint`ApplyConstraints[susyScaleMatching];
           ];
         WriteOut`ReplaceInFiles[files,
                        { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
@@ -907,7 +897,7 @@ WriteMatchingClass[files_List] :=
                          "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
                          "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
-                         "@applyUserMatching@" -> IndentText[WrapLines[userMatching]],
+                         "@applyUserMatching@" -> IndentText[IndentText[WrapLines[userMatching]]],
                          Sequence @@ GeneralReplacementRules[]
                        } ];
         ];
@@ -2460,16 +2450,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
             Print["Creating matching class ..."];
-            WriteMatchingClass[ {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
-                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]},
-                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
-                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
-                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
-                                }
-                              ];
+            WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+                               {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
+                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]},
+                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
+                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
+                               }];
 
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
