@@ -58,14 +58,7 @@ private:
    softsusy::QedQcd qedqcd;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
-   Eigen::Matrix<double,3,3> neutrinoDRbar;
-   double MZDRbar;
-   double AlphaS;
-   double EDRbar;
-   double ThetaWDRbar;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
-
-   void calculate_threshold_corrections();
 };
 
 } // namespace standard_model

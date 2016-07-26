@@ -60,10 +60,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    , qedqcd()
    , ckm()
    , pmns()
-   , MZDRbar(0.)
-   , AlphaS(0.)
-   , EDRbar(0.)
-   , ThetaWDRbar(0.)
    , threshold_corrections_loop_order(1)
 {
    ckm << 1., 0., 0.,
@@ -97,19 +93,36 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    model->set_low_energy_data(qedqcd);
    model->calculate_DRbar_masses();
 
-   calculate_threshold_corrections();
+   const double alpha_em = qedqcd.displayAlpha(softsusy::ALPHA);
+   const double alpha_s  = qedqcd.displayAlpha(softsusy::ALPHAS);
+   const double mz_pole  = qedqcd.displayPoleMZ();
+
+   double delta_alpha_em = 0.;
+   double delta_alpha_s  = 0.;
+
+   if (model->get_thresholds()) {
+      delta_alpha_em = model->calculate_delta_alpha_em(alpha_em);
+      delta_alpha_s  = model->calculate_delta_alpha_s(alpha_s);
+   }
+
+   const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
+   const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
+   const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
+   const double mZ = model->get_thresholds() ?
+      model->calculate_MVZ_DRbar(mz_pole) : mz_pole;
+   const double theta_w = model->calculate_theta_w(alpha_em_drbar);
 
    const auto g1 = MODELPARAMETER(g1);
    const auto g2 = MODELPARAMETER(g2);
 
-   MODEL->set_v(Re((2*MZDRbar)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
+   MODEL->set_v(Re((2*mZ)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
    model->calculate_Yu_DRbar();
    model->calculate_Yd_DRbar();
    model->calculate_Ye_DRbar();
 
-   model->set_g1(1.2909944487358056*EDRbar*Sec(ThetaWDRbar));
-   model->set_g2(EDRbar*Csc(ThetaWDRbar));
-   model->set_g3(3.5449077018110318*Sqrt(AlphaS));
+   model->set_g1(1.2909944487358056*e_drbar*Sec(theta_w));
+   model->set_g2(e_drbar*Csc(theta_w));
+   model->set_g3(3.5449077018110318*Sqrt(alpha_s_drbar));
 
    model->recalculate_mw_pole();
 }
@@ -150,10 +163,6 @@ void Standard_model_low_scale_constraint<Two_scale>::clear()
    scale = 0.;
    model = NULL;
    qedqcd = softsusy::QedQcd();
-   MZDRbar = 0.;
-   AlphaS = 0.;
-   EDRbar = 0.;
-   ThetaWDRbar = 0.;
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::initialize()
@@ -162,50 +171,8 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
           "initialize(): model pointer is zero.");
 
    scale = MZPole;
-   MZDRbar = 0.;
-   AlphaS = 0.;
-   EDRbar = 0.;
-   ThetaWDRbar = 0.;
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
-{
-   assert(qedqcd.displayMu() == get_scale() && "Error: low-energy data"
-          " set is not defined at the same scale as the low-energy"
-          " constraint.  You need to run the low-energy data set to this"
-          " scale!");
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_threshold_corrections(): model pointer is zero");
-
-   const double alpha_em = qedqcd.displayAlpha(softsusy::ALPHA);
-   const double alpha_s  = qedqcd.displayAlpha(softsusy::ALPHAS);
-   const double mw_pole  = qedqcd.displayPoleMW();
-   const double mz_pole  = qedqcd.displayPoleMZ();
-
-   double delta_alpha_em = 0.;
-   double delta_alpha_s  = 0.;
-
-   if (model->get_thresholds()) {
-      delta_alpha_em = model->calculate_delta_alpha_em(alpha_em);
-      delta_alpha_s  = model->calculate_delta_alpha_s(alpha_s);
-   }
-
-   const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
-   const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
-   const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
-
-   // interface variables
-   MZDRbar = mz_pole;
-
-   if (model->get_thresholds()) {
-      MZDRbar = model->calculate_MVZ_DRbar(mz_pole);
-   }
-
-   AlphaS = alpha_s_drbar;
-   EDRbar = e_drbar;
-   ThetaWDRbar = model->calculate_theta_w(alpha_em_drbar);
 }
 
 } // namespace standard_model
