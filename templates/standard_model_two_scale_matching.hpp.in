@@ -66,6 +66,9 @@ public:
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
 
+      eft->run_to(get_scale());
+      model->run_to(get_scale());
+
       if (!model->get_thresholds())
          @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
       else
@@ -77,6 +80,9 @@ public:
          throw SetupError("Model pointer in matching class is NULL!");
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
+
+      eft->run_to(get_scale());
+      model->run_to(get_scale());
 
       if (!model->get_thresholds())
          @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
@@ -90,6 +96,9 @@ public:
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
 
+      eft->run_to(get_scale());
+      model->run_to(get_scale());
+
       @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
    }
 
@@ -98,6 +107,9 @@ public:
          throw SetupError("Model pointer in matching class is NULL!");
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
+
+      eft->run_to(get_scale());
+      model->run_to(get_scale());
 
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
    }

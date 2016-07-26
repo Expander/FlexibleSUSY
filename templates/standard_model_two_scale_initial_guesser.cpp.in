@@ -227,8 +227,9 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_paramete
    matching.set_constraint(&susy_constraint);
    matching.match_low_to_high_scale_model_tree_level();
 
-
    // apply susy-scale first guess
+   model->run_to(susy_scale_guess, running_precision);
+
    {
 @initialGuessAtSUSYScale@
    }
