@@ -125,6 +125,7 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
 
    matching.set_models(&eft, &model);
    matching.set_constraint(&susy_scale_constraint);
+   matching.set_scale(this->settings.get(Spectrum_generator_settings::eft_matching_scale));
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();

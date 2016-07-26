@@ -20,104 +20,47 @@
 #define @ModelName@_TWO_SCALE_MATCHING_H
 
 #include "two_scale_matching.hpp"
-#include "@ModelName@_two_scale_model.hpp"
-#include "standard_model_two_scale_model.hpp"
-#include "@ModelName@_standard_model_matching.hpp"
-#include "error.hpp"
-#include "two_scale_constraint.hpp"
 
 namespace flexiblesusy {
 
 class Two_scale;
 class Two_scale_model;
 
-template <class T>
-class @ModelName@_standard_model_Matching;
+template <class T> class Constraint;
+template <class T> class @ModelName@;
+template <class T> class @ModelName@_standard_model_Matching;
+
+namespace standard_model {
+template <class T> class StandardModel;
+}
 
 template<>
-class @ModelName@_standard_model_Matching<Two_scale>: public Matching<Two_scale>
+class @ModelName@_standard_model_Matching<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_Matching(): constraint(0), eft(0), model(0) {}
+   @ModelName@_standard_model_Matching();
 
-   @ModelName@_standard_model_Matching(standard_model::StandardModel<Two_scale>* low_, @ModelName@<Two_scale>* high_, Constraint<Two_scale>* constraint_)
-      :constraint(constraint_), eft(low_), model(high_) {}
+   @ModelName@_standard_model_Matching(standard_model::StandardModel<Two_scale>*,
+                                       @ModelName@<Two_scale>*,
+                                       Constraint<Two_scale>*);
 
-   virtual ~@ModelName@_standard_model_Matching() {}
+   virtual ~@ModelName@_standard_model_Matching();
 
-   virtual double get_scale() const {
-      if (!constraint)
-         throw SetupError("Constraint pointer in matching class is NULL!");
-      return constraint->get_scale();
-   }
+   virtual double get_scale() const;
+   virtual void set_models(Two_scale_model*, Two_scale_model*);
+   virtual void match_high_to_low_scale_model();
+   virtual void match_low_to_high_scale_model();
 
-   void set_constraint(Constraint<Two_scale>* constraint_) {
-      constraint = constraint_;
-   }
-
-   virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
-      eft = cast_model<standard_model::StandardModel<Two_scale>*>(low);
-      model = cast_model<@ModelName@<Two_scale>*>(high);
-   }
-
-   virtual void match_high_to_low_scale_model() {
-      if (!model || !eft)
-         throw SetupError("Model pointer in matching class is NULL!");
-      if (!constraint)
-         throw SetupError("Constraint pointer in matching class is NULL!");
-
-      eft->run_to(get_scale());
-      model->run_to(get_scale());
-
-      if (!model->get_thresholds())
-         @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
-      else
-         @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model);
-   }
-
-   virtual void match_low_to_high_scale_model() {
-      if (!model || !eft)
-         throw SetupError("Model pointer in matching class is NULL!");
-      if (!constraint)
-         throw SetupError("Constraint pointer in matching class is NULL!");
-
-      eft->run_to(get_scale());
-      model->run_to(get_scale());
-
-      if (!model->get_thresholds())
-         @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
-      else
-         @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft);
-   }
-
-   void match_high_to_low_scale_model_tree_level() {
-      if (!model || !eft)
-         throw SetupError("Model pointer in matching class is NULL!");
-      if (!constraint)
-         throw SetupError("Constraint pointer in matching class is NULL!");
-
-      eft->run_to(get_scale());
-      model->run_to(get_scale());
-
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
-   }
-
-   void match_low_to_high_scale_model_tree_level() {
-      if (!model || !eft)
-         throw SetupError("Model pointer in matching class is NULL!");
-      if (!constraint)
-         throw SetupError("Constraint pointer in matching class is NULL!");
-
-      eft->run_to(get_scale());
-      model->run_to(get_scale());
-
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
-   }
+   void set_scale(double);
+   void set_constraint(Constraint<Two_scale>*);
+   void match_high_to_low_scale_model_tree_level();
+   void match_low_to_high_scale_model_tree_level();
 
 private:
    @ModelName@<Two_scale>* model;
    standard_model::StandardModel<Two_scale>* eft;
    Constraint<Two_scale>* constraint;
+   double scale;
 };
 
 } // namespace flexiblesusy
