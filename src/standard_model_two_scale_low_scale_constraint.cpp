@@ -102,10 +102,10 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    assert(model && "Error: Standard_model_low_scale_constraint::apply():"
           " model pointer must not be zero");
 
-   model->calculate_DRbar_masses();
    update_scale();
    qedqcd.runto(scale, 1.0e-5);
    model->set_low_energy_data(qedqcd);
+   model->calculate_DRbar_masses();
    calculate_DRbar_gauge_couplings();
 
    const auto g1 = MODELPARAMETER(g1);
