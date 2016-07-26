@@ -1994,7 +1994,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  AppendTo[FlexibleSUSY`SUSYScaleInput,
                           FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
                 ];
-              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
                                      Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput],
                                      Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching]];
               ,
