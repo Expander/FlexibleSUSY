@@ -485,6 +485,10 @@ public:
 
    double ThetaW() const;
 
+   double calculate_delta_alpha_em(double alphaEm) const;
+   double calculate_delta_alpha_s(double alphaS) const;
+   void calculate_Lambdax_DRbar();
+   double calculate_theta_w(double alpha_em_drbar);
    void calculate_Yu_DRbar();
    void calculate_Yd_DRbar();
    void calculate_Ye_DRbar();
@@ -602,10 +606,6 @@ private:
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters();
-   void calculate_Lambdax_DRbar();
-   double calculate_delta_alpha_em(double alphaEm) const;
-   double calculate_delta_alpha_s(double alphaS) const;
-   double calculate_theta_w(double alpha_em_drbar);
    bool check_convergence(const Standard_model& old) const;
 
    // Passarino-Veltman loop functions
