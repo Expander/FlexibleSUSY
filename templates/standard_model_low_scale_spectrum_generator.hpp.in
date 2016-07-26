@@ -55,6 +55,8 @@ public:
       , solver()
       , susy_scale_constraint()
       , low_scale_constraint()
+      , matching()
+      , eft()
       , susy_scale(0.)
       , low_scale(0.)
    {}
@@ -68,11 +70,11 @@ public:
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
 private:
-   standard_model::StandardModel<T> eft;
    RGFlow<T> solver;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
    @ModelName@_standard_model_Matching<T> matching;
+   standard_model::StandardModel<T> eft;
    double susy_scale, low_scale;
 };
 
