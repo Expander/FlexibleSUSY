@@ -112,16 +112,15 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    const auto g2 = MODELPARAMETER(g2);
 
    MODEL->set_v(Re((2*MZDRbar)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
-   calculate_Yu_DRbar();
-   calculate_Yd_DRbar();
-   calculate_Ye_DRbar();
+   model->calculate_Yu_DRbar();
+   model->calculate_Yd_DRbar();
+   model->calculate_Ye_DRbar();
 
    model->set_g1(new_g1);
    model->set_g2(new_g2);
    model->set_g3(new_g3);
 
-   recalculate_mw_pole();
-
+   model->recalculate_mw_pole();
 }
 
 const Eigen::Matrix<std::complex<double>,3,3>& Standard_model_low_scale_constraint<Two_scale>::get_ckm()
@@ -225,8 +224,8 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_correct
    double delta_alpha_s  = 0.;
 
    if (model->get_thresholds()) {
-      delta_alpha_em = calculate_delta_alpha_em(alpha_em);
-      delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
+      delta_alpha_em = model->calculate_delta_alpha_em(alpha_em);
+      delta_alpha_s  = model->calculate_delta_alpha_s(alpha_s);
    }
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
@@ -242,7 +241,7 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_correct
 
    AlphaS = alpha_s_drbar;
    EDRbar = e_drbar;
-   ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
+   ThetaWDRbar = model->calculate_theta_w(alpha_em_drbar);
 }
 
 double Standard_model_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
@@ -264,75 +263,6 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupl
    new_g2 = EDRbar*Csc(ThetaWDRbar);
    new_g3 = 3.5449077018110318*Sqrt(AlphaS);
 
-}
-
-double Standard_model_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_delta_alpha_em(): model pointer is zero");
-
-   return model->calculate_delta_alpha_em(alphaEm);
-}
-
-double Standard_model_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(double alphaS) const
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_delta_alpha_s(): model pointer is zero");
-
-   return model->calculate_delta_alpha_s(alphaS);
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
-{
-   calculate_Yu_DRbar();
-   calculate_Yd_DRbar();
-   calculate_Ye_DRbar();
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_Yu_DRbar(): model pointer is zero");
-
-   model->calculate_Yu_DRbar();
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_Yd_DRbar(): model pointer is zero");
-
-   model->calculate_Yd_DRbar();
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_Ye_DRbar(): model pointer is zero");
-
-   model->calculate_Ye_DRbar();
-}
-
-void Standard_model_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "calculate_MNeutrino_DRbar(): model pointer is zero");
-
-   neutrinoDRbar.setZero();
-   neutrinoDRbar(0,0) = qedqcd.displayNeutrinoPoleMass(1);
-   neutrinoDRbar(1,1) = qedqcd.displayNeutrinoPoleMass(2);
-   neutrinoDRbar(2,2) = qedqcd.displayNeutrinoPoleMass(3);
-}
-
-/**
- * Recalculates the W boson pole mass using the new gauge couplings.
- */
-void Standard_model_low_scale_constraint<Two_scale>::recalculate_mw_pole()
-{
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "recalculate_mw_pole(): model pointer is zero");
-
-   model->recalculate_mw_pole();
 }
 
 } // namespace standard_model

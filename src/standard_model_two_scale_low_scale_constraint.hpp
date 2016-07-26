@@ -72,14 +72,6 @@ private:
    double calculate_theta_w(double);
    void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();
-   void calculate_DRbar_yukawa_couplings();
-   void calculate_Yu_DRbar();
-   void calculate_Yd_DRbar();
-   void calculate_Ye_DRbar();
-   void calculate_MNeutrino_DRbar();
-   double calculate_delta_alpha_em(double) const;
-   double calculate_delta_alpha_s(double) const;
-   void recalculate_mw_pole();
    void update_scale();
 };
 
