@@ -63,7 +63,6 @@ private:
    double AlphaS;
    double EDRbar;
    double ThetaWDRbar;
-   double self_energy_w_at_mw;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_threshold_corrections();

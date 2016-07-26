@@ -64,7 +64,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    , AlphaS(0.)
    , EDRbar(0.)
    , ThetaWDRbar(0.)
-   , self_energy_w_at_mw(0.)
    , threshold_corrections_loop_order(1)
 {
    ckm << 1., 0., 0.,
@@ -81,7 +80,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    : Constraint<Two_scale>()
    , model(model_)
    , qedqcd(qedqcd_)
-   , self_energy_w_at_mw(0.)
 {
    initialize();
 }
@@ -156,7 +154,6 @@ void Standard_model_low_scale_constraint<Two_scale>::clear()
    AlphaS = 0.;
    EDRbar = 0.;
    ThetaWDRbar = 0.;
-   self_energy_w_at_mw = 0.;
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::initialize()
@@ -171,7 +168,6 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
    ThetaWDRbar = 0.;
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
-   self_energy_w_at_mw = 0.;
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
