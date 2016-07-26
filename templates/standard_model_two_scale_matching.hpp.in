@@ -66,9 +66,6 @@ public:
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
 
-      model->calculate_DRbar_masses();
-      model->solve_ewsb_one_loop();
-
       if (!model->get_thresholds())
          @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
       else
@@ -92,8 +89,6 @@ public:
          throw SetupError("Model pointer in matching class is NULL!");
       if (!constraint)
          throw SetupError("Constraint pointer in matching class is NULL!");
-
-      model->calculate_DRbar_masses();
 
       @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
    }
