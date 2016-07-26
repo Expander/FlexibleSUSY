@@ -1,15 +1,11 @@
-
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
-
-(* CMSSM input parameters *)
+OnlyLowEnergyFlexibleSUSY = True;
+SMTower = True;
 
 MINPAR = {
     {4, Sign[\[Mu]]}
-};
-
-EXTPAR = {
 };
 
 FSExtraInputParameters = {
@@ -61,19 +57,13 @@ InitialGuessAtSUSYScale = {
     {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
 };
 
-(* InitialGuessAtLowScale is ignored if SMTower is true *)
-(* vev is a keyword in SUSYScaleMatching, describing SM-like VEV in the full theory *)
-
+(* vev is the SM-like VEV in the MSSM *)
 SUSYScaleMatching = {
     {vu, vev Sin[ArcTan[TanBeta]]},
     {vd, vev Cos[ArcTan[TanBeta]]}
 };
 
 LowScale = LowEnergyConstant[MZ];
-
-SMTower = True;
-
-OnlyLowEnergyFlexibleSUSY = True;
 
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
