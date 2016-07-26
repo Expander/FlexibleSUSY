@@ -87,13 +87,13 @@ Block SMINPUTS               # Standard Model inputs
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR                 # Input parameters
-    1   1500                 # m0
-    2   800                  # m12
+    1   91                   # m0
+    2   91                   # m12
     3   10                   # TanBeta
     4   1                    # SignMu
     5   0                    # Azero
-    6   1000                 # MuInput
-    7   1000                 # BInput
+    6   91                   # MuInput
+    7   91                   # BInput
 "
 
 run_sg() {
@@ -124,7 +124,7 @@ MhCMSSMMuBMutower=$(run_sg "$MODELDIR/CMSSMMuBMutower/run_CMSSMMuBMutower.x" "$i
 echo "Mh in the CMSSMMuBMu     : $MhCMSSMMuBMu"
 echo "Mh in the CMSSMMuBMutower: $MhCMSSMMuBMutower"
 
-CHECK_EQUAL_FRACTION "$MhCMSSMMuBMu" "$MhCMSSMMuBMutower" "0.01" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhCMSSMMuBMu" "$MhCMSSMMuBMutower" "0.005" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."
