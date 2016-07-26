@@ -1997,7 +1997,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                      Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
                                      Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput],
-                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching]];
+                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching],
+                                     {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}];
               ,
               If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                        FlexibleSUSY`FSSolveEWSBFor[___]],
