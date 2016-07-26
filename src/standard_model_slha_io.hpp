@@ -26,7 +26,6 @@
 #include "ckm.hpp"
 #include "ew_input.hpp"
 #include "lowe.h"
-#include "observables.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -38,21 +37,17 @@
 #define LOCALPHYSICAL(p) physical.p
 #define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
-#define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
 namespace flexiblesusy {
 
 class Spectrum_generator_settings;
-struct Observables;
 
 namespace standard_model {
 
 template <class T>
 class Standard_model_slha;
-
-
 
 struct Standard_model_scales {
    Standard_model_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
@@ -75,7 +70,7 @@ public:
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
-   template <class T> void set_extra(const Standard_model_slha<T>&, const Standard_model_scales&, const Observables&);
+   template <class T> void set_extra(const Standard_model_slha<T>&, const Standard_model_scales&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const Standard_model_slha<T>&);
    template <class T> void set_spectrum(const StandardModel<T>&);
@@ -84,10 +79,10 @@ public:
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const Standard_model_slha<T>&, const softsusy::QedQcd&, const Standard_model_scales&, const Observables&);
+   static void fill_slhaea(SLHAea::Coll&, const Standard_model_slha<T>&, const softsusy::QedQcd&, const Standard_model_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const Standard_model_slha<T>&, const softsusy::QedQcd&, const Standard_model_scales&, const Observables&);
+   static SLHAea::Coll fill_slhaea(const Standard_model_slha<T>&, const softsusy::QedQcd&, const Standard_model_scales&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -118,8 +113,7 @@ void Standard_model_slha_io::fill(Standard_model_slha<T>& model) const
 template <class T>
 void Standard_model_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const Standard_model_slha<T>& model,
-   const softsusy::QedQcd& qedqcd, const Standard_model_scales& scales,
-   const Observables& observables)
+   const softsusy::QedQcd& qedqcd, const Standard_model_scales& scales)
 {
    Standard_model_slha_io slha_io;
    const Problems<standard_model_info::NUMBER_OF_PARTICLES>& problems
@@ -130,7 +124,7 @@ void Standard_model_slha_io::fill_slhaea(
    slha_io.set_sminputs(qedqcd);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model, scales, observables);
+      slha_io.set_extra(model, scales);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
@@ -139,10 +133,10 @@ void Standard_model_slha_io::fill_slhaea(
 template <class T>
 SLHAea::Coll Standard_model_slha_io::fill_slhaea(
    const Standard_model_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const Standard_model_scales& scales, const Observables& observables)
+   const Standard_model_scales& scales)
 {
    SLHAea::Coll slhaea;
-   Standard_model_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
+   Standard_model_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
 
    return slhaea;
 }
@@ -192,12 +186,9 @@ void Standard_model_slha_io::set_model_parameters(const Standard_model_slha<T>& 
  */
 template <class T>
 void Standard_model_slha_io::set_extra(
-   const Standard_model_slha<T>& model, const Standard_model_scales& scales,
-   const Observables& observables)
+   const Standard_model_slha<T>& model, const Standard_model_scales& scales)
 {
    const Standard_model_physical physical(model.get_physical_slha());
-
-
 }
 
 /**
@@ -244,7 +235,6 @@ void Standard_model_slha_io::set_spectrum(const Standard_model_slha<T>& model)
 #undef LOCALPHYSICAL
 #undef MODEL
 #undef MODELPARAMETER
-#undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES
 

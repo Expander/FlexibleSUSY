@@ -195,6 +195,23 @@ BOOST_AUTO_TEST_CASE( test_snu )
    BOOST_CHECK_CLOSE_FRACTION(theta_snu, 0.5 * Pi, 1.0e-9);
 }
 
+// calculates theta according to Eq. (19) of arxiv:hep-ph/0105096
+double calculate_theta_stop_field_independent(const CMSSM<Two_scale>& m)
+{
+   double mst1, mst2, theta_stop;
+   m.calculate_MSu_3rd_generation(mst1, mst2, theta_stop);
+
+   const double mt = m.get_MFu(2);
+   const double At = m.get_TYu(2,2) / m.get_Yu(2,2);
+   const double Mu = m.get_Mu();
+   const double tanb = m.get_vu() / m.get_vd();
+   const double signMu = -1;
+   const double Xt = At + signMu * Mu / tanb;
+   const double s2t = 2 * mt * Xt / (Sqr(mst1) - Sqr(mst2));
+
+   return 0.5 * ArcSin(s2t);
+}
+
 BOOST_AUTO_TEST_CASE( test_stop_different_sign )
 {
    CMSSM<Two_scale> m;
@@ -216,7 +233,11 @@ BOOST_AUTO_TEST_CASE( test_stop_different_sign )
 
    m.calculate_MSu_3rd_generation(mstop(0), mstop(1), theta_stop);
 
+   // calculate theta according to Eq. (19) of arxiv:hep-ph/0105096
+   const double theta_stop_2 = calculate_theta_stop_field_independent(m);
+
    BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(theta_stop, thetat, 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_stop, theta_stop_2, 1.0e-9);
 }

@@ -85,7 +85,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         VERBOSE_MSG(ss.str());
+         BOOST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -125,7 +125,7 @@ public:
       if (!high_constraint)
          high_constraint = new CMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm);
+         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm, qedqcd);
       if (!low_constraint)
          low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }

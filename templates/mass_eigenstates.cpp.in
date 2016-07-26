@@ -653,6 +653,16 @@ void CLASSNAME::clear()
    problems.clear();
 }
 
+void CLASSNAME::set_DRbar_masses(const Eigen::ArrayXd& pars)
+{
+@setMasses@
+}
+
+Eigen::ArrayXd CLASSNAME::get_DRbar_masses() const
+{
+@getMasses@
+}
+
 std::string CLASSNAME::name() const
 {
    return "@ModelName@";
@@ -687,7 +697,7 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @runningDRbarMassesFunctions@
 
-@dependenceNumFunctions@
+@dependenceFunctions@
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_mass_eigenstates& model)
 {

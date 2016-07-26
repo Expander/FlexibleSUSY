@@ -1,5 +1,5 @@
 DIR          := src
-MODNAME      := flexisusy
+MODNAME      := src
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -13,12 +13,12 @@ LIBFLEXI_SRC := \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
+		$(DIR)/effective_couplings.cpp \
 		$(DIR)/error.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
-		$(DIR)/observables.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
@@ -34,9 +34,10 @@ LIBFLEXI_SRC := \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/split_threeloophiggs.cpp \
+		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
-		$(DIR)/standard_model_slha_io.cpp \
 		$(DIR)/standard_model_physical.cpp \
+		$(DIR)/standard_model_slha_io.cpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/standard_model_two_scale_model_slha.cpp \
@@ -62,6 +63,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
+		$(DIR)/effective_couplings.hpp \
 		$(DIR)/eigen_utils.hpp \
 		$(DIR)/eigen_tensor.hpp \
 		$(DIR)/error.hpp \
@@ -86,7 +88,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
-		$(DIR)/observables.hpp \
 		$(DIR)/physical_input.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
@@ -100,6 +101,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
+		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
 		$(DIR)/standard_model_low_scale_constraint.hpp \
@@ -144,13 +146,15 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFLEXI     := $(DIR)/libflexisusy$(LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFLEXI)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -163,13 +167,18 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFLEXI_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFLEXI)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFLEXI_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFLEXI)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 

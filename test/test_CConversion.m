@@ -159,6 +159,11 @@ TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
              ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[i k]]], "result", ScalarType[integerScalarCType], " = 0"]},
             "result", "int", "420"];
+TestCPPCode[{"int Abs(int n) { return n < 0 ? -n : n; }\nint Sqr(int n) { return n*n; }",
+             "int a = 2, b = 3;" <>
+             "int result = 0;" <>
+             ExpandSums[Abs[sum[i,1,3,a sum[k,1,2,b]]]^2, "result", ScalarType[integerScalarCType]]},
+            "result", "int", "1296"];
 
 Clear[SARAH`sum];
 

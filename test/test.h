@@ -5,6 +5,7 @@
 #include "linalg.h"
 #include "numerics2.hpp"
 #include <cmath>
+#include <type_traits>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -82,10 +83,10 @@ double max_rel_diff(T a, T b)
    return (a - b) / a;
 }
 
-template <typename T>
+template <class T, class = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 void check_equality(T a, T b, const std::string& testMsg, double max_dev)
 {
-   if (!is_equal(a, b, max_dev)) {
+   if (!is_equal(a, b, T(max_dev))) {
       std::cout << "test failed: " << testMsg << ": "
                 << a << " != " << b
                 << " (diff.: " << max_diff(a,b) << ", rel. diff.: "
@@ -169,12 +170,16 @@ void check_equality(const softsusy::DoubleMatrix& b,
    }
 }
 
-void check_equality(const Eigen::Matrix<double,3,3>& a,
-                    const Eigen::Matrix<double,3,3>& b,
+template <class DerivedA, class DerivedB>
+void check_equality(const Eigen::MatrixBase<DerivedA>& a,
+                    const Eigen::MatrixBase<DerivedB>& b,
                     const std::string& testMsg, double max_dev)
 {
-   for (int i = 0; i < 3; ++i) {
-      for (int l = 0; l < 3; ++l) {
+   assert(a.rows() == b.rows());
+   assert(a.cols() == b.cols());
+
+   for (int i = 0; i < a.rows(); ++i) {
+      for (int l = 0; l < a.cols(); ++l) {
          std::ostringstream element;
          element << testMsg << " [element " << i << "," << l << "]";
          check_equality(a(i,l), b(i,l), element.str(), max_dev);

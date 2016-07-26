@@ -21,6 +21,7 @@
 #include "lowe.h"
 #include "linalg.h"
 #include "ew_input.hpp"
+#include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 
 #include <fstream>
@@ -186,6 +187,20 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
 }
 
 /**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param input struct of physical input parameters
+ */
+void SLHA_io::fill(Physical_input& input) const
+{
+   SLHA_io::Tuple_processor processor
+      = boost::bind(&SLHA_io::process_flexiblesusyinput_tuple, boost::ref(input), _1, _2);
+
+   read_block("FlexibleSUSYInput", processor);
+}
+
+/**
  * Fill struct of spectrum generator settings from SLHA object
  * (FlexibleSUSY block)
  *
@@ -337,6 +352,18 @@ void SLHA_io::set_block(const std::ostringstream& lines, Position position)
       data.push_back(block);
 }
 
+void SLHA_io::set_block(const std::string& lines, Position position)
+{
+   set_block(std::ostringstream(lines), position);
+}
+
+void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
+{
+   for (std::vector<std::string>::const_iterator it = blocks.begin(),
+           end = blocks.end(); it != end; it++)
+      set_block(*it, position);
+}
+
 /**
  * This function treats a given scalar as 1x1 matrix.  Such a case is
  * not defined in the SLHA standard, but we still handle it to avoid
@@ -410,9 +437,9 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
    ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
    ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "mnu3(pole)");
    ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()       , "MW(pole)");
-   ss << FORMAT_ELEMENT(11, qedqcd.displayMass(mElectron), "melectron(pole)");
+   ss << FORMAT_ELEMENT(11, qedqcd.displayPoleMel()      , "melectron(pole)");
    ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
-   ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
+   ss << FORMAT_ELEMENT(13, qedqcd.displayPoleMmuon()    , "mmuon(pole)");
    ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "mnu2(pole)");
 
    // recalculate mc(mc)^MS-bar
@@ -496,15 +523,18 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
    switch (key) {
    case 1:
       qedqcd.setAlpha(ALPHA, 1.0 / value);
+      qedqcd.setAlphaEmInput(1.0 / value);
       break;
    case 2:
       qedqcd.setFermiConstant(value);
       break;
    case 3:
       qedqcd.setAlpha(ALPHAS, value);
+      qedqcd.setAlphaSInput(value);
       break;
    case 4:
       qedqcd.setPoleMZ(value);
+      qedqcd.setMu(value);
       softsusy::MZ = value;
       break;
    case 5:
@@ -526,6 +556,7 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 11:
       qedqcd.setMass(mElectron, value);
+      qedqcd.setPoleMel(value);
       break;
    case 12:
       qedqcd.setNeutrinoPoleMass(1, value);
@@ -539,15 +570,19 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 21:
       qedqcd.setMass(mDown, value);
+      qedqcd.setMd2GeV(value);
       break;
    case 22:
       qedqcd.setMass(mUp, value);
+      qedqcd.setMu2GeV(value);
       break;
    case 23:
       qedqcd.setMass(mStrange, value);
+      qedqcd.setMs2GeV(value);
       break;
    case 24:
       qedqcd.setMass(mCharm, value);
+      qedqcd.setMcMc(value);
       break;
    default:
       WARNING("Unrecognized entry in block SMINPUTS: " << key);
@@ -562,6 +597,17 @@ void SLHA_io::process_flexiblesusy_tuple(Spectrum_generator_settings& settings,
       settings.set((Spectrum_generator_settings::Settings)key, value);
    } else {
       WARNING("Unrecognized entry in block FlexibleSUSY: " << key);
+   }
+}
+
+void SLHA_io::process_flexiblesusyinput_tuple(
+   Physical_input& input,
+   int key, double value)
+{
+   if (0 <= key && key < static_cast<int>(Physical_input::NUMBER_OF_INPUT_PARAMETERS)) {
+      input.set((Physical_input::Input)key, value);
+   } else {
+      WARNING("Unrecognized entry in block FlexibleSUSYInput: " << key);
    }
 }
 

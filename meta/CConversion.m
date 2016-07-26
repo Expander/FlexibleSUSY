@@ -1,6 +1,7 @@
 
 BeginPackage["CConversion`", {"SARAH`", "TextFormatting`", "Utils`"}];
 
+TensorType::usage="";
 MatrixType::usage="";
 ArrayType::usage="";
 VectorType::usage="";
@@ -10,25 +11,28 @@ integerScalarCType::usage="represents an integer C type";
 realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
-ToRealType::usage="convers a given type to a type with real elements";
+ToRealType::usage="converts a given type to a type with real elements";
 
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
+ZEROTENSOR::usage="";
 ZEROVECTOR::usage="";
 UNITMATRIXCOMPLEX::usage="";
 ZEROARRAYCOMPLEX::usage="";
 ZEROMATRIXCOMPLEX::usage="";
+ZEROTENSORCOMPLEX::usage="";
 ZEROVECTORCOMPLEX::usage="";
 PROJECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 threeLoop::usage="";
+Sqr::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
 IndexSum::usage="";
-TensorProd::usgae="";
+TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
 dimension";
@@ -123,9 +127,18 @@ GetElementType[CConversion`ScalarType[type_]]     := type;
 GetElementType[CConversion`ArrayType[type_, __]]  := type;
 GetElementType[CConversion`VectorType[type_, __]] := type;
 GetElementType[CConversion`MatrixType[type_, __]] := type;
+GetElementType[CConversion`TensorType[type_, __]] := type;
 
 GetScalarElementType[type_] :=
     CConversion`ScalarType[GetElementType[type]];
+
+(* better use TensorFixedSize class *)
+EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String] :=
+    "Eigen::Tensor<" <> elementType <> ", 3>";
+
+(* better use TensorFixedSize class *)
+EigenTensor[elementType_String, dim1_String, dim2_String, dim3_String, dim4_String] :=
+    "Eigen::Tensor<" <> elementType <> ", 4>";
 
 EigenMatrix[elementType_String, dim1_String, dim2_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
@@ -146,6 +159,7 @@ ToRealType[CConversion`ScalarType[_]] := CConversion`ScalarType[realScalarCType]
 ToRealType[CConversion`ArrayType[_,n_]] := CConversion`ArrayType[realScalarCType, n];
 ToRealType[CConversion`VectorType[_,n_]] := CConversion`VectorType[realScalarCType, n];
 ToRealType[CConversion`MatrixType[_,m_,n_]] := CConversion`MatrixType[realScalarCType, m, n];
+ToRealType[CConversion`TensorType[_,n__]] := CConversion`TensorType[realScalarCType, n];
 
 CreateCType[type_] :=
     Print["Error: CreateCType: unknown type: " <> ToString[type]];
@@ -177,6 +191,12 @@ CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
 CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
 
+CreateCType[CConversion`TensorType[realScalarCType, dims__]] :=
+    EigenTensor["double", Sequence @@ (ToString /@ {dims})];
+
+CreateCType[CConversion`TensorType[complexScalarCType, dims__]] :=
+    EigenTensor["std::complex<double>", Sequence @@ (ToString /@ {dims})];
+
 CastTo[expr_String, toType_ /; toType === None] := expr;
 
 CastTo[expr_String, toType_] :=
@@ -186,7 +206,8 @@ CastTo[expr_String, toType_] :=
            ,
            CConversion`VectorType[CConversion`realScalarCType,_] |
            CConversion`ArrayType[ CConversion`realScalarCType,_] |
-           CConversion`MatrixType[CConversion`realScalarCType,__],
+           CConversion`MatrixType[CConversion`realScalarCType,__]|
+           CConversion`TensorType[CConversion`realScalarCType,__],
            "(" <> expr <> ").real()"
            ,
            CConversion`ScalarType[CConversion`complexScalarCType],
@@ -194,7 +215,8 @@ CastTo[expr_String, toType_] :=
            ,
            CConversion`VectorType[CConversion`complexScalarCType,_] |
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
-           CConversion`MatrixType[CConversion`complexScalarCType,__],
+           CConversion`MatrixType[CConversion`complexScalarCType,__]|
+           CConversion`TensorType[CConversion`complexScalarCType,__],
            "(" <> expr <> ").cast<std::complex<double> >()"
            ,
            _,
@@ -217,6 +239,9 @@ CreateGetterReturnType[CConversion`VectorType[type_, entries_]] :=
 CreateGetterReturnType[CConversion`MatrixType[type_, dim1_, dim2_]] :=
     "const " <> CreateCType[CConversion`MatrixType[type, dim1, dim2]] <> "&";
 
+CreateGetterReturnType[CConversion`TensorType[type_, dims__]] :=
+    "const " <> CreateCType[CConversion`TensorType[type, dims]] <> "&";
+
 CreateSetterInputType[type_] :=
     CreateGetterReturnType[type];
 
@@ -228,6 +253,14 @@ CreateInlineElementSetter[parameter_String, elementType_String, dim_Integer] :=
 CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer] :=
     "void set_" <> parameter <> "(int i, int k, " <> elementType <>
     " value) { " <> parameter <> "(i,k) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer] :=
+    "void set_" <> parameter <> "(int i, int k, int l, " <> elementType <>
+    " value) { " <> parameter <> "(i,k,l) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, dim4_Integer] :=
+    "void set_" <> parameter <> "(int i, int k, int l, int j, " <> elementType <>
+    " value) { " <> parameter <> "(i,k,l,j) = value; }\n";
 
 CreateInlineElementSetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_]] :=
     CreateInlineElementSetter[parameter, "double", entries];
@@ -247,6 +280,12 @@ CreateInlineElementSetter[parameter_String, CConversion`MatrixType[realScalarCTy
 CreateInlineElementSetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     CreateInlineElementSetter[parameter, "const std::complex<double>&", dim1, dim2];
 
+CreateInlineElementSetter[parameter_String, CConversion`TensorType[realScalarCType, dims__]] :=
+    CreateInlineElementSetter[parameter, "double", dims];
+
+CreateInlineElementSetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__]] :=
+    CreateInlineElementSetter[parameter, "const std::complex<double>&", dims];
+
 (* Creates a C++ setter *)
 CreateInlineSetter[parameter_String, type_String] :=
     "void set_" <> parameter <> "(" <> type <>
@@ -264,6 +303,14 @@ CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer, pos
 CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, postFix_String:"", wrapper_String:""] :=
     elementType <> " get_" <> parameter <> postFix <> "(int i, int k) const" <>
     " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k)" <> If[wrapper != "", ")", ""] <> "; }\n";
+
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, postFix_String:"", wrapper_String:""] :=
+    elementType <> " get_" <> parameter <> postFix <> "(int i, int k, int l) const" <>
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k,l)" <> If[wrapper != "", ")", ""] <> "; }\n";
+
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, dim3_Integer, dim4_Integer, postFix_String:"", wrapper_String:""] :=
+    elementType <> " get_" <> parameter <> postFix <> "(int i, int k, int l, int j) const" <>
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k,l,j)" <> If[wrapper != "", ")", ""] <> "; }\n";
 
 CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCType], postFix_String:"", wrapper_String:""] :=
     CreateInlineGetter[parameter, "double", postFix, wrapper];
@@ -288,6 +335,12 @@ CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCTy
 
 CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, wrapper];
+
+CreateInlineElementGetter[parameter_String, CConversion`TensorType[realScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "double", dims, postFix, wrapper];
+
+CreateInlineElementGetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", dims, postFix, wrapper];
 
 (* Creates a C++ inline getter *)
 CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_String:""] :=
@@ -323,6 +376,9 @@ CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries
 CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
 
+CreateDefaultConstructor[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    parameter <> "(" <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero())";
+
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
@@ -337,6 +393,9 @@ CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, entries_
 
 CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     CreateCType[CConversion`MatrixType[type, rows, cols]] <> " " <> parameter;
+
+CreateDefaultDefinition[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    CreateCType[CConversion`TensorType[type, dims]] <> " " <> parameter;
 
 SetToDefault[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
@@ -359,6 +418,9 @@ SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
 SetToDefault[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> " = " <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero();\n";
 
+SetToDefault[parameter_String, CConversion`TensorType[type_, dims__]] :=
+    parameter <> " = " <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero();\n";
+
 (* create unitary matrix *)
 CreateUnitMatrix[type_] :=
     Block[{},
@@ -378,6 +440,18 @@ CreateUnitMatrix[CConversion`MatrixType[CConversion`realScalarCType, rows_, rows
 CreateUnitMatrix[CConversion`MatrixType[CConversion`complexScalarCType, rows_, rows_]] :=
     CConversion`UNITMATRIXCOMPLEX[rows];
 
+CreateUnitMatrix[CConversion`TensorType[CConversion`realScalarCType, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSOR[rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`complexScalarCType, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSORCOMPLEX[rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`realScalarCType, rows_, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSOR[rows,rows,rows,rows];
+
+CreateUnitMatrix[CConversion`TensorType[CConversion`complexScalarCType, rows_, rows_, rows_, rows_]] :=
+    CConversion`UNITTENSORCOMPLEX[rows,rows,rows,rows];
+
 CreateZero[type_] :=
     Block[{},
           Print["Error: CreateZero: can't create zero for type: ", type];
@@ -395,6 +469,12 @@ CreateZero[CConversion`VectorType[CConversion`realScalarCType, entries_]] :=
 CreateZero[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
 
+CreateZero[CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
+    CConversion`ZEROTENSOR3[dim1,dim2,dim3];
+
+CreateZero[CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_, dim4_]] :=
+    CConversion`ZEROTENSOR4[dim1,dim2,dim3,dim4];
+
 CreateZero[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] :=
     CConversion`ZEROARRAYCOMPLEX[entries];
 
@@ -403,6 +483,12 @@ CreateZero[CConversion`VectorType[CConversion`complexScalarCType, entries_]] :=
 
 CreateZero[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIXCOMPLEX[rows,cols];
+
+CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
+    CConversion`ZEROTENSOR3COMPLEX[dim1,dim2,dim3];
+
+CreateZero[CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_, dim4_]] :=
+    CConversion`ZEROTENSOR4COMPLEX[dim1,dim2,dim3,dim4];
 
 CreateConstExternDecl[parameter_String, type_] :=
     "extern const " <> CreateCType[type] <> " " <>
@@ -667,6 +753,15 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
     Format["(" <> ToString[CForm[HoldForm[x]]] <> ")*(" <>
            ToString[CForm[HoldForm[y]]] <> ").transpose()", OutputForm];
 
+(* Finds all Greek symbols in an expression.
+   Note: All arguments of Which and If are evaluated.
+ *)
+FindGreekSymbols[expr_] :=
+    Block[{Which, If},
+          DeleteDuplicates @ Select[
+              Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True], GreekQ]
+         ];
+
 (* Converts an expression to CForm and expands SARAH symbols
  *
  *   MatMul[A]      ->   A
@@ -681,11 +776,8 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
 RValueToCFormString[expr_String] := expr;
 
 RValueToCFormString[expr_] :=
-    Module[{times, result, symbols, greekSymbols, greekSymbolsRules,
-            conjSimplification = {}},
-           symbols = Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True];
-           greekSymbols = DeleteDuplicates @ Select[symbols, GreekQ];
-           greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
+    Module[{times, result, greekSymbolsRules, conjSimplification = {}},
+           greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ FindGreekSymbols[expr];
            (* create complicated conj simplification rules only when needed *)
            If[!FreeQ[expr, Susyno`LieGroups`conj] || !FreeQ[expr, SARAH`Conj],
               conjSimplification = {
@@ -693,8 +785,7 @@ RValueToCFormString[expr_] :=
                   Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z
               };
              ];
-           result = expr /.
-                    greekSymbolsRules /.
+           result = Block[{Which, If}, expr /. greekSymbolsRules] /.
                     SARAH`Mass -> FlexibleSUSY`M //. {
                     SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
                     SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
@@ -713,24 +804,23 @@ RValueToCFormString[expr_] :=
                     SARAH`G0[p_^2, a__]              :> SARAH`G0[p, a],
                     SARAH`H0[p_^2, a__]              :> SARAH`H0[p, a] } /.
                     SARAH`A0[0]              -> 0 /.
-                    SARAH`Mass2[a_?NumberQ]  :> Global`Sqr[a] /.
-                    SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`M[a]] /.
+                    SARAH`Mass2[a_?NumberQ]  :> Sqr[a] /.
+                    SARAH`Mass2[a_]          :> Sqr[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`M[a_?NumberQ]   :> a /.
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
+                    FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
-                    a_[Susyno`LieGroups`i1] :> a /.
-                    a_[Susyno`LieGroups`i1, SARAH`i2] :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
                     Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.
                     Rational[a_?NumericQ, b_?NumericQ] :> N[Rational[a,b]] /.
                     Power[a_,0.5]            :> Sqrt[a] /.
                     Power[a_,-0.5]           :> 1/Sqrt[a] /.
-                    Power[a_,2]              :> Global`Sqr[a] /.
-                    Power[a_,-2]             :> 1/Global`Sqr[a] /.
+                    Power[a_,2]              :> Sqr[a] /.
+                    Power[a_,-2]             :> 1/Sqr[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
@@ -846,6 +936,20 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
            Return[result];
           ];
 
+ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
+    Module[{var, result = ""},
+           var = CreateUniqueCVariable[];
+           result = CConversion`CreateCType[type] <> " " <> var <> ";\n" <>
+                    ExpandSums[expr, var, type, initialValue] <>
+                    variable <> " = " <> ToString[Fun] <> "(" <> var <>
+                    If[{rest} === {}, "", ","] <>
+                    Utils`StringJoinWithSeparator[RValueToCFormString /@ {rest}, ","] <>
+                    ");\n";
+           Return[result];
+          ];
+
 ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
@@ -891,6 +995,8 @@ HaveSameDimension[{ArrayType[_,n_], ArrayType[_,m_]}] := n === m;
 HaveSameDimension[{VectorType[_,n_], VectorType[_,m_]}] := n === m;
 HaveSameDimension[{VectorType[_,n_], ArrayType[_,m_]}] := n === m;
 HaveSameDimension[{MatrixType[_,n_,k_], MatrixType[_,m_,l_]}] := n === m && k === l;
+HaveSameDimension[{MatrixType[_,dims1__], MatrixType[_,dims2__]}] :=
+    And @@ ((#[[1]] == #[[2]])& /@ Utils`Zip[{dims1},{dims2}]);
 HaveSameDimension[{_,_}] := False;
 HaveSameDimension[types_List] :=
     And @@ (HaveSameDimension /@ Subsets[types, {2}]);

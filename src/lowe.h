@@ -89,7 +89,7 @@ public:
   QedQcd(const QedQcd &); ///< Initialises object with another
   const QedQcd& operator=(const QedQcd & m); ///< Sets two objects equal
   virtual ~QedQcd() {};
-
+  
   void setPoleMt(double mt) { input(MT_pole) = mt; }; ///< set pole top mass
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
   void setPoleMtau(double mtau) { input(MTau_pole) = mtau; }; ///< set pole tau mass

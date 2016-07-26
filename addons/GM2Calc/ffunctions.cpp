@@ -30,6 +30,10 @@ namespace gm2calc {
 
 using namespace flexiblesusy;
 
+double abs_sqrt(double x) {
+   return std::sqrt(std::abs(x));
+}
+
 int sign(double x) { return x < 0 ? -1 : 1; }
 
 double signed_sqr(double x) { return sign(x) * x * x; }
@@ -165,6 +169,9 @@ double Fbx(double x, double y) {
 }
 
 double Fb(double x, double y) {
+   if ((is_zero(x) && is_zero(y)) || is_zero(x) || is_zero(y))
+      return 0.;
+
    if (is_equal(x, 1., 0.01) && is_equal(y, 1., 0.01))
       return Fb11(x,y);
 
@@ -205,6 +212,9 @@ double Fax(double x, double y) {
 }
 
 double Fa(double x, double y) {
+   if ((is_zero(x) && is_zero(y)) || is_zero(x) || is_zero(y))
+      return 0.;
+
    if (is_equal(x, 1., 0.01) && is_equal(y, 1., 0.01))
       return Fa11(x,y);
 
@@ -228,28 +238,6 @@ double G4(double x) {
    return 1. / (2. * cube(x - 1.)) * ((x - 1.) * (x + 1.) - 2. * x * log(x));
 }
 
-/**
- * \f$H_2(x,y)\f$ function from Eq (34) of arxiv:0901.2065 .
- *
- * The \f$H_2(x,y)\f$ function is related to \f$I(a,b,c)\f$ by
- * \f$\frac{1}{z^2} H_2(\frac{x^2}{z^2},\frac{y^2}{z^2}) = - I(x,y,z)\f$.
- */
-double H2(double x, double y) {
-   if (is_equal(x, 1., 1e-8) && is_equal(y, 1., 1e-8))
-      return -0.5;
-
-   if (is_equal(x, 1., 1e-8))
-      return (-1. + y - y*log(y))/sqr(-1. + y);
-
-   if (is_equal(y, 1., 1e-8))
-      return (-1. + x - x*log(x))/sqr(-1. + x);
-
-   if (is_equal(x, y, 1e-8))
-      return (1 - y + log(y))/sqr(-1 + y);
-
-   return x * log(x) / ((1-x)*(x-y)) + y * log(y) / ((1-y)*(y-x));
-}
-
 /// Iabc(a,a,a)
 double Iaaa(double a, double b, double c) {
    return (151.*quad(a) + 13.*sqr(b)*sqr(c) - 128.*cube(a)*(b + c) - 40.*a*b*c*(b + c)
@@ -267,18 +255,52 @@ double Iaac(double a, double b, double c) {
       / (6.*sqr(a)*quad(sqr(a) - sqr(c)));
 }
 
+/// Iabc(a,a,0)
+double Iaa0(double a, double b) {
+   return (17.*sqr(a) - 16.*a*b + 5.*sqr(b)) / (6.*quad(a));
+}
+
+/// Iabc(0,b,c)
+double I0bc(double b, double c) {
+   return log(sqr(b/c))/(sqr(b) - sqr(c));
+}
+
 double Iabc(double a, double b, double c) {
+   if ((is_zero(a) && is_zero(b) && is_zero(c)) ||
+       (is_zero(a) && is_zero(b)) ||
+       (is_zero(a) && is_zero(c)) ||
+       (is_zero(b) && is_zero(c)))
+      return 0.;
+
    if (is_equal_rel(std::abs(a), std::abs(b), 0.01) && is_equal_rel(std::abs(a), std::abs(c), 0.01))
       return Iaaa(std::abs(a),std::abs(b),std::abs(c));
 
-   if (is_equal_rel(std::abs(a), std::abs(b), 0.01))
+   if (is_equal_rel(std::abs(a), std::abs(b), 0.01)) {
+      if (is_zero(c))
+         return Iaa0(std::abs(a),std::abs(b));
       return Iaac(std::abs(a),std::abs(b),c);
+   }
 
-   if (is_equal_rel(std::abs(b), std::abs(c), 0.01))
+   if (is_equal_rel(std::abs(b), std::abs(c), 0.01)) {
+      if (is_zero(a))
+         return Iaa0(std::abs(b),std::abs(c));
       return Iaac(std::abs(b),std::abs(c),a);
+   }
 
-   if (is_equal_rel(std::abs(a), std::abs(c), 0.01))
+   if (is_equal_rel(std::abs(a), std::abs(c), 0.01)) {
+      if (is_zero(b))
+         return Iaa0(std::abs(a),std::abs(c));
       return Iaac(std::abs(a),std::abs(c),b);
+   }
+
+   if (is_zero(a))
+      return I0bc(b,c);
+
+   if (is_zero(b))
+      return I0bc(c,a);
+
+   if (is_zero(c))
+      return I0bc(a,b);
 
    return ( (sqr(a * b) * log(sqr(a / b))
            + sqr(b * c) * log(sqr(b / c))

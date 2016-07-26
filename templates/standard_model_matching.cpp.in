@@ -102,14 +102,14 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 
 @applyUserMatching@
 
-   Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> electronDRbar = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
 
    for (unsigned gen = 0; gen < 3; gen++) {
-      topDRbar(gen, gen)      = sm.get_MFu(gen);
-      bottomDRbar(gen, gen)   = sm.get_MFd(gen);
-      electronDRbar(gen, gen) = sm.get_MFe(gen);
+      upQuarksDRbar(gen, gen)    = sm.get_MFu(gen);
+      downQuarksDRbar(gen, gen)  = sm.get_MFd(gen);
+      downLeptonsDRbar(gen, gen) = sm.get_MFe(gen);
    }
 
 @setYukawas@
@@ -125,9 +125,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
-   Eigen::Matrix<double, 3, 3> topDRbar      = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> bottomDRbar   = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> electronDRbar = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
 
    model.run_to(sm.get_scale());
    model.calculate_DRbar_masses();
@@ -174,9 +174,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
       model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
 
    for (unsigned gen = 0; gen < 3; gen++) {
-      topDRbar(gen, gen)      = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
-      bottomDRbar(gen, gen)   = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
-      electronDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
+      upQuarksDRbar(gen, gen)    = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
+      downQuarksDRbar(gen, gen)  = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
+      downLeptonsDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
    }
 
    // define and apply 1L-matched gauge parameters

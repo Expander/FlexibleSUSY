@@ -104,6 +104,14 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
    BOOST_CHECK_GT(slha_model.get_physical_slha().MChi.maxCoeff(), 0.);
    BOOST_CHECK_LT(slha_model.get_physical_slha().MChi.minCoeff(), 0.);
    BOOST_CHECK_EQUAL(slha_model.get_physical_slha().ZN.imag().maxCoeff(), 0.);
+
+   // no automatic conversion
+   CMSSM_slha<Two_scale> slha_model_not_converted(model, false);
+
+   // check that model is in non-SLHA convention
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().MChi.maxCoeff(), 0.);
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().MChi.minCoeff(), 0.);
+   BOOST_CHECK_GT(slha_model_not_converted.get_physical().ZN.imag().maxCoeff(), 0.);
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
@@ -348,6 +356,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
    // check CKM matrix
    const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(ZUL_slha * ZDL_slha.adjoint());
    const Eigen::Matrix<std::complex<double>,3,3> ckm_slha(model.get_ckm_matrix());
+
+   BOOST_MESSAGE("ckm_matrix =\n" << ckm_matrix);
+   BOOST_MESSAGE("ckm_slha =\n" << ckm_slha);
 
    // check that SLHA mixing matrix is in PDG convention
    BOOST_CHECK(Re(ckm_slha(0,0)) > 0.);

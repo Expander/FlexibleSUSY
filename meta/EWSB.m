@@ -47,9 +47,6 @@ list with EWSB output parameters";
 
 Begin["`Private`"];
 
-InputFormOfNonStrings[a_String] := a;
-InputFormOfNonStrings[a_] := InputForm[a];
-
 DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<EWSB>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
@@ -299,9 +296,10 @@ TimeConstrainedSolve[eq_, par_] :=
                                     FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[result === {} || result === {{}},
               Off[Reduce::nsmet];
-              result = TimeConstrained[ToRules[Reduce[independentEq, par]],
-                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[Head[result] === ToRules || Head[result] === Reduce,
+              result = TimeConstrained[{ToRules[Reduce[independentEq, par]]},
+                                        FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              If[Length[result] == 1 &&
+                 (Head[result[[1]]] === ToRules || Head[result[[1]]] === Reduce),
                  result = {};
                 ];
               On[Reduce::nsmet];

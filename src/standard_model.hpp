@@ -50,13 +50,13 @@ class EWSB_solver;
 
 namespace standard_model_info {
 
-enum Particles : unsigned {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
-   NUMBER_OF_PARTICLES};
+   enum Particles : unsigned {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
+      NUMBER_OF_PARTICLES};
 
-enum Parameters : unsigned {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
-   Yu1_1, Yu1_2, Yu2_0, Yu2_1, Yu2_2, Yd0_0, Yd0_1, Yd0_2, Yd1_0, Yd1_1, Yd1_2
-   , Yd2_0, Yd2_1, Yd2_2, Ye0_0, Ye0_1, Ye0_2, Ye1_0, Ye1_1, Ye1_2, Ye2_0,
-   Ye2_1, Ye2_2, mu2, v, NUMBER_OF_PARAMETERS};
+   enum Parameters : unsigned {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
+      Yu1_1, Yu1_2, Yu2_0, Yu2_1, Yu2_2, Yd0_0, Yd0_1, Yd0_2, Yd1_0, Yd1_1, Yd1_2
+      , Yd2_0, Yd2_1, Yd2_2, Ye0_0, Ye0_1, Ye0_2, Ye1_0, Ye1_1, Ye1_2, Ye2_0,
+      Ye2_1, Ye2_2, mu2, v, NUMBER_OF_PARAMETERS};
 
    enum Mixings : unsigned {ReVd00, ImVd00, ReVd01, ImVd01, ReVd02, ImVd02,
       ReVd10, ImVd10, ReVd11, ImVd11, ReVd12, ImVd12, ReVd20, ImVd20, ReVd21,
@@ -91,7 +91,6 @@ namespace standard_model {
 
 template <class T>
 class StandardModel;
-
 
 /**
  * @class Standard_model

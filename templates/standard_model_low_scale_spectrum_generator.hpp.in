@@ -94,24 +94,23 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
    @ModelName@<T>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(this->calculate_sm_masses);
-   model.do_force_output(this->force_output);
-   model.set_loops(this->beta_loop_order);
-   model.set_thresholds(this->threshold_corrections_loop_order);
-   model.set_zero_threshold(this->beta_zero_threshold);
+   model.do_calculate_sm_pole_masses(this->settings.get(Spectrum_generator_settings::calculate_sm_masses));
+   model.do_force_output(this->settings.get(Spectrum_generator_settings::force_output));
+   model.set_loops(this->settings.get(Spectrum_generator_settings::beta_loop_order));
+   model.set_thresholds(this->settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   model.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
 
    eft.clear();
-   eft.do_force_output(this->force_output);
-   eft.set_loops(this->beta_loop_order);
-   eft.set_thresholds(this->threshold_corrections_loop_order);
-   eft.set_zero_threshold(this->beta_zero_threshold);
+   eft.do_force_output(this->settings.get(Spectrum_generator_settings::force_output));
+   eft.set_loops(this->settings.get(Spectrum_generator_settings::beta_loop_order));
+   eft.set_thresholds(this->settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   eft.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
    eft.set_pole_mass_loop_order(this->model.get_pole_mass_loop_order());
    eft.set_ewsb_loop_order(this->model.get_ewsb_loop_order());
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
    eft.set_number_of_ewsb_iterations(this->model.get_number_of_ewsb_iterations());
    eft.set_number_of_mass_iterations(this->model.get_number_of_mass_iterations());
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
-
 
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -135,14 +134,17 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
    std::vector<Constraint<T>*> eft_constraints(1);
    eft_constraints[0] = &low_scale_constraint;
 
-   @ModelName@_convergence_tester<T> convergence_tester(&model, this->precision_goal);
-   if (this->max_iterations > 0)
-      convergence_tester.set_max_iterations(this->max_iterations);
+   @ModelName@_convergence_tester<T> convergence_tester(
+      &model, this->settings.get(Spectrum_generator_settings::precision));
+   if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
+      convergence_tester.set_max_iterations(
+         this->settings.get(Spectrum_generator_settings::max_iterations));
 
    @ModelName@_standard_model_initial_guesser<T> initial_guesser(&model, &eft, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint);
-   Two_scale_increasing_precision precision(10.0, this->precision_goal);
+   Two_scale_increasing_precision precision(
+      10.0, this->settings.get(Spectrum_generator_settings::precision));
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
