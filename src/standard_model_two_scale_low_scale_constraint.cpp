@@ -35,40 +35,12 @@
 namespace flexiblesusy {
 namespace standard_model {
 
-#define MODELPARAMETER(p) model->get_##p()
-#define PHASE(p) model->get_##p()
-#define BETAPARAMETER(p) beta_functions.get_##p()
-#define BETA(p) beta_##p
-#define LowEnergyConstant(p) Electroweak_constants::p
-#define MZPole qedqcd.displayPoleMZ()
-#define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
-#define Pole(p) model->get_physical().p
-#define SCALE model->get_scale()
-#define MODEL model
-#define MODELCLASSNAME StandardModel<Two_scale>
-#define CKM ckm
-#define PMNS pmns
-#define THETAW theta_w
-#define THRESHOLD static_cast<int>(model->get_thresholds())
-#define ALPHA_EM_DRBAR alpha_em_drbar
-#define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
-
 Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint()
    : Constraint<Two_scale>()
    , scale(0.)
    , model(0)
    , qedqcd()
-   , ckm()
-   , pmns()
-   , threshold_corrections_loop_order(1)
 {
-   ckm << 1., 0., 0.,
-          0., 1., 0.,
-          0., 0., 1.;
-
-   pmns << 1., 0., 0.,
-           0., 1., 0.,
-           0., 0., 1.;
 }
 
 Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint(
@@ -108,33 +80,30 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
    const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
+   const double g1 = model->get_g1();
+   const double g2 = model->get_g2();
    const double mZ = model->get_thresholds() ?
       model->calculate_MVZ_DRbar(mz_pole) : mz_pole;
-   const double theta_w = model->calculate_theta_w(alpha_em_drbar);
+   double theta_w = model->calculate_theta_w(alpha_em_drbar);
 
-   const auto g1 = MODELPARAMETER(g1);
-   const auto g2 = MODELPARAMETER(g2);
+   if (IsFinite(theta_w)) {
+      model->get_problems().unflag_non_perturbative_parameter(
+         "sin(theta_W)");
+   } else {
+      model->get_problems().flag_non_perturbative_parameter(
+         "sin(theta_W)", theta_w, get_scale(), 0);
+      theta_w = ArcSin(Electroweak_constants::sinThetaW);
+   }
 
-   MODEL->set_v(Re((2*mZ)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
+   model->set_v(Re((2*mZ)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
    model->calculate_Yu_DRbar();
    model->calculate_Yd_DRbar();
    model->calculate_Ye_DRbar();
-
    model->set_g1(1.2909944487358056*e_drbar*Sec(theta_w));
    model->set_g2(e_drbar*Csc(theta_w));
    model->set_g3(3.5449077018110318*Sqrt(alpha_s_drbar));
 
    model->recalculate_mw_pole();
-}
-
-const Eigen::Matrix<std::complex<double>,3,3>& Standard_model_low_scale_constraint<Two_scale>::get_ckm()
-{
-   return ckm;
-}
-
-const Eigen::Matrix<std::complex<double>,3,3>& Standard_model_low_scale_constraint<Two_scale>::get_pmns()
-{
-   return pmns;
 }
 
 double Standard_model_low_scale_constraint<Two_scale>::get_scale() const
@@ -167,12 +136,7 @@ void Standard_model_low_scale_constraint<Two_scale>::clear()
 
 void Standard_model_low_scale_constraint<Two_scale>::initialize()
 {
-   assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
-          "initialize(): model pointer is zero.");
-
-   scale = MZPole;
-   ckm = qedqcd.get_complex_ckm();
-   pmns = qedqcd.get_complex_pmns();
+   scale = qedqcd.displayPoleMZ();
 }
 
 } // namespace standard_model
