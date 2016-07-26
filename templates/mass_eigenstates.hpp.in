@@ -107,6 +107,27 @@ public:
    void set_precision(double);
    double get_precision() const;
 
+#ifdef ENABLE_THREADS
+   struct Thread {
+      typedef void(@ModelName@_mass_eigenstates::*Memfun_t)();
+      @ModelName@_mass_eigenstates* model;
+      Memfun_t fun;
+
+      Thread(@ModelName@_mass_eigenstates* model_, Memfun_t fun_)
+         : model(model_), fun(fun_) {}
+      void operator()() {
+         try {
+            (model->*fun)();
+         } catch (...) {
+            model->thread_exception = std::current_exception();
+         }
+      }
+   };
+#endif
+
+   void clear_thread_exception();
+   void rethrow_thread_exception() const;
+
 @lspGetters@
 @massGetters@
 @higgsMassGetterPrototypes@
@@ -132,24 +153,6 @@ private:
       @ModelName@_mass_eigenstates* model;
       unsigned ewsb_loop_order;
    };
-
-#ifdef ENABLE_THREADS
-   struct Thread {
-      typedef void(@ModelName@_mass_eigenstates::*Memfun_t)();
-      @ModelName@_mass_eigenstates* model;
-      Memfun_t fun;
-
-      Thread(@ModelName@_mass_eigenstates* model_, Memfun_t fun_)
-         : model(model_), fun(fun_) {}
-      void operator()() {
-         try {
-            (model->*fun)();
-         } catch (...) {
-            model->thread_exception = std::current_exception();
-         }
-      }
-   };
-#endif
 
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;

@@ -563,12 +563,11 @@ void CLASSNAME::calculate_DRbar_parameters()
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   thread_exception = 0;
+   clear_thread_exception();
 
 @callAllLoopMassFunctionsInThreads@
 
-   if (thread_exception != 0)
-      std::rethrow_exception(thread_exception);
+   rethrow_thread_exception();
 #else
 @callAllLoopMassFunctions@
 #endif
@@ -652,6 +651,22 @@ void CLASSNAME::clear()
    physical.clear();
    problems.clear();
 }
+
+#ifdef ENABLE_THREADS
+void CLASSNAME::clear_thread_exception()
+{
+   thread_exception = 0;
+}
+
+void CLASSNAME::rethrow_thread_exception() const
+{
+   if (thread_exception != 0)
+      std::rethrow_exception(thread_exception);
+}
+#else
+void CLASSNAME::clear_thread_exception() {}
+void CLASSNAME::rethrow_thread_exception() const {}
+#endif
 
 void CLASSNAME::set_DRbar_masses(const Eigen::ArrayXd& pars)
 {

@@ -885,6 +885,22 @@ void Standard_model::clear()
    problems.clear();
 }
 
+#ifdef ENABLE_THREADS
+void Standard_model::clear_thread_exception()
+{
+   thread_exception = 0;
+}
+
+void Standard_model::rethrow_thread_exception() const
+{
+   if (thread_exception != 0)
+      std::rethrow_exception(thread_exception);
+}
+#else
+void Standard_model::clear_thread_exception() {}
+void Standard_model::rethrow_thread_exception() const {}
+#endif
+
 std::string Standard_model::name() const
 {
    return "Standard model";

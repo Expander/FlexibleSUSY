@@ -493,6 +493,27 @@ public:
    void calculate_Ye_DRbar();
    void recalculate_mw_pole();
 
+#ifdef ENABLE_THREADS
+   struct Thread {
+      typedef void(Standard_model::*Memfun_t)();
+      Standard_model* model;
+      Memfun_t fun;
+
+      Thread(Standard_model* model_, Memfun_t fun_)
+         : model(model_), fun(fun_) {}
+      void operator()() {
+         try {
+            (model->*fun)();
+         } catch (...) {
+            model->thread_exception = std::current_exception();
+         }
+      }
+   };
+#endif
+
+   void clear_thread_exception();
+   void rethrow_thread_exception() const;
+
 protected:
 
    // Running parameters
@@ -559,24 +580,6 @@ private:
       Standard_model* model;
       unsigned ewsb_loop_order;
    };
-
-#ifdef ENABLE_THREADS
-   struct Thread {
-      typedef void(Standard_model::*Memfun_t)();
-      Standard_model* model;
-      Memfun_t fun;
-
-      Thread(Standard_model* model_, Memfun_t fun_)
-         : model(model_), fun(fun_) {}
-      void operator()() {
-         try {
-            (model->*fun)();
-         } catch (...) {
-            model->thread_exception = std::current_exception();
-         }
-      }
-   };
-#endif
 
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
