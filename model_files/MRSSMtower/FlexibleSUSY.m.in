@@ -1,0 +1,79 @@
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = MRSSM;
+AutomaticInputAtMSUSY = False;
+OnlyLowEnergyFlexibleSUSY = True;
+SMTower = True;
+
+MINPAR = {
+    {3, TanBeta}
+};
+
+EXTPAR = {
+    {0, MS}
+};
+
+EWSBOutputParameters = { mHd2, mHu2, vS, vT };
+FSSolveEWSBTreeLevelFor = EWSBOutputParameters;
+
+SUSYScale = MS;
+
+SUSYScaleFirstGuess = MS;
+
+SUSYScaleInput = {
+    {mq2   , LHInput[mq2]},
+    {mu2   , LHInput[mu2]},
+    {md2   , LHInput[md2]},
+    {ml2   , LHInput[ml2]},
+    {me2   , LHInput[me2]},
+    {mS2   , LHInput[mS2]},
+    {mT2   , LHInput[mT2]},
+    {moc2  , LHInput[moc2]},
+    {mRd2  , LHInput[mRd2]},
+    {mRu2  , LHInput[mRu2]},
+    {B[\[Mu]], LHInput[B[\[Mu]]]},
+    {LamSD , SARAH`LHInput[LamSD]},
+    {LamSU , SARAH`LHInput[LamSU]},
+    {LamTD , SARAH`LHInput[LamTD]},
+    {LamTU , SARAH`LHInput[LamTU]},
+    {MDBS  , LHInput[MDBS] },
+    {MDGoc , LHInput[MDGoc]},
+    {MDWBT , LHInput[MDWBT]},
+    {MuD   , LHInput[MuD]},
+    {MuU   , LHInput[MuU]},
+    {\[Mu] , 0}, (* non-zero Mu would break R-symmetry *)
+    {B[MuD], 0}, (* non-zero B[MuD] would break R-symmetry *)
+    {B[MuU], 0}  (* non-zero B[MuU] would break R-symmetry *)
+};
+
+InitialGuessAtSUSYScale = SUSYScaleInput;
+
+SUSYScaleUserMatching = {
+    {vu, vev Sin[ArcTan[TanBeta]]},
+    {vd, vev Cos[ArcTan[TanBeta]]}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+DefaultPoleMassPrecision = HighPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
+FSWeakMixingAngleOptions = FSSetOption[
+    FSWeakMixingAngleOptions,
+    FSWeakMixingAngleInput -> FSMassW
+];
+FSWeakMixingAngleOptions = FSSetOption[
+    FSWeakMixingAngleOptions,
+    FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
+];
+
+SARAH`ParameterDefinitions = Append[
+    Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`ThetaW, ___}],
+    {SARAH`ThetaW,
+     { Description -> "Weinberg-Angle",
+       DependenceNum -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]}}
+];
