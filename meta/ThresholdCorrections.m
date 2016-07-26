@@ -265,21 +265,20 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
            Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
+(* TODO: rename topDRbar, bottomDRbar, electronDRbar *)
 SetDRbarYukawaCouplings[] :=
-    Module[{y, f, fermion, yukawa, mass, term = {0,0,0}},
+    Module[{y, f, fermion, yukawa, mass, term = {0,0,0}, i},
            fermion = {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron};
            yukawa  = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
            mass    = {Global`topDRbar, Global`bottomDRbar, Global`electronDRbar};
            For[i = 1, i <= 3, i++,
-                 {y, f} = InvertMassRelation[fermion[[i]], yukawa[[i]]];
-                 term[[i]] = f /. fermion[[i]] -> mass[[i]];
+               {y, f} = InvertMassRelation[fermion[[i]], yukawa[[i]]];
+               term[[i]] = f /. fermion[[i]] -> mass[[i]];
               ];
-           Return[
-                   Parameters`CreateLocalConstRefs[term[[1]] + term[[2]] + term[[3]]] <>
-                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[1]]] <> "(" <> CConversion`RValueToCFormString[term[[1]]] <> ");\n" <>
-                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[2]]] <> "(" <> CConversion`RValueToCFormString[term[[2]]] <> ");\n" <>
-                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[3]]] <> "(" <> CConversion`RValueToCFormString[term[[3]]] <> ");\n"
-                 ];
+           Parameters`CreateLocalConstRefs[term] <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[1]]] <> "(" <> CConversion`RValueToCFormString[term[[1]]] <> ");\n" <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[2]]] <> "(" <> CConversion`RValueToCFormString[term[[2]]] <> ");\n" <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[3]]] <> "(" <> CConversion`RValueToCFormString[term[[3]]] <> ");\n"
           ];
 
 MultiplyBy[factor_ /; factor == 1] := "";
