@@ -31,6 +31,8 @@ Block FlexibleSUSY
    15   0                    # calculate observables (a_muon, ...)
    16   0                    # force positive majorana masses
    17   0                    # pole mass renormalization scale (0 = SUSY scale)
+   18   0                    # pole mass renormalization scale in the EFT (0 = min(SUSY scale, Mt))
+   19   0                    # EFT matching scale (0 = SUSY scale)
 Block SPhenoInput         # SPheno specific input
     1 -1          # error level
     2  1          # SPA conventions
