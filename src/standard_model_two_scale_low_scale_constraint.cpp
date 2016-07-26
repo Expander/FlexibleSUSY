@@ -106,6 +106,7 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    model->calculate_DRbar_masses();
    update_scale();
    qedqcd.runto(scale, 1.0e-5);
+   model->set_low_energy_data(qedqcd);
    calculate_DRbar_gauge_couplings();
 
    const auto g1 = MODELPARAMETER(g1);
@@ -390,18 +391,7 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "calculate_Yu_DRbar(): model pointer is zero");
 
-   Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
-   topDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
-   topDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
-   topDRbar(2,2)      = qedqcd.displayMass(softsusy::mTop);
-
-   if (model->get_thresholds()) {
-      topDRbar(2,2) = MODEL->calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
-   }
-
-   const auto v = MODELPARAMETER(v);
-   MODEL->set_Yu((-((1.4142135623730951*topDRbar)/v).transpose()).real());
-
+   model->calculate_Yu_DRbar();
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
@@ -409,18 +399,7 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "calculate_Yd_DRbar(): model pointer is zero");
 
-   Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
-   bottomDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
-   bottomDRbar(1,1)   = qedqcd.displayMass(softsusy::mStrange);
-   bottomDRbar(2,2)   = qedqcd.displayMass(softsusy::mBottom);
-
-   if (model->get_thresholds()) {
-      bottomDRbar(2,2) = MODEL->calculate_MFd_DRbar(qedqcd.displayMass(softsusy::mBottom), 2);
-   }
-
-   const auto v = MODELPARAMETER(v);
-   MODEL->set_Yd((((1.4142135623730951*bottomDRbar)/v).transpose()).real());
-
+   model->calculate_Yd_DRbar();
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
@@ -428,20 +407,7 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "calculate_Ye_DRbar(): model pointer is zero");
 
-   Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
-   electronDRbar(0,0) = qedqcd.displayMass(softsusy::mElectron);
-   electronDRbar(1,1) = qedqcd.displayMass(softsusy::mMuon);
-   electronDRbar(2,2) = qedqcd.displayMass(softsusy::mTau);
-
-   if (model->get_thresholds()) {
-      electronDRbar(0,0) = MODEL->calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mElectron), 0);
-      electronDRbar(1,1) = MODEL->calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mMuon), 1);
-      electronDRbar(2,2) = MODEL->calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mTau), 2);
-   }
-
-   const auto v = MODELPARAMETER(v);
-   MODEL->set_Ye((((1.4142135623730951*electronDRbar)/v).transpose()).real());
-
+   model->calculate_Ye_DRbar();
 }
 
 void Standard_model_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
@@ -463,21 +429,7 @@ void Standard_model_low_scale_constraint<Two_scale>::recalculate_mw_pole()
    assert(model && "Standard_model_low_scale_constraint<Two_scale>::"
           "recalculate_mw_pole(): model pointer is zero");
 
-   if (!model->get_thresholds())
-      return;
-
-   MODEL->calculate_MVWp();
-
-   const double mw_drbar    = MODEL->get_MVWp();
-   const double mw_pole_sqr = Sqr(mw_drbar) - self_energy_w_at_mw;
-
-   if (mw_pole_sqr < 0.)
-      MODEL->get_problems().flag_tachyon(standard_model_info::VWp);
-
-   const double mw_pole = AbsSqrt(mw_pole_sqr);
-
-   qedqcd.setPoleMW(mw_pole);
-
+   model->recalculate_mw_pole();
 }
 
 } // namespace standard_model
