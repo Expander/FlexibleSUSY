@@ -68,6 +68,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | force_positive_masses            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_scale                  | any positive double          | 0 (= SUSY scale)|
+ * | eft_pole_mass_scale              | any positive double          | 0 (= minimum of {Mt, SUSY scale})|
  */
 void Spectrum_generator_settings::reset()
 {
@@ -89,6 +90,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_observables]            = 0;
    values[force_positive_masses]            = 0;
    values[pole_mass_scale]                  = 0;
+   values[eft_pole_mass_scale]              = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
