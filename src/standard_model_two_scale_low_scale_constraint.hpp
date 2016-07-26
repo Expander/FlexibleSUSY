@@ -61,7 +61,6 @@ private:
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
    Eigen::Matrix<double,3,3> neutrinoDRbar;
-   double MWDRbar;
    double MZDRbar;
    double AlphaS;
    double EDRbar;

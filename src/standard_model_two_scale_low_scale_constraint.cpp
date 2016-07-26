@@ -61,7 +61,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    , qedqcd()
    , ckm()
    , pmns()
-   , MWDRbar(0.)
    , MZDRbar(0.)
    , AlphaS(0.)
    , EDRbar(0.)
@@ -167,7 +166,6 @@ void Standard_model_low_scale_constraint<Two_scale>::clear()
    initial_scale_guess = 0.;
    model = NULL;
    qedqcd = softsusy::QedQcd();
-   MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
@@ -187,7 +185,6 @@ void Standard_model_low_scale_constraint<Two_scale>::initialize()
 
    scale = initial_scale_guess;
 
-   MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
@@ -238,11 +235,9 @@ void Standard_model_low_scale_constraint<Two_scale>::calculate_threshold_correct
 
    // interface variables
    MZDRbar = mz_pole;
-   MWDRbar = mw_pole;
 
    if (model->get_thresholds()) {
       MZDRbar = model->calculate_MVZ_DRbar(mz_pole);
-      MWDRbar = model->calculate_MVWp_DRbar(mw_pole);
    }
 
    AlphaS = alpha_s_drbar;
