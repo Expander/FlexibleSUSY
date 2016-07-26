@@ -162,18 +162,27 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
 
-      model.run_to(susy_scale);
+      const double mass_scale =
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
+         this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+
+      model.run_to(mass_scale);
       model.solve_ewsb();
       model.calculate_spectrum();
 
       // start logarithmic resummation
       {
+         model.run_to(susy_scale);
          matching.match_high_to_low_scale_model();
          eft.run_to(low_scale);
          low_scale_constraint.apply();
 
-         double const Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-         const double Q_higgs = susy_scale > Mt ? Mt : susy_scale;
+         double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
+
+         if (Q_higgs == 0.) {
+            const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
+            Q_higgs = std::min(susy_scale, Mt);
+         }
 
          eft.run_to(Q_higgs);
 
