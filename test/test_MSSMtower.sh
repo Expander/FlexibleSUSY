@@ -102,14 +102,8 @@ Block FlexibleSUSY
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
-Block EXTPAR                 # Input parameters
+Block EXTPAR
   100   2                    # LambdaLoopOrder (HSSUSY)
-Block Ms
-    ${MS}                    # SUSY scale
-Block TanBeta
-    ${TB}                    # tan(Beta) at the SUSY scale
-Block Xtt
-    ${Xt}                    # Xt / Ms
 "
 
 run_sg() {
@@ -126,12 +120,6 @@ run_sg() {
     slha_input=$(
     { echo "$slha_tmpl" ; \
       cat <<EOF
-Block TanBeta
-    ${TB}                    # tan(Beta) at the SUSY scale
-Block Xtt
-    ${Xt}                    # Xt / Ms
-Block Ms
-    ${MS}  # SUSY scale
 Block EXTPAR                 # Input parameters
     0   ${MS}                # MSUSY
     1   ${MS}                # M1(MSUSY)
@@ -141,6 +129,7 @@ Block EXTPAR                 # Input parameters
     5   ${MS}                # mA(MSUSY)
     6   173.34               # MEWSB
     7   ${At}                # At(MSUSY)
+   14   ${Xt}                # Xt / Ms
    25   ${TB}                # TanBeta(MSUSY)
 Block MSQ2IN
   1  1     ${MS2}   # mq2(1,1)

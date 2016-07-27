@@ -42,9 +42,6 @@ Block SMINPUTS               # Standard Model inputs
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
-Block Ms
-    2000                    # SUSY scale
-Block TanBeta
-    5                      # tan(Beta) at the SUSY scale
-Block Xtt
-    0                      # Xt / Ms
+    0   2000                 # Ms
+   14   0                    # Xt / Ms
+   25   5                    # tan(beta) at Ms

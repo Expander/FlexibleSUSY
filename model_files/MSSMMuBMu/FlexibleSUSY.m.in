@@ -1,19 +1,16 @@
-
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
 OnlyLowEnergyFlexibleSUSY = True;
 
-(* CMSSM input parameters *)
-
 MINPAR = {
     {4, Sign[\[Mu]]}
 };
 
-FSExtraInputParameters = {
-    {TanBeta, TanBeta, {1}},
-    {Ms, Ms, {1}},
-    {Xtt, Xtt, {1}}
+EXTPAR = {
+    {0, Ms},
+    {14, Xtt},
+    {25, TanBeta}
 };
 
 EWSBOutputParameters = { mHd2, mHu2 };
