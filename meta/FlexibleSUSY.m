@@ -885,10 +885,12 @@ GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
 WriteMatchingClass[susyScaleMatching_List, files_List] :=
-    Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
+    Module[{scheme = GetRenormalizationScheme[], userMatching = "",
+            setRunningFermionMasses},
         If[Head[susyScaleMatching] === List,
            userMatching = Constraint`ApplyConstraints[susyScaleMatching];
           ];
+        setRunningFermionMasses = ThresholdCorrections`CalculateRunningFermionMasses[];
         WriteOut`ReplaceInFiles[files,
                        { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
                                                                     ThresholdCorrections`CalculateColorCoupling[scheme] +
@@ -897,6 +899,7 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
                                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
                          "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
+                         "@setRunningFermionMasses@" -> IndentText[WrapLines[setRunningFermionMasses]],
                          "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
                          "@applyUserMatching@" -> IndentText[IndentText[WrapLines[userMatching]]],
                          Sequence @@ GeneralReplacementRules[]

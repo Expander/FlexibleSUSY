@@ -273,11 +273,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    else
       model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
 
-   for (unsigned gen = 0; gen < 3; gen++) {
-      upQuarksDRbar(gen, gen)    = sm.get_physical().MFu(gen) - model.get_physical().M@TopQuark@(gen) + model.get_M@TopQuark@(gen);
-      downQuarksDRbar(gen, gen)  = sm.get_physical().MFd(gen) - model.get_physical().M@BottomQuark@(gen) + model.get_M@BottomQuark@(gen);
-      downLeptonsDRbar(gen, gen) = sm.get_physical().MFe(gen) - model.get_physical().M@Electron@(gen) + model.get_M@Electron@(gen);
-   }
+@setRunningFermionMasses@
 
    // define and apply 1L-matched gauge parameters
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_g1;

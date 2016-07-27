@@ -9,6 +9,7 @@ RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
+CalculateRunningFermionMasses::usage = "";
 CalculateColorCoupling::usage="";
 CalculateElectromagneticCoupling::usage="";
 SetDRbarYukawaCouplings::usage="";
@@ -645,6 +646,38 @@ CalculateGaugeCouplings[] :=
                     "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
                     "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
+          ];
+
+CalculateRunningFermionMasses[] :=
+    Module[{result = "", i, iStr, mq, mqFun},
+           For[i = 0, i < 3, i++,
+               iStr = ToString[i];
+               mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetUpQuark[i + 1, True]];
+               If[Length[TreeMasses`GetSMUpQuarks[]] == 3, mqFun = mq <> "()"];
+               result = result <>
+                        "upQuarksDRbar(" <> iStr <> "," <> iStr <> ") = " <>
+                        "sm.get_physical().MFu(" <> iStr <> ") - " <>
+                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+              ];
+           For[i = 0, i < 3, i++,
+               iStr = ToString[i];
+               mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownQuark[i + 1, True]];
+               If[Length[TreeMasses`GetSMDownQuarks[]] == 3, mqFun = mq <> "()"];
+               result = result <>
+                        "downQuarksDRbar(" <> iStr <> "," <> iStr <> ") = " <>
+                        "sm.get_physical().MFd(" <> iStr <> ") - " <>
+                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+              ];
+           For[i = 0, i < 3, i++,
+               iStr = ToString[i];
+               mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownLepton[i + 1, True]];
+               If[Length[TreeMasses`GetSMChargedLeptons[]] == 3, mqFun = mq <> "()"];
+               result = result <>
+                        "downLeptonsDRbar(" <> iStr <> "," <> iStr <> ") = " <>
+                        "sm.get_physical().MFe(" <> iStr <> ") - " <>
+                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+              ];
+           result
           ];
 
 End[];
