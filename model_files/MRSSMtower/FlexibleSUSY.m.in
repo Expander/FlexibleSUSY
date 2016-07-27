@@ -48,7 +48,7 @@ SUSYScaleInput = {
 
 InitialGuessAtSUSYScale = SUSYScaleInput;
 
-SUSYScaleUserMatching = {
+SUSYScaleMatching = {
     {vu, vev Sin[ArcTan[TanBeta]]},
     {vd, vev Cos[ArcTan[TanBeta]]}
 };
