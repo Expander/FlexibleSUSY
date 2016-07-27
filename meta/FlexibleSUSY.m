@@ -886,11 +886,15 @@ GetRenormalizationScheme[] :=
 
 WriteMatchingClass[susyScaleMatching_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
-            setRunningFermionMasses},
+            setRunningFermionMasses,
+            callAllSMPoleMassFunctions,
+            callAllSMPoleMassFunctionsThreads},
         If[Head[susyScaleMatching] === List,
            userMatching = Constraint`ApplyConstraints[susyScaleMatching];
           ];
         setRunningFermionMasses = ThresholdCorrections`CalculateRunningFermionMasses[];
+        callAllSMPoleMassFunctions        = LoopMasses`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
+        callAllSMPoleMassFunctionsThreads = LoopMasses`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
         WriteOut`ReplaceInFiles[files,
                        { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
                                                                     ThresholdCorrections`CalculateColorCoupling[scheme] +
@@ -899,9 +903,11 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
                                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
                          "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
-                         "@setRunningFermionMasses@" -> IndentText[WrapLines[setRunningFermionMasses]],
+                         "@setRunningFermionMasses@" -> IndentText[setRunningFermionMasses],
                          "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
                          "@applyUserMatching@" -> IndentText[IndentText[WrapLines[userMatching]]],
+                         "@callAllSMPoleMassFunctions@" -> IndentText[callAllSMPoleMassFunctions],
+                         "@callAllSMPoleMassFunctionsThreads@" -> IndentText[callAllSMPoleMassFunctionsThreads],
                          Sequence @@ GeneralReplacementRules[]
                        } ];
         ];

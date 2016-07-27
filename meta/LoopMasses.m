@@ -7,6 +7,7 @@ BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
 CreateOneLoopPoleMassFunctions::usage="";
 CreateOneLoopPoleMassPrototypes::usage="";
 CallAllPoleMassFunctions::usage="";
+CallSMPoleMassFunctions::usage = "";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
 CallCalculateDRbarMass::usage="";
@@ -687,8 +688,8 @@ DoDiagonalization[particle_Symbol, FlexibleSUSY`HighPrecision, tadpole_] :=
 CreateLoopMassFunctionName[particle_Symbol] :=
     "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole";
 
-CallPoleMassFunction[particle_Symbol] :=
-    CreateLoopMassFunctionName[particle] <> "();\n";
+CallPoleMassFunction[particle_Symbol, obj_:""] :=
+    obj <> CreateLoopMassFunctionName[particle] <> "();\n";
 
 CreateLoopMassPrototype[particle_Symbol] :=
     "void " <> CreateLoopMassFunctionName[particle] <> "();\n";
@@ -792,10 +793,10 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallThreadedPoleMassFunction[particle_Symbol] :=
+CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::" <>
+           "std::thread thread_" <> massStr <> "(Thread(" <> ptr <> ", &CLASSNAME::" <>
            CreateLoopMassFunctionName[particle] <> "));\n"
           ];
 
@@ -828,6 +829,19 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
                        joinSusyThreads;
              ];
            Return[result];
+          ];
+
+CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
+    Module[{particles, result, Selector},
+           Selector[p_] := SARAH`SMQ[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
+           particles = Select[GetLoopCorrectedParticles[states], Selector];
+           If[enablePoleMassThreads =!= True,
+              result = StringJoin[CallPoleMassFunction[#,"model."]& /@ particles];
+              ,
+              result = StringJoin[CallThreadedPoleMassFunction[#,"&model"]& /@ particles] <> "\n" <>
+                       StringJoin[JoinLoopMassFunctionThread /@ particles];
+             ];
+           result
           ];
 
 GetRunningOneLoopDRbarParticles[] :=

@@ -148,27 +148,19 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
 #ifdef ENABLE_THREADS
-   typedef @ModelName@_mass_eigenstates::Thread MTr;
+#define CLASSNAME @ModelName@_mass_eigenstates
+
+   typedef @ModelName@_mass_eigenstates::Thread Thread;
 
    model.clear_thread_exception();
    sm.clear_thread_exception();
 
-   std::thread thread_@ModelName@_M@TopQuark@(MTr(&model, &@ModelName@_mass_eigenstates::calculate_M@TopQuark@_pole));
-   std::thread thread_@ModelName@_M@BottomQuark@(MTr(&model, &@ModelName@_mass_eigenstates::calculate_M@BottomQuark@_pole));
-   std::thread thread_@ModelName@_M@Electron@(MTr(&model, &@ModelName@_mass_eigenstates::calculate_M@Electron@_pole));
-   std::thread thread_@ModelName@_M@VectorW@(MTr(&model, &@ModelName@_mass_eigenstates::calculate_M@VectorW@_pole));
-   std::thread thread_@ModelName@_M@VectorZ@(MTr(&model, &@ModelName@_mass_eigenstates::calculate_M@VectorZ@_pole));
    std::thread thread_Standard_model_MFu(Standard_model::Thread(&sm, &Standard_model::calculate_MFu_pole));
    std::thread thread_Standard_model_MFd(Standard_model::Thread(&sm, &Standard_model::calculate_MFd_pole));
    std::thread thread_Standard_model_MFe(Standard_model::Thread(&sm, &Standard_model::calculate_MFe_pole));
    std::thread thread_Standard_model_MVW(Standard_model::Thread(&sm, &Standard_model::calculate_MVWp_pole));
    std::thread thread_Standard_model_MVZ(Standard_model::Thread(&sm, &Standard_model::calculate_MVZ_pole));
-
-   thread_@ModelName@_M@TopQuark@.join();
-   thread_@ModelName@_M@BottomQuark@.join();
-   thread_@ModelName@_M@Electron@.join();
-   thread_@ModelName@_M@VectorW@.join();
-   thread_@ModelName@_M@VectorZ@.join();
+@callAllSMPoleMassFunctionsThreads@
    thread_Standard_model_MFu.join();
    thread_Standard_model_MFd.join();
    thread_Standard_model_MFe.join();
@@ -177,13 +169,10 @@ static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standa
 
    model.rethrow_thread_exception();
    sm.rethrow_thread_exception();
-#else
-   model.calculate_M@TopQuark@_pole();
-   model.calculate_M@BottomQuark@_pole();
-   model.calculate_M@Electron@_pole();
-   model.calculate_M@VectorW@_pole();
-   model.calculate_M@VectorZ@_pole();
 
+#undef CLASSNAME
+#else
+@callAllSMPoleMassFunctions@
    sm.calculate_MFu_pole();
    sm.calculate_MFd_pole();
    sm.calculate_MFe_pole();
