@@ -615,10 +615,6 @@ ToValidCSymbol[symbol_Integer] := symbol;
 
 ToValidCSymbol[symbol_Real] := symbol;
 
-ToValidCSymbol[symbol_[Susyno`LieGroups`i1]] := ToValidCSymbol[symbol];
-
-ToValidCSymbol[symbol_[Susyno`LieGroups`i1,SARAH`i2]] := ToValidCSymbol[symbol];
-
 ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
     Module[{result = "", i},
            For[i = 0, i <= Length[symbol], i++,
