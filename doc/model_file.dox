@@ -245,16 +245,16 @@ RealParameters = { B[\[Mu]] };
 
 \section boundary_conditions Boundary conditions
 
-In FlexibleSUSY, spectrum generators with two or three boundary
-conditions can be generated.  (Future versions will support more than
-three boundary conditions.)  By default, a spectrum generator with
-three boundary conditions is generated.  These boundary conditions are
-named "high-scale", "susy-scale" and "low-scale" boundary condition
-and are described in the following.  In order to generate a spectrum
-generator with only two boundary conditions, set
+In FlexibleSUSY, spectrum generators with maximum 3 boundary
+conditions can be generated.  These boundary conditions are named
+"high-scale", "susy-scale" and "low-scale" boundary condition and are
+described in the following.
+
+However, it is possible to disable the high-scale boundary condition.
+In order to do so, set
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-OnlyLowEnergyFlexibleSUSY = True;  (* only 2 BCs, default: False *)
+OnlyLowEnergyFlexibleSUSY = True;  (* disable high-scale BC, default: False *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _____________________________________________________________________
@@ -267,6 +267,8 @@ __Description__:
 
 The scale of the low-scale boundary condition, at which the model is
 matched to the Standard Model.
+
+\note `LowScale` is ignored if `FlexibleEFTHiggs == True`
 
 Example: In the CMSSM the low-energy scale should be set to the Z or
 top pole mass.  This choice is achieved by the following expression:
@@ -284,6 +286,8 @@ __Default value__: _unset_
 __Description__:
 
 First guess of the low-energy scale.
+
+\note `LowScaleFirstGuess` is ignored if `FlexibleEFTHiggs == True`
 
 Example: In the CMSSM the first guess for the low-energy scale should
 be set to the Z or top pole mass:
@@ -307,6 +311,8 @@ refer to \ref input_format for details about the list format.
 At the low-energy scale, FlexibleSUSY automatically determines the
 three gauge couplings from the SLHA input parameters
 \f$\alpha_{em}\f$, \f$M_Z\f$ and \f$G_F\f$ or \f$M_W\f$.
+
+\note `LowScaleInput` is ignored if `FlexibleEFTHiggs == True`
 
 _TODO_: Add note about how the the user can chose between \f$G_F\f$ or
 \f$M_W\f$ as input.
@@ -495,8 +501,10 @@ __Default value__: `{}`
 __Description__:
 
 With the `InitialGuessAtLowScale` variable initial values for the
-model MS-bar parameters can be given at the low-energy scale
+model MS-bar/DR-bar parameters can be given at the low-energy scale
 `LowScale`.
+
+\note `InitialGuessAtLowScale` is ignored if `FlexibleEFTHiggs == True`
 
 Example: In the CMSSM `InitialGuessAtLowScale` is given as follows:
 
@@ -512,6 +520,44 @@ InitialGuessAtLowScale = {
 
 _____________________________________________________________________
 
+__Symbol__: `InitialGuessAtSUSYScale`
+
+__Default value__: `{}`
+
+__Description__:
+
+\note `InitialGuessAtSUSYScale` is only used if `FlexibleEFTHiggs == True`
+
+With the `InitialGuessAtSUSYScale` variable initial values for the
+model MS-bar/DR-bar parameters can be given at the SUSY scale
+`SUSYScale`.
+
+Example: In the MSSMtower `InitialGuessAtSUSYScale` is given as follows:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+InitialGuessAtSUSYScale = {
+    {Yu, Automatic},
+    {Yd, Automatic},
+    {Ye, Automatic}
+    {MassB, Ms},
+    {MassWB, Ms},
+    {MassG, Ms},
+    {mq2, UNITMATRIX[3] Ms^2},
+    {mu2, UNITMATRIX[3] Ms^2},
+    {md2, UNITMATRIX[3] Ms^2},
+    {ml2, UNITMATRIX[3] Ms^2},
+    {me2, UNITMATRIX[3] Ms^2},
+    {\[Mu], Ms},
+    {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
+    {T[Yu], Ms/TanBeta Yu},
+    {T[Yd], Ms TanBeta Yd},
+    {T[Ye], Ms TanBeta Ye},
+    {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
 __Symbol__: `InitialGuessAtHighScale`
 
 __Default value__: `{}`
@@ -519,7 +565,7 @@ __Default value__: `{}`
 __Description__:
 
 With the `InitialGuessAtHighScale` variable initial values for the
-model MS-bar parameters can be given at the high-energy scale
+model MS-bar/DR-bar parameters can be given at the high-energy scale
 `HighScale`.
 
 Example: In the CMSSM `InitialGuessAtHighScale` is given as follows:
@@ -583,6 +629,63 @@ output parameters are chosen automatically as follows:
   `EWSBOutputParameters` are fixed by the tree-level EWSB equation
   temporarily when the running (tree-level) masses are calculated.
 
+_____________________________________________________________________
+
+__Symbol__: `SUSYScaleMatching`
+
+__Default value__: `{}`
+
+__Description__:
+
+\note `SUSYScaleMatching` is only used if `FlexibleEFTHiggs == True`
+
+In the `SUSYScaleMatching` variable, relations between the parameters
+of the full model and the Standard Model (the EFT) at the `SUSYScale`
+can be specified.
+
+An important application is the relation between the vacuum
+expectation values (VEVs) in a SUSY model and \f$v\f$ in the Standard
+Model: In `FlexibleEFTHiggs` the running Yukawa couplings of the full
+model are determined from a pole mass matching of the Standard Model
+fermions (which need to be present in both models).  For this
+determination the running VEVs of the full model must be known and
+non-zero.  `SUSYScaleMatching` allows the user for example to fix the
+running VEVs of the full model as a function of the running SM-like
+VEV \f$v\f$ in the full model.
+
+_Example:_ In the MSSM the vacuum expectation values \f$v_u\f$ and
+\f$v_d\f$ are related to the MSSM SM-like VEV \f$v = \sqrt{v_u^2 +
+v_d^2}\f$ as
+\f{align*}{
+  v_u &= v \sin\beta , \\
+  v_d &= v \cos\beta .
+\f}
+
+To fix \f$v_u\f$ and \f$v_d\f$ in the MSSM in this way,
+`SUSYScaleMatching` can be used:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+SUSYScaleMatching = {
+    {vu, VEV Sin[ArcTan[TanBeta]]},
+    {vd, VEV Cos[ArcTan[TanBeta]]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+where `TanBeta` is an input parameter.  The symbol `VEV` is a
+FlexibleSUSY constant which is assigned the value
+\f{align*}{
+   \text{VEV} = \frac{2 m_Z}{\sqrt{g_Y^2 + g_2^2}} ,
+\f}
+where \f$m_Z\f$ is the running Z boson mass in the full model,
+detetermined by requiring the equality of the Z boson pole masses of
+the full model and the Standard Model.  \f$g_Y\f$ and \f$g_2\f$ are
+the running gauge couplings of \f$U(1)_Y\f$ and \f$SU(2)_L\f$ in the
+full model, respectively.  These two gauge couplings are calculated
+using the 1-loop threshold correction for \f$\alpha_{\text{em}}\f$ and
+the running weak mixing angle, \f$\cos\theta_W = m_W / m_Z\f$.
+\f$m_W\f$ is the running W boson mass in the full model, detetermined
+by requiring the equality of the W boson pole masses of the full model
+and the Standard Model.
 
 \subsection input_format Boundary condition format
 

@@ -28,6 +28,9 @@ Block FlexibleSUSY
    15   0        # calculate observables (a_muon, effective couplings)
    16   0        # force positive majorana masses
    17   0        # pole mass scale
+   18   0        # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
+   19   0        # EFT matching scale (0 = SUSY scale)
+   20   1        # EFT matching loop order
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -57,6 +60,9 @@ index | description                          | possible values              | de
 15    | calculate observables                | 0 (no) or 1 (yes)            | 0 (= no)
 16    | force positive Majorana masses       | 0 (no) or 1 (yes)            | 0 (= no)
 17    | pole mass scale                      | any positive double          | 0 (= SUSY scale)
+18    | EFT pole mass scale                  | any positive double          | 0 (= minimum of {Mt, SUSY scale})
+19    | EFT matching scale                   | any positive double          | 0 (= SUSY scale)
+20    | EFT matching loop order              | 0, 1                         | 1 (= 1-loop)
 
 ### Precision goal ###
 
@@ -249,7 +255,7 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
         ^4\right\}}{9953280 \pi^6}
   \f}
 
-## Pole mass scale ##
+### Pole mass scale ###
 
 Using `FlexibleSUSY[17]`, the renormalization scale at which the pole
 mass spectrum is calculated can be overwritten.  By default the
@@ -257,6 +263,42 @@ renormalization scale is the SUSY scale (`SUSYScale` variable in the
 model file).  If `FlexibleSUSY[17]` is set to `0`, the value given by
 the `SUSYScale` variable is used.  If `FlexibleSUSY[17]` is set to a
 non-zero value, then this value is used as renormalization scale.
+
+### EFT pole mass scale ###
+
+\note Only used if `FlexibleEFTHiggs == True`
+
+Using `FlexibleSUSY[18]`, the renormalization scale at which the
+Standard Model pole mass spectrum is calculated in the EFT can be
+overwritten.  If unspecified or set to `0`, the minimum of the top
+pole mass and the `SUSYScale` is used.
+
+### EFT matching scale ###
+
+\note Only used if `FlexibleEFTHiggs == True`
+
+Using `FlexibleSUSY[19]`, the renormalization scale at which the full
+model is matched to the Standard Model can be overwritten.  If
+unspecified or set to `0`, the `SUSYScale` is used.
+
+### EFT matching loop order ###
+
+\note Only used if `FlexibleEFTHiggs == True`
+
+Using `FlexibleSUSY[20]`, the loop order for the matching of the full
+model to the Standard Model can be selected.  If unspecified, the loop
+order is set to `1`.
+
+\note When `FlexibleSUSY[20] = 1` and `FlexibleSUSY[13] = 1`, then
+2-loop top Yukawa coupling threshold corrections are additonally taken
+into account in the determination of running top Yukawa coupling of
+the full model at the matching scale, \f$y_t^{\text{model}}\f$.  These
+2-loop corrections arise when top pole masses of the Standard Model
+and the full model are set equal to determine
+\f$y_t^{\text{model}}\f$.  These 2-loop corrections must be included
+in order to reproduce the results of the pure EFT approaches
+(FlexibleSUSY/HSSUSY or SUSYHD) with FlexibleEFTHiggs.
+
 
 \section FlexibleSUSY_input Additional physical input parameters (FlexibleSUSYInput)
 
