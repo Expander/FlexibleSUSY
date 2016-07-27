@@ -70,10 +70,3 @@ FSWeakMixingAngleOptions = FSSetOption[
     FSWeakMixingAngleOptions,
     FSWeakMixingAngleExpr  -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]
 ];
-
-SARAH`ParameterDefinitions = Append[
-    Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`ThetaW, ___}],
-    {SARAH`ThetaW,
-     { Description -> "Weinberg-Angle",
-       DependenceNum -> ArcSin[Sqrt[1 - (Mass[VWm]^2 - g2^2*vT^2)/Mass[VZ]^2]]}}
-];
