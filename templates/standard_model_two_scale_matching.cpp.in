@@ -30,14 +30,19 @@
 namespace flexiblesusy {
 
 CLASSNAME::@ModelName@_standard_model_Matching()
-   : model(0), eft(0), constraint(0), scale(0.)
+   : model(0), eft(0), constraint(0), scale(0.), loop_order(1)
 {}
 
 CLASSNAME::@ModelName@_standard_model_Matching(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
-   Constraint<Two_scale>* constraint_)
-   : model(high_), eft(low_), constraint(constraint_), scale(0.)
+   Constraint<Two_scale>* constraint_,
+   unsigned loop_order_)
+   : model(high_)
+   , eft(low_)
+   , constraint(constraint_)
+   , scale(0.)
+   , loop_order(loop_order_)
 {}
 
 CLASSNAME::~@ModelName@_standard_model_Matching()
@@ -70,10 +75,10 @@ void CLASSNAME::match_high_to_low_scale_model()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (!model->get_thresholds())
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order);
    else
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model);
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
 }
 
 void CLASSNAME::match_low_to_high_scale_model()
@@ -86,10 +91,14 @@ void CLASSNAME::match_low_to_high_scale_model()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (!model->get_thresholds())
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+   // 2-loop QCD contributions to Mt needed when matching low ->
+   // high-scale model to reproduce the pure EFT result at high SUSY
+   // scales
+
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, 2 /* loop_order */);
    else
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft);
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
 void CLASSNAME::match_high_to_low_scale_model_tree_level()
@@ -116,6 +125,16 @@ void CLASSNAME::match_low_to_high_scale_model_tree_level()
    model->run_to(get_scale());
 
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+}
+
+unsigned CLASSNAME::get_loop_order() const
+{
+   return loop_order;
+}
+
+void CLASSNAME::set_loop_order(unsigned loop_order_)
+{
+   loop_order = loop_order_;
 }
 
 void CLASSNAME::set_constraint(Constraint<Two_scale>* constraint_)

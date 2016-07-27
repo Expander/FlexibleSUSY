@@ -58,32 +58,56 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_lev
  * 1-loop Higgs pole masses are equal in both models.
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order)
 {
-   const auto model_pole_mass_order = model.get_pole_mass_loop_order();
-   const auto sm_pole_mass_order = sm.get_pole_mass_loop_order();
+   if (loop_order == 0) {
+      match_high_to_low_scale_model_tree_level(sm, model);
+      return;
+   }
 
-   model.set_pole_mass_loop_order(1);
-   sm.set_pole_mass_loop_order(1);
+   // temporarily set loop order to `loop_order'
+   const unsigned model_pole_mass_order = model.get_pole_mass_loop_order();
+   const unsigned model_ewsb_order      = model.get_ewsb_loop_order();
+   const unsigned sm_pole_mass_order    = sm.get_pole_mass_loop_order();
+   const unsigned sm_ewsb_order         = sm.get_ewsb_loop_order();
 
-   model.calculate_DRbar_masses();
-   model.solve_ewsb_one_loop();
-   model.calculate_M@HiggsBoson@_pole();
+   model.set_pole_mass_loop_order(loop_order);
+   model.set_ewsb_loop_order(loop_order);
+   sm.set_pole_mass_loop_order(loop_order);
+   sm.set_ewsb_loop_order(loop_order);
 
-   sm.calculate_DRbar_masses();
-   sm.solve_ewsb_one_loop();
-   sm.calculate_Mhh_pole();
+   match_high_to_low_scale_model(sm, model);
 
-   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
-
+   // reset loop order
    model.set_pole_mass_loop_order(model_pole_mass_order);
+   model.set_ewsb_loop_order(model_ewsb_order);
    sm.set_pole_mass_loop_order(sm_pole_mass_order);
+   sm.set_ewsb_loop_order(sm_ewsb_order);
 
    model.calculate_DRbar_masses();
    model.solve_ewsb();
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
+}
 
+
+/**
+ * Calculates \f$\lambda(Q)\f$ at the current loop level from the
+ * lightest CP-even Higgs boson mass of the @ModelName@ by requiring
+ * that the Higgs pole masses are equal in both models.
+ */
+void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
+   Standard_model& sm, @ModelName@_mass_eigenstates& model)
+{
+   model.calculate_DRbar_masses();
+   model.solve_ewsb();
+   model.calculate_M@HiggsBoson@_pole();
+
+   sm.calculate_DRbar_masses();
+   sm.solve_ewsb();
+   sm.calculate_Mhh_pole();
+
+   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
 }
 
 /**
@@ -174,6 +198,44 @@ static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standa
  * couplings and the SM vev.
  */
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
+   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned loop_order)
+{
+   if (loop_order == 0) {
+      match_low_to_high_scale_model_tree_level(model, sm);
+      return;
+   }
+
+   // temporarily set loop order to `loop_order'
+   const unsigned model_pole_mass_order = model.get_pole_mass_loop_order();
+   const unsigned model_ewsb_order      = model.get_ewsb_loop_order();
+   const unsigned sm_pole_mass_order    = sm.get_pole_mass_loop_order();
+   const unsigned sm_ewsb_order         = sm.get_ewsb_loop_order();
+
+   model.set_pole_mass_loop_order(loop_order);
+   model.set_ewsb_loop_order(loop_order);
+   sm.set_pole_mass_loop_order(loop_order);
+   sm.set_ewsb_loop_order(loop_order);
+
+   match_low_to_high_scale_model(model, sm);
+
+   // reset loop order
+   model.set_pole_mass_loop_order(model_pole_mass_order);
+   model.set_ewsb_loop_order(model_ewsb_order);
+   sm.set_pole_mass_loop_order(sm_pole_mass_order);
+   sm.set_ewsb_loop_order(sm_ewsb_order);
+
+   model.calculate_DRbar_masses();
+   model.solve_ewsb();
+   sm.calculate_DRbar_masses();
+   sm.solve_ewsb();
+}
+
+/**
+ * Calculates the gauge and Yukawa couplings and the SM-like VEV in
+ * the @ModelName@ at the current loop level from the known Standard
+ * Model couplings and the SM vev.
+ */
+void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
@@ -234,9 +296,6 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    }
 
 @setYukawas@
-
-   model.calculate_DRbar_masses();
-   model.solve_ewsb();
 }
 
 } // namespace flexiblesusy
