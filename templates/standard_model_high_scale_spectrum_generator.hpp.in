@@ -43,7 +43,6 @@
 #include <limits>
 
 namespace flexiblesusy {
-using namespace softsusy;
 
 #define MODELPARAMETER(p) model.get_##p()
 

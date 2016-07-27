@@ -22,15 +22,15 @@
 #define @ModelName@_STANDARD_MODEL_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "@ModelName@_initial_guesser.hpp"
-#include "standard_model_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
+#include "standard_model_two_scale_low_scale_constraint.hpp"
 #include "two_scale_initial_guesser.hpp"
+#include "lowe.h"
 
 #include <sstream>
 
 namespace flexiblesusy {
-using namespace softsusy;
 
 class Two_scale;
 
@@ -43,8 +43,6 @@ class StandardModel;
 template <class T>
 class @ModelName@_standard_model_initial_guesser;
 
-
-
 /**
  * @class @ModelName@_standard_model_initial_guesser<Two_scale>
  * @brief initial guesser for the @ModelName@ tower
@@ -55,7 +53,7 @@ class @ModelName@_standard_model_initial_guesser<Two_scale> : public Initial_gue
 public:
    @ModelName@_standard_model_initial_guesser(@ModelName@<Two_scale>*,
                                standard_model::StandardModel<Two_scale>*,
-                               const QedQcd&,
+                               const softsusy::QedQcd&,
                                const standard_model::Standard_model_low_scale_constraint<Two_scale>&,
                                const @ModelName@_susy_scale_constraint<Two_scale>&,
                                const @ModelName@_high_scale_constraint<Two_scale>&);
@@ -67,7 +65,7 @@ public:
 private:
    @ModelName@<Two_scale>* model; ///< pointer to model class
    standard_model::StandardModel<Two_scale>* eft; ///< pointer to effective low energy model
-   QedQcd oneset;   ///< Standard Model low-energy data
+   softsusy::QedQcd oneset; ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
    double mc_guess; ///< guessed DR-bar mass of charm-quark
    double mt_guess; ///< guessed DR-bar mass of top-quark
