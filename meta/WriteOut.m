@@ -343,6 +343,8 @@ SplitRealAndImagPartBlocks[{block_, {parameter_ /; Head[parameter] =!= List}}] :
        {{block, {Re[parameter]}}, {CreateImaginaryPartBlockName[block], {Im[parameter]}}}
       ];
 
+SortBlocks[{}] := {};
+
 SortBlocks[modelParameters_List] :=
     Module[{reformed, allBlocks, collected},
            reformed = LesHouchesNameToFront /@ modelParameters;
