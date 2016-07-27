@@ -190,12 +190,27 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
 
          eft.run_to(Q_higgs);
 
-         // 1L computation of pole mass spectrum in the SM
+         // computation of pole mass spectrum in the SM
+         const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
+         const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
+
+         if (eft_pole_loops > 1) {
+            WARNING("Pole mass loop order " << eft_pole_loops
+                    << " in the EFT is currently not supported!  I'm using 1-loop.");
+            eft.set_pole_mass_loop_order(1);
+         }
+         if (eft_ewsb_loops > 1) {
+            WARNING("EWSB loop order " << eft_ewsb_loops
+                    << " in the EFT is currently not supported!  I'm using 1-loop.");
+            eft.set_ewsb_loop_order(1);
+         }
+
          eft.calculate_DRbar_masses();
-         eft.set_pole_mass_loop_order(1);
-         eft.set_ewsb_loop_order(1);
          eft.solve_ewsb();
          eft.calculate_spectrum();
+
+         eft.set_pole_mass_loop_order(eft_pole_loops);
+         eft.set_ewsb_loop_order(eft_ewsb_loops);
 
          this->model.get_physical().M@HiggsBoson_0@ = eft.get_physical().Mhh;
          this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;

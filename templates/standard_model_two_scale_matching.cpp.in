@@ -42,8 +42,9 @@ CLASSNAME::@ModelName@_standard_model_Matching(
    , eft(low_)
    , constraint(constraint_)
    , scale(0.)
-   , loop_order(loop_order_)
-{}
+{
+   set_loop_order(loop_order_);
+}
 
 CLASSNAME::~@ModelName@_standard_model_Matching()
 {}
@@ -134,6 +135,12 @@ unsigned CLASSNAME::get_loop_order() const
 
 void CLASSNAME::set_loop_order(unsigned loop_order_)
 {
+   if (loop_order_ > 1) {
+      WARNING("Matching loop order " << loop_order_ << " currently not"
+              " supported!  I'm using 1-loop matching.");
+      loop_order_ = 1;
+   }
+
    loop_order = loop_order_;
 }
 
