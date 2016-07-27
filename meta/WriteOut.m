@@ -564,19 +564,17 @@ WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_Str
     WriteSLHABlock[{blockName, parameter}, scale];
 
 WriteSLHAModelParametersBlocks[] :=
-    Module[{result = "", modelParameters, blocks},
+    Module[{modelParameters, blocks},
            modelParameters = GetSLHAModelParameters[];
            blocks = SortBlocks[modelParameters];
-           (result = result <> WriteSLHABlock[#])& /@ blocks;
-           Return[result];
+           StringJoin[WriteSLHABlock /@ blocks]
           ];
 
 WriteSLHAPhasesBlocks[] :=
-    Module[{result = "", phases, blocks},
+    Module[{phases, blocks},
            phases = GetSLHAPhases[];
            blocks = SortBlocks[phases];
-           (result = result <> WriteSLHABlock[#])& /@ blocks;
-           Return[result]
+           StringJoin[WriteSLHABlock /@ blocks]
           ];
 
 GetExtraSLHAOutputBlockScale[scale_ /; scale === FlexibleSUSY`NoScale] := "";
