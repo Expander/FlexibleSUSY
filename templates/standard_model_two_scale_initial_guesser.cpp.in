@@ -20,8 +20,8 @@
 
 #include "@ModelName@_standard_model_two_scale_initial_guesser.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "standard_model_two_scale_model.hpp"
 #include "@ModelName@_standard_model_two_scale_matching.hpp"
+#include "standard_model_two_scale_model.hpp"
 #include "lowe.h"
 #include "error.hpp"
 #include "ew_input.hpp"
@@ -42,7 +42,7 @@ namespace flexiblesusy {
 @ModelName@_standard_model_initial_guesser<Two_scale>::@ModelName@_standard_model_initial_guesser(
    @ModelName@<Two_scale>* model_,
    standard_model::StandardModel<Two_scale>* eft_,
-   const QedQcd& oneset_,
+   const softsusy::QedQcd& oneset_,
    const standard_model::Standard_model_low_scale_constraint<Two_scale>& low_constraint_,
    const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_,
    const @ModelName@_high_scale_constraint<Two_scale>& high_constraint_
@@ -96,7 +96,9 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess()
  */
 void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters()
 {
-   QedQcd leAtMt(oneset);
+   using namespace softsusy;
+
+   softsusy::QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
@@ -104,12 +106,18 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters
 
    mu_guess = leAtMt.displayMass(mUp);
    mc_guess = leAtMt.displayMass(mCharm);
-   mt_guess = leAtMt.displayMass(mTop) - 30.0;
+   mt_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mTop) - 30.0 :
+      leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(mDown);
    ms_guess = leAtMt.displayMass(mStrange);
    mb_guess = leAtMt.displayMass(mBottom);
-   me_guess = leAtMt.displayMass(mElectron);
-   mm_guess = leAtMt.displayMass(mMuon);
+   me_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mElectron) :
+      leAtMt.displayPoleMel();
+   mm_guess = model->get_thresholds() > 0 ?
+      leAtMt.displayMass(mMuon) :
+      leAtMt.displayPoleMmuon();
    mtau_guess = leAtMt.displayMass(mTau);
 
    // guess gauge couplings at mt
@@ -139,7 +147,6 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters
 
    eft->set_Lambdax(0.12604);
    eft->solve_ewsb_tree_level();
-
 }
 
 void @ModelName@_standard_model_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
