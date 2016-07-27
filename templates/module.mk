@@ -48,6 +48,7 @@ TEMPLATES    := \
 		$(DIR)/two_scale_low_scale_constraint.hpp.in \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
 		$(DIR)/standard_model_two_scale_matching.hpp.in \
+		$(DIR)/standard_model_two_scale_matching.cpp.in \
 		$(DIR)/standard_model_high_scale_spectrum_generator.hpp.in \
 		$(DIR)/standard_model_low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_model.hpp.in \
