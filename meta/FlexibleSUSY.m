@@ -886,7 +886,7 @@ GetRenormalizationScheme[] :=
 
 WriteMatchingClass[susyScaleMatching_List, files_List] :=
     Module[ {scheme = GetRenormalizationScheme[], userMatching = ""},
-        If[SMTower && Head[susyScaleMatching] === List,
+        If[Head[susyScaleMatching] === List,
            userMatching = Constraint`ApplyConstraints[susyScaleMatching];
           ];
         WriteOut`ReplaceInFiles[files,
