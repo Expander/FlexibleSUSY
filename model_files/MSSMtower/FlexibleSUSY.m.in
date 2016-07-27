@@ -37,25 +37,7 @@ SUSYScaleInput = {
     {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
 };
 
-InitialGuessAtSUSYScale = {
-    {Yu, Automatic},
-    {Yd, Automatic},
-    {Ye, Automatic}
-    {MassB, Ms},
-    {MassWB, Ms},
-    {MassG, Ms},
-    {mq2, UNITMATRIX[3] Ms^2},
-    {mu2, UNITMATRIX[3] Ms^2},
-    {md2, UNITMATRIX[3] Ms^2},
-    {ml2, UNITMATRIX[3] Ms^2},
-    {me2, UNITMATRIX[3] Ms^2},
-    {\[Mu], Ms},
-    {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
-    {T[Yu], Ms/TanBeta Yu},
-    {T[Yd], Ms TanBeta Yd},
-    {T[Ye], Ms TanBeta Ye},
-    {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
-};
+InitialGuessAtSUSYScale = SUSYScaleInput;
 
 (* VEV is the SM-like VEV in the MSSM *)
 SUSYScaleMatching = {
