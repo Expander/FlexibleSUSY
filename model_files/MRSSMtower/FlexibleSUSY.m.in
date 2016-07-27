@@ -3,7 +3,7 @@ FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MRSSM;
 AutomaticInputAtMSUSY = False;
 OnlyLowEnergyFlexibleSUSY = True;
-SMTower = True;
+FlexibleEFTHiggs = True;
 
 MINPAR = {
     {3, TanBeta}

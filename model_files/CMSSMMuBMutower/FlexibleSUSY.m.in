@@ -1,7 +1,7 @@
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
-SMTower = True;
+FlexibleEFTHiggs = True;
 
 MINPAR = {
     {1, m0},

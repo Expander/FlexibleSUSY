@@ -77,7 +77,7 @@ InitialGuessAtLowScale = {};
 InitialGuessAtSUSYScale = {};
 InitialGuessAtHighScale = {};
 OnlyLowEnergyFlexibleSUSY = False;
-SMTower = False;
+FlexibleEFTHiggs = False;
 SUSYScaleMatching={};
 AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
@@ -1266,7 +1266,7 @@ WriteUserExample[inputParameters_List, files_List] :=
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
-           spectrumGen = If[SMTower === True,
+           spectrumGen = If[FlexibleEFTHiggs === True,
                             CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
                             CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
@@ -1945,7 +1945,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
-           Constraint`SanityCheck[Join[If[SMTower === True,
+           Constraint`SanityCheck[Join[If[FlexibleEFTHiggs === True,
                                           FlexibleSUSY`InitialGuessAtSUSYScale,
                                           FlexibleSUSY`InitialGuessAtLowScale],
                                        FlexibleSUSY`InitialGuessAtHighScale],
@@ -1979,7 +1979,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            (* add EWSB constraint to SUSY-scale constraint if not set *)
-           If[FlexibleSUSY`SMTower === True,
+           If[FlexibleSUSY`FlexibleEFTHiggs === True,
               If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                        FlexibleSUSY`FSSolveEWSBFor[___]],
                  AppendTo[FlexibleSUSY`SUSYScaleInput,

@@ -2,7 +2,7 @@ FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSM;
 OnlyLowEnergyFlexibleSUSY = True;
-SMTower = True;
+FlexibleEFTHiggs = True;
 
 MINPAR = {
     {4, Sign[\[Mu]]}

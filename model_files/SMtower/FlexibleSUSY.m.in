@@ -2,7 +2,7 @@ FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = SM;
 OnlyLowEnergyFlexibleSUSY = True;
-SMTower = True;
+FlexibleEFTHiggs = True;
 
 (* SM input parameters *)
 
