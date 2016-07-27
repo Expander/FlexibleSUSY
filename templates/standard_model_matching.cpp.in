@@ -101,7 +101,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 
    {
       @ModelName@_mass_eigenstates* MODEL = &model;
-      const auto vev = sm.get_v();
+      const double VEV = sm.get_v();
 
 @applyUserMatching@
    }
@@ -228,7 +228,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
 
    {
       @ModelName@_mass_eigenstates* MODEL = &model;
-      const double vev = 2. * AbsSqrt(mZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
+      const double VEV = 2. * AbsSqrt(mZ2_1L/(Sqr(g1_1L*@ModelName@_info::normalization_g1) + Sqr(g2_1L*@ModelName@_info::normalization_g2)));
 
 @applyUserMatching@
    }

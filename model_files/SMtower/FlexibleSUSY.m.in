@@ -39,7 +39,7 @@ InitialGuessAtSUSYScale = {
 }
 
 SUSYScaleMatching = {
-    {v, vev}
+    {v, VEV}
 };
 
 SMParticles = {

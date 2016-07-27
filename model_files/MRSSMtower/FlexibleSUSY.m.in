@@ -48,9 +48,10 @@ SUSYScaleInput = {
 
 InitialGuessAtSUSYScale = SUSYScaleInput;
 
+(* VEV is the SM-like VEV in the MRSSM *)
 SUSYScaleMatching = {
-    {vu, vev Sin[ArcTan[TanBeta]]},
-    {vd, vev Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[TanBeta]]},
+    {vd, VEV Cos[ArcTan[TanBeta]]}
 };
 
 LowScale = LowEnergyConstant[MZ];

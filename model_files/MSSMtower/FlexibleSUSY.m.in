@@ -57,10 +57,10 @@ InitialGuessAtSUSYScale = {
     {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]}
 };
 
-(* vev is the SM-like VEV in the MSSM *)
+(* VEV is the SM-like VEV in the MSSM *)
 SUSYScaleMatching = {
-    {vu, vev Sin[ArcTan[TanBeta]]},
-    {vd, vev Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[TanBeta]]},
+    {vd, VEV Cos[ArcTan[TanBeta]]}
 };
 
 LowScale = LowEnergyConstant[MZ];

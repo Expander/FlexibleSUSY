@@ -97,6 +97,7 @@ EDRbar;
 ThetaWDRbar;
 SCALE;
 THRESHOLD;
+VEV::usage = "running SM-like VEV in the full model";
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
