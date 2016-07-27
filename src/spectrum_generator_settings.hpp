@@ -54,6 +54,7 @@ public:
       pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
       eft_pole_mass_scale,   ///< [18] renormalization scale at which the pole masses are calculated in the EFT
       eft_matching_scale,    ///< [19] renormalization scale at which the EFT is matched to the full model
+      eft_matching_loop_order, ///< [20] loop order at which the full model is matched to the EFT
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
