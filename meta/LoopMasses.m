@@ -7,10 +7,12 @@ BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
 CreateOneLoopPoleMassFunctions::usage="";
 CreateOneLoopPoleMassPrototypes::usage="";
 CallAllPoleMassFunctions::usage="";
-CallSMPoleMassFunctions::usage = "";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
 CallCalculateDRbarMass::usage="";
+CallPoleMassFunction::usage="";
+CallThreadedPoleMassFunction::usage="";
+JoinLoopMassFunctionThread::usage="";
 CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
@@ -829,19 +831,6 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
                        joinSusyThreads;
              ];
            Return[result];
-          ];
-
-CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
-    Module[{particles, result, Selector},
-           Selector[p_] := SARAH`SMQ[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
-           particles = Select[GetLoopCorrectedParticles[states], Selector];
-           If[enablePoleMassThreads =!= True,
-              result = StringJoin[CallPoleMassFunction[#,"model."]& /@ particles];
-              ,
-              result = StringJoin[CallThreadedPoleMassFunction[#,"&model"]& /@ particles] <> "\n" <>
-                       StringJoin[JoinLoopMassFunctionThread /@ particles];
-             ];
-           result
           ];
 
 GetRunningOneLoopDRbarParticles[] :=

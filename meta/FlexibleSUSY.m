@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -892,9 +892,9 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
         If[Head[susyScaleMatching] === List,
            userMatching = Constraint`ApplyConstraints[susyScaleMatching];
           ];
-        setRunningFermionMasses = ThresholdCorrections`CalculateRunningFermionMasses[];
-        callAllSMPoleMassFunctions        = LoopMasses`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
-        callAllSMPoleMassFunctionsThreads = LoopMasses`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
+        setRunningFermionMasses           = FlexibleEFTHiggsMatching`CalculateRunningFermionMasses[];
+        callAllSMPoleMassFunctions        = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
+        callAllSMPoleMassFunctionsThreads = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
         WriteOut`ReplaceInFiles[files,
                        { "@gauge1Linit@"       -> IndentText[WrapLines[Parameters`CreateLocalConstRefs[
                                                                     ThresholdCorrections`CalculateColorCoupling[scheme] +
