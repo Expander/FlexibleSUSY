@@ -35,11 +35,9 @@ struct Two_loop_corrections {
       , higgs_at_at(true)
       , higgs_atau_atau(true)
       , top_qcd(true)
-      , higgs_log(0)
       {}
    bool higgs_at_as, higgs_ab_as, higgs_at_at, higgs_atau_atau;
    bool top_qcd;
-   int higgs_log;
 };
 
 } // namespace flexiblesusy
