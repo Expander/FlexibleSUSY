@@ -2,6 +2,7 @@ BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopM
 
 CallSMPoleMassFunctions::usage = "";
 CalculateRunningFermionMasses::usage = "";
+FillSMFermionPoleMasses::usage = "";
 
 Begin["`Private`"];
 
@@ -46,6 +47,29 @@ CalculateRunningFermionMasses[] :=
                         "downLeptonsDRbar(" <> iStr <> "," <> iStr <> ") = " <>
                         "sm.get_physical().MFe(" <> iStr <> ") - " <>
                         "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+              ];
+           result
+          ];
+
+FillSMFermionPoleMasses[] :=
+    Module[{result = "", i, mq},
+           For[i = 0, i < 3, i++,
+               mq = CConversion`RValueToCFormString[TreeMasses`GetUpQuark[i + 1, True]];
+               result = result <>
+                        "this->model.get_physical().M" <> mq <> " = " <>
+                        "eft.get_physical().MFu(" <> ToString[i] <> ");\n";
+              ];
+           For[i = 0, i < 3, i++,
+               mq = CConversion`RValueToCFormString[TreeMasses`GetDownQuark[i + 1, True]];
+               result = result <>
+                        "this->model.get_physical().M" <> mq <> " = " <>
+                        "eft.get_physical().MFd(" <> ToString[i] <> ");\n";
+              ];
+           For[i = 0, i < 3, i++,
+               mq = CConversion`RValueToCFormString[TreeMasses`GetDownLepton[i + 1, True]];
+               result = result <>
+                        "this->model.get_physical().M" <> mq <> " = " <>
+                        "eft.get_physical().MFe(" <> ToString[i] <> ");\n";
               ];
            result
           ];

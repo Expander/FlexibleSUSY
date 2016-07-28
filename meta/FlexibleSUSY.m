@@ -1278,7 +1278,8 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars, spectrumGen},
+    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars, spectrumGen,
+            fillSMFermionPoleMasses = ""},
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
@@ -1286,10 +1287,12 @@ WriteUserExample[inputParameters_List, files_List] :=
                             CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
                             CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
                            ];
+           fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@SpectrumGenerator@" -> spectrumGen,
+                            "@fillSMFermionPoleMasses@" -> IndentText[IndentText[IndentText[fillSMFermionPoleMasses]]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

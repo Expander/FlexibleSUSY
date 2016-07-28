@@ -212,9 +212,7 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
          this->model.get_physical().M@HiggsBoson_0@ = eft.get_physical().Mhh;
          this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
          this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
-         this->model.get_physical().M@TopQuark@ = eft.get_physical().MFu;
-         this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
-         this->model.get_physical().M@Electron@ = eft.get_physical().MFe;
+@fillSMFermionPoleMasses@
       }
 
       // copy calculated W pole mass
