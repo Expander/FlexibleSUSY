@@ -47,7 +47,7 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_lev
    Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
    model.calculate_DRbar_masses();
-   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson()_0@/sm.get_v()));
+   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(0)@/sm.get_v()));
    sm.calculate_DRbar_masses();
 }
 
@@ -249,8 +249,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    calculate_SM_pole_masses(model, sm);
 
    // running W, Z masses (via 1L matching)
-   const double mW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW()_0@);
-   const double mZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ()_0@);
+   const double mW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW(0)@);
+   const double mZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
 
    if (mZ2_1L < 0.)
       model.get_problems().flag_tachyon(@ModelName@_info::@VectorZ@);
