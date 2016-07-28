@@ -56,7 +56,7 @@ SMParticles = {
 UseSM3LoopRGEs = True;
 UseHiggs2LoopSM = True;
 
-DefaultPoleMassPrecision = HighPrecision;
+DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
