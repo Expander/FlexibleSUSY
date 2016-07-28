@@ -742,7 +742,7 @@ void Standard_model::calculate_DRbar_parameters()
 void Standard_model::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   thread_exception = 0;
+   clear_thread_exception();
 
    std::thread thread_MVG(Thread(this, &Standard_model::calculate_MVG_pole));
    std::thread thread_MFv(Thread(this, &Standard_model::calculate_MFv_pole));
@@ -763,8 +763,7 @@ void Standard_model::calculate_pole_masses()
    thread_MFe.join();
    thread_MVWp.join();
 
-   if (thread_exception != 0)
-      std::rethrow_exception(thread_exception);
+   rethrow_thread_exception();
 #else
 
    calculate_MVG_pole();
