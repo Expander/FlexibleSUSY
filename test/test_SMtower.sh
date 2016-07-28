@@ -121,7 +121,7 @@ run_sg() {
 
 error=0
 
-MhSM=$(run_sg "$MODELDIR/SM/run_SM.x" "$input")
+MhSM=$(run_sg "$MODELDIR/SMHighPrecision/run_SMHighPrecision.x" "$input")
 MhSMtower=$(run_sg "$MODELDIR/SMtower/run_SMtower.x" "$input")
 
 echo "Mh in the SM     : $MhSM"
