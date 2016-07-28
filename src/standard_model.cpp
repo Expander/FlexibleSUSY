@@ -5338,7 +5338,7 @@ std::complex<double> Standard_model::self_energy_Fe_PL(double p , unsigned gO1, 
 
 }
 
-std::complex<double> Standard_model::self_energy_VZ_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VZ_heavy(double) const
 {
    std::complex<double> result;
 
@@ -5348,7 +5348,7 @@ std::complex<double> Standard_model::self_energy_VZ_heavy(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_VWp_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VWp_heavy(double) const
 {
    std::complex<double> result;
 
