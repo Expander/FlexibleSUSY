@@ -241,6 +241,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
             /(4. * Pi * (Sqr(sm.get_g1()*standard_model_info::normalization_g1) + Sqr(sm.get_g2()*standard_model_info::normalization_g2)));
    const double alpha_s  = Sqr(sm.get_g3() * standard_model_info::normalization_g3)/(4. * Pi);
    const double currentScale = sm.get_scale();
+   double delta_alpha_em = 0., delta_alpha_s = 0.;
 
 @gauge1Linit@
 @alphaEM1Lmatching@
