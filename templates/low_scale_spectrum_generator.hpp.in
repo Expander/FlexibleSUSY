@@ -26,23 +26,18 @@
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
-#include "@ModelName@_utilities.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_info.hpp"
-
 
 #include "lowe.h"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
-#include "ew_input.hpp"
 
 #include <limits>
 
 namespace flexiblesusy {
-
-#define MODELPARAMETER(p) model.get_##p()
 
 template <class T>
 class @ModelName@_spectrum_generator
@@ -60,6 +55,7 @@ public:
    double get_high_scale() const { return 0.; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
+
    virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
@@ -193,7 +189,6 @@ void @ModelName@_spectrum_generator<T>::write_running_couplings(
 {
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, susy_scale);
 }
-
 
 } // namespace flexiblesusy
 
