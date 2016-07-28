@@ -144,13 +144,6 @@ EXE@CLASSNAME@_DEP := \
 
 LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
-
-ifeq ($(MODNAME),SM)
-LIBEFT             :=
-else
-LIBEFT             := $(LIBSM)
-endif
-
 METACODE_STAMP_@CLASSNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
 ifeq ($(ENABLE_META),yes)
