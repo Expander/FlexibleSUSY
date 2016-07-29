@@ -1,7 +1,7 @@
 #!/bin/sh
 
-BASEDIR=$(dirname $0)
-MODELDIR=${BASEDIR}/../models
+BASEDIR="$(dirname $0)"
+MODELDIR="${BASEDIR}/../models"
 
 start=91.1876
 stop=100000
