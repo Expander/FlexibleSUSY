@@ -294,6 +294,11 @@ TEST_SH += \
 		$(DIR)/test_MSSMtower.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-MSSMtower --with-MSSMNoFVtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMNoFVtower.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-SMHighPrecision --with-SMtower),yes yes)
 TEST_SH += \
 		$(DIR)/test_SMtower.sh
