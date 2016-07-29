@@ -54,7 +54,8 @@ public:
       pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
       eft_pole_mass_scale,   ///< [18] renormalization scale at which the pole masses are calculated in the EFT
       eft_matching_scale,    ///< [19] renormalization scale at which the EFT is matched to the full model
-      eft_matching_loop_order, ///< [20] loop order at which the full model is matched to the EFT
+      eft_matching_loop_order_up, ///< [20] loop order at which the gauge and Yukawa couplings of the full model are calculated from the EFT ones (upwards matching)
+      eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

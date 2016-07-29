@@ -21,7 +21,8 @@ Block FlexibleSUSY
    17   0                    # pole mass renormalization scale (0 = SUSY scale)
    18   0                    # pole mass renormalization scale in the EFT (0 = min(SUSY scale, Mt))
    19   0                    # EFT matching scale (0 = SUSY scale)
-   20   1                    # EFT matching loop order
+   20   2                    # EFT loop order for upwards matching
+   21   1                    # EFT loop order for downwards matching
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi

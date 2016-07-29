@@ -43,7 +43,7 @@ public:
    @ModelName@_standard_model_Matching(standard_model::StandardModel<Two_scale>*,
                                        @ModelName@<Two_scale>*,
                                        Constraint<Two_scale>*,
-                                       unsigned);
+                                       unsigned, unsigned);
 
    virtual ~@ModelName@_standard_model_Matching();
 
@@ -52,8 +52,10 @@ public:
    virtual void match_high_to_low_scale_model();
    virtual void match_low_to_high_scale_model();
 
-   unsigned get_loop_order() const;
-   void set_loop_order(unsigned);
+   unsigned get_loop_order_up() const;
+   unsigned get_loop_order_down() const;
+   void set_loop_order_up(unsigned);
+   void set_loop_order_down(unsigned);
    void set_scale(double);
    void set_constraint(Constraint<Two_scale>*);
    void match_high_to_low_scale_model_tree_level();
@@ -64,7 +66,7 @@ private:
    standard_model::StandardModel<Two_scale>* eft;
    Constraint<Two_scale>* constraint;
    double scale;
-   unsigned loop_order;
+   unsigned loop_order_up, loop_order_down;
 };
 
 } // namespace flexiblesusy
