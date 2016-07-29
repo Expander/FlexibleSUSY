@@ -78,6 +78,9 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 
    match_high_to_low_scale_model(sm, model);
 
+   model.get_physical().clear();
+   sm.get_physical().clear();
+
    // reset loop order
    model.set_pole_mass_loop_order(model_pole_mass_order);
    model.set_ewsb_loop_order(model_ewsb_order);
@@ -206,6 +209,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    sm.set_ewsb_loop_order(loop_order);
 
    match_low_to_high_scale_model(model, sm);
+
+   model.get_physical().clear();
+   sm.get_physical().clear();
 
    // reset loop order
    model.set_pole_mass_loop_order(model_pole_mass_order);
