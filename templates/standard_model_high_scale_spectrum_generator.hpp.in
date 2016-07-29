@@ -181,9 +181,6 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
 
       // start logarithmic resummation
       {
-         eft.run_to(low_scale);
-         low_scale_constraint.apply();
-
          double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
 
          if (Q_higgs == 0.) {
