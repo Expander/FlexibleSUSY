@@ -46,17 +46,17 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
          ];
 
 ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
-                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
+                 value_ /; (!FreeQ[value, Global`upQuarksDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
 ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
-                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
+                 value_ /; (!FreeQ[value, Global`downQuarksDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
 ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
-                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
+                 value_ /; (!FreeQ[value, Global`downLeptonsDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
@@ -194,10 +194,34 @@ ApplyConstraints[settings_List] :=
                {FlexibleSUSY`Temporary[_], _}
            ];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
+           result = result <> AddBetas[noMacros];
            result = result <> "\n";
            (result = result <> ApplyConstraint[#, "MODEL"])& /@ noTemp;
            Return[result];
           ];
+
+ContainsBetas[expr_] := !FreeQ[expr, FlexibleSUSY`BETA];
+
+(* -1 = current beta-function loop order *)
+MaxBetaLoopOrder[expr_] :=
+    Sort @ Cases[expr /. FlexibleSUSY`BETA[p_] :> FlexibleSUSY`BETA[-1,p],
+                 FlexibleSUSY`BETA[l_, _] | FlexibleSUSY`BETA[l_, _][___] :> l, {0, Infinity}];
+
+CallCalcBeta[-1] :=
+    "const " <> FlexibleSUSY`FSModelName <> "_soft_parameters beta_functions(MODEL->calc_beta());\n";
+
+CallCalcBeta[l_?IntegerQ] :=
+    Module[{lstr = ToString[l]},
+           "const " <> FlexibleSUSY`FSModelName <>
+           "_soft_parameters beta_functions_" <> lstr <>
+           "L(MODEL->calc_beta(" <> lstr <> "));\n"
+          ];
+
+AddBetas[expr_?ContainsBetas] :=
+    StringJoin[CallCalcBeta /@ MaxBetaLoopOrder[expr]] <>
+    Parameters`CreateLocalConstRefsForBetas[expr];
+
+AddBetas[_] := "";
 
 FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[parameter];
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
@@ -375,10 +399,16 @@ CalculateScale[expr_, scaleName_String] :=
            Return[result];
           ];
 
+CreateBetasForParsIn[expr_] :=
+    Module[{pars},
+           pars = Parameters`FSModelParameters /. Parameters`FindAllParametersClassified[expr];
+           FlexibleSUSY`BETA /@ pars
+          ];
+
 CalculateScale[expr_Equal, scaleName_String] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[expr];
-           result = result <> Parameters`CreateLocalConstRefsForBetas[expr];
+           result = result <> Parameters`CreateLocalConstRefsForBetas[CreateBetasForParsIn[expr]];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
@@ -409,7 +439,7 @@ CalculateScaleFromExprSymb[Equal[expr1_, expr2_]] :=
            parSeq = Sequence @@ parameters;
            F1[parSeq] := expr1;
            F2[parSeq] := expr2;
-           betaFunctions = Global`BETA /@ parameters;
+           betaFunctions = FlexibleSUSY`BETA /@ parameters;
            solution = Solve[Log[scale/Global`currentScale] *
                             (betaFunctions . D[F1[parSeq] - F2[parSeq],
                                                {parameters}])

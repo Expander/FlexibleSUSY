@@ -113,7 +113,7 @@ public:
 
    virtual Eigen::ArrayXd beta() const;
    virtual Eigen::ArrayXd get() const;
-   void print(std::ostream&) const;
+   void print(std::ostream& out = std::cout) const;
    virtual void set(const Eigen::ArrayXd&);
 
    Standard_model calc_beta() const;

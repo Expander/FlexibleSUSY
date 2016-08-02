@@ -110,7 +110,7 @@ protected:
 /**
  * Setup spectrum generator from a Spectrum_generator_settings object.
  *
- * @param settings spectrum generator settings
+ * @param settings_ spectrum generator settings
  */
 template <class T>
 void @ModelName@_spectrum_generator_interface<T>::set_settings(

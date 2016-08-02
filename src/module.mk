@@ -1,5 +1,5 @@
 DIR          := src
-MODNAME      := flexisusy
+MODNAME      := src
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -34,6 +34,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/split_threeloophiggs.cpp \
+		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
 		$(DIR)/standard_model_physical.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
@@ -96,6 +97,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
+		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
 		$(DIR)/standard_model_physical.hpp \
@@ -137,13 +139,15 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFLEXI     := $(DIR)/libflexisusy$(LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFLEXI)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -156,11 +160,14 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFLEXI_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFLEXI)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFLEXI_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFLEXI)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
