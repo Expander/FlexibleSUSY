@@ -282,14 +282,12 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double tadpole[number_of_ewsb_equations] = { 0. };
-
-   model->tadpole_equations(tadpole);
+   const auto tadpole(model->tadpole_equations());
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   return is_finite<number_of_ewsb_equations>(tadpole) ? GSL_SUCCESS : GSL_EDOM;
+   return is_finite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
 }
 
 /**
