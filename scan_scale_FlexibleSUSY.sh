@@ -1,7 +1,8 @@
 #!/bin/sh
 
 [ $# -lt 5 ] && {
-    echo "Usage: $0 <spectrum-generator> <input> <scan-fields> <output-fields> <mean-scale> [<factor>] [steps]"
+    echo "Usage: $0 <spectrum-generator> <input> <scan-fields> <output-fields> <mean-scale> [<factor>] [steps] [option]"
+    echo "Option: --min --max --dif"
     exit 1
 }
 
@@ -27,6 +28,25 @@ steps=10
     steps="$1"
     shift
 }
+
+print_what=dif
+
+if test $# -gt 0 ; then
+    while test ! "x$1" = "x" ; do
+        case "$1" in
+            -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+            *) optarg= ;;
+        esac
+
+        case $1 in
+            --max) print_what=max ;;
+            --min) print_what=min ;;
+            --dif) print_what=dif ;;
+            *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
+        esac
+        shift
+    done
+fi
 
 slha_input=$(cat ${input})
 
@@ -114,6 +134,11 @@ define abs(i) {
 
 abs(${min_value} - ${max_value})
 EOF
-        )
+     )
 
-echo "$delta"
+case "$print_what" in
+    max) echo "$max_value" ;;
+    min) echo "$min_value" ;;
+    dif) echo "$delta" ;;
+    *)   echo "-" ;;
+esac
