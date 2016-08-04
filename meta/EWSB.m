@@ -45,6 +45,9 @@ vector.";
 CreateEWSBParametersInitializationList::usage="Creates initialization
 list with EWSB output parameters";
 
+CreateEWSBParametersInitializationComma::usage="Creates initialization
+list with EWSB output parameters";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -785,17 +788,13 @@ SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
            Return[result];
           ];
 
+CreateEWSBParametersInitializationComma[{}] := "";
+
+CreateEWSBParametersInitializationComma[parameters_List] :=
+    Utils`StringJoinWithSeparator[ConvertToReal /@ parameters, ", "];
+
 CreateEWSBParametersInitializationList[parameters_List] :=
-    Module[{result = "{}"},
-           If[Length[parameters] > 0,
-              result = Utils`StringJoinWithSeparator[
-                  ConvertToReal /@ parameters,
-                  ", "
-              ];
-              result = "{ " <> result <> " }";
-             ];
-           result
-          ];
+    "{" <> CreateEWSBParametersInitializationComma[parameters] <> "}";
 
 End[];
 
