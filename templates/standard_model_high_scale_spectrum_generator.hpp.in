@@ -228,20 +228,8 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
          model.run_to(this->parameter_output_scale);
          eft.run_to(this->parameter_output_scale);
       }
-   } catch (const NoConvergenceError&) {
-      model.get_problems().flag_no_convergence();
-   } catch (const NonPerturbativeRunningError&) {
-      model.get_problems().flag_no_perturbative();
-   } catch (const NoRhoConvergenceError&) {
-      model.get_problems().flag_no_rho_convergence();
-   } catch (const Error& error) {
-      model.get_problems().flag_thrown(error.what());
-   } catch (const std::string& str) {
-      model.get_problems().flag_thrown(str);
-   } catch (const char* str) {
-      model.get_problems().flag_thrown(str);
-   } catch (const std::exception& error) {
-      model.get_problems().flag_thrown(error.what());
+   } catch (...) {
+      this->translate_exception_to_problem(model);
    }
 }
 
