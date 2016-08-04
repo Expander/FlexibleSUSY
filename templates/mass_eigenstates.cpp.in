@@ -427,10 +427,10 @@ std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_initial_
  * @return GSL_SUCCESS if new EWSB output parameters are finite,
  * GSL_EDOM otherwise.
  */
-int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
+std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_step() const
 {
-   int error;
    double tadpole[number_of_ewsb_equations] = { 0. };
+   std::array<double, number_of_ewsb_equations> ewsb_parameters{};
 
    if (ewsb_loop_order > 0) {
 @calculateOneLoopTadpolesNoStruct@
@@ -441,14 +441,12 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
 
 @solveEwsbWithTadpoles@
 
-   if (is_finite) {
-      error = GSL_SUCCESS;
-@fillArrayWithEWSBParameters@
-   } else {
-      error = GSL_EDOM;
-   }
+   if (!is_finite)
+      throw EEWSBStepFailed();
 
-   return error;
+@fillArrayWithEWSBParameters@
+
+   return ewsb_parameters;
 }
 
 /**
@@ -478,10 +476,17 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double ewsb_parameters[number_of_ewsb_equations] =
+   std::array<double, number_of_ewsb_equations> ewsb_parameters =
       @ewsbParametersInitializationList@;
 
-   const int status = model->ewsb_step(ewsb_parameters);
+   int status = GSL_SUCCESS;
+
+   try {
+      ewsb_parameters = model->ewsb_step();
+      status = GSL_SUCCESS;
+   } catch (...) {
+      status = GSL_EDOM;
+   }
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, ewsb_parameters[i]);
