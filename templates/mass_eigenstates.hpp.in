@@ -39,6 +39,7 @@
 #include "problems.hpp"
 #include "config.h"
 
+#include <array>
 #include <iosfwd>
 #include <string>
 
@@ -118,6 +119,8 @@ public:
 
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
+   /// calculates the tadpoles at current loop order
+   std::array<double, number_of_ewsb_equations> tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@

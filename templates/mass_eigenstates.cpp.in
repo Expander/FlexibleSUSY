@@ -227,10 +227,12 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
 /**
  * Method which calculates the tadpoles at the current loop order.
  *
- * @param tadpole array of tadpole
+ * @return array of tadpoles
  */
-void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) const
+std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::tadpole_equations() const
 {
+   std::array<double, number_of_ewsb_equations> tadpole{};
+
 @calculateTreeLevelTadpoles@
    if (ewsb_loop_order > 0) {
 @calculateOneLoopTadpoles@
@@ -238,6 +240,19 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
 @calculateTwoLoopTadpoles@
       }
    }
+
+   return tadpole;
+}
+
+/**
+ * Method which calculates the tadpoles at the current loop order.
+ *
+ * @param tadpole array of tadpole
+ */
+void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) const
+{
+   const auto tadpole_(tadpole_equations());
+   std::copy(tadpole_.begin(), tadpole_.end(), tadpole);
 }
 
 /**
