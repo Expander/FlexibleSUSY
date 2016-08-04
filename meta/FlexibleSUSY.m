@@ -921,6 +921,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             getEWSBParametersFromGSLVector = "",
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
+            ewsbParametersInitializationComma = "",
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
@@ -1059,6 +1060,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
+           ewsbParametersInitializationComma = EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
@@ -1137,6 +1139,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies],
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
+                            "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
