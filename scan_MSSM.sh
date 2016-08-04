@@ -111,6 +111,22 @@ echo "$slha_templ" | \
         --output=MS[],MASS[25] \
         | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat
 
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty_max.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+        | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty_max.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty_min.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+        | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty_min.dat
+
 echo "calculate Q uncertainty"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
@@ -119,6 +135,10 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$
+
+paste "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
+      "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$ \
+      > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat
 
 echo "calculating uncertainty from Q_match in the tower"
 
@@ -130,9 +150,21 @@ echo "$slha_templ" | \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty.dat
 
-paste "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
-      "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$ \
-      > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty_max.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+    | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty_max.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty_min.sh \
+        --scan-range=MS[]=91~100000:$n_points \
+        --step-size=log \
+        --output=MS[],MASS[25] \
+    | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty_min.dat
 
 echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
 
