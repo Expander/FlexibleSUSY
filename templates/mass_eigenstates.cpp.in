@@ -305,8 +305,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
-   double x_init[number_of_ewsb_equations] = { 0. };
-   ewsb_initial_guess(x_init);
+   const auto x_init(ewsb_initial_guess());
 
 #ifdef ENABLE_VERBOSE
    std::cout << "Solving EWSB equations ...\n"
@@ -357,10 +356,10 @@ int CLASSNAME::solve_ewsb_iteratively()
  */
 int CLASSNAME::solve_ewsb_iteratively_with(
    EWSB_solver* solver,
-   const double x_init[number_of_ewsb_equations]
+   const std::array<double, number_of_ewsb_equations>& x_init
 )
 {
-   const int status = solver->solve(x_init);
+   const int status = solver->solve(&x_init[0]);
 
 @setEWSBSolution@
 
@@ -412,9 +411,13 @@ int CLASSNAME::solve_ewsb()
    return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
-void CLASSNAME::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
+std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_initial_guess()
 {
+   std::array<double, number_of_ewsb_equations> x_init{};
+
 @ewsbInitialGuess@
+
+   return x_init;
 }
 
 /**

@@ -1352,8 +1352,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          ewsb_iteration_precision)
    };
 
-   double x_init[2];
-   model.ewsb_initial_guess(x_init);
+   const auto x_init(model.ewsb_initial_guess());
 
    // starting values for Mu, BMu
    const double Mu_0 = model.get_Mu();
