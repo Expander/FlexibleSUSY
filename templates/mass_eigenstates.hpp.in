@@ -40,7 +40,6 @@
 #include "problems.hpp"
 #include "config.h"
 
-#include <array>
 #include <iosfwd>
 #include <string>
 
@@ -121,7 +120,7 @@ public:
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
-   std::array<double, number_of_ewsb_equations> tadpole_equations() const;
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -179,10 +178,10 @@ private:
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const std::array<double, number_of_ewsb_equations>&);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
    int solve_ewsb_tree_level_custom();
-   std::array<double, number_of_ewsb_equations> ewsb_initial_guess();
-   std::array<double, number_of_ewsb_equations> ewsb_step() const;
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();

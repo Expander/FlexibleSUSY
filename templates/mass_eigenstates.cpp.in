@@ -229,9 +229,9 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
  *
  * @return array of tadpoles
  */
-std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::tadpole_equations() const
+Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::tadpole_equations() const
 {
-   std::array<double, number_of_ewsb_equations> tadpole{};
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
 @calculateTreeLevelTadpoles@
    if (ewsb_loop_order > 0) {
@@ -252,7 +252,7 @@ std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::tadpole_equat
 void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) const
 {
    const auto tadpole_(tadpole_equations());
-   std::copy(tadpole_.begin(), tadpole_.end(), tadpole);
+   std::copy(tadpole_.data(), tadpole_.data() + number_of_ewsb_equations, tadpole);
 }
 
 /**
@@ -287,7 +287,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   return is_finite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
+   return IsFinite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
 }
 
 /**
@@ -354,7 +354,7 @@ int CLASSNAME::solve_ewsb_iteratively()
  */
 int CLASSNAME::solve_ewsb_iteratively_with(
    EWSB_solver* solver,
-   const std::array<double, number_of_ewsb_equations>& x_init
+   const Eigen::Matrix<double, number_of_ewsb_equations, 1>& x_init
 )
 {
    const int status = solver->solve(&x_init[0]);
@@ -409,9 +409,9 @@ int CLASSNAME::solve_ewsb()
    return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
-std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_initial_guess()
+Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_initial_guess()
 {
-   std::array<double, number_of_ewsb_equations> x_init{};
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> x_init(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
 @ewsbInitialGuess@
 
@@ -427,10 +427,10 @@ std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_initial_
  * @return GSL_SUCCESS if new EWSB output parameters are finite,
  * GSL_EDOM otherwise.
  */
-std::array<double, CLASSNAME::number_of_ewsb_equations> CLASSNAME::ewsb_step() const
+Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_step() const
 {
    double tadpole[number_of_ewsb_equations] = { 0. };
-   std::array<double, number_of_ewsb_equations> ewsb_parameters{};
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
    if (ewsb_loop_order > 0) {
 @calculateOneLoopTadpolesNoStruct@
@@ -476,8 +476,8 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   std::array<double, number_of_ewsb_equations> ewsb_parameters =
-      @ewsbParametersInitializationList@;
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters;
+   ewsb_parameters << @ewsbParametersInitializationComma@;
 
    int status = GSL_SUCCESS;
 
