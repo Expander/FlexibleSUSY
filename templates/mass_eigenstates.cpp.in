@@ -421,11 +421,10 @@ Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_in
 /**
  * Calculates EWSB output parameters including loop-corrections.
  *
- * @param ewsb_parameters new EWSB output parameters.  \a
- * ewsb_parameters is only modified if all new parameters are finite.
+ * Throws exception of type EEWSBStepFailed if new EWSB parameters are
+ * inf or nan.
  *
- * @return GSL_SUCCESS if new EWSB output parameters are finite,
- * GSL_EDOM otherwise.
+ * @return new set of EWSB output parameters
  */
 Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_step() const
 {
