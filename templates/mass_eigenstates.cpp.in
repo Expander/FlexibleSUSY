@@ -476,7 +476,7 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
       model->calculate_DRbar_masses();
 
    Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters;
-   ewsb_parameters << @ewsbParametersInitializationComma@;
+@ewsbParametersInitialization@
 
    int status = GSL_SUCCESS;
 

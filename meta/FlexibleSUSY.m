@@ -922,6 +922,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
             ewsbParametersInitializationComma = "",
+            ewsbParametersInitialization = "",
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
@@ -1061,6 +1062,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            ewsbParametersInitializationComma = EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB];
+           If[Length[parametersFixedByEWSB] > 0,
+              ewsbParametersInitialization = IndentText["ewsb_parameters << " <>
+                 EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB] <> ";"];
+             ];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
@@ -1140,6 +1145,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,
+                            "@ewsbParametersInitialization@" -> ewsbParametersInitialization,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
