@@ -1063,8 +1063,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            ewsbParametersInitializationComma = EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB];
            If[Length[parametersFixedByEWSB] > 0,
-              ewsbParametersInitialization = IndentText["ewsb_parameters << " <>
-                 EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB] <> ";"];
+              ewsbParametersInitialization = IndentText[
+                 EWSB`CreateEWSBParametersInitialization[parametersFixedByEWSB, "ewsb_parameters"]];
              ];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];

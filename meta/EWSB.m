@@ -48,6 +48,9 @@ list with EWSB output parameters";
 CreateEWSBParametersInitializationComma::usage="Creates initialization
 list with EWSB output parameters";
 
+CreateEWSBParametersInitialization::usage="Creates initialization
+of EWSB output parameters";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -795,6 +798,12 @@ CreateEWSBParametersInitializationComma[parameters_List] :=
 
 CreateEWSBParametersInitializationList[parameters_List] :=
     "{" <> CreateEWSBParametersInitializationComma[parameters] <> "}";
+
+SetEWSBParameter[par_, idx_, array_String] :=
+    array <> "[" <> ToString[idx] <> "] = " <> ConvertToReal[par] <> ";\n";
+
+CreateEWSBParametersInitialization[parameters_List, array_String] :=
+    StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2],array]&, parameters]];
 
 End[];
 
