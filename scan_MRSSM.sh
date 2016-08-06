@@ -198,6 +198,22 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMMSUSY_TB-5_scale_uncertainty.dat &
 
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMMSUSY_uncertainty_max.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_scale_uncertainty_max.dat &
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMMSUSY_uncertainty_min.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMMSUSY_TB-5_scale_uncertainty_min.dat &
+
+wait
+
 # calculate parametric uncertainty from Q
 echo "calculating parametric uncertainty from Q in SPheno"
 
@@ -209,6 +225,24 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     --type=SPheno \
     > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat &
 
+echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
+    --spectrum-generator=./SPhenoMRSSM2_uncertainty_max.sh \
+    --scan-range=MINPAR[1]=91~100000:$n_points \
+    --step-size=log \
+    --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
+    > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty_max.dat &
+
+echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
+    --spectrum-generator=./SPhenoMRSSM2_uncertainty_min.sh \
+    --scan-range=MINPAR[1]=91~100000:$n_points \
+    --step-size=log \
+    --output=MINPAR[1],MASS[25] \
+    --type=SPheno \
+    > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty_min.dat &
+
+wait
+
 echo "calculating parametric uncertainty from Q in the tower"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
@@ -217,6 +251,20 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_scale_uncertainty.dat &
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_uncertainty_max.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_scale_uncertainty_max.dat &
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_uncertainty_min.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_scale_uncertainty_min.dat &
 
 wait
 
@@ -228,6 +276,20 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --step-size=log \
     --output=EXTPAR[0],MASS[25] \
     > scale_MRSSMtower_TB-5_Qmatch_uncertainty.dat &
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_Qmatch_uncertainty_max.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_Qmatch_uncertainty_max.dat &
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MRSSMtower_Qmatch_uncertainty_min.sh \
+    --scan-range=EXTPAR[0]=91~100000:$n_points \
+    --step-size=log \
+    --output=EXTPAR[0],MASS[25] \
+    > scale_MRSSMtower_TB-5_Qmatch_uncertainty_min.dat &
 
 echo "run MRSSM-tower with yt(0L)"
 

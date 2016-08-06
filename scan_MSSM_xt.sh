@@ -125,6 +125,20 @@ echo "$slha_templ" | \
         --output=Xtt[],MASS[25] \
         | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMMuBMu_uncertainty_max.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty_max.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMMuBMu_uncertainty_min.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMMuBMu_TB-${TB}_MS-${MS}_scale_uncertainty_min.dat
+
 echo "calculating parametric uncertainty from Q in the tower"
 
 echo "$slha_templ" | \
@@ -134,6 +148,20 @@ echo "$slha_templ" | \
         --output=Xtt[],MASS[25] \
         | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty.dat
 
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty_max.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty_max.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_uncertainty_min.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_scale_uncertainty_min.dat
+
 echo "calculating parametric uncertainty from Q_match in the tower"
 
 echo "$slha_templ" | \
@@ -142,6 +170,20 @@ echo "$slha_templ" | \
         --scan-range=Xtt[]=${start}:${stop}:${n_points} \
         --output=Xtt[],MASS[25] \
         | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty_max.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty_max.dat
+
+echo "$slha_templ" | \
+    ./utils/scan-slha.sh \
+        --spectrum-generator=./MSSMtower_Qmatch_uncertainty_min.sh \
+        --scan-range=Xtt[]=${start}:${stop}:${n_points} \
+        --output=Xtt[],MASS[25] \
+        | tee "${DIR}"/xt_MSSMtower_TB-${TB}_MS-${MS}_Qmatch_uncertainty_min.dat
 
 echo "calculating parametric uncertainty from delta in the tower"
 

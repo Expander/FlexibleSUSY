@@ -136,6 +136,20 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$
 
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MSSMMuBMu_uncertainty_max.sh \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=MS[],MASS[25] \
+    | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty_max.dat
+
+echo "$slha_templ" | ./utils/scan-slha.sh \
+    --spectrum-generator=./MSSMMuBMu_uncertainty_min.sh \
+    --scan-range=MS[]=91~100000:$n_points \
+    --step-size=log \
+    --output=MS[],MASS[25] \
+    | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty_min.dat
+
 paste "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat \
       "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$ \
       > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat
