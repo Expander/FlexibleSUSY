@@ -67,7 +67,7 @@ echo "calculating parametric uncertainty from DeltaMt in FlexibleSUSY/MSSM"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}.dat
@@ -79,7 +79,7 @@ Block EXTPAR
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_high.dat
@@ -91,7 +91,7 @@ Block EXTPAR
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMMuBMu/run_MSSMMuBMu.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     > "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_DeltaMt_low.dat
@@ -106,7 +106,7 @@ echo "uncertainty from Q in the tower"
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_uncertainty.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
         | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat
@@ -114,7 +114,7 @@ echo "$slha_templ" | \
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_uncertainty_max.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
         | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty_max.dat
@@ -122,7 +122,7 @@ echo "$slha_templ" | \
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_uncertainty_min.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
         | tee "${DIR}"/scale_MSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty_min.dat
@@ -131,21 +131,21 @@ echo "calculate Q uncertainty"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=./MSSMMuBMu_uncertainty.sh \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty.dat.$$
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=./MSSMMuBMu_uncertainty_max.sh \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty_max.dat
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=./MSSMMuBMu_uncertainty_min.sh \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMMuBMu_TB-5_Xt-${Xt}_scale_uncertainty_min.dat
@@ -159,7 +159,7 @@ echo "calculating uncertainty from Q_match in the tower"
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty.dat
@@ -167,7 +167,7 @@ echo "$slha_templ" | \
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty_max.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty_max.dat
@@ -175,7 +175,7 @@ echo "$slha_templ" | \
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./MSSMtower_Qmatch_uncertainty_min.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~100000:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_Qmatch_uncertainty_min.dat
@@ -184,7 +184,7 @@ echo "calculate uncertainty in MSSMtower from varying DeltaLambda"
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
     > "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}.dat
@@ -197,7 +197,7 @@ Block EXTPAR
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
     > "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_low.dat
@@ -210,7 +210,7 @@ Block EXTPAR
 EOF
 } | ./utils/scan-slha.sh \
     --spectrum-generator=models/MSSMtower/run_MSSMtower.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~100000:$n_points \
     --step-size=log \
     --output=Ms[],MASS[25] \
     > "${DIR}"/scale_MSSMtower_TB-5_Xt-${Xt}_DeltaLambda_high.dat
