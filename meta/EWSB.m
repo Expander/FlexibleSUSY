@@ -663,8 +663,11 @@ CreateEWSBRootFinders[{}] :=
           Quit[1];
          ];
 
+MakeUniquePtr[str_String, obj_String] :=
+    "std::unique_ptr<" <> obj <> ">(" <> str <> ")";
+
 CreateEWSBRootFinders[rootFinders_List] :=
-    Utils`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
+    Utils`StringJoinWithSeparator[MakeUniquePtr[#,"EWSB_solver"]& /@ (CreateEWSBRootFinder /@ rootFinders), ",\n"];
 
 WrapPhase[phase_ /; phase === Null, str_String] :=
     str;

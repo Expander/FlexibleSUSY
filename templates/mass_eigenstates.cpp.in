@@ -49,6 +49,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <algorithm>
 
 #ifdef ENABLE_THREADS
@@ -298,7 +299,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 {
    EWSB_args params = {this, ewsb_loop_order};
 
-   EWSB_solver* solvers[] = {
+   std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
    };
 
@@ -316,7 +317,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    int status;
    for (std::size_t i = 0; i < number_of_solvers; ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solve_ewsb_iteratively_with(solvers[i], x_init);
+      status = solve_ewsb_iteratively_with(solvers[i].get(), x_init);
       if (status == EWSB_solver::SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
@@ -338,8 +339,6 @@ int CLASSNAME::solve_ewsb_iteratively()
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
    }
-
-   std::for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }
