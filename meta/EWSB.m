@@ -803,7 +803,7 @@ SetEWSBParameter[par_, idx_, array_String] :=
     array <> "[" <> ToString[idx] <> "] = " <> ConvertToReal[par] <> ";\n";
 
 CreateEWSBParametersInitialization[parameters_List, array_String] :=
-    StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2],array]&, parameters]];
+    StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
 
 End[];
 
