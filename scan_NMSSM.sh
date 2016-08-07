@@ -68,7 +68,7 @@ echo "running vanilla NMSSM SGs ..."
 
 echo "$slha_templ" | ./utils/scan-slha.sh \
     --spectrum-generator=models/NMSSMtower/run_NMSSMtower.x \
-    --scan-range=MS[]=91~100000:$n_points \
+    --scan-range=MS[]=${start}~${stop}:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_NMSSMtower_TB-${TB}.dat
@@ -78,7 +78,7 @@ echo "calculating uncertainty from Q_match in the tower"
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./NMSSMtower_Qmatch_uncertainty.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_Qmatch_uncertainty.dat
@@ -88,7 +88,7 @@ echo "uncertainty from Q in the tower"
 echo "$slha_templ" | \
     ./utils/scan-slha.sh \
         --spectrum-generator=./NMSSMtower_scale_uncertainty.sh \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat
@@ -102,7 +102,7 @@ Block FlexibleSUSY
 EOF
 } | ./utils/scan-slha.sh \
         --spectrum-generator=models/NMSSMtower/run_NMSSMtower.x \
-        --scan-range=MS[]=91~100000:$n_points \
+        --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
     | tee "${Dir}"/scale_NMSSMtower_TB-${TB}_yt-0L.dat
