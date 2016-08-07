@@ -6,8 +6,8 @@ DIR=${OUTPUT_DIR:-.}
 
 Xt=0
 TB=5
-Kappa=0.5
-Lambda=0.5
+Kappa=0.6
+Lambda=0.6
 
 
 slha_templ="
@@ -71,7 +71,7 @@ echo "$slha_templ" | ./utils/scan-slha.sh \
     --scan-range=MS[]=${start}~${stop}:$n_points \
     --step-size=log \
     --output=MS[],MASS[25] \
-    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}.dat
+    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}.dat &
 
 echo "calculating uncertainty from Q_match in the tower"
 
@@ -81,7 +81,7 @@ echo "$slha_templ" | \
         --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
-    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_Qmatch_uncertainty.dat
+    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_Qmatch_uncertainty.dat &
 
 echo "uncertainty from Q in the tower"
 
@@ -91,7 +91,7 @@ echo "$slha_templ" | \
         --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
-    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat
+    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_Xt-${Xt}_scale_uncertainty.dat &
 
 echo "run NMSSM-tower with yt(0L)"
 
@@ -105,4 +105,6 @@ EOF
         --scan-range=MS[]=${start}~${stop}:$n_points \
         --step-size=log \
         --output=MS[],MASS[25] \
-    | tee "${Dir}"/scale_NMSSMtower_TB-${TB}_yt-0L.dat
+    | tee "${DIR}"/scale_NMSSMtower_TB-${TB}_yt-0L.dat &
+
+wait
