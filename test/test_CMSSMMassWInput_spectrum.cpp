@@ -579,20 +579,13 @@ public:
                                                       *high_constraint);
       Two_scale_increasing_precision precision(10.0, precision_goal);
 
-      std::vector<Constraint<Two_scale>*> upward_constraints;
-      upward_constraints.push_back(low_constraint);
-      upward_constraints.push_back(high_constraint);
-
-      std::vector<Constraint<Two_scale>*> downward_constraints;
-      downward_constraints.push_back(high_constraint);
-      downward_constraints.push_back(susy_constraint);
-      downward_constraints.push_back(low_constraint);
-
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&convergence_tester);
       solver.set_running_precision(&precision);
       solver.set_initial_guesser(&initial_guesser);
-      solver.add_model(&mssm, upward_constraints, downward_constraints);
+      solver.add(low_constraint, &mssm);
+      solver.add(high_constraint, &mssm);
+      solver.add(susy_constraint, &mssm);
       solver.solve();
       mssm.run_to(susy_constraint->get_scale());
       mssm.solve_ewsb();

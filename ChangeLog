@@ -1,3 +1,20 @@
+Flexiblesusy-2.0.0 [not released yet]
+
+ * Change: The interface for adding constraints and matching
+   conditions to the Two_scale_solver class has been simplified.
+   Constrains are now added using the add() function.  Matching
+   conditions are added using the add_upwards() or add_downwards()
+   functions, depending on whether the low-scale model shall be
+   matched to the high-scale one, or vice versa.  The added
+   constraints and matching conditions are imposed in the given order.
+
+   Example: To first impose the low-scale, then the high-scale and
+   finally the susy-scale constraint call
+
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&high_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
+
 Flexiblesusy-1.5.2 [not released yet]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions

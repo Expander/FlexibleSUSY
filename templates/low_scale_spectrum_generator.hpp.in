@@ -102,14 +102,6 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   std::vector<Constraint<T>*> upward_constraints(2);
-   upward_constraints[0] = &low_scale_constraint;
-   upward_constraints[1] = &susy_scale_constraint;
-
-   std::vector<Constraint<T>*> downward_constraints(2);
-   downward_constraints[0] = &susy_scale_constraint;
-   downward_constraints[1] = &low_scale_constraint;
-
    @ModelName@_convergence_tester<T> convergence_tester(
       &model, this->settings.get(Spectrum_generator_settings::precision));
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
@@ -127,7 +119,8 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model, upward_constraints, downward_constraints);
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
 
    susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();

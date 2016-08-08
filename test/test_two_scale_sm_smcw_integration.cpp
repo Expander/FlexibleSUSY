@@ -141,6 +141,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
 
    StandardModelCW<Two_scale>* smcw = new StandardModelCW<Two_scale>();
+   smcw->setScale(MZ);
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
@@ -150,8 +151,8 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    StandardModelCW_convergence_tester convergence_tester(smcw, 0.01);
 
    RGFlow<Two_scale> solver;
-   solver.add_model(sm, &mc);
-   solver.add_model(smcw);
+   solver.add_upwards(&mc, sm, smcw);
+   solver.add_downwards(&mc, smcw, sm);
    solver.set_convergence_tester(&convergence_tester);
 
    // run two scale solver and ensure that no errors occure
@@ -186,13 +187,14 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
    StandardModel_exp_constraint sm_ew_constraint;
-   const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
+   sm_ew_constraint.set_model(&sm);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
+   smcw.setScale(Electroweak_constants::MZ);
    const double lambda_at_mgut = 1.0;
    StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
-   const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
+   smcw_gut_constraint.set_model(&smcw);
 
    // create trivial matching condition
    Trivial_SM_SMCW_matching_condition mc;
@@ -202,8 +204,10 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
 
    // create two scale solver
    RGFlow<Two_scale> solver;
-   solver.add_model(&sm, &mc, sm_constraints);
-   solver.add_model(&smcw, smcw_constraints);
+   solver.add(&sm_ew_constraint, &sm);
+   solver.add_upwards(&mc, &sm, &smcw);
+   solver.add(&smcw_gut_constraint, &smcw);
+   solver.add_downwards(&mc, &smcw, &sm);
    solver.set_convergence_tester(&convergence_tester);
 
    // run two scale solver and ensure that no errors occure
@@ -257,13 +261,14 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
    StandardModel_exp_constraint sm_ew_constraint;
-   const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
+   sm_ew_constraint.set_model(&sm);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
+   smcw.setScale(Electroweak_constants::MZ);
    const double lambda_at_mgut = 1.0;
    StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
-   const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
+   smcw_gut_constraint.set_model(&smcw);
 
    // create trivial matching condition
    Trivial_SM_SMCW_matching_condition mc;
@@ -274,8 +279,10 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    // create two scale solver
    RGFlow<Two_scale> solver;
    solver.set_convergence_tester(&convergence_tester);
-   solver.add_model(&sm, &mc, sm_constraints);
-   solver.add_model(&smcw, smcw_constraints);
+   solver.add(&sm_ew_constraint, &sm);
+   solver.add_upwards(&mc, &sm, &smcw);
+   solver.add(&smcw_gut_constraint, &smcw);
+   solver.add_downwards(&mc, &smcw, &sm);
 
    // run two scale solver and ensure that no errors occure
    try {
@@ -309,14 +316,15 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
    StandardModel_exp_constraint sm_ew_constraint;
-   const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
+   sm_ew_constraint.set_model(&sm);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
+   smcw.setScale(Electroweak_constants::MZ);
    smcw.setVs(5000.0);
    const double lambda_at_mgut = 1.0;
    StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
-   const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
+   smcw_gut_constraint.set_model(&smcw);
 
    // create dynamic matching condition
    Dynamic_SM_SMCW_matching_condition mc;
@@ -327,8 +335,10 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    // create two scale solver
    RGFlow<Two_scale> solver;
    solver.set_convergence_tester(&convergence_tester);
-   solver.add_model(&sm, &mc, sm_constraints);
-   solver.add_model(&smcw, smcw_constraints);
+   solver.add(&sm_ew_constraint, &sm);
+   solver.add_upwards(&mc, &sm, &smcw);
+   solver.add(&smcw_gut_constraint, &smcw);
+   solver.add_downwards(&mc, &smcw, &sm);
 
    // run two scale solver and ensure that no errors occure
    try {

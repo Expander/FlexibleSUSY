@@ -45,8 +45,15 @@ class Two_scale_running_precision;
  *
  * This boundary condition solver uses the two-scale algorithm to
  * solve the boundary value problem: It uses RG running to iteratively
- * run the model tower to the boundary condtions scales and imposes
- * the constraints.
+ * run the models to the boundary condtion (constraint) scales and
+ * imposes the constraints.
+ *
+ * To add constraints use the add() function.  Matching conditions are
+ * added using the add_upwards() or add_downwards() functions,
+ * depending on whether the low-scale model should be matched to the
+ * high-scale one (add_upwards()) or vice versa (add_downwards()).
+ * The added constraints and matching conditions are applied in their
+ * given order.
  */
 
 template<>
@@ -55,30 +62,17 @@ public:
    RGFlow();
    ~RGFlow();
 
-   /// add models and constraints
-   void add_model(Two_scale_model*,
-                  const std::vector<Constraint<Two_scale>*>&);
-   /// add models and up- and downwards constraints
-   void add_model(Two_scale_model*,
-                  const std::vector<Constraint<Two_scale>*>&,
-                  const std::vector<Constraint<Two_scale>*>&);
-   /// add models, constraints and matching condition
-   void add_model(Two_scale_model*,
-                  Matching<Two_scale>* m = NULL,
-                  const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
-   /// add models, up- and downward constraints and matching condition
-   void add_model(Two_scale_model*,
-                  Matching<Two_scale>* m,
-                  const std::vector<Constraint<Two_scale>*>& upwards_constraints,
-                  const std::vector<Constraint<Two_scale>*>& downwards_constraints);
-   /// get model at current scale
-   Two_scale_model* get_model() const;
+   /// add constraint
+   void add(Constraint<Two_scale>*, Two_scale_model*);
+   /// add upwards matching condition
+   void add_upwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
+   /// add downwards matching condition
+   void add_downwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
+
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
    /// clear all internal data
    void reset();
-   /// pick valid model and run it to the given scale
-   void run_to(double);
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set running precision calculator
@@ -89,32 +83,54 @@ public:
    void solve();
 
 private:
-   typedef std::vector<Constraint<Two_scale>*> Constraint_container;
-
-   /**
-    * @class TModel
-    * @brief contains model, constraints and matching condition
-    *
-    * This class lumps together the model, its constraints and the
-    * matching condition to the next higher model.
-    */
-   struct TModel {
-      Two_scale_model* model;                          ///< the model
-      Constraint_container upwards_constraints; ///< upwards constraints
-      Constraint_container downwards_constraints; ///< downwards constraints
-      Matching<Two_scale>* matching_condition;         ///< matching condition
-
-      TModel(Two_scale_model* m,
-             const Constraint_container& uc,
-             const Constraint_container& dc,
-             Matching<Two_scale>* mc)
-         : model(m)
-         , upwards_constraints(uc)
-         , downwards_constraints(dc)
-         , matching_condition(mc)
-         {}
+   struct Slider {
+   public:
+      virtual ~Slider() {}
+      virtual void clear_problems() {}
+      virtual void slide() {}
+      virtual void set_precision(double) {}
    };
-   std::vector<TModel*> models;        ///< tower of models (from low to high scale)
+
+   struct Constraint_slider : public Slider {
+   public:
+      Constraint_slider(Two_scale_model* m, Constraint<Two_scale>* c)
+         : model(m), constraint(c) {}
+      virtual ~Constraint_slider() {}
+      virtual void clear_problems();
+      virtual void slide();
+      virtual void set_precision(double);
+   private:
+      Two_scale_model* model;
+      Constraint<Two_scale>* constraint;
+   };
+
+   struct Matching_up_slider : public Slider {
+   public:
+      Matching_up_slider(Two_scale_model* m1, Two_scale_model* m2, Matching<Two_scale>* mc)
+         : model1(m1), model2(m2), matching(mc) {}
+      virtual ~Matching_up_slider() {}
+      virtual void clear_problems();
+      virtual void slide();
+      virtual void set_precision(double);
+   private:
+      Two_scale_model *model1, *model2;
+      Matching<Two_scale>* matching;
+   };
+
+   struct Matching_down_slider : public Slider {
+   public:
+      Matching_down_slider(Two_scale_model* m1, Two_scale_model* m2, Matching<Two_scale>* mc)
+         : model1(m1), model2(m2), matching(mc) {}
+      virtual ~Matching_down_slider() {}
+      virtual void clear_problems();
+      virtual void slide();
+      virtual void set_precision(double);
+   private:
+      Two_scale_model *model1, *model2;
+      Matching<Two_scale>* matching;
+   };
+
+   std::vector<Slider*> sliders;       ///< sliders to be run up and down
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
@@ -126,14 +142,13 @@ private:
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
-   void delete_models();               ///< delete all models
+   void delete_sliders();              ///< delete all sliders
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
    void initial_guess();               ///< initial guess
-   void run_up();                      ///< run all models up
-   void run_down();                    ///< run all models down
-   void apply_lowest_constraint();      ///< apply lowest constraint
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision
+
+   void run_sliders();                 ///< run all sliders
 };
 
 }

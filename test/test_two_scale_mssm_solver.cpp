@@ -195,20 +195,17 @@ public:
       initial_guesser.set_QedQcd(qedqcd);
       Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
-      std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
-      mssm_upward_constraints.push_back(&mssm_mz_constraint);
-      mssm_upward_constraints.push_back(&mssm_sugra_constraint);
-
-      std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
-      mssm_downward_constraints.push_back(&mssm_sugra_constraint);
-      mssm_downward_constraints.push_back(&mssm_msusy_constraint);
-      mssm_downward_constraints.push_back(&mssm_mz_constraint);
+      mssm_sugra_constraint.set_model(&mssm);
+      mssm_msusy_constraint.set_model(&mssm);
+      mssm_mz_constraint.set_model(&mssm);
 
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&mssm_convergence_tester);
       solver.set_running_precision(&two_scale_increasing_precision);
       solver.set_initial_guesser(&initial_guesser);
-      solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
+      solver.add(&mssm_mz_constraint, &mssm);
+      solver.add(&mssm_sugra_constraint, &mssm);
+      solver.add(&mssm_msusy_constraint, &mssm);
       solver.solve();
       mssm.calculate_spectrum();
 

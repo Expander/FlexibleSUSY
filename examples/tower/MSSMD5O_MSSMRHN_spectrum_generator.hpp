@@ -140,19 +140,6 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    susy_scale_constraint_1.initialize();
    low_scale_constraint_1.initialize();
 
-   std::vector<Constraint<T>*> upward_constraints_1;
-   upward_constraints_1.push_back(&low_scale_constraint_1);
-
-   std::vector<Constraint<T>*> downward_constraints_1;
-   downward_constraints_1.push_back(&susy_scale_constraint_1);
-   downward_constraints_1.push_back(&low_scale_constraint_1);
-
-   std::vector<Constraint<T>*> upward_constraints_2;
-   upward_constraints_2.push_back(&high_scale_constraint_2);
-
-   std::vector<Constraint<T>*> downward_constraints_2;
-   downward_constraints_2.push_back(&high_scale_constraint_2);
-
    MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
    MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
    if (max_iterations > 0) {
@@ -175,8 +162,11 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model_1, &matching, upward_constraints_1, downward_constraints_1);
-   solver.add_model(&model_2, upward_constraints_2, downward_constraints_2);
+   solver.add(&low_scale_constraint_1, &model_1);
+   solver.add_upwards(&matching, &model_1, &model_2);
+   solver.add(&high_scale_constraint_2, &model_2);
+   solver.add_downwards(&matching, &model_2, &model_1);
+   solver.add(&susy_scale_constraint_1, &model_1);
 
    high_scale_2 = susy_scale_1 = low_scale_1 = 0.;
    matching_scale = 0;
