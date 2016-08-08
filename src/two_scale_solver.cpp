@@ -160,7 +160,7 @@ void RGFlow<Two_scale>::clear_problems()
 {
    VERBOSE_MSG("> clearing problems ...");
 
-   for (auto s: sliders)
+   for (auto& s: sliders)
       s->clear_problems();
 }
 
