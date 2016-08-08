@@ -467,10 +467,6 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
 
    if (ewsb_loop_order > 0) {
       tadpole[0] += Re(tadpole_hh());
-
-      if (ewsb_loop_order > 1) {
-
-      }
    }
 
    double mu2;
