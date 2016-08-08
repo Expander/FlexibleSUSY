@@ -62,25 +62,11 @@ Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_Str
     "const double p = " <> momentum <> ";\n" <>
     "double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     If[FlexibleSUSY`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
-       "\
-if (pole_mass_loop_order > 1) {
-" <> IndentText["\
-double two_loop[1] = { 0. };
-self_energy_" <> particleName <> "_2loop(two_loop);
-self_energy += two_loop[0];
-"] <> "}
-"
-       , ""] <>
+       "if (pole_mass_loop_order > 1)\n" <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_2loop();\n"], ""] <>
     If[FlexibleSUSY`UseHiggs3LoopSplit === True && particle === SARAH`HiggsBoson,
-       "\
-if (pole_mass_loop_order > 2) {
-" <> IndentText["\
-double three_loop[1] = { 0. };
-self_energy_" <> particleName <> "_3loop(three_loop);
-self_energy += three_loop[0];
-"] <> "}
-"
-       , ""] <>
+       "if (pole_mass_loop_order > 2)\n" <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_3loop();\n"], ""] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(mass_sqr);\n";
@@ -393,25 +379,19 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                     numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
                     numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
-                    addTwoLoopHiggsContributions = "";
-                    For[k = 0; n = 0, k < dim, k++,
-                        For[l = k, l < dim, l++; n++,
-                            addTwoLoopHiggsContributions = addTwoLoopHiggsContributions <>
-                               "self_energy(" <> ToString[k] <> ", " <>
-                               ToString[l] <> ") += two_loop[" <> ToString[n] <> "];\n";
-                           ];
-                       ];
-                    addTwoLoopHiggsContributions = "\n" <> addTwoLoopHiggsContributions;
+                    addTwoLoopHiggsContributions = "\nself_energy += self_energy_2l;\n";
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
-double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
+" <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
 if (pole_mass_loop_order > 1) {
 " <> IndentText["\
-self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
-for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
-   if (!std::isfinite(two_loop[i])) {
-      two_loop[i] = 0.;
-      problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
+for (unsigned i = 0; i < " <> dimStr <> "; i++) {
+   for (unsigned k = 0; k < " <> dimStr <> "; k++) {
+      if (!std::isfinite(self_energy_2l(i,k))) {
+         self_energy_2l(i,k) = 0.;
+         problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+      }
    }
 }
 "] <> "}

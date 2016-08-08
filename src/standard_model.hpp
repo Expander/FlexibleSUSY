@@ -29,6 +29,7 @@
 #include "betafunction.hpp"
 #include "standard_model_physical.hpp"
 #include "two_loop_corrections.hpp"
+#include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
 #include "lowe.h"
@@ -36,10 +37,6 @@
 
 #include <iosfwd>
 #include <string>
-
-#ifdef ENABLE_THREADS
-#include <mutex>
-#endif
 
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
@@ -457,9 +454,10 @@ public:
    std::complex<double> tadpole_hh() const;
 
    /// calculates the tadpoles at current loop order
-   void tadpole_equations(double[number_of_ewsb_equations]) const;
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
 
-   void self_energy_hh_2loop(double result[1]) const;
+   /// calculates Higgs 2-loop self-energy
+   double self_energy_hh_2loop() const;
 
    void calculate_MVG_pole();
    void calculate_MFv_pole();
@@ -581,6 +579,12 @@ private:
       unsigned ewsb_loop_order;
    };
 
+   class EEWSBStepFailed : public Error {
+   public:
+      virtual ~EEWSBStepFailed() {}
+      virtual std::string what() const { return "Could not perform EWSB step."; }
+   };
+
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
@@ -595,14 +599,14 @@ private:
    Physical_input input;
 #ifdef ENABLE_THREADS
    std::exception_ptr thread_exception;
-   static std::mutex mtx_fortran; /// locks fortran functions
 #endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
-   void ewsb_initial_guess(double[number_of_ewsb_equations]);
-   int ewsb_step(double[number_of_ewsb_equations]) const;
+   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
+   int solve_ewsb_tree_level_custom();
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();

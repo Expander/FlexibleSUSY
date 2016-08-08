@@ -19,6 +19,7 @@
 #ifndef NUMERICS_HPP
 #define NUMERICS_HPP
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <cstddef>
@@ -62,6 +63,12 @@ bool is_finite(const double v[N])
       is_finite = is_finite && std::isfinite(v[i]);
 
    return is_finite;
+}
+
+template <typename T, std::size_t N>
+bool is_finite(const std::array<T, N>& v)
+{
+   return is_finite<N>(&v[0]);
 }
 
 } // namespace flexiblesusy

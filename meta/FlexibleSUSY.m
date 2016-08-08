@@ -975,6 +975,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             getEWSBParametersFromGSLVector = "",
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
+            ewsbParametersInitializationComma = "",
+            ewsbParametersInitialization = "",
             setEWSBParametersFromGSLVector = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
@@ -1113,6 +1115,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
+           ewsbParametersInitializationComma = EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB];
+           If[Length[parametersFixedByEWSB] > 0,
+              ewsbParametersInitialization = IndentText[
+                 EWSB`CreateEWSBParametersInitialization[parametersFixedByEWSB, "ewsb_parameters"]];
+             ];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
@@ -1185,12 +1192,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
                             "@solveEWSBTemporarily@"         -> IndentText[solveEWSBTemporarily],
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
-                            "@fillArrayWithEWSBParameters@"  -> IndentText[IndentText[fillArrayWithEWSBParameters]],
+                            "@fillArrayWithEWSBParameters@"  -> IndentText[fillArrayWithEWSBParameters],
                             "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
                             "@getEWSBParametersFromGSLVector@" -> IndentText[getEWSBParametersFromGSLVector],
                             "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies],
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
+                            "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,
+                            "@ewsbParametersInitialization@" -> ewsbParametersInitialization,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
