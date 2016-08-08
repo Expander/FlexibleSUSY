@@ -42,6 +42,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <algorithm>
 
 #ifdef ENABLE_THREADS
@@ -81,15 +82,6 @@ const int Standard_model::numberOfParameters;
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
-
-#ifdef ENABLE_THREADS
-   std::mutex Standard_model::mtx_fortran;
-   #define LOCK_MUTEX() mtx_fortran.lock()
-   #define UNLOCK_MUTEX() mtx_fortran.unlock()
-#else
-   #define LOCK_MUTEX()
-   #define UNLOCK_MUTEX()
-#endif
 
 Standard_model::Standard_model()
    : Beta_function()
@@ -279,18 +271,17 @@ Problems<standard_model_info::NUMBER_OF_PARTICLES>& Standard_model::get_problems
 /**
  * Method which calculates the tadpoles at the current loop order.
  *
- * @param tadpole array of tadpole
+ * @return array of tadpoles
  */
-void Standard_model::tadpole_equations(double tadpole[number_of_ewsb_equations]) const
+Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_model::tadpole_equations() const
 {
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole(
+      Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
+
    tadpole[0] = get_ewsb_eq_hh_1();
 
    if (ewsb_loop_order > 0) {
       tadpole[0] -= Re(tadpole_hh());
-
-      if (ewsb_loop_order > 1) {
-
-      }
    }
 }
 
@@ -322,14 +313,12 @@ int Standard_model::tadpole_equations(const gsl_vector* x, void* params, gsl_vec
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double tadpole[number_of_ewsb_equations] = { 0. };
-
-   model->tadpole_equations(tadpole);
+   const auto tadpole(model->tadpole_equations());
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   return is_finite<number_of_ewsb_equations>(tadpole) ? GSL_SUCCESS : GSL_EDOM;
+   return IsFinite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
 }
 
 /**
@@ -340,15 +329,14 @@ int Standard_model::solve_ewsb_iteratively()
 {
    EWSB_args params = {this, ewsb_loop_order};
 
-   EWSB_solver* solvers[] = {
-      new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(Standard_model::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision),
-      new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
-      new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden)
+   std::unique_ptr<EWSB_solver> solvers[] = {
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(Standard_model::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden))
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
-   double x_init[number_of_ewsb_equations] = { 0. };
-   ewsb_initial_guess(x_init);
+   const auto x_init(ewsb_initial_guess());
 
 #ifdef ENABLE_VERBOSE
    std::cout << "Solving EWSB equations ...\n"
@@ -361,7 +349,7 @@ int Standard_model::solve_ewsb_iteratively()
    int status;
    for (std::size_t i = 0; i < number_of_solvers; ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solve_ewsb_iteratively_with(solvers[i], x_init);
+      status = solve_ewsb_iteratively_with(solvers[i].get(), x_init);
       if (status == EWSB_solver::SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
@@ -384,8 +372,6 @@ int Standard_model::solve_ewsb_iteratively()
 #endif
    }
 
-   std::for_each(solvers, solvers + number_of_solvers, Delete_object());
-
    return status;
 }
 
@@ -399,10 +385,10 @@ int Standard_model::solve_ewsb_iteratively()
  */
 int Standard_model::solve_ewsb_iteratively_with(
    EWSB_solver* solver,
-   const double x_init[number_of_ewsb_equations]
+   const Eigen::Matrix<double, number_of_ewsb_equations, 1>& x_init
 )
 {
-   const int status = solver->solve(x_init);
+   const int status = solver->solve(&x_init[0]);
 
    mu2 = solver->get_solution(0);
 
@@ -456,25 +442,28 @@ int Standard_model::solve_ewsb()
    return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
-void Standard_model::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
+Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_model::ewsb_initial_guess()
 {
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> x_init;
+
    x_init[0] = mu2;
 
+
+   return x_init;
 }
 
 /**
  * Calculates EWSB output parameters including loop-corrections.
  *
- * @param ewsb_parameters new EWSB output parameters.  \a
- * ewsb_parameters is only modified if all new parameters are finite.
+ * Throws exception of type EEWSBStepFailed if new EWSB parameters are
+ * inf or nan.
  *
- * @return GSL_SUCCESS if new EWSB output parameters are finite,
- * GSL_EDOM otherwise.
+ * @return new set of EWSB output parameters
  */
-int Standard_model::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
+Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_model::ewsb_step() const
 {
-   int error;
    double tadpole[number_of_ewsb_equations] = { 0. };
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
    if (ewsb_loop_order > 0) {
       tadpole[0] += Re(tadpole_hh());
@@ -491,15 +480,13 @@ int Standard_model::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) 
    const bool is_finite = IsFinite(mu2);
 
 
-   if (is_finite) {
-      error = GSL_SUCCESS;
-      ewsb_parameters[0] = mu2;
+   if (!is_finite)
+      throw EEWSBStepFailed();
 
-   } else {
-      error = GSL_EDOM;
-   }
+   ewsb_parameters[0] = mu2;
 
-   return error;
+
+   return ewsb_parameters;
 }
 
 /**
@@ -531,10 +518,18 @@ int Standard_model::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double ewsb_parameters[number_of_ewsb_equations] =
-      { mu2 };
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters;
+   ewsb_parameters[0] = mu2;
 
-   const int status = model->ewsb_step(ewsb_parameters);
+
+   int status = GSL_SUCCESS;
+
+   try {
+      ewsb_parameters = model->ewsb_step();
+      status = GSL_SUCCESS;
+   } catch (...) {
+      status = GSL_EDOM;
+   }
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, ewsb_parameters[i]);
@@ -5929,7 +5924,7 @@ std::complex<double> Standard_model::tadpole_hh() const
 
 
 
-void Standard_model::self_energy_hh_2loop(double result[1]) const
+double Standard_model::self_energy_hh_2loop() const
 {
    const double mt = MFu(2);
    const double yt = Yu(2,2);
@@ -5945,8 +5940,7 @@ void Standard_model::self_energy_hh_2loop(double result[1]) const
       self_energy += self_energy_higgs_2loop_at_as_sm(scale, mt, yt, gs);
    }
 
-   result[0] = self_energy;
-
+   return self_energy;
 }
 
 
@@ -5981,11 +5975,8 @@ void Standard_model::calculate_Mhh_pole()
       const double M_tree(get_mass_matrix_hh());
       const double p = old_Mhh;
       double self_energy = Re(self_energy_hh(p));
-      if (pole_mass_loop_order > 1) {
-         double two_loop[1] = { 0. };
-         self_energy_hh_2loop(two_loop);
-         self_energy += two_loop[0];
-      }
+      if (pole_mass_loop_order > 1)
+         self_energy += self_energy_hh_2loop();
       const double mass_sqr = M_tree - self_energy;
 
       PHYSICAL(Mhh) = SignedAbsSqrt(mass_sqr);
