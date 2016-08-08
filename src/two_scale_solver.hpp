@@ -21,6 +21,7 @@
 
 #include "rg_flow.hpp"
 
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -130,7 +131,7 @@ private:
       Matching<Two_scale>* matching;
    };
 
-   std::vector<Slider*> sliders;       ///< sliders to be run up and down
+   std::vector<std::shared_ptr<Slider> > sliders; ///< sliders to be run up and down
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
@@ -142,7 +143,6 @@ private:
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
-   void delete_sliders();              ///< delete all sliders
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
    void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision

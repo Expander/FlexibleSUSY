@@ -58,7 +58,6 @@ RGFlow<Two_scale>::RGFlow()
 
 RGFlow<Two_scale>::~RGFlow()
 {
-   delete_sliders();
 }
 
 /**
@@ -71,7 +70,7 @@ void RGFlow<Two_scale>::add(Constraint<Two_scale>* c, Two_scale_model* m)
 {
    if (!c) throw SetupError("constraint pointer is NULL");
    if (!m) throw SetupError("model pointer is NULL");
-   sliders.push_back(new Constraint_slider(m, c));
+   sliders.push_back(std::make_shared<Constraint_slider>(m, c));
 }
 
 /**
@@ -89,7 +88,7 @@ void RGFlow<Two_scale>::add_upwards(Matching<Two_scale>* mc, Two_scale_model* m1
    if (!m1) throw SetupError("model pointer 1 is NULL");
    if (!m2) throw SetupError("model pointer 2 is NULL");
    mc->set_models(m1, m2);
-   sliders.push_back(new Matching_up_slider(m1, m2, mc));
+   sliders.push_back(std::make_shared<Matching_up_slider>(m1, m2, mc));
 }
 
 /**
@@ -107,7 +106,7 @@ void RGFlow<Two_scale>::add_downwards(Matching<Two_scale>* mc, Two_scale_model* 
    if (!m1) throw SetupError("model pointer 1 is NULL");
    if (!m2) throw SetupError("model pointer 2 is NULL");
    mc->set_models(m2, m1);
-   sliders.push_back(new Matching_down_slider(m1, m2, mc));
+   sliders.push_back(std::make_shared<Matching_down_slider>(m1, m2, mc));
 }
 
 /**
@@ -163,11 +162,6 @@ void RGFlow<Two_scale>::clear_problems()
 
    for (auto s: sliders)
       s->clear_problems();
-}
-
-void RGFlow<Two_scale>::delete_sliders()
-{
-   for_each(sliders.begin(), sliders.end(), Delete_object());
 }
 
 /**
@@ -273,7 +267,6 @@ unsigned int RGFlow<Two_scale>::get_max_iterations() const
  */
 void RGFlow<Two_scale>::reset()
 {
-   delete_sliders();
    sliders.clear();
 
    iteration = 0;
