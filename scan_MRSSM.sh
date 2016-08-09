@@ -156,7 +156,7 @@ echo "$slha_templ_spheno_like" | ./utils/scan-slha.sh \
     > scale_MRSSMMSUSYYuatMS_TB-5_SPheno-like.dat &
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2 \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -164,7 +164,7 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_1L.dat &
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2 \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -172,7 +172,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_2L.dat &
 
 echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -182,7 +182,7 @@ echo "$slha_templ_spheno_1L" | ./utils/scan-slha.sh \
 wait
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2_FlexibleSUSY_like \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor_FlexibleSUSY_like \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -218,7 +218,7 @@ wait
 echo "calculating parametric uncertainty from Q in SPheno"
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2_uncertainty.sh \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor_uncertainty.sh \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -226,7 +226,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty.dat &
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2_uncertainty_max.sh \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor_uncertainty_max.sh \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
@@ -234,7 +234,7 @@ echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
     > scale_SPhenoMRSSM_TB-5_2L_scale_uncertainty_max.dat &
 
 echo "$slha_templ_spheno_2L" | ./utils/scan-slha.sh \
-    --spectrum-generator=./SPhenoMRSSM2_uncertainty_min.sh \
+    --spectrum-generator=./SPhenoMRSSM_scaleFactor_uncertainty_min.sh \
     --scan-range=MINPAR[1]=91~100000:$n_points \
     --step-size=log \
     --output=MINPAR[1],MASS[25] \
