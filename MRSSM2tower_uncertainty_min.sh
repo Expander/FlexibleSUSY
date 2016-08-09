@@ -8,8 +8,8 @@
 input=-
 output_block=MASS
 output_entry=25
-scale_block=MINPAR
-scale_entry=1
+scale_block=SMINPUTS
+scale_entry=0
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
