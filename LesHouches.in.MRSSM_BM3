@@ -1,0 +1,121 @@
+Block MODSEL     #
+    1 1          #  1/0: High/low scale input
+    2 1          # Boundary Condition
+    6 1          # Generation Mixing
+#   12 1000       # output scale
+Block FlexibleSUSY
+    0   1.000000000e-04      # precision goal
+    1   0                    # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   1                    # calculate SM pole masses
+    4   2                    # pole mass loop order
+    5   2                    # EWSB loop order
+    6   2                    # beta-functions loop order
+    7   2                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   12   0                    # force output
+   13   1                    # Top quark 2-loop corrections QCD
+   14   1                    # Higgs logarithmic resummation
+   15   1.000000000e-11      # beta-function zero threshold
+   16   0                    # calculate observables (a_muon, ...)
+   17   0                    # Mt method (0 = FS, 1 = SPheno)
+   18   0                    # write EFT output
+Block SPhenoInput   # SPheno specific input 
+    1  -1              # error level 
+    2   0              # SPA conventions 
+    7   1              # Skip 2-loop Higgs corrections 
+    8   3              # Method used for two-loop calculation 
+    9   1              # Gaugeless limit used at two-loop 
+   10   0              # safe-mode used at two-loop 
+   11   0               # calculate branching ratios 
+   13   0               # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
+   14   0               # Run couplings to scale of decaying particle 
+   12   1.000E-04       # write only branching ratios larger than this value 
+   15   1.000E-30       # write only decay if width larger than this value 
+   31   -1              # fixed GUT scale (-1: dynamical GUT scale) 
+   32   0               # Strict unification 
+   34   1.000E-04       # Precision of mass calculation 
+   35   40              # Maximal number of iterations
+   36   5               # Minimal number of iterations before discarding points
+   37   1               # Set Yukawa scheme  
+   38   2               # 1- or 2-Loop RGEs 
+   50   1               # Majorana phases: use only positive masses (put 0 to use file with CalcHep/Micromegas!) 
+   51   0               # Write Output in CKM basis 
+   52   0               # Write spectrum in case of tachyonic states 
+   55   1               # Calculate loop corrected masses 
+   57   0               # Calculate low energy constraints 
+   65   1               # Solution tadpole equation 
+   75   1               # Write WHIZARD files 
+   76   1               # Write HiggsBounds file   
+   86   0               # Maximal width to be counted as invisible in Higgs decays; -1: only LSP 
+  510   0               # Write tree level values for tadpole solutions 
+  515   0               # Write parameter values at GUT scale 
+  520   0               # Write effective Higgs couplings (HiggsBounds blocks): put 0 to use file with MadGraph! 
+  521   0               # Diphoton/Digluon widths including higher order 
+  525   0               # Write loop contributions to diphoton decay of Higgs 
+  530   0               # Write Blocks for Vevacious 
+Block SMINPUTS               # Standard Model inputs
+    1   1.279400000e+02      # alpha^(-1) SM MSbar(MZ)
+    2   1.166379700e-05      # G_Fermi
+    3   1.187000000e-01      # alpha_s(MZ) SM MSbar
+    4   9.118760000e+01      # MZ(pole)
+    5   4.180000000e+00      # mb(mb) SM MSbar
+    6   1.733400000e+02      # mtop(pole)
+    7   1.776690000e+00      # mtau(pole)
+    8   0.000000000e+00      # mnu3(pole)
+    9   80.384               # MW pole
+   11   5.109989020e-04      # melectron(pole)
+   12   0.000000000e+00      # mnu1(pole)
+   13   1.056583570e-01      # mmuon(pole)
+   14   0.000000000e+00      # mnu2(pole)
+   21   4.750000000e-03      # md(2 GeV) MS-bar
+   22   2.400000000e-03      # mu(2 GeV) MS-bar
+   23   1.040000000e-01      # ms(2 GeV) MS-bar
+   24   1.270000000e+00      # mc(mc) MS-bar
+Block MINPAR
+    1    1e3              # Ms
+    3    40               # TanBeta
+Block EXTPAR
+    0    1e3              # Ms
+Block HMIXIN
+    301  0.15             # lSD
+    302 -0.15             # lSU
+    303 -1.0              # LTD
+    304 -1.15             # LTU
+Block NMSSMRUNIN
+    10   4e6              # mS2
+Block MSOFTIN
+   300   250          # MDB
+   302   1500         # MDO
+   301   500          # MDW
+   111   1e6          # mo2
+    50   4.9e6        # mRd2
+    51   1e6          # mRu2
+   110   9e6          # mt2
+Block HMIXIN
+   201   400          # MuD
+   202   400          # MuU
+   101   40000        # Bmu
+Block MSD2IN
+   1 1   6.25e6       # md2(1,1)
+   2 2   6.25e6       # md2(2,2)
+   3 3   1e6          # md2(3,3)
+Block MSE2IN
+   1 1   1e6          # me2(1,1)
+   2 2   1e6          # me2(2,2)
+   3 3   1e6          # me2(3,3)
+Block MSL2IN
+   1 1   1e6          # ml2(1,1)
+   2 2   1e6          # ml2(2,2)
+   3 3   1e6          # ml2(3,3)
+Block MSQ2IN
+   1 1   6.25e6       # mq2(1,1)
+   2 2   6.25e6       # mq2(2,2)
+   3 3   1e6          # mq2(3,3)
+Block MSU2IN
+   1 1   6.25e6       # mu2(1,1)
+   2 2   6.25e6       # mu2(2,2)
+   3 3   1e6          # mu2(3,3)
