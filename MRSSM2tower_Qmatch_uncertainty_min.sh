@@ -8,8 +8,8 @@
 input=-
 output_block=MASS
 output_entry=25
-scale_block=MINPAR
-scale_entry=1
+scale_block=EXTPAR
+scale_entry=103
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
@@ -28,11 +28,11 @@ fi
 slha_input=$(cat ${input})
 
 mean_scale=$(echo "$slha_input" | \
-                    awk -f utils/print_slha_block.awk -v block="EXTPAR" | \
-                    awk -f utils/print_slha_block_entry.awk -v entries="0" | tail -n 1)
+                    awk -f utils/print_slha_block.awk -v block="MINPAR" | \
+                    awk -f utils/print_slha_block_entry.awk -v entries="1" | tail -n 1)
 
 [ -z "$mean_scale" ] && {
-    echo "Error: mean scale not found in ${scale_block}[${scale_entry}] in the following input:" > /dev/stderr
+    echo "Error: mean scale not found in MINPAR[1] in the following input:" > /dev/stderr
     echo "$slha_input" > /dev/stderr
     exit 1
 }
