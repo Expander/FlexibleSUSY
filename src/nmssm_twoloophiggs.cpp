@@ -90,7 +90,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm(
       tadpole_higgs_2loop_at_as_nmssm(
          sqr(rmt), mg, mst1sq, mst2sq, sxt, cxt, scalesq, amu, tanb, vev2, gs, svevS).asDiagonal();
 
-   return -se - tadpoles;
+   return se - tadpoles;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
@@ -109,7 +109,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
       tadpole_higgs_2loop_ab_as_nmssm(
          sqr(rmb), mg, msb1sq, msb2sq, sxb, cxb, scalesq, amu, cotb, vev2, gs, svevS).asDiagonal();
 
-   return -se - tadpoles;
+   return se - tadpoles;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
@@ -129,7 +129,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
       tadpole_higgs_2loop_at_as_nmssm(
          sqr(rmt), mg, mst1sq, mst2sq, sxt, cxt, scalesq, amu, tanb, vev2, gs, svevS).asDiagonal();
 
-   return -se - tadpoles;
+   return se - tadpoles;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
@@ -149,7 +149,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
       tadpole_higgs_2loop_ab_as_nmssm(
          sqr(rmb), mg, msb1sq, msb2sq, sxb, cxb, scalesq, amu, cotb, vev2, gs, svevS).asDiagonal();
 
-   return -se - tadpoles;
+   return se - tadpoles;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
@@ -170,7 +170,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
              DMS[1][0], DMS[1][1], DMS[1][2],
              DMS[2][0], DMS[2][1], DMS[2][2];
 
-   return result;
+   return -result;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
@@ -196,7 +196,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
              DMS[1][0], DMS[1][1], DMS[1][2],
              DMS[2][0], DMS[2][1], DMS[2][2];
 
-   return result;
+   return -result;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
@@ -217,7 +217,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadp
              DMP[1][0], DMP[1][1], DMP[1][2],
              DMP[2][0], DMP[2][1], DMP[2][2];
 
-   return result;
+   return -result;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadpoles(
@@ -243,7 +243,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadp
              DMP[1][0], DMP[1][1], DMP[1][2],
              DMP[2][0], DMP[2][1], DMP[2][2];
 
-   return result;
+   return -result;
 }
 
 } // namespace flexiblesusy
