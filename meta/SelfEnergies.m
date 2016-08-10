@@ -608,8 +608,8 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
       costau, scalesq, amu, tanb, vev2);
 }
 
-tadpole_2l(0) *= -" <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
-tadpole_2l(1) *= -" <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
+tadpole_2l(0) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
+tadpole_2l(1) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
 
 if (!IsFinite(tadpole_2l))
    tadpole_2l.setZero();
@@ -697,9 +697,9 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
       costau, scalesq, amu, tanb, vev2);
 }
 
-tadpole_2l(0) *= -" <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
-tadpole_2l(1) *= -" <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
-tadpole_2l(2) *= -" <>  svevStr <> ";
+tadpole_2l(0) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
+tadpole_2l(1) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
+tadpole_2l(2) *= " <>  svevStr <> ";
 
 if (!IsFinite(tadpole_2l))
    tadpole_2l.setZero();
