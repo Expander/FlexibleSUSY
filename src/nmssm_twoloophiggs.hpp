@@ -23,22 +23,52 @@
 
 namespace flexiblesusy {
 
+Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_at_as_nmssm(
+   double rmtsq, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq,
+   double amu, double tanb, double vev2, double gs, double svevS);
+
+Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_ab_as_nmssm(
+   double rmbsq, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq,
+   double amu, double cotbeta, double vev2, double gs, double svevS);
+
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm(
    double rmt, double mg, double mst1sq, double mst2sq,
    double sxt, double cxt, double scalesq, double tanb, double vevS,
-   double lamS, double svevS, double as);
+   double lamS, double svevS, double as, double amu);
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
    double rmb, double mg, double msb1sq, double msb2sq,
    double sxb, double cxb, double scalesq, double cotb, double vevS,
-   double lamS, double svevS, double as);
+   double lamS, double svevS, double as, double amu);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
    double rmt, double mg, double mst1sq, double mst2sq,
    double sxt, double cxt, double scalesq, double tanb, double vevS,
-   double lamS, double svevS, double as);
+   double lamS, double svevS, double as, double amu);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
+   double rmb, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq, double cotb, double vevS,
+   double lamS, double svevS, double as, double amu);
+
+Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
+   double rmt, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq, double tanb, double vevS,
+   double lamS, double svevS, double as);
+
+Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
+   double rmb, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq, double cotb, double vevS,
+   double lamS, double svevS, double as);
+
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
+   double rmt, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq, double tanb, double vevS,
+   double lamS, double svevS, double as);
+
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadpoles(
    double rmb, double mg, double msb1sq, double msb2sq,
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as);

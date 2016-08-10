@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "nmssm_twoloophiggs.hpp"
+#include "mssm_twoloophiggs.hpp"
 #include "nmssm2loop.h"
 #include "config.h"
 #include <utility>
@@ -32,7 +33,126 @@ namespace flexiblesusy {
 
 static std::mutex mtx_nmssm; /// locks MSSM fortran functions
 
+namespace {
+template <typename T> T sqr(T a) { return a * a; }
+}
+
+Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_at_as_nmssm(
+   double rmtsq, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq,
+   double amu, double tanb, double vev2, double gs, double svevS)
+{
+   const double cosb = 1. / std::sqrt(1. + sqr(tanb));
+
+   const Eigen::Matrix<double, 2, 1> t_mssm = tadpole_higgs_2loop_at_as_mssm(
+      rmtsq, mg, mst1sq, mst2sq, sxt, cxt, scalesq, amu, tanb, vev2, gs);
+
+   Eigen::Matrix<double, 3, 1> result;
+   result.head<2>() = t_mssm;
+   // rescale T1 to get TS
+   result(2) = t_mssm(0) * std::sqrt(vev2) * cosb / (svevS * std::sqrt(2.));
+
+   return result;
+}
+
+Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_ab_as_nmssm(
+   double rmbsq, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq,
+   double amu, double cotbeta, double vev2, double gs, double svevS)
+{
+   const double tanb = 1./cotbeta;
+   const double sinb = tanb / std::sqrt(1. + sqr(tanb));
+
+   const Eigen::Matrix<double, 2, 1> t_mssm = tadpole_higgs_2loop_ab_as_mssm(
+      rmbsq, mg, msb1sq, msb2sq, sxb, cxb, scalesq, amu, cotbeta, vev2, gs);
+
+   Eigen::Matrix<double, 3, 1> result;
+   result.head<2>() = t_mssm;
+   // rescale T1 to get TS
+   result(2) = t_mssm(0) * std::sqrt(vev2) * sinb / (svevS * std::sqrt(2.));
+
+   return result;
+}
+
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm(
+   double rmt, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq, double tanb, double vevS,
+   double lamS, double svevS, double as, double amu)
+{
+   const double vev2 = sqr(vevS * std::sqrt(2.));
+   const double gs = std::sqrt(as * 4. * M_PI);
+
+   const Eigen::Matrix<double, 3, 3> se =
+      self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
+         rmt, mg, mst1sq, mst2sq, sxt, cxt, scalesq, tanb, vevS, lamS, svevS, as);
+
+   const Eigen::Matrix<double, 3, 3> tadpoles =
+      tadpole_higgs_2loop_at_as_nmssm(
+         sqr(rmt), mg, mst1sq, mst2sq, sxt, cxt, scalesq, amu, tanb, vev2, gs, svevS).asDiagonal();
+
+   return -se - tadpoles;
+}
+
+Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
+   double rmb, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq, double cotb, double vevS,
+   double lamS, double svevS, double as, double amu)
+{
+   const double vev2 = sqr(vevS * std::sqrt(2.));
+   const double gs = std::sqrt(as * 4. * M_PI);
+
+   const Eigen::Matrix<double, 3, 3> se =
+      self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
+         rmb, mg, msb1sq, msb2sq, sxb, cxb, scalesq, cotb, vevS, lamS, svevS, as);
+
+   const Eigen::Matrix<double, 3, 3> tadpoles =
+      tadpole_higgs_2loop_ab_as_nmssm(
+         sqr(rmb), mg, msb1sq, msb2sq, sxb, cxb, scalesq, amu, cotb, vev2, gs, svevS).asDiagonal();
+
+   return -se - tadpoles;
+}
+
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
+   double rmt, double mg, double mst1sq, double mst2sq,
+   double sxt, double cxt, double scalesq, double tanb, double vevS,
+   double lamS, double svevS, double as, double amu)
+{
+   const double vev2 = sqr(vevS * std::sqrt(2.));
+   const double gs = std::sqrt(as * 4. * M_PI);
+
+   const Eigen::Matrix<double, 3, 3> se =
+      self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
+         rmt, mg, mst1sq, mst2sq, sxt, cxt, scalesq, tanb, vevS,
+         lamS, svevS, as);
+
+   const Eigen::Matrix<double, 3, 3> tadpoles =
+      tadpole_higgs_2loop_at_as_nmssm(
+         sqr(rmt), mg, mst1sq, mst2sq, sxt, cxt, scalesq, amu, tanb, vev2, gs, svevS).asDiagonal();
+
+   return -se - tadpoles;
+}
+
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
+   double rmb, double mg, double msb1sq, double msb2sq,
+   double sxb, double cxb, double scalesq, double cotb, double vevS,
+   double lamS, double svevS, double as, double amu)
+{
+   const double vev2 = sqr(vevS * std::sqrt(2.));
+   const double gs = std::sqrt(as * 4. * M_PI);
+
+   const Eigen::Matrix<double, 3, 3> se =
+      self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
+         rmb, mg, msb1sq, msb2sq, sxb, cxb, scalesq, cotb, vevS,
+         lamS, svevS, as);
+
+   const Eigen::Matrix<double, 3, 3> tadpoles =
+      tadpole_higgs_2loop_ab_as_nmssm(
+         sqr(rmb), mg, msb1sq, msb2sq, sxb, cxb, scalesq, amu, cotb, vev2, gs, svevS).asDiagonal();
+
+   return -se - tadpoles;
+}
+
+Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
    double rmt, double mg, double mst1sq, double mst2sq,
    double sxt, double cxt, double scalesq, double tanb, double vevS,
    double lamS, double svevS, double as)
@@ -53,7 +173,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm(
    return result;
 }
 
-Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
+Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
    double rmb, double mg, double msb1sq, double msb2sq,
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as)
@@ -79,7 +199,7 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
    return result;
 }
 
-Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
    double rmt, double mg, double mst1sq, double mst2sq,
    double sxt, double cxt, double scalesq, double tanb, double vevS,
    double lamS, double svevS, double as)
@@ -100,7 +220,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
    return result;
 }
 
-Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
+Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadpoles(
    double rmb, double mg, double msb1sq, double msb2sq,
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as)
