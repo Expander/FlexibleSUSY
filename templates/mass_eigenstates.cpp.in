@@ -76,13 +76,6 @@ using namespace @ModelName@_info;
 #define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
-#ifdef ENABLE_THREADS
-   std::mutex CLASSNAME::mtx_fortran;
-   #define LOCK_MUTEX() std::lock_guard<std::mutex> _lock_guard(mtx_fortran)
-#else
-   #define LOCK_MUTEX()
-#endif
-
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
    , number_of_ewsb_iterations(100)

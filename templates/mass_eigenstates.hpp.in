@@ -43,10 +43,6 @@
 #include <iosfwd>
 #include <string>
 
-#ifdef ENABLE_THREADS
-#include <mutex>
-#endif
-
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
@@ -173,7 +169,6 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
 #ifdef ENABLE_THREADS
    std::exception_ptr thread_exception;
-   static std::mutex mtx_fortran; /// locks fortran functions
 #endif
 
    int solve_ewsb_iteratively();
