@@ -52,7 +52,6 @@
  * tanb   : DR-bar tan(beta) = vu/vd in the MSSM
  * cotb   : DR-bar 1/tan(beta) in the MSSM
  * vev2   : squared DR-bar vev^2 = (vu^2 + vd^2) in the MSSM
- * vevS   : DR-bar vev = sqrt(vu^2 + vd^2) in the MSSM
  * svevS  : DR-bar singlet vev = vS / sqrt(2)
  *
  * scheme : DR-bar scheme (0) or on-shell scheme (1)
@@ -73,42 +72,42 @@ Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_ab_as_nmssm(
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm(
    double rmt, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double tanb, double vevS,
+   double sxt, double cxt, double scale2, double tanb, double vev2,
    double lamS, double svevS, double as, double mu);
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm(
    double rmb, double mg, double msb12, double msb22,
-   double sxb, double cxb, double scale2, double cotb, double vevS,
+   double sxb, double cxb, double scale2, double cotb, double vev2,
    double lamS, double svevS, double as, double mu);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
    double rmt, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double tanb, double vevS,
+   double sxt, double cxt, double scale2, double tanb, double vev2,
    double lamS, double svevS, double as, double mu);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
    double rmb, double mg, double msb12, double msb22,
-   double sxb, double cxb, double scale2, double cotb, double vevS,
+   double sxb, double cxb, double scale2, double cotb, double vev2,
    double lamS, double svevS, double as, double mu);
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
    double rmt, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double tanb, double vevS,
+   double sxt, double cxt, double scale2, double tanb, double vev2,
    double lamS, double svevS, double as);
 
 Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
    double rmb, double mg, double msb12, double msb22,
-   double sxb, double cxb, double scale2, double cotb, double vevS,
+   double sxb, double cxb, double scale2, double cotb, double vev2,
    double lamS, double svevS, double as);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
    double rmt, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double tanb, double vevS,
+   double sxt, double cxt, double scale2, double tanb, double vev2,
    double lamS, double svevS, double as);
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadpoles(
    double rmb, double mg, double msb12, double msb22,
-   double sxb, double cxb, double scale2, double cotb, double vevS,
+   double sxb, double cxb, double scale2, double cotb, double vev2,
    double lamS, double svevS, double as);
 
 } // namespace nmssm_twoloophiggs

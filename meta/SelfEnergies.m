@@ -1023,7 +1023,6 @@ const double rmt = " <> mtStr <> ";
 const double rmtsq = Sqr(rmt);
 const double scalesq = Sqr(get_scale());
 const double vev2 = " <> vev2Str <> ";
-const double vev = Sqrt(" <> vev2Str <> ");
 const double tanb = " <> tanbStr <> ";
 const double amu = Re(" <> muStr <> ");
 const double mg = " <> m3Str <> ";
@@ -1033,22 +1032,20 @@ const double rmb = " <> mbStr <> ";
 const double rmbsq = Sqr(rmb);
 const double rmtausq = Sqr(" <> mtauStr <> ");
 const double lamS = Re(" <> lambdaStr <> ");
-static const double root2 = Sqrt(2.0);
-const double vevS =  vev / root2;
-const double svevS = " <> vsStr <> " / root2;
+const double svevS = " <> vsStr <> " / Sqrt(2.0);
 
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_2l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
    self_energy_2l += self_energy_higgs_2loop_at_as_nmssm(
       rmt, mg, mst1sq, mst2sq, sxt, cxt,
-      scalesq, tanb, vevS, lamS, svevS, as, amu);
+      scalesq, tanb, vev2, lamS, svevS, as, amu);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AB_AS) {
    self_energy_2l += self_energy_higgs_2loop_ab_as_nmssm(
       rmb, mg, msb1sq, msb2sq, sxb, cxb,
-      scalesq, cotb, vevS, lamS, svevS, as, amu);
+      scalesq, cotb, vev2, lamS, svevS, as, amu);
 }
 
 // Corrections as in MSSM, not corrected for NMSSM,
@@ -1124,7 +1121,6 @@ const double rmt = " <> mtStr <> ";
 const double rmtsq = Sqr(rmt);
 const double scalesq = Sqr(get_scale());
 const double vev2 = " <> vev2Str <> ";
-const double vev = Sqrt(" <> vev2Str <> ");
 const double tanb = " <> tanbStr <> ";
 const double amu = Re(" <> muStr <> ");
 const double mg = " <> m3Str <> ";
@@ -1134,22 +1130,20 @@ const double rmb = " <> mbStr <> ";
 const double rmbsq = Sqr(rmb);
 const double rmtausq = Sqr(" <> mtauStr <> ");
 const double lamS = Re(" <> lambdaStr <> ");
-static const double root2 = Sqrt(2.0);
-const double vevS =  vev / root2;
-const double svevS = " <> vsStr <> " / root2;
+const double svevS = " <> vsStr <> " / Sqrt(2.0);
 
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`PseudoScalar]] <> " self_energy_2l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`PseudoScalar]] <> "::Zero());
 
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
    self_energy_2l += self_energy_pseudoscalar_2loop_at_as_nmssm(
       rmt, mg, mst1sq, mst2sq, sxt, cxt,
-      scalesq, tanb, vevS, lamS, svevS, as, amu);
+      scalesq, tanb, vev2, lamS, svevS, as, amu);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AB_AS) {
    self_energy_2l += self_energy_pseudoscalar_2loop_ab_as_nmssm(
       rmb, mg, msb1sq, msb2sq, sxb, cxb,
-      scalesq, cotb, vevS, lamS, svevS, as, amu);
+      scalesq, cotb, vev2, lamS, svevS, as, amu);
 }
 
 // Corrections as in MSSM, not corrected for NMSSM,
