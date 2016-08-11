@@ -124,7 +124,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm(
    const double gs = std::sqrt(as * 4. * M_PI);
 
    const Eigen::Matrix<double, 3, 3> se =
-      self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
+      self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
          rmt, mg, mst1sq, mst2sq, sxt, cxt, scalesq, tanb, vevS,
          lamS, svevS, as);
 
@@ -144,7 +144,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm(
    const double gs = std::sqrt(as * 4. * M_PI);
 
    const Eigen::Matrix<double, 3, 3> se =
-      self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
+      self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadpoles(
          rmb, mg, msb1sq, msb2sq, sxb, cxb, scalesq, cotb, vevS,
          lamS, svevS, as);
 
