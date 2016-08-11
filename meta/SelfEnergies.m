@@ -548,6 +548,8 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
            mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -636,6 +638,9 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
            mA0Str  = CConversion`RValueToCFormString[Parameters`GetEffectiveMASqr[]];
            svevStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+using namespace flexiblesusy::nmssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -812,6 +817,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
            mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -896,6 +903,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
            mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -983,6 +992,9 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+using namespace flexiblesusy::nmssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -1081,6 +1093,9 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
            vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
 "\
+using namespace flexiblesusy::mssm_twoloophiggs;
+using namespace flexiblesusy::nmssm_twoloophiggs;
+
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;

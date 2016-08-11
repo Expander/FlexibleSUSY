@@ -30,6 +30,7 @@
 #endif
 
 namespace flexiblesusy {
+namespace mssm_twoloophiggs {
 
 static std::mutex mtx_mssm; /// locks MSSM fortran functions
 
@@ -437,4 +438,5 @@ Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_atau_atau_mssm(
    return subtract_mssm_tadpoles_pseudoscalar(se, tadpoles, tanb);
 }
 
+} // namespace mssm_twoloophiggs
 } // namespace flexiblesusy

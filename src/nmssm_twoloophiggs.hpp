@@ -22,6 +22,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
+namespace nmssm_twoloophiggs {
 
 Eigen::Matrix<double, 3, 1> tadpole_higgs_2loop_at_as_nmssm(
    double rmtsq, double mg, double mst1sq, double mst2sq,
@@ -73,6 +74,7 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadp
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as);
 
-}
+} // namespace nmssm_twoloophiggs
+} // namespace flexiblesusy
 
 #endif

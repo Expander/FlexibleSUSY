@@ -29,7 +29,10 @@
    #define LOCK_MUTEX()
 #endif
 
+using namespace flexiblesusy::mssm_twoloophiggs;
+
 namespace flexiblesusy {
+namespace nmssm_twoloophiggs {
 
 static std::mutex mtx_nmssm; /// locks MSSM fortran functions
 
@@ -246,4 +249,5 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadp
    return -result;
 }
 
+} // namespace nmssm_twoloophiggs
 } // namespace flexiblesusy

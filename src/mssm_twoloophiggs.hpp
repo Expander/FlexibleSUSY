@@ -22,6 +22,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
+namespace mssm_twoloophiggs {
 
 // tadpoles
 
@@ -136,6 +137,7 @@ double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
    double mstau2sq, double sintau, double costau, double scalesq,
    double amu, double tanb, double vev2);
 
+} // namespace mssm_twoloophiggs
 } // namespace flexiblesusy
 
 #endif
