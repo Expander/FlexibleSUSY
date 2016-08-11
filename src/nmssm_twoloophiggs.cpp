@@ -163,10 +163,12 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
    int loop = 2;
    double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
-           &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+      effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+              &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+   }
 
    Eigen::Matrix<double, 3, 3> result;
    result << DMS[0][0], DMS[0][1], DMS[0][2],
@@ -202,10 +204,12 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadp
    int loop = 2;
    double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
-           &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+      effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+              &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+   }
 
    Eigen::Matrix<double, 3, 3> result;
    result << DMP[0][0], DMP[0][1], DMP[0][2],
