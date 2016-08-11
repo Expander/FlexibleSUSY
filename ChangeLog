@@ -15,6 +15,11 @@ Flexiblesusy-1.5.2 [not released yet]
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
+ * Bugfix (commit 44b31fa): Fix potential race condition when
+   different model classes that make use of the (N)MSSM 2-loop Higgs
+   mass routines of P. Slavich call calculate_spectrum() at the same
+   time.
+
 Flexiblesusy-1.5.1 [July, 12 2017]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
