@@ -181,25 +181,17 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_ab_as_nmssm_with_tadpoles(
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as)
 {
-   int loop = 2;
-   double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
-
-   LOCK_MUTEX();
-
-   effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
-           &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+   Eigen::Matrix<double, 3, 3> result =
+      self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
+         rmb, mg, msb1sq, msb2sq, sxb, cxb, scalesq, cotb, vevS,
+         lamS, svevS, as);
 
    // Make appropriate substitutions for elements following 0907.4682
    // bottom of page 9
-   std::swap(DMS[0][0], DMS[1][1]);
-   std::swap(DMS[0][2], DMS[1][2]);
+   std::swap(result(0,0), result(1,1));
+   std::swap(result(0,2), result(1,2));
 
-   Eigen::Matrix<double, 3, 3> result;
-   result << DMS[0][0], DMS[0][1], DMS[0][2],
-             DMS[1][0], DMS[1][1], DMS[1][2],
-             DMS[2][0], DMS[2][1], DMS[2][2];
-
-   return -result;
+   return result;
 }
 
 Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
@@ -228,25 +220,17 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_ab_as_nmssm_with_tadp
    double sxb, double cxb, double scalesq, double cotb, double vevS,
    double lamS, double svevS, double as)
 {
-   int loop = 2;
-   double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
-
-   LOCK_MUTEX();
-
-   effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
-           &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+   Eigen::Matrix<double, 3, 3> result =
+      self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadpoles(
+         rmb, mg, msb1sq, msb2sq, sxb, cxb, scalesq, cotb, vevS,
+         lamS, svevS, as);
 
    // Make appropriate substitutions for elements following 0907.4682
    // bottom of page 9
-   std::swap(DMP[0][0], DMP[1][1]);
-   std::swap(DMP[0][2], DMP[1][2]);
+   std::swap(result(0,0), result(1,1));
+   std::swap(result(0,2), result(1,2));
 
-   Eigen::Matrix<double, 3, 3> result;
-   result << DMP[0][0], DMP[0][1], DMP[0][2],
-             DMP[1][0], DMP[1][1], DMP[1][2],
-             DMP[2][0], DMP[2][1], DMP[2][2];
-
-   return -result;
+   return result;
 }
 
 } // namespace nmssm_twoloophiggs
