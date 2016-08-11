@@ -21,121 +21,156 @@
 
 #include <Eigen/Core>
 
+/**
+ * @file mssm_twoloophiggs.hpp
+ * @brief function declarations for 2-loop MSSM Higgs self-energies
+ *        and tadpoles
+ *
+ * Notation:
+ *
+ * mt2    : squared DR-bar top mass in the MSSM
+ * mb2    : squared DR-bar bottom mass in the MSSM
+ * mtau2  : squared DR-bar tau mass in the MSSM
+ * mg     : DR-bar gluino mass in the MSSM
+ * mA2    : squared DR-bar CP-odd Higgs mass in the MSSM
+ * mst12  : squared DR-bar lightest stop mass
+ * mst22  : squared DR-bar heaviest stop mass
+ * msb12  : squared DR-bar lightest sbottom mass
+ * msb22  : squared DR-bar heaviest sbottom mass
+ * mstau12: squared DR-bar lightest stau mass
+ * mstau22: squared DR-bar heaviest stau mass
+ *
+ * sxt    : sine of DR-bar stop mixing angle in the MSSM
+ * cxt    : cosine of DR-bar stop mixing angle in the MSSM
+ * sxb    : sine of DR-bar sbottom mixing angle in the MSSM
+ * cxb    : cosine of DR-bar sbottom mixing angle in the MSSM
+ * sintau : sine of DR-bar stau mixing angle in the MSSM
+ * costau : cosine of DR-bar stau mixing angle in the MSSM
+ *
+ * gs     : DR-bar strong gauge coupling g3 in the MSSM
+ * mu     : DR-bar mu-parameter in the MSSM (arXiv:0907.4682)
+ * tanb   : DR-bar tan(beta) = vu/vd in the MSSM
+ * cotb   : DR-bar 1/tan(beta) in the MSSM
+ * vev2   : squared DR-bar vev^2 = (vu^2 + vd^2) in the MSSM
+ *
+ * scheme : DR-bar scheme (0) or on-shell scheme (1)
+ */
+
 namespace flexiblesusy {
 namespace mssm_twoloophiggs {
 
 // tadpoles
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
-   double rmtsq, double mg, double mst1sq, double mst2sq,
-   double sxt, double cxt, double scalesq,
-   double amu, double tanb, double vev2, double gs);
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2,
+   double mu, double tanb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
-   double rmtsq, double rmbsq, double mAsq, double mst1sq,
-   double mst2sq, double msb1sq, double msb2sq,
+   double mt2, double mb2, double mA2, double mst12,
+   double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
-   double scalesq, double amu, double tanb, double vev2);
+   double scale2, double mu, double tanb, double vev2);
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb1sq, double msb2sq,
-   double sxb, double cxb, double scalesq,
-   double amu, double cotbeta, double vev2, double gs);
+   double mb2, double mg, double msb12, double msb22,
+   double sxb, double cxb, double scale2,
+   double mu, double cotb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_atau_atau_mssm(
-   double rmtausq, double mAsq, double msnusq, double mstau1sq,
-   double mstau2sq, double sintau, double costau, double scalesq,
-   double amu, double tanb, double vev2);
+   double mtau2, double mA2, double msnusq, double mstau12,
+   double mstau22, double sintau, double costau, double scale2,
+   double mu, double tanb, double vev2);
 
 // self-energies
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm(
-   double rmtsq, double mg, double mst1sq, double mst2sq,
-   double sxt, double cxt, double scalesq, double amu,
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm(
-   double rmtsq, double rmbsq, double fmasq, double mst1sq,
-   double mst2sq, double msb1sq, double msb2sq,
+   double mt2, double mb2, double mA2, double mst12,
+   double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
-   double scalesq, double amu, double tanb, double vev2);
+   double scale2, double mu, double tanb, double vev2);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb1sq, double msb2sq,
-   double sxb, double cxb, double scalesq, double amu,
-   double cotbeta, double vev2, double gs, int scheme = 0);
+   double mb2, double mg, double msb12, double msb22,
+   double sxb, double cxb, double scale2, double mu,
+   double cotb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm(
-   double rmtausq, double fmasq, double msnusq, double mstau1sq,
-   double mstau2sq, double sintau, double costau, double scalesq,
-   double amu, double tanb, double vev2, int scheme = 0);
+   double mtau2, double mA2, double msnusq, double mstau12,
+   double mstau22, double sintau, double costau, double scale2,
+   double mu, double tanb, double vev2, int scheme = 0);
 
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_at_as_mssm(
-   double rmtsq, double mg, double mst1sq, double mst2sq,
-   double sxt, double cxt, double scalesq, double amu,
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_at_at_mssm(
-   double rmtsq, double rmbsq, double fmasq, double mst1sq,
-   double mst2sq, double msb1sq, double msb2sq,
+   double mt2, double mb2, double mA2, double mst12,
+   double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
-   double scalesq, double amu, double tanb, double vev2);
+   double scale2, double mu, double tanb, double vev2);
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb1sq, double msb2sq,
-   double sxb, double cxb, double scalesq, double amu,
-   double cotbeta, double vev2, double gs);
+   double mb2, double mg, double msb12, double msb22,
+   double sxb, double cxb, double scale2, double mu,
+   double cotb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_atau_atau_mssm(
-   double rmtausq, double fmasq, double msnusq, double mstau1sq,
-   double mstau2sq, double sintau, double costau, double scalesq,
-   double amu, double tanb, double vev2);
+   double mtau2, double mA2, double msnusq, double mstau12,
+   double mstau22, double sintau, double costau, double scale2,
+   double mu, double tanb, double vev2);
 
 // self-energies with tadpoles added
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
-   double rmtsq, double mg, double mst1sq, double mst2sq,
-   double sxt, double cxt, double scalesq, double amu,
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
-   double rmtsq, double rmbsq, double fmasq, double mst1sq,
-   double mst2sq, double msb1sq, double msb2sq,
+   double mt2, double mb2, double mA2, double mst12,
+   double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
-   double scalesq, double amu, double tanb, double vev2);
+   double scale2, double mu, double tanb, double vev2);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm_with_tadpoles(
-   double rmbsq, double mg, double msb1sq, double msb2sq,
-   double sxb, double cxb, double scalesq, double amu,
-   double cotbeta, double vev2, double gs, int scheme = 0);
+   double mb2, double mg, double msb12, double msb22,
+   double sxb, double cxb, double scale2, double mu,
+   double cotb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm_with_tadpoles(
-   double rmtausq, double fmasq, double msnusq, double mstau1sq,
-   double mstau2sq, double sintau, double costau, double scalesq,
-   double amu, double tanb, double vev2, int scheme = 0);
+   double mtau2, double mA2, double msnusq, double mstau12,
+   double mstau22, double sintau, double costau, double scale2,
+   double mu, double tanb, double vev2, int scheme = 0);
 
 
 double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
-   double rmtsq, double mg, double mst1sq, double mst2sq,
-   double sxt, double cxt, double scalesq, double amu,
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs);
 
 double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
-   double rmtsq, double rmbsq, double fmasq, double mst1sq,
-   double mst2sq, double msb1sq, double msb2sq,
+   double mt2, double mb2, double mA2, double mst12,
+   double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
-   double scalesq, double amu, double tanb, double vev2);
+   double scale2, double mu, double tanb, double vev2);
 
 double self_energy_pseudoscalar_2loop_ab_as_mssm_with_tadpoles(
-   double rmbsq, double mg, double msb1sq, double msb2sq,
-   double sxb, double cxb, double scalesq, double amu,
-   double cotbeta, double vev2, double gs);
+   double mb2, double mg, double msb12, double msb22,
+   double sxb, double cxb, double scale2, double mu,
+   double cotb, double vev2, double gs);
 
 double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
-   double rmtausq, double fmasq, double msnusq, double mstau1sq,
-   double mstau2sq, double sintau, double costau, double scalesq,
-   double amu, double tanb, double vev2);
+   double mtau2, double mA2, double msnusq, double mstau12,
+   double mstau22, double sintau, double costau, double scale2,
+   double mu, double tanb, double vev2);
 
 } // namespace mssm_twoloophiggs
 } // namespace flexiblesusy
