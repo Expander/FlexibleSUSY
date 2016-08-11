@@ -20,6 +20,7 @@
 #include "mssm_twoloophiggs.hpp"
 #include "nmssm2loop.h"
 #include "config.h"
+#include <cmath>
 #include <utility>
 
 #ifdef ENABLE_THREADS
