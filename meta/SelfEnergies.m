@@ -1031,7 +1031,7 @@ const double cotb = 1.0 / tanb;
 const double rmb = " <> mbStr <> ";
 const double rmbsq = Sqr(rmb);
 const double rmtausq = Sqr(" <> mtauStr <> ");
-const double lamS = Re(" <> lambdaStr <> ");
+const double lam = Re(" <> lambdaStr <> ");
 const double svevS = " <> vsStr <> " / Sqrt(2.0);
 
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_2l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
@@ -1039,13 +1039,13 @@ const double svevS = " <> vsStr <> " / Sqrt(2.0);
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
    self_energy_2l += self_energy_higgs_2loop_at_as_nmssm(
       rmt, mg, mst1sq, mst2sq, sxt, cxt,
-      scalesq, tanb, vev2, lamS, svevS, as, amu);
+      scalesq, tanb, vev2, lam, svevS, as, amu);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AB_AS) {
    self_energy_2l += self_energy_higgs_2loop_ab_as_nmssm(
       rmb, mg, msb1sq, msb2sq, sxb, cxb,
-      scalesq, cotb, vev2, lamS, svevS, as, amu);
+      scalesq, cotb, vev2, lam, svevS, as, amu);
 }
 
 // Corrections as in MSSM, not corrected for NMSSM,
@@ -1129,7 +1129,7 @@ const double cotb = 1.0 / tanb;
 const double rmb = " <> mbStr <> ";
 const double rmbsq = Sqr(rmb);
 const double rmtausq = Sqr(" <> mtauStr <> ");
-const double lamS = Re(" <> lambdaStr <> ");
+const double lam = Re(" <> lambdaStr <> ");
 const double svevS = " <> vsStr <> " / Sqrt(2.0);
 
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`PseudoScalar]] <> " self_energy_2l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`PseudoScalar]] <> "::Zero());
@@ -1137,13 +1137,13 @@ const double svevS = " <> vsStr <> " / Sqrt(2.0);
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
    self_energy_2l += self_energy_pseudoscalar_2loop_at_as_nmssm(
       rmt, mg, mst1sq, mst2sq, sxt, cxt,
-      scalesq, tanb, vev2, lamS, svevS, as, amu);
+      scalesq, tanb, vev2, lam, svevS, as, amu);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AB_AS) {
    self_energy_2l += self_energy_pseudoscalar_2loop_ab_as_nmssm(
       rmb, mg, msb1sq, msb2sq, sxb, cxb,
-      scalesq, cotb, vev2, lamS, svevS, as, amu);
+      scalesq, cotb, vev2, lam, svevS, as, amu);
 }
 
 // Corrections as in MSSM, not corrected for NMSSM,
