@@ -39,6 +39,7 @@
  * msb22  : squared DR-bar heaviest sbottom mass
  * mstau12: squared DR-bar lightest stau mass
  * mstau22: squared DR-bar heaviest stau mass
+ * msv2   : squared DR-bar tau sneutrino mass
  *
  * sxt    : sine of DR-bar stop mixing angle in the MSSM
  * cxt    : cosine of DR-bar stop mixing angle in the MSSM
@@ -78,7 +79,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_ab_as_mssm(
    double mu, double cotb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_atau_atau_mssm(
-   double mtau2, double mA2, double msnusq, double mstau12,
+   double mtau2, double mA2, double msv2, double mstau12,
    double mstau22, double sintau, double costau, double scale2,
    double mu, double tanb, double vev2);
 
@@ -101,7 +102,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm(
    double cotb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm(
-   double mtau2, double mA2, double msnusq, double mstau12,
+   double mtau2, double mA2, double msv2, double mstau12,
    double mstau22, double sintau, double costau, double scale2,
    double mu, double tanb, double vev2, int scheme = 0);
 
@@ -123,7 +124,7 @@ Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_ab_as_mssm(
    double cotb, double vev2, double gs);
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_atau_atau_mssm(
-   double mtau2, double mA2, double msnusq, double mstau12,
+   double mtau2, double mA2, double msv2, double mstau12,
    double mstau22, double sintau, double costau, double scale2,
    double mu, double tanb, double vev2);
 
@@ -146,7 +147,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm_with_tadpoles(
    double cotb, double vev2, double gs, int scheme = 0);
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm_with_tadpoles(
-   double mtau2, double mA2, double msnusq, double mstau12,
+   double mtau2, double mA2, double msv2, double mstau12,
    double mstau22, double sintau, double costau, double scale2,
    double mu, double tanb, double vev2, int scheme = 0);
 
@@ -168,7 +169,7 @@ double self_energy_pseudoscalar_2loop_ab_as_mssm_with_tadpoles(
    double cotb, double vev2, double gs);
 
 double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
-   double mtau2, double mA2, double msnusq, double mstau12,
+   double mtau2, double mA2, double msv2, double mstau12,
    double mstau22, double sintau, double costau, double scale2,
    double mu, double tanb, double vev2);
 
