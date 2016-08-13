@@ -37,6 +37,10 @@ The full signature of function reads
                             quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5]
 ";
 
+GetMTopPoleOverMTopMSbar::usage = "Returns the ratio of the pole top
+ mass over the top MS-bar, being the inverse of
+ GetMTopMSbarOverMTopPole[]."
+
 Begin["`Private`"];
 
 GetMTopMSbarOverMTopPole0L[] := 1;
@@ -233,6 +237,16 @@ GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, 
                loopOrder[[2]] GetMTopMSbarOverMTopPole1L[Q, quark] +
                loopOrder[[3]] GetMTopMSbarOverMTopPole2L[Q, quark, NH, NL] +
                loopOrder[[4]] GetMTopMSbarOverMTopPole3L[Q, quark, NH, NL]
+           )
+          ];
+
+GetMTopPoleOverMTopMSbar[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5] :=
+    Module[{inv = Normal @ Series[1 / GetMTopMSbarOverMTopPole[{1, h, h^2, h^3}, quark, Q, NH, NL], {h,0,3}]},
+           (
+               loopOrder[[1]] Coefficient[inv, h, 0] +
+               loopOrder[[2]] Coefficient[inv, h, 1] +
+               loopOrder[[3]] Coefficient[inv, h, 2] +
+               loopOrder[[4]] Coefficient[inv, h, 3]
            )
           ];
 
