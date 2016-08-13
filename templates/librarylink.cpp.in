@@ -380,6 +380,9 @@ void calculate_spectrum(Model_data& data, MLINK link)
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ());
+   } catch (const flexiblesusy::Error& e) {
+      put_message(link, "FS@ModelName@CalculateSpectrum", "error", e.what());
+      throw EInvalidSpectrum();
    } catch (const std::string& s) {
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
       throw EInvalidSpectrum();
