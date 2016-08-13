@@ -96,7 +96,7 @@ M = Simplify[
 deriv = D[M, Q];
 
 deriv = FullSimplify[
-    Normal[Series[deriv, {h, 0, 3}]] /. FlexibleSUSY`M[Fu] -> m[Q],
+    Normal[Series[deriv, {h, 0, 3}]],
     ass
 ];
 
