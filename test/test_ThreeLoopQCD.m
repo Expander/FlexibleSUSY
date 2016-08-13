@@ -96,10 +96,7 @@ M3L = Simplify[Coefficient[M3L, h^3], ass];
 
 (* pole mass up to 3L order *)
 M = Simplify[
-    m[Q] (1 +
-          h^1 GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q] +
-          h^2 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[TopQuark, Q] +
-          h^3 M3L) /. gRules
+    m[Q] GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. gRules
     , ass];
 
 deriv = D[M, Q];
