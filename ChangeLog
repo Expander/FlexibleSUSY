@@ -12,6 +12,16 @@ Flexiblesusy-1.5.2 [not released yet]
        {\[Lambda], BETA[g1] + BETA[g2] + BETA[1,Yu][3,3]}
    };
 
+ * Feature (commit 5e0bca1): Allow user to add 3-loop QCD corrections
+   of [arxiv:hep-ph/9912391] when calculating the top pole mass in
+   non-SUSY models.  The 3-loop QCD corrections are added if the flag
+   FlexibleSUSY[13] is set to 2 and the pole mass loop order,
+   FlexibleSUSY[4], is set to a value > 2.
+
+   FlexibleSUSY[13] = 0 and FlexibleSUSY[4] > 0: 1L QCD correction
+   FlexibleSUSY[13] = 1 and FlexibleSUSY[4] > 1: 2L QCD correction
+   FlexibleSUSY[13] = 2 and FlexibleSUSY[4] > 2: 3L QCD correction
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
