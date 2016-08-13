@@ -634,7 +634,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       put_spectrum(data.model, link);
 
       handles[hid] = data;
-   } catch (const flexiblesusy::Error& e) {
+   } catch (const flexiblesusy::Error&) {
       put_error_output(link);
    }
 
