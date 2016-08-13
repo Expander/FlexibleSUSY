@@ -262,7 +262,7 @@ void put_settings(const Model_data& data, MLINK link)
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at), "higgs2loopCorrectionAtAt");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau), "higgs2loopCorrectionAtauAtau");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::force_output), "forceOutput");
-   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::top_2loop_corrections_qcd), "top2loopCorrectionsQCD");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::top_pole_qcd_corrections), "top2loopCorrectionsQCD");
    MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::force_positive_masses), "forcePositiveMasses");
    MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
@@ -421,7 +421,7 @@ Model_data fill(double* pars, mint npars)
    data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, pars[c++]);
    data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, pars[c++]);
    data.settings.set(Spectrum_generator_settings::force_output, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::top_2loop_corrections_qcd, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::top_pole_qcd_corrections, pars[c++]);
    data.settings.set(Spectrum_generator_settings::beta_zero_threshold, pars[c++]);
    data.settings.set(Spectrum_generator_settings::force_positive_masses, pars[c++]);
    data.settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
