@@ -105,12 +105,14 @@ protected:
    Spectrum_generator_settings settings;
    double parameter_output_scale; ///< output scale for running parameters
    double reached_precision; ///< the precision that was reached
+
+   void translate_exception_to_problem(@ModelName@<T>& model);
 };
 
 /**
  * Setup spectrum generator from a Spectrum_generator_settings object.
  *
- * @param settings spectrum generator settings
+ * @param settings_ spectrum generator settings
  */
 template <class T>
 void @ModelName@_spectrum_generator_interface<T>::set_settings(
@@ -163,6 +165,42 @@ void @ModelName@_spectrum_generator_interface<T>::write_spectrum(const std::stri
    @ModelName@_spectrum_plotter plotter;
    plotter.extract_spectrum(model);
    plotter.write_to_file(filename);
+}
+
+/**
+ * Flags problems in the given model class from the current pending
+ * exception.
+ *
+ * This function assumes that there is an active exception.
+ *
+ * @param model model class
+ */
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem(@ModelName@<T>& model)
+{
+   try {
+      throw;
+   } catch (const NoConvergenceError&) {
+      model.get_problems().flag_no_convergence();
+   } catch (const NonPerturbativeRunningError& error) {
+      model.get_problems().flag_no_perturbative();
+      const int parameter_index = error.get_parameter_index();
+      const std::string parameter_name =
+         parameter_index < 0 ? "Q" : @ModelName@_info::parameter_names[parameter_index];
+      const double parameter_value = error.get_parameter_value();
+      const double scale = error.get_scale();
+      model.get_problems().flag_non_perturbative_parameter(parameter_name, parameter_value, scale, -1);
+   } catch (const NoRhoConvergenceError&) {
+      model.get_problems().flag_no_rho_convergence();
+   } catch (const Error& error) {
+      model.get_problems().flag_thrown(error.what());
+   } catch (const std::string& str) {
+      model.get_problems().flag_thrown(str);
+   } catch (const char* str) {
+      model.get_problems().flag_thrown(str);
+   } catch (const std::exception& error) {
+      model.get_problems().flag_thrown(error.what());
+   }
 }
 
 } // namespace flexiblesusy

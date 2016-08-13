@@ -23,8 +23,7 @@ When releasing FlexibleSUSY, please follow these steps:
 
  3. Run configure with all features disabled to create the Makefile
 
-      ./configure --disable-meta --disable-compile \
-          --with-models= --with-algorithms=
+      ./configure --disable-meta --disable-compile
 
  4. Create a non-annotated tag via
 

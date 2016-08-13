@@ -47,7 +47,7 @@ public:
       higgs_2loop_correction_at_at,     ///< [10] Higgs 2-loop correction O(alpha_t alpha_t + alpha_t alpha_b + alpha_b alpha_b)
       higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
       force_output,          ///< [12] force output
-      top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
+      top_pole_qcd_corrections,         ///< [13] Top-quark pole mass QCD corrections
       beta_zero_threshold,   ///< [14] beta function zero threshold
       calculate_observables, ///< [15] calculate observables (a_muon, ...)
       force_positive_masses, ///< [16] force positive masses of majoran fermions

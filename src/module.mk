@@ -1,5 +1,5 @@
 DIR          := src
-MODNAME      := flexisusy
+MODNAME      := src
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -20,7 +20,9 @@ LIBFLEXI_SRC := \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
-		$(DIR)/mssm_twoloophiggs.f \
+		$(DIR)/mssm_twoloophiggs.cpp \
+		$(DIR)/mssm_twoloophiggs_impl.f \
+		$(DIR)/nmssm_twoloophiggs.cpp \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
@@ -80,9 +82,10 @@ LIBFLEXI_HDR := \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
+		$(DIR)/mssm_twoloophiggs.hpp \
 		$(DIR)/mycomplex.h \
+		$(DIR)/nmssm_twoloophiggs.hpp \
 		$(DIR)/nmssm2loop.h \
-		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/pmns.hpp \
@@ -138,7 +141,7 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
+LIBFLEXI     := $(DIR)/libflexisusy$(MODULE_LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 

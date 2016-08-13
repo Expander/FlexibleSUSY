@@ -43,7 +43,7 @@ const int @ModelName@_susy_parameters::numberOfParameters;
 }
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(
-   double scale_, double loops_, double thresholds_,
+   double scale_, unsigned loops_, unsigned thresholds_,
    const @ModelName@_input_parameters& input_
    @cCtorParameterList@
 )
@@ -68,6 +68,14 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 
    return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
                     @betaParameterList@);
+}
+
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(unsigned loops) const
+{
+   @ModelName@_susy_parameters p(*this);
+   p.set_loops(loops);
+
+   return p.calc_beta();
 }
 
 void @ModelName@_susy_parameters::clear()

@@ -621,10 +621,6 @@ ToValidCSymbol[symbol_Integer] := symbol;
 
 ToValidCSymbol[symbol_Real] := symbol;
 
-ToValidCSymbol[symbol_[Susyno`LieGroups`i1]] := ToValidCSymbol[symbol];
-
-ToValidCSymbol[symbol_[Susyno`LieGroups`i1,SARAH`i2]] := ToValidCSymbol[symbol];
-
 ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
     Module[{result = "", i},
            For[i = 0, i <= Length[symbol], i++,
@@ -816,11 +812,9 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
+                    FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
-                    (* TODO: remove the following 2 lines: *)
-                    a_[Susyno`LieGroups`i1] :> a /.
-                    a_[Susyno`LieGroups`i1, SARAH`i2] :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
                     Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.

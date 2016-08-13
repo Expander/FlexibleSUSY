@@ -209,7 +209,7 @@ int Root_finder<dimension>::find_root(const double start[dimension])
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
 #ifdef ENABLE_VERBOSE
-   printf("\tRoot_finder status = %s\n", gsl_strerror(status));
+   std::cout << "\tRoot_finder status = " << gsl_strerror(status) << '\n';
 #endif
 
    gsl_vector_memcpy(root, solver->x);

@@ -143,6 +143,7 @@ namespace @ModelName@_database {
  * @param model mass eigenstates
  * @param qedqcd pointer to low-enregy data. If zero, the low-enregy
  *    data will not be written.
+ * @param physical_input pointer to physical non-SLHA input parameters
  * @param observables pointer to observables struct. If zero, the
  *    observables will not be written.
  */

@@ -30,8 +30,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    tadpole[1] = m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1));
 
    if (m.get_ewsb_loop_order() > 1) {
-      double two_loop_tadpole[2];
-      m.tadpole_hh_2loop(two_loop_tadpole);
+      const auto two_loop_tadpole(m.tadpole_hh_2loop());
       tadpole[0] -= two_loop_tadpole[0];
       tadpole[1] -= two_loop_tadpole[1];
    }

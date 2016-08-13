@@ -36,15 +36,12 @@
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
 #include "two_loop_corrections.hpp"
+#include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
 
 #include <iosfwd>
 #include <string>
-
-#ifdef ENABLE_THREADS
-#include <mutex>
-#endif
 
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
@@ -118,6 +115,8 @@ public:
 
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
+   /// calculates the tadpoles at current loop order
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -131,6 +130,12 @@ private:
    struct EWSB_args {
       @ModelName@_mass_eigenstates* model;
       unsigned ewsb_loop_order;
+   };
+
+   class EEWSBStepFailed : public Error {
+   public:
+      virtual ~EEWSBStepFailed() {}
+      virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
 #ifdef ENABLE_THREADS
@@ -164,15 +169,14 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
 #ifdef ENABLE_THREADS
    std::exception_ptr thread_exception;
-   static std::mutex mtx_fortran; /// locks fortran functions
 #endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
    int solve_ewsb_tree_level_custom();
-   void ewsb_initial_guess(double[number_of_ewsb_equations]);
-   int ewsb_step(double[number_of_ewsb_equations]) const;
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
+   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
