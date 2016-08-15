@@ -90,12 +90,16 @@ private:
 /**
  * Calculates \f$\lambda(Q)\f$ at the tree level from the lightest
  * CP-even Higgs boson mass of the @ModelName@.
+ *
+ * @param sm Standard Model
+ * @param model BSM model
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
 {
    model.calculate_DRbar_masses();
-   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(0)@/sm.get_v()));
+   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(idx)@/sm.get_v()));
    sm.calculate_DRbar_masses();
 }
 
@@ -104,19 +108,24 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_lev
  * Calculates \f$\lambda(Q)\f$ at the 1-loop level from the lightest
  * CP-even Higgs boson mass of the @ModelName@ by requiring that the
  * 1-loop Higgs pole masses are equal in both models.
+ *
+ * @param sm Standard Model
+ * @param model BSM model
+ * @param loop_order downwards matching loop order
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
 {
    if (loop_order == 0) {
-      match_high_to_low_scale_model_tree_level(sm, model);
+      match_high_to_low_scale_model_tree_level(sm, model, idx);
       return;
    }
 
    // temporarily set loop order to `loop_order'
    Loop_order_setter los(&sm, &model, loop_order);
 
-   match_high_to_low_scale_model(sm, model);
+   match_high_to_low_scale_model(sm, model, idx);
 
    model.get_physical().clear();
    sm.get_physical().clear();
@@ -127,9 +136,13 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
  * Calculates \f$\lambda(Q)\f$ at the current loop level from the
  * lightest CP-even Higgs boson mass of the @ModelName@ by requiring
  * that the Higgs pole masses are equal in both models.
+ *
+ * @param sm Standard Model
+ * @param model BSM model
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
@@ -139,7 +152,8 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    sm.solve_ewsb();
    sm.calculate_Mhh_pole();
 
-   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_0@) - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
+   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_idx@)
+                   - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
 }
 
 /**

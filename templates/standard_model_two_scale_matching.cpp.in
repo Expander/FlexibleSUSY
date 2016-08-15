@@ -32,17 +32,20 @@ namespace flexiblesusy {
 CLASSNAME::@ModelName@_standard_model_Matching()
    : model(0), eft(0), constraint(0), scale(0.)
    , loop_order_up(0), loop_order_down(0)
+   , higgs_idx(0)
 {}
 
 CLASSNAME::@ModelName@_standard_model_Matching(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    Constraint<Two_scale>* constraint_,
-   unsigned loop_order_up_, unsigned loop_order_down_)
+   unsigned loop_order_up_, unsigned loop_order_down_,
+   unsigned higgs_idx_)
    : model(high_)
    , eft(low_)
    , constraint(constraint_)
    , scale(0.)
+   , higgs_idx(higgs_idx_)
 {
    set_loop_order_up(loop_order_up_);
    set_loop_order_down(loop_order_down_);
@@ -79,9 +82,9 @@ void CLASSNAME::match_high_to_low_scale_model()
    model->run_to(get_scale());
 
    if (model->get_thresholds() && loop_order_down)
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order_down);
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order_down, higgs_idx);
    else
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
 }
 
 void CLASSNAME::match_low_to_high_scale_model()
@@ -110,7 +113,7 @@ void CLASSNAME::match_high_to_low_scale_model_tree_level()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model);
+   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
 }
 
 void CLASSNAME::match_low_to_high_scale_model_tree_level()
@@ -126,6 +129,11 @@ void CLASSNAME::match_low_to_high_scale_model_tree_level()
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
+unsigned CLASSNAME::get_higgs_index() const
+{
+   return higgs_idx;
+}
+
 unsigned CLASSNAME::get_loop_order_up() const
 {
    return loop_order_up;
@@ -134,6 +142,11 @@ unsigned CLASSNAME::get_loop_order_up() const
 unsigned CLASSNAME::get_loop_order_down() const
 {
    return loop_order_down;
+}
+
+void CLASSNAME::set_higgs_index(unsigned idx)
+{
+   higgs_idx = idx;
 }
 
 void CLASSNAME::set_loop_order_up(unsigned loop_order_up_)
