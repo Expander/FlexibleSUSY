@@ -490,6 +490,7 @@ GeneralReplacementRules[] :=
     ParticleIndexRule[SARAH`PseudoScalarBoson, "PseudoScalarBoson"],
     ParticleIndexRule[SARAH`ChargedHiggs, "ChargedHiggs"],
     ParticleIndexRule[SARAH`TopSquark, "TopSquark"],
+    ParticleIndexRule[SARAH`BottomSquark, "BottomSquark"],
     ParticleIndexRule[SARAH`Sneutrino, "Sneutrino"],
     ParticleIndexRule[SARAH`Selectron, "Selectron"],
     ParticleIndexRule[SARAH`Gluino, "Gluino"],
