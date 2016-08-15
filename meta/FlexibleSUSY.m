@@ -538,7 +538,6 @@ GeneralReplacementRules[] :=
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
-      "@HiggsGen@" -> ToValidCSymbolString[GetDimension[SARAH`HiggsBoson]],
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
     }
     ];
