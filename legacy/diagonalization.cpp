@@ -17,11 +17,25 @@
 // ====================================================================
 
 #include "diagonalization.hpp"
+#include "error.hpp"
 #include "wrappers.hpp"
 #include "config.h"
 #include <sstream>
 
 namespace flexiblesusy {
+
+/**
+ * @class DiagonalizationError
+ * @brief Diagonalization failed
+ */
+class DiagonalizationError : public Error {
+public:
+   explicit DiagonalizationError(const std::string& message_) : message(message_) {}
+   virtual ~DiagonalizationError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
 
 namespace {
    double AbsSqrt_d(double x)
@@ -51,7 +65,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
-      throw ii.str();
+      throw DiagonalizationError(ii.str());
    }
 #endif
    // Numerical recipes routine replaces argument, so make a copy of elements
@@ -100,7 +114,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u, so
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
-      throw ii.str();
+      throw DiagonalizationError(ii.str());
    }
 #endif
    // Numerical recipes routine replaces argument, so make a copy of elements
@@ -150,7 +164,7 @@ void AssociateOrderAbs(softsusy::DoubleMatrix& u, softsusy::DoubleMatrix& v, sof
        (w.displayStart() != 1)) {
       std::ostringstream ii;
       ii << "Associated ordering incompatibility\n";
-      throw ii.str();
+      throw DiagonalizationError(ii.str());
    }
 #endif
    for (int i = w.displayStart(); i <= w.displayEnd(); ++i) {
@@ -183,7 +197,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::DoubleMatrix& u,
       std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m
          << "with u" << u << "v " << v << "eigenvalues " << eigenvalues;
-      throw ii.str();
+      throw DiagonalizationError(ii.str());
    }
 #endif
    // Numerical routine replaces argument, so make a copy of elements
@@ -222,7 +236,7 @@ void Diagonalize(const softsusy::DoubleMatrix& m, softsusy::ComplexMatrix& u,
        v.displayCols() != c || v.displayRows() !=c || c > 10) {
       std::ostringstream ii;
       ii << "Error: Trying to diagonalise matrix \n" << m;
-      throw ii.str();
+      throw DiagonalizationError(ii.str());
    }
 #endif
    softsusy::DoubleMatrix realU(u.real()), realV(v.real());
