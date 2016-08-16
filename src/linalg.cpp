@@ -1399,7 +1399,7 @@ double DoubleMatrix::nmin(int & k, int & l) const {
 double DoubleVector::compare(const DoubleVector & a) const {
 #ifdef ARRAY_BOUNDS_CHECKING
   if (displayStart() != a.displayStart() || displayEnd() != a.displayEnd())
-    throw("In DoubleVector::compare, two vectors are of incompatible size.\n");
+    throw flexiblesusy::OutOfBoundsError("In DoubleVector::compare, two vectors are of incompatible size.");
 #endif
   
   DoubleVector sumTol(display());
@@ -1417,7 +1417,7 @@ double DoubleVector::compare(const DoubleVector & a) const {
 DoubleMatrix DoubleMatrix::ludcmp(double & d) const {
 #ifdef ARRAY_BOUNDS_CHECKING
   if (displayCols() != displayRows()) 
-    throw("In DoubleMatrix::ludcmp. Not a square matrix\n");
+    throw flexiblesusy::OutOfBoundsError("In DoubleMatrix::ludcmp. Not a square matrix");
 #endif
   vector<int> indx; 
 

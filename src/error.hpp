@@ -49,17 +49,19 @@ private:
  */
 class NoConvergenceError : public Error {
 public:
-   explicit NoConvergenceError(unsigned number_of_iterations_)
-      : number_of_iterations(number_of_iterations_) {}
+   explicit NoConvergenceError(unsigned number_of_iterations_, const std::string msg = "")
+      : number_of_iterations(number_of_iterations_), message(msg) {}
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
-      std::stringstream message;
-      message << "NoConvergenceError: no convergence"
-              << " after " << number_of_iterations << " iterations";
-      return message.str();
+      if (!message.empty())
+         return message;
+
+      return "NoConvergenceError: no convergence after "
+         + std::to_string(number_of_iterations) + " iterations";
    }
    unsigned get_number_of_iterations() const { return number_of_iterations; }
 private:
+   std::string message;
    unsigned number_of_iterations;
 };
 
@@ -179,6 +181,15 @@ class DiagonalizationError : public Error {
 public:
    explicit DiagonalizationError(const std::string& message_) : message(message_) {}
    virtual ~DiagonalizationError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
+
+class ReadError : public Error {
+public:
+   ReadError(const std::string& message_) : message(message_) {}
+   virtual ~ReadError() {}
    virtual std::string what() const { return message; }
 private:
    std::string message;
