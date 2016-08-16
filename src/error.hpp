@@ -137,6 +137,17 @@ private:
    int parameter_index; ///< index of parameter that becomes non-perturbative
 };
 
+class NonPerturbativeRunningQedQcdError : public Error {
+public:
+   explicit NonPerturbativeRunningQedQcdError(std::string msg_)
+      : msg(msg_)
+      {}
+   virtual ~NonPerturbativeRunningQedQcdError() {}
+   virtual std::string what() const { return msg; }
+private:
+   std::string msg;
+};
+
 /**
  * @class OutOfMemoryError
  * @brief Not enough memory
@@ -166,9 +177,7 @@ public:
       : msg(msg_)
       {}
    virtual ~OutOfBoundsError() {}
-   virtual std::string what() const {
-      return msg;
-   }
+   virtual std::string what() const { return msg; }
 private:
    std::string msg;
 };

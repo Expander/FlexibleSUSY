@@ -12,25 +12,6 @@
 #include "error.hpp"
 #include "wrappers.hpp"
 
-namespace flexiblesusy {
-
-class NonPerturbativeRunningQedQcdError : public Error {
-public:
-   explicit NonPerturbativeRunningQedQcdError(std::string msg_)
-      : msg(msg_)
-      {}
-   virtual ~NonPerturbativeRunningQedQcdError() {}
-   virtual std::string what() const {
-      std::stringstream message;
-      message << "NonPerturbativeRunningQedQcdError: Not enought memory: " << msg;
-      return message.str();
-   }
-private:
-   std::string msg;
-};
-
-} // namespace flexiblesusy
-
 namespace softsusy {
 
 const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
