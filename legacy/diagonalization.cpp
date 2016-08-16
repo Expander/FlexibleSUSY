@@ -24,19 +24,6 @@
 
 namespace flexiblesusy {
 
-/**
- * @class DiagonalizationError
- * @brief Diagonalization failed
- */
-class DiagonalizationError : public Error {
-public:
-   explicit DiagonalizationError(const std::string& message_) : message(message_) {}
-   virtual ~DiagonalizationError() {}
-   virtual std::string what() const { return message; }
-private:
-   std::string message;
-};
-
 namespace {
    double AbsSqrt_d(double x)
    {
