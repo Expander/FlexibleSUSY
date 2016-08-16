@@ -69,11 +69,14 @@ public:
    void add_upwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
    /// add downwards matching condition
    void add_downwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
-
+   /// get model at current scale
+   Two_scale_model* get_model() const;
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
    /// clear all internal data
    void reset();
+   /// run model at given scale to given scale
+   void run_to(double);
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set running precision calculator
@@ -88,6 +91,8 @@ private:
    public:
       virtual ~Slider() {}
       virtual void clear_problems() {}
+      virtual Two_scale_model* get_model() = 0;
+      virtual double get_scale() = 0;
       virtual void slide() {}
       virtual void set_precision(double) {}
    };
@@ -98,6 +103,8 @@ private:
          : model(m), constraint(c) {}
       virtual ~Constraint_slider() {}
       virtual void clear_problems();
+      virtual Two_scale_model* get_model();
+      virtual double get_scale();
       virtual void slide();
       virtual void set_precision(double);
    private:
@@ -107,28 +114,44 @@ private:
 
    struct Matching_up_slider : public Slider {
    public:
-      Matching_up_slider(Two_scale_model* m1, Two_scale_model* m2, Matching<Two_scale>* mc)
-         : model1(m1), model2(m2), matching(mc) {}
+      Matching_up_slider(Two_scale_model* low_, Two_scale_model* high_, Matching<Two_scale>* mc)
+         : low(low_), high(high_), matching(mc) {}
       virtual ~Matching_up_slider() {}
       virtual void clear_problems();
+      virtual Two_scale_model* get_model();
+      virtual double get_scale();
       virtual void slide();
       virtual void set_precision(double);
    private:
-      Two_scale_model *model1, *model2;
+      Two_scale_model *low, *high;
       Matching<Two_scale>* matching;
    };
 
    struct Matching_down_slider : public Slider {
    public:
-      Matching_down_slider(Two_scale_model* m1, Two_scale_model* m2, Matching<Two_scale>* mc)
-         : model1(m1), model2(m2), matching(mc) {}
+      Matching_down_slider(Two_scale_model* high_, Two_scale_model* low_, Matching<Two_scale>* mc)
+         : high(high_), low(low_), matching(mc) {}
       virtual ~Matching_down_slider() {}
       virtual void clear_problems();
+      virtual Two_scale_model* get_model();
+      virtual double get_scale();
       virtual void slide();
       virtual void set_precision(double);
    private:
-      Two_scale_model *model1, *model2;
+      Two_scale_model *high, *low;
       Matching<Two_scale>* matching;
+   };
+
+   struct Scale_comp {
+      bool operator()(std::shared_ptr<Slider> s1, std::shared_ptr<Slider> s2) {
+         return s1->get_scale() < s2->get_scale();
+      }
+   };
+
+   struct Scale_lower_bound_comp {
+      bool operator()(std::shared_ptr<Slider> s, double scale) {
+         return s->get_scale() < scale;
+      }
    };
 
    std::vector<std::shared_ptr<Slider> > sliders; ///< sliders to be run up and down
@@ -137,16 +160,18 @@ private:
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator; ///< RG running precision calculator
    double running_precision;           ///< RG running precision
-   Two_scale_model* model_at_this_scale; ///< model at current scale
+   double scale;                       ///< current scale
 
    RGFlow(const RGFlow&) {}
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
+   Two_scale_model* get_model(double) const; ///< returns model at given scale
    void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision
+   std::vector<std::shared_ptr<Slider> > sort_sliders() const; ///< sort the sliders w.r.t. to scale
 
    void run_sliders();                 ///< run all sliders
 };

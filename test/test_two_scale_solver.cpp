@@ -31,9 +31,10 @@ private:
 
 class Trivial_matching_condition: public Matching<Two_scale> {
 public:
-   Trivial_matching_condition()
+   Trivial_matching_condition(double scale_ = 100.)
       : mLow(0)
       , mHigh(0)
+      , scale(scale_)
       {}
    virtual ~Trivial_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
@@ -43,7 +44,7 @@ public:
       mLow->set_parameters(mHigh->get_parameters());
    }
    virtual double get_scale() const {
-      return 100.0;
+      return scale;
    }
    virtual void set_models(Two_scale_model* mLow_, Two_scale_model* mHigh_) {
       mLow = cast_model<Static_model*>(mLow_);
@@ -51,6 +52,7 @@ public:
    }
 private:
    Static_model *mLow, *mHigh;
+   double scale;
 };
 
 class Counting_model: public Two_scale_model {
@@ -225,4 +227,58 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       BOOST_CHECK_EQUAL(model2_c1.get_number_of_apply_calls(),
                         2 * number_of_iterations);
    }
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_zero_models )
+{
+   RGFlow<Two_scale> solver;
+
+   int status = 0;
+   try { solver.run_to(1000.); } catch (Error&) { status = 1; }
+
+   BOOST_CHECK_EQUAL(status, 0);
+   BOOST_CHECK_EQUAL(solver.get_model(), (void*)NULL);
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
+{
+   Static_model model(DoubleVector(10));
+   Counting_constraint cc(1000);
+   RGFlow<Two_scale> solver;
+   solver.add(&cc, &model);
+
+   int status = 0;
+   try { solver.run_to(1000.); } catch (Error&) { status = 1; }
+
+   BOOST_CHECK_EQUAL(status, 0);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model);
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
+{
+   Static_model model1(DoubleVector(10)), model2(DoubleVector(10));
+   Counting_constraint c1(50), c2(200);
+   Trivial_matching_condition mc(100);
+   const double mc_scale = mc.get_scale();
+
+   RGFlow<Two_scale> solver;
+   solver.add(&c1, &model1);
+   solver.add_upwards(&mc, &model1, &model2);
+   solver.add(&c2, &model2);
+   solver.add_downwards(&mc, &model2, &model1);
+
+   solver.run_to(c1.get_scale());
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to((c1.get_scale() + mc_scale) / 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to(mc_scale);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to((mc_scale + c2.get_scale()) / 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model2);
+
+   solver.run_to(c2.get_scale());
+   BOOST_CHECK_EQUAL(solver.get_model(), &model2);
 }

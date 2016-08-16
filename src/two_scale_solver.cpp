@@ -52,7 +52,7 @@ RGFlow<Two_scale>::RGFlow()
    , initial_guesser(NULL)
    , running_precision_calculator(NULL)
    , running_precision(1.0e-3)
-   , model_at_this_scale(NULL)
+   , scale(0)
 {
 }
 
@@ -259,6 +259,34 @@ unsigned int RGFlow<Two_scale>::get_max_iterations() const
 }
 
 /**
+ * Returns the pointer to the model at the given scale.
+ *
+ * @param scale scale for which corresponding model to return
+ * @return model at scale
+ */
+Two_scale_model* RGFlow<Two_scale>::get_model(double scale) const
+{
+   const std::vector<std::shared_ptr<Slider> > sorted_sliders(sort_sliders());
+
+   auto it = std::lower_bound(sorted_sliders.begin(), sorted_sliders.end(),
+                              scale, Scale_lower_bound_comp());
+
+   if (it == sorted_sliders.end())
+      return NULL;
+
+   return (*it)->get_model();
+}
+
+/**
+ * Returns the pointer to the model at the current scale.
+ * @return model at current scale
+ */
+Two_scale_model* RGFlow<Two_scale>::get_model() const
+{
+   return get_model(scale);
+}
+
+/**
  * @brief resets the solver to the initial condition
  *
  * The pointers to the models, matching conditions, convergence
@@ -274,13 +302,50 @@ void RGFlow<Two_scale>::reset()
    initial_guesser = NULL;
    running_precision_calculator = NULL;
    running_precision = 1.0e-3;
-   model_at_this_scale = NULL;
+   scale = 0;
+}
+
+/**
+ * Returns vector of sliders, sorted w.r.t. their scale.
+ *
+ * @return vector of sorted sliders
+ */
+std::vector<std::shared_ptr<RGFlow<Two_scale>::Slider> > RGFlow<Two_scale>::sort_sliders() const
+{
+   std::vector<std::shared_ptr<Slider> > sorted_sliders(sliders);
+
+   std::sort(sorted_sliders.begin(), sorted_sliders.end(), Scale_comp());
+
+   return sorted_sliders;
+}
+
+/**
+ * Run the model tower to the given scale.
+ *
+ * @param scale_ scale to run to
+ */
+void RGFlow<Two_scale>::run_to(double scale_)
+{
+   scale = scale_;
+
+   Two_scale_model* model = get_model();
+
+   if (model)
+      model->run_to(scale);
 }
 
 /* Implementation of sliders */
 
 void RGFlow<Two_scale>::Constraint_slider::clear_problems() {
    model->clear_problems();
+}
+
+Two_scale_model* RGFlow<Two_scale>::Constraint_slider::get_model() {
+   return model;
+}
+
+double RGFlow<Two_scale>::Constraint_slider::get_scale() {
+   return constraint->get_scale();
 }
 
 void RGFlow<Two_scale>::Constraint_slider::slide() {
@@ -295,41 +360,57 @@ void RGFlow<Two_scale>::Constraint_slider::set_precision(double p) {
 }
 
 void RGFlow<Two_scale>::Matching_up_slider::clear_problems() {
-   model1->clear_problems();
-   model2->clear_problems();
+   low->clear_problems();
+   high->clear_problems();
+}
+
+Two_scale_model* RGFlow<Two_scale>::Matching_up_slider::get_model() {
+   return low;
+}
+
+double RGFlow<Two_scale>::Matching_up_slider::get_scale() {
+   return matching->get_scale();
 }
 
 void RGFlow<Two_scale>::Matching_up_slider::slide() {
-   VERBOSE_MSG("> \trunning " << model1->name() << " to scale " << matching->get_scale() << " GeV");
-   model1->run_to(matching->get_scale());
-   VERBOSE_MSG("> \trunning " << model2->name() << " to scale " << matching->get_scale() << " GeV");
-   model2->run_to(matching->get_scale());
-   VERBOSE_MSG("> \tmatching " << model1->name() << " -> " << model2->name());
+   VERBOSE_MSG("> \trunning " << low->name() << " to scale " << matching->get_scale() << " GeV");
+   low->run_to(matching->get_scale());
+   VERBOSE_MSG("> \trunning " << high->name() << " to scale " << matching->get_scale() << " GeV");
+   high->run_to(matching->get_scale());
+   VERBOSE_MSG("> \tmatching " << low->name() << " -> " << high->name());
    matching->match_low_to_high_scale_model();
 }
 
 void RGFlow<Two_scale>::Matching_up_slider::set_precision(double p) {
-   model1->set_precision(p);
-   model2->set_precision(p);
+   low->set_precision(p);
+   high->set_precision(p);
 }
 
 void RGFlow<Two_scale>::Matching_down_slider::clear_problems() {
-   model1->clear_problems();
-   model2->clear_problems();
+   high->clear_problems();
+   low->clear_problems();
+}
+
+Two_scale_model* RGFlow<Two_scale>::Matching_down_slider::get_model() {
+   return low;
+}
+
+double RGFlow<Two_scale>::Matching_down_slider::get_scale() {
+   return matching->get_scale();
 }
 
 void RGFlow<Two_scale>::Matching_down_slider::slide() {
-   VERBOSE_MSG("> \trunning " << model1->name() << " to scale " << matching->get_scale() << " GeV");
-   model1->run_to(matching->get_scale());
-   VERBOSE_MSG("> \trunning " << model2->name() << " to scale " << matching->get_scale() << " GeV");
-   model2->run_to(matching->get_scale());
-   VERBOSE_MSG("> \tmatching " << model1->name() << " -> " << model2->name());
+   VERBOSE_MSG("> \trunning " << high->name() << " to scale " << matching->get_scale() << " GeV");
+   high->run_to(matching->get_scale());
+   VERBOSE_MSG("> \trunning " << low->name() << " to scale " << matching->get_scale() << " GeV");
+   low->run_to(matching->get_scale());
+   VERBOSE_MSG("> \tmatching " << high->name() << " -> " << low->name());
    matching->match_high_to_low_scale_model();
 }
 
 void RGFlow<Two_scale>::Matching_down_slider::set_precision(double p) {
-   model1->set_precision(p);
-   model2->set_precision(p);
+   high->set_precision(p);
+   low->set_precision(p);
 }
 
 } // namespace flexiblesusy
