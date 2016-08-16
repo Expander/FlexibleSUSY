@@ -19,22 +19,6 @@
 using namespace softsusy;
 using namespace Eigen;
 
-double lnLPoisson(unsigned k, double lambda) {
-  if (lambda < 6.66e-66) throw("In lnPoisson: lambda not positive\n");
-  double lnL = -lambda + double(k) * log(lambda);
-  for (unsigned i=2; i<=k; i++) lnL -= log(double(i));
-
-  return lnL;
-}
-
-double LPoisson(unsigned k, double lambda) {
-  if (lambda < 6.66e-66) throw("In lnPoisson: lambda not positive\n");
-  double L = exp(-lambda) * pow(lambda,int(k));
-  for (unsigned i=2; i<=k; i++) L /= double(i);
-
-  return L;
-}
-
 double calcDerivative(double (*func)(double), double x, double h, double
 		      *err){
   const double CON = 1.4, CON2 = CON * CON, BIG = 1.0e30, 

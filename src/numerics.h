@@ -26,14 +26,6 @@
 /// calculates root(1+x), where x<<1 accurately
 double accurateSqrt1Plusx(double x);
 
-/// Calculates log likelihood of a Poisson with k observed events, expecting
-/// lambda>0. 
-double lnLPoisson(unsigned k, double lambda);
-
-/// Calculates likelihood of a Poisson with k observed events, expecting
-/// lambda>0. 
-double LPoisson(unsigned k, double lambda);
-
 /// func is user-supplied, h is an estimate of what step-size to start with
 /// and err returns error flags
 double calcDerivative(double (*func)(double), 
