@@ -155,18 +155,20 @@ private:
 };
 
 /**
- * @class FailedDiagonalizationError
- * @brief Failed diagonalization of a matrix
+ * @class OutOfBoundsError
+ * @brief Out of bounds access
  */
-class FailedDiagonalizationError : public Error {
+class OutOfBoundsError : public Error {
 public:
-   explicit FailedDiagonalizationError()
+   explicit OutOfBoundsError(std::string msg_)
+      : msg(msg_)
       {}
-   virtual ~FailedDiagonalizationError() {}
+   virtual ~OutOfBoundsError() {}
    virtual std::string what() const {
-      return std::string("FailedDiagonalizationError:"
-                         " Mass matrix diagonalization failed");
+      return msg;
    }
+private:
+   std::string msg;
 };
 
 }
