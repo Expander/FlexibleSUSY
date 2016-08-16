@@ -98,7 +98,7 @@ void QedQcd::runto_safe(double scale, double eps)
 {
    if (runto(scale, eps)) {
       throw flexiblesusy::NonPerturbativeRunningQedQcdError(
-         std::string("Error: Non-perturbative running to Q = ")
+         std::string("Non-perturbative running to Q = ")
          + flexiblesusy::ToString(scale)
          + " during determination of the SM(5) parameters.");
    }
@@ -296,7 +296,7 @@ double QedQcd::extractRunningMb(double alphasMb) {
 
   if (displayMu() != mbPole) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractRunningMb called at scale "
+    ii << "QedQcd::extractRunningMb called at scale "
          << displayMu() << " instead of mbpole\n";
     throw flexiblesusy::SetupError(ii.str());
   }
@@ -322,7 +322,7 @@ double QedQcd::extractPoleMb(double alphasMb) {
 
   if (displayMu() != displayMass(mBottom)) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractPoleMb called at scale " << displayMu() <<
+    ii << "QedQcd::extractPoleMb called at scale " << displayMu() <<
       " instead of mb(mb)\n";
     throw flexiblesusy::SetupError(ii.str());
   }
@@ -488,7 +488,7 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
 
    if (!converged && max_iterations > 0) {
       std::string msg =
-         "Error: Iteration to determine SM(5) parameters did not"
+         "Iteration to determine SM(5) parameters did not"
          " converge after " + std::to_string(max_iterations) +
          " iterations";
       throw flexiblesusy::NoConvergenceError(max_iterations, msg);
