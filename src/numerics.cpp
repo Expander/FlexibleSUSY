@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 #include "numerics.h"
 #include "dilog.hpp"
+#include "error.hpp"
 #include "rk.hpp"
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
@@ -741,7 +742,7 @@ int *ivector(long nl, long nh) {
 	int *v;
 
 	v=(int *)malloc((size_t) ((nh-nl+2)*sizeof(int)));
-	if (!v) throw("allocation failure in ivector()\n");
+	if (!v) throw flexiblesusy::OutOfMemoryError("allocation failure in ivector()");
 	return v-nl+1;
 }
 
