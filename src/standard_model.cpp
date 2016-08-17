@@ -46,7 +46,7 @@
 #include <algorithm>
 
 #ifdef ENABLE_THREADS
-#include <future>
+#include <thread>
 #endif
 
 #include <gsl/gsl_multiroots.h>
@@ -664,15 +664,24 @@ void Standard_model::calculate_pole_masses()
 #ifdef ENABLE_THREADS
    thread_exception = 0;
 
-   auto fut_MVG = std::async(Thread(this, &Standard_model::calculate_MVG_pole));
-   auto fut_MFv = std::async(Thread(this, &Standard_model::calculate_MFv_pole));
-   auto fut_Mhh = std::async(Thread(this, &Standard_model::calculate_Mhh_pole));
-   auto fut_MVP = std::async(Thread(this, &Standard_model::calculate_MVP_pole));
-   auto fut_MVZ = std::async(Thread(this, &Standard_model::calculate_MVZ_pole));
-   auto fut_MFd = std::async(Thread(this, &Standard_model::calculate_MFd_pole));
-   auto fut_MFu = std::async(Thread(this, &Standard_model::calculate_MFu_pole));
-   auto fut_MFe = std::async(Thread(this, &Standard_model::calculate_MFe_pole));
-   auto fut_MVWp = std::async(Thread(this, &Standard_model::calculate_MVWp_pole));
+   std::thread thread_MVG(Thread(this, &Standard_model::calculate_MVG_pole));
+   std::thread thread_MFv(Thread(this, &Standard_model::calculate_MFv_pole));
+   std::thread thread_Mhh(Thread(this, &Standard_model::calculate_Mhh_pole));
+   std::thread thread_MVP(Thread(this, &Standard_model::calculate_MVP_pole));
+   std::thread thread_MVZ(Thread(this, &Standard_model::calculate_MVZ_pole));
+   std::thread thread_MFd(Thread(this, &Standard_model::calculate_MFd_pole));
+   std::thread thread_MFu(Thread(this, &Standard_model::calculate_MFu_pole));
+   std::thread thread_MFe(Thread(this, &Standard_model::calculate_MFe_pole));
+   std::thread thread_MVWp(Thread(this, &Standard_model::calculate_MVWp_pole));
+   thread_MVG.join();
+   thread_MFv.join();
+   thread_Mhh.join();
+   thread_MVP.join();
+   thread_MVZ.join();
+   thread_MFd.join();
+   thread_MFu.join();
+   thread_MFe.join();
+   thread_MVWp.join();
 
    if (thread_exception != 0)
       std::rethrow_exception(thread_exception);
