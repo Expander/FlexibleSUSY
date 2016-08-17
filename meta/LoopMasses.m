@@ -12,6 +12,7 @@ CreateRunningDRbarMassFunctions::usage="";
 CallCalculateDRbarMass::usage="";
 CallPoleMassFunction::usage="";
 CallThreadedPoleMassFunction::usage="";
+JoinLoopMassFunctionThread::usage="";
 CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
