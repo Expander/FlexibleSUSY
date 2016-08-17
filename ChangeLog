@@ -22,6 +22,10 @@ Flexiblesusy-1.5.2 [not released yet]
    FlexibleSUSY[13] = 1 and FlexibleSUSY[4] > 1: 2L QCD correction
    FlexibleSUSY[13] = 2 and FlexibleSUSY[4] > 2: 3L QCD correction
 
+ * Feature (commit 1cc1880): Better thread scheduling during
+   calculation of pole masses, which avoids.  This can give a speed-up
+   of up to 30% for MSSM.
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
