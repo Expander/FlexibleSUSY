@@ -57,6 +57,33 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
+AddMtPoleQCDCorrections[1, expr_] := "\
+double qcd_1l = 0.;
+
+{
+   const double currentScale = get_scale();
+   qcd_1l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
+AddMtPoleQCDCorrections[2, expr_] := "\
+double qcd_2l = 0.;
+
+if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+   const double currentScale = get_scale();
+   qcd_2l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
+AddMtPoleQCDCorrections[3, expr_] := "\
+double qcd_3l = 0.;
+
+if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
+   const double currentScale = get_scale();
+   qcd_3l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
 Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
@@ -86,7 +113,7 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
               _String, _String, _String, momentum_String, type_] :=
     Module[{massName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
-            qcdOneLoop, qcdTwoLoop
+            qcdOneLoop, qcdTwoLoop, qcdThreeLoop
            },
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
@@ -94,25 +121,20 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
            topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
            qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
            qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
-"\
-const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
-const double currentScale = get_scale();
-
-const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop] <> ";
-
-double qcd_2l = 0.;
-
-if (add_2loop_corrections) {
-   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop] <> ";
-}
-
+           qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
+                             Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
+                                          Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                             0];
+           AddMtPoleQCDCorrections[1, qcdOneLoop] <> "\n" <>
+           AddMtPoleQCDCorrections[2, qcdTwoLoop] <> "\n" <>
+           AddMtPoleQCDCorrections[3, qcdThreeLoop] <> "
 const double p = " <> momentum <> ";
 const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[topSelfEnergyFunctionS  <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p)",type] <> ";
 const auto M_loop = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
- - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n
+ - " <> massMatrixName <> " * (qcd_1l + qcd_2l + qcd_3l);\n
 PHYSICAL(" <> massName <> ") = calculate_singlet_mass(M_loop);\n"
           ];
 
@@ -465,19 +487,13 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
-              qcdCorrections = "\
-const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
-const double currentScale = get_scale();
-
-const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
-
-double qcd_2l = 0.;
-
-if (add_2loop_corrections) {
-   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
-}
-
-";
+              qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
+                                Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
+                                             Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                                0];
+              qcdCorrections = AddMtPoleQCDCorrections[1, qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
+                               AddMtPoleQCDCorrections[2, qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
+                               AddMtPoleQCDCorrections[3, qcdThreeLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n";
              ];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
@@ -515,7 +531,7 @@ if (add_2loop_corrections) {
                                   If[topTwoLoop,
                                      selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>
-                                     "delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l);\n"
+                                     "delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l + qcd_3l);\n"
                                      ,
                                      "const " <> selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n"
@@ -778,16 +794,13 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
 CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "std::thread thread_" <> massStr <> "(Thread(" <> ptr <> ", &CLASSNAME::" <>
+           "auto fut_" <> massStr <> " = std::async(Thread(" <> ptr <> ", &CLASSNAME::" <>
            CreateLoopMassFunctionName[particle] <> "));\n"
           ];
 
-JoinLoopMassFunctionThread[particle_Symbol] :=
-    "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
-
 CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
-            callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
+            callSM = "", result},
            particles = GetLoopCorrectedParticles[states];
            smParticles = Select[particles, SARAH`SMQ[#]&];
            susyParticles = Complement[particles, smParticles];
@@ -801,14 +814,10 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
               ,
               (callSusy = callSusy <> CallThreadedPoleMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallThreadedPoleMassFunction[#])& /@ smParticles;
-              (joinSmThreads   = joinSmThreads   <> JoinLoopMassFunctionThread[#])& /@ smParticles;
-              (joinSusyThreads = joinSusyThreads <> JoinLoopMassFunctionThread[#])& /@ susyParticles;
               result = callSusy <> "\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
-                       IndentText[joinSmThreads] <>
-                       "}\n\n" <>
-                       joinSusyThreads;
+                       "}\n\n"
              ];
            Return[result];
           ];

@@ -152,15 +152,6 @@ public:
       }
    };
 
-   class ReadError : public Error {
-   public:
-      ReadError(const std::string& message_) : message(message_) {}
-      virtual ~ReadError() {}
-      virtual std::string what() const { return message; }
-   private:
-      std::string message;
-   };
-
    SLHA_io();
    ~SLHA_io() {}
 

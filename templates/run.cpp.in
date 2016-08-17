@@ -73,8 +73,8 @@ int main(int argc, const char* argv[])
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
-   } catch (const std::string& s) {
-      ERROR(s);
+   } catch (const Error& e) {
+      ERROR(e.what());
       return EXIT_FAILURE;
    }
 

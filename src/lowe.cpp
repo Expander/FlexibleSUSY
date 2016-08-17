@@ -9,6 +9,7 @@
 #include "lowe.h"
 #include "conversion.hpp"
 #include "ew_input.hpp"
+#include "error.hpp"
 #include "wrappers.hpp"
 
 namespace softsusy {
@@ -96,9 +97,10 @@ const DoubleVector QedQcd::display() const {
 void QedQcd::runto_safe(double scale, double eps)
 {
    if (runto(scale, eps)) {
-      throw std::string("Error: Non-perturbative running to Q = ")
+      throw flexiblesusy::NonPerturbativeRunningQedQcdError(
+         std::string("Non-perturbative running to Q = ")
          + flexiblesusy::ToString(scale)
-         + " during determination of the SM(5) parameters.";
+         + " during determination of the SM(5) parameters.");
    }
 }
 
@@ -172,10 +174,9 @@ istream & operator >>(istream &left, QedQcd &m) {
   m.setMass(mTop, getRunMtFromMz(mtpole, alphas));
 
   if (cmbmb == "?" && cmbpole == "?") {
-    ostringstream ii;
-    ii << "Error reading in low energy QCDQED object: must specify ";
-    ii << "running AND/OR pole bottom mass" << endl;
-    throw ii.str();
+     throw flexiblesusy::ReadError(
+        "Error reading in low energy QCDQED object: must specify "
+        "running AND/OR pole bottom mass");
   }
 
   // If you set one of the bottom mass parameters to be "?", it will calculate
@@ -295,9 +296,9 @@ double QedQcd::extractRunningMb(double alphasMb) {
 
   if (displayMu() != mbPole) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractRunningMb called at scale "
+    ii << "QedQcd::extractRunningMb called at scale "
          << displayMu() << " instead of mbpole\n";
-    throw ii.str();
+    throw flexiblesusy::SetupError(ii.str());
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391 and ZPC48 673
@@ -321,9 +322,9 @@ double QedQcd::extractPoleMb(double alphasMb) {
 
   if (displayMu() != displayMass(mBottom)) {
     ostringstream ii;
-    ii << "ERROR: QedQcd::extractPoleMb called at scale " << displayMu() <<
+    ii << "QedQcd::extractPoleMb called at scale " << displayMu() <<
       " instead of mb(mb)\n";
-    throw ii.str();
+    throw flexiblesusy::SetupError(ii.str());
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391
@@ -486,10 +487,11 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    runto_safe(scale, precision_goal);
 
    if (!converged && max_iterations > 0) {
-      std::ostringstream ostr;
-      ostr << "Error: Iteration to determine SM(5) parameters did not"
-         " converge after " << max_iterations;
-      throw ostr.str();
+      std::string msg =
+         "Iteration to determine SM(5) parameters did not"
+         " converge after " + std::to_string(max_iterations) +
+         " iterations";
+      throw flexiblesusy::NoConvergenceError(max_iterations, msg);
    }
 }
 
@@ -502,14 +504,6 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
 DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   using std::log;
   static const double INVPI = 1.0 / PI;
-  /*
-  if (displayMu() != MZ) {
-    ostringstream ii;
-    ii << "Error in lowe.cpp:QedQcd::getGaugeMu called with mu=" <<
-      displayMu() << " not MZ=" << MZ << endl;
-    throw ii.str();
-    }
-  */
   DoubleVector temp(1, 3);
 
   double a1, a2, aem = displayAlpha(ALPHA), m1 = displayMu();

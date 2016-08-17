@@ -484,6 +484,10 @@ ParticleIndexRule[par_, name_String] := {
     ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", "()"]
 };
 
+GenerationIndexRule[par_, name_String] :=
+    "@Generations(" ~~ name ~~ ")@" :>
+    ToString[TreeMasses`GetDimension[par]];
+
 GeneralReplacementRules[] :=
     Join[
     ParticleIndexRule[SARAH`VectorZ, "VectorZ"],
@@ -498,9 +502,28 @@ GeneralReplacementRules[] :=
     ParticleIndexRule[SARAH`PseudoScalarBoson, "PseudoScalarBoson"],
     ParticleIndexRule[SARAH`ChargedHiggs, "ChargedHiggs"],
     ParticleIndexRule[SARAH`TopSquark, "TopSquark"],
+    ParticleIndexRule[SARAH`BottomSquark, "BottomSquark"],
     ParticleIndexRule[SARAH`Sneutrino, "Sneutrino"],
     ParticleIndexRule[SARAH`Selectron, "Selectron"],
     ParticleIndexRule[SARAH`Gluino, "Gluino"],
+    {
+        GenerationIndexRule[SARAH`VectorZ, "VectorZ"],
+        GenerationIndexRule[SARAH`VectorW, "VectorW"],
+        GenerationIndexRule[SARAH`VectorP, "VectorP"],
+        GenerationIndexRule[SARAH`VectorG, "VectorG"],
+        GenerationIndexRule[SARAH`TopQuark, "TopQuark"],
+        GenerationIndexRule[SARAH`BottomQuark, "BottomQuark"],
+        GenerationIndexRule[SARAH`Electron, "Electron"],
+        GenerationIndexRule[SARAH`Neutrino, "Neutrino"],
+        GenerationIndexRule[SARAH`HiggsBoson, "HiggsBoson"],
+        GenerationIndexRule[SARAH`PseudoScalarBoson, "PseudoScalarBoson"],
+        GenerationIndexRule[SARAH`ChargedHiggs, "ChargedHiggs"],
+        GenerationIndexRule[SARAH`TopSquark, "TopSquark"],
+        GenerationIndexRule[SARAH`BottomSquark, "BottomSquark"],
+        GenerationIndexRule[SARAH`Sneutrino, "Sneutrino"],
+        GenerationIndexRule[SARAH`Selectron, "Selectron"],
+        GenerationIndexRule[SARAH`Gluino, "Gluino"]
+    },
     { "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
       "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
@@ -1039,12 +1062,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
-              twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.h\"\n";
+              twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n";
              ];
            If[FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
-              twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
+              twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
            setEWSBParametersFromGSLVector = EWSB`SetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
