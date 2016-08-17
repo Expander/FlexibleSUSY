@@ -795,7 +795,6 @@ CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            "std::thread thread_" <> massStr <> "(Thread(" <> ptr <> ", &CLASSNAME::" <>
-           "auto fut_" <> massStr <> " = std::async(Thread(" <> ptr <> ", &CLASSNAME::" <>
            CreateLoopMassFunctionName[particle] <> "));\n"
           ];
 
