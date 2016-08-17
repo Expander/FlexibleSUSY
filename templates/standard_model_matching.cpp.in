@@ -28,7 +28,7 @@
 #include <cmath>
 
 #ifdef ENABLE_THREADS
-#include <thread>
+#include <future>
 #endif
 
 using namespace flexiblesusy::standard_model;
@@ -201,17 +201,12 @@ static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standa
    model.clear_thread_exception();
    sm.clear_thread_exception();
 
-   std::thread thread_Standard_model_MFu(Standard_model::Thread(&sm, &Standard_model::calculate_MFu_pole));
-   std::thread thread_Standard_model_MFd(Standard_model::Thread(&sm, &Standard_model::calculate_MFd_pole));
-   std::thread thread_Standard_model_MFe(Standard_model::Thread(&sm, &Standard_model::calculate_MFe_pole));
-   std::thread thread_Standard_model_MVW(Standard_model::Thread(&sm, &Standard_model::calculate_MVWp_pole));
-   std::thread thread_Standard_model_MVZ(Standard_model::Thread(&sm, &Standard_model::calculate_MVZ_pole));
+   auto fut_Standard_model_MFu = std::async(Standard_model::Thread(&sm, &Standard_model::calculate_MFu_pole));
+   auto fut_Standard_model_MFd = std::async(Standard_model::Thread(&sm, &Standard_model::calculate_MFd_pole));
+   auto fut_Standard_model_MFe = std::async(Standard_model::Thread(&sm, &Standard_model::calculate_MFe_pole));
+   auto fut_Standard_model_MVW = std::async(Standard_model::Thread(&sm, &Standard_model::calculate_MVWp_pole));
+   auto fut_Standard_model_MVZ = std::async(Standard_model::Thread(&sm, &Standard_model::calculate_MVZ_pole));
 @callAllSMPoleMassFunctionsThreads@
-   thread_Standard_model_MFu.join();
-   thread_Standard_model_MFd.join();
-   thread_Standard_model_MFe.join();
-   thread_Standard_model_MVW.join();
-   thread_Standard_model_MVZ.join();
 
    model.rethrow_thread_exception();
    sm.rethrow_thread_exception();
