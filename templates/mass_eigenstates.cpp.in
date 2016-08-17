@@ -53,7 +53,7 @@
 #include <algorithm>
 
 #ifdef ENABLE_THREADS
-#include <thread>
+#include <future>
 #endif
 
 #include <gsl/gsl_multiroots.h>
