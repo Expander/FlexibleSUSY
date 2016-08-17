@@ -13,8 +13,7 @@ CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
            If[enablePoleMassThreads =!= True,
               result = StringJoin[LoopMasses`CallPoleMassFunction[#,"model."]& /@ particles];
               ,
-              result = StringJoin[LoopMasses`CallThreadedPoleMassFunction[#,"&model"]& /@ particles] <> "\n" <>
-                       StringJoin[LoopMasses`JoinLoopMassFunctionThread /@ particles];
+              result = StringJoin[LoopMasses`CallThreadedPoleMassFunction[#,"&model"]& /@ particles];
              ];
            result
           ];
