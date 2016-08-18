@@ -149,4 +149,35 @@ Mhh2 = CalcMh[45];
 
 TestEquality[Mhh1, Mhh2];
 
+Print["Testing Set[] function"];
+
+CalcMh[handle_] :=
+    Module[{spec},
+           spec = FSCMSSMCalculateSpectrum[handle];
+           If[spec === $Failed, 0,
+              (Pole[M[hh]] /. spec)[[1]]
+             ]
+          ];
+
+handle = FSCMSSMOpenHandle[
+    fsSettings -> settings,
+    fsSMParameters -> smInputs,
+    fsModelParameters -> {
+        m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+
+Mhh1 = CalcMh[handle];
+
+FSCMSSMSet[handle, TanBeta -> 10];
+
+Mhh2 = CalcMh[handle];
+
+TestEquality[Mhh1, Mhh2];
+
+FSCMSSMSet[handle, TanBeta -> 20];
+
+Mhh3 = CalcMh[handle];
+
+TestNonEquality[Mhh1, Mhh3];
+
 PrintTestSummary[];

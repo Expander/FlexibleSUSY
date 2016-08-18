@@ -627,6 +627,40 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
 /******************************************************************/
 
+DLLEXPORT int FS@ModelName@Set(
+   WolframLibraryData libData, mint Argc, MArgument* Args, MArgument /* Res */)
+{
+   if (Argc != 2)
+      return LIBRARY_TYPE_ERROR;
+
+   const Handle_id hid = MArgument_getInteger(Args[0]);
+   MTensor pars = MArgument_getMTensor(Args[1]);
+
+   if (libData->MTensor_getType(pars) != MType_Real ||
+       libData->MTensor_getRank(pars) != 1)
+      return LIBRARY_TYPE_ERROR;
+
+   const Handle_map::iterator handle = handles.find(hid);
+
+   if (handle == handles.end()) {
+      std::cerr << "Error: FS@ModelName@Set: Unknown handle: "
+                << hid << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
+   }
+
+   try {
+      handle->second = fill(libData->MTensor_getRealData(pars),
+                            libData->MTensor_getDimensions(pars)[0]);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      return LIBRARY_FUNCTION_ERROR;
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
    WolframLibraryData /* libData */, MLINK link)
 {

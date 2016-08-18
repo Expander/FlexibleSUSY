@@ -190,6 +190,39 @@ _Output_:
   Azero -> 0. }
 ~~~~~~~~~~~~~~~~~~~~
 
+\subsubsection FS_model_Set FS<model>Set
+
+Using the `FS<model>Set[]` function, the input parameters and settings
+associated to a certain handle can be modified.  The `FS<model>Set[]`
+function takes first as argument the handle, and as second argument
+the replacement list of new parameters / settings.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsModelParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+
+FSCMSSMGetInputParameters[handle]
+
+FSCMSSMSet[handle, TanBeta -> 20];
+
+FSCMSSMGetInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{m0 -> 125., m12 -> 500., TanBeta -> 10., SignMu -> 1, Azero -> 0.}
+
+{m0 -> 125., m12 -> 500., TanBeta -> 20., SignMu -> 1, Azero -> 0.}
+~~~~~~~~~~~~~~~~~~~~
+
 \subsubsection FS_model_CalculateSpectrum FS<model>CalculateSpectrum
 
 For each `<model>`, the `FS<model>CalculateSpectrum[handle]` function

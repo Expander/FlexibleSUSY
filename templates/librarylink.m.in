@@ -7,6 +7,8 @@ FS@ModelName@GetInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelN
 FS@ModelName@OpenHandleLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {{Real,1}}, Integer];
 FS@ModelName@CloseHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CloseHandle", {Integer}, Void];
 
+FS@ModelName@SetLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@Set", {Integer, {Real,1}}, Void];
+
 FS@ModelName@CalculateSpectrum = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateSpectrum", LinkObject, LinkObject];
 FS@ModelName@CalculateObservables = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CalculateObservables", LinkObject, LinkObject];
 
@@ -141,3 +143,17 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
 @setInputParameterArguments@
         }
 ];
+
+Options[FS@ModelName@Set] = Options[FS@ModelName@OpenHandle];
+
+FS@ModelName@Set[handle_Integer, a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List, r___] :=
+    FS@ModelName@Set[a, Sequence @@ s, r];
+
+FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
+    FS@ModelName@SetLib[
+        handle,
+        First /@ Options[FS@ModelName@Set] /.
+        { p } /.
+        FS@ModelName@GetSettings[handle] /.
+        FS@ModelName@GetSMInputParameters[handle] /.
+        FS@ModelName@GetInputParameters[handle]];
