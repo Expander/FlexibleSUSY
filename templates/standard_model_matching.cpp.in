@@ -41,48 +41,29 @@ namespace flexiblesusy {
 
 namespace {
 
+template <class T>
 class Loop_order_setter {
 public:
-   Loop_order_setter(
-      Standard_model* sm_, @ModelName@_mass_eigenstates* model_, unsigned loop_order_)
-      : sm(sm_), model(model_), loop_order(loop_order_)
+   Loop_order_setter(T& model_, unsigned loop_order_)
+      : model(model_), loop_order(loop_order_)
    {
-      assert(sm);
-      assert(model);
-
-      // store old loop orders
-      model_pole_mass_order = model->get_pole_mass_loop_order();
-      model_ewsb_order      = model->get_ewsb_loop_order();
-      sm_pole_mass_order    = sm->get_pole_mass_loop_order();
-      sm_ewsb_order         = sm->get_ewsb_loop_order();
-
-      // temporarily set loop order to `loop_order'
-      model->set_pole_mass_loop_order(loop_order);
-      model->set_ewsb_loop_order(loop_order);
-      sm->set_pole_mass_loop_order(loop_order);
-      sm->set_ewsb_loop_order(loop_order);
+      model_pole_mass_order = model.get_pole_mass_loop_order();
+      model_ewsb_order = model.get_ewsb_loop_order();
+      model.set_pole_mass_loop_order(loop_order);
+      model.set_ewsb_loop_order(loop_order);
    }
 
    ~Loop_order_setter() {
-      // reset loop order
-      model->set_pole_mass_loop_order(model_pole_mass_order);
-      model->set_ewsb_loop_order(model_ewsb_order);
-      sm->set_pole_mass_loop_order(sm_pole_mass_order);
-      sm->set_ewsb_loop_order(sm_ewsb_order);
-
-      model->calculate_DRbar_masses();
-      model->solve_ewsb();
-      sm->calculate_DRbar_masses();
-      sm->solve_ewsb();
+      model.set_pole_mass_loop_order(model_pole_mass_order);
+      model.set_ewsb_loop_order(model_ewsb_order);
+      model.calculate_DRbar_masses();
+      model.solve_ewsb();
    }
 private:
-   Standard_model* sm;
-   @ModelName@_mass_eigenstates* model;
+   T& model;
    unsigned loop_order;            ///< temporary loop order
    unsigned model_pole_mass_order; ///< old model pole mass loop order
    unsigned model_ewsb_order;      ///< old model EWSB loop order
-   unsigned sm_pole_mass_order;    ///< old SM pole mass loop order
-   unsigned sm_ewsb_order;         ///< old SM EWSB loop order
 };
 
 } // anonymous namespace
@@ -123,7 +104,8 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    }
 
    // temporarily set loop order to `loop_order'
-   Loop_order_setter los(&sm, &model, loop_order);
+   Loop_order_setter<Standard_model> los_sm(sm, loop_order);
+   Loop_order_setter<@ModelName@_mass_eigenstates> los_model(model, loop_order);
 
    match_high_to_low_scale_model(sm, model, idx);
 
@@ -241,7 +223,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    }
 
    // temporarily set loop order to `loop_order'
-   Loop_order_setter los(&sm, &model, loop_order);
+   Loop_order_setter<Standard_model> los_sm(sm, loop_order);
+   Loop_order_setter<@ModelName@_mass_eigenstates> los_model(model, loop_order);
 
    match_low_to_high_scale_model(model, sm);
 
