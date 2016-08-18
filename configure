@@ -1812,6 +1812,7 @@ find_symbol_using_pkgconfig() {
     local pkg
     local ldpaths
     local libnames
+    local pkg_flags=$([ "x$enable_static" = xyes ] && echo "--static")
     pkg="$1"
     linker_flags=""
     type pkg-config > /dev/null 2>&1 || {
@@ -1822,15 +1823,15 @@ find_symbol_using_pkgconfig() {
 	logmsg "pkg-config does not manage $pkg"
 	return 1
     }
-    ldpaths=$(pkg-config --libs-only-L "$pkg")
-    libnames=$(pkg-config --libs-only-l "$pkg")
+    ldpaths=$(pkg-config "$pkg_flags" --libs-only-L "$pkg")
+    libnames=$(pkg-config "$pkg_flags" --libs-only-l "$pkg")
     shift
     for symbol; do
 	for dopt in $default_lib_paths $ldpaths; do
 	    for lopt in $libnames; do
 		if check_symbol "$symbol" "$lopt" "$dopt"; then
 		    logmsg "found $symbol in $dopt $lopt"
-		    linker_flags=$(pkg-config --libs "$pkg")
+		    linker_flags=$(pkg-config "$pkg_flags" --libs "$pkg")
 		    continue 3
 		fi
 	    done
