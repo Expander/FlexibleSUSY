@@ -793,9 +793,12 @@ CallThreadedPoleMassFunction[particle_Symbol] :=
            CreateLoopMassFunctionName[particle] <> ", this);\n"
           ];
 
+JoinLoopMassFunctionThread[particle_Symbol] :=
+    "fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".get();\n";
+
 CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
-            callSM = "", result},
+            callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
            smParticles = Select[particles, SARAH`SMQ[#]&];
            susyParticles = Complement[particles, smParticles];
@@ -809,10 +812,14 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
               ,
               (callSusy = callSusy <> CallThreadedPoleMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallThreadedPoleMassFunction[#])& /@ smParticles;
+              (joinSmThreads   = joinSmThreads   <> JoinLoopMassFunctionThread[#])& /@ smParticles;
+              (joinSusyThreads = joinSusyThreads <> JoinLoopMassFunctionThread[#])& /@ susyParticles;
               result = callSusy <> "\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
-                       "}\n";
+                       IndentText[joinSmThreads] <>
+                       "}\n\n" <>
+                       joinSusyThreads;
              ];
            Return[result];
           ];
