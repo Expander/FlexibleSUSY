@@ -101,6 +101,7 @@ options="                    \
    enable_silent             \
    enable_shared_libs        \
    enable_sqlite             \
+   enable_static             \
    enable_threads            \
    enable_tsil               \
    enable_verbose            \
@@ -127,6 +128,7 @@ enable_meta="yes"
 enable_silent="no"
 enable_sqlite="automatic"
 enable_shared_libs="no"
+enable_static="no"
 enable_threads="yes"
 enable_tsil="automatic"
 enable_verbose="no"
@@ -164,8 +166,6 @@ FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
-LDFLAGS=""
-LDLIBS=""
 CXX="g++"
 CC="gcc"
 EIGENFLAGS=""
@@ -179,12 +179,18 @@ OPTIONAL_MODULES=""
 pthread_lib_dir=""
 STATIC_LIB_EXT=".a"
 STATIC_LIB_CMD="ar cru"
+STATIC_LDFLAGS="-static"
+STATIC_LDLIBS="-ldl"
 SHARED_LIB_EXT=".so"
 SHARED_LIB_CMD="$CC -shared -o"
+SHARED_LDFLAGS=""
+SHARED_LDLIBS=""
 MODULE_LIBEXT="$STATIC_LIB_EXT"
 MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
 LIBLNK_LIBEXT="$SHARED_LIB_EXT"
 LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
+LDFLAGS="$SHARED_LDFLAGS"
+LDLIBS="$SHARED_LDLIBS"
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -1600,6 +1606,18 @@ check_fortran_libs() {
 
 #_____________________________________________________________________
 check_linking() {
+    if [ "x$enable_static" = xyes ] ; then
+        # static linking requires static libraries
+        [ "x$enable_shared_libs" = xyes ] && \
+            message "Note: Static libraries will be created, because they are needed for static linking (--enable-static)."
+        enable_shared_libs=no
+        LDFLAGS="$STATIC_LDFLAGS"
+        LDLIBS="$STATIC_LDLIBS"
+    else
+        LDFLAGS="$SHARED_LDFLAGS"
+        LDLIBS="$SHARED_LDLIBS"
+    fi
+
     if [ "x$enable_shared_libs" = xyes ] ; then
         MODULE_LIBEXT="$SHARED_LIB_EXT"
         MODULE_MAKE_LIB_CMD="$SHARED_LIB_CMD"
@@ -2194,6 +2212,7 @@ replace_markers() {
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
 	-e "s|@ENABLE_SHARED_LIBS@|$enable_shared_libs|" \
+	-e "s|@ENABLE_STATIC@|$enable_static|"           \
 	-e "s|@MATH@|$MATH|"               \
 	-e "s|@MODULE_LIBEXT@|$MODULE_LIBEXT|"  \
 	-e "s|@MODULE_MAKE_LIB_CMD@|$MODULE_MAKE_LIB_CMD|" \
@@ -2230,6 +2249,7 @@ cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
   shared-libs       Create shared libraries (default: $enable_shared_libs)
+  static            Create statically linked executables (default: $enable_static)
   threads           Enable multi-threading (default: $enable_threads)
   tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
@@ -2256,8 +2276,6 @@ Package directories, compilation settings and model selection
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
-  --with-ldflags=           Linker flags (default: $LDFLAGS)
-  --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
 EOF
@@ -2273,10 +2291,14 @@ cat <<EOF
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
   --with-pthread-libdir=    Path to search for pthread library
+  --with-shared-ldflags=    Linker flags for shared library linking (default: $SHARED_LDFLAGS)
+  --with-shared-ldlibs=     Additional libraries to be linked during shared library linking (default: $SHARED_LDLIBS)
   --with-shared-lib-cmd=    Command to make shared library (default: $SHARED_LIB_CMD)
   --with-shared-lib-ext=    File extension for shared library (default: $SHARED_LIB_EXT)
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
+  --with-static-ldflags=    Linker flags for static linking (default: $STATIC_LDFLAGS)
+  --with-static-ldlibs=     Additional libraries to be linked during static linking (default: $STATIC_LDLIBS)
   --with-static-lib-cmd=    Command to make static library (default: $STATIC_LIB_CMD)
   --with-static-lib-ext=    File extension for static library (default: $STATIC_LIB_EXT)
   --with-tsil-libdir=       Path to search for TSIL library
@@ -2367,14 +2389,16 @@ if test $# -gt 0 ; then
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
-            --with-ldflags=*)        LDFLAGS=$optarg ;;
-            --with-ldlibs=*)         LDLIBS=$optarg ;;
+            --with-static-ldflags=*) STATIC_LDFLAGS=$optarg ;;
+            --with-static-ldlibs=*)  STATIC_LDLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
+            --with-shared-ldflags=*) SHARED_LDFLAGS=$optarg ;;
+            --with-shared-ldlibs=*)  SHARED_LDLIBS=$optarg ;;
             --with-shared-lib-cmd=*) SHARED_LIB_CMD=$optarg ;;
             --with-shared-lib-ext=*) SHARED_LIB_EXT=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;

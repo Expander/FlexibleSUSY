@@ -241,19 +241,37 @@ Statically linked executables
 =============================
 
 External libraries can be statically linked to the spectrum generator
-executables by setting linker specific flags in LDFLAGS.  On some
-systems additional libraries have to be linked to the executables in
-such cases.  In FlexibleSUSY such additional libraries can be
-specified in the variable LDLIBS.
+executables by passing --enable-static to configure.
 
 Example (using g++ on Debian Jessie):
 
-   $ ./configure --with-models=CMSSM \
-     --with-ldflags="-static" \
-     --with-ldlibs="-lquadmath -ldl"
+   $ ./configure --with-models=CMSSM --enable-static
 
-This will create a standalone executable which does not depend on
-dynamic libraries.
+If --enable-static is used, the following linker flags and additional
+libraries will be used:
+
+   LDFLAGS = -static
+   LDLIBS  = -ldl
+
+These linker specific flags and additional libraries can be
+overwritten using
+
+   --with-static-ldflags=
+   --with-static-ldlibs=
+
+Example:
+
+   $ ./configure --with-models=CMSSM \
+     --enable-static \
+     --with-static-ldflags="-static" \
+     --with-static-ldlibs="-ldl"
+
+In case of dynamic linking, the options
+
+   --with-shared-ldflags=
+   --with-shared-ldlibs=
+
+must be used to set LDFLAGS and LDLIBS.
 
 
 Looptools
