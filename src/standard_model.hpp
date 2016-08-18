@@ -516,24 +516,6 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-#ifdef ENABLE_THREADS
-   struct Thread {
-      typedef void(Standard_model::*Memfun_t)();
-      Standard_model* model;
-      Memfun_t fun;
-
-      Thread(Standard_model* model_, Memfun_t fun_)
-         : model(model_), fun(fun_) {}
-      void operator()() {
-         try {
-            (model->*fun)();
-         } catch (...) {
-            model->thread_exception = std::current_exception();
-         }
-      }
-   };
-#endif
-
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
@@ -546,9 +528,6 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    softsusy::QedQcd qedqcd;
    Physical_input input;
-#ifdef ENABLE_THREADS
-   std::exception_ptr thread_exception;
-#endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);

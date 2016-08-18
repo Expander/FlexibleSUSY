@@ -33,6 +33,7 @@
 #include "fixed_point_iterator.hpp"
 #include "gsl_utils.hpp"
 #include "config.h"
+#include "parallel.hpp"
 #include "pv.hpp"
 #include "functors.hpp"
 #include "ew_input.hpp"
@@ -44,10 +45,6 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-
-#ifdef ENABLE_THREADS
-#include <thread>
-#endif
 
 #include <gsl/gsl_multiroots.h>
 
@@ -97,9 +94,6 @@ Standard_model::Standard_model()
    , two_loop_corrections()
    , qedqcd()
    , input()
-#ifdef ENABLE_THREADS
-   , thread_exception()
-#endif
    , g1(0), g2(0), g3(0), Lambdax(0), Yu(Eigen::Matrix<double,3,3>::Zero()), Yd
    (Eigen::Matrix<double,3,3>::Zero()), Ye(Eigen::Matrix<double,3,3>::Zero())
    , mu2(0), v(0)
@@ -135,9 +129,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    , two_loop_corrections()
    , qedqcd()
    , input()
-#ifdef ENABLE_THREADS
-   , thread_exception()
-#endif
    , g1(g1_), g2(g2_), g3(g3_), Lambdax(Lambdax_), Yu(Yu_), Yd(Yd_), Ye(Ye_)
    , mu2(mu2_), v(v_)
    , MVG(0), MHp(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), Mhh(0), MVP
@@ -662,29 +653,27 @@ void Standard_model::calculate_DRbar_parameters()
 void Standard_model::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   thread_exception = 0;
+   typedef void (Standard_model::*Mem_fun_t)();
+   typedef Standard_model* Obj_ptr_t;
 
-   std::thread thread_MVG(Thread(this, &Standard_model::calculate_MVG_pole));
-   std::thread thread_MFv(Thread(this, &Standard_model::calculate_MFv_pole));
-   std::thread thread_Mhh(Thread(this, &Standard_model::calculate_Mhh_pole));
-   std::thread thread_MVP(Thread(this, &Standard_model::calculate_MVP_pole));
-   std::thread thread_MVZ(Thread(this, &Standard_model::calculate_MVZ_pole));
-   std::thread thread_MFd(Thread(this, &Standard_model::calculate_MFd_pole));
-   std::thread thread_MFu(Thread(this, &Standard_model::calculate_MFu_pole));
-   std::thread thread_MFe(Thread(this, &Standard_model::calculate_MFe_pole));
-   std::thread thread_MVWp(Thread(this, &Standard_model::calculate_MVWp_pole));
-   thread_MVG.join();
-   thread_MFv.join();
-   thread_Mhh.join();
-   thread_MVP.join();
-   thread_MVZ.join();
-   thread_MFd.join();
-   thread_MFu.join();
-   thread_MFe.join();
-   thread_MVWp.join();
-
-   if (thread_exception != 0)
-      std::rethrow_exception(thread_exception);
+   auto fut_MVG = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVG_pole, this);
+   auto fut_MFv = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFv_pole, this);
+   auto fut_Mhh = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_Mhh_pole, this);
+   auto fut_MVP = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVP_pole, this);
+   auto fut_MVZ = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVZ_pole, this);
+   auto fut_MFd = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFd_pole, this);
+   auto fut_MFu = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFu_pole, this);
+   auto fut_MFe = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFe_pole, this);
+   auto fut_MVWp = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVWp_pole, this);
+   fut_MVG.get();
+   fut_MFv.get();
+   fut_Mhh.get();
+   fut_MVP.get();
+   fut_MVZ.get();
+   fut_MFd.get();
+   fut_MFu.get();
+   fut_MFe.get();
+   fut_MVWp.get();
 #else
    
    calculate_MVG_pole();

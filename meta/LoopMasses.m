@@ -789,12 +789,12 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
 CallThreadedPoleMassFunction[particle_Symbol] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::" <>
-           CreateLoopMassFunctionName[particle] <> "));\n"
+           "auto fut_" <> massStr <> " = run_async<Mem_fun_t, Obj_ptr_t>(&CLASSNAME::" <>
+           CreateLoopMassFunctionName[particle] <> ", this);\n"
           ];
 
 JoinLoopMassFunctionThread[particle_Symbol] :=
-    "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
+    "fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".get();\n";
 
 CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",

@@ -41,6 +41,7 @@
 #include "fixed_point_iterator.hpp"
 #include "gsl_utils.hpp"
 #include "config.h"
+#include "parallel.hpp"
 #include "pv.hpp"
 #include "functors.hpp"
 
@@ -51,10 +52,6 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-
-#ifdef ENABLE_THREADS
-#include <thread>
-#endif
 
 #include <gsl/gsl_multiroots.h>
 
@@ -89,9 +86,6 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    , physical()
    , problems(@ModelName@_info::particle_names)
    , two_loop_corrections()
-#ifdef ENABLE_THREADS
-   , thread_exception()
-#endif
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
@@ -573,12 +567,10 @@ void CLASSNAME::calculate_DRbar_parameters()
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   thread_exception = 0;
+   typedef void (CLASSNAME::*Mem_fun_t)();
+   typedef CLASSNAME* Obj_ptr_t;
 
 @callAllLoopMassFunctionsInThreads@
-
-   if (thread_exception != 0)
-      std::rethrow_exception(thread_exception);
 #else
 @callAllLoopMassFunctions@
 #endif
