@@ -285,7 +285,7 @@ void put_settings(const Model_data& data, MLINK link)
 
 void put_sm_input_parameters(const Model_data& data, MLINK link)
 {
-   MLPutFunction(link, "List", 19);
+   MLPutFunction(link, "List", 29);
 
    MLPutRuleTo(link, data.qedqcd.displayAlphaEmInput(), "alphaEmMZ");
    MLPutRuleTo(link, data.qedqcd.displayFermiConstant(), "GF");
