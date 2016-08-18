@@ -1310,20 +1310,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars, spectrumGen,
+    Module[{parseCmdLineOptions, printCommandLineOptions, inputPars,
             fillSMFermionPoleMasses = ""},
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
-           spectrumGen = If[FlexibleEFTHiggs === True,
-                            CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_standard_model",
-                            CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
-                           ];
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
-                            "@SpectrumGenerator@" -> spectrumGen,
                             "@fillSMFermionPoleMasses@" -> IndentText[IndentText[IndentText[fillSMFermionPoleMasses]]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
@@ -2533,11 +2528,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
+           If[FlexibleSUSY`FlexibleEFTHiggs === True,
+              spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
+             ];
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_" <> spectrumGeneratorInputFile}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_spectrum_generator.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],

@@ -76,7 +76,6 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_standard_model_matching.hpp \
 		$(DIR)/@CLASSNAME@_standard_model_two_scale_initial_guesser.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator_interface.hpp \
-		$(DIR)/@CLASSNAME@_standard_model_spectrum_generator.hpp \
 		$(DIR)/@CLASSNAME@_standard_model_two_scale_matching.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
 		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \

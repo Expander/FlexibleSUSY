@@ -42,10 +42,10 @@
 namespace flexiblesusy {
 
 template <class T>
-class @ModelName@_standard_model_spectrum_generator
+class @ModelName@_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
 public:
-   @ModelName@_standard_model_spectrum_generator()
+   @ModelName@_spectrum_generator()
       : @ModelName@_spectrum_generator_interface<T>()
       , solver()
       , susy_scale_constraint()
@@ -55,7 +55,7 @@ public:
       , susy_scale(0.)
       , low_scale(0.)
    {}
-   virtual ~@ModelName@_standard_model_spectrum_generator() {}
+   virtual ~@ModelName@_spectrum_generator() {}
 
    const standard_model::StandardModel<T>& get_eft() const { return eft; }
    double get_high_scale() const { return 0.; }
@@ -86,7 +86,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -231,7 +231,7 @@ void @ModelName@_standard_model_spectrum_generator<T>::run(const softsusy::QedQc
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_standard_model_spectrum_generator<T>::write_running_couplings(
+void @ModelName@_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, susy_scale);
