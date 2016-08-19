@@ -59,7 +59,7 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
-#define INPUT(parameter) this->get_input().parameter
+#define INPUT(parameter) get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 #define MODELPARAMETER(parameter) model->get_##parameter()
 
@@ -91,18 +91,18 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
       [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (this->ewsb_loop_order > 0)
-         this->calculate_DRbar_masses();
-      return this->ewsb_step();
+      if (ewsb_loop_order > 0)
+         calculate_DRbar_masses();
+      return ewsb_step();
    };
 
    tadpole_stepper =
       [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (this->ewsb_loop_order > 0)
-         this->calculate_DRbar_masses();
-      return this->tadpole_equations();
+      if (ewsb_loop_order > 0)
+         calculate_DRbar_masses();
+      return tadpole_equations();
    };
 }
 
