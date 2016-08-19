@@ -246,16 +246,6 @@ void put_message(MLINK link,
 
 /******************************************************************/
 
-static void put_error_message_and_output(
-   MLINK link, const std::string& function_name,
-   const std::string& message_str)
-{
-   put_message(link, function_name, "error", message_str);
-   put_error_output(link);
-}
-
-/******************************************************************/
-
 void put_settings(const Model_data& data, MLINK link)
 {
    MLPutFunction(link, "List", 17);
@@ -392,9 +382,6 @@ void calculate_spectrum(Model_data& data, MLINK link)
       qedqcd.to(qedqcd.displayPoleMZ());
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", e.what());
-      throw EInvalidSpectrum();
-   } catch (const std::string& s) {
-      put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
       throw EInvalidSpectrum();
    }
 
@@ -718,9 +705,8 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
 
       put_observables(observables, link);
    } catch (const flexiblesusy::Error& e) {
-      put_error_message_and_output(link, "FS@ModelName@CalculateObservables", e.what());
-   } catch (const std::string& str) {
-      put_error_message_and_output(link, "FS@ModelName@CalculateObservables", str);
+      put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;
