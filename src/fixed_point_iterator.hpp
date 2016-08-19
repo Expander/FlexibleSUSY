@@ -302,6 +302,9 @@ int Fixed_point_iterator<dimension,Convergence_tester>::find_fixed_point(
    const double start[dimension]
 )
 {
+   if (!function)
+      throw SetupError("Fixed_point_iterator: function not callable");
+
    int status;
    std::size_t iter = 0;
 
