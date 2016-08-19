@@ -168,6 +168,9 @@ Minimizer<dimension>::~Minimizer()
 template <std::size_t dimension>
 int Minimizer<dimension>::minimize(const double start[dimension])
 {
+   if (!function)
+      throw SetupError("Minimizer: function not callable");
+
    gsl_multimin_fminimizer *minimizer;
    gsl_multimin_function minex_func;
 

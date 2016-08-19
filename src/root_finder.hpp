@@ -163,6 +163,9 @@ Root_finder<dimension>::~Root_finder()
 template <std::size_t dimension>
 int Root_finder<dimension>::find_root(const double start[dimension])
 {
+   if (!function)
+      throw SetupError("Root_finder: function not callable");
+
    int status;
    std::size_t iter = 0;
    void* parameters = &function;
