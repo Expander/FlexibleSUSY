@@ -30,7 +30,7 @@
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
-   Minimizer<2> minimizer1(NULL, NULL, 100, 1.0e-2);
+   Minimizer<2> minimizer1(NULL, 100, 1.0e-2);
    Minimizer<2> minimizer2(minimizer1);
 }
 
@@ -101,32 +101,25 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   struct Chi_sqr_mH_mZ {
-      static double func(const gsl_vector* x, void* params) {
-         if (!is_finite(x))
-            return std::numeric_limits<double>::max();
+   auto func = [&model](const Eigen::Matrix<double,2,1>& x) -> double {
+      const double vd = x(0);
+      const double vu = x(1);
 
-         CMSSM<Two_scale>* model = static_cast<CMSSM<Two_scale>*>(params);
+      model.set_vd(vd);
+      model.set_vu(vu);
 
-         const double vd = gsl_vector_get(x, 0);
-         const double vu = gsl_vector_get(x, 1);
+      model.calculate_DRbar_masses();
+      model.calculate_Mhh_pole();
+      model.calculate_MVZ_pole();
 
-         model->set_vd(vd);
-         model->set_vu(vu);
+      const double mH = model.get_physical().Mhh(1);
+      const double mZ = model.get_physical().MVZ;
 
-         model->calculate_DRbar_masses();
-         model->calculate_Mhh_pole();
-         model->calculate_MVZ_pole();
-
-         const double mH = model->get_physical().Mhh(1);
-         const double mZ = model->get_physical().MVZ;
-
-         return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
-              + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH));
-      }
+      return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+         + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH));
    };
 
-   Minimizer<2> minimizer(Chi_sqr_mH_mZ::func, &model, 100, 1.0e-2);
+   Minimizer<2> minimizer(func, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);

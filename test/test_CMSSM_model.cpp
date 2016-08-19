@@ -1327,26 +1327,24 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double BMu_ss = softSusy.displayM3Squared();
 
    // prepare solvers
-   CMSSM<Two_scale>::EWSB_args params = {&model, ewsb_loop_order};
-
    EWSB_solver* solvers[] = {
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrid),
+         model.tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybrid),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
+         model.tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybridS),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
+         model.tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLBroyden),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
+         model.tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLNewton),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         model.ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         model.ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision)
    };
 
