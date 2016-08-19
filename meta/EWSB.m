@@ -39,9 +39,6 @@ GetEWSBParametersFromVector::usage="Create local copies of EWSB
 SetEWSBParametersFromLocalCopies::usage="Set model parameters from
 local copies";
 
-SetEWSBParametersFromGSLVector::usage="Set model parameters from GSL
-vector.";
-
 CreateEWSBParametersInitializationList::usage="Creates initialization
 list with EWSB output parameters";
 
@@ -782,16 +779,6 @@ SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
     Module[{result = ""},
            (result = result <> Parameters`SetParameter[#, CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
            result
-          ];
-
-SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
-                               gslIntputVector_String] :=
-    Module[{i, result = "", par},
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par = parametersFixedByEWSB[[i]];
-               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
-              ];
-           Return[result];
           ];
 
 CreateEWSBParametersInitializationComma[{}] := "";
