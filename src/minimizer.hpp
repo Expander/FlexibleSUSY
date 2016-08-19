@@ -42,15 +42,13 @@ namespace flexiblesusy {
  *
  * Example:
  * @code
- * struct Parabola {
- *    static double func(const gsl_vector* x, void*) {
- *       const double y = gsl_vector_get(x, 0);
- *       const double z = gsl_vector_get(x, 1);
- *       return (y - 5.0)*(y - 5.0) + (z - 1.0)*(z - 1.0);
- *    }
+ * auto parabola = [](const Eigen::Matrix<double,2,1>& x) -> double {
+ *    const double y = x(0);
+ *    const double z = x(1);
+ *    return Sqr(y - 5.0) + Sqr(z - 1.0);
  * };
  *
- * Minimizer<2> minimizer(Parabola::func, NULL, 100, 1.0e-5);
+ * Minimizer<2> minimizer(parabola, 100, 1.0e-5);
  * const double start[2] = { 10, 10 };
  * const int status = minimizer.minimize(start);
  * @endcode
@@ -58,10 +56,12 @@ namespace flexiblesusy {
 template <std::size_t dimension>
 class Minimizer : public EWSB_solver {
 public:
-   typedef std::function<double(Eigen::Matrix<double,dimension,1>)> Function_t;
+   typedef Eigen::Matrix<double,dimension,1> Vector_t;
+   typedef std::function<double(const Vector_t&)> Function_t;
+   enum Solver_type { GSLSimplex, GSLSimplex2, GSLSimplex2Rand };
 
    Minimizer();
-   Minimizer(Function_t, std::size_t, double, const gsl_multimin_fminimizer_type* solver_type_ = gsl_multimin_fminimizer_nmsimplex2);
+   Minimizer(Function_t, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
    Minimizer(const Minimizer&);
    virtual ~Minimizer();
 
@@ -70,7 +70,7 @@ public:
    void set_function(Function_t f) { function = f; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
-   void set_solver_type(const gsl_multimin_fminimizer_type* t) { solver_type = t; }
+   void set_solver_type(Solver_type t) { solver_type = t; }
    int minimize(const double[dimension]);
 
    // EWSB_solver interface methods
@@ -86,10 +86,11 @@ private:
    gsl_vector* step_size;      ///< GSL vector of initial step size
    void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
-   const gsl_multimin_fminimizer_type* solver_type; ///< GSL minimizer type
+   Solver_type solver_type;    ///< minimizer type
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
    static double gsl_function(const gsl_vector*, void*);
+   const gsl_multimin_fminimizer_type* solver_type_to_gsl_pointer() const;
 };
 
 /**
@@ -102,7 +103,7 @@ Minimizer<dimension>::Minimizer()
    , initial_step_size(1.0)
    , minimum_value(0.0)
    , function(NULL)
-   , solver_type(gsl_multimin_fminimizer_nmsimplex2)
+   , solver_type(GSLSimplex2)
 {
    minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
@@ -121,7 +122,7 @@ Minimizer<dimension>::Minimizer(
    Function_t function_,
    std::size_t max_iterations_,
    double precision_,
-   const gsl_multimin_fminimizer_type* solver_type_
+   Solver_type solver_type_
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
@@ -182,7 +183,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    minex_func.f = gsl_function;
    minex_func.params = &function;
 
-   minimizer = gsl_multimin_fminimizer_alloc(solver_type, dimension);
+   minimizer = gsl_multimin_fminimizer_alloc(solver_type_to_gsl_pointer(), dimension);
    gsl_multimin_fminimizer_set(minimizer, &minex_func, minimum_point, step_size);
 
    size_t iter = 0;
@@ -260,7 +261,7 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
       return std::numeric_limits<double>::max();
 
    Function_t* fun = static_cast<Function_t*>(params);
-   Eigen::Matrix<double,dimension,1> arg;
+   Vector_t arg;
    double result;
 
    for (std::size_t i = 0; i < dimension; ++i)
@@ -273,6 +274,21 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
    }
 
    return result;
+}
+
+template <std::size_t dimension>
+const gsl_multimin_fminimizer_type* Minimizer<dimension>::solver_type_to_gsl_pointer() const
+{
+   switch (solver_type) {
+   case GSLSimplex     : return gsl_multimin_fminimizer_nmsimplex;
+   case GSLSimplex2    : return gsl_multimin_fminimizer_nmsimplex2;
+   case GSLSimplex2Rand: return gsl_multimin_fminimizer_nmsimplex2rand;
+   default:
+      throw SetupError("Unknown minimizer solver type: "
+                       + std::to_string(solver_type));
+   }
+
+   return NULL;
 }
 
 } // namespace flexiblesusy

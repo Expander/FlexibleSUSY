@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
     * @param x touple (x,y)
     * @return f(x,y)
     */
-   auto func = [](EV2_t x) -> EV2_t {
+   auto func = [](const EV2_t& x) -> EV2_t {
       const double y = x(0);
       const double z = x(1);
       EV2_t f;
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
     * @param x touple (x,y)
     * @return f_1(x,y) + f_2(x,y)
     */
-   auto chi2 = [](EV2_t x) -> double {
+   auto chi2 = [](const EV2_t& x) -> double {
       const double y = x(0);
       const double z = x(1);
       const double chi2 = (y - 5.)*(y - 5.) + (z - 1.)*(z - 1.);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
     *
     * @return fixed point iteration update steps
     */
-   auto update = [](EV2_t x) -> EV2_t {
+   auto update = [](const EV2_t& x) -> EV2_t {
       const double y = x(0);
       const double z = x(1);
       EV2_t f;
@@ -78,13 +78,13 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    double start[dimension] = { 9, 9 };
 
    EWSB_solver* solvers[] = {
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_broyden),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybrid),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybridS),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLBroyden),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLNewton),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex2),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex2Rand),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(update, max_iterations, precision),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(update, max_iterations, precision)
    };
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
 BOOST_AUTO_TEST_CASE( test_perturbation )
 {
-   auto func = [](EV2_t x) -> EV2_t {
+   auto func = [](const EV2_t& x) -> EV2_t {
       const double y = x(0);
       const double z = x(1);
       EV2_t f;
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
     * @param x touple (x,y)
     * @return f_1(x,y) + f_2(x,y)
     */
-   auto chi2 = [func](EV2_t x) -> double {
+   auto chi2 = [func](const EV2_t& x) -> double {
       EV2_t f = func(x);
       const double chi2 = Sqr(f(0)) + Sqr(f(1));
       number_of_calls++;
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
     *
     * @return fixed point iteration update steps
     */
-   auto update = [](EV2_t x) -> EV2_t {
+   auto update = [](const EV2_t& x) -> EV2_t {
       const double y = x(0);
       const double z = x(1);
       EV2_t f;
@@ -166,13 +166,13 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    double start[dimension] = { 10, 10 };
 
    EWSB_solver* solvers[] = {
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_broyden),
-      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
-      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybrid),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybridS),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLBroyden),
+      new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLNewton),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex2),
+      new Minimizer<dimension>(chi2, max_iterations, precision, Minimizer<dimension>::GSLSimplex2Rand),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(update, max_iterations, precision),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(update, max_iterations, precision),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_tadpole<dimension> >(update, max_iterations, fixed_point_iterator::Convergence_tester_tadpole<dimension>(precision, func))

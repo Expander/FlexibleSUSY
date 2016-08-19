@@ -145,8 +145,8 @@ private:
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-   std::function<EWSB_vector_t(EWSB_vector_t)> ewsb_stepper;   ///< stepper for EWSB FPI
-   std::function<EWSB_vector_t(EWSB_vector_t)> tadpole_stepper;///< stepper for EWSB root finder
+   std::function<EWSB_vector_t(const EWSB_vector_t&)> ewsb_stepper;   ///< stepper for EWSB FPI
+   std::function<EWSB_vector_t(const EWSB_vector_t&)> tadpole_stepper;///< stepper for EWSB root finder
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);

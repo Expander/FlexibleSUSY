@@ -22,6 +22,7 @@
 #include <iostream>
 #include <cassert>
 #include <limits>
+#include <Eigen/Core>
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
@@ -113,10 +114,11 @@ private:
 template <std::size_t dimension>
 class Convergence_tester_tadpole {
 public:
-   typedef std::function<Eigen::Matrix<double,dimension,1>(Eigen::Matrix<double,dimension,1>)> Tadpole_function_t;
+   typedef Eigen::Matrix<double,dimension,1> Vector_t;
+   typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
    Convergence_tester_tadpole(double precision_,
-                              Tadpole_function_t tadpole_function_)
+                              Function_t tadpole_function_)
       : precision(precision_)
       , tadpole_function(tadpole_function_)
    {}
@@ -158,7 +160,7 @@ public:
 
 private:
    double precision;                 ///< precision goal
-   const Tadpole_function_t tadpole_function; ///< function to calculate tadpole
+   const Function_t tadpole_function; ///< function to calculate tadpole
 
    int check_tadpoles(const gsl_vector* x) const {
       gsl_vector* t = to_gsl_vector(tadpole_function(to_eigen_array(x)));
@@ -178,11 +180,10 @@ private:
  * @tparam Convergence_tester function for relative comparison
  *    of subsequent iteration steps
  *
- * The user has to provide the function (of which a fixed point
- * should be found) of the type \a Function_t. This function gets as
- * arguments a GSL vector of length \a dimension, a pointer to the
- * parameters (of type \a void*) and a GSL vector where the next
- * point must be stored.
+ * The user has to provide the function (of which a fixed point should
+ * be found) of the type \a Function_t. This function gets as
+ * arguments a Eigen vector of length \a dimension and returns a
+ * vector with the next point.
  *
  * @note The standard relative convergence criterion
  * \f$\text{MaxRelDiff}(x_{n+1}, x_{n}) < \text{precision}\f$ is not
@@ -195,7 +196,8 @@ private:
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
 class Fixed_point_iterator : public EWSB_solver {
 public:
-   typedef std::function<Eigen::Matrix<double,dimension,1>(Eigen::Matrix<double,dimension,1>)> Function_t;
+   typedef Eigen::Matrix<double,dimension,1> Vector_t;
+   typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
    Fixed_point_iterator();
    Fixed_point_iterator(Function_t, std::size_t, const Convergence_tester&);
@@ -300,9 +302,6 @@ int Fixed_point_iterator<dimension,Convergence_tester>::find_fixed_point(
    const double start[dimension]
 )
 {
-   assert(function && "Fixed_point_iterator<dimension,Convergence_tester>"
-          "::find_fixed_point: function pointer must not be zero!");
-
    int status;
    std::size_t iter = 0;
 
@@ -406,7 +405,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   Eigen::Matrix<double,dimension,1> arg, result;
+   Vector_t arg, result;
 
    for (std::size_t i = 0; i < dimension; ++i)
       arg(i) = gsl_vector_get(x, i);

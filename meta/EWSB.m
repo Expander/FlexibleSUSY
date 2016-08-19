@@ -646,16 +646,16 @@ CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPITadpole] :=
     "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations> >(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations>(ewsb_iteration_precision, tadpole_stepper))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLHybrid)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybridS] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrids)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLHybridS)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLBroyden] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_broyden)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLBroyden)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLNewton] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_dnewton)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLNewton)";
 
 CreateEWSBRootFinders[{}] :=
     Block[{},

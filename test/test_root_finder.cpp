@@ -13,7 +13,7 @@ typedef Eigen::Matrix<double,2,1> EV2_t;
 
 BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 {
-   auto parabola = [](EV2_t x) -> EV2_t {
+   auto parabola = [](const EV2_t& x) -> EV2_t {
       const double y = x(0);
       const double z = x(1);
       EV2_t f;
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
 static unsigned number_of_calls = 0;
 
-auto parabola = [](EV2_t x) -> EV2_t {
+auto parabola = [](const EV2_t& x) -> EV2_t {
    number_of_calls++;
    const double y = x(0);
    const double z = x(1);
@@ -48,9 +48,11 @@ BOOST_AUTO_TEST_CASE( test_number_of_calls )
    const double start[2] = { 10, 10 };
    int status = GSL_SUCCESS;
 
-   const gsl_multiroot_fsolver_type* solvers[] =
-      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids,
-       gsl_multiroot_fsolver_broyden, gsl_multiroot_fsolver_dnewton};
+   Root_finder<2>::Solver_type solvers[] =
+      { Root_finder<2>::GSLHybrid,
+        Root_finder<2>::GSLHybridS,
+        Root_finder<2>::GSLBroyden,
+        Root_finder<2>::GSLNewton };
 
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       number_of_calls = 0;

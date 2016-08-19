@@ -31,7 +31,6 @@
 #include "error.hpp"
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
-#include "gsl_utils.hpp"
 #include "config.h"
 #include "parallel.hpp"
 #include "pv.hpp"
@@ -45,8 +44,6 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
-
-#include <gsl/gsl_multiroots.h>
 
 namespace flexiblesusy {
 
@@ -112,7 +109,7 @@ Standard_model::Standard_model()
    set_number_of_parameters(numberOfParameters);
 
    ewsb_stepper =
-      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
       this->set_mu2(ewsb_pars(0));
       if (this->ewsb_loop_order > 0)
          this->calculate_DRbar_masses();
@@ -120,7 +117,7 @@ Standard_model::Standard_model()
    };
 
    tadpole_stepper =
-      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
       this->set_mu2(ewsb_pars(0));
       if (this->ewsb_loop_order > 0)
          this->calculate_DRbar_masses();
@@ -300,8 +297,8 @@ int Standard_model::solve_ewsb_iteratively()
 {
    std::unique_ptr<EWSB_solver> solvers[] = {
       std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden))
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);

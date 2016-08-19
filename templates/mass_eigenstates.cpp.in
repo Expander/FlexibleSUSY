@@ -52,8 +52,6 @@
 #include <memory>
 #include <algorithm>
 
-#include <gsl/gsl_multiroots.h>
-
 namespace flexiblesusy {
 
 using namespace @ModelName@_info;
@@ -90,7 +88,7 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
 @phasesInit@
 {
    ewsb_stepper =
-      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
       if (this->ewsb_loop_order > 0)
@@ -99,7 +97,7 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    };
 
    tadpole_stepper =
-      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
       if (this->ewsb_loop_order > 0)
