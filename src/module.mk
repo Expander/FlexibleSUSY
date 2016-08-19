@@ -88,6 +88,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
+		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \

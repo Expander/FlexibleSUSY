@@ -17,6 +17,7 @@
 #include "mycomplex.h"
 #include "xpr-vector.h"
 #include "xpr-matrix.h"
+#include "error.hpp"
 #include <iosfwd>
 #include <valarray>
 #include <sstream>
@@ -191,7 +192,7 @@ inline double & DoubleVector::operator() (int i) {
       ii << "Trying to access " << i << "th element of DoubleVector\n";
       ii << "start " << start << " end " << end;
       ii << *this;
-      throw ii.str();
+      throw OutOfBoundsError(ii.str());
   }
 #endif
   return x[i-start];
@@ -203,7 +204,7 @@ inline void DoubleVector::set(int i, double f) {
     {
       std::ostringstream ii;
       ii << "Cannot access " << i << "th element of vector " << *this;
-      throw ii.str();
+      throw OutOfBoundsError(ii.str());
     }
 #endif
   x[i-start] = f;
@@ -470,7 +471,7 @@ inline double DoubleMatrix::operator() (int i, int j) const {
     std::ostringstream ii;
     ii << "Trying to access " << i << "," << j << 
       "th element of DoubleMatrix\n" << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return elmt(i,j); 
@@ -482,7 +483,7 @@ inline double &  DoubleMatrix::operator() (int i, int j) {
     std::ostringstream ii;
     ii << "Trying to access " << i << "," << j << 
       "th element of DoubleMatrix\n" << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return elmt(i,j); 
@@ -494,7 +495,7 @@ inline double DoubleMatrix::display(int i, int j) const {
     std::ostringstream ii;
     ii << "Error: Requested display (" << i << "," << j << 
       ")th element of matrix " << *this; 
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return elmt(i,j); 
@@ -605,7 +606,7 @@ inline Complex & ComplexVector::operator() (int i) {
     ii << "Trying to access " << i << "th element of DoubleVector\n";
     ii << "start " << start << " end " << end;
     ii << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return x[i-start];
@@ -616,7 +617,7 @@ inline void ComplexVector::set(int i, Complex f) {
   if (i < start || i > end) {
     std::ostringstream ii;
     ii << "Cannot access " << i << "th element of vector " << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   x[i-start] = f;
@@ -764,7 +765,7 @@ inline Complex & ComplexMatrix::operator() (int i, int j) {
     std::ostringstream ii;
     ii << "Trying to access " << i << "," << j << 
       "th element of ComplexMatrix\n" << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return elmt(i,j); 
@@ -776,7 +777,7 @@ inline Complex ComplexMatrix::operator() (int i, int j) const {
     std::ostringstream ii;
     ii << "Trying to access " << i << "," << j << 
       "th element of ComplexMatrix\n" << *this;
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
   }
 #endif
   return elmt(i,j); 
@@ -788,7 +789,7 @@ inline Complex ComplexMatrix::display(int i, int j) const {
     std::ostringstream ii;
     ii << "Error: Requested display (" << i << "," << j << 
 	")th element of matrix " << *this; 
-    throw ii.str();
+    throw OutOfBoundsError(ii.str());
     }
 #endif
   return elmt(i,j); 

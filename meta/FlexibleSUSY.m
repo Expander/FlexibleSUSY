@@ -468,27 +468,55 @@ EvaluateUserInput[] :=
 GUTNormalization[coupling_] :=
     Parameters`GetGUTNormalization[coupling];
 
+ParticleIndexRule[par_, name_String] := {
+    "@" <> name <> "@" -> ToValidCSymbolString[par],
+    "@" <> name <> "_" ~~ num___ ~~ "@" /; StringFreeQ[num, "@"] :>
+    ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", ""],
+    "@" <> name <> "(" ~~ num___ ~~ ")@" /; StringFreeQ[num, "@"] :>
+    ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", "()"]
+};
+
+GenerationIndexRule[par_, name_String] :=
+    "@Generations(" ~~ name ~~ ")@" :>
+    ToString[TreeMasses`GetDimension[par]];
+
 GeneralReplacementRules[] :=
-    { "@VectorZ@"     -> ToValidCSymbolString[SARAH`VectorZ],
-      "@VectorP@"     -> ToValidCSymbolString[SARAH`VectorP],
-      "@VectorW@"     -> ToValidCSymbolString[SARAH`VectorW],
-      "@VectorG@"     -> ToValidCSymbolString[SARAH`VectorG],
-      "@TopQuark@"    -> ToValidCSymbolString[SARAH`TopQuark],
-      "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
-      "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
-      "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino],
-      "@HiggsBoson@"  -> ToValidCSymbolString[SARAH`HiggsBoson],
-      "@HiggsBoson_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`HiggsBoson] <> If[TreeMasses`GetDimension[SARAH`HiggsBoson] > 1, "(" <> num <> ")", ""],
-      "@PseudoScalarBoson@" -> ToValidCSymbolString[SARAH`PseudoScalarBoson],
-      "@ChargedHiggs@"   -> ToValidCSymbolString[SARAH`ChargedHiggs],
-      "@TopSquark@"      -> ToValidCSymbolString[SARAH`TopSquark],
-      "@TopSquark_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`TopSquark] <> If[TreeMasses`GetDimension[SARAH`TopSquark] > 1, "(" <> num <> ")", ""],
-      "@BottomSquark@"   -> ToValidCSymbolString[SARAH`BottomSquark],
-      "@BottomSquark_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`BottomSquark] <> If[TreeMasses`GetDimension[SARAH`BottomSquark] > 1, "(" <> num <> ")", ""],
-      "@Sneutrino@"      -> ToValidCSymbolString[SARAH`Sneutrino],
-      "@Selectron@"      -> ToValidCSymbolString[SARAH`Selectron],
-      "@Gluino@"         -> ToValidCSymbolString[SARAH`Gluino],
-      "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
+    Join[
+    ParticleIndexRule[SARAH`VectorZ, "VectorZ"],
+    ParticleIndexRule[SARAH`VectorW, "VectorW"],
+    ParticleIndexRule[SARAH`VectorP, "VectorP"],
+    ParticleIndexRule[SARAH`VectorG, "VectorG"],
+    ParticleIndexRule[SARAH`TopQuark, "TopQuark"],
+    ParticleIndexRule[SARAH`BottomQuark, "BottomQuark"],
+    ParticleIndexRule[SARAH`Electron, "Electron"],
+    ParticleIndexRule[SARAH`Neutrino, "Neutrino"],
+    ParticleIndexRule[SARAH`HiggsBoson, "HiggsBoson"],
+    ParticleIndexRule[SARAH`PseudoScalarBoson, "PseudoScalarBoson"],
+    ParticleIndexRule[SARAH`ChargedHiggs, "ChargedHiggs"],
+    ParticleIndexRule[SARAH`TopSquark, "TopSquark"],
+    ParticleIndexRule[SARAH`BottomSquark, "BottomSquark"],
+    ParticleIndexRule[SARAH`Sneutrino, "Sneutrino"],
+    ParticleIndexRule[SARAH`Selectron, "Selectron"],
+    ParticleIndexRule[SARAH`Gluino, "Gluino"],
+    {
+        GenerationIndexRule[SARAH`VectorZ, "VectorZ"],
+        GenerationIndexRule[SARAH`VectorW, "VectorW"],
+        GenerationIndexRule[SARAH`VectorP, "VectorP"],
+        GenerationIndexRule[SARAH`VectorG, "VectorG"],
+        GenerationIndexRule[SARAH`TopQuark, "TopQuark"],
+        GenerationIndexRule[SARAH`BottomQuark, "BottomQuark"],
+        GenerationIndexRule[SARAH`Electron, "Electron"],
+        GenerationIndexRule[SARAH`Neutrino, "Neutrino"],
+        GenerationIndexRule[SARAH`HiggsBoson, "HiggsBoson"],
+        GenerationIndexRule[SARAH`PseudoScalarBoson, "PseudoScalarBoson"],
+        GenerationIndexRule[SARAH`ChargedHiggs, "ChargedHiggs"],
+        GenerationIndexRule[SARAH`TopSquark, "TopSquark"],
+        GenerationIndexRule[SARAH`BottomSquark, "BottomSquark"],
+        GenerationIndexRule[SARAH`Sneutrino, "Sneutrino"],
+        GenerationIndexRule[SARAH`Selectron, "Selectron"],
+        GenerationIndexRule[SARAH`Gluino, "Gluino"]
+    },
+    { "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
       "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
       "@LeftUpMixingMatrix@"   -> ToValidCSymbolString[SARAH`UpMatrixL],
@@ -526,7 +554,8 @@ GeneralReplacementRules[] :=
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
-    };
+    }
+    ];
 
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
