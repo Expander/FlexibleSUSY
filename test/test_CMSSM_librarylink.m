@@ -172,12 +172,17 @@ FSCMSSMSet[handle, TanBeta -> 10];
 
 Mhh2 = CalcMh[handle];
 
-TestEquality[Mhh1, Mhh2];
-
-FSCMSSMSet[handle, TanBeta -> 20];
+FSCMSSMSet[handle, fsModelParameters -> { TanBeta -> 10 }];
 
 Mhh3 = CalcMh[handle];
 
-TestNonEquality[Mhh1, Mhh3];
+TestEquality[Mhh1, Mhh2];
+TestEquality[Mhh1, Mhh3];
+
+FSCMSSMSet[handle, TanBeta -> 20];
+
+Mhh4 = CalcMh[handle];
+
+TestNonEquality[Mhh1, Mhh4];
 
 PrintTestSummary[];
