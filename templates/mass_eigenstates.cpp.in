@@ -59,7 +59,7 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
-#define INPUT(parameter) get_input().parameter
+#define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 #define MODELPARAMETER(parameter) model->get_##parameter()
 
@@ -83,27 +83,24 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    , physical()
    , problems(@ModelName@_info::particle_names)
    , two_loop_corrections()
+   , ewsb_stepper([](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+        if (model->get_ewsb_loop_order() > 0)
+           model->calculate_DRbar_masses();
+        return model->ewsb_step();
+     })
+   , tadpole_stepper([](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+        if (model->get_ewsb_loop_order() > 0)
+           model->calculate_DRbar_masses();
+        return model->tadpole_equations();
+   })
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
 {
-   ewsb_stepper =
-      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-@getEWSBParametersFromVector@
-@setEWSBParametersFromLocalCopies@
-      if (ewsb_loop_order > 0)
-         calculate_DRbar_masses();
-      return ewsb_step();
-   };
-
-   tadpole_stepper =
-      [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-@getEWSBParametersFromVector@
-@setEWSBParametersFromLocalCopies@
-      if (ewsb_loop_order > 0)
-         calculate_DRbar_masses();
-      return tadpole_equations();
-   };
 }
 
 CLASSNAME::~@ModelName@_mass_eigenstates()
@@ -263,6 +260,9 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
+   auto ewsb_stepper_ = std::bind(ewsb_stepper, this, std::placeholders::_1);
+   auto tadpole_stepper_ = std::bind(tadpole_stepper, this, std::placeholders::_1);
+
    std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
    };

@@ -38,7 +38,7 @@
 #include <iosfwd>
 #include <string>
 
-#include <gsl/gsl_vector.h>
+#include <functional>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -525,8 +525,8 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    softsusy::QedQcd qedqcd;
    Physical_input input;
-   std::function<EWSB_vector_t(const EWSB_vector_t&)> ewsb_stepper;
-   std::function<EWSB_vector_t(const EWSB_vector_t&)> tadpole_stepper;
+   std::function<EWSB_vector_t(Standard_model*, const EWSB_vector_t&)> ewsb_stepper;
+   std::function<EWSB_vector_t(Standard_model*, const EWSB_vector_t&)> tadpole_stepper;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
@@ -534,7 +534,6 @@ private:
    int solve_ewsb_tree_level_custom();
    EWSB_vector_t ewsb_initial_guess();
    EWSB_vector_t ewsb_step() const;
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters();

@@ -1326,25 +1326,30 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double Mu_ss = softSusy.displaySusyMu();
    const double BMu_ss = softSusy.displayM3Squared();
 
+   using namespace std::placeholders;
+
+   auto ewsb_stepper = std::bind(model.ewsb_stepper, &model, _1);
+   auto tadpole_stepper = std::bind(model.tadpole_stepper, &model, _1);
+
    // prepare solvers
    EWSB_solver* solvers[] = {
       new Root_finder<2>(
-         model.tadpole_stepper, number_of_ewsb_iterations,
+         tadpole_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision, Root_finder<2>::GSLHybrid),
       new Root_finder<2>(
-         model.tadpole_stepper, number_of_ewsb_iterations,
+         tadpole_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision, Root_finder<2>::GSLHybridS),
       new Root_finder<2>(
-         model.tadpole_stepper, number_of_ewsb_iterations,
+         tadpole_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision, Root_finder<2>::GSLBroyden),
       new Root_finder<2>(
-         model.tadpole_stepper, number_of_ewsb_iterations,
+         tadpole_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision, Root_finder<2>::GSLNewton),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
-         model.ewsb_stepper, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
-         model.ewsb_stepper, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision)
    };
 
