@@ -408,12 +408,8 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   Vector_t arg, result;
-
-   for (std::size_t i = 0; i < dimension; ++i)
-      arg(i) = gsl_vector_get(x, i);
-
-   result = arg;
+   const Vector_t arg(to_eigen_array(x));
+   Vector_t result = arg;
 
    try {
       result = (*fun)(arg);
@@ -422,8 +418,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
       status = GSL_EDOM;
    }
 
-   for (std::size_t i = 0; i < dimension; ++i)
-      gsl_vector_set(f, i, result(i));
+   copy(result, f);
 
    return status;
 }

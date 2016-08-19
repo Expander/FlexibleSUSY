@@ -253,22 +253,18 @@ int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   Vector_t arg, result;
-
-   for (std::size_t i = 0; i < dimension; ++i)
-      arg(i) = gsl_vector_get(x, i);
-
-   result = arg;
+   const Vector_t arg(to_eigen_array(x));
+   Vector_t result;
 
    try {
       result = (*fun)(arg);
       status = result.allFinite() ? GSL_SUCCESS : GSL_EDOM;
    } catch (const flexiblesusy::Error&) {
+      result.setConstant(std::numeric_limits<double>::max());
       status = GSL_EDOM;
    }
 
-   for (std::size_t i = 0; i < dimension; ++i)
-      gsl_vector_set(f, i, result(i));
+   copy(result, f);
 
    return status;
 }

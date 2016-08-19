@@ -264,11 +264,8 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
       return std::numeric_limits<double>::max();
 
    Function_t* fun = static_cast<Function_t*>(params);
-   Vector_t arg;
+   const Vector_t arg(to_eigen_array(x));
    double result;
-
-   for (std::size_t i = 0; i < dimension; ++i)
-      arg(i) = gsl_vector_get(x, i);
 
    try {
       result = (*fun)(arg);
