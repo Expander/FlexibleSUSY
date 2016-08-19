@@ -21,11 +21,14 @@
 
 #include <iostream>
 #include <cassert>
+#include <Eigen/Core>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multimin.h>
 
-#include "logger.hpp"
+#include "error.hpp"
 #include "ewsb_solver.hpp"
+#include "logger.hpp"
+#include "gsl_utils.hpp"
 
 namespace flexiblesusy {
 
@@ -55,18 +58,16 @@ namespace flexiblesusy {
 template <std::size_t dimension>
 class Minimizer : public EWSB_solver {
 public:
-   /// pointer to function to minimize
-   typedef double (*Function_t)(const gsl_vector*, void*);
+   typedef std::function<double(Eigen::Matrix<double,dimension,1>)> Function_t;
 
    Minimizer();
-   Minimizer(Function_t, void*, std::size_t, double, const gsl_multimin_fminimizer_type* solver_type_ = gsl_multimin_fminimizer_nmsimplex2);
+   Minimizer(Function_t, std::size_t, double, const gsl_multimin_fminimizer_type* solver_type_ = gsl_multimin_fminimizer_nmsimplex2);
    Minimizer(const Minimizer&);
    virtual ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
    double get_minimum_point(std::size_t) const;
    void set_function(Function_t f) { function = f; }
-   void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(const gsl_multimin_fminimizer_type* t) { solver_type = t; }
@@ -88,6 +89,7 @@ private:
    const gsl_multimin_fminimizer_type* solver_type; ///< GSL minimizer type
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
+   static double gsl_function(const gsl_vector*, void*);
 };
 
 /**
@@ -99,7 +101,6 @@ Minimizer<dimension>::Minimizer()
    , precision(1.0e-2)
    , initial_step_size(1.0)
    , minimum_value(0.0)
-   , parameters(NULL)
    , function(NULL)
    , solver_type(gsl_multimin_fminimizer_nmsimplex2)
 {
@@ -111,7 +112,6 @@ Minimizer<dimension>::Minimizer()
  * Constructor
  *
  * @param function_ pointer to the function to minimize
- * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
  * @param solver_type_ GSL multimin minimizer type
@@ -119,7 +119,6 @@ Minimizer<dimension>::Minimizer()
 template <std::size_t dimension>
 Minimizer<dimension>::Minimizer(
    Function_t function_,
-   void* parameters_,
    std::size_t max_iterations_,
    double precision_,
    const gsl_multimin_fminimizer_type* solver_type_
@@ -128,7 +127,6 @@ Minimizer<dimension>::Minimizer(
    , precision(precision_)
    , initial_step_size(1.0)
    , minimum_value(0.0)
-   , parameters(parameters_)
    , function(function_)
    , solver_type(solver_type_)
 {
@@ -142,7 +140,6 @@ Minimizer<dimension>::Minimizer(const Minimizer& other)
    , precision(other.precision)
    , initial_step_size(other.initial_step_size)
    , minimum_value(other.minimum_value)
-   , parameters(other.parameters)
    , function(other.function)
    , solver_type(other.solver_type)
 {
@@ -170,9 +167,6 @@ Minimizer<dimension>::~Minimizer()
 template <std::size_t dimension>
 int Minimizer<dimension>::minimize(const double start[dimension])
 {
-   assert(function && "Minimizer<dimension>::minimize: function pointer"
-          " must not be zero!");
-
    gsl_multimin_fminimizer *minimizer;
    gsl_multimin_function minex_func;
 
@@ -185,8 +179,8 @@ int Minimizer<dimension>::minimize(const double start[dimension])
 
    // Initialize method and iterate
    minex_func.n = dimension;
-   minex_func.f = function;
-   minex_func.params = parameters;
+   minex_func.f = gsl_function;
+   minex_func.params = &function;
 
    minimizer = gsl_multimin_fminimizer_alloc(solver_type, dimension);
    gsl_multimin_fminimizer_set(minimizer, &minex_func, minimum_point, step_size);
@@ -257,6 +251,28 @@ template <std::size_t dimension>
 double Minimizer<dimension>::get_solution(unsigned i)
 {
    return get_minimum_point(i);
+}
+
+template <std::size_t dimension>
+double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
+{
+   if (!is_finite(x))
+      return std::numeric_limits<double>::max();
+
+   Function_t* fun = static_cast<Function_t*>(params);
+   Eigen::Matrix<double,dimension,1> arg;
+   double result;
+
+   for (std::size_t i = 0; i < dimension; ++i)
+      arg(i) = gsl_vector_get(x, i);
+
+   try {
+      result = (*fun)(arg);
+   } catch (const flexiblesusy::Error&) {
+      result = std::numeric_limits<double>::max();
+   }
+
+   return result;
 }
 
 } // namespace flexiblesusy

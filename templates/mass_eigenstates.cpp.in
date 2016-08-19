@@ -39,7 +39,6 @@
 #include "error.hpp"
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
-#include "gsl_utils.hpp"
 #include "config.h"
 #include "parallel.hpp"
 #include "pv.hpp"
@@ -62,7 +61,7 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
-#define INPUT(parameter) model->get_input().parameter
+#define INPUT(parameter) this->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 #define MODELPARAMETER(parameter) model->get_##parameter()
 
@@ -90,6 +89,23 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
 @mixingMatricesInit@
 @phasesInit@
 {
+   ewsb_stepper =
+      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+      if (this->ewsb_loop_order > 0)
+         this->calculate_DRbar_masses();
+      return this->ewsb_step();
+   };
+
+   tadpole_stepper =
+      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+      if (this->ewsb_loop_order > 0)
+         this->calculate_DRbar_masses();
+      return this->tadpole_equations();
+   };
 }
 
 CLASSNAME::~@ModelName@_mass_eigenstates()
@@ -244,48 +260,11 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
 }
 
 /**
- * Method which calculates the tadpoles at loop order specified in the
- * pointer to the CLASSNAME::EWSB_args struct.
- *
- * @param x GSL vector of EWSB output parameters
- * @param params pointer to CLASSNAME::EWSB_args struct
- * @param f GSL vector with tadpoles
- *
- * @return GSL_EDOM if x contains Nans, GSL_SUCCESS otherwise.
- */
-int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
-{
-   if (!is_finite(x)) {
-      gsl_vector_set_all(f, std::numeric_limits<double>::max());
-      return GSL_EDOM;
-   }
-
-   const CLASSNAME::EWSB_args* ewsb_args
-      = static_cast<CLASSNAME::EWSB_args*>(params);
-   @ModelName@_mass_eigenstates* model = ewsb_args->model;
-   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
-
-@setEWSBParametersFromGSLVector@
-
-   if (ewsb_loop_order > 0)
-      model->calculate_DRbar_masses();
-
-   const auto tadpole(model->tadpole_equations());
-
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      gsl_vector_set(f, i, tadpole[i]);
-
-   return IsFinite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
-}
-
-/**
  * This method solves the EWSB conditions iteratively, trying several
  * root finding methods until a solution is found.
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   EWSB_args params = {this, ewsb_loop_order};
-
    std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
    };
@@ -432,51 +411,6 @@ Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_st
 @fillArrayWithEWSBParameters@
 
    return ewsb_parameters;
-}
-
-/**
- * Calculates EWSB output parameters including loop-corrections.
- *
- * @param x old EWSB output parameters
- * @param params further function parameters
- * @param f new EWSB output parameters
- *
- * @return Returns status of CLASSNAME::ewsb_step
- */
-int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
-{
-   if (!is_finite(x)) {
-      gsl_vector_set_all(f, std::numeric_limits<double>::max());
-      return GSL_EDOM;
-   }
-
-   const CLASSNAME::EWSB_args* ewsb_args
-      = static_cast<CLASSNAME::EWSB_args*>(params);
-   @ModelName@_mass_eigenstates* model = ewsb_args->model;
-   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
-
-@getEWSBParametersFromGSLVector@
-@setEWSBParametersFromLocalCopies@
-
-   if (ewsb_loop_order > 0)
-      model->calculate_DRbar_masses();
-
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters;
-@ewsbParametersInitialization@
-
-   int status = GSL_SUCCESS;
-
-   try {
-      ewsb_parameters = model->ewsb_step();
-      status = GSL_SUCCESS;
-   } catch (...) {
-      status = GSL_EDOM;
-   }
-
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      gsl_vector_set(f, i, ewsb_parameters[i]);
-
-   return status;
 }
 
 void CLASSNAME::print(std::ostream& ostr) const

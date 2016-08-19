@@ -110,6 +110,22 @@ Standard_model::Standard_model()
 
 {
    set_number_of_parameters(numberOfParameters);
+
+   ewsb_stepper =
+      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      this->set_mu2(ewsb_pars(0));
+      if (this->ewsb_loop_order > 0)
+         this->calculate_DRbar_masses();
+      return this->ewsb_step();
+   };
+
+   tadpole_stepper =
+      [this](EWSB_vector_t ewsb_pars) -> EWSB_vector_t {
+      this->set_mu2(ewsb_pars(0));
+      if (this->ewsb_loop_order > 0)
+         this->calculate_DRbar_masses();
+      return this->tadpole_equations();
+   };
 }
 
 Standard_model::Standard_model(double scale_, double loops_, double thresholds_
@@ -277,53 +293,15 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
 }
 
 /**
- * Method which calculates the tadpoles at loop order specified in the
- * pointer to the Standard_model::EWSB_args struct.
- *
- * @param x GSL vector of EWSB output parameters
- * @param params pointer to Standard_model::EWSB_args struct
- * @param f GSL vector with tadpoles
- *
- * @return GSL_EDOM if x contains Nans, GSL_SUCCESS otherwise.
- */
-int Standard_model::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
-{
-   if (!is_finite(x)) {
-      gsl_vector_set_all(f, std::numeric_limits<double>::max());
-      return GSL_EDOM;
-   }
-
-   const Standard_model::EWSB_args* ewsb_args
-      = static_cast<Standard_model::EWSB_args*>(params);
-   Standard_model* model = ewsb_args->model;
-   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
-
-   model->set_mu2(gsl_vector_get(x, 0));
-
-
-   if (ewsb_loop_order > 0)
-      model->calculate_DRbar_masses();
-
-   const auto tadpole(model->tadpole_equations());
-
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      gsl_vector_set(f, i, tadpole[i]);
-
-   return IsFinite(tadpole) ? GSL_SUCCESS : GSL_EDOM;
-}
-
-/**
  * This method solves the EWSB conditions iteratively, trying several
  * root finding methods until a solution is found.
  */
 int Standard_model::solve_ewsb_iteratively()
 {
-   EWSB_args params = {this, ewsb_loop_order};
-
    std::unique_ptr<EWSB_solver> solvers[] = {
-      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(Standard_model::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden))
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden))
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
@@ -474,54 +452,6 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
 
 
    return ewsb_parameters;
-}
-
-/**
- * Calculates EWSB output parameters including loop-corrections.
- *
- * @param x old EWSB output parameters
- * @param params further function parameters
- * @param f new EWSB output parameters
- *
- * @return Returns status of Standard_model::ewsb_step
- */
-int Standard_model::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
-{
-   if (!is_finite(x)) {
-      gsl_vector_set_all(f, std::numeric_limits<double>::max());
-      return GSL_EDOM;
-   }
-
-   const Standard_model::EWSB_args* ewsb_args
-      = static_cast<Standard_model::EWSB_args*>(params);
-   Standard_model* model = ewsb_args->model;
-   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
-
-   const double mu2 = gsl_vector_get(x, 0);
-
-   model->set_mu2(mu2);
-
-
-   if (ewsb_loop_order > 0)
-      model->calculate_DRbar_masses();
-
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters;
-   ewsb_parameters[0] = mu2;
-
-
-   int status = GSL_SUCCESS;
-
-   try {
-      ewsb_parameters = model->ewsb_step();
-      status = GSL_SUCCESS;
-   } catch (...) {
-      status = GSL_EDOM;
-   }
-
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      gsl_vector_set(f, i, ewsb_parameters[i]);
-
-   return status;
 }
 
 void Standard_model::print(std::ostream& ostr) const

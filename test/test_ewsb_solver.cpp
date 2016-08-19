@@ -12,25 +12,31 @@
 
 using namespace flexiblesusy;
 
-class Parabola {
-public:
-   static void reset() { number_of_calls = 0; }
-   static unsigned get_number_of_calls() { return number_of_calls; }
+static unsigned number_of_calls = 0;
+static const double small = 1/(16 * Pi*Pi);
 
+void reset() { number_of_calls = 0; }
+unsigned get_number_of_calls() { return number_of_calls; }
+
+typedef Eigen::Matrix<double,2,1> EV2_t;
+
+BOOST_AUTO_TEST_CASE( test_parabola_2dim )
+{
    /**
     * Function f(x,y) = ((x-5)^2, (y-1)^2) ,
     *
     * @param x touple (x,y)
     * @return f(x,y)
     */
-   static int func(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0, (y - 5.)*(y - 5.));
-      gsl_vector_set(f, 1, (z - 1.)*(z - 1.));
+   auto func = [](EV2_t x) -> EV2_t {
+      const double y = x(0);
+      const double z = x(1);
+      EV2_t f;
+      f(0) = (y - 5.)*(y - 5.);
+      f(1) = (z - 1.)*(z - 1.);
       number_of_calls++;
-      return GSL_SUCCESS;
-   }
+      return f;
+   };
 
    /**
     * Function f(x,y) = ((x-5)^2, (y-1)^2) ,
@@ -38,13 +44,13 @@ public:
     * @param x touple (x,y)
     * @return f_1(x,y) + f_2(x,y)
     */
-   static double chi2(const gsl_vector* x, void*) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
+   auto chi2 = [](EV2_t x) -> double {
+      const double y = x(0);
+      const double z = x(1);
       const double chi2 = (y - 5.)*(y - 5.) + (z - 1.)*(z - 1.);
       number_of_calls++;
       return chi2;
-   }
+   };
 
    /**
     * Update steps of f(x,y) = ((x-5)^2, (y-1)^2) :
@@ -55,23 +61,16 @@ public:
     *
     * @return fixed point iteration update steps
     */
-   static int update(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0, -25./(y - 10.));
-      gsl_vector_set(f, 1, -1./(z - 2.));
+   auto update = [](EV2_t x) -> EV2_t {
+      const double y = x(0);
+      const double z = x(1);
+      EV2_t f;
+      f(0) = -25./(y - 10.);
+      f(1) = -1./(z - 2.);
       number_of_calls++;
-      return GSL_SUCCESS;
-   }
+      return f;
+   };
 
-private:
-   static unsigned number_of_calls;
-};
-
-unsigned Parabola::number_of_calls = 0;
-
-BOOST_AUTO_TEST_CASE( test_parabola_2dim )
-{
    const int dimension = 2;
    const double precision = 1.0e-4;
    const int max_iterations = 1000;
@@ -79,19 +78,19 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    double start[dimension] = { 9, 9 };
 
    EWSB_solver* solvers[] = {
-      new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
-      new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
-      new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_broyden),
-      new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
-      new Minimizer<dimension>(Parabola::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
-      new Minimizer<dimension>(Parabola::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
-      new Minimizer<dimension>(Parabola::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(Parabola::update, NULL, max_iterations, precision),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(Parabola::update, NULL, max_iterations, precision)
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_broyden),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(update, max_iterations, precision),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(update, max_iterations, precision)
    };
 
    for (int i = 0; i < sizeof(solvers)/sizeof(solvers[0]); i++) {
-      Parabola::reset();
+      reset();
 
       const int status = solvers[i]->solve(start);
 
@@ -104,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
                     << (status == EWSB_solver::SUCCESS ?
                         "success" : "fail")
                     << " ("
-                    << Parabola::get_number_of_calls() << " function calls)");
+                    << get_number_of_calls() << " function calls)");
    }
 
    for (int i = 0; i < sizeof(solvers)/sizeof(solvers[0]); i++) {
@@ -115,61 +114,51 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 /**
  * More realistic example closer to EWSB eqs (including tadpoles)
  */
-class Perturbation {
-public:
-   static void reset() { number_of_calls = 0; }
-   static unsigned get_number_of_calls() { return number_of_calls; }
-
-   /**
-    * @param x touple (x,y)
-    * @return f(x,y)
-    */
-   static int func(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0,  y + z + small  *(y*y + z*z) + 1);
-      gsl_vector_set(f, 1, -y + z + small*2*(y*y + z*z) + 2);
-      number_of_calls++;
-      return GSL_SUCCESS;
-   }
-
-   /**
-    * @param x touple (x,y)
-    * @return (f_1(x,y))^2 + (f_2(x,y))^2
-    */
-   static double chi2(const gsl_vector* x, void*) {
-      gsl_vector* f = gsl_vector_alloc(2);
-      func(x, NULL, f);
-      const double chi2 = Sqr(gsl_vector_get(f,0)) + Sqr(gsl_vector_get(f,1));
-      gsl_vector_free(f);
-      number_of_calls++;
-      return chi2;
-   }
-
-   /**
-    * Update steps of f(x,y)
-    * @param x touple (x,y)
-    * @return fixed point iteration update steps
-    */
-   static int update(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0,  0.5 + small*0.5*(y*y + z*z));
-      gsl_vector_set(f, 1, -1.5 - small*1.5*(y*y + z*z));
-      number_of_calls++;
-      return GSL_SUCCESS;
-   }
-
-private:
-   static unsigned number_of_calls;
-   static const double small;
-};
-
-unsigned Perturbation::number_of_calls = 0;
-const double Perturbation::small = 1/(16 * Pi*Pi);
 
 BOOST_AUTO_TEST_CASE( test_perturbation )
 {
+   auto func = [](EV2_t x) -> EV2_t {
+      const double y = x(0);
+      const double z = x(1);
+      EV2_t f;
+      f(0) =  y + z + small  *(y*y + z*z) + 1;
+      f(1) = -y + z + small*2*(y*y + z*z) + 2;
+      number_of_calls++;
+      return f;
+   };
+
+   /**
+    * Function f(x,y) = ((x-5)^2, (y-1)^2) ,
+    *
+    * @param x touple (x,y)
+    * @return f_1(x,y) + f_2(x,y)
+    */
+   auto chi2 = [func](EV2_t x) -> double {
+      EV2_t f = func(x);
+      const double chi2 = Sqr(f(0)) + Sqr(f(1));
+      number_of_calls++;
+      return chi2;
+   };
+
+   /**
+    * Update steps of f(x,y) = ((x-5)^2, (y-1)^2) :
+    *
+    * (x,y) = (-25/(x-10), -1/(y-2))
+    *
+    * @param x touple (x,y)
+    *
+    * @return fixed point iteration update steps
+    */
+   auto update = [](EV2_t x) -> EV2_t {
+      const double y = x(0);
+      const double z = x(1);
+      EV2_t f;
+      f(0) =  0.5 + small*0.5*(y*y + z*z);
+      f(1) = -1.5 - small*1.5*(y*y + z*z);
+      number_of_calls++;
+      return f;
+   };
+
    const int dimension = 2;
    const double precision = 1.0e-4;
    const int max_iterations = 1000;
@@ -177,20 +166,20 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    double start[dimension] = { 10, 10 };
 
    EWSB_solver* solvers[] = {
-      new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
-      new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
-      new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_broyden),
-      new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
-      new Minimizer<dimension>(Perturbation::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
-      new Minimizer<dimension>(Perturbation::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
-      new Minimizer<dimension>(Perturbation::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(Perturbation::update, NULL, max_iterations, precision),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(Perturbation::update, NULL, max_iterations, precision),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_tadpole>(Perturbation::update, NULL, max_iterations, fixed_point_iterator::Convergence_tester_tadpole(precision, Perturbation::func, NULL))
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_broyden),
+      new Root_finder<dimension>(func, max_iterations, precision, gsl_multiroot_fsolver_dnewton),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
+      new Minimizer<dimension>(chi2, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(update, max_iterations, precision),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(update, max_iterations, precision),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_tadpole<dimension> >(update, max_iterations, fixed_point_iterator::Convergence_tester_tadpole<dimension>(precision, func))
    };
 
    for (int i = 0; i < sizeof(solvers)/sizeof(solvers[0]); i++) {
-      Perturbation::reset();
+      reset();
 
       const int status = solvers[i]->solve(start);
 
@@ -208,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
                         "success" : "fail")
                     << ", solution = (" << solution_1 << ", " << solution_2
                     << ") ("
-                    << Perturbation::get_number_of_calls() << " function calls)");
+                    << get_number_of_calls() << " function calls)");
    }
 
    for (int i = 0; i < sizeof(solvers)/sizeof(solvers[0]); i++) {

@@ -12,76 +12,62 @@
 
 using namespace flexiblesusy;
 
-class Parabola1 {
-public:
-   static void reset() { number_of_calls = 0; }
-   static unsigned get_number_of_calls() { return number_of_calls; }
+typedef Eigen::Matrix<double,2,1> EV2_t;
 
-   /**
-    * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,
-    *
-    * => Update steps
-    *
-    * (x,y) = (-25/(x-10), -1/(y-2))
-    *
-    * @param x touple (x,y)
-    *
-    * @return fixed point iteration update steps
-    */
-   static int func(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0, -25./(y - 10.));
-      gsl_vector_set(f, 1, -1./(z - 2.));
-      number_of_calls++;
-      return GSL_SUCCESS;
-   }
+static unsigned number_of_calls = 0;
+void reset() { number_of_calls = 0; }
+unsigned get_number_of_calls() { return number_of_calls; }
 
-private:
-   static unsigned number_of_calls;
+/**
+ * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,
+ *
+ * => Update steps
+ *
+ * (x,y) = (-25/(x-10), -1/(y-2))
+ *
+ * @param x touple (x,y)
+ *
+ * @return fixed point iteration update steps
+ */
+auto parabola1 = [](EV2_t x) -> EV2_t {
+   const double y = x(0);
+   const double z = x(1);
+   EV2_t f;
+   f(0) = -25./(y - 10.);
+   f(1) = -1./(z - 2.);
+   number_of_calls++;
+   return f;
 };
 
-unsigned Parabola1::number_of_calls = 0;
-
-class Parabola2 {
-public:
-   static void reset() { number_of_calls = 0; }
-   static unsigned get_number_of_calls() { return number_of_calls; }
-
-   /**
-    * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,
-    *
-    * => Update steps in the problematic form
-    *
-    * (x,y) = ((y^2 + 25)/10, (z^2+1)/2)
-    *
-    * @param x touple (x,y)
-    *
-    * @return fixed point iteration update steps
-    */
-   static int func(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      gsl_vector_set(f, 0, (y*y + 25.) / 10.);
-      gsl_vector_set(f, 1, (z*z + 1.) / 2.);
-      number_of_calls++;
-      return GSL_SUCCESS;
-   }
-
-private:
-   static unsigned number_of_calls;
+/**
+ * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,
+ *
+ * => Update steps in the problematic form
+ *
+ * (x,y) = ((y^2 + 25)/10, (z^2+1)/2)
+ *
+ * @param x touple (x,y)
+ *
+ * @return fixed point iteration update steps
+ */
+auto parabola2 = [](EV2_t x) -> EV2_t {
+   const double y = x(0);
+   const double z = x(1);
+   EV2_t f;
+   f(0) = (y*y + 25.) / 10.;
+   f(1) = (z*z + 1.) / 2.;
+   number_of_calls++;
+   return f;
 };
-
-unsigned Parabola2::number_of_calls = 0;
 
 BOOST_AUTO_TEST_CASE( test_parabola1 )
 {
    const double precision = 1.0e-4;
    const double start[2] = { 9, 9 };
-   Fixed_point_iterator<2> fpi(Parabola1::func, NULL, 1000, precision);
+   Fixed_point_iterator<2> fpi(parabola1, 1000, precision);
    int status = GSL_SUCCESS;
 
-   Parabola1::reset();
+   reset();
 
    status = fpi.find_fixed_point(start);
 
@@ -97,17 +83,17 @@ BOOST_AUTO_TEST_CASE( test_parabola1 )
    BOOST_REQUIRE(status == GSL_SUCCESS);
    BOOST_CHECK_LT(residual_1, 100*precision);
    BOOST_CHECK_LT(residual_2, 100*precision);
-   BOOST_MESSAGE("fixed point iterator used " << Parabola1::get_number_of_calls() << " calls");
+   BOOST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
 }
 
 BOOST_AUTO_TEST_CASE( test_parabola2 )
 {
    const double precision = 1.0e-4;
    const double start[2] = { 9, 9 };
-   Fixed_point_iterator<2> fpi(Parabola2::func, NULL, 1000, precision);
+   Fixed_point_iterator<2> fpi(parabola2, 1000, precision);
    int status = GSL_SUCCESS;
 
-   Parabola2::reset();
+   reset();
 
    status = fpi.find_fixed_point(start);
 
@@ -118,40 +104,30 @@ BOOST_AUTO_TEST_CASE( test_parabola2 )
    BOOST_REQUIRE(status != GSL_SUCCESS);
 }
 
-class Perturbation {
-public:
-   static void reset() { number_of_calls = 0; }
-   static unsigned get_number_of_calls() { return number_of_calls; }
-
-   /**
-    * Update function which has the form of a constant plus a
-    * perturbation term.
-    */
-   static int func(const gsl_vector* x, void*, gsl_vector* f) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      const double f1 = 1 + (y - z*z)/(16.*Sqr(Pi));
-      const double f2 = 2 + (y*y - z)/(16.*Sqr(Pi));
-      gsl_vector_set(f, 0, f1);
-      gsl_vector_set(f, 1, f2);
-      number_of_calls++;
-      return GSL_SUCCESS;
-   }
-
-private:
-   static unsigned number_of_calls;
+/**
+ * Update function which has the form of a constant plus a
+ * perturbation term.
+ */
+auto perturbation = [](EV2_t x) -> EV2_t {
+   const double y = x(0);
+   const double z = x(1);
+   const double f1 = 1 + (y - z*z)/(16.*Sqr(Pi));
+   const double f2 = 2 + (y*y - z)/(16.*Sqr(Pi));
+   EV2_t f;
+   f(0) = f1;
+   f(1) = f2;
+   number_of_calls++;
+   return f;
 };
-
-unsigned Perturbation::number_of_calls = 0;
 
 BOOST_AUTO_TEST_CASE( test_perturbation )
 {
    const double precision = 1.0e-4;
    const double start[2] = { 10, 10 };
-   Fixed_point_iterator<2> fpi(Perturbation::func, NULL, 1000, precision);
+   Fixed_point_iterator<2> fpi(perturbation, 1000, precision);
    int status = GSL_SUCCESS;
 
-   Perturbation::reset();
+   reset();
 
    status = fpi.find_fixed_point(start);
 
@@ -159,6 +135,6 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(0), 1.0, 0.02);
    BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(1), 2.0, 0.04);
 
-   BOOST_MESSAGE("fixed point iterator used " << Perturbation::get_number_of_calls() << " calls");
-   BOOST_CHECK(Perturbation::get_number_of_calls() < 6);
+   BOOST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
+   BOOST_CHECK(get_number_of_calls() < 6);
 }

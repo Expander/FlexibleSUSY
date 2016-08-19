@@ -947,7 +947,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBSolution = "",
             fillArrayWithEWSBParameters = "",
             solveEwsbWithTadpoles = "",
-            getEWSBParametersFromGSLVector = "",
+            getEWSBParametersFromVector = "",
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
             ewsbParametersInitializationComma = "",
@@ -1087,8 +1087,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solver->get_solution"];
            fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
            solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, treeLevelEWSBOutputParameters];
-           getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
-           setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
+           getEWSBParametersFromVector  = EWSB`GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, "ewsb_pars"];
+           setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "this"];
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            ewsbParametersInitializationComma = EWSB`CreateEWSBParametersInitializationComma[parametersFixedByEWSB];
            If[Length[parametersFixedByEWSB] > 0,
@@ -1169,8 +1169,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
                             "@fillArrayWithEWSBParameters@"  -> IndentText[fillArrayWithEWSBParameters],
                             "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
-                            "@getEWSBParametersFromGSLVector@" -> IndentText[getEWSBParametersFromGSLVector],
-                            "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies],
+                            "@getEWSBParametersFromVector@"  -> IndentText[IndentText[getEWSBParametersFromVector]],
+                            "@setEWSBParametersFromLocalCopies@" -> IndentText[IndentText[setEWSBParametersFromLocalCopies]],
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,

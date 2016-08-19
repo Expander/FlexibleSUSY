@@ -27,6 +27,7 @@
 #include "logger.hpp"
 #include "error.hpp"
 #include "ewsb_solver.hpp"
+#include "gsl_utils.hpp"
 
 namespace flexiblesusy {
 
@@ -60,17 +61,15 @@ namespace flexiblesusy {
 template <std::size_t dimension>
 class Root_finder : public EWSB_solver {
 public:
-   /// pointer to function to find root of
-   typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
+   typedef std::function<Eigen::Matrix<double,dimension,1>(Eigen::Matrix<double,dimension,1>)> Function_t;
 
    Root_finder();
-   Root_finder(Function_t, void*, std::size_t, double, const gsl_multiroot_fsolver_type* solver_type_ = gsl_multiroot_fsolver_hybrid);
+   Root_finder(Function_t, std::size_t, double, const gsl_multiroot_fsolver_type* solver_type_ = gsl_multiroot_fsolver_hybrid);
    Root_finder(const Root_finder&);
    virtual ~Root_finder();
 
    double get_root(std::size_t) const;
    void set_function(Function_t f) { function = f; }
-   void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(const gsl_multiroot_fsolver_type* t) { solver_type = t; }
@@ -84,11 +83,11 @@ private:
    std::size_t max_iterations; ///< maximum number of iterations
    double precision;           ///< precision goal
    gsl_vector* root;           ///< GSL vector of root
-   void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
    const gsl_multiroot_fsolver_type* solver_type; ///< GSL solver type
 
    void print_state(const gsl_multiroot_fsolver*, std::size_t) const;
+   static int gsl_function(const gsl_vector*, void*, gsl_vector*);
 };
 
 /**
@@ -98,7 +97,6 @@ template <std::size_t dimension>
 Root_finder<dimension>::Root_finder()
    : max_iterations(100)
    , precision(1.0e-2)
-   , parameters(NULL)
    , function(NULL)
    , solver_type(gsl_multiroot_fsolver_hybrid)
 {
@@ -112,7 +110,6 @@ Root_finder<dimension>::Root_finder()
  * Constructor
  *
  * @param function_ pointer to the function to minimize
- * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
  * @param solver_type_ GSL multiroot solver type
@@ -120,14 +117,12 @@ Root_finder<dimension>::Root_finder()
 template <std::size_t dimension>
 Root_finder<dimension>::Root_finder(
    Function_t function_,
-   void* parameters_,
    std::size_t max_iterations_,
    double precision_,
    const gsl_multiroot_fsolver_type* solver_type_
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , parameters(parameters_)
    , function(function_)
    , solver_type(solver_type_)
 {
@@ -142,7 +137,6 @@ template <std::size_t dimension>
 Root_finder<dimension>::Root_finder(const Root_finder& other)
    : max_iterations(other.max_iterations)
    , precision(other.precision)
-   , parameters(other.parameters)
    , function(other.function)
    , solver_type(other.solver_type)
 {
@@ -171,7 +165,8 @@ int Root_finder<dimension>::find_root(const double start[dimension])
 
    int status;
    std::size_t iter = 0;
-   gsl_multiroot_function f = {function, dimension, parameters};
+   void* parameters = &function;
+   gsl_multiroot_function f = {gsl_function, dimension, parameters};
 
    gsl_multiroot_fsolver* solver
       = gsl_multiroot_fsolver_alloc(solver_type, dimension);
@@ -243,6 +238,36 @@ double Root_finder<dimension>::get_root(std::size_t i) const
    assert(i < dimension && "Root_finder<>::get_root: index out"
           " of bounds");
    return gsl_vector_get(root, i);
+}
+
+template <std::size_t dimension>
+int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   if (!is_finite(x)) {
+      gsl_vector_set_all(f, std::numeric_limits<double>::max());
+      return GSL_EDOM;
+   }
+
+   Function_t* fun = static_cast<Function_t*>(params);
+   int status = GSL_SUCCESS;
+   Eigen::Matrix<double,dimension,1> arg, result;
+
+   for (std::size_t i = 0; i < dimension; ++i)
+      arg(i) = gsl_vector_get(x, i);
+
+   result = arg;
+
+   try {
+      result = (*fun)(arg);
+      status = result.allFinite() ? GSL_SUCCESS : GSL_EDOM;
+   } catch (const flexiblesusy::Error&) {
+      status = GSL_EDOM;
+   }
+
+   for (std::size_t i = 0; i < dimension; ++i)
+      gsl_vector_set(f, i, result(i));
+
+   return status;
 }
 
 template <std::size_t dimension>

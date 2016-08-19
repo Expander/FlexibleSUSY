@@ -30,6 +30,7 @@
 #include "wrappers.hpp"
 #include "error.hpp"
 #include "ewsb_solver.hpp"
+#include "gsl_utils.hpp"
 
 namespace flexiblesusy {
 
@@ -109,20 +110,16 @@ private:
    double precision;                 ///< precision goal
 };
 
+template <std::size_t dimension>
 class Convergence_tester_tadpole {
 public:
-   /// pointer to tadpole function
-   typedef int (*Tadpole_function_t)(const gsl_vector*, void*, gsl_vector*);
+   typedef std::function<Eigen::Matrix<double,dimension,1>(Eigen::Matrix<double,dimension,1>)> Tadpole_function_t;
 
    Convergence_tester_tadpole(double precision_,
-                              Tadpole_function_t tadpole_function_,
-                              void* parameters_)
+                              Tadpole_function_t tadpole_function_)
       : precision(precision_)
       , tadpole_function(tadpole_function_)
-      , parameters(parameters_)
-   {
-      assert(tadpole_function_);
-   }
+   {}
 
    /**
     * Test whether the relative difference is less than the set
@@ -139,7 +136,6 @@ public:
    int operator()(const gsl_vector* a, const gsl_vector* b) const {
       assert(a->size == b->size && "Error: vectors have different size.");
 
-      const std::size_t dimension = a->size;
       double rel_diff = 0.;
 
       if (precision < 0.)
@@ -155,7 +151,7 @@ public:
             return GSL_SUCCESS;
       }
 
-      const int status = check_tadpoles(a, parameters);
+      const int status = check_tadpoles(a);
 
       return status;
    }
@@ -163,14 +159,11 @@ public:
 private:
    double precision;                 ///< precision goal
    const Tadpole_function_t tadpole_function; ///< function to calculate tadpole
-   void* parameters;                 ///< tadpole function parameters
 
-   int check_tadpoles(const gsl_vector* x, void* parameters) const {
-      gsl_vector* t = gsl_vector_alloc(x->size);
-      tadpole_function(x, parameters, t);
+   int check_tadpoles(const gsl_vector* x) const {
+      gsl_vector* t = to_gsl_vector(tadpole_function(to_eigen_array(x)));
       const int status = gsl_multiroot_test_residual(t, precision);
       gsl_vector_free(t);
-
       return status;
    }
 };
@@ -202,16 +195,15 @@ private:
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
 class Fixed_point_iterator : public EWSB_solver {
 public:
-   typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
+   typedef std::function<Eigen::Matrix<double,dimension,1>(Eigen::Matrix<double,dimension,1>)> Function_t;
 
    Fixed_point_iterator();
-   Fixed_point_iterator(Function_t, void*, std::size_t, const Convergence_tester&);
+   Fixed_point_iterator(Function_t, std::size_t, const Convergence_tester&);
    Fixed_point_iterator(const Fixed_point_iterator&);
    virtual ~Fixed_point_iterator();
 
    double get_fixed_point(std::size_t) const;
    void set_function(Function_t f) { function = f; }
-   void set_parameters(void* m) { parameters = m; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    int find_fixed_point(const double[dimension]);
 
@@ -223,12 +215,12 @@ private:
    std::size_t max_iterations;       ///< maximum number of iterations
    gsl_vector* xn;                   ///< current iteration point
    gsl_vector* fixed_point;          ///< vector of fixed point estimate
-   void* parameters;                 ///< pointer to parameters
    Function_t function;              ///< function defining fixed point
    Convergence_tester convergence_tester; ///< convergence tester
 
    int fixed_point_iterator_iterate();
    void print_state(std::size_t) const;
+   static int gsl_function(const gsl_vector*, void*, gsl_vector*);
 };
 
 /**
@@ -237,7 +229,6 @@ private:
 template <std::size_t dimension, class Convergence_tester>
 Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator()
    : max_iterations(100)
-   , parameters(NULL)
    , function(NULL)
    , convergence_tester(Convergence_tester())
 {
@@ -253,19 +244,16 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator()
  * Constructor
  *
  * @param function_ pointer to the function to find fixed point for
- * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param convergence_tester_ convergence tester
  */
 template <std::size_t dimension, class Convergence_tester>
 Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
    Function_t function_,
-   void* parameters_,
    std::size_t max_iterations_,
    const Convergence_tester& convergence_tester_
 )
    : max_iterations(max_iterations_)
-   , parameters(parameters_)
    , function(function_)
    , convergence_tester(convergence_tester_)
 {
@@ -283,7 +271,6 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
    const Fixed_point_iterator& other
 )
    : max_iterations(other.max_iterations)
-   , parameters(other.parameters)
    , function(other.function)
    , convergence_tester(other.convergence_tester)
 {
@@ -365,7 +352,9 @@ int Fixed_point_iterator<dimension,Convergence_tester>::fixed_point_iterator_ite
 {
    gsl_vector_memcpy(xn, fixed_point);
 
-   int status = function(xn, parameters, fixed_point);
+   void* parameters = &function;
+
+   int status = gsl_function(xn, parameters, fixed_point);
 
    if (status != GSL_SUCCESS)
       return GSL_EBADFUNC;
@@ -405,6 +394,36 @@ double Fixed_point_iterator<dimension,Convergence_tester>::get_fixed_point(std::
    assert(i < dimension && "Fixed_point_iterator<>::get_fixed_point: index out"
           " of bounds");
    return gsl_vector_get(fixed_point, i);
+}
+
+template <std::size_t dimension, class Convergence_tester>
+int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   if (!is_finite(x)) {
+      gsl_vector_set_all(f, std::numeric_limits<double>::max());
+      return GSL_EDOM;
+   }
+
+   Function_t* fun = static_cast<Function_t*>(params);
+   int status = GSL_SUCCESS;
+   Eigen::Matrix<double,dimension,1> arg, result;
+
+   for (std::size_t i = 0; i < dimension; ++i)
+      arg(i) = gsl_vector_get(x, i);
+
+   result = arg;
+
+   try {
+      result = (*fun)(arg);
+      status = GSL_SUCCESS;
+   } catch (const flexiblesusy::Error&) {
+      status = GSL_EDOM;
+   }
+
+   for (std::size_t i = 0; i < dimension; ++i)
+      gsl_vector_set(f, i, result(i));
+
+   return status;
 }
 
 template <std::size_t dimension, class Convergence_tester>
