@@ -17,7 +17,7 @@ LIBsmcw_OBJ  := \
 LIBsmcw_DEP  := \
 		$(LIBsmcw_OBJ:.o=.d)
 
-LIBsmcw      := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBsmcw      := $(DIR)/$(MODNAME)$(MODULE_LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -35,7 +35,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(LIBsmcw): $(LIBsmcw_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ALLDEP += $(LIBsmcw_DEP)
 ALLLIB += $(LIBsmcw)

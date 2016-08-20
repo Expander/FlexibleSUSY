@@ -24,7 +24,7 @@ LIBSoftsusyMSSM_OBJ  := \
 LIBSoftsusyMSSM_DEP  := \
 		$(LIBSoftsusyMSSM_OBJ:.o=.d)
 
-LIBSoftsusyMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBSoftsusyMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 EXESoftsusyMSSM_SRC := \
 		$(DIR)/run_SoftsusyMSSM.cpp
@@ -64,7 +64,7 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP) $(LIBSoftsusyMSSM_OBJ) $(EXESoftsusyMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
 
 $(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
