@@ -79,9 +79,8 @@ CreateStartPoint[parameters_List, name_String] :=
                startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
                             CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
               ];
-           startPoint = "const double " <> name <> "[" <> dimStr <> "] = {" <>
-                        startPoint <> " };\n";
-           Return[startPoint];
+           "Eigen::VectorXd " <> name <> "(" <> dimStr <> ");\n" <>
+           name <> " << " <> startPoint <> " ;\n"
           ];
 
 SetModelParametersFromVector[model_String, vector_String, parameters_List] :=
