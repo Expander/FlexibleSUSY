@@ -66,20 +66,20 @@ public:
    enum Solver_type { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton };
 
    Root_finder();
-   Root_finder(Function_t, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
+   Root_finder(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
    Root_finder(const Root_finder&);
    virtual ~Root_finder();
 
    double get_root(std::size_t) const;
-   void set_function(Function_t f) { function = f; }
+   void set_function(const Function_t& f) { function = f; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
-   int find_root(const double[dimension]);
+   int find_root(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual int solve(const double[dimension]);
-   virtual double get_solution(unsigned);
+   virtual int solve(const Eigen::VectorXd&) override;
+   virtual Eigen::VectorXd get_solution() override;
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -119,7 +119,7 @@ Root_finder<dimension>::Root_finder()
  */
 template <std::size_t dimension>
 Root_finder<dimension>::Root_finder(
-   Function_t function_,
+   const Function_t& function_,
    std::size_t max_iterations_,
    double precision_,
    Solver_type solver_type_
@@ -133,7 +133,7 @@ Root_finder<dimension>::Root_finder(
 
    if (!root)
       throw OutOfMemoryError("GSL vector allocation failed in Root_finder("
-                             "Function_t, void*, size_t, double)");
+                             "Function_t, size_t, double, Solver_type)");
 }
 
 template <std::size_t dimension>
@@ -161,7 +161,7 @@ Root_finder<dimension>::~Root_finder()
  * @return GSL error code (GSL_SUCCESS if minimum found)
  */
 template <std::size_t dimension>
-int Root_finder<dimension>::find_root(const double start[dimension])
+int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
 {
    if (!function)
       throw SetupError("Root_finder: function not callable");
@@ -253,7 +253,7 @@ int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   const Vector_t arg(to_eigen_array(x));
+   const Vector_t arg(to_eigen_vector(x));
    Vector_t result;
 
    try {
@@ -286,16 +286,16 @@ const gsl_multiroot_fsolver_type* Root_finder<dimension>::solver_type_to_gsl_poi
 }
 
 template <std::size_t dimension>
-int Root_finder<dimension>::solve(const double start[dimension])
+int Root_finder<dimension>::solve(const Eigen::VectorXd& start)
 {
    return (find_root(start) == GSL_SUCCESS ?
            EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension>
-double Root_finder<dimension>::get_solution(unsigned i)
+Eigen::VectorXd Root_finder<dimension>::get_solution()
 {
-   return get_root(i);
+   return to_eigen_vector(root);
 }
 
 } // namespace flexiblesusy

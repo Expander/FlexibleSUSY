@@ -118,7 +118,7 @@ public:
    typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
    Convergence_tester_tadpole(double precision_,
-                              Function_t tadpole_function_)
+                              const Function_t& tadpole_function_)
       : precision(precision_)
       , tadpole_function(tadpole_function_)
    {}
@@ -163,7 +163,7 @@ private:
    const Function_t tadpole_function; ///< function to calculate tadpole
 
    int check_tadpoles(const gsl_vector* x) const {
-      gsl_vector* t = to_gsl_vector(tadpole_function(to_eigen_array(x)));
+      gsl_vector* t = to_gsl_vector(tadpole_function(to_eigen_vector(x)));
       const int status = gsl_multiroot_test_residual(t, precision);
       gsl_vector_free(t);
       return status;
@@ -200,18 +200,18 @@ public:
    typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
    Fixed_point_iterator();
-   Fixed_point_iterator(Function_t, std::size_t, const Convergence_tester&);
+   Fixed_point_iterator(const Function_t&, std::size_t, const Convergence_tester&);
    Fixed_point_iterator(const Fixed_point_iterator&);
    virtual ~Fixed_point_iterator();
 
    double get_fixed_point(std::size_t) const;
-   void set_function(Function_t f) { function = f; }
+   void set_function(const Function_t& f) { function = f; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
-   int find_fixed_point(const double[dimension]);
+   int find_fixed_point(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual int solve(const double[dimension]);
-   virtual double get_solution(unsigned);
+   virtual int solve(const Eigen::VectorXd&) override;
+   virtual Eigen::VectorXd get_solution() override;
 
 private:
    std::size_t max_iterations;       ///< maximum number of iterations
@@ -251,7 +251,7 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator()
  */
 template <std::size_t dimension, class Convergence_tester>
 Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
-   Function_t function_,
+   const Function_t& function_,
    std::size_t max_iterations_,
    const Convergence_tester& convergence_tester_
 )
@@ -264,8 +264,8 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
 
    if (!xn || !fixed_point)
       throw OutOfMemoryError("GSL vector allocation failed in"
-                             " Fixed_point_iterator(Function_t, void*,"
-                             " size_t, double, bool)");
+                             " Fixed_point_iterator(Function_t,"
+                             " size_t, double)");
 }
 
 template <std::size_t dimension, class Convergence_tester>
@@ -299,7 +299,7 @@ Fixed_point_iterator<dimension,Convergence_tester>::~Fixed_point_iterator()
  */
 template <std::size_t dimension, class Convergence_tester>
 int Fixed_point_iterator<dimension,Convergence_tester>::find_fixed_point(
-   const double start[dimension]
+   const Eigen::VectorXd& start
 )
 {
    if (!function)
@@ -408,7 +408,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   const Vector_t arg(to_eigen_array(x));
+   const Vector_t arg(to_eigen_vector(x));
    Vector_t result = arg;
 
    try {
@@ -424,16 +424,16 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
 }
 
 template <std::size_t dimension, class Convergence_tester>
-int Fixed_point_iterator<dimension,Convergence_tester>::solve(const double start[dimension])
+int Fixed_point_iterator<dimension,Convergence_tester>::solve(const Eigen::VectorXd& start)
 {
    return (find_fixed_point(start) == GSL_SUCCESS ?
            EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension, class Convergence_tester>
-double Fixed_point_iterator<dimension,Convergence_tester>::get_solution(unsigned i)
+Eigen::VectorXd Fixed_point_iterator<dimension,Convergence_tester>::get_solution()
 {
-   return get_fixed_point(i);
+   return to_eigen_vector(fixed_point);
 }
 
 } // namespace flexiblesusy

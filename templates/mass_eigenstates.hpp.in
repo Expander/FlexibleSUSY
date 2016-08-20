@@ -40,7 +40,6 @@
 #include "problems.hpp"
 #include "config.h"
 
-#include <functional>
 #include <iosfwd>
 #include <string>
 
@@ -113,10 +112,12 @@ public:
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
 
+   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
+
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
+   EWSB_vector_t tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -127,8 +128,6 @@ public:
 @dependencePrototypes@
 
 private:
-   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
-
    class EEWSBStepFailed : public Error {
    public:
       virtual ~EEWSBStepFailed() {}
@@ -146,12 +145,10 @@ private:
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-   std::function<EWSB_vector_t(@ModelName@_mass_eigenstates*, const EWSB_vector_t&)> ewsb_stepper;   ///< stepper for EWSB FPI
-   std::function<EWSB_vector_t(@ModelName@_mass_eigenstates*, const EWSB_vector_t&)> tadpole_stepper;///< stepper for EWSB root finder
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const EWSB_vector_t&);
    int solve_ewsb_tree_level_custom();
    EWSB_vector_t ewsb_initial_guess();
    EWSB_vector_t ewsb_step() const;

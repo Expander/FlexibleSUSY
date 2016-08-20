@@ -38,7 +38,6 @@
 #include <iosfwd>
 #include <string>
 
-#include <functional>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -525,8 +524,6 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    softsusy::QedQcd qedqcd;
    Physical_input input;
-   std::function<EWSB_vector_t(Standard_model*, const EWSB_vector_t&)> ewsb_stepper;
-   std::function<EWSB_vector_t(Standard_model*, const EWSB_vector_t&)> tadpole_stepper;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);

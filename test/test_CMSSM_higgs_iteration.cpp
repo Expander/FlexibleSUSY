@@ -120,7 +120,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_higgs_iteration )
    };
 
    Minimizer<2> minimizer(func, 100, 1.0e-2);
-   const double start[2] = { model.get_vd(), model.get_vu() };
+   Eigen::Matrix<double,2,1> start;
+   start << model.get_vd(), model.get_vu();
 
    const int status = minimizer.minimize(start);
 

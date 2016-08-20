@@ -75,7 +75,8 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    const double precision = 1.0e-4;
    const int max_iterations = 1000;
 
-   double start[dimension] = { 9, 9 };
+   Eigen::Matrix<double,2,1> start;
+   start << 9, 9;
 
    EWSB_solver* solvers[] = {
       new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybrid),
@@ -96,8 +97,8 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
       BOOST_CHECK(status == EWSB_solver::SUCCESS);
 
-      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(0), 5., 0.01);
-      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(1), 1., 0.01);
+      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution()(0), 5., 0.01);
+      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution()(1), 1., 0.01);
 
       BOOST_MESSAGE("solver " << i << ": "
                     << (status == EWSB_solver::SUCCESS ?
@@ -163,7 +164,8 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    const double precision = 1.0e-4;
    const int max_iterations = 1000;
 
-   double start[dimension] = { 10, 10 };
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
 
    EWSB_solver* solvers[] = {
       new Root_finder<dimension>(func, max_iterations, precision, Root_finder<dimension>::GSLHybrid),
@@ -185,17 +187,16 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
 
       BOOST_CHECK(status == EWSB_solver::SUCCESS);
 
-      const double solution_1 = solvers[i]->get_solution(0);
-      const double solution_2 = solvers[i]->get_solution(1);
+      const auto solution = solvers[i]->get_solution();
 
       // true solution calculated with Mathematica 7
-      BOOST_CHECK_CLOSE_FRACTION(solution_1, 0.508177, 0.01);
-      BOOST_CHECK_CLOSE_FRACTION(solution_2, -1.52453, 0.01);
+      BOOST_CHECK_CLOSE_FRACTION(solution(0), 0.508177, 0.01);
+      BOOST_CHECK_CLOSE_FRACTION(solution(1), -1.52453, 0.01);
 
       BOOST_MESSAGE("solver " << i << ": "
                     << (status == EWSB_solver::SUCCESS ?
                         "success" : "fail")
-                    << ", solution = (" << solution_1 << ", " << solution_2
+                    << ", solution = (" << solution(0) << ", " << solution(1)
                     << ") ("
                     << get_number_of_calls() << " function calls)");
    }

@@ -20,13 +20,15 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    };
 
    Minimizer<2> minimizer(parabola, 100, 1.0e-5);
-   const double start[2] = { 10, 10 };
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
    const int status = minimizer.minimize(start);
+   const auto minimum_point = minimizer.get_solution();
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
    BOOST_CHECK_SMALL(minimizer.get_minimum_value(), 1.0e-5);
-   BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(0), 5.0, 1.0e-5);
-   BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(1), 1.0, 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(minimum_point(0), 5.0, 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(minimum_point(1), 1.0, 1.0e-5);
 }
 
 static unsigned number_of_calls = 0;
@@ -42,7 +44,8 @@ BOOST_AUTO_TEST_CASE( test_number_of_calls )
 {
    const double precision = 1.0e-5;
    Minimizer<2> minimizer(parabola, 100, precision);
-   const double start[2] = { 10, 10 };
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
    int status = GSL_SUCCESS;
 
    Minimizer<2>::Solver_type solvers[] =
@@ -54,10 +57,11 @@ BOOST_AUTO_TEST_CASE( test_number_of_calls )
       number_of_calls = 0;
       minimizer.set_solver_type(solvers[i]);
       status = minimizer.minimize(start);
+      const auto minimum_point = minimizer.get_solution();
 
       BOOST_REQUIRE(status == GSL_SUCCESS);
-      BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(0), 5.0, precision);
-      BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(1), 1.0, precision);
+      BOOST_CHECK_CLOSE_FRACTION(minimum_point(0), 5.0, precision);
+      BOOST_CHECK_CLOSE_FRACTION(minimum_point(1), 1.0, precision);
       BOOST_MESSAGE("solver type " << i << " used " << number_of_calls << " calls");
    }
 }

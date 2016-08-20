@@ -61,21 +61,21 @@ public:
    enum Solver_type { GSLSimplex, GSLSimplex2, GSLSimplex2Rand };
 
    Minimizer();
-   Minimizer(Function_t, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
+   Minimizer(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
    Minimizer(const Minimizer&);
    virtual ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
    double get_minimum_point(std::size_t) const;
-   void set_function(Function_t f) { function = f; }
+   void set_function(const Function_t& f) { function = f; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
-   int minimize(const double[dimension]);
+   int minimize(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual int solve(const double[dimension]);
-   virtual double get_solution(unsigned);
+   virtual int solve(const Eigen::VectorXd&) override;
+   virtual Eigen::VectorXd get_solution() override;
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -119,7 +119,7 @@ Minimizer<dimension>::Minimizer()
  */
 template <std::size_t dimension>
 Minimizer<dimension>::Minimizer(
-   Function_t function_,
+   const Function_t& function_,
    std::size_t max_iterations_,
    double precision_,
    Solver_type solver_type_
@@ -166,7 +166,7 @@ Minimizer<dimension>::~Minimizer()
  * @return GSL error code (GSL_SUCCESS if minimum found)
  */
 template <std::size_t dimension>
-int Minimizer<dimension>::minimize(const double start[dimension])
+int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
 {
    if (!function)
       throw SetupError("Minimizer: function not callable");
@@ -245,16 +245,16 @@ double Minimizer<dimension>::get_minimum_point(std::size_t i) const
 }
 
 template <std::size_t dimension>
-int Minimizer<dimension>::solve(const double start[dimension])
+int Minimizer<dimension>::solve(const Eigen::VectorXd& start)
 {
    return (minimize(start) == GSL_SUCCESS ?
            EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension>
-double Minimizer<dimension>::get_solution(unsigned i)
+Eigen::VectorXd Minimizer<dimension>::get_solution()
 {
-   return get_minimum_point(i);
+   return to_eigen_vector(minimum_point);
 }
 
 template <std::size_t dimension>
@@ -264,7 +264,7 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
       return std::numeric_limits<double>::max();
 
    Function_t* fun = static_cast<Function_t*>(params);
-   const Vector_t arg(to_eigen_array(x));
+   const Vector_t arg(to_eigen_vector(x));
    double result;
 
    try {

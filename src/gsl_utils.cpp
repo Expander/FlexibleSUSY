@@ -59,6 +59,18 @@ Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
 }
 
 /**
+ * Returns an Eigen array which contains the elements of the given GSL
+ * vector.
+ *
+ * @param v GSL vector
+ * @return Eigen vector
+ */
+Eigen::VectorXd to_eigen_vector(const gsl_vector* v)
+{
+   return to_eigen_array(v);
+}
+
+/**
  * Allocates a new GSL vector and fills it with the values of the
  * given Eigen array.
  *

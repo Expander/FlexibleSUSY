@@ -48,6 +48,7 @@
 @threeLoopHiggsHeaders@
 
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <algorithm>
@@ -83,20 +84,6 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    , physical()
    , problems(@ModelName@_info::particle_names)
    , two_loop_corrections()
-   , ewsb_stepper([](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-@getEWSBParametersFromVector@
-@setEWSBParametersFromLocalCopies@
-        if (model->get_ewsb_loop_order() > 0)
-           model->calculate_DRbar_masses();
-        return model->ewsb_step();
-     })
-   , tadpole_stepper([](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-@getEWSBParametersFromVector@
-@setEWSBParametersFromLocalCopies@
-        if (model->get_ewsb_loop_order() > 0)
-           model->calculate_DRbar_masses();
-        return model->tadpole_equations();
-   })
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
@@ -228,9 +215,9 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
  *
  * @return array of tadpoles
  */
-Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::tadpole_equations() const
+CLASSNAME::EWSB_vector_t CLASSNAME::tadpole_equations() const
 {
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
+   EWSB_vector_t tadpole(EWSB_vector_t::Zero());
 
 @calculateTreeLevelTadpoles@
    if (ewsb_loop_order > 0) {
@@ -260,8 +247,23 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   auto ewsb_stepper_ = std::bind(ewsb_stepper, this, std::placeholders::_1);
-   auto tadpole_stepper_ = std::bind(tadpole_stepper, this, std::placeholders::_1);
+   auto ewsb_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+      if (model->get_ewsb_loop_order() > 0)
+         model->calculate_DRbar_masses();
+      return model->ewsb_step();
+   };
+   auto tadpole_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+      if (model->get_ewsb_loop_order() > 0)
+         model->calculate_DRbar_masses();
+      return model->tadpole_equations();
+   };
+
+   auto ewsb_stepper = std::bind(ewsb_stepper_, this, std::placeholders::_1);
+   auto tadpole_stepper = std::bind(tadpole_stepper_, this, std::placeholders::_1);
 
    std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
@@ -316,11 +318,10 @@ int CLASSNAME::solve_ewsb_iteratively()
  * @return status of the EWSB solver
  */
 int CLASSNAME::solve_ewsb_iteratively_with(
-   EWSB_solver* solver,
-   const Eigen::Matrix<double, number_of_ewsb_equations, 1>& x_init
-)
+   EWSB_solver* solver, const EWSB_vector_t& x_init)
 {
-   const int status = solver->solve(&x_init[0]);
+   const int status = solver->solve(x_init);
+   const auto solution = solver->get_solution();
 
 @setEWSBSolution@
 
@@ -372,9 +373,9 @@ int CLASSNAME::solve_ewsb()
    return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
-Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_initial_guess()
+CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_initial_guess()
 {
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> x_init(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
+   EWSB_vector_t x_init(EWSB_vector_t::Zero());
 
 @ewsbInitialGuess@
 
@@ -389,10 +390,10 @@ Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_in
  *
  * @return new set of EWSB output parameters
  */
-Eigen::Matrix<double, CLASSNAME::number_of_ewsb_equations, 1> CLASSNAME::ewsb_step() const
+CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_step() const
 {
    double tadpole[number_of_ewsb_equations] = { 0. };
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
+   EWSB_vector_t ewsb_parameters(EWSB_vector_t::Zero());
 
    if (ewsb_loop_order > 0) {
 @calculateOneLoopTadpolesNoStruct@

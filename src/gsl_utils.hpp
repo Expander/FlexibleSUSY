@@ -28,6 +28,7 @@ namespace flexiblesusy {
 bool is_finite(const gsl_vector*);
 
 Eigen::ArrayXd to_eigen_array(const gsl_vector*);
+Eigen::VectorXd to_eigen_vector(const gsl_vector*);
 gsl_vector* to_gsl_vector(const Eigen::ArrayXd&);
 void copy(const Eigen::ArrayXd&, gsl_vector*);
 

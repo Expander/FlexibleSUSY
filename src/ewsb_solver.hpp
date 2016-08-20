@@ -19,6 +19,8 @@
 #ifndef EWSB_SOLVER_H
 #define EWSB_SOLVER_H
 
+#include <Eigen/Core>
+
 namespace flexiblesusy {
 
 /**
@@ -30,8 +32,8 @@ public:
    enum Status : int { SUCCESS = 0, FAIL = 1 };
 
    virtual ~EWSB_solver() {}
-   virtual int solve(const double*) = 0;
-   virtual double get_solution(unsigned) = 0;
+   virtual int solve(const Eigen::VectorXd&) = 0;
+   virtual Eigen::VectorXd get_solution() = 0;
 };
 
 } // namespace flexiblesusy

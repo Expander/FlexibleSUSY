@@ -1082,7 +1082,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               solveEWSBTemporarily = "solve_ewsb_tree_level();";
              ];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
-           setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solver->get_solution"];
+           setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solution"];
            fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
            solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, treeLevelEWSBOutputParameters];
            getEWSBParametersFromVector  = EWSB`GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, "ewsb_pars"];
@@ -1167,8 +1167,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
                             "@fillArrayWithEWSBParameters@"  -> IndentText[fillArrayWithEWSBParameters],
                             "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
-                            "@getEWSBParametersFromVector@"  -> IndentText[getEWSBParametersFromVector,8],
-                            "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies,8],
+                            "@getEWSBParametersFromVector@"  -> IndentText[IndentText[getEWSBParametersFromVector]],
+                            "@setEWSBParametersFromLocalCopies@" -> IndentText[IndentText[setEWSBParametersFromLocalCopies]],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,
                             "@ewsbParametersInitialization@" -> ewsbParametersInitialization,

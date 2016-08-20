@@ -63,16 +63,18 @@ auto parabola2 = [](EV2_t x) -> EV2_t {
 BOOST_AUTO_TEST_CASE( test_parabola1 )
 {
    const double precision = 1.0e-4;
-   const double start[2] = { 9, 9 };
+   Eigen::Matrix<double,2,1> start;
+   start << 9, 9;
    Fixed_point_iterator<2> fpi(parabola1, 1000, precision);
    int status = GSL_SUCCESS;
 
    reset();
 
    status = fpi.find_fixed_point(start);
+   const auto fixed_point = fpi.get_solution();
 
-   const double residual_1 = MaxRelDiff(5.0, fpi.get_fixed_point(0));
-   const double residual_2 = MaxRelDiff(1.0, fpi.get_fixed_point(1));
+   const double residual_1 = MaxRelDiff(5.0, fixed_point(0));
+   const double residual_2 = MaxRelDiff(1.0, fixed_point(1));
 
    // Note: The convergence criterion
    // MaxRelDiff(x_{n+1}, x_{n}) < precision
@@ -89,7 +91,8 @@ BOOST_AUTO_TEST_CASE( test_parabola1 )
 BOOST_AUTO_TEST_CASE( test_parabola2 )
 {
    const double precision = 1.0e-4;
-   const double start[2] = { 9, 9 };
+   Eigen::Matrix<double,2,1> start;
+   start << 9, 9;
    Fixed_point_iterator<2> fpi(parabola2, 1000, precision);
    int status = GSL_SUCCESS;
 
@@ -123,17 +126,19 @@ auto perturbation = [](EV2_t x) -> EV2_t {
 BOOST_AUTO_TEST_CASE( test_perturbation )
 {
    const double precision = 1.0e-4;
-   const double start[2] = { 10, 10 };
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
    Fixed_point_iterator<2> fpi(perturbation, 1000, precision);
    int status = GSL_SUCCESS;
 
    reset();
 
    status = fpi.find_fixed_point(start);
+   const auto fixed_point = fpi.get_solution();
 
    BOOST_REQUIRE(status == GSL_SUCCESS);
-   BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(0), 1.0, 0.02);
-   BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(1), 2.0, 0.04);
+   BOOST_CHECK_CLOSE_FRACTION(fixed_point(0), 1.0, 0.02);
+   BOOST_CHECK_CLOSE_FRACTION(fixed_point(1), 2.0, 0.04);
 
    BOOST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
    BOOST_CHECK(get_number_of_calls() < 6);

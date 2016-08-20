@@ -1326,10 +1326,23 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double Mu_ss = softSusy.displaySusyMu();
    const double BMu_ss = softSusy.displayM3Squared();
 
-   using namespace std::placeholders;
+   typedef Eigen::Matrix<double,2,1> EWSB_vector_t;
 
-   auto ewsb_stepper = std::bind(model.ewsb_stepper, &model, _1);
-   auto tadpole_stepper = std::bind(model.tadpole_stepper, &model, _1);
+   auto ewsb_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return model.ewsb_step();
+   };
+
+   auto tadpole_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return model.tadpole_equations();
+   };
 
    // prepare solvers
    EWSB_solver* solvers[] = {

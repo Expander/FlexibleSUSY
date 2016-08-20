@@ -41,6 +41,7 @@
 #include "sm_twoloophiggs.hpp"
 
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <algorithm>
@@ -91,18 +92,6 @@ Standard_model::Standard_model()
    , two_loop_corrections()
    , qedqcd()
    , input()
-   , ewsb_stepper([](Standard_model* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-        model->set_mu2(ewsb_pars(0));
-        if (model->get_ewsb_loop_order() > 0)
-           model->calculate_DRbar_masses();
-        return model->ewsb_step();
-     })
-   , tadpole_stepper([](Standard_model* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-        model->set_mu2(ewsb_pars(0));
-        if (model->get_ewsb_loop_order() > 0)
-           model->calculate_DRbar_masses();
-        return model->tadpole_equations();
-   })
    , g1(0), g2(0), g3(0), Lambdax(0), Yu(Eigen::Matrix<double,3,3>::Zero()), Yd
    (Eigen::Matrix<double,3,3>::Zero()), Ye(Eigen::Matrix<double,3,3>::Zero())
    , mu2(0), v(0)
@@ -291,13 +280,23 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
  */
 int Standard_model::solve_ewsb_iteratively()
 {
-   auto ewsb_stepper_ = std::bind(ewsb_stepper, this, std::placeholders::_1);
-   auto tadpole_stepper_ = std::bind(tadpole_stepper, this, std::placeholders::_1);
+   auto ewsb_stepper = [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      set_mu2(ewsb_pars(0));
+      if (get_ewsb_loop_order() > 0)
+         calculate_DRbar_masses();
+      return ewsb_step();
+   };
+   auto tadpole_stepper = [this](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      set_mu2(ewsb_pars(0));
+      if (get_ewsb_loop_order() > 0)
+         calculate_DRbar_masses();
+      return tadpole_equations();
+   };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
-      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper_, number_of_ewsb_iterations, ewsb_iteration_precision)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper_, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper_, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
@@ -353,9 +352,10 @@ int Standard_model::solve_ewsb_iteratively_with(
    const Eigen::Matrix<double, number_of_ewsb_equations, 1>& x_init
 )
 {
-   const int status = solver->solve(&x_init[0]);
+   const int status = solver->solve(x_init);
+   const auto solution = solver->get_solution();
 
-   mu2 = solver->get_solution(0);
+   mu2 = solution(0);
 
 
    return status;
