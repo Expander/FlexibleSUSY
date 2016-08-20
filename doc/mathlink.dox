@@ -9,6 +9,9 @@ within Mathematica using Wolfram's LibraryLink interface.
 
 \subsection math_interface_quick_start Quick start for the CMSSM
 
+The following example calculates the pole mass spectrum and the
+observables in the CMSSM for a given parameter point:
+
 ~~~~~~~~~~~~~~~~~~~~{.m}
 Get["models/CMSSM/CMSSM_librarylink.m"];
 
@@ -30,6 +33,72 @@ FSCMSSMCalculateObservables[handle]
 (* close the model handle *)
 FSCMSSMCloseHandle[handle];
 ~~~~~~~~~~~~~~~~~~~~
+
+In the following example the Higgs pole mass is calculated in the
+HSUSY model (an EFT calculation of the SM-like Higgs mass, assuming
+that the high-energy completion is the MSSM) as a function of \f$X_t /
+M_S\f$ for \f$\tan\beta = 5\f$ and different values of the SUSY scale.
+The example also illustrates how parallelization can be used to
+exploit the performance of multi-core systems.
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/HSSUSY/HSSUSY_librarylink.m"];
+
+CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
+    handle = FSHSSUSYOpenHandle[
+        fsSettings -> {
+            precisionGoal -> 1.*^-5,
+            calculateStandardModelMasses -> 1,
+            poleMassLoopOrder -> 2,
+            ewsbLoopOrder -> 2,
+            betaFunctionLoopOrder -> 3,
+            thresholdCorrectionsLoopOrder -> 2,
+            poleMassScale -> 173.34,
+            parameterOutputScale -> 173.34
+        },
+        fsModelParameters -> {
+            TanBeta -> TB,
+            LambdaLoopOrder -> 2,
+            MEWSB -> 173.34,
+            MSUSY -> MS,
+            M1Input -> MS,
+            M2Input -> MS,
+            M3Input -> MS,
+            MuInput -> MS,
+            mAInput -> MS,
+            AtInput -> (Xtt + 1/TB) * MS,
+            msq2 -> MS^2 IdentityMatrix[3],
+            msu2 -> MS^2 IdentityMatrix[3],
+            msd2 -> MS^2 IdentityMatrix[3],
+            msl2 -> MS^2 IdentityMatrix[3],
+            mse2 -> MS^2 IdentityMatrix[3]
+        }
+    ];
+    spec = FSHSSUSYCalculateSpectrum[handle];
+    FSHSSUSYCloseHandle[handle];
+    If[spec =!= $Failed, Pole[M[hh]] /. spec, 0]
+];
+
+LaunchKernels[];
+DistributeDefinitions[CalcMh];
+
+data = {
+    ParallelMap[{#, CalcMh[5, #, 1000 ]}&, Range[-3.5, 3.5, 0.1]],
+    ParallelMap[{#, CalcMh[5, #, 2000 ]}&, Range[-3.5, 3.5, 0.1]],
+    ParallelMap[{#, CalcMh[5, #, 10000]}&, Range[-3.5, 3.5, 0.1]]
+};
+
+plot = ListPlot[data,
+                PlotLegends -> {"MS = 1 TeV", "MS = 2 TeV", "MS = 10 TeV"},
+                Axes -> False, Frame -> True,
+                FrameLabel -> {"Xt / MS", "Mh / GeV"}];
+
+Export["Mh_Xt.png", plot, ImageSize -> 1000];
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+\image html Mh_Xt.png
 
 \subsection math_interface_defs Using the Mathematica interface functions
 
