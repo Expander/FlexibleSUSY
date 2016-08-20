@@ -40,6 +40,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #define INPUTPARAMETER(p) data.input.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -583,7 +584,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 
       const Handle_id hid = get_new_handle();
 
-      handles.emplace(hid, data);
+      handles.emplace(hid, std::move(data));
 
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
