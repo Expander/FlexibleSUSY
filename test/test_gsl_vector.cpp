@@ -6,6 +6,8 @@
 #include "gsl_vector.hpp"
 #include "error.hpp"
 
+#include <limits>
+
 using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_init_default )
@@ -127,4 +129,11 @@ BOOST_AUTO_TEST_CASE( test_nonempty_bounds_check )
    BOOST_CHECK_NO_THROW(v[1]);
    BOOST_CHECK_NO_THROW(v[2]);
    BOOST_CHECK_THROW(v[3], OutOfBoundsError);
+}
+
+BOOST_AUTO_TEST_CASE( test_alloc )
+{
+   gsl_set_error_handler_off();
+   BOOST_CHECK_THROW(GSL_vector v(std::numeric_limits<std::size_t>::max()),
+                     OutOfMemoryError);
 }
