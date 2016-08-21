@@ -190,6 +190,12 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             (* replace SARAH traces in expr *)
             traceRules = Rule[#,ToValidCSymbol[#]]& /@ (Traces`FindSARAHTraces[expr, sarahTraces]);
             beta = beta /. traceRules;
+            (* collecting complicated matrix multiplications *)
+            beta = beta / loopFactor;
+            beta = TimeConstrained[Collect[beta,SARAH`MatMul[___]],
+                                   FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint,
+                                   beta];
+            beta = beta loopFactor;
             (* declare SARAH traces locally *)
             localDecl  = localDecl <> Traces`CreateLocalCopiesOfSARAHTraces[expr, sarahTraces, "TRACE_STRUCT"];
             If[beta === 0,
