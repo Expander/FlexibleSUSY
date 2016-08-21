@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "gsl_vector.hpp"
+#include "error.hpp"
 
 using namespace flexiblesusy;
 
@@ -108,4 +109,22 @@ BOOST_AUTO_TEST_CASE( test_output )
    v[2] = 3.;
 
    BOOST_MESSAGE(v);
+}
+
+BOOST_AUTO_TEST_CASE( test_empty_bounds_check )
+{
+   GSL_vector v;
+
+   BOOST_CHECK_THROW(v[0], OutOfBoundsError);
+   BOOST_CHECK_THROW(v[1], OutOfBoundsError);
+}
+
+BOOST_AUTO_TEST_CASE( test_nonempty_bounds_check )
+{
+   GSL_vector v(3);
+
+   BOOST_CHECK_NO_THROW(v[0]);
+   BOOST_CHECK_NO_THROW(v[1]);
+   BOOST_CHECK_NO_THROW(v[2]);
+   BOOST_CHECK_THROW(v[3], OutOfBoundsError);
 }

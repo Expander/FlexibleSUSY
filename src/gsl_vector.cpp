@@ -19,7 +19,6 @@
 #include "gsl_vector.hpp"
 #include "error.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <string>
 
@@ -91,15 +90,31 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& other)
 
 double& GSL_vector::operator[](std::size_t n)
 {
-   assert(vec);
-   assert(n < vec->size && "GSL_vector::operator[]: index out of range");
+   if (!vec)
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size 0.");
+
+   if (n >= size())
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size " + std::to_string(size()) + ".");
+
    return *gsl_vector_ptr(vec, n);
 }
 
 double GSL_vector::operator[](std::size_t n) const
 {
-   assert(vec);
-   assert(n < vec->size && "GSL_vector::operator[]: index out of range");
+   if (!vec)
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size 0.");
+
+   if (n >= size())
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size " + std::to_string(size()) + ".");
+
    return gsl_vector_get(vec, n);
 }
 
