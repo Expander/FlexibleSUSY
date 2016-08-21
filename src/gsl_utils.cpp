@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "gsl_utils.hpp"
+#include "gsl_vector.hpp"
 #include <cstddef>
 #include <cmath>
 

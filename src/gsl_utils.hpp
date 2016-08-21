@@ -19,11 +19,12 @@
 #ifndef GSL_UTILS_H
 #define GSL_UTILS_H
 
-#include "gsl_vector.hpp"
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
+
+class GSL_vector;
 
 /// Returns true if GSL_vector contains only finite elements, false otherwise
 bool is_finite(const GSL_vector&);
