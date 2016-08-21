@@ -26,6 +26,7 @@ TEST_SRC := \
 		$(DIR)/test_ewsb_solver.cpp \
 		$(DIR)/test_fixed_point_iterator.cpp \
 		$(DIR)/test_goldstones.cpp \
+		$(DIR)/test_gsl_vector.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
 		$(DIR)/test_namespace_collisions.cpp \
@@ -454,6 +455,9 @@ $(DIR)/test_fixed_point_iterator.x: $(DIR)/test_fixed_point_iterator.o $(LIBFLEX
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_goldstones.x: $(DIR)/test_goldstones.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+
+$(DIR)/test_gsl_vector.x: $(DIR)/test_gsl_vector.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_linalg2.x: $(DIR)/test_linalg2.o

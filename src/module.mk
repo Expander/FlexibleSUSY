@@ -17,6 +17,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/error.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
+		$(DIR)/gsl_vector.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
@@ -71,6 +72,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/functors.hpp \
 		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl_utils.hpp \
+		$(DIR)/gsl_vector.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
 		$(DIR)/two_loop_corrections.hpp \
 		$(DIR)/initial_guesser.hpp \
