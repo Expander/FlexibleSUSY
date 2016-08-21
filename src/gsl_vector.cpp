@@ -42,7 +42,7 @@ GSL_vector::GSL_vector(const GSL_vector& other)
    gsl_vector_memcpy(vec, other.vec);
 }
 
-GSL_vector::GSL_vector(GSL_vector&& other)
+GSL_vector::GSL_vector(GSL_vector&& other) noexcept
 {
    vec = other.vec;
    other.vec = NULL;

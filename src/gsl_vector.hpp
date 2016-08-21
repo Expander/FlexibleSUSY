@@ -29,7 +29,7 @@ public:
    GSL_vector();
    explicit GSL_vector(std::size_t);
    GSL_vector(const GSL_vector&);
-   GSL_vector(GSL_vector&&);
+   GSL_vector(GSL_vector&&) noexcept;
    ~GSL_vector();
 
    const GSL_vector& operator=(const GSL_vector&);
