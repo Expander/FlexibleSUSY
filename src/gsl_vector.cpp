@@ -17,9 +17,11 @@
 // ====================================================================
 
 #include "gsl_vector.hpp"
+#include "error.hpp"
 
 #include <cassert>
 #include <cmath>
+#include <string>
 
 namespace flexiblesusy {
 
@@ -30,15 +32,28 @@ GSL_vector::GSL_vector()
 
 GSL_vector::GSL_vector(std::size_t size)
 {
-   if (size)
-      vec = gsl_vector_calloc(size);
-   else
+   if (!size) {
       vec = NULL;
+      return;
+   }
+
+   vec = gsl_vector_calloc(size);
+
+   if (!vec)
+      throw OutOfMemoryError(
+         "Allocation of GSL_vector of size " + std::to_string(size)
+         + "failed.");
 }
 
 GSL_vector::GSL_vector(const GSL_vector& other)
 {
    vec = gsl_vector_alloc(other.size());
+
+   if (!vec)
+      throw OutOfMemoryError(
+         "Allocation of GSL_vector of size " + std::to_string(other.size())
+         + "failed.");
+
    gsl_vector_memcpy(vec, other.vec);
 }
 
@@ -52,6 +67,12 @@ void GSL_vector::assign(const gsl_vector* other)
 {
    gsl_vector_free(vec);
    vec = gsl_vector_alloc(other->size);
+
+   if (!vec)
+      throw OutOfMemoryError(
+         "Allocation of GSL_vector of size " + std::to_string(other->size)
+         + "failed.");
+
    gsl_vector_memcpy(vec, other);
 }
 
