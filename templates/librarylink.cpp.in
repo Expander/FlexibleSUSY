@@ -579,8 +579,8 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      const Model_data data = fill(libData->MTensor_getRealData(pars),
-                                   libData->MTensor_getDimensions(pars)[0]);
+      Model_data data = fill(libData->MTensor_getRealData(pars),
+                             libData->MTensor_getDimensions(pars)[0]);
 
       const Handle_id hid = get_new_handle();
 
