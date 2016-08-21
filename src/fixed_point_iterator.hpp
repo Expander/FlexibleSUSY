@@ -326,7 +326,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::fixed_point_iterator_ite
 
    // For safety, include a check for nans or infs here (which
    // should be sufficient for now)
-   if (!fixed_point.all_finite())
+   if (!is_finite(fixed_point))
       GSL_ERROR("update point is not finite", GSL_EBADFUNC);
 
    return GSL_SUCCESS;

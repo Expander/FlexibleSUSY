@@ -88,16 +88,6 @@ std::size_t GSL_vector::size() const
    return vec->size;
 }
 
-bool GSL_vector::all_finite() const
-{
-   bool finite = true;
-
-   for (std::size_t i = 0; i < size(); i++)
-      finite = finite && std::isfinite((*this)[i]);
-
-   return finite;
-}
-
 const gsl_vector* GSL_vector::raw() const
 {
    return vec;

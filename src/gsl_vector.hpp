@@ -37,7 +37,6 @@ public:
    double operator[](std::size_t) const;
 
    void assign(const gsl_vector*);
-   bool all_finite() const;
    const gsl_vector* raw() const;
    gsl_vector* raw();
    void set_all(double);

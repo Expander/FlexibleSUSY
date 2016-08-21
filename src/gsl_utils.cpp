@@ -41,6 +41,24 @@ bool is_finite(const gsl_vector* x)
 }
 
 /**
+ * Returns true if GSL_vector contains only finite elements (neither
+ * nan nor inf), false otherwise.
+ *
+ * @param x GSL vector
+ * @return true if vector contains only finite elements, false otherwise.
+ */
+bool is_finite(const GSL_vector& v)
+{
+   const std::size_t length = v.size();
+   bool finite = true;
+
+   for (std::size_t i = 0; i < length; i++)
+      finite = finite && std::isfinite(v[i]);
+
+   return finite;
+}
+
+/**
  * Returns an Eigen array which contains the elements of the given GSL
  * vector.
  *
