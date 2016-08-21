@@ -33,17 +33,17 @@ public:
    ~GSL_vector();
 
    const GSL_vector& operator=(const GSL_vector&);
-   double& operator[](std::size_t);
-   double operator[](std::size_t) const;
+   double& operator[](std::size_t);      ///< element read/write access
+   double operator[](std::size_t) const; ///< element read access
 
-   void assign(const gsl_vector*);
-   const gsl_vector* raw() const;
-   gsl_vector* raw();
-   void set_all(double);
+   void assign(const gsl_vector*); ///< assign from gsl_vector
+   const gsl_vector* raw() const;  ///< get raw pointer
+   gsl_vector* raw();              ///< get raw pointer
+   void set_all(double);           ///< set all elemets to same value
    std::size_t size() const;
 
 private:
-   gsl_vector* vec;
+   gsl_vector* vec;                ///< raw gsl_vector
 };
 
 std::ostream& operator<<(std::ostream&, const GSL_vector&);
