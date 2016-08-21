@@ -3,7 +3,6 @@
 #define BOOST_TEST_MODULE test_CMSSM_higgs_iteration
 
 #include <boost/test/unit_test.hpp>
-#include <gsl/gsl_vector.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_multimin.h>

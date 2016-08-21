@@ -19,6 +19,7 @@
 #ifndef GSL_UTILS_H
 #define GSL_UTILS_H
 
+#include "gsl_vector.hpp"
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
@@ -29,7 +30,9 @@ bool is_finite(const gsl_vector*);
 
 Eigen::ArrayXd to_eigen_array(const gsl_vector*);
 Eigen::VectorXd to_eigen_vector(const gsl_vector*);
-gsl_vector* to_gsl_vector(const Eigen::ArrayXd&);
+Eigen::VectorXd to_eigen_vector(const GSL_vector&);
+GSL_vector to_GSL_vector(const Eigen::VectorXd&);
+GSL_vector to_GSL_vector(const gsl_vector*);
 void copy(const Eigen::ArrayXd&, gsl_vector*);
 
 }

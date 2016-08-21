@@ -17,7 +17,9 @@
 // ====================================================================
 
 #include "gsl_vector.hpp"
+
 #include <cassert>
+#include <cmath>
 
 namespace flexiblesusy {
 
@@ -46,6 +48,13 @@ GSL_vector::GSL_vector(GSL_vector&& other)
    other.vec = NULL;
 }
 
+void GSL_vector::assign(const gsl_vector* other)
+{
+   gsl_vector_free(vec);
+   vec = gsl_vector_alloc(other->size);
+   gsl_vector_memcpy(vec, other);
+}
+
 GSL_vector::~GSL_vector()
 {
    gsl_vector_free(vec);
@@ -53,11 +62,8 @@ GSL_vector::~GSL_vector()
 
 const GSL_vector& GSL_vector::operator=(const GSL_vector& other)
 {
-   if (this != &other) {
-      gsl_vector_free(vec);
-      vec = gsl_vector_alloc(other.size());
-      gsl_vector_memcpy(vec, other.vec);
-   }
+   if (this != &other)
+      assign(other.vec);
 
    return *this;
 }
@@ -82,6 +88,16 @@ std::size_t GSL_vector::size() const
    return vec->size;
 }
 
+bool GSL_vector::all_finite() const
+{
+   bool finite = true;
+
+   for (std::size_t i = 0; i < size(); i++)
+      finite = finite && std::isfinite((*this)[i]);
+
+   return finite;
+}
+
 const gsl_vector* GSL_vector::raw() const
 {
    return vec;
@@ -90,6 +106,11 @@ const gsl_vector* GSL_vector::raw() const
 gsl_vector* GSL_vector::raw()
 {
    return vec;
+}
+
+void GSL_vector::set_all(double value)
+{
+   gsl_vector_set_all(vec, value);
 }
 
 std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)

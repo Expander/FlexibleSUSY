@@ -63,6 +63,24 @@ Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
  * vector.
  *
  * @param v GSL vector
+ * @return Eigen array
+ */
+Eigen::ArrayXd to_eigen_array(const GSL_vector& v)
+{
+   const std::size_t dim = v.size();
+   Eigen::ArrayXd xa(dim);
+
+   for (std::size_t i = 0; i < dim; i++)
+      xa(i) = v[i];
+
+   return xa;
+}
+
+/**
+ * Returns an Eigen array which contains the elements of the given GSL
+ * vector.
+ *
+ * @param v GSL vector
  * @return Eigen vector
  */
 Eigen::VectorXd to_eigen_vector(const gsl_vector* v)
@@ -71,19 +89,37 @@ Eigen::VectorXd to_eigen_vector(const gsl_vector* v)
 }
 
 /**
- * Allocates a new GSL vector and fills it with the values of the
- * given Eigen array.
+ * Returns an Eigen array which contains the elements of the given GSL
+ * vector.
  *
- * @param v Eigen arry
- * @return new allocated GSL vector
+ * @param v GSL vector
+ * @return Eigen vector
  */
-gsl_vector* to_gsl_vector(const Eigen::ArrayXd& v)
+Eigen::VectorXd to_eigen_vector(const GSL_vector& v)
 {
-   gsl_vector* result = gsl_vector_alloc(v.rows());
+   Eigen::VectorXd v2(v.size());
 
-   copy(v, result);
+   for (std::size_t i = 0; i < v.size(); i++)
+      v2(i) = v[i];
 
-   return result;
+   return v2;
+}
+
+GSL_vector to_GSL_vector(const Eigen::VectorXd& v)
+{
+   GSL_vector v2(v.rows());
+
+   for (std::size_t i = 0; i < v.rows(); i++)
+      v2[i] = v(i);
+
+   return v2;
+}
+
+GSL_vector to_GSL_vector(const gsl_vector* v)
+{
+   GSL_vector v2(v->size);
+   gsl_vector_memcpy(v2.raw(), v);
+   return v2;
 }
 
 /**
