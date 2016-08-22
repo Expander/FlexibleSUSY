@@ -80,10 +80,10 @@ GSL_vector::~GSL_vector()
    gsl_vector_free(vec);
 }
 
-const GSL_vector& GSL_vector::operator=(const GSL_vector& other)
+const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 {
-   if (this != &other)
-      assign(other.vec);
+   if (this != &rhs)
+      assign(rhs.vec);
 
    return *this;
 }
