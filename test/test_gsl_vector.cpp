@@ -114,6 +114,7 @@ BOOST_AUTO_TEST_CASE( test_move )
 
    GSL_vector v2(std::move(v));
 
+   BOOST_CHECK(!v.raw());
    BOOST_CHECK_EQUAL(v2[0], 1.);
    BOOST_CHECK_EQUAL(v2[1], 2.);
    BOOST_CHECK_EQUAL(v2[2], 3.);
