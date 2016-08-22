@@ -89,6 +89,22 @@ BOOST_AUTO_TEST_CASE( test_assign_chain )
    BOOST_CHECK_EQUAL(v3[2], 3.);
 }
 
+BOOST_AUTO_TEST_CASE( test_move_assign )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   GSL_vector v2;
+   v2 = std::move(v);
+
+   BOOST_CHECK(!v.raw());
+   BOOST_CHECK_EQUAL(v2[0], 1.);
+   BOOST_CHECK_EQUAL(v2[1], 2.);
+   BOOST_CHECK_EQUAL(v2[2], 3.);
+}
+
 BOOST_AUTO_TEST_CASE( test_move )
 {
    GSL_vector v(3);

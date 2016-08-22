@@ -88,6 +88,12 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& other)
    return *this;
 }
 
+GSL_vector& GSL_vector::operator=(GSL_vector&& rhs)
+{
+   vec = rhs.vec;
+   rhs.vec = NULL;
+}
+
 double& GSL_vector::operator[](std::size_t n)
 {
    if (!vec)

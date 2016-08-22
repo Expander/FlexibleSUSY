@@ -34,6 +34,7 @@ public:
    ~GSL_vector();
 
    const GSL_vector& operator=(const GSL_vector&);
+   GSL_vector& operator=(GSL_vector&&);
    double& operator[](std::size_t);      ///< element read/write access
    double operator[](std::size_t) const; ///< element read access
 
