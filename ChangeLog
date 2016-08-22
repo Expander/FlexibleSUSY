@@ -22,6 +22,9 @@ Flexiblesusy-1.5.2 [not released yet]
    FlexibleSUSY[13] = 1 and FlexibleSUSY[4] > 1: 2L QCD correction
    FlexibleSUSY[13] = 2 and FlexibleSUSY[4] > 2: 3L QCD correction
 
+ * Feature (commits 98bc536, e8fd56a): Speed up of the RG running in
+   models with very complicated beta functions.
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
