@@ -90,8 +90,12 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 
 GSL_vector& GSL_vector::operator=(GSL_vector&& rhs)
 {
-   vec = rhs.vec;
-   rhs.vec = NULL;
+   if (this != &rhs) {
+      vec = rhs.vec;
+      rhs.vec = NULL;
+   }
+
+   return *this;
 }
 
 double& GSL_vector::operator[](std::size_t n)
