@@ -197,10 +197,10 @@ clean-dep:
 	-rm -f $(ALLDEP)
 
 clean-executables:
-	-rm -f $(ALLEXE) $(ALLLL)
+	-rm -f $(ALLEXE)
 
 clean-lib:
-	-rm -f $(ALLLIB)
+	-rm -f $(ALLLIB) $(ALLLL)
 
 depend:  clean-dep
 depend:  $(ALLDEP)
