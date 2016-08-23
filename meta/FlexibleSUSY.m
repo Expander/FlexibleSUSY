@@ -1307,6 +1307,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
                             "@setInputParameters@" -> IndentText[setInputParameters],
                             "@setInputParameterArguments@" -> IndentText[setInputParameterArguments, 12],
                             "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
+                            "@setDefaultInputParameters@" -> IndentText[setInputParameterDefaultArguments,8],
                             "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
                             "@putSpectrum@" -> IndentText[putSpectrum],
                             "@numberOfObservables@" -> ToString[numberOfObservables],
@@ -2504,7 +2505,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.cpp"}]},
                           {FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.m.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]}
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "run.m.in"}],
+                           FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".m"}]}
                          }];
 
            PrintHeadline["FlexibleSUSY has finished"];
