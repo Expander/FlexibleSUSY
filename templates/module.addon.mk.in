@@ -1,5 +1,6 @@
 DIR          := @DIR@
 MODNAME      := @ADDON@
+WITH_$(MODNAME) := yes
 
 LIB@ADDON@_MK  := $(DIR)/module.mk
 
