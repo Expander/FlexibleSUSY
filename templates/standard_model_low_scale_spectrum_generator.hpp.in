@@ -124,6 +124,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    matching.set_scale(this->settings.get(Spectrum_generator_settings::eft_matching_scale));
    matching.set_loop_order_up(this->settings.get(Spectrum_generator_settings::eft_matching_loop_order_up));
    matching.set_loop_order_down(this->settings.get(Spectrum_generator_settings::eft_matching_loop_order_down));
+   matching.set_higgs_index(this->settings.get(Spectrum_generator_settings::eft_higgs_index));
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();

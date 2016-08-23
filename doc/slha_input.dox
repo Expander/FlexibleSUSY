@@ -30,7 +30,9 @@ Block FlexibleSUSY
    17   0        # pole mass scale
    18   0        # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
    19   0        # EFT matching scale (0 = SUSY scale)
-   20   1        # EFT matching loop order
+   20   1        # EFT loop order for upwards matching
+   21   1        # EFT loop order for downwards matching
+   22   1        # EFT index of SM-like Higgs in the BSM model
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -62,7 +64,9 @@ index | description                          | possible values              | de
 17    | pole mass scale                      | any positive double          | 0 (= SUSY scale)
 18    | EFT pole mass scale                  | any positive double          | 0 (= minimum of {Mt, SUSY scale})
 19    | EFT matching scale                   | any positive double          | 0 (= SUSY scale)
-20    | EFT matching loop order              | 0, 1                         | 1 (= 1-loop)
+20    | EFT loop order for upwards matching  | 0, 1, 2                      | 2 (= 2-loop)
+21    | EFT loop order for downwards matching| 0, 1                         | 1 (= 1-loop)
+22    | EFT Higgs index                      | any integer >= 0             | 0 (= lightest)
 
 ### Precision goal ###
 
@@ -281,15 +285,15 @@ Using `FlexibleSUSY[19]`, the renormalization scale at which the full
 model is matched to the Standard Model can be overwritten.  If
 unspecified or set to `0`, the `SUSYScale` is used.
 
-### EFT matching loop order ###
+### EFT upwards matching loop order ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 
-Using `FlexibleSUSY[20]`, the loop order for the matching of the full
-model to the Standard Model can be selected.  If unspecified, the loop
-order is set to `1`.
+Using `FlexibleSUSY[20]`, the loop order for the matching of the
+Standard Model to the full BSM model can be selected ("upwards
+matching").  If unspecified, the loop order is set to `2`.
 
-\note When `FlexibleSUSY[20] = 1` and `FlexibleSUSY[13] = 1`, then
+\note When `FlexibleSUSY[20] = 2` and `FlexibleSUSY[13] = 1`, then
 2-loop top Yukawa coupling threshold corrections are additonally taken
 into account in the determination of running top Yukawa coupling of
 the full model at the matching scale, \f$y_t^{\text{model}}\f$.  These
@@ -298,6 +302,23 @@ and the full model are set equal to determine
 \f$y_t^{\text{model}}\f$.  These 2-loop corrections must be included
 in order to reproduce the results of the pure EFT approaches
 (FlexibleSUSY/HSSUSY or SUSYHD) with FlexibleEFTHiggs.
+
+### EFT downwards matching loop order ###
+
+\note Only used if `FlexibleEFTHiggs == True`
+
+Using `FlexibleSUSY[21]`, the loop order for the matching of the BSM
+model to the Standard Model can be selected ("downwards matching").
+If unspecified, the loop order is set to `1`.
+
+### EFT index of SM-like Higgs ###
+
+\note Only used if `FlexibleEFTHiggs == True`
+
+Using `FlexibleSUSY[22]`, the user can specify which Higgs in the BSM
+model should be interpreted to be the SM-like one.  If unspecified,
+the index is set to `0`, i.e. the lightest Higgs eigenstate in the BSM
+model is interpreted as the SM-like Higgs.
 
 
 \section FlexibleSUSY_input Additional physical input parameters (FlexibleSUSYInput)

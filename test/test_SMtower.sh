@@ -75,6 +75,7 @@ Block FlexibleSUSY
    19   0                    # EFT matching scale (0 = SUSY scale)
    20   2                    # EFT loop order for upwards matching
    21   1                    # EFT loop order for downwards matching
+   22   0                    # EFT index of SM-like Higgs in the BSM model
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi

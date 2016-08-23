@@ -72,6 +72,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | eft_matching_scale               | any positive double          | 0 (= SUSY scale)|
  * | eft_matching_loop_order_up       | 0, 1, 2                      | 2 (= 2-loop)    |
  * | eft_matching_loop_order_down     | 0, 1                         | 1 (= 1-loop)    |
+ * | eft_higgs_index                  | any integer >= 0             | 0 (= lightest)  |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -97,6 +98,7 @@ void Spectrum_generator_settings::reset()
    values[eft_matching_scale]               = 0;
    values[eft_matching_loop_order_up]       = 2.;
    values[eft_matching_loop_order_down]     = 1.;
+   values[eft_higgs_index]                  = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
