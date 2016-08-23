@@ -378,25 +378,39 @@ name.
 
 Example for the CMSSM:
 
-  Get["models/CMSSM/CMSSM_librarylink.m"];
+   Get["models/CMSSM/CMSSM_librarylink.m"];
 
-  (* Create a handle to a model given the input parameters.
-     See Options[FSCMSSMOpenHandle] for all default options. *)
-  handle = FSCMSSMOpenHandle[
-    fsSettings -> { precisionGoal -> 1.*^-4 },
-    fsSMParameters -> { Mt -> 173.3 },
-    fsModelParameters -> {
-        m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
-  ];
+   (* Create a handle to a model given the input parameters.
+      See Options[FSCMSSMOpenHandle] for all default options. *)
+   handle = FSCMSSMOpenHandle[
+     fsSettings -> { precisionGoal -> 1.*^-4 },
+     fsSMParameters -> { Mt -> 173.3 },
+     fsModelParameters -> {
+         m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+   ];
 
-  (* calculate pole mass spectrum *)
-  FSCMSSMCalculateSpectrum[handle]
+   (* calculate pole mass spectrum *)
+   FSCMSSMCalculateSpectrum[handle]
 
-  (* calculate further observables *)
-  FSCMSSMCalculateObservables[handle]
+   (* calculate observables *)
+   FSCMSSMCalculateObservables[handle]
 
-  (* close the model handle *)
-  FSCMSSMCloseHandle[handle];
+   (* close the model handle *)
+   FSCMSSMCloseHandle[handle];
+
+For each model, FlexibleSUSY creates an example Mathematica script
+which illustrates the use of the Mathematica interface.  The generated
+example can be found in
+
+   models/<model>/run_<model>.m
+
+which can be run for example as
+
+   $ math -run "<< \"models/<model>/run_<model>.m\""
+
+Before running it, the model parameters in the script sould be
+reasonable values.  More advanced examples can be found in the
+FlexibleSUSY documentation.
 
 
 Cleaning
