@@ -34,12 +34,23 @@ FSCMSSMCalculateObservables[handle]
 FSCMSSMCloseHandle[handle];
 ~~~~~~~~~~~~~~~~~~~~
 
-In the following example the Higgs pole mass is calculated in the
-HSUSY model (an EFT calculation of the SM-like Higgs mass, assuming
-that the high-energy completion is the MSSM) as a function of \f$X_t /
-M_S\f$ for \f$\tan\beta = 5\f$ and different values of the SUSY scale.
-The example also illustrates how parallelization can be used to
-exploit the performance of multi-core systems.
+@note For each model, FlexibleSUSY creates an example Mathematica
+script which illustrates the use of the Mathematica interface.  The
+generated example can be found in `models/<model>/run_<model>.m`,
+which can be run for example as
+
+    math -run "<< \"models/<model>/run_<model>.m\""
+.
+Before running the example Mathematica script, the model parameters in
+the script should be set to reasonable values.
+
+In the following more advanced example the Higgs pole mass is
+calculated in the HSUSY model (an EFT calculation of the SM-like Higgs
+mass, assuming that the high-energy completion is the MSSM) as a
+function of \f$X_t / M_S\f$ for \f$\tan\beta = 5\f$ and different
+values of the SUSY scale.  The example also illustrates how
+parallelization can be used to exploit the performance of multi-core
+systems.
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
 Get["models/HSSUSY/HSSUSY_librarylink.m"];

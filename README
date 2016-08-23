@@ -411,7 +411,7 @@ which can be run for example as
 
    $ math -run "<< \"models/<model>/run_<model>.m\""
 
-Before running it, the model parameters in the script sould be
+Before running it, the model parameters in the script should be set to
 reasonable values.  More advanced examples can be found in the
 FlexibleSUSY documentation.
 
