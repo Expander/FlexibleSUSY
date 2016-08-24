@@ -124,12 +124,15 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    low_scale_constraint .set_model(&eft);
 
    low_scale_constraint .set_sm_parameters(oneset);
+
+   const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
+
    matching.set_models(&eft, &model);
    matching.set_constraint(&susy_scale_constraint);
    matching.set_scale(this->settings.get(Spectrum_generator_settings::eft_matching_scale));
    matching.set_loop_order_up(this->settings.get(Spectrum_generator_settings::eft_matching_loop_order_up));
    matching.set_loop_order_down(this->settings.get(Spectrum_generator_settings::eft_matching_loop_order_down));
-   matching.set_higgs_index(this->settings.get(Spectrum_generator_settings::eft_higgs_index));
+   matching.set_higgs_index(index);
 
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
@@ -214,7 +217,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          eft.set_pole_mass_loop_order(eft_pole_loops);
          eft.set_ewsb_loop_order(eft_ewsb_loops);
 
-         this->model.get_physical().M@HiggsBoson_0@ = eft.get_physical().Mhh;
+         this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
          this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
          this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
 @fillSMFermionPoleMasses@
