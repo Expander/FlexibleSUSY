@@ -9,37 +9,52 @@ MINPAR = {
 };
 
 EXTPAR = {
-    {0, Ms},
-    {14, Xtt},
+    {0, MSUSY},
+    {1, M1Input},
+    {2, M2Input},
+    {3, M3Input},
+    {4, MuInput},
     {25, TanBeta},
     {61, LambdaInput},
-    {62, KappaInput}
+    {62, KappaInput},
+    {63, ALambdaInput},
+    {64, AKappaInput}
+};
+
+FSExtraInputParameters = {
+    {mq2Input, MSQ2IN, {3,3}}, (* 3x3 matrix *)
+    {mu2Input, MSU2IN, {3,3}}, (* 3x3 matrix *)
+    {md2Input, MSD2IN, {3,3}}, (* 3x3 matrix *)
+    {ml2Input, MSL2IN, {3,3}}, (* 3x3 matrix *)
+    {me2Input, MSE2IN, {3,3}}, (* 3x3 matrix *)
+    {AuInput, AUIN, {3,3}}, (* 3x3 matrix *)
+    {AdInput, ADIN, {3,3}}, (* 3x3 matrix *)
+    {AeInput, AEIN, {3,3}}  (* 3x3 matrix *)
 };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };
 
-SUSYScale = Ms;
+SUSYScale = MSUSY;
 
-SUSYScaleFirstGuess = Ms;
+SUSYScaleFirstGuess = MSUSY;
 
 SUSYScaleInput = {
-    {MassB, Ms},
-    {MassWB, Ms},
-    {MassG, Ms},
-    {mq2, UNITMATRIX[3] Ms^2},
-    {mu2, UNITMATRIX[3] Ms^2},
-    {md2, UNITMATRIX[3] Ms^2},
-    {ml2, UNITMATRIX[3] Ms^2},
-    {me2, UNITMATRIX[3] Ms^2},
-    {T[Yu], Ms/TanBeta Yu},
-    {T[Yd], Ms TanBeta Yd},
-    {T[Ye], Ms TanBeta Ye},
-    {T[Yu][3,3], (Ms/TanBeta + Xtt Ms) Yu[3,3]},
-    {vS, Sqrt[2]*Ms/LambdaInput},
+    {MassB, M1Input},
+    {MassWB, M2Input},
+    {MassG, M3Input},
+    {mq2, mq2Input},
+    {mu2, mu2Input},
+    {md2, md2Input},
+    {ml2, ml2Input},
+    {me2, me2Input},
+    {T[Yu], AuInput Yu},
+    {T[Yd], AdInput Yd},
+    {T[Ye], AeInput Ye},
+    {vS, Sqrt[2] MuInput/LambdaInput},
     {\[Kappa], KappaInput},
     {\[Lambda], LambdaInput},
-    {T[\[Kappa]], KappaInput (-Sqrt[2] Ms^2 / vS)},
-    {T[\[Lambda]], Sqrt[2] TanBeta Ms^2 / (vS (TanBeta^2 + 1)) - \[Kappa] \[Lambda] vS / Sqrt[2]}
+    {T[\[Kappa]], AKappaInput KappaInput},
+    {T[\[Lambda]], ALambdaInput LambdaInput}
 };
 
 InitialGuessAtSUSYScale = SUSYScaleInput;

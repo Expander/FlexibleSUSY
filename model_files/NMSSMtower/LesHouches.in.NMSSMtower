@@ -46,7 +46,44 @@ Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
     0   2000                 # Ms
-   14   0                    # Xt / Ms
+    1   2000                 # M1(MSUSY)
+    2   2000                 # M2(MSUSY)
+    3   2000                 # M3(MSUSY)
+    4   2000                 # Mu(MSUSY)
    25   5                    # tan(beta) at Ms
    61   0.5                  # Lambda
    62   0.5                  # Kappa
+   63  -1.61538462E+03       # ALambda
+   64  -1.00000000E+03       # AKappa
+Block MSQ2IN
+  1  1     4.00000000E+06   # mq2(1,1)
+  2  2     4.00000000E+06   # mq2(2,2)
+  3  3     4.00000000E+06   # mq2(3,3)
+Block MSE2IN
+  1  1     4.00000000E+06   # me2(1,1)
+  2  2     4.00000000E+06   # me2(2,2)
+  3  3     4.00000000E+06   # me2(3,3)
+Block MSL2IN
+  1  1     4.00000000E+06   # ml2(1,1)
+  2  2     4.00000000E+06   # ml2(2,2)
+  3  3     4.00000000E+06   # ml2(3,3)
+Block MSU2IN
+  1  1     4.00000000E+06   # mu2(1,1)
+  2  2     4.00000000E+06   # mu2(2,2)
+  3  3     4.00000000E+06   # mu2(3,3)
+Block MSD2IN
+  1  1     4.00000000E+06   # md2(1,1)
+  2  2     4.00000000E+06   # md2(2,2)
+  3  3     4.00000000E+06   # md2(3,3)
+Block AUIN
+  1  1     400   # Au(1,1)
+  2  2     400   # Au(2,2)
+  3  3     400   # Au(3,3)
+Block ADIN
+  1  1     1e4   # Ad(1,1)
+  2  2     1e4   # Ad(2,2)
+  3  3     1e4   # Ad(3,3)
+Block AEIN
+  1  1     1e4   # Ad(1,1)
+  2  2     1e4   # Ad(2,2)
+  3  3     1e4   # Ad(3,3)
