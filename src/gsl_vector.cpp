@@ -69,13 +69,22 @@ GSL_vector::~GSL_vector()
 
 void GSL_vector::assign(const gsl_vector* other)
 {
-   gsl_vector_free(vec);
-   vec = gsl_vector_alloc(other->size);
+   if (!other) {
+      gsl_vector_free(vec);
+      vec = NULL;
+      return;
+   }
 
-   if (!vec)
-      throw OutOfMemoryError(
-         "Allocation of GSL_vector of size " + std::to_string(other->size)
-         + "failed.");
+   // avoid free and alloc if other has same size
+   if (size() != other->size) {
+      gsl_vector_free(vec);
+      vec = gsl_vector_alloc(other->size);
+
+      if (!vec)
+         throw OutOfMemoryError(
+            "Allocation of GSL_vector of size " + std::to_string(other->size)
+            + "failed.");
+   }
 
    gsl_vector_memcpy(vec, other);
 }

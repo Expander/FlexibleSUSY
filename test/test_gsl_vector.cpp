@@ -71,6 +71,47 @@ BOOST_AUTO_TEST_CASE( test_assign )
    BOOST_CHECK_EQUAL(v2[2], 3.);
 }
 
+BOOST_AUTO_TEST_CASE( test_gsl_assign )
+{
+   gsl_vector* v;
+   v = gsl_vector_alloc(3);
+   gsl_vector_set(v, 0, 1.);
+   gsl_vector_set(v, 1, 2.);
+   gsl_vector_set(v, 2, 3.);
+
+   GSL_vector v2(3);
+   v2.assign(v);
+
+   BOOST_CHECK_EQUAL(v2[0], 1.);
+   BOOST_CHECK_EQUAL(v2[1], 2.);
+   BOOST_CHECK_EQUAL(v2[2], 3.);
+}
+
+BOOST_AUTO_TEST_CASE( test_gsl_empty_assign )
+{
+   gsl_vector* v;
+   v = gsl_vector_alloc(3);
+   gsl_vector_set(v, 0, 1.);
+   gsl_vector_set(v, 1, 2.);
+   gsl_vector_set(v, 2, 3.);
+
+   GSL_vector v2;
+   v2.assign(v);
+
+   BOOST_CHECK_EQUAL(v2[0], 1.);
+   BOOST_CHECK_EQUAL(v2[1], 2.);
+   BOOST_CHECK_EQUAL(v2[2], 3.);
+}
+
+BOOST_AUTO_TEST_CASE( test_gsl_null_assign )
+{
+   gsl_vector* v = 0;
+   GSL_vector v2;
+   v2.assign(v);
+
+   BOOST_CHECK_EQUAL(v2.size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE( test_assign_chain )
 {
    GSL_vector v(3);
