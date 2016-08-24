@@ -491,27 +491,6 @@ public:
    void calculate_Ye_DRbar();
    void recalculate_mw_pole();
 
-#ifdef ENABLE_THREADS
-   struct Thread {
-      typedef void(Standard_model::*Memfun_t)();
-      Standard_model* model;
-      Memfun_t fun;
-
-      Thread(Standard_model* model_, Memfun_t fun_)
-         : model(model_), fun(fun_) {}
-      void operator()() {
-         try {
-            (model->*fun)();
-         } catch (...) {
-            model->thread_exception = std::current_exception();
-         }
-      }
-   };
-#endif
-
-   void clear_thread_exception();
-   void rethrow_thread_exception() const;
-
 protected:
 
    // Running parameters
@@ -597,9 +576,6 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    softsusy::QedQcd qedqcd;
    Physical_input input;
-#ifdef ENABLE_THREADS
-   std::exception_ptr thread_exception;
-#endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);

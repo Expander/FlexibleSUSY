@@ -1,5 +1,6 @@
 DIR          := fflite
 MODNAME      := fflite
+WITH_$(MODNAME) := yes
 
 LIBFFLITE_HDR := \
 		$(DIR)/defs.h \

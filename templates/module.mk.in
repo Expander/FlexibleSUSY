@@ -1,6 +1,7 @@
 DIR          := @DIR@
 MODNAME      := @CLASSNAME@
 SARAH_MODEL  := @MODEL@
+WITH_$(MODNAME) := yes
 
 @CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 

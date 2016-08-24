@@ -1,5 +1,6 @@
 DIR          := src
 MODNAME      := src
+WITH_$(MODNAME) := yes
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -91,6 +92,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/physical_input.hpp \
+		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
