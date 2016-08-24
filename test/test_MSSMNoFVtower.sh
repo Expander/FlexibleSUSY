@@ -122,12 +122,51 @@ run_sg() {
 
 run_MSSMtower() {
     local SG="$1"
+    local MS2=$(echo "scale=5; ${MS}^2" | bc)
+    local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
+    local Ab=$(echo "scale=10; (${TB} + ${Xb}) * ${MS}" | bc)
     local slha_input="\
 ${slha_tmpl}
 Block EXTPAR                 # Input parameters
     0   ${MS}                # MSUSY
-   14   ${Xt}                # Xt / Ms
+    1   ${MS}                # M1(MSUSY)
+    2   ${MS}                # M2(MSUSY)
+    3   ${MS}                # M3(MSUSY)
+    4   ${MS}                # Mu(MSUSY)
+    5   ${MS}                # mA(MSUSY)
    25   ${TB}                # TanBeta(MSUSY)
+Block MSQ2IN
+  1  1     ${MS2}   # mq2(1,1)
+  2  2     ${MS2}   # mq2(2,2)
+  3  3     ${MS2}   # mq2(3,3)
+Block MSE2IN
+  1  1     ${MS2}   # me2(1,1)
+  2  2     ${MS2}   # me2(2,2)
+  3  3     ${MS2}   # me2(3,3)
+Block MSL2IN
+  1  1     ${MS2}   # ml2(1,1)
+  2  2     ${MS2}   # ml2(2,2)
+  3  3     ${MS2}   # ml2(3,3)
+Block MSU2IN
+  1  1     ${MS2}   # mu2(1,1)
+  2  2     ${MS2}   # mu2(2,2)
+  3  3     ${MS2}   # mu2(3,3)
+Block MSD2IN
+  1  1     ${MS2}   # md2(1,1)
+  2  2     ${MS2}   # md2(2,2)
+  3  3     ${MS2}   # md2(3,3)
+Block AUIN
+  1  1     ${At} # Au(1,1)
+  2  2     ${At} # Au(2,2)
+  3  3     ${At} # Au(3,3)
+Block ADIN
+  1  1     ${Ab} # Ad(1,1)
+  2  2     ${Ab} # Ad(2,2)
+  3  3     ${Ab} # Ad(3,3)
+Block AEIN
+  1  1     ${Ab} # Ad(1,1)
+  2  2     ${Ab} # Ad(2,2)
+  3  3     ${Ab} # Ad(3,3)
 "
 
     echo $(run_sg "$SG" "$slha_input" "MASS-25")
@@ -182,7 +221,7 @@ scan() {
     local stop="$2"
     local steps="$3"
 
-    printf "# %14s %16s %16s\n" "MS" "MSSMtower" "MSSMMuBMu"
+    printf "# %14s %16s %16s\n" "MS" "MSSMtower" "MSSMNoFVtower"
 
     for i in $(seq 0 $steps); do
         MS=$(cat <<EOF | bc -l
