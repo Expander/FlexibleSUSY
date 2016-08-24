@@ -62,6 +62,11 @@ GSL_vector::GSL_vector(GSL_vector&& other) noexcept
    other.vec = NULL;
 }
 
+GSL_vector::~GSL_vector()
+{
+   gsl_vector_free(vec);
+}
+
 void GSL_vector::assign(const gsl_vector* other)
 {
    gsl_vector_free(vec);
@@ -73,11 +78,6 @@ void GSL_vector::assign(const gsl_vector* other)
          + "failed.");
 
    gsl_vector_memcpy(vec, other);
-}
-
-GSL_vector::~GSL_vector()
-{
-   gsl_vector_free(vec);
 }
 
 const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
