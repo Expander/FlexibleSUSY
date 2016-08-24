@@ -300,6 +300,11 @@ TEST_SH += \
 		$(DIR)/test_MSSMNoFVtower.sh
 endif
 
+ifeq ($(WITH_NMSSMtower) $(WITH_lowNMSSM),yes yes)
+TEST_SH += \
+		$(DIR)/test_NMSSMtower.sh
+endif
+
 ifeq ($(WITH_SMHighPrecision) $(WITH_SMtower),yes yes)
 TEST_SH += \
 		$(DIR)/test_SMtower.sh
