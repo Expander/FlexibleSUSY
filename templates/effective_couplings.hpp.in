@@ -39,7 +39,6 @@ public:
    @ModelName@_effective_couplings(const @ModelName@_mass_eigenstates&,
                                    const softsusy::QedQcd&,
                                    const Physical_input&);
-   ~@ModelName@_effective_couplings();
 
    void do_run_couplings(bool flag) { rg_improve = flag; }
    bool do_run_couplings() const { return rg_improve; }

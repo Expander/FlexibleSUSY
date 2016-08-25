@@ -1,5 +1,6 @@
 DIR      := test
 MODNAME  := test
+WITH_$(MODNAME) := yes
 
 LIBTEST_SRC := \
 		$(DIR)/run_cmd.cpp \
@@ -55,13 +56,13 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
+ifeq ($(WITH_SoftsusyMSSM),yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSM),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_sfermions.cpp \
@@ -76,16 +77,16 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSMMassWInput),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMMassWInput),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMMassWInput_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMLowPrecision),yes)
+ifeq ($(WITH_CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM),yes yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
@@ -93,13 +94,13 @@ TEST_SH += \
 		$(DIR)/test_CMSSM_gluino.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-CMSSMCKM),yes yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyFlavourMSSM) $(WITH_CMSSMCKM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCKM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-NMSSM),yes yes)
+ifeq ($(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
@@ -113,57 +114,57 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-NMSSM),yes yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_benchmark.cpp \
 		$(DIR)/test_NMSSM_slha_output.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-SMSSM),yes yes)
+ifeq ($(WITH_SoftsusyNMSSM) $(WITH_SMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_SMSSM_beta_functions.cpp \
 		$(DIR)/test_SMSSM_ewsb.cpp \
 		$(DIR)/test_SMSSM_one_loop_spectrum.cpp \
 		$(DIR)/test_SMSSM_tree_level_spectrum.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-sm),yes)
+ifeq ($(WITH_sm),yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_sm.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-sm --with-smcw),yes yes)
+ifeq ($(WITH_sm) $(WITH_smcw),yes yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_sm_smcw_integration.cpp
 endif
 endif
-ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-NMSSM),yes yes)
+ifeq ($(WITH_CMSSM) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_NMSSM_linking.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMNoFV),yes)
+ifeq ($(WITH_CMSSMNoFV),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-GM2Calc),yes)
+ifeq ($(WITH_GM2Calc),yes)
 TEST_SRC += \
 		$(DIR)/test_gm2calc.cpp \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-GM2Calc --with-CMSSMNoFV),yes yes)
+ifeq ($(WITH_GM2Calc) $(WITH_CMSSMNoFV),yes yes)
 TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-CMSSMNoFV),yes yes)
+ifeq ($(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
 		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-cCMSSM),yes yes)
+ifeq ($(WITH_CMSSM) $(WITH_cCMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_cCMSSM.sh
 endif
@@ -183,17 +184,17 @@ ALLDEP += $(LIBFFLITE_DEP)
 endif
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-BLSMlightZp),yes)
+ifeq ($(WITH_BLSMlightZp),yes)
 TEST_SH += \
 		$(DIR)/test_BLSMlightZp_ZZp_mixing.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
+ifeq ($(WITH_MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
+ifeq ($(WITH_CMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_CMSSM_slha_doubled_blocks.sh \
 		$(DIR)/test_CMSSM_memory_leaks.sh \
@@ -206,12 +207,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_info.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NMSSM),yes)
+ifeq ($(WITH_NMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_NMSSM_profile.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+ifeq ($(WITH_SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
 		$(DIR)/test_SM_effective_couplings.cpp \
@@ -223,69 +224,69 @@ TEST_SRC += \
 		$(DIR)/test_SM_weinberg_angle.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SMHighPrecision),yes)
+ifeq ($(WITH_SMHighPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_SMHighPrecision_two_loop_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NSM),yes)
+ifeq ($(WITH_NSM),yes)
 TEST_SRC += \
 		$(DIR)/test_NSM_low_scale_constraint.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-CMSSM),yes yes)
+ifeq ($(WITH_lowMSSM) $(WITH_CMSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-lowNMSSM --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes yes)
+ifeq ($(WITH_lowNMSSM) $(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM),yes yes yes)
 TEST_SH += \
 		$(DIR)/test_lowNMSSM_spectrum.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute --with-CMSSMFPITadpole),yes yes yes yes yes yes yes)
+ifeq ($(WITH_CMSSMGSLHybrid) $(WITH_CMSSMGSLHybridS) $(WITH_CMSSMGSLBroyden) $(WITH_CMSSMGSLNewton) $(WITH_CMSSMFPIRelative) $(WITH_CMSSMFPIAbsolute) $(WITH_CMSSMFPITadpole),yes yes yes yes yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_compare_ewsb_solvers.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV),yes)
+ifeq ($(WITH_CMSSMCPV),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_ewsb.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV --with-CMSSM),yes yes)
+ifeq ($(WITH_CMSSMCPV) $(WITH_CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_tree_level_spectrum.cpp
 TEST_SH += \
 		$(DIR)/test_CMSSMCPV_spectrum.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NMSSMCPV),yes)
+ifeq ($(WITH_NMSSMCPV),yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSMCPV_ewsb.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NMSSMCPV --with-NMSSM),yes yes)
+ifeq ($(WITH_NMSSMCPV) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSMCPV_tree_level_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM),yes)
+ifeq ($(WITH_NUTNMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_NUTNMSSM.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM --with-SoftsusyNMSSM),yes yes)
+ifeq ($(WITH_NUTNMSSM) $(WITH_SoftsusyNMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-HSSUSY),yes)
+ifeq ($(WITH_HSSUSY),yes)
 TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-THDMIIMSSMBC --with-THDMIIMSSMBCApprox --with-HGTHDMIIMSSMBC --with-HGTHDMIIMSSMBCApprox),yes yes yes yes)
+ifeq ($(WITH_THDMIIMSSMBC) $(WITH_THDMIIMSSMBCApprox) $(WITH_HGTHDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBCApprox),yes yes yes yes)
 TEST_SH += \
 		$(DIR)/test_THDMIIMSSMBCFull_approximation.sh
 endif
@@ -312,17 +313,17 @@ TEST_META := \
 		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_Vertices.m
 
-ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+ifeq ($(WITH_SM),yes)
 TEST_META += \
 		$(DIR)/test_SM_3loop_beta.m
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SMnoGUT),yes)
+ifeq ($(WITH_SMnoGUT),yes)
 TEST_META += \
 		$(DIR)/test_SMnoGUT_3loop_beta.m
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
+ifeq ($(WITH_CMSSM),yes)
 TEST_META += \
 		$(DIR)/test_CMSSM_3loop_beta.m
 endif

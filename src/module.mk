@@ -1,5 +1,6 @@
 DIR          := src
 MODNAME      := src
+WITH_$(MODNAME) := yes
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk

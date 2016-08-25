@@ -144,19 +144,16 @@ public:
       if (precision < 0.)
          GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);
 
-      for (std::size_t i = 0; i < dimension; ++i) {
-         rel_diff = MaxRelDiff(a[i], b[i]);
+      const double max_rel_diff =
+         MaxRelDiff(to_eigen_vector(a), to_eigen_vector(b));
 
-         if (rel_diff > precision)
-            return GSL_CONTINUE;
+      if (max_rel_diff > precision)
+         return GSL_CONTINUE;
 
-         if (rel_diff < std::numeric_limits<double>::epsilon())
-            return GSL_SUCCESS;
-      }
+      if (max_rel_diff < std::numeric_limits<double>::epsilon())
+         return GSL_SUCCESS;
 
-      const int status = check_tadpoles(a);
-
-      return status;
+      return check_tadpoles(a, parameters);
    }
 
 private:

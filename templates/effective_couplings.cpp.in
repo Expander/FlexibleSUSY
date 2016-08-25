@@ -45,10 +45,6 @@ using namespace effective_couplings;
 {
 }
 
-@ModelName@_effective_couplings::~@ModelName@_effective_couplings()
-{
-}
-
 void @ModelName@_effective_couplings::calculate_effective_couplings()
 {
 @calculateLoopCouplings@

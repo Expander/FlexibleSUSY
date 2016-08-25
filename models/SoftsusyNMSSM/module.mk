@@ -1,5 +1,6 @@
 DIR          := models/SoftsusyNMSSM
 MODNAME      := SoftsusyNMSSM
+WITH_$(MODNAME) := yes
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 LIBSoftsusyNMSSM_SRC  := \
