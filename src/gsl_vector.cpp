@@ -109,31 +109,13 @@ GSL_vector& GSL_vector::operator=(GSL_vector&& rhs)
 
 double& GSL_vector::operator[](std::size_t n)
 {
-   if (!vec)
-      throw OutOfBoundsError(
-         "GSL_vector::operator[]: index " + std::to_string(n)
-         + " out of range for vector of size 0.");
-
-   if (n >= size())
-      throw OutOfBoundsError(
-         "GSL_vector::operator[]: index " + std::to_string(n)
-         + " out of range for vector of size " + std::to_string(size()) + ".");
-
+   range_check(n);
    return *gsl_vector_ptr(vec, n);
 }
 
 double GSL_vector::operator[](std::size_t n) const
 {
-   if (!vec)
-      throw OutOfBoundsError(
-         "GSL_vector::operator[]: index " + std::to_string(n)
-         + " out of range for vector of size 0.");
-
-   if (n >= size())
-      throw OutOfBoundsError(
-         "GSL_vector::operator[]: index " + std::to_string(n)
-         + " out of range for vector of size " + std::to_string(size()) + ".");
-
+   range_check(n);
    return gsl_vector_get(vec, n);
 }
 
@@ -169,6 +151,19 @@ std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
    }
 
    std::cout << ")";
+}
+
+void GSL_vector::range_check(std::size_t n) const
+{
+   if (!vec)
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size 0.");
+
+   if (n >= size())
+      throw OutOfBoundsError(
+         "GSL_vector::operator[]: index " + std::to_string(n)
+         + " out of range for vector of size " + std::to_string(size()) + ".");
 }
 
 } // namespace flexiblesusy

@@ -46,6 +46,8 @@ public:
 
 private:
    gsl_vector* vec;                ///< raw gsl_vector
+
+   void range_check(std::size_t) const;
 };
 
 std::ostream& operator<<(std::ostream&, const GSL_vector&);
