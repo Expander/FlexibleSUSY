@@ -45,6 +45,11 @@ GSL_vector::GSL_vector(std::size_t size)
          + "failed.");
 }
 
+GSL_vector::GSL_vector(const gsl_vector* v)
+{
+   assign(v);
+}
+
 GSL_vector::GSL_vector(const GSL_vector& other)
 {
    vec = gsl_vector_alloc(other.size());

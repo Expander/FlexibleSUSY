@@ -29,7 +29,8 @@ namespace flexiblesusy {
 class GSL_vector {
 public:
    GSL_vector();
-   explicit GSL_vector(std::size_t);
+   GSL_vector(std::size_t);
+   explicit GSL_vector(const gsl_vector*);
    GSL_vector(const GSL_vector&);
    GSL_vector(GSL_vector&&) noexcept;
    GSL_vector(std::initializer_list<double>);
