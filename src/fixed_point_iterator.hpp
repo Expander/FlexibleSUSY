@@ -153,7 +153,7 @@ public:
       if (max_rel_diff < std::numeric_limits<double>::epsilon())
          return GSL_SUCCESS;
 
-      return check_tadpoles(a, parameters);
+      return check_tadpoles(a);
    }
 
 private:
