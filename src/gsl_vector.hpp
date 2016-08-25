@@ -20,6 +20,7 @@
 #define GSL_VECTOR_H
 
 #include <gsl/gsl_vector.h>
+#include <initializer_list>
 #include <iostream>
 #include <cstddef>
 
@@ -31,6 +32,7 @@ public:
    explicit GSL_vector(std::size_t);
    GSL_vector(const GSL_vector&);
    GSL_vector(GSL_vector&&) noexcept;
+   GSL_vector(std::initializer_list<double>);
    ~GSL_vector();
 
    const GSL_vector& operator=(const GSL_vector&);

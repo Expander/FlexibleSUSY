@@ -169,6 +169,23 @@ BOOST_AUTO_TEST_CASE( test_move_assign_chain )
    BOOST_CHECK_EQUAL(v3[2], 3.);
 }
 
+BOOST_AUTO_TEST_CASE( test_initializer_list )
+{
+   GSL_vector v = {1., 2., 3.};
+
+   BOOST_CHECK_EQUAL(v.size(), 3);
+   BOOST_CHECK_EQUAL(v[0], 1.);
+   BOOST_CHECK_EQUAL(v[1], 2.);
+   BOOST_CHECK_EQUAL(v[2], 3.);
+}
+
+BOOST_AUTO_TEST_CASE( test_empty_initializer_list )
+{
+   GSL_vector v = {};
+
+   BOOST_CHECK_EQUAL(v.size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE( test_empty )
 {
    GSL_vector v(3), v2;

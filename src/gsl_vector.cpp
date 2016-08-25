@@ -62,6 +62,18 @@ GSL_vector::GSL_vector(GSL_vector&& other) noexcept
    move_assign(std::move(other));
 }
 
+GSL_vector::GSL_vector(std::initializer_list<double> list)
+{
+   if (list.size() == 0) {
+      vec = NULL;
+      return;
+   }
+
+   vec = gsl_vector_alloc(list.size());
+
+   std::copy(list.begin(), list.end(), gsl_vector_ptr(vec, 0));
+}
+
 GSL_vector::~GSL_vector()
 {
    gsl_vector_free(vec);
