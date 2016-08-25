@@ -51,6 +51,12 @@ private:
    void range_check(std::size_t) const;
 };
 
+double* begin(GSL_vector&); ///< iterator to begin of GSL_vector
+double* end(GSL_vector&);   ///< iterator to end of GSL_vector
+
+const double* cbegin(const GSL_vector&); ///< const iterator to begin of GSL_vector
+const double* cend(const GSL_vector&);   ///< const iterator to end of GSL_vector
+
 std::ostream& operator<<(std::ostream&, const GSL_vector&);
 
 } // namespace flexiblesusy

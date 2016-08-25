@@ -218,3 +218,74 @@ BOOST_AUTO_TEST_CASE( test_alloc )
    BOOST_CHECK_THROW(GSL_vector v(std::numeric_limits<std::size_t>::max()),
                      OutOfMemoryError);
 }
+
+BOOST_AUTO_TEST_CASE( test_begin )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   BOOST_REQUIRE(begin(v));
+   BOOST_CHECK_EQUAL(*begin(v), 1.);
+}
+
+BOOST_AUTO_TEST_CASE( test_end )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   const double* e = begin(v);
+   e++; e++; e++;
+
+   BOOST_REQUIRE(end(v));
+   BOOST_CHECK_EQUAL(e, end(v));
+}
+
+BOOST_AUTO_TEST_CASE( test_cbegin )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   BOOST_REQUIRE(cbegin(v));
+   BOOST_CHECK_EQUAL(*cbegin(v), 1.);
+}
+
+BOOST_AUTO_TEST_CASE( test_cend )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   const double* e = begin(v);
+   e++; e++; e++;
+
+   BOOST_REQUIRE(cend(v));
+   BOOST_CHECK_EQUAL(e, cend(v));
+}
+
+BOOST_AUTO_TEST_CASE( test_begin_end_empty )
+{
+   GSL_vector v;
+   BOOST_CHECK(begin(v) == end(v));
+}
+
+BOOST_AUTO_TEST_CASE( test_range_for )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   double sum = 0;
+
+   for (auto& x: v)
+      sum += x;
+
+   BOOST_CHECK_EQUAL(sum, 6.);
+}

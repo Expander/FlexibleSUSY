@@ -170,4 +170,40 @@ void GSL_vector::range_check(std::size_t n) const
          + " out of range for vector of size " + std::to_string(size()) + ".");
 }
 
+double* begin(GSL_vector& v)
+{
+   if (v.size())
+      return gsl_vector_ptr(v.raw(), 0);
+
+   return nullptr;
+}
+
+double* end(GSL_vector& v)
+{
+   if (v.size()) {
+      double* last = gsl_vector_ptr(v.raw(), v.size() - 1);
+      return ++last;
+   }
+
+   return nullptr;
+}
+
+const double* cbegin(const GSL_vector& v)
+{
+   if (v.size())
+      return gsl_vector_const_ptr(v.raw(), 0);
+
+   return nullptr;
+}
+
+const double* cend(const GSL_vector& v)
+{
+   if (v.size()) {
+      const double* last = gsl_vector_const_ptr(v.raw(), v.size() - 1);
+      return ++last;
+   }
+
+   return nullptr;
+}
+
 } // namespace flexiblesusy
