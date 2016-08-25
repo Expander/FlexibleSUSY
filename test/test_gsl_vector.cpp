@@ -169,6 +169,14 @@ BOOST_AUTO_TEST_CASE( test_move_assign_chain )
    BOOST_CHECK_EQUAL(v3[2], 3.);
 }
 
+BOOST_AUTO_TEST_CASE( test_empty )
+{
+   GSL_vector v(3), v2;
+
+   BOOST_CHECK(!v.empty());
+   BOOST_CHECK(v2.empty());
+}
+
 BOOST_AUTO_TEST_CASE( test_move )
 {
    GSL_vector v(3);

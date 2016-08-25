@@ -89,6 +89,11 @@ void GSL_vector::assign(const gsl_vector* other)
    gsl_vector_memcpy(vec, other);
 }
 
+bool GSL_vector::empty() const
+{
+   return size() == 0;
+}
+
 const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 {
    if (this != &rhs)

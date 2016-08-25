@@ -39,6 +39,7 @@ public:
    double operator[](std::size_t) const; ///< element read access
 
    void assign(const gsl_vector*); ///< assign from gsl_vector
+   bool empty() const;             ///< check if empty
    const gsl_vector* raw() const;  ///< get raw pointer
    gsl_vector* raw();              ///< get raw pointer
    void set_all(double);           ///< set all elemets to same value
