@@ -30,6 +30,7 @@
 #include "wrappers.hpp"
 #include "error.hpp"
 #include "ewsb_solver.hpp"
+#include "gsl_utils.hpp"
 
 namespace flexiblesusy {
 
@@ -145,19 +146,16 @@ public:
       if (precision < 0.)
          GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);
 
-      for (std::size_t i = 0; i < dimension; ++i) {
-         rel_diff = MaxRelDiff(gsl_vector_get(a, i), gsl_vector_get(b, i));
+      const Eigen::ArrayXd aa = to_eigen_array(a), ba = to_eigen_array(b);
+      const double max_rel_diff = MaxRelDiff(aa, ba);
 
-         if (rel_diff > precision)
-            return GSL_CONTINUE;
+      if (max_rel_diff > precision)
+         return GSL_CONTINUE;
 
-         if (rel_diff < std::numeric_limits<double>::epsilon())
-            return GSL_SUCCESS;
-      }
+      if (max_rel_diff < std::numeric_limits<double>::epsilon())
+         return GSL_SUCCESS;
 
-      const int status = check_tadpoles(a, parameters);
-
-      return status;
+      return check_tadpoles(a, parameters);
    }
 
 private:
