@@ -203,8 +203,8 @@ void Root_finder<dimension>::print_state(const gsl_multiroot_fsolver* solver,
                                          std::size_t iteration) const
 {
    std::cout << "\tIteration " << iteration
-             << ": x = " << to_GSL_vector(solver->x)
-             << ", f(x) = " << to_GSL_vector(solver->f) << '\n';
+             << ": x = " << GSL_vector(solver->x)
+             << ", f(x) = " << GSL_vector(solver->f) << '\n';
 }
 
 template <std::size_t dimension>

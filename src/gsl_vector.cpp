@@ -46,6 +46,7 @@ GSL_vector::GSL_vector(std::size_t size)
 }
 
 GSL_vector::GSL_vector(const gsl_vector* v)
+   : vec(NULL)
 {
    assign(v);
 }

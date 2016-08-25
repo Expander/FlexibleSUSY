@@ -206,7 +206,7 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
                                                std::size_t iteration) const
 {
    std::cout << "\tIteration " << iteration
-             << ": x = " << to_GSL_vector(minimizer->x)
+             << ": x = " << GSL_vector(minimizer->x)
              << ", f(x) = " << minimizer->fval << '\n';
 }
 
