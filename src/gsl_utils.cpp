@@ -68,13 +68,7 @@ bool is_finite(const GSL_vector& v)
  */
 Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
 {
-   const std::size_t dim = v->size;
-   Eigen::ArrayXd xa(dim);
-
-   for (std::size_t i = 0; i < dim; i++)
-      xa(i) = gsl_vector_get(v, i);
-
-   return xa;
+   return to_eigen_vector(v);
 }
 
 /**
@@ -86,13 +80,7 @@ Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
  */
 Eigen::ArrayXd to_eigen_array(const GSL_vector& v)
 {
-   const std::size_t dim = v.size();
-   Eigen::ArrayXd xa(dim);
-
-   for (std::size_t i = 0; i < dim; i++)
-      xa(i) = v[i];
-
-   return xa;
+   return to_eigen_vector(v);
 }
 
 /**
@@ -104,7 +92,7 @@ Eigen::ArrayXd to_eigen_array(const GSL_vector& v)
  */
 Eigen::VectorXd to_eigen_vector(const gsl_vector* v)
 {
-   return to_eigen_array(v);
+   return to_eigen_vector(GSL_vector(v));
 }
 
 /**
@@ -136,9 +124,7 @@ GSL_vector to_GSL_vector(const Eigen::VectorXd& v)
 
 GSL_vector to_GSL_vector(const gsl_vector* v)
 {
-   GSL_vector v2(v->size);
-   gsl_vector_memcpy(v2.raw(), v);
-   return v2;
+   return GSL_vector(v);
 }
 
 /**
