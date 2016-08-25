@@ -21,6 +21,7 @@
 
 #include <cmath>
 #include <string>
+#include <utility>
 
 namespace flexiblesusy {
 
@@ -58,8 +59,7 @@ GSL_vector::GSL_vector(const GSL_vector& other)
 
 GSL_vector::GSL_vector(GSL_vector&& other) noexcept
 {
-   vec = other.vec;
-   other.vec = NULL;
+   move_assign(std::move(other));
 }
 
 GSL_vector::~GSL_vector()
@@ -99,10 +99,8 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 
 GSL_vector& GSL_vector::operator=(GSL_vector&& rhs)
 {
-   if (this != &rhs) {
-      vec = rhs.vec;
-      rhs.vec = NULL;
-   }
+   if (this != &rhs)
+      move_assign(std::move(rhs));
 
    return *this;
 }
@@ -151,6 +149,12 @@ std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
    }
 
    std::cout << ")";
+}
+
+void GSL_vector::move_assign(GSL_vector&& other)
+{
+   vec = other.vec;
+   other.vec = NULL;
 }
 
 void GSL_vector::range_check(std::size_t n) const

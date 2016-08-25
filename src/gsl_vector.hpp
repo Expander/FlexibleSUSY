@@ -47,6 +47,7 @@ public:
 private:
    gsl_vector* vec;                ///< raw gsl_vector
 
+   void move_assign(GSL_vector&&); ///< move assign
    void range_check(std::size_t) const;
 };
 
