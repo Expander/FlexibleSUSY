@@ -185,7 +185,7 @@ int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
    std::cout << "\tRoot_finder status = " << gsl_strerror(status) << '\n';
 #endif
 
-   root.assign(solver->x);
+   root = solver->x;
 
    gsl_multiroot_fsolver_free(solver);
 

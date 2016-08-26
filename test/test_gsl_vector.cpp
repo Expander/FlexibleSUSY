@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_gsl_assign )
    gsl_vector_set(v, 2, 3.);
 
    GSL_vector v2(3);
-   v2.assign(v);
+   v2 = v;
 
    gsl_vector_free(v);
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_gsl_empty_assign )
    gsl_vector_set(v, 2, 3.);
 
    GSL_vector v2;
-   v2.assign(v);
+   v2 = v;
 
    gsl_vector_free(v);
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( test_gsl_null_assign )
 {
    gsl_vector* v = 0;
    GSL_vector v2(3);
-   v2.assign(v);
+   v2 = v;
 
    BOOST_CHECK_EQUAL(v2.size(), 0);
 }

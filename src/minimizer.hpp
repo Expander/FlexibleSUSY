@@ -187,7 +187,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
 #endif
 
    // save minimum point and function value
-   minimum_point.assign(minimizer->x);
+   minimum_point = minimizer->x;
    minimum_value = minimizer->fval;
 
    gsl_multimin_fminimizer_free(minimizer);

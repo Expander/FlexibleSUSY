@@ -30,7 +30,7 @@ class GSL_vector {
 public:
    GSL_vector();
    GSL_vector(std::size_t);
-   explicit GSL_vector(const gsl_vector*);
+   GSL_vector(const gsl_vector*);
    GSL_vector(const GSL_vector&);
    GSL_vector(GSL_vector&&) noexcept;
    GSL_vector(std::initializer_list<double>);
@@ -41,7 +41,6 @@ public:
    double& operator[](std::size_t);      ///< element read/write access
    double operator[](std::size_t) const; ///< element read access
 
-   void assign(const gsl_vector*);          ///< assign from gsl_vector
    bool empty() const noexcept;             ///< check if empty
    const gsl_vector* raw() const noexcept;  ///< get raw pointer
    gsl_vector* raw() noexcept;              ///< get raw pointer
@@ -51,6 +50,7 @@ public:
 private:
    gsl_vector* vec;                         ///< raw gsl_vector
 
+   void assign(const gsl_vector*);          ///< assign from gsl_vector
    void move_assign(GSL_vector&&) noexcept; ///< move assign
    void range_check(std::size_t) const;
 };
