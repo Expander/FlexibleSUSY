@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( test_move_assign )
    v[1] = 2.;
    v[2] = 3.;
 
-   GSL_vector v2;
+   GSL_vector v2(2);
    v2 = std::move(v);
 
    BOOST_CHECK(!v.raw());
