@@ -241,7 +241,7 @@ GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, 
           ];
 
 GetMTopPoleOverMTopMSbar[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5] :=
-    Module[{h},
+    Module[{h, inv},
            inv = Normal @ Series[1 / GetMTopMSbarOverMTopPole[{1, h, h^2, h^3}, quark, Q, NH, NL], {h,0,3}];
            (
                loopOrder[[1]] Coefficient[inv, h, 0] +
