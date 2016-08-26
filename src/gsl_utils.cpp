@@ -127,20 +127,4 @@ GSL_vector to_GSL_vector(const gsl_vector* v)
    return GSL_vector(v);
 }
 
-/**
- * Copies values from an Eigen array to a GSL vector.
- *
- * @param src Eigen array
- * @param dst GSL vector
- */
-void copy(const Eigen::ArrayXd& src, gsl_vector* dst)
-{
-   const std::size_t dim = src.rows();
-
-   assert(dim == dst->size);
-
-   for (std::size_t i = 0; i < dim; i++)
-      gsl_vector_set(dst, i, src(i));
-}
-
 }
