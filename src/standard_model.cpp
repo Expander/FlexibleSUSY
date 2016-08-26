@@ -6068,9 +6068,9 @@ void Standard_model::calculate_MFu_pole()
 
    if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
       const double currentScale = get_scale();
-      qcd_3l = Power(g3,6)*(0.0017408026847411467 +
-         0.000984413176263005*Log(Sqr(currentScale)/Sqr(MFu(2))) +
-         0.00003352082872926087*Power(Log(Sqr(currentScale)/Sqr(MFu(2))),3) +
+      qcd_3l = Power(g3,6)*(-0.0017408026847411467 -
+         0.000984413176263005*Log(Sqr(currentScale)/Sqr(MFu(2))) -
+         0.00003352082872926087*Power(Log(Sqr(currentScale)/Sqr(MFu(2))),3) -
          0.00029813221915266867*Sqr(Log(Power(currentScale,2)/Sqr(MFu(2)))));
    }
 
