@@ -42,7 +42,7 @@ GSL_vector::GSL_vector(std::size_t size)
    if (!vec)
       throw OutOfMemoryError(
          "Allocation of GSL_vector of size " + std::to_string(size)
-         + "failed.");
+         + " failed.");
 }
 
 GSL_vector::GSL_vector(const gsl_vector* v)
@@ -58,7 +58,7 @@ GSL_vector::GSL_vector(const GSL_vector& other)
    if (!vec)
       throw OutOfMemoryError(
          "Allocation of GSL_vector of size " + std::to_string(other.size())
-         + "failed.");
+         + " failed.");
 
    gsl_vector_memcpy(vec, other.vec);
 }
@@ -76,6 +76,11 @@ GSL_vector::GSL_vector(std::initializer_list<double> list)
    }
 
    vec = gsl_vector_alloc(list.size());
+
+   if (!vec)
+      throw OutOfMemoryError(
+         "Allocation of GSL_vector of size " + std::to_string(list.size())
+         + " failed.");
 
    std::copy(list.begin(), list.end(), gsl_vector_ptr(vec, 0));
 }
@@ -101,13 +106,13 @@ void GSL_vector::assign(const gsl_vector* other)
       if (!vec)
          throw OutOfMemoryError(
             "Allocation of GSL_vector of size " + std::to_string(other->size)
-            + "failed.");
+            + " failed.");
    }
 
    gsl_vector_memcpy(vec, other);
 }
 
-bool GSL_vector::empty() const
+bool GSL_vector::empty() const noexcept
 {
    return size() == 0;
 }
@@ -120,7 +125,7 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
    return *this;
 }
 
-GSL_vector& GSL_vector::operator=(GSL_vector&& rhs)
+GSL_vector& GSL_vector::operator=(GSL_vector&& rhs) noexcept
 {
    if (this != &rhs)
       move_assign(std::move(rhs));
@@ -140,23 +145,23 @@ double GSL_vector::operator[](std::size_t n) const
    return gsl_vector_get(vec, n);
 }
 
-std::size_t GSL_vector::size() const
+std::size_t GSL_vector::size() const noexcept
 {
    if (!vec) return 0;
    return vec->size;
 }
 
-const gsl_vector* GSL_vector::raw() const
+const gsl_vector* GSL_vector::raw() const noexcept
 {
    return vec;
 }
 
-gsl_vector* GSL_vector::raw()
+gsl_vector* GSL_vector::raw() noexcept
 {
    return vec;
 }
 
-void GSL_vector::set_all(double value)
+void GSL_vector::set_all(double value) noexcept
 {
    gsl_vector_set_all(vec, value);
 }
@@ -174,7 +179,7 @@ std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
    std::cout << ")";
 }
 
-void GSL_vector::move_assign(GSL_vector&& other)
+void GSL_vector::move_assign(GSL_vector&& other) noexcept
 {
    vec = other.vec;
    other.vec = NULL;

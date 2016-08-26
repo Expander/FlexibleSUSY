@@ -194,6 +194,16 @@ BOOST_AUTO_TEST_CASE( test_empty )
    BOOST_CHECK(v2.empty());
 }
 
+BOOST_AUTO_TEST_CASE( test_set_all )
+{
+   GSL_vector v(3);
+   v.set_all(1.);
+
+   BOOST_CHECK_EQUAL(v[0], 1.);
+   BOOST_CHECK_EQUAL(v[1], 1.);
+   BOOST_CHECK_EQUAL(v[2], 1.);
+}
+
 BOOST_AUTO_TEST_CASE( test_move )
 {
    GSL_vector v(3);

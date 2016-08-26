@@ -37,21 +37,21 @@ public:
    ~GSL_vector();
 
    const GSL_vector& operator=(const GSL_vector&);
-   GSL_vector& operator=(GSL_vector&&);
+   GSL_vector& operator=(GSL_vector&&) noexcept;
    double& operator[](std::size_t);      ///< element read/write access
    double operator[](std::size_t) const; ///< element read access
 
-   void assign(const gsl_vector*); ///< assign from gsl_vector
-   bool empty() const;             ///< check if empty
-   const gsl_vector* raw() const;  ///< get raw pointer
-   gsl_vector* raw();              ///< get raw pointer
-   void set_all(double);           ///< set all elemets to same value
-   std::size_t size() const;
+   void assign(const gsl_vector*);          ///< assign from gsl_vector
+   bool empty() const noexcept;             ///< check if empty
+   const gsl_vector* raw() const noexcept;  ///< get raw pointer
+   gsl_vector* raw() noexcept;              ///< get raw pointer
+   void set_all(double) noexcept;           ///< set all elemets to same value
+   std::size_t size() const noexcept;       ///< number of elements
 
 private:
-   gsl_vector* vec;                ///< raw gsl_vector
+   gsl_vector* vec;                         ///< raw gsl_vector
 
-   void move_assign(GSL_vector&&); ///< move assign
+   void move_assign(GSL_vector&&) noexcept; ///< move assign
    void range_check(std::size_t) const;
 };
 
