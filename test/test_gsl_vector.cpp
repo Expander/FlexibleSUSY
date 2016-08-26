@@ -204,6 +204,14 @@ BOOST_AUTO_TEST_CASE( test_set_all )
    BOOST_CHECK_EQUAL(v[2], 1.);
 }
 
+BOOST_AUTO_TEST_CASE( test_set_all_empty )
+{
+   GSL_vector v;
+   v.set_all(1.);
+
+   BOOST_CHECK_EQUAL(v.size(), 0);
+}
+
 BOOST_AUTO_TEST_CASE( test_move )
 {
    GSL_vector v(3);

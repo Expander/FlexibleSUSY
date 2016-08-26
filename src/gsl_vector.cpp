@@ -163,7 +163,8 @@ gsl_vector* GSL_vector::raw() noexcept
 
 void GSL_vector::set_all(double value) noexcept
 {
-   gsl_vector_set_all(vec, value);
+   if (vec)
+      gsl_vector_set_all(vec, value);
 }
 
 std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
