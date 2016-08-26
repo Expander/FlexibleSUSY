@@ -40,6 +40,8 @@ public:
    GSL_vector& operator=(GSL_vector&&) noexcept;
    double& operator[](std::size_t);      ///< element read/write access
    double operator[](std::size_t) const; ///< element read access
+   double& operator()(std::size_t);      ///< element read/write access w/ range check
+   double operator()(std::size_t) const; ///< element read access w/ range check
 
    bool empty() const noexcept;             ///< check if empty
    const gsl_vector* raw() const noexcept;  ///< get raw pointer

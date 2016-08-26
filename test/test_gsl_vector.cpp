@@ -40,6 +40,9 @@ BOOST_AUTO_TEST_CASE( test_operator )
    BOOST_CHECK_EQUAL(v[0], 1.);
    BOOST_CHECK_EQUAL(v[1], 2.);
    BOOST_CHECK_EQUAL(v[2], 3.);
+   BOOST_CHECK_EQUAL(v(0), 1.);
+   BOOST_CHECK_EQUAL(v(1), 2.);
+   BOOST_CHECK_EQUAL(v(2), 3.);
 }
 
 BOOST_AUTO_TEST_CASE( test_copy )
@@ -267,18 +270,18 @@ BOOST_AUTO_TEST_CASE( test_empty_bounds_check )
 {
    GSL_vector v;
 
-   BOOST_CHECK_THROW(v[0], OutOfBoundsError);
-   BOOST_CHECK_THROW(v[1], OutOfBoundsError);
+   BOOST_CHECK_THROW(v(0), OutOfBoundsError);
+   BOOST_CHECK_THROW(v(1), OutOfBoundsError);
 }
 
 BOOST_AUTO_TEST_CASE( test_nonempty_bounds_check )
 {
    GSL_vector v(3);
 
-   BOOST_CHECK_NO_THROW(v[0]);
-   BOOST_CHECK_NO_THROW(v[1]);
-   BOOST_CHECK_NO_THROW(v[2]);
-   BOOST_CHECK_THROW(v[3], OutOfBoundsError);
+   BOOST_CHECK_NO_THROW(v(0));
+   BOOST_CHECK_NO_THROW(v(1));
+   BOOST_CHECK_NO_THROW(v(2));
+   BOOST_CHECK_THROW(v(3), OutOfBoundsError);
 }
 
 BOOST_AUTO_TEST_CASE( test_alloc )

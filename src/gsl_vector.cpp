@@ -138,14 +138,24 @@ GSL_vector& GSL_vector::operator=(GSL_vector&& rhs) noexcept
 
 double& GSL_vector::operator[](std::size_t n)
 {
-   range_check(n);
    return *gsl_vector_ptr(vec, n);
 }
 
 double GSL_vector::operator[](std::size_t n) const
 {
-   range_check(n);
    return gsl_vector_get(vec, n);
+}
+
+double& GSL_vector::operator()(std::size_t n)
+{
+   range_check(n);
+   return operator[](n);
+}
+
+double GSL_vector::operator()(std::size_t n) const
+{
+   range_check(n);
+   return operator[](n);
 }
 
 std::size_t GSL_vector::size() const noexcept
