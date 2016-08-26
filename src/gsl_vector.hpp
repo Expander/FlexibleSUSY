@@ -21,7 +21,7 @@
 
 #include <gsl/gsl_vector.h>
 #include <initializer_list>
-#include <iostream>
+#include <iosfwd>
 #include <cstddef>
 
 namespace flexiblesusy {

@@ -20,20 +20,21 @@
 #include "error.hpp"
 
 #include <cmath>
+#include <iostream>
 #include <string>
 #include <utility>
 
 namespace flexiblesusy {
 
 GSL_vector::GSL_vector()
-   : vec(NULL)
+   : vec(nullptr)
 {
 }
 
 GSL_vector::GSL_vector(std::size_t size)
 {
    if (!size) {
-      vec = NULL;
+      vec = nullptr;
       return;
    }
 
@@ -46,7 +47,7 @@ GSL_vector::GSL_vector(std::size_t size)
 }
 
 GSL_vector::GSL_vector(const gsl_vector* v)
-   : vec(NULL)
+   : vec(nullptr)
 {
    assign(v);
 }
@@ -71,7 +72,7 @@ GSL_vector::GSL_vector(GSL_vector&& other) noexcept
 GSL_vector::GSL_vector(std::initializer_list<double> list)
 {
    if (list.size() == 0) {
-      vec = NULL;
+      vec = nullptr;
       return;
    }
 
@@ -94,7 +95,7 @@ void GSL_vector::assign(const gsl_vector* other)
 {
    if (!other) {
       gsl_vector_free(vec);
-      vec = NULL;
+      vec = nullptr;
       return;
    }
 
@@ -185,7 +186,7 @@ std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
 void GSL_vector::move_assign(GSL_vector&& other) noexcept
 {
    vec = other.vec;
-   other.vec = NULL;
+   other.vec = nullptr;
 }
 
 void GSL_vector::range_check(std::size_t n) const
