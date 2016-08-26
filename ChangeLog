@@ -43,6 +43,13 @@ Flexiblesusy-1.5.2 [not released yet]
    mass routines of P. Slavich call calculate_spectrum() at the same
    time.
 
+ * Bugfix (commit 0d08b99): Do not try to generate non-squared unit
+   matrices for beta function expressions that must be splitted.
+   Non-squared unit matrices did appear for non-squared matrix-valued
+   parameters, as for example T[hE] in the SE6SSM.
+
+   Thanks to Dylan Harries.
+
 Flexiblesusy-1.5.1 [July, 12 2017]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
