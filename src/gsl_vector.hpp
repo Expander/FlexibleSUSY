@@ -53,7 +53,6 @@ private:
 
    void move_assign(GSL_vector&&) noexcept; ///< move assign
    void range_check(std::size_t) const;
-   void swap(GSL_vector&) noexcept;
 };
 
 double* begin(GSL_vector&); ///< iterator to begin of GSL_vector

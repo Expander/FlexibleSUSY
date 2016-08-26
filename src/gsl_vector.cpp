@@ -120,7 +120,7 @@ bool GSL_vector::empty() const noexcept
 const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 {
    if (this != &rhs)
-      GSL_vector(rhs).swap(*this);
+      assign(rhs.vec);
 
    return *this;
 }
@@ -200,11 +200,6 @@ void GSL_vector::range_check(std::size_t n) const
       throw OutOfBoundsError(
          "GSL_vector::operator[]: index " + std::to_string(n)
          + " out of range for vector of size " + std::to_string(size()) + ".");
-}
-
-void GSL_vector::swap(GSL_vector& v) noexcept
-{
-   std::swap(vec, v.vec);
 }
 
 double* begin(GSL_vector& v)
