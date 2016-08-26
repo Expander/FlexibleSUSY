@@ -150,6 +150,32 @@ BOOST_AUTO_TEST_CASE( test_move_assign )
    BOOST_CHECK_EQUAL(v2[2], 3.);
 }
 
+BOOST_AUTO_TEST_CASE( test_move_assign_to_empty )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   GSL_vector v2;
+   v2 = std::move(v);
+
+   BOOST_CHECK(!v.raw());
+   BOOST_CHECK_EQUAL(v2[0], 1.);
+   BOOST_CHECK_EQUAL(v2[1], 2.);
+   BOOST_CHECK_EQUAL(v2[2], 3.);
+}
+
+BOOST_AUTO_TEST_CASE( test_move_assign_from_empty )
+{
+   GSL_vector v;
+   GSL_vector v2;
+   v2 = std::move(v);
+
+   BOOST_CHECK(!v.raw());
+   BOOST_CHECK(!v2.raw());
+}
+
 BOOST_AUTO_TEST_CASE( test_move_assign_chain )
 {
    GSL_vector v(3);

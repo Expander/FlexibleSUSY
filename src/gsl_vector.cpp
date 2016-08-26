@@ -127,11 +127,10 @@ const GSL_vector& GSL_vector::operator=(const GSL_vector& rhs)
 
 GSL_vector& GSL_vector::operator=(GSL_vector&& rhs) noexcept
 {
-   if (vec)
+   if (this != &rhs) {
       gsl_vector_free(vec);
-
-   if (this != &rhs)
       move_assign(std::move(rhs));
+   }
 
    return *this;
 }
