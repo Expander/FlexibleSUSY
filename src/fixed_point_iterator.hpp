@@ -338,8 +338,8 @@ template <std::size_t dimension, class Convergence_tester>
 void Fixed_point_iterator<dimension,Convergence_tester>::print_state(std::size_t iteration) const
 {
    std::cout << "\tIteration n = " << iteration
-             << ": x_{n} =" << xn
-             << ", x_{n+1} =" << fixed_point << '\n';
+             << ": x_{n} = " << xn
+             << ", x_{n+1} = " << fixed_point << '\n';
 }
 
 template <std::size_t dimension, class Convergence_tester>
