@@ -1,4 +1,4 @@
-Flexiblesusy-1.5.2 [not released yet]
+Flexiblesusy-1.6.0 [August, 27 2016]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions
    of the model parameters on the r.h.s. of the constraints.  BETA[p]
