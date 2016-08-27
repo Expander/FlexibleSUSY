@@ -206,8 +206,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_tadpoles )
    BOOST_CHECK_CLOSE(tadpole_hh_3 / vS, tadpole_ss_3, 1.0e-11);
 
    // compare two-loop tadpoles
-   double two_loop_tadpole[3];
-   m.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(m.tadpole_hh_2loop());
 
    softsusy::numRewsbLoops = 2;
    s.doTadpoles(mt, sinthDRbar);
@@ -262,8 +261,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    const Complex tadpole_hh_2(m.tadpole_hh(1));
    const Complex tadpole_hh_3(m.tadpole_hh(2));
 
-   double two_loop_tadpole[3];
-   m.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(m.tadpole_hh_2loop());
 
    BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);

@@ -657,6 +657,20 @@ SUSYScaleInput = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+It is also possible to access the \f$\beta\f$ functions on the
+r.h.s. of an assignment using the `BETA` head: `BETA[p]` represents
+the \f$\beta\f$ function of the parameter `p` using the loop level
+given in the SLHA input.  `BETA[l,p]` represents the `l`-loop
+\f$\beta\f$ function of the parameter `p`.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+HighScaleInput = {
+    {\[Lambda], BETA[g1] + BETA[g2] + BETA[1,Yu][3,3]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ### Temporary parameter re-definitions ###
 
 Since FlexibleSUSY 1.4.0, the user can perform a temporary parameter

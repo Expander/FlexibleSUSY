@@ -172,6 +172,8 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
  * Writes extra SLHA blocks
  *
  * @param model model class
+ * @param scales struct of boundary condition scales
+ * @param observables struct of observables
  */
 template <class T>
 void @ModelName@_slha_io::set_extra(
