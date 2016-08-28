@@ -25,14 +25,15 @@
 #ifdef ENABLE_THREADS
    #include <mutex>
    #define LOCK_MUTEX() std::lock_guard<std::mutex> lg(mtx_mssm)
+   namespace flexiblesusy {namespace mssm_twoloophiggs {
+      static std::mutex mtx_mssm; /// locks MSSM fortran functions
+   }}
 #else
    #define LOCK_MUTEX()
 #endif
 
 namespace flexiblesusy {
 namespace mssm_twoloophiggs {
-
-static std::mutex mtx_mssm; /// locks MSSM fortran functions
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
    double mt2, double mg, double mst12, double mst22,

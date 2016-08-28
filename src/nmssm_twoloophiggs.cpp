@@ -26,6 +26,9 @@
 #ifdef ENABLE_THREADS
    #include <mutex>
    #define LOCK_MUTEX() std::lock_guard<std::mutex> lg(mtx_nmssm)
+   namespace flexiblesusy {namespace nmssm_twoloophiggs {
+      static std::mutex mtx_nmssm; /// locks MSSM fortran functions
+   }}
 #else
    #define LOCK_MUTEX()
 #endif
@@ -34,8 +37,6 @@ using namespace flexiblesusy::mssm_twoloophiggs;
 
 namespace flexiblesusy {
 namespace nmssm_twoloophiggs {
-
-static std::mutex mtx_nmssm; /// locks MSSM fortran functions
 
 namespace {
 template <typename T> T sqr(T a) { return a * a; }
