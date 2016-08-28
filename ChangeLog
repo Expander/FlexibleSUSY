@@ -1,4 +1,4 @@
-Flexiblesusy-1.6.1 [not released yet]
+Flexiblesusy-1.6.1 [August, 28 2016]
 
  * Bugfix (commit db67c81): Fix compilation with --disable-threads .
 
