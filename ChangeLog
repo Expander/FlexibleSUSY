@@ -1,3 +1,7 @@
+Flexiblesusy-1.6.1 [not released yet]
+
+ * Bugfix (commit db67c81): Fix compilation with --disable-threads .
+
 Flexiblesusy-1.6.0 [August, 27 2016]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions
