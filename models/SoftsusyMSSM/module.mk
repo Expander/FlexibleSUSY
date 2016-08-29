@@ -1,5 +1,6 @@
 DIR          := models/SoftsusyMSSM
 MODNAME      := SoftsusyMSSM
+WITH_$(MODNAME) := yes
 
 LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/mssmUtils.cpp \

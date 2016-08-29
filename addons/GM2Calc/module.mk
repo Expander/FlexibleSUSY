@@ -1,5 +1,6 @@
 DIR          := addons/GM2Calc
 MODNAME      := GM2Calc
+WITH_$(MODNAME) := yes
 
 LIBGM2Calc_MK  := $(DIR)/module.mk
 

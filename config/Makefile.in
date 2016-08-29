@@ -125,9 +125,10 @@ MATH_INC_PATHS := config/mathematica_include_paths.sh
 # README file
 README_FILE := README
 
-.PHONY:  all allsrc allexec alllib allll alltest clean-executables \
-	 clean clean-dep clean-lib clean-obj depend distclean librarylink \
-	 release-tag release-head showbuild tag
+.PHONY:  all allsrc allexec alllib allll alltest clean clean-dep \
+	 clean-executables clean-generated clean-lib clean-obj \
+	 depend distclean librarylink release-tag release-head \
+	 showbuild tag
 
 all:
 ifeq ($(ENABLE_META),yes)

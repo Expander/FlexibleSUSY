@@ -6,7 +6,7 @@
 
 \subsection Requirements
 
- - C++ compiler (`g++` >= 4.4.7 or `clang++` >= 3.1 or `icpc` >= 12.1)
+ - C++ compiler (`g++` >= 4.7.2 or `clang++` >= 3.1 or `icpc` >= 12.1)
  - Fortran compiler (`gfortran`, `ifort`)
  - Mathematica (version 7.0 or higher)
  - SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
@@ -217,15 +217,18 @@ dynamic libraries.
 There are several make targets to remove generated files, compiled
 object files, libraries or executables:
 
-     make clean      # deletes all .d .o .a .x and generated files
+     make clean      # deletes all .d .o .a .x files
 
-     make distclean  # calls `make clean' and deletes in addition
+     make distclean  # does `clean' and `clean-generated'
+                     # and deletes in addition:
                      # Makefile flexiblesusy-config config.*
                      # config/list_sarah_model_files.sh
 
      make clean-dep  # deletes all .d files
 
      make clean-executables # deletes all .x files
+
+     make clean-generated   # deletes generated files
 
      make clean-lib  # deletes all libraries
 

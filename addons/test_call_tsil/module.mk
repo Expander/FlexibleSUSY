@@ -1,5 +1,6 @@
 DIR          := addons/test_call_tsil
 MODNAME      := test_call_tsil
+WITH_$(MODNAME) := yes
 
 LIBtest_call_tsil_MK  := $(DIR)/module.mk
 

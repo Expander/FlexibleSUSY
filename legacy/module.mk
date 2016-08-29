@@ -1,5 +1,6 @@
 DIR          := legacy
 MODNAME      := legacy
+WITH_$(MODNAME) := yes
 
 LIBLEGACY_HDR := \
 		$(DIR)/conversion.hpp \

@@ -293,13 +293,8 @@ int CLASSNAME::solve_ewsb_iteratively()
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
    const auto x_init(ewsb_initial_guess());
 
-#ifdef ENABLE_VERBOSE
-   std::cout << "Solving EWSB equations ...\n"
-      "\tInitial guess: x_init =";
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      std::cout << ' ' << x_init[i];
-   std::cout << '\n';
-#endif
+   VERBOSE_MSG("Solving EWSB equations ...");
+   VERBOSE_MSG("\tInitial guess: x_init = " << x_init.transpose());
 
    int status;
    for (std::size_t i = 0; i < number_of_solvers; ++i) {
