@@ -210,15 +210,15 @@ Dynamic libraries
 =================
 
 If you want to create dynamic libraries (instead of static libraries)
-you need to pass all the --enable-shared-libs option to the
-./configure script.  The default file name extension for the shared
-libraries as well as the command to build the libraries can be
-overwritten using the
+you need to pass the --enable-shared-libs option to the ./configure
+script.  The default file name extension for the shared libraries as
+well as the command to build the libraries can be overwritten using
+the
 
    --with-shared-lib-ext=
    --with-shared-lib-cmd=
 
-options.  For example, when Intel compilers should be used, replace
+parameters.  For example, when Intel compilers should be used, replace
 `gcc' by `icc' or `icpc'.
 
 Example:
