@@ -1,6 +1,12 @@
 Needs["TestSuite`", "TestSuite.m"];
 Get["models/CMSSM/CMSSM_librarylink.m"];
 
+Off[FSCMSSM::info];
+Off[FSCMSSMCalculateSpectrum::error];
+Off[FSCMSSMCalculateSpectrum::warning];
+Off[FSCMSSMCalculateObservables::error];
+Off[FSCMSSMCalculateObservables::warning];
+
 CalcMh[TB_] :=
     Module[{spec, handle},
            handle = FSCMSSMOpenHandle[
