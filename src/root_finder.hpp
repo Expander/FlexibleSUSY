@@ -101,7 +101,7 @@ Root_finder<dimension>::Root_finder()
    : max_iterations(100)
    , precision(1.0e-2)
    , root(dimension)
-   , function(NULL)
+   , function(nullptr)
    , solver_type(GSLHybrid)
 {
 }

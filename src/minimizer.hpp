@@ -104,7 +104,7 @@ Minimizer<dimension>::Minimizer()
    , minimum_value(0.0)
    , minimum_point(dimension)
    , step_size(dimension)
-   , function(NULL)
+   , function(nullptr)
    , solver_type(GSLSimplex2)
 {
 }

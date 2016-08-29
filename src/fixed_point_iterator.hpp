@@ -227,7 +227,7 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator()
    : max_iterations(100)
    , xn(dimension)
    , fixed_point(dimension)
-   , function(NULL)
+   , function(nullptr)
    , convergence_tester(Convergence_tester())
 {
 }
