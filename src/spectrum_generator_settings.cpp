@@ -19,6 +19,7 @@
 #include "spectrum_generator_settings.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace flexiblesusy {
 
@@ -111,6 +112,19 @@ void Spectrum_generator_settings::set_two_loop_corrections(
    set(higgs_2loop_correction_at_at, two_loop_corrections.higgs_at_at);
    set(higgs_2loop_correction_atau_atau, two_loop_corrections.higgs_atau_atau);
    set(top_pole_qcd_corrections, two_loop_corrections.top_qcd);
+}
+
+std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_settings& sgs)
+{
+   ostr << "(";
+
+   for (unsigned i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
+      ostr << sgs.get(static_cast<Spectrum_generator_settings::Settings>(i));
+      if (i < Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1)
+         ostr << ", ";
+   }
+
+   ostr << ")";
 }
 
 } // namespace flexiblesusy
