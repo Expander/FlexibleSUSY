@@ -29,6 +29,9 @@ range = Range[1, 50, 1];
 resultMap = AbsoluteTiming[Map[CalcMh, range]];
 resultParallelMap = AbsoluteTiming[ParallelMap[CalcMh, range]];
 
+Print["time for sequential runs: ", resultMap[[1]]];
+Print["time for parallel runs  : ", resultParallelMap[[1]]];
+
 If[Length[kernels] > 1,
    TestLowerThan[resultParallelMap[[1]], resultMap[[1]]];
   ];
