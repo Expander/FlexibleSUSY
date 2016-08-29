@@ -262,8 +262,17 @@ int CLASSNAME::solve_ewsb_iteratively()
       return model->tadpole_equations();
    };
 
-   auto ewsb_stepper = std::bind(ewsb_stepper_, this, std::placeholders::_1);
-   auto tadpole_stepper = std::bind(tadpole_stepper_, this, std::placeholders::_1);
+   // bind this pointer
+   //
+   // @TODO: This may be changed if we improve the error handling for
+   // EWSB solver failures
+   auto ewsb_stepper = [this,&ewsb_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      return ewsb_stepper_(this, ewsb_pars);
+   };
+
+   auto tadpole_stepper = [this,&tadpole_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      return tadpole_stepper_(this, ewsb_pars);
+   };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
