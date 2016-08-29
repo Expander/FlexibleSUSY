@@ -29,7 +29,6 @@
 #include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
-#include "wrappers.hpp"
 
 #include "mathlink.h"
 #include "mathlink_utils.hpp"
