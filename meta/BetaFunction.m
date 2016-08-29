@@ -138,13 +138,16 @@ ConvertSingleExprToC[expr_, type_, target_String] :=
     "const " <> CConversion`CreateCType[type] <> " " <> target <>
     " = " <> CastTo[RValueToCFormString[expr], type] <> ";\n"
 
+TryCreateUnitMatrix[CConversion`MatrixType[_,m_,n_] /; m =!= n] := 1;
+TryCreateUnitMatrix[type_] := CConversion`CreateUnitMatrix[type];
+
 ConvertExprToC[expr_, type_, target_String] :=
     Module[{result, splitExpr},
            If[NeedToSplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize],
               splitExpr = SplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize];
               result = MapIndexed[
                   ConvertSingleExprToC[
-                      #1 * CConversion`CreateUnitMatrix[type] /. {
+                      #1 * TryCreateUnitMatrix[type] /. {
                           CConversion`UNITMATRIX[r_]^_        :> CConversion`UNITMATRIX[r],
                           CConversion`UNITMATRIXCOMPLEX[r_]^_ :> CConversion`UNITMATRIXCOMPLEX[r]
                       },

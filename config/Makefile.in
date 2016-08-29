@@ -117,8 +117,8 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 README_FILE := README
 
 .PHONY:  all allsrc allexec alllib alltest clean clean-dep \
-	 clean-executables clean-lib clean-obj depend distclean \
-	 release-tag release-head showbuild tag
+	 clean-executables clean-generated clean-lib clean-obj \
+	 depend distclean release-tag release-head showbuild tag
 
 all:
 ifeq ($(ENABLE_META),yes)

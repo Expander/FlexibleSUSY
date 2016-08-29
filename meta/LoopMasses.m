@@ -461,7 +461,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
             eigenArrayType, mixingMatrixType, particleName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
             topTwoLoop = False, thirdGenMass, qcdCorrections = "",
-            qcdOneLoop, qcdTwoLoop
+            qcdOneLoop, qcdTwoLoop, qcdThreeLoop
            },
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -488,7 +488,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
               qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
-                                Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
+                                (* contribution to self-energy => neg. sign *)
+                                Simplify @ N[-ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
                                              Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
                                 0];
               qcdCorrections = AddMtPoleQCDCorrections[1, qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>

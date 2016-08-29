@@ -1,4 +1,8 @@
-Flexiblesusy-1.5.2 [not released yet]
+Flexiblesusy-1.6.1 [August, 28 2016]
+
+ * Bugfix (commit db67c81): Fix compilation with --disable-threads .
+
+Flexiblesusy-1.6.0 [August, 27 2016]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions
    of the model parameters on the r.h.s. of the constraints.  BETA[p]
@@ -25,6 +29,16 @@ Flexiblesusy-1.5.2 [not released yet]
  * Feature (commits 98bc536, e8fd56a): Speed up of the RG running in
    models with very complicated beta functions.
 
+ * Change (commit 728b5ea): `make clean' no longer removes generated
+   source files to avoid the need to re-generate them.  To remove the
+   generated files use either
+
+   $ make clean-<model>-src # deletes generated files for <model>
+
+   or
+
+   $ make clean-generated   # deletes all generated files
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
@@ -33,7 +47,14 @@ Flexiblesusy-1.5.2 [not released yet]
    mass routines of P. Slavich call calculate_spectrum() at the same
    time.
 
-Flexiblesusy-1.5.1 [July, 12 2017]
+ * Bugfix (commit 0d08b99): Do not try to generate non-squared unit
+   matrices for beta function expressions that must be splitted.
+   Non-squared unit matrices did appear for non-squared matrix-valued
+   parameters, as for example T[hE] in the SE6SSM.
+
+   Thanks to Dylan Harries.
+
+Flexiblesusy-1.5.1 [July, 12 2016]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
    function in parameter regions with p << m1,m2 and m1 close to m2.
