@@ -296,6 +296,11 @@ TEST_SH += \
 		$(DIR)/test_MSSMtower.sh
 endif
 
+ifeq ($(WITH_MSSMtower),yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower_librarylink.sh
+endif
+
 ifeq ($(WITH_MSSMtower) $(WITH_MSSMNoFVtower),yes yes)
 TEST_SH += \
 		$(DIR)/test_MSSMNoFVtower.sh
@@ -456,7 +461,7 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< >> $@ 2>&1; \
+		@MATH_CMD="$$MATH" $< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
