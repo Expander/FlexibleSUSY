@@ -14,7 +14,7 @@ handle = FS@ModelName@OpenHandle[
         higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
         higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
         forceOutput -> 0,                  (* FlexibleSUSY[12] *)
-        top2loopCorrectionsQCD -> 1,       (* FlexibleSUSY[13] *)
+        topPoleQCDCorrections -> 1,        (* FlexibleSUSY[13] *)
         betaZeroThreshold -> 1.*^-11,      (* FlexibleSUSY[14] *)
         forcePositiveMasses -> 0,          (* FlexibleSUSY[16] *)
         poleMassScale -> 0,                (* FlexibleSUSY[17] *)
