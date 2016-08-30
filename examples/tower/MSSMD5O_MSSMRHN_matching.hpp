@@ -22,7 +22,10 @@
 namespace flexiblesusy {
 
 template <class T>
-class MSSMD5O_MSSMRHN_matching;
+class MSSMD5O_MSSMRHN_matching_up;
+
+template <class T>
+class MSSMD5O_MSSMRHN_matching_down;
 
 } // namespace flexiblesusy
 

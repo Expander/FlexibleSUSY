@@ -33,8 +33,7 @@
 using namespace std;
 namespace flexiblesusy {
 
-MSSMD5O_MSSMRHN_matching<Two_scale>::MSSMD5O_MSSMRHN_matching() :
-    Matching<Two_scale>(),
+MSSMD5O_MSSMRHN_matching::MSSMD5O_MSSMRHN_matching() :
     fixed_scale(0),
     lower(0), upper(0),
     inputPars()
@@ -43,8 +42,7 @@ MSSMD5O_MSSMRHN_matching<Two_scale>::MSSMD5O_MSSMRHN_matching() :
     scale = initial_scale_guess = 0;
 }
 
-MSSMD5O_MSSMRHN_matching<Two_scale>::MSSMD5O_MSSMRHN_matching(const MSSMD5O_input_parameters& inputPars_) :
-    Matching<Two_scale>(),
+MSSMD5O_MSSMRHN_matching::MSSMD5O_MSSMRHN_matching(const MSSMD5O_input_parameters& inputPars_) :
     lower(0), upper(0),
     inputPars(inputPars_)
 {
@@ -61,7 +59,7 @@ struct CompareSpectrum {
 
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
+void MSSMD5O_MSSMRHN_matching::invert_seesaw_formula
 (const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
  Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv)
 {
@@ -77,7 +75,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
     Yv = YvDiag.asDiagonal() * U.adjoint();
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+void MSSMD5O_MSSMRHN_matching::match_low_to_high_scale_model()
 {
     upper->set_Yd(lower->get_Yd());
     upper->set_Ye(lower->get_Ye());
@@ -120,7 +118,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
     upper->set_scale(lower->get_scale());
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
+void MSSMD5O_MSSMRHN_matching::match_high_to_low_scale_model()
 {
     update_scale();
 
@@ -156,29 +154,29 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
     lower->set_scale(upper->get_scale());
 }
 
-double MSSMD5O_MSSMRHN_matching<Two_scale>::get_scale() const
+double MSSMD5O_MSSMRHN_matching::get_scale() const
 {
     return scale;
 }
 
-double MSSMD5O_MSSMRHN_matching<Two_scale>::get_initial_scale_guess() const
+double MSSMD5O_MSSMRHN_matching::get_initial_scale_guess() const
 {
    return initial_scale_guess;
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::set_models(Two_scale_model *lower_, Two_scale_model *upper_)
+void MSSMD5O_MSSMRHN_matching::set_models(Two_scale_model *lower_, Two_scale_model *upper_)
 {
     lower = cast_model<MSSMD5O<Two_scale>*>(lower_);
     upper = cast_model<MSSMRHN<Two_scale>*>(upper_);
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::set_lower_input_parameters(const MSSMD5O_input_parameters& inputPars_)
+void MSSMD5O_MSSMRHN_matching::set_lower_input_parameters(const MSSMD5O_input_parameters& inputPars_)
 {
    inputPars = inputPars_;
    make_initial_scale_guess();
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
+void MSSMD5O_MSSMRHN_matching::make_initial_scale_guess()
 {
     const auto TanBeta = inputPars.TanBeta;
     double vu = (TanBeta*LowEnergyConstant(vev))/Sqrt(1 + Sqr(TanBeta));
@@ -247,7 +245,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
     scale = initial_scale_guess = RHN_scale;
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::reset()
+void MSSMD5O_MSSMRHN_matching::reset()
 {
    scale = initial_scale_guess;
    fixed_scale = 0.;
@@ -255,7 +253,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::reset()
    upper = NULL;
 }
 
-void MSSMD5O_MSSMRHN_matching<Two_scale>::update_scale()
+void MSSMD5O_MSSMRHN_matching::update_scale()
 {
     if (!is_zero(fixed_scale)) {
 	scale = fixed_scale;
@@ -264,6 +262,100 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::update_scale()
 
     double RHN_scale = pow(abs(upper->get_Mv().determinant()), 1.0/3);
     scale = RHN_scale;
+}
+
+MSSMD5O_MSSMRHN_matching_up<Two_scale>::MSSMD5O_MSSMRHN_matching_up()
+   : Matching()
+   , matching()
+{}
+
+MSSMD5O_MSSMRHN_matching_up<Two_scale>::MSSMD5O_MSSMRHN_matching_up(const MSSMD5O_input_parameters& input)
+   : Matching()
+   , matching(input)
+{}
+
+void MSSMD5O_MSSMRHN_matching_up<Two_scale>::match()
+{
+   matching.match_low_to_high_scale_model();
+}
+
+double MSSMD5O_MSSMRHN_matching_up<Two_scale>::get_scale() const
+{
+   return matching.get_scale();
+}
+
+void MSSMD5O_MSSMRHN_matching_up<Two_scale>::set_models(
+   Two_scale_model *lower, Two_scale_model *upper)
+{
+   matching.set_models(lower, upper);
+}
+
+double MSSMD5O_MSSMRHN_matching_up<Two_scale>::get_initial_scale_guess() const
+{
+   return matching.get_initial_scale_guess();
+}
+
+void MSSMD5O_MSSMRHN_matching_up<Two_scale>::set_lower_input_parameters(
+   const MSSMD5O_input_parameters& input)
+{
+   matching.set_lower_input_parameters(input);
+}
+
+void MSSMD5O_MSSMRHN_matching_up<Two_scale>::set_scale(double scale)
+{
+   matching.set_scale(scale);
+}
+
+void MSSMD5O_MSSMRHN_matching_up<Two_scale>::reset()
+{
+   matching.reset();
+}
+
+MSSMD5O_MSSMRHN_matching_down<Two_scale>::MSSMD5O_MSSMRHN_matching_down()
+   : Matching()
+   , matching()
+{}
+
+MSSMD5O_MSSMRHN_matching_down<Two_scale>::MSSMD5O_MSSMRHN_matching_down(const MSSMD5O_input_parameters& input)
+   : Matching()
+   , matching(input)
+{}
+
+void MSSMD5O_MSSMRHN_matching_down<Two_scale>::match()
+{
+   matching.match_high_to_low_scale_model();
+}
+
+double MSSMD5O_MSSMRHN_matching_down<Two_scale>::get_scale() const
+{
+   return matching.get_scale();
+}
+
+void MSSMD5O_MSSMRHN_matching_down<Two_scale>::set_models(
+   Two_scale_model *upper, Two_scale_model *lower)
+{
+   matching.set_models(lower, upper);
+}
+
+double MSSMD5O_MSSMRHN_matching_down<Two_scale>::get_initial_scale_guess() const
+{
+   return matching.get_initial_scale_guess();
+}
+
+void MSSMD5O_MSSMRHN_matching_down<Two_scale>::set_lower_input_parameters(
+   const MSSMD5O_input_parameters& input)
+{
+   matching.set_lower_input_parameters(input);
+}
+
+void MSSMD5O_MSSMRHN_matching_down<Two_scale>::set_scale(double scale)
+{
+   matching.set_scale(scale);
+}
+
+void MSSMD5O_MSSMRHN_matching_down<Two_scale>::reset()
+{
+   matching.reset();
 }
 
 } // namespace flexiblesusy
