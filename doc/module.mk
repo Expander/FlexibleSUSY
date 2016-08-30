@@ -18,6 +18,7 @@ DOC_VERSION_TEX := \
 HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
+IMAGE_DIR       := $(DIR)/images
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
@@ -101,6 +102,7 @@ $(INDEX_PAGE):
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \
 		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
 		) | doxygen -
 
 $(MAN_PAGE):

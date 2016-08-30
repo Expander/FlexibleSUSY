@@ -28,7 +28,7 @@ LIBSoftsusyNMSSM_OBJ  := \
 LIBSoftsusyNMSSM_DEP  := \
 		$(LIBSoftsusyNMSSM_OBJ:.o=.d)
 
-LIBSoftsusyNMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBSoftsusyNMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 EXESoftsusyNMSSM_SRC  :=
 
@@ -72,7 +72,7 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP) $(LIBSoftsusyNMSSM_OBJ) $(EXESoftsusyNMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
 
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(RUN_SOFTPOINT_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)

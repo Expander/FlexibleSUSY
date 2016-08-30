@@ -1,3 +1,32 @@
+Flexiblesusy-1.7.0 [not released yet]
+
+ * Feature: FlexibleSUSY now provides a Mathematica interface for the
+   generated spectrum generators.  For each model, an example
+   Mathematica script
+
+      models/<model>/run_<model>.m
+
+   is generated, which illustrates the usage.  The documentation of
+   the Mathematica interface and several examples can be found in
+   FlexibleSUSY's HTML documentation.  Please see the section
+   "Creating the soucre code documentation" in the README file for a
+   description about how to generate the documentation.
+
+ * Change: The configure options for creating dynamic libraries and
+   statically linked executable has been changed.  By default, static
+   FlexibleSUSY libraries and dynamically linked executables are
+   created.
+
+   To generate shared FlexibleSUSY libraries, run
+
+      $ ./configure --enable-shared-libs ...
+
+   To generate statically linked executables, run
+
+      $ ./configure --enable-static ...
+
+   Please refer to the README file for more information.
+
 Flexiblesusy-1.6.1 [August, 28 2016]
 
  * Bugfix (commit db67c81): Fix compilation with --disable-threads .

@@ -56,6 +56,7 @@ META_SRC     := \
 		$(DIR)/FlexibleEFTHiggsMatching.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/Format.m \
+		$(DIR)/FSMathLink.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \

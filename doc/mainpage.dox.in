@@ -38,6 +38,7 @@ To run the NMSSM spectrum generator, run
 - @ref FlexibleEFTHiggs
 - @ref slha_input_fields
 - @ref addons
+- @ref librarylink
 - @ref documentation
 - @ref package
 - @ref utilities

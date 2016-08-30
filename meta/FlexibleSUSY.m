@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -1324,6 +1324,51 @@ WriteUserExample[inputParameters_List, files_List] :=
                           } ];
           ];
 
+WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
+    Module[{numberOfInputParameters, numberOfInputParameterRules,
+            putInputParameters,
+            setInputParameterDefaultArguments,
+            setInputParameterArguments,
+            numberOfSpectrumEntries, putSpectrum, setInputParameters,
+            numberOfObservables, putObservables,
+            listOfInputParameters, listOfModelParameters, listOfOutputParameters,
+            inputPars, outPars, requestedObservables},
+           inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
+           numberOfInputParameters = Total[CConversion`CountNumberOfEntries[#[[2]]]& /@ inputPars];
+           numberOfInputParameterRules = FSMathLink`GetNumberOfInputParameterRules[inputPars];
+           putInputParameters = FSMathLink`PutInputParameters[inputPars, "link"];
+           setInputParameters = FSMathLink`SetInputParametersFromArguments[inputPars];
+           setInputParameterDefaultArguments = FSMathLink`SetInputParameterDefaultArguments[inputPars];
+           setInputParameterArguments = FSMathLink`SetInputParameterArguments[inputPars];
+           outPars = Parameters`GetOutputParameters[] /. FlexibleSUSY`M[p_List] :> Sequence @@ (FlexibleSUSY`M /@ p);
+           outPars = Join[outPars, FlexibleSUSY`Pole /@ outPars, Parameters`GetModelParameters[], {FlexibleSUSY`SCALE}];
+           listOfInputParameters = ToString[First /@ inputParameters];
+           listOfOutputParameters = ToString[outPars];
+           listOfModelParameters = ToString[Parameters`GetModelParameters[]];
+           numberOfSpectrumEntries = FSMathLink`GetNumberOfSpectrumEntries[outPars];
+           putSpectrum = FSMathLink`PutSpectrum[outPars, "link"];
+           (* get observables *)
+           requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
+           numberOfObservables = Length[requestedObservables];
+           putObservables = FSMathLink`PutObservables[requestedObservables, "link"];
+           WriteOut`ReplaceInFiles[files,
+                          { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
+                            "@numberOfInputParameterRules@" -> ToString[numberOfInputParameterRules],
+                            "@putInputParameters@" -> IndentText[putInputParameters],
+                            "@setInputParameters@" -> IndentText[setInputParameters],
+                            "@setInputParameterArguments@" -> IndentText[setInputParameterArguments, 12],
+                            "@setInputParameterDefaultArguments@" -> IndentText[setInputParameterDefaultArguments],
+                            "@setDefaultInputParameters@" -> IndentText[setInputParameterDefaultArguments,8],
+                            "@numberOfSpectrumEntries@" -> ToString[numberOfSpectrumEntries],
+                            "@putSpectrum@" -> IndentText[putSpectrum],
+                            "@numberOfObservables@" -> ToString[numberOfObservables],
+                            "@putObservables@" -> IndentText[putObservables],
+                            "@listOfInputParameters@" -> listOfInputParameters,
+                            "@listOfModelParameters@" -> listOfModelParameters,
+                            "@listOfOutputParameters@" -> listOfOutputParameters,
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
 
 WritePlotScripts[files_List] :=
     Module[{},
@@ -2543,6 +2588,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "scan.cpp.in"}],
                               FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
                             }];
+
+           Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
+           WriteMathLink[inputParameters, extraSLHAOutputBlocks,
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.cpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.m.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "run.m.in"}],
+                           FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".m"}]}
+                         }];
 
            PrintHeadline["FlexibleSUSY has finished"];
           ];

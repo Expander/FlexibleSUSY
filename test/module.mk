@@ -13,7 +13,7 @@ LIBTEST_OBJ := \
 LIBTEST_DEP := \
 		$(LIBTEST_OBJ:.o=.d)
 
-LIBTEST     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBTEST     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 TEST_SRC := \
 		$(DIR)/test_ckm.cpp \
@@ -352,7 +352,9 @@ endif
 
 ifeq ($(WITH_CMSSM),yes)
 TEST_META += \
-		$(DIR)/test_CMSSM_3loop_beta.m
+		$(DIR)/test_CMSSM_3loop_beta.m \
+		$(DIR)/test_CMSSM_librarylink.m \
+		$(DIR)/test_CMSSM_librarylink_parallel.m
 endif
 
 TEST_OBJ := \
@@ -687,12 +689,12 @@ $(DIR)/test_%.x: $(DIR)/test_%.o
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
 
-ifeq ($(ENABLE_STATIC_LIBS),yes)
+ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 else
 $(LIBTEST): $(LIBTEST_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 
 ALLDEP += $(LIBTEST_DEP) $(TEST_DEP)

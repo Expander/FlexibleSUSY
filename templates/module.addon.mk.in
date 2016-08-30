@@ -36,7 +36,7 @@ EXE@ADDON@_EXE := \
 		$(patsubst %.f, %.x, $(filter %.f, $(EXE@ADDON@_SRC)))
 
 LIB@ADDON@     := \
-		$(DIR)/lib$(MODNAME)$(LIBEXT)
+		$(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIB@ADDON@_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)
@@ -100,10 +100,10 @@ $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAG
 endif
 
 $(LIB@ADDON@): $(LIB@ADDON@_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(EXE@ADDON@_EXE): $(EXE@ADDON@_OBJ) $(LIB@ADDON@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS) $(THREADLIBS)
 
 ALLDEP += $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP)
 ALLSRC += $(LIB@ADDON@_SRC) $(EXE@ADDON@_SRC)

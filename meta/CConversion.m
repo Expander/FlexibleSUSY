@@ -13,6 +13,9 @@ complexScalarCType::usage="represents a complex scalar C type";
 
 ToRealType::usage="converts a given type to a type with real elements";
 
+GreekQ::usage = "Returns true if the given symbol contains one or more
+ greek letters.";
+
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
@@ -36,6 +39,9 @@ TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
 dimension";
+
+CountNumberOfEntries::usage = "returns numbers of entries of a
+ given type";
 
 CreateCType::usage="returns string with the C/C++ data type";
 
@@ -996,6 +1002,17 @@ HaveSameDimension[{MatrixType[_,dims1__], MatrixType[_,dims2__]}] :=
 HaveSameDimension[{_,_}] := False;
 HaveSameDimension[types_List] :=
     And @@ (HaveSameDimension /@ Subsets[types, {2}]);
+
+
+CountNumberOfEntries[CConversion`realScalarCType]    := 1;
+CountNumberOfEntries[CConversion`integerScalarCType] := 1;
+CountNumberOfEntries[CConversion`complexScalarCType] := 2;
+
+CountNumberOfEntries[CConversion`ScalarType[type_]]     := CountNumberOfEntries[type];
+CountNumberOfEntries[CConversion`ArrayType[type_, n_]]  := n CountNumberOfEntries[type];
+CountNumberOfEntries[CConversion`VectorType[type_, n_]] := n CountNumberOfEntries[type];
+CountNumberOfEntries[CConversion`MatrixType[type_, m_, n_]] := m n CountNumberOfEntries[type];
+CountNumberOfEntries[CConversion`TensorType[type_, dims__]] := Times[dims] CountNumberOfEntries[type];
 
 End[];
 

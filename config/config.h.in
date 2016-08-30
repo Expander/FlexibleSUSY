@@ -59,6 +59,9 @@
 /* Enable fflite */
 @DEFINE_ENABLE_FFLITE@
 
+/* Enable LibraryLink */
+@DEFINE_ENABLE_LIBRARYLINK@
+
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
