@@ -82,31 +82,13 @@ void RGFlow<Two_scale>::add(Constraint<Two_scale>* c, Two_scale_model* m)
  * @param m1 low-scale model
  * @param m2 high-scale model
  */
-void RGFlow<Two_scale>::add_upwards(Matching<Two_scale>* mc, Two_scale_model* m1, Two_scale_model* m2)
+void RGFlow<Two_scale>::add(Matching<Two_scale>* mc, Two_scale_model* m1, Two_scale_model* m2)
 {
    if (!mc) throw SetupError("matching condition pointer is NULL");
    if (!m1) throw SetupError("model pointer 1 is NULL");
    if (!m2) throw SetupError("model pointer 2 is NULL");
    mc->set_models(m1, m2);
-   sliders.push_back(std::make_shared<Matching_up_slider>(m1, m2, mc));
-}
-
-/**
- * Adds a downwards matching condition.  This matching condition
- * matches the high-scale model to the low-scale model by calling
- * match_high_to_low_scale_model().
- *
- * @param mc matching condition
- * @param m1 high-scale model
- * @param m2 low-scale model
- */
-void RGFlow<Two_scale>::add_downwards(Matching<Two_scale>* mc, Two_scale_model* m1, Two_scale_model* m2)
-{
-   if (!mc) throw SetupError("matching condition pointer is NULL");
-   if (!m1) throw SetupError("model pointer 1 is NULL");
-   if (!m2) throw SetupError("model pointer 2 is NULL");
-   mc->set_models(m2, m1);
-   sliders.push_back(std::make_shared<Matching_down_slider>(m1, m2, mc));
+   sliders.push_back(std::make_shared<Matching_slider>(m1, m2, mc));
 }
 
 /**
@@ -359,58 +341,31 @@ void RGFlow<Two_scale>::Constraint_slider::set_precision(double p) {
    model->set_precision(p);
 }
 
-void RGFlow<Two_scale>::Matching_up_slider::clear_problems() {
-   low->clear_problems();
-   high->clear_problems();
+void RGFlow<Two_scale>::Matching_slider::clear_problems() {
+   m1->clear_problems();
+   m2->clear_problems();
 }
 
-Two_scale_model* RGFlow<Two_scale>::Matching_up_slider::get_model() {
-   return low;
+Two_scale_model* RGFlow<Two_scale>::Matching_slider::get_model() {
+   return m1;
 }
 
-double RGFlow<Two_scale>::Matching_up_slider::get_scale() {
+double RGFlow<Two_scale>::Matching_slider::get_scale() {
    return matching->get_scale();
 }
 
-void RGFlow<Two_scale>::Matching_up_slider::slide() {
-   VERBOSE_MSG("> \trunning " << low->name() << " to scale " << matching->get_scale() << " GeV");
-   low->run_to(matching->get_scale());
-   VERBOSE_MSG("> \trunning " << high->name() << " to scale " << matching->get_scale() << " GeV");
-   high->run_to(matching->get_scale());
-   VERBOSE_MSG("> \tmatching " << low->name() << " -> " << high->name());
-   matching->match_low_to_high_scale_model();
+void RGFlow<Two_scale>::Matching_slider::slide() {
+   VERBOSE_MSG("> \trunning " << m1->name() << " to scale " << matching->get_scale() << " GeV");
+   m1->run_to(matching->get_scale());
+   VERBOSE_MSG("> \trunning " << m2->name() << " to scale " << matching->get_scale() << " GeV");
+   m2->run_to(matching->get_scale());
+   VERBOSE_MSG("> \tmatching " << m1->name() << " -> " << m2->name());
+   matching->match();
 }
 
-void RGFlow<Two_scale>::Matching_up_slider::set_precision(double p) {
-   low->set_precision(p);
-   high->set_precision(p);
-}
-
-void RGFlow<Two_scale>::Matching_down_slider::clear_problems() {
-   high->clear_problems();
-   low->clear_problems();
-}
-
-Two_scale_model* RGFlow<Two_scale>::Matching_down_slider::get_model() {
-   return low;
-}
-
-double RGFlow<Two_scale>::Matching_down_slider::get_scale() {
-   return matching->get_scale();
-}
-
-void RGFlow<Two_scale>::Matching_down_slider::slide() {
-   VERBOSE_MSG("> \trunning " << high->name() << " to scale " << matching->get_scale() << " GeV");
-   high->run_to(matching->get_scale());
-   VERBOSE_MSG("> \trunning " << low->name() << " to scale " << matching->get_scale() << " GeV");
-   low->run_to(matching->get_scale());
-   VERBOSE_MSG("> \tmatching " << high->name() << " -> " << low->name());
-   matching->match_high_to_low_scale_model();
-}
-
-void RGFlow<Two_scale>::Matching_down_slider::set_precision(double p) {
-   high->set_precision(p);
-   low->set_precision(p);
+void RGFlow<Two_scale>::Matching_slider::set_precision(double p) {
+   m1->set_precision(p);
+   m2->set_precision(p);
 }
 
 } // namespace flexiblesusy

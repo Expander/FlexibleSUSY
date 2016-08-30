@@ -65,10 +65,8 @@ public:
 
    /// add constraint
    void add(Constraint<Two_scale>*, Two_scale_model*);
-   /// add upwards matching condition
-   void add_upwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
-   /// add downwards matching condition
-   void add_downwards(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
+   /// add matching condition
+   void add(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
    /// get model at current scale
    Two_scale_model* get_model() const;
    /// get number of used iterations
@@ -112,33 +110,18 @@ private:
       Constraint<Two_scale>* constraint;
    };
 
-   struct Matching_up_slider : public Slider {
+   struct Matching_slider : public Slider {
    public:
-      Matching_up_slider(Two_scale_model* low_, Two_scale_model* high_, Matching<Two_scale>* mc)
-         : low(low_), high(high_), matching(mc) {}
-      virtual ~Matching_up_slider() {}
+      Matching_slider(Two_scale_model* m1_, Two_scale_model* m2_, Matching<Two_scale>* mc)
+         : m1(m1_), m2(m2_), matching(mc) {}
+      virtual ~Matching_slider() {}
       virtual void clear_problems();
       virtual Two_scale_model* get_model();
       virtual double get_scale();
       virtual void slide();
       virtual void set_precision(double);
    private:
-      Two_scale_model *low, *high;
-      Matching<Two_scale>* matching;
-   };
-
-   struct Matching_down_slider : public Slider {
-   public:
-      Matching_down_slider(Two_scale_model* high_, Two_scale_model* low_, Matching<Two_scale>* mc)
-         : high(high_), low(low_), matching(mc) {}
-      virtual ~Matching_down_slider() {}
-      virtual void clear_problems();
-      virtual Two_scale_model* get_model();
-      virtual double get_scale();
-      virtual void slide();
-      virtual void set_precision(double);
-   private:
-      Two_scale_model *high, *low;
+      Two_scale_model *m1, *m2;
       Matching<Two_scale>* matching;
    };
 

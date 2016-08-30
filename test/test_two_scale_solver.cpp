@@ -37,11 +37,8 @@ public:
       , scale(scale_)
       {}
    virtual ~Trivial_matching_condition() {}
-   virtual void match_low_to_high_scale_model() {
+   virtual void match() {
       mHigh->set_parameters(mLow->get_parameters());
-   }
-   virtual void match_high_to_low_scale_model() {
-      mLow->set_parameters(mHigh->get_parameters());
    }
    virtual double get_scale() const {
       return scale;
@@ -92,16 +89,12 @@ class Counting_matching_condition: public Matching<Two_scale> {
 public:
    Counting_matching_condition(double scale_)
       : scale(scale_)
-      , number_of_low_to_high_matches(0)
-      , number_of_high_to_low_matches(0)
+      , number_of_matches(0)
       , number_of_get_scale(0)
       {}
    virtual ~Counting_matching_condition() {}
-   virtual void match_low_to_high_scale_model() {
-      ++number_of_low_to_high_matches;
-   }
-   virtual void match_high_to_low_scale_model() {
-      ++number_of_high_to_low_matches;
+   virtual void match() {
+      ++number_of_matches;
    }
    virtual double get_scale() const {
       ++number_of_get_scale;
@@ -109,19 +102,15 @@ public:
    }
    virtual void set_models(Two_scale_model*, Two_scale_model*) {
    }
-   unsigned get_number_of_low_to_high_matches() const {
-      return number_of_low_to_high_matches;
-   }
-   unsigned get_number_of_high_to_low_matches() const {
-      return number_of_high_to_low_matches;
+   unsigned get_number_of_matches() const {
+      return number_of_matches;
    }
    unsigned get_number_of_get_scale() const {
       return number_of_get_scale;
    }
 private:
    double   scale;
-   unsigned number_of_low_to_high_matches;
-   unsigned number_of_high_to_low_matches;
+   unsigned number_of_matches;
    mutable unsigned number_of_get_scale;
 };
 
@@ -162,7 +151,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    RGFlow<Two_scale> solver;
    solver.add(&cc, &model1);
-   solver.add_upwards(&mc, &model1, &model2);
+   solver.add(&mc, &model1, &model2);
    solver.add(&cc, &model2);
    solver.set_convergence_tester(&ccc);
 
@@ -188,11 +177,11 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       solver.set_convergence_tester(&ccc);
       solver.add(&model1_c1, &model1);
       solver.add(&model1_c2, &model1);
-      solver.add_upwards(&mc, &model1, &model2);
+      solver.add(&mc, &model1, &model2);
       solver.add(&model2_c1, &model2);
       solver.add(&model2_c2, &model2);
       solver.add(&model2_c1, &model2);
-      solver.add_downwards(&mc, &model2, &model2);
+      solver.add(&mc, &model2, &model1);
       solver.add(&model1_c2, &model1);
 
       if (number_of_iterations == 0) {
@@ -211,10 +200,8 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       BOOST_CHECK_EQUAL(solver.number_of_iterations_done(),
                         number_of_iterations);
       // check how often the matching is appied
-      BOOST_CHECK_EQUAL(mc.get_number_of_low_to_high_matches(),
-                        number_of_iterations);
-      BOOST_CHECK_EQUAL(mc.get_number_of_high_to_low_matches(),
-                        number_of_iterations);
+      BOOST_CHECK_EQUAL(mc.get_number_of_matches(),
+                        2*number_of_iterations);
       // lowest constraint applied first time and once in each iteration
       BOOST_CHECK_EQUAL(model1_c1.get_number_of_apply_calls(),
                         number_of_iterations);
@@ -263,9 +250,9 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
 
    RGFlow<Two_scale> solver;
    solver.add(&c1, &model1);
-   solver.add_upwards(&mc, &model1, &model2);
+   solver.add(&mc, &model1, &model2);
    solver.add(&c2, &model2);
-   solver.add_downwards(&mc, &model2, &model1);
+   solver.add(&mc, &model2, &model1);
 
    solver.run_to(c1.get_scale());
    BOOST_CHECK_EQUAL(solver.get_model(), &model1);
