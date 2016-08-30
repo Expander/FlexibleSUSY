@@ -74,13 +74,13 @@ void RGFlow<Two_scale>::add(Constraint<Two_scale>* c, Two_scale_model* m)
 }
 
 /**
- * Adds an upwards matching condition.  This matching condition
- * matches the low-scale model to the high-scale model by calling
- * match_low_to_high_scale_model().
+ * Adds a matching condition.  This matching condition matches the two
+ * models by calling match().  The two models are passed to the
+ * set_models() function of the matching condition.
  *
  * @param mc matching condition
- * @param m1 low-scale model
- * @param m2 high-scale model
+ * @param m1 model 1
+ * @param m2 model 2
  */
 void RGFlow<Two_scale>::add(Matching<Two_scale>* mc, Two_scale_model* m1, Two_scale_model* m2)
 {
