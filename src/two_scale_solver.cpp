@@ -251,7 +251,9 @@ Two_scale_model* RGFlow<Two_scale>::get_model(double scale) const
    const std::vector<std::shared_ptr<Slider> > sorted_sliders(sort_sliders());
 
    auto it = std::lower_bound(sorted_sliders.begin(), sorted_sliders.end(),
-                              scale, Scale_lower_bound_comp());
+                              scale,
+                              [](const std::shared_ptr<Slider>& s, double scale) -> bool
+                              { return s->get_scale() < scale; });
 
    if (it == sorted_sliders.end())
       return NULL;
@@ -296,7 +298,9 @@ std::vector<std::shared_ptr<RGFlow<Two_scale>::Slider> > RGFlow<Two_scale>::sort
 {
    std::vector<std::shared_ptr<Slider> > sorted_sliders(sliders);
 
-   std::sort(sorted_sliders.begin(), sorted_sliders.end(), Scale_comp());
+   std::sort(sorted_sliders.begin(), sorted_sliders.end(),
+             [](const std::shared_ptr<Slider>& s1, const std::shared_ptr<Slider>& s2) -> bool
+             { return s1->get_scale() < s2->get_scale(); });
 
    return sorted_sliders;
 }

@@ -125,18 +125,6 @@ private:
       Matching<Two_scale>* matching;
    };
 
-   struct Scale_comp {
-      bool operator()(std::shared_ptr<Slider> s1, std::shared_ptr<Slider> s2) {
-         return s1->get_scale() < s2->get_scale();
-      }
-   };
-
-   struct Scale_lower_bound_comp {
-      bool operator()(std::shared_ptr<Slider> s, double scale) {
-         return s->get_scale() < scale;
-      }
-   };
-
    std::vector<std::shared_ptr<Slider> > sliders; ///< sliders to be run up and down
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
