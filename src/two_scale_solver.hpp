@@ -100,11 +100,11 @@ private:
       Constraint_slider(Two_scale_model* m, Constraint<Two_scale>* c)
          : model(m), constraint(c) {}
       virtual ~Constraint_slider() {}
-      virtual void clear_problems();
-      virtual Two_scale_model* get_model();
-      virtual double get_scale();
-      virtual void slide();
-      virtual void set_precision(double);
+      virtual void clear_problems() override;
+      virtual Two_scale_model* get_model() override;
+      virtual double get_scale() override;
+      virtual void slide() override;
+      virtual void set_precision(double) override;
    private:
       Two_scale_model* model;
       Constraint<Two_scale>* constraint;
@@ -115,11 +115,11 @@ private:
       Matching_slider(Two_scale_model* m1_, Two_scale_model* m2_, Matching<Two_scale>* mc)
          : m1(m1_), m2(m2_), matching(mc) {}
       virtual ~Matching_slider() {}
-      virtual void clear_problems();
-      virtual Two_scale_model* get_model();
-      virtual double get_scale();
-      virtual void slide();
-      virtual void set_precision(double);
+      virtual void clear_problems() override;
+      virtual Two_scale_model* get_model() override;
+      virtual double get_scale() override;
+      virtual void slide() override;
+      virtual void set_precision(double) override;
    private:
       Two_scale_model *m1, *m2;
       Matching<Two_scale>* matching;
