@@ -27,6 +27,9 @@ Flexiblesusy-1.7.0 [not released yet]
 
    Please refer to the README file for more information.
 
+ * Bugfix (commit 3126ac1): Catch NaNs from inside the MSSM 2L Higgs
+   mass routines of Pietro Slavich.
+
 Flexiblesusy-1.6.1 [August, 28 2016]
 
  * Bugfix (commit db67c81): Fix compilation with --disable-threads .
