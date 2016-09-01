@@ -66,6 +66,8 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
+$(DIR)/fmssmn_lattice.o: $(DIR)/fmssmn_lattice_translator.inc
+
 $(DIR)/%.cpp : $(DIR)/%.cpp.m
 	$(MATH) -run 'filename="$@"; << $<; Quit[]'
 
