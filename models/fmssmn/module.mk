@@ -37,18 +37,23 @@ LIBFMSSMN_DEP  := \
 
 LIBFMSSMN      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
+		distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFMSSMN)
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFMSSMN_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFMSSMN)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFMSSMN_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFMSSMN)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(LIBFMSSMN_GENERATED_SRC)
