@@ -38,7 +38,7 @@ LIBFMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) \
 		clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
-		distclean-$(MODNAME)
+		clean-$(MODNAME)-src distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFMSSM)
 
@@ -51,12 +51,15 @@ clean-$(MODNAME)-lib:
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFMSSM_OBJ)
 
+clean-$(MODNAME)-src:
+		-rm -f $(LIBFMSSM_GENERATED_SRC)
+		-rm -f $(LIBFMSSM_INC)
+
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		@true
 
-distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBFMSSM_GENERATED_SRC)
-		-rm -f $(LIBFMSSM_INC)
+distclean-$(MODNAME): clean-$(MODNAME) clean-$(MODNAME)-src
+		@true
 
 clean::         clean-$(MODNAME)
 
