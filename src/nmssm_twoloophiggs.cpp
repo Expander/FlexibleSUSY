@@ -174,9 +174,6 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
              DMS[1][0], DMS[1][1], DMS[1][2],
              DMS[2][0], DMS[2][1], DMS[2][2];
 
-   if (!result.allFinite())
-      result.setZero();
-
    return -result;
 }
 
@@ -218,9 +215,6 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadp
    result << DMP[0][0], DMP[0][1], DMP[0][2],
              DMP[1][0], DMP[1][1], DMP[1][2],
              DMP[2][0], DMP[2][1], DMP[2][2];
-
-   if (!result.allFinite())
-      result.setZero();
 
    return -result;
 }

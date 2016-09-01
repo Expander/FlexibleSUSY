@@ -128,9 +128,6 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
 
    result(1,0) = result(0,1);
 
-   if (!result.allFinite())
-      result.setZero();
-
    return -result;
 }
 
@@ -151,9 +148,6 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
    }
 
    result(1,0) = result(0,1);
-
-   if (!result.allFinite())
-      result.setZero();
 
    return -result;
 }
@@ -189,9 +183,6 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm_with_tadpoles
 
    result(1,0) = result(0,1);
 
-   if (!result.allFinite())
-      result.setZero();
-
    return -result;
 }
 
@@ -208,9 +199,6 @@ double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
       dszodd_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
               &tanb, &vev2, &gs, &result);
    }
-
-   if (!std::isfinite(result))
-      result = 0.;
 
    return -result;
 }
@@ -229,9 +217,6 @@ double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
       ddsodd_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
               &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2, &result);
    }
-
-   if (!std::isfinite(result))
-      result = 0.;
 
    return -result;
 }
@@ -259,9 +244,6 @@ double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
       tausqodd_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
                 &costau, &scale2, &mu, &tanb, &vev2, &result);
    }
-
-   if (!std::isfinite(result))
-      result = 0.;
 
    return -result;
 }
