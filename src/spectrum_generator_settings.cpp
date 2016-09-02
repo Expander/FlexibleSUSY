@@ -125,6 +125,8 @@ std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_settings& 
    }
 
    ostr << ")";
+
+   return ostr;
 }
 
 } // namespace flexiblesusy

@@ -274,6 +274,8 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
    if (ewsb_loop_order > 0) {
       tadpole[0] -= Re(tadpole_hh());
    }
+
+   return tadpole;
 }
 
 /**
@@ -5233,24 +5235,14 @@ std::complex<double> Standard_model::self_energy_Fe_PL(double p , unsigned gO1, 
 
 }
 
-std::complex<double> Standard_model::self_energy_VZ_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VZ_heavy(double) const
 {
-   std::complex<double> result;
-
-   result += 0;
-
-   return result * oneOver16PiSqr;
-
+   return 0.;
 }
 
-std::complex<double> Standard_model::self_energy_VWp_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VWp_heavy(double) const
 {
-   std::complex<double> result;
-
-   result += 0;
-
-   return result * oneOver16PiSqr;
-
+   return 0.;
 }
 
 std::complex<double> Standard_model::self_energy_Fd_1_heavy_rotated(double p , unsigned gO1, unsigned gO2) const

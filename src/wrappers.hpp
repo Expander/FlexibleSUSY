@@ -419,7 +419,7 @@ inline double Im(const std::complex<double>& x)
 }
 
 template<int M, int N>
-Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>& x)
+Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>&)
 {
    return Eigen::Matrix<double,M,N>::Zero();
 }
