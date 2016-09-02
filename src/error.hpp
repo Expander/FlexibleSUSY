@@ -50,7 +50,7 @@ private:
 class NoConvergenceError : public Error {
 public:
    explicit NoConvergenceError(unsigned number_of_iterations_, const std::string msg = "")
-      : number_of_iterations(number_of_iterations_), message(msg) {}
+      : message(msg), number_of_iterations(number_of_iterations_) {}
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
       if (!message.empty())
