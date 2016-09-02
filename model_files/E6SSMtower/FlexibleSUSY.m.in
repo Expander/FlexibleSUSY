@@ -1,0 +1,99 @@
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = E6SSM;
+OnlyLowEnergyFlexibleSUSY = True;
+FlexibleEFTHiggs = True;
+
+EXTPAR = {
+    (* {0, MSUSY}, *)
+    (* {1, M1Input}, *)
+    (* {2, M2Input}, *)
+    (* {3, M3Input}, *)
+    (* {4, MuInput}, *)
+    (* {5, mAInput}, *)
+    (* {25, TanBeta}, *)
+    {61, LambdaInput},
+    {62, KappaInput},
+    {65, vsInput},
+    {66, Lambda12Input},
+    {70, gNInput}
+};
+
+FSExtraInputParameters = {
+    {TanBeta, TanBeta, {1}},
+    {MSUSY, MSUSY, {1}},
+    {Xtt, Xtt, {1}}
+};
+
+EWSBOutputParameters = { mHd2, mHu2, ms2 };
+
+SUSYScale = MSUSY;
+
+SUSYScaleFirstGuess = MSUSY;
+
+SUSYScaleInput = {
+    {gN, gNInput},
+    {MassB, MSUSY},
+    {MassWB, MSUSY},
+    {MassG, MSUSY},
+    {MassBp, MSUSY},
+    {me2, MSUSY^2 UNITMATRIX[3]},
+    {mq2, MSUSY^2 UNITMATRIX[3]},
+    {mu2, MSUSY^2 UNITMATRIX[3]},
+    {md2, MSUSY^2 UNITMATRIX[3]},
+    {ml2, MSUSY^2 UNITMATRIX[3]},
+    {mDx2, MSUSY^2 UNITMATRIX[3]},
+    {mDxbar2, MSUSY^2 UNITMATRIX[3]},
+    {mH1I2, MSUSY^2 UNITMATRIX[2]},
+    {mH2I2, MSUSY^2 UNITMATRIX[2]},
+    {msI2, MSUSY^2 UNITMATRIX[2]},
+    {mDx2[1,1], MSUSY^2},
+    {mDxbar2[1,1], MSUSY^2},
+    {mH1I2[1,1], MSUSY^2},
+    {mH2I2[1,1], MSUSY^2},
+    {msI2[1,1], MSUSY^2},
+    {mDx2[2,2], MSUSY^2},
+    {mDxbar2[2,2], MSUSY^2},
+    {mH1I2[2,2], MSUSY^2},
+    {mH2I2[2,2], MSUSY^2},
+    {msI2[2,2], MSUSY^2},
+    {mDx2[3,3], MSUSY^2},
+    {mDxbar2[3,3], MSUSY^2},
+    {mHp2, MSUSY^2},
+    {mHpbar2, MSUSY^2},
+    {B[\[Mu]Pr], MSUSY^2},
+    {\[Mu]Pr, MSUSY},
+    {\[Kappa], UNITMATRIX[3] KappaInput},
+    {\[Lambda]12, UNITMATRIX[2] Lambda12Input},
+    {\[Lambda], LambdaInput},
+    {T[\[Kappa]], UNITMATRIX[3] MSUSY KappaInput},
+    {T[\[Lambda]12], UNITMATRIX[2] MSUSY Lambda12Input},
+    {vs, vsInput},
+    {T[\[Lambda]], MSUSY^2 Sqrt[2] / (vs (TanBeta + 1/TanBeta)) },
+    {T[Yu], Yu \[Lambda] vs / ( Sqrt[2] TanBeta) },
+    {T[Yd], TanBeta Yd \[Lambda] vs / Sqrt[2] },
+    {T[Ye], TanBeta Ye \[Lambda] vs / Sqrt[2] },
+    {T[Yu][3,3], (\[Lambda] vs / (Sqrt[2] TanBeta) + Xtt) Yu[3,3] }
+};
+
+InitialGuessAtSUSYScale = SUSYScaleInput;
+
+SUSYScaleMatching = {
+    {vu, VEV Sin[ArcTan[TanBeta]]},
+    {vd, VEV Cos[ArcTan[TanBeta]]}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+UseHiggs2LoopNMSSM = True;
+EffectiveMu =  \[Lambda] vs / Sqrt[2];
+EffectiveMASqr = T[\[Lambda]] vs / Sqrt[2] (vu^2 + vd^2) / (vu vd);
+
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+DefaultPoleMassPrecision = HighPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
