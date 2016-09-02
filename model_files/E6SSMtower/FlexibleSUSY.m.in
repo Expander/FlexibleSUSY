@@ -5,24 +5,40 @@ OnlyLowEnergyFlexibleSUSY = True;
 FlexibleEFTHiggs = True;
 
 EXTPAR = {
-    (* {0, MSUSY}, *)
-    (* {1, M1Input}, *)
-    (* {2, M2Input}, *)
-    (* {3, M3Input}, *)
-    (* {4, MuInput}, *)
-    (* {5, mAInput}, *)
-    (* {25, TanBeta}, *)
+    {0, MSUSY},
+    {1, M1Input},
+    {2, M2Input},
+    {3, M3Input},
+    {4, MuInput},
+    {5, mAInput},
+    {25, TanBeta},
     {61, LambdaInput},
-    {62, KappaInput},
-    {65, vsInput},
-    {66, Lambda12Input},
-    {70, gNInput}
+    {71, gNInput},
+    {72, M4Input},
+    {73, mHp2Input},
+    {74, mHpbar2Input},
+    {75, MuPrInput},
+    {76, BMuPrInput}
 };
 
 FSExtraInputParameters = {
-    {TanBeta, TanBeta, {1}},
-    {MSUSY, MSUSY, {1}},
-    {Xtt, Xtt, {1}}
+    {mq2Input      , MSQ2IN     , {3,3}},
+    {mu2Input      , MSU2IN     , {3,3}},
+    {md2Input      , MSD2IN     , {3,3}},
+    {ml2Input      , MSL2IN     , {3,3}},
+    {me2Input      , MSE2IN     , {3,3}},
+    {AuInput       , AUIN       , {3,3}},
+    {AdInput       , ADIN       , {3,3}},
+    {AeInput       , AEIN       , {3,3}},
+    {Lambda12Input , LAMBDA12IN , {2,2}},
+    {ALambda12Input, ALAMBDA12IN, {2,2}},
+    {KappaInput    , KAPPAIN    , {3,3}},
+    {AKappaInput   , AKAPPAIN   , {3,3}},
+    {mDx2Input     , MDX2IN     , {3,3}},
+    {mDxbar2Input  , MDXBAR2IN  , {3,3}},
+    {mH1I2Input    , MH1I2IN    , {2,2}},
+    {mH2I2Input    , MH2I2IN    , {2,2}},
+    {msI2Input     , MSI2IN     , {2,2}}
 };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };
@@ -33,47 +49,34 @@ SUSYScaleFirstGuess = MSUSY;
 
 SUSYScaleInput = {
     {gN, gNInput},
-    {MassB, MSUSY},
-    {MassWB, MSUSY},
-    {MassG, MSUSY},
-    {MassBp, MSUSY},
-    {me2, MSUSY^2 UNITMATRIX[3]},
-    {mq2, MSUSY^2 UNITMATRIX[3]},
-    {mu2, MSUSY^2 UNITMATRIX[3]},
-    {md2, MSUSY^2 UNITMATRIX[3]},
-    {ml2, MSUSY^2 UNITMATRIX[3]},
-    {mDx2, MSUSY^2 UNITMATRIX[3]},
-    {mDxbar2, MSUSY^2 UNITMATRIX[3]},
-    {mH1I2, MSUSY^2 UNITMATRIX[2]},
-    {mH2I2, MSUSY^2 UNITMATRIX[2]},
-    {msI2, MSUSY^2 UNITMATRIX[2]},
-    {mDx2[1,1], MSUSY^2},
-    {mDxbar2[1,1], MSUSY^2},
-    {mH1I2[1,1], MSUSY^2},
-    {mH2I2[1,1], MSUSY^2},
-    {msI2[1,1], MSUSY^2},
-    {mDx2[2,2], MSUSY^2},
-    {mDxbar2[2,2], MSUSY^2},
-    {mH1I2[2,2], MSUSY^2},
-    {mH2I2[2,2], MSUSY^2},
-    {msI2[2,2], MSUSY^2},
-    {mDx2[3,3], MSUSY^2},
-    {mDxbar2[3,3], MSUSY^2},
-    {mHp2, MSUSY^2},
-    {mHpbar2, MSUSY^2},
-    {B[\[Mu]Pr], MSUSY^2},
-    {\[Mu]Pr, MSUSY},
-    {\[Kappa], UNITMATRIX[3] KappaInput},
-    {\[Lambda]12, UNITMATRIX[2] Lambda12Input},
+    {MassB, M1Input},
+    {MassWB, M2Input},
+    {MassG, M3Input},
+    {MassBp, M4Input},
+    {mq2, mq2Input},
+    {mu2, mu2Input},
+    {md2, md2Input},
+    {ml2, ml2Input},
+    {me2, me2Input},
+    {mDx2, mDx2Input},
+    {mDxbar2, mDxbar2Input},
+    {mH1I2, mH1I2Input},
+    {mH2I2, mH2I2Input},
+    {msI2, msI2Input},
+    {mHp2, mHp2Input},
+    {mHpbar2, mHpbar2Input},
+    {B[\[Mu]Pr], BMuPrInput},
+    {\[Mu]Pr, MuPrInput},
+    {\[Kappa], KappaInput},
+    {\[Lambda]12, Lambda12Input},
     {\[Lambda], LambdaInput},
-    {T[\[Kappa]], UNITMATRIX[3] MSUSY KappaInput},
-    {T[\[Lambda]12], UNITMATRIX[2] MSUSY Lambda12Input},
-    {vs, vsInput},
-    {T[\[Lambda]], MSUSY^2 Sqrt[2] / (vs (TanBeta + 1/TanBeta)) },
-    {T[Yu], Yu \[Lambda] vs / ( Sqrt[2] TanBeta) },
-    {T[Yd], TanBeta Yd \[Lambda] vs / Sqrt[2] },
-    {T[Ye], TanBeta Ye \[Lambda] vs / Sqrt[2] },
-    {T[Yu][3,3], (\[Lambda] vs / (Sqrt[2] TanBeta) + Xtt) Yu[3,3] }
+    {T[\[Kappa]], AKappaInput KappaInput},
+    {T[\[Lambda]12], ALambda12Input Lambda12Input},
+    {vs, Sqrt[2] MuInput/LambdaInput},
+    {T[\[Lambda]], Sqrt[2] mAInput^2 / (vs (TanBeta + 1/TanBeta))},
+    {T[Yu], AuInput Yu},
+    {T[Yd], AdInput Yd},
+    {T[Ye], AeInput Ye}
 };
 
 InitialGuessAtSUSYScale = SUSYScaleInput;
