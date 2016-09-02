@@ -11,7 +11,6 @@ CONFIG_TMPL  := \
 		$(DIR)/abspathx.mk \
 		$(DIR)/config.h.in \
 		$(DIR)/flexiblesusy-config.in \
-		$(DIR)/libsyntax.mk \
 		$(DIR)/list_sarah_model_files.sh.in
 
 DEPGEN_SRC   := $(DIR)/depgen.cpp
