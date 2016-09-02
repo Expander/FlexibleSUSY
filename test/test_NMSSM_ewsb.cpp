@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
    const double vS_fs    = m.get_vS();
    const double ms2_fs   = m.get_ms2();
 
-   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 2.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 2.1e-9);
    BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 3.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 5.0e-8);
 }
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    const double vS_fs    = m.get_vS();
    const double ms2_fs   = m.get_ms2();
 
-   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 5.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 5.5e-9);
    BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 4.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 8.0e-8);
 }
