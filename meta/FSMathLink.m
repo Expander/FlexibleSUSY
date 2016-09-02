@@ -134,7 +134,7 @@ HeadStr[par_] :=
           ];
 
 ToUTF8String[s_] :=
-    StringJoin[("\\u0" <> IntegerString[#,16])& /@ ToCharacterCode[ToString[s]]];
+    StringJoin[("\\u" <> Utils`FSStringPadLeft[IntegerString[#,16], 4, "0"])& /@ ToCharacterCode[ToString[s]]];
 
 ToValidWolframSymbolString[par_?CConversion`GreekQ] := ToUTF8String[par];
 ToValidWolframSymbolString[par_] := ToString[par];
