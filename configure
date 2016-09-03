@@ -1000,8 +1000,16 @@ check_addons() {
 #_____________________________________________________________________
 check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
-        # no special requirements for LibraryLink
-        enable_librarylink=yes
+        checking_msg "LibraryLink"
+        # building LibraryLink needs Mathematica headers
+        exists_in_path "$MATH"
+        if [ -n "$cmd" ] ; then
+            result "yes"
+            enable_librarylink=yes
+        else
+            result "no"
+            enable_librarylink=no
+        fi
     fi
 }
 
