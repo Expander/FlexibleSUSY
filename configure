@@ -1000,12 +1000,8 @@ check_addons() {
 #_____________________________________________________________________
 check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
-        # check requirements for LibraryLink
-        if [ "x${enable_compile}" = "xyes" -a "x${enable_meta}" = "xyes" ] ; then
-            enable_librarylink=yes
-        else
-            enable_librarylink=no
-        fi
+        # no special requirements for LibraryLink
+        enable_librarylink=yes
     fi
 }
 
@@ -2075,7 +2071,7 @@ enable_defines() {
 
     if test "x$enable_librarylink" = "xyes" ; then
         DEFINE_ENABLE_LIBRARYLINK="#define ENABLE_LIBRARYLINK 1"
-        message "Enabling LibraryLink"
+        logmsg "Enabling LibraryLink"
         logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
     else
         DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
