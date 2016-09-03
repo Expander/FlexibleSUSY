@@ -373,9 +373,8 @@ Mathematica interface
 =====================
 
 FlexibleSUSY can be called from within Mathematica using Wolfram's
-LibraryLink.  In order to build the LibraryLink-compatible library,
-FlexibleSUSY must be configured with --enable-meta (enabled by
-default).  For each model the LibraryLink library can be found in
+LibraryLink.  By default, FlexibleSUSY creates a LibraryLink library
+for each spectrum genreator.  The generated library can be found in
 models/<model>/<model>_librarylink.so, where <model> is the model
 name.
 
@@ -414,6 +413,10 @@ which can be run for example as
 Before running it, the model parameters in the script should be set to
 reasonable values.  More advanced examples can be found in the
 FlexibleSUSY documentation.
+
+Note: In order to compile the library, Mathematica must be installed.
+To disable the LibraryLink interface, configure with
+--disable-librarylink .
 
 
 Cleaning

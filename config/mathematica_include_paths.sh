@@ -44,6 +44,19 @@ get_mathlink_incpath() {
     echo "$p"
 }
 
+usage() {
+cat <<EOF
+Usage: ./$(basename $0) [options]
+Options:
+
+  -I                Prepend -I on each following include path.
+  --librarylink,-l  Output include path for LibraryLink headers.
+  --mathlink,-m     Output include path for MathLink headers.
+  --math-cmd=       Use Mathematica kernel.
+  --help,-h         Print this help message.
+EOF
+}
+
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
         case "$1" in

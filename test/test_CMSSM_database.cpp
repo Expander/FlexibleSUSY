@@ -83,97 +83,97 @@ void setup_CMSSM(CMSSM_mass_eigenstates& m, const CMSSM_input_parameters& input)
 }
 
 template <class T, class P>
-void test_parameter_equality(const T& a, const P& b)
+void test_parameter_equality(const T& a, const P& b, double eps)
 {
-   TEST_EQUALITY(a.get_loops(), b.get_loops());
-   TEST_EQUALITY(a.get_scale(), b.get_scale());
-   TEST_EQUALITY(a.get_thresholds(), b.get_thresholds());
-   TEST_EQUALITY(a.get_ewsb_loop_order(), b.get_ewsb_loop_order());
-   TEST_EQUALITY(a.get_pole_mass_loop_order(), b.get_pole_mass_loop_order());
-   TEST_EQUALITY(a.get_precision(), b.get_precision());
-   TEST_EQUALITY(a.get_ewsb_iteration_precision(), b.get_ewsb_iteration_precision());
+   TEST_CLOSE(a.get_loops(), b.get_loops(), eps);
+   TEST_CLOSE(a.get_scale(), b.get_scale(), eps);
+   TEST_CLOSE(a.get_thresholds(), b.get_thresholds(), eps);
+   TEST_CLOSE(a.get_ewsb_loop_order(), b.get_ewsb_loop_order(), eps);
+   TEST_CLOSE(a.get_pole_mass_loop_order(), b.get_pole_mass_loop_order(), eps);
+   TEST_CLOSE(a.get_precision(), b.get_precision(), eps);
+   TEST_CLOSE(a.get_ewsb_iteration_precision(), b.get_ewsb_iteration_precision(), eps);
 
-   TEST_EQUALITY(a.get_number_of_parameters(), b.get_number_of_parameters());
+   TEST_CLOSE(a.get_number_of_parameters(), b.get_number_of_parameters(), eps);
 
-   TEST_EQUALITY(a.get_g1(), b.get_g1());
-   TEST_EQUALITY(a.get_g2(), b.get_g2());
-   TEST_EQUALITY(a.get_g3(), b.get_g3());
+   TEST_CLOSE(a.get_g1(), b.get_g1(), eps);
+   TEST_CLOSE(a.get_g2(), b.get_g2(), eps);
+   TEST_CLOSE(a.get_g3(), b.get_g3(), eps);
 
-   TEST_EQUALITY(a.get_Yu(), b.get_Yu());
-   TEST_EQUALITY(a.get_Yd(), b.get_Yd());
-   TEST_EQUALITY(a.get_Ye(), b.get_Ye());
+   TEST_CLOSE(a.get_Yu(), b.get_Yu(), eps);
+   TEST_CLOSE(a.get_Yd(), b.get_Yd(), eps);
+   TEST_CLOSE(a.get_Ye(), b.get_Ye(), eps);
 
-   TEST_EQUALITY(a.get_MassB(), b.get_MassB());
-   TEST_EQUALITY(a.get_MassWB(), b.get_MassWB());
-   TEST_EQUALITY(a.get_MassG(), b.get_MassG());
+   TEST_CLOSE(a.get_MassB(), b.get_MassB(), eps);
+   TEST_CLOSE(a.get_MassWB(), b.get_MassWB(), eps);
+   TEST_CLOSE(a.get_MassG(), b.get_MassG(), eps);
 
-   TEST_EQUALITY(a.get_mHd2(), b.get_mHd2());
-   TEST_EQUALITY(a.get_mHu2(), b.get_mHu2());
-   TEST_EQUALITY(a.get_mq2(), b.get_mq2());
-   TEST_EQUALITY(a.get_mu2(), b.get_mu2());
-   TEST_EQUALITY(a.get_md2(), b.get_md2());
-   TEST_EQUALITY(a.get_ml2(), b.get_ml2());
-   TEST_EQUALITY(a.get_me2(), b.get_me2());
+   TEST_CLOSE(a.get_mHd2(), b.get_mHd2(), eps);
+   TEST_CLOSE(a.get_mHu2(), b.get_mHu2(), eps);
+   TEST_CLOSE(a.get_mq2(), b.get_mq2(), eps);
+   TEST_CLOSE(a.get_mu2(), b.get_mu2(), eps);
+   TEST_CLOSE(a.get_md2(), b.get_md2(), eps);
+   TEST_CLOSE(a.get_ml2(), b.get_ml2(), eps);
+   TEST_CLOSE(a.get_me2(), b.get_me2(), eps);
 
-   TEST_EQUALITY(a.get_TYu(), b.get_TYu());
-   TEST_EQUALITY(a.get_TYd(), b.get_TYd());
-   TEST_EQUALITY(a.get_TYe(), b.get_TYe());
+   TEST_CLOSE(a.get_TYu(), b.get_TYu(), eps);
+   TEST_CLOSE(a.get_TYd(), b.get_TYd(), eps);
+   TEST_CLOSE(a.get_TYe(), b.get_TYe(), eps);
 
-   TEST_EQUALITY(a.get_Mu(), b.get_Mu());
+   TEST_CLOSE(a.get_Mu(), b.get_Mu(), eps);
    TEST_CLOSE(a.get_BMu(), b.get_BMu(), 1e-10);
 
-   TEST_EQUALITY(a.get_vu(), b.get_vu());
-   TEST_EQUALITY(a.get_vd(), b.get_vd());
+   TEST_CLOSE(a.get_vu(), b.get_vu(), eps);
+   TEST_CLOSE(a.get_vd(), b.get_vd(), eps);
 }
 
 template <class T, class P>
-void test_mass_equality(const T& a, const P& b)
+void test_mass_equality(const T& a, const P& b, double eps)
 {
-   TEST_EQUALITY(a.Mhh, b.Mhh);
-   TEST_EQUALITY(a.MAh, b.MAh);
-   TEST_EQUALITY(a.MHpm, b.MHpm);
-   TEST_EQUALITY(a.MCha, b.MCha);
-   TEST_EQUALITY(a.MChi, b.MChi);
-   TEST_EQUALITY(a.MGlu, b.MGlu);
-   TEST_EQUALITY(a.MSu, b.MSu);
-   TEST_EQUALITY(a.MSd, b.MSd);
-   TEST_EQUALITY(a.MSe, b.MSe);
-   TEST_EQUALITY(a.MSv, b.MSv);
-   TEST_EQUALITY(a.MFu, b.MFu);
-   TEST_EQUALITY(a.MFd, b.MFd);
-   TEST_EQUALITY(a.MFe, b.MFe);
-   TEST_EQUALITY(a.MFv, b.MFv);
-   TEST_EQUALITY(a.MVP, b.MVP);
-   TEST_EQUALITY(a.MVG, b.MVG);
-   TEST_EQUALITY(a.MVWm, b.MVWm);
-   TEST_EQUALITY(a.MVZ, b.MVZ);
+   TEST_CLOSE(a.Mhh, b.Mhh, eps);
+   TEST_CLOSE(a.MAh, b.MAh, eps);
+   TEST_CLOSE(a.MHpm, b.MHpm, eps);
+   TEST_CLOSE(a.MCha, b.MCha, eps);
+   TEST_CLOSE(a.MChi, b.MChi, eps);
+   TEST_CLOSE(a.MGlu, b.MGlu, eps);
+   TEST_CLOSE(a.MSu, b.MSu, eps);
+   TEST_CLOSE(a.MSd, b.MSd, eps);
+   TEST_CLOSE(a.MSe, b.MSe, eps);
+   TEST_CLOSE(a.MSv, b.MSv, eps);
+   TEST_CLOSE(a.MFu, b.MFu, eps);
+   TEST_CLOSE(a.MFd, b.MFd, eps);
+   TEST_CLOSE(a.MFe, b.MFe, eps);
+   TEST_CLOSE(a.MFv, b.MFv, eps);
+   TEST_CLOSE(a.MVP, b.MVP, eps);
+   TEST_CLOSE(a.MVG, b.MVG, eps);
+   TEST_CLOSE(a.MVWm, b.MVWm, eps);
+   TEST_CLOSE(a.MVZ, b.MVZ, eps);
 
-   TEST_EQUALITY(a.ZH, b.ZH);
-   TEST_EQUALITY(a.ZA, b.ZA);
-   TEST_EQUALITY(a.ZP, b.ZP);
-   TEST_EQUALITY(a.ZN, b.ZN);
-   TEST_EQUALITY(a.UM, b.UM);
-   TEST_EQUALITY(a.UP, b.UP);
-   TEST_EQUALITY(a.ZU, b.ZU);
-   TEST_EQUALITY(a.ZD, b.ZD);
-   TEST_EQUALITY(a.ZE, b.ZE);
-   TEST_EQUALITY(a.ZV, b.ZV);
-   TEST_EQUALITY(a.ZEL, b.ZEL);
-   TEST_EQUALITY(a.ZER, b.ZER);
-   TEST_EQUALITY(a.ZUL, b.ZUL);
-   TEST_EQUALITY(a.ZUR, b.ZUR);
-   TEST_EQUALITY(a.ZDL, b.ZDL);
-   TEST_EQUALITY(a.ZDR, b.ZDR);
+   TEST_CLOSE(a.ZH, b.ZH, eps);
+   TEST_CLOSE(a.ZA, b.ZA, eps);
+   TEST_CLOSE(a.ZP, b.ZP, eps);
+   TEST_CLOSE(a.ZN, b.ZN, eps);
+   TEST_CLOSE(a.UM, b.UM, eps);
+   TEST_CLOSE(a.UP, b.UP, eps);
+   TEST_CLOSE(a.ZU, b.ZU, eps);
+   TEST_CLOSE(a.ZD, b.ZD, eps);
+   TEST_CLOSE(a.ZE, b.ZE, eps);
+   TEST_CLOSE(a.ZV, b.ZV, eps);
+   TEST_CLOSE(a.ZEL, b.ZEL, eps);
+   TEST_CLOSE(a.ZER, b.ZER, eps);
+   TEST_CLOSE(a.ZUL, b.ZUL, eps);
+   TEST_CLOSE(a.ZUR, b.ZUR, eps);
+   TEST_CLOSE(a.ZDL, b.ZDL, eps);
+   TEST_CLOSE(a.ZDR, b.ZDR, eps);
 }
 
 template <class T, class P>
-void test_input_parameter_equality(const T& a, const P& b)
+void test_input_parameter_equality(const T& a, const P& b, double eps)
 {
-   TEST_EQUALITY(a.m0, b.m0);
-   TEST_EQUALITY(a.m12, b.m12);
-   TEST_EQUALITY(a.TanBeta, b.TanBeta);
-   TEST_EQUALITY(a.SignMu, b.SignMu);
-   TEST_EQUALITY(a.Azero, b.Azero);
+   TEST_CLOSE(a.m0, b.m0, eps);
+   TEST_CLOSE(a.m12, b.m12, eps);
+   TEST_CLOSE(a.TanBeta, b.TanBeta, eps);
+   TEST_CLOSE(a.SignMu, b.SignMu, eps);
+   TEST_CLOSE(a.Azero, b.Azero, eps);
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
@@ -207,10 +207,12 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &physical_input2, &obs2));
 
+   const double eps = 1e-10;
+
    gErrors = 0;
-   test_parameter_equality(model, tmp);
-   test_mass_equality(model.get_physical(), tmp.get_physical());
-   test_input_parameter_equality(model.get_input(), tmp.get_input());
+   test_parameter_equality(model, tmp, eps);
+   test_mass_equality(model.get_physical(), tmp.get_physical(), eps);
+   test_input_parameter_equality(model.get_input(), tmp.get_input(), eps);
    BOOST_REQUIRE(gErrors == 0);
    BOOST_REQUIRE((qedqcd1.display_input() - qedqcd2.display_input()).cwiseAbs().maxCoeff() < 1e-10);
    BOOST_REQUIRE((physical_input1.get() - physical_input2.get()).cwiseAbs().maxCoeff() < 1e-10);
