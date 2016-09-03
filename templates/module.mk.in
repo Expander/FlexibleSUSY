@@ -34,6 +34,7 @@ EXE@CLASSNAME@_SRC :=
 LL@CLASSNAME@_LIB  :=
 LL@CLASSNAME@_OBJ  :=
 LL@CLASSNAME@_SRC  :=
+LL@CLASSNAME@_MMA  :=
 
 LIB@CLASSNAME@_HDR :=
 
@@ -95,6 +96,10 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp
 LL@CLASSNAME@_SRC  += \
 		$(DIR)/@CLASSNAME@_librarylink.cpp
+
+LL@CLASSNAME@_MMA  += \
+		$(DIR)/@CLASSNAME@_librarylink.m \
+		$(DIR)/run_@CLASSNAME@.m
 
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
@@ -177,6 +182,7 @@ install-src::
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_MMA) $(@CLASSNAME@_INSTALL_DIR)
 		$(INSTALL_STRIPPED) $(@CLASSNAME@_MK) $(@CLASSNAME@_INSTALL_DIR) -m u=rw,g=r,o=r
 		install -m u=rw,g=r,o=r $(@CLASSNAME@_TWO_SCALE_MK) $(@CLASSNAME@_INSTALL_DIR)
 ifneq ($(@CLASSNAME@_SLHA_INPUT),)
@@ -205,6 +211,7 @@ clean-$(MODNAME)-src:
 		-rm -f $(LIB@CLASSNAME@_HDR)
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(LL@CLASSNAME@_SRC)
+		-rm -f $(LL@CLASSNAME@_MMA)
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 		-rm -f $(@CLASSNAME@_TWO_SCALE_MK)
 		-rm -f $(@CLASSNAME@_SLHA_INPUT)
@@ -234,7 +241,7 @@ pack-$(MODNAME)-src:
 		$(@CLASSNAME@_MK) $(@CLASSNAME@_TWO_SCALE_MK) \
 		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_GNUPLOT)
 
-$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)
 		@true
 
