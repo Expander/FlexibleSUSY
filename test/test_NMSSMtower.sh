@@ -226,7 +226,7 @@ MhNMSSMtower=$(run_sg "$MODELDIR/NMSSMtower/run_NMSSMtower.x" "$input_NMSSMtower
 echo "Mh in the lowNMSSM  : $MhlowNMSSM"
 echo "Mh in the NMSSMtower: $MhNMSSMtower"
 
-CHECK_EQUAL_FRACTION "$MhlowNMSSM" "$MhNMSSMtower" "0.001" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhlowNMSSM" "$MhNMSSMtower" "0.0015" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."

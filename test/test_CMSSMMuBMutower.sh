@@ -124,7 +124,7 @@ MhCMSSMMuBMutower=$(run_sg "$MODELDIR/CMSSMMuBMutower/run_CMSSMMuBMutower.x" "$i
 echo "Mh in the CMSSMMuBMu     : $MhCMSSMMuBMu"
 echo "Mh in the CMSSMMuBMutower: $MhCMSSMMuBMutower"
 
-CHECK_EQUAL_FRACTION "$MhCMSSMMuBMu" "$MhCMSSMMuBMutower" "0.005" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhCMSSMMuBMu" "$MhCMSSMMuBMutower" "0.007" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."
