@@ -186,10 +186,6 @@ double log1minusx(double x);
 /// and  vecfunc(n, x, f) is the Jacobian array
 void fdjac(int n, softsusy::DoubleVector x, const softsusy::DoubleVector & fvec, DoubleMatrix & df,
 	   void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &));
-/* allocate an int vector with subscript range v[nl..nh] */
-int *ivector(long nl, long nh);
-/* free an int vector allocated with ivector() */
-void free_ivector(int *v, long nl, long nh);
 void lubksb(const DoubleMatrix & a, int n, int *indx, softsusy::DoubleVector & b);
 /// calculates the n-vector y, given freely specifiable values v(1..n2) at x1
 void load(float x, const softsusy::DoubleVector & v, softsusy::DoubleVector & y);
