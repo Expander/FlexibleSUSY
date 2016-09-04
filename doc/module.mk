@@ -6,8 +6,17 @@ DOC_MK       := \
 
 DOC_TMPL     := \
 		$(DIR)/mainpage.dox.in \
+		$(DIR)/addons.dox \
+		$(DIR)/building.dox \
+		$(DIR)/documentation.dox \
+		$(DIR)/install.dox \
+		$(DIR)/librarylink.dox \
+		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.dox \
+		$(DIR)/models.dox \
+		$(DIR)/package.dox \
 		$(DIR)/slha_input.dox \
+		$(DIR)/utilities.dox \
 		$(DIR)/version.tex.in
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
