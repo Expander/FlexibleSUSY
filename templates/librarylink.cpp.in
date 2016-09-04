@@ -590,7 +590,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 
       const Handle_id hid = get_new_handle();
 
-      handles.emplace(hid, std::move(data));
+      handles.insert(std::make_pair(hid, std::move(data)));
 
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
