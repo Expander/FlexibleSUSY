@@ -38,6 +38,11 @@ fsDefaultSettings = {
       betaZeroThreshold -> 1.*^-11,      (* FlexibleSUSY[14] *)
       forcePositiveMasses -> 0,          (* FlexibleSUSY[16] *)
       poleMassScale -> 0,                (* FlexibleSUSY[17] *)
+      eftPoleMassScale -> 0,             (* FlexibleSUSY[18] *)
+      eftMatchingScale -> 0,             (* FlexibleSUSY[19] *)
+      eftMatchingLoopOrderUp -> 2,       (* FlexibleSUSY[20] *)
+      eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
+      eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
       parameterOutputScale -> 0          (* MODSEL[12] *)
 };
 
@@ -106,6 +111,11 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[betaZeroThreshold],
             OptionValue[forcePositiveMasses],
             OptionValue[poleMassScale],
+            OptionValue[eftPoleMassScale],
+            OptionValue[eftMatchingScale],
+            OptionValue[eftMatchingLoopOrderUp],
+            OptionValue[eftMatchingLoopOrderDown],
+            OptionValue[eftHiggsIndex],
             OptionValue[parameterOutputScale],
 
             (* Standard Model input parameters *)

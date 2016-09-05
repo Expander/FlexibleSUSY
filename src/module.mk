@@ -39,7 +39,10 @@ LIBFLEXI_SRC := \
 		$(DIR)/split_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
+		$(DIR)/standard_model_effective_couplings.cpp \
 		$(DIR)/standard_model_physical.cpp \
+		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
+		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -89,6 +92,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
+		$(DIR)/physical_input.hpp \
 		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
@@ -105,8 +109,11 @@ LIBFLEXI_HDR := \
 		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
+		$(DIR)/standard_model_effective_couplings.hpp \
+		$(DIR)/standard_model_low_scale_constraint.hpp \
 		$(DIR)/standard_model_physical.hpp \
-		$(DIR)/physical_input.hpp \
+		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
+		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \

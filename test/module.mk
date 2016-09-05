@@ -286,10 +286,42 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
+ifeq ($(WITH_CMSSMMuBMutower) $(WITH_CMSSMMuBMu),yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMMuBMutower.sh
+endif
+
+ifeq ($(WITH_HSSUSY) $(WITH_MSSMtower) $(WITH_MSSMMuBMu),yes yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower.sh
+endif
+
+ifeq ($(WITH_MSSMtower),yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower_librarylink.sh
+endif
+
+ifeq ($(WITH_MSSMtower) $(WITH_MSSMNoFVtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMNoFVtower.sh
+endif
+
+ifeq ($(WITH_NMSSMtower) $(WITH_lowNMSSM),yes yes)
+TEST_SH += \
+		$(DIR)/test_NMSSMtower.sh
+endif
+
+ifeq ($(WITH_SMHighPrecision) $(WITH_SMtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_SMtower.sh
+endif
+
 ifeq ($(WITH_THDMIIMSSMBC) $(WITH_THDMIIMSSMBCApprox) $(WITH_HGTHDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBCApprox),yes yes yes yes)
+
 TEST_SH += \
 		$(DIR)/test_THDMIIMSSMBCFull_approximation.sh
 endif
+
 
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
@@ -429,7 +461,7 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< >> $@ 2>&1; \
+		@MATH_CMD="$$MATH" $< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)

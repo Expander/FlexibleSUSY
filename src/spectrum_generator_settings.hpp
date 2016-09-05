@@ -53,6 +53,11 @@ public:
       calculate_observables, ///< [15] calculate observables (a_muon, ...)
       force_positive_masses, ///< [16] force positive masses of majoran fermions
       pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
+      eft_pole_mass_scale,   ///< [18] renormalization scale at which the pole masses are calculated in the EFT
+      eft_matching_scale,    ///< [19] renormalization scale at which the EFT is matched to the full model
+      eft_matching_loop_order_up, ///< [20] loop order at which the gauge and Yukawa couplings of the full model are calculated from the EFT ones (upwards matching)
+      eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
+      eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

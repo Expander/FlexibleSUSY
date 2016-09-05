@@ -52,15 +52,86 @@ namespace flexiblesusy {
 
 namespace standard_model_info {
 
-const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
-   "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+   const double normalization_g1 = 0.7745966692414834;
+   const double normalization_g2 = 1;
+   const double normalization_g3 = 1;
 
-const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
-   "Lambdax", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)", "Yu(1,1)", "Yu(1,2)",
-   "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)", "Yd(0,2)", "Yd(1,0)"
-   , "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)", "Ye(0,0)",
-   "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)", "Ye(2,0)", "Ye(2,1)",
-   "Ye(2,2)", "mu2", "v"};
+   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
+      , 1, 1, 3, 3, 3, 1};
+
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
+      "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g", "H^+",
+      "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
+
+   const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
+      "Lambdax", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)", "Yu(1,1)", "Yu(1,2)",
+      "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)", "Yd(0,2)", "Yd(1,0)"
+      , "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)", "Ye(0,0)",
+      "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)", "Ye(2,0)", "Ye(2,1)",
+      "Ye(2,2)", "mu2", "v"};
+
+   const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {   "Re(Vd(0,0))",
+      "Im(Vd(0,0))", "Re(Vd(0,1))", "Im(Vd(0,1))", "Re(Vd(0,2))", "Im(Vd(0,2))",
+      "Re(Vd(1,0))", "Im(Vd(1,0))", "Re(Vd(1,1))", "Im(Vd(1,1))", "Re(Vd(1,2))",
+      "Im(Vd(1,2))", "Re(Vd(2,0))", "Im(Vd(2,0))", "Re(Vd(2,1))", "Im(Vd(2,1))",
+      "Re(Vd(2,2))", "Im(Vd(2,2))", "Re(Ud(0,0))", "Im(Ud(0,0))", "Re(Ud(0,1))",
+      "Im(Ud(0,1))", "Re(Ud(0,2))", "Im(Ud(0,2))", "Re(Ud(1,0))", "Im(Ud(1,0))",
+      "Re(Ud(1,1))", "Im(Ud(1,1))", "Re(Ud(1,2))", "Im(Ud(1,2))", "Re(Ud(2,0))",
+      "Im(Ud(2,0))", "Re(Ud(2,1))", "Im(Ud(2,1))", "Re(Ud(2,2))", "Im(Ud(2,2))",
+      "Re(Vu(0,0))", "Im(Vu(0,0))", "Re(Vu(0,1))", "Im(Vu(0,1))", "Re(Vu(0,2))",
+      "Im(Vu(0,2))", "Re(Vu(1,0))", "Im(Vu(1,0))", "Re(Vu(1,1))", "Im(Vu(1,1))",
+      "Re(Vu(1,2))", "Im(Vu(1,2))", "Re(Vu(2,0))", "Im(Vu(2,0))", "Re(Vu(2,1))",
+      "Im(Vu(2,1))", "Re(Vu(2,2))", "Im(Vu(2,2))", "Re(Uu(0,0))", "Im(Uu(0,0))",
+      "Re(Uu(0,1))", "Im(Uu(0,1))", "Re(Uu(0,2))", "Im(Uu(0,2))", "Re(Uu(1,0))",
+      "Im(Uu(1,0))", "Re(Uu(1,1))", "Im(Uu(1,1))", "Re(Uu(1,2))", "Im(Uu(1,2))",
+      "Re(Uu(2,0))", "Im(Uu(2,0))", "Re(Uu(2,1))", "Im(Uu(2,1))", "Re(Uu(2,2))",
+      "Im(Uu(2,2))", "Re(Ve(0,0))", "Im(Ve(0,0))", "Re(Ve(0,1))", "Im(Ve(0,1))",
+      "Re(Ve(0,2))", "Im(Ve(0,2))", "Re(Ve(1,0))", "Im(Ve(1,0))", "Re(Ve(1,1))",
+      "Im(Ve(1,1))", "Re(Ve(1,2))", "Im(Ve(1,2))", "Re(Ve(2,0))", "Im(Ve(2,0))",
+      "Re(Ve(2,1))", "Im(Ve(2,1))", "Re(Ve(2,2))", "Im(Ve(2,2))", "Re(Ue(0,0))",
+      "Im(Ue(0,0))", "Re(Ue(0,1))", "Im(Ue(0,1))", "Re(Ue(0,2))", "Im(Ue(0,2))",
+      "Re(Ue(1,0))", "Im(Ue(1,0))", "Re(Ue(1,1))", "Im(Ue(1,1))", "Re(Ue(1,2))",
+      "Im(Ue(1,2))", "Re(Ue(2,0))", "Im(Ue(2,0))", "Re(Ue(2,1))", "Im(Ue(2,1))",
+      "Re(Ue(2,2))", "Im(Ue(2,2))"};
+
+   const char* model_name = "Standard_model";
+   const bool is_low_energy_model = false;
+   const bool is_supersymmetric_model = false;
+
+void print(std::ostream& ostr)
+{
+   ostr
+      << "Model information\n"
+      << "=================\n"
+      << "Model name:                " << model_name << '\n'
+      << "Is a low-energy model:     "
+      << (is_low_energy_model ? "yes" : "no") << '\n'
+      << "Is a supersymmetric model: "
+      << (is_supersymmetric_model ? "yes" : "no") << '\n'
+      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
+      ;
+
+   ostr << "\n"
+      "Multiplets:                ";
+   for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+      ostr << particle_names[i]
+           << '[' << particle_multiplicities[i] << ']';
+      if (i + 1 < NUMBER_OF_PARTICLES)
+         ostr << ", ";
+   }
+
+   ostr << "\n\n"
+      "Parameters:                ";
+   for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
+      ostr << parameter_names[i];
+      if (i + 1 < NUMBER_OF_PARAMETERS)
+         ostr << ", ";
+   }
+   ostr << '\n';
+}
 
 } // namespace standard_model_info
 
@@ -677,7 +748,7 @@ void Standard_model::calculate_pole_masses()
    fut_MFe.get();
    fut_MVWp.get();
 #else
-   
+
    calculate_MVG_pole();
    calculate_MFv_pole();
    calculate_Mhh_pole();
@@ -1067,7 +1138,6 @@ void Standard_model::calculate_Ye_DRbar()
    }
 
    Ye = ((1.4142135623730951*downLeptonsDRbar)/v).transpose();
-
 }
 
 void Standard_model::calculate_Lambdax_DRbar()
