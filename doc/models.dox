@@ -79,7 +79,7 @@ __Pole masses__
 
 The Standard Model pole mass spectrum is calculated at the 1-loop
 level.  Depending on the given input flags, 2-loop corrections
-\f$O(\alpha_t\alpha_s + \alpha_t^2)\f$ of [arxiv:1205.6497, Eq. (20)]
-are included.
+\f$O(\alpha_t\alpha_s)\f$ [arxiv:1205.6497, Eq.(20)] and
+\f$O(\alpha_t^2)\f$ [arxiv:1504.05200, Eq.(20)] are included.
 
 */
