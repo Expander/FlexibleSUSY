@@ -124,7 +124,7 @@ SUSYScaleInput = {
     {ml2, UNITMATRIX[3] Ms^2},
     {me2, UNITMATRIX[3] Ms^2},
     {\[Mu], Ms},
-    {B[\[Mu]], Sqr[Ms]/(TanBeta + 1/TanBeta)},
+    {B[\[Mu]], Ms^2/(TanBeta + 1/TanBeta)},
     {T[Yu], Ms/TanBeta Yu},
     {T[Yd], Ms TanBeta Yd},
     {T[Ye], Ms TanBeta Ye},
