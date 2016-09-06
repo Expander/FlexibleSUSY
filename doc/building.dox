@@ -72,7 +72,9 @@ created.
 
 \section running_the_sg Running the spectrum generator
 
-To run the spectrum generator execute
+\subsection running_the_sg_cmd_line Running the spectrum generator from the command line
+
+To run the spectrum generator at the command line, execute
 
     ./models/<model>/run_<model>.x --slha-input-file=<slha-input-file>
 
@@ -105,6 +107,10 @@ The output can also be written to an SQLite database using the
 
     ./models/NMSSM/run_NMSSM.x --slha-input-file=model_files/NMSSM/LesHouches.in.NMSSM --slha-output-file= --database-output-file=point.db
 
+\subsection running_the_sg_mathematica Running the spectrum generator from inside Mathematica
+
+Since version 1.7.0, FlexibleSUSY provides a Mathematica interface.
+Please see \ref librarylink for more details and examples.
 
 \section no_compilation Creating only the source code files -- no compilation
 
