@@ -960,27 +960,6 @@ Example:
 FSRGELoopOrder = 2; (* generate two-loop RGEs using SARAH *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-### Three-loop RGEs for specific models ###
-
-#### Standard Model ####
-
-In the Standard Model the known three-loop RGEs from [arxiv:1303.4364,
-arXiv:1307.3536] can be used by setting in the model file
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseSM3LoopRGEs = True; (* use three-loop SM RGEs *)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#### MSSM ####
-
-In the MSSM the known three-loop RGEs from [arxiv:hep-ph/0308231,
-http://www.liv.ac.uk/~dij/betas/allgennb.log] can be used by setting
-in the model file
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 \section pole_masses Pole masses
 
 In order to tune the spectrum generator for speed, the precision of
@@ -1185,5 +1164,26 @@ UseYukawa3LoopQCD = True;
 Note, that these 3-loop corrections are only applied at run-time if
 the threshold correction loop order (block `FlexibleSUSY[7]`) is set
 to a value > 2.
+
+### Three-loop RGEs for specific models ###
+
+#### Standard Model ####
+
+In the Standard Model the known three-loop RGEs from [arxiv:1303.4364,
+arXiv:1307.3536] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseSM3LoopRGEs = True; (* use three-loop SM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### MSSM ####
+
+In the MSSM the known three-loop RGEs from [arxiv:hep-ph/0308231,
+http://www.liv.ac.uk/~dij/betas/allgennb.log] can be used by setting
+in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 */
