@@ -30,6 +30,15 @@ Flexiblesusy-1.7.0 [not released yet]
  * Bugfix (commit 3126ac1): Catch NaNs from inside the MSSM 2L Higgs
    mass routines of Pietro Slavich.
 
+ * Bugfix (commit b6db614): Correcting 2-loop self energy O(alpha_t^2)
+   in the Standard Model.  Before, Eq. (20) of arxiv:1205.6497 has
+   been used.  However, this is incorrect, because it includes 2-loop
+   contributions from the momentum iteration of the 1-loop self
+   energy, which would be double counted, because FlexibleSUSY already
+   does a momentum iteration of the 1-loop self energy.  To fix this,
+   Eq. (20) of arxiv:1504.05200 has been used, which does not include
+   these 2-loop pieces.
+
 Flexiblesusy-1.6.1 [August, 28 2016]
 
  * Bugfix (commit db67c81): Fix compilation with --disable-threads .
