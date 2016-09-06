@@ -85,8 +85,11 @@ boundary_conditions for the precise definition.
 
 \section eft_example MSSM example for FlexibleEFTHiggs
 
-A complete example for the MSSM can be found in
-`model_files/MSSMtower/FlexibleSUSY.m.in`
+An example for the general MSSM can be found in
+`model_files/MSSMtower/FlexibleSUSY.m.in`.  Below, we show a
+simplified FlexibleEFTHiggs/MSSM spectrum generator, which takes only
+three input parameters: The SUSY scale \f$M_\text{S}\f$, the stop
+mixing parameter \f$X_t\f$, and \f$\tan\beta\f$:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 FSModelName = "@CLASSNAME@";
