@@ -9,11 +9,11 @@ DOC_TMPL     := \
 		$(DIR)/addons.dox \
 		$(DIR)/building.dox \
 		$(DIR)/documentation.dox \
+		$(DIR)/hssusy.dox \
 		$(DIR)/install.dox \
 		$(DIR)/librarylink.dox \
 		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.dox \
-		$(DIR)/models.dox \
 		$(DIR)/package.dox \
 		$(DIR)/slha_input.dox \
 		$(DIR)/utilities.dox \

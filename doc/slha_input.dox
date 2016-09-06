@@ -38,7 +38,7 @@ Block FlexibleSUSY
 __Description__:
 
 The `FlexibleSUSY` block contains fields to configure the spectrum
-calculation.  For example, in the `FlexibleSUSY` block the
+calculation at run-time.  For example, in the `FlexibleSUSY` block the
 renormalization group running precsision, the beta function loop order
 or the loop order of the pole mass calculation can be selected.
 
