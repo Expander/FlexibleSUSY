@@ -2086,6 +2086,7 @@ enable_defines() {
         logmsg "Enabling LibraryLink"
         logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
     else
+        enable_librarylink=no
         DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
         message "Disabling LibraryLink"
         logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
@@ -2134,6 +2135,7 @@ enable_defines() {
         logmsg "Enabling sqlite"
         logmsg "   ${DEFINE_ENABLE_SQLITE}"
     else
+        enable_sqlite=no
         DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
         message "Disabling sqlite"
         logmsg "   ${DEFINE_ENABLE_SQLITE}"
@@ -2154,6 +2156,7 @@ enable_defines() {
         message "Enabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     else
+        enable_tsil=no
         DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
         message "Disabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
