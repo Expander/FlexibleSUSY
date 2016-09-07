@@ -18,7 +18,7 @@ settings = {
     higgs2loopCorrectionAtAt -> 1,
     higgs2loopCorrectionAtauAtau -> 1,
     forceOutput -> 0,
-    top2loopCorrectionsQCD -> 1,
+    topPoleQCDCorrections -> 1,
     betaZeroThreshold -> 1.*10^-11,
     forcePositiveMasses -> 0,
     poleMassScale -> 0.,
