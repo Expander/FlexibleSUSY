@@ -129,7 +129,7 @@ enable_silent="no"
 enable_sqlite="automatic"
 enable_shared_libs="no"
 enable_static="no"
-enable_threads="yes"
+enable_threads="automatic"
 enable_tsil="automatic"
 enable_verbose="no"
 
@@ -1202,11 +1202,12 @@ check_boost_thread_incl() {
 #_____________________________________________________________________
 check_std_threads() {
     # check for C++ std::thread and std::mutex
-    if test "x${enable_threads}" = "xyes" ; then
+    if test "x${enable_threads}" = "xyes" -o  "x${enable_threads}" = "xautomatic" ; then
         checking_msg "std::thread"
         if try_compile_cpp_program "#include <thread>
 #include <mutex>" "std::mutex mtx; std::thread thr;";
         then
+            enable_threads="yes"
             result "ok"
         else
             result "not available"
@@ -1295,7 +1296,7 @@ check_icpc_features() {
 
     # disable multi-threading for versions < 14.0.0
     if ! major_minor_patch_at_least $major $minor $patch "14" "0" "0" &&
-       [ "$enable_threads" = "yes" ]; then
+       [ "$enable_threads" = "yes" -o "$enable_threads" = "automatic" ]; then
 	message ""
 	message "   Warning: multi-threading support requires $compiler 14.0.0 or newer."
 	enable_threads="no"
@@ -2146,6 +2147,7 @@ enable_defines() {
         logmsg "Enabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
     else
+        enable_threads=no
         DEFINE_ENABLE_THREADS="#undef ENABLE_THREADS"
         message "Disabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
