@@ -2463,23 +2463,22 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for initial guesser ..."];
-           initialGuesserInputFile = "initial_guesser";
+           initialGuesserInputFile = "two_scale_initial_guesser";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
-              initialGuesserInputFile = "initial_guesser_low_scale_model";
+              initialGuesserInputFile = initialGuesserInputFile <> "_low_scale_model";
+             ];
+           If[FlexibleSUSY`FlexibleEFTHiggs === True,
+              initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
              ];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
                                     FlexibleSUSY`InitialGuessAtSUSYScale,
                                     FlexibleSUSY`InitialGuessAtHighScale,
                                     {{FileNameJoin[{$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_initial_guesser.cpp"}]}
+                                     {FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}
                                     }
                                    ];
 
