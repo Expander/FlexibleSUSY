@@ -286,9 +286,9 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
-ifeq ($(WITH_CMSSMMuBMutower) $(WITH_CMSSMMuBMu),yes yes)
+ifeq ($(WITH_NUHMSSMalttower) $(WITH_NUHMSSMalt),yes yes)
 TEST_SH += \
-		$(DIR)/test_CMSSMMuBMutower.sh
+		$(DIR)/test_NUHMSSMalttower.sh
 endif
 
 ifeq ($(WITH_HSSUSY) $(WITH_MSSMtower) $(WITH_MSSMMuBMu),yes yes yes)
