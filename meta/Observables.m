@@ -14,6 +14,8 @@ CreateObservablesInitialization::usage="";
 CreateSetAndDisplayObservablesFunctions::usage="";
 CreateClearObservablesFunction::usage="";
 CalculateObservables::usage="";
+GetObservableName::usage="returns name of observable in Observables struct";
+GetObservableType::usage="returns type of observable";
 
 Begin["`Private`"];
 

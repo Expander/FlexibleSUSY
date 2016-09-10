@@ -13,7 +13,7 @@ LIBTEST_OBJ := \
 LIBTEST_DEP := \
 		$(LIBTEST_OBJ:.o=.d)
 
-LIBTEST     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBTEST     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 TEST_SRC := \
 		$(DIR)/test_ckm.cpp \
@@ -286,10 +286,42 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
+ifeq ($(WITH_CMSSMMuBMutower) $(WITH_CMSSMMuBMu),yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMMuBMutower.sh
+endif
+
+ifeq ($(WITH_HSSUSY) $(WITH_MSSMtower) $(WITH_MSSMMuBMu),yes yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower.sh
+endif
+
+ifeq ($(WITH_MSSMtower),yes)
+TEST_SH += \
+		$(DIR)/test_MSSMtower_librarylink.sh
+endif
+
+ifeq ($(WITH_MSSMtower) $(WITH_MSSMNoFVtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_MSSMNoFVtower.sh
+endif
+
+ifeq ($(WITH_NMSSMtower) $(WITH_lowNMSSM),yes yes)
+TEST_SH += \
+		$(DIR)/test_NMSSMtower.sh
+endif
+
+ifeq ($(WITH_SMHighPrecision) $(WITH_SMtower),yes yes)
+TEST_SH += \
+		$(DIR)/test_SMtower.sh
+endif
+
 ifeq ($(WITH_THDMIIMSSMBC) $(WITH_THDMIIMSSMBCApprox) $(WITH_HGTHDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBCApprox),yes yes yes yes)
+
 TEST_SH += \
 		$(DIR)/test_THDMIIMSSMBCFull_approximation.sh
 endif
+
 
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
@@ -325,7 +357,9 @@ endif
 
 ifeq ($(WITH_CMSSM),yes)
 TEST_META += \
-		$(DIR)/test_CMSSM_3loop_beta.m
+		$(DIR)/test_CMSSM_3loop_beta.m \
+		$(DIR)/test_CMSSM_librarylink.m \
+		$(DIR)/test_CMSSM_librarylink_parallel.m
 endif
 
 TEST_OBJ := \
@@ -427,7 +461,7 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< >> $@ 2>&1; \
+		@MATH_CMD="$$MATH" $< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
@@ -660,12 +694,12 @@ $(DIR)/test_%.x: $(DIR)/test_%.o
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
 
-ifeq ($(ENABLE_STATIC_LIBS),yes)
+ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 else
 $(LIBTEST): $(LIBTEST_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 
 ALLDEP += $(LIBTEST_DEP) $(TEST_DEP)

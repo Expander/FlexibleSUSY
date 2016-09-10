@@ -1412,84 +1412,9 @@ double DoubleVector::compare(const DoubleVector & a) const {
   return sumTol.max();
 }
 
-/// indx records the row permutation undergone. 
-/// d=+1 or -1 depending on whether the permutation is even or odd. 
-DoubleMatrix DoubleMatrix::ludcmp(double & d) const {
-#ifdef ARRAY_BOUNDS_CHECKING
-  if (displayCols() != displayRows()) 
-    throw flexiblesusy::OutOfBoundsError("In DoubleMatrix::ludcmp. Not a square matrix");
-#endif
-  vector<int> indx; 
-
-  DoubleMatrix a(*this);
-  int n = displayCols();
-  const double tiny = 1.e-20;
-  int i,imax,j,k;
-  float big,dum,sum,temp;
-  DoubleVector vv(n);
-  
-  d = 1.0;
-  for (i=1;i<=n;i++) {
-    big = 0.0;
-    for (j=1;j<=n;j++)
-      if ((temp = fabs(a.elmt(i, j))) > big) big = temp;
-    if (big == 0.0) throw flexiblesusy::DiagonalizationError("Singular matrix in routine ludcmp");
-    vv(i) = 1.0/big;
-  }
-
-  for (j=1;j<=n;j++) {
-    for (i=1;i<j;i++) {
-      sum = a.elmt(i, j);
-      for (k=1;k<i;k++) sum -= a.elmt(i, k) * a.elmt(k, j);
-      a.elmt(i, j) = sum;
-    }
-
-    big = 0.0;
-    for (i=j;i<=n;i++) {
-      sum = a.elmt(i, j);
-      for (k=1;k<j;k++)
-	sum -= a.elmt(i, k) * a.elmt(k, j);
-      a.elmt(i, j) = sum;
-      if ( (dum=vv(i) * fabs(sum)) >= big) {
-	big = dum;
-	imax = i;
-      }
-    }
-
-    if (j != imax) {
-      for (k=1;k<=n;k++) {
-	dum = a.elmt(imax, k);
-	a.elmt(imax, k) = a.elmt(j, k);
-	a.elmt(j, k) = dum;
-      }
-      d = -d;
-      vv(imax) = vv(j);
-    }
-    indx.push_back(imax);
-
-    if (a.elmt(j, j) == 0.0) a.elmt(j, j) = tiny;
-
-    if (j != n) {
-      dum = 1.0 / (a.elmt(j, j));
-      for (i=j+1;i<=n;i++) a.elmt(i, j) *= dum;
-    }
-  }
-
-  return a;
-}
-
 void DoubleMatrix::fillArray(double* array, unsigned offset) const
 {
    softsusy::fillArray(x, array, offset);
-}
-
-double DoubleMatrix::determinant() const {
-  double ans = 1.;
-  DoubleMatrix lu(ludcmp(ans));
-
-  for (int i=1; i<=displayRows(); i++)
-    ans *= lu.elmt(i, i);
-  return ans;
 }
 
 double DoubleVector::norm() const {

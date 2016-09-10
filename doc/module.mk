@@ -6,8 +6,17 @@ DOC_MK       := \
 
 DOC_TMPL     := \
 		$(DIR)/mainpage.dox.in \
+		$(DIR)/addons.dox \
+		$(DIR)/building.dox \
+		$(DIR)/documentation.dox \
+		$(DIR)/hssusy.dox \
+		$(DIR)/install.dox \
+		$(DIR)/librarylink.dox \
+		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.dox \
+		$(DIR)/package.dox \
 		$(DIR)/slha_input.dox \
+		$(DIR)/utilities.dox \
 		$(DIR)/version.tex.in
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
@@ -18,6 +27,7 @@ DOC_VERSION_TEX := \
 HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
+IMAGE_DIR       := $(DIR)/images
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
@@ -101,6 +111,7 @@ $(INDEX_PAGE):
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \
 		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
 		) | doxygen -
 
 $(MAN_PAGE):

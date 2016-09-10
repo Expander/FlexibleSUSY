@@ -96,10 +96,12 @@ options="                    \
    enable_debug              \
    enable_mass_error_check   \
    enable_fflite             \
+   enable_librarylink        \
    enable_looptools          \
    enable_silent             \
-   enable_static_libs        \
+   enable_shared_libs        \
    enable_sqlite             \
+   enable_static             \
    enable_threads            \
    enable_tsil               \
    enable_verbose            \
@@ -117,6 +119,7 @@ enable_colors="no"
 enable_debug=""
 enable_mass_error_check="no"
 enable_fflite="no"
+enable_librarylink="automatic"
 enable_looptools="no"
 enable_meta="no"
 # BEGIN: NOT EXPORTED ##########################################
@@ -124,8 +127,9 @@ enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
 enable_silent="no"
 enable_sqlite="automatic"
-enable_static_libs="yes"
-enable_threads="yes"
+enable_shared_libs="no"
+enable_static="no"
+enable_threads="automatic"
 enable_tsil="automatic"
 enable_verbose="no"
 
@@ -134,6 +138,7 @@ DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
 DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
+DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
@@ -154,16 +159,13 @@ looptools_lib_dir=""
 looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-std=c++11 -O2"
+CXXFLAGS="-std=c++11 -O2 -fPIC"
 CFLAGS="-O2"
-FFLAGS="-O2"
+FFLAGS="-O2 -fPIC"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
-LDFLAGS=""
-LDLIBS=""
-LIBEXT=".a"
 CXX="g++"
 CC="gcc"
 EIGENFLAGS=""
@@ -172,10 +174,23 @@ GSLLIBS=""
 INSTALL_DIR=""
 BLASLIBS=""
 LAPACKLIBS=""
-MAKELIB="ar cru"
 MATH="math"
 OPTIONAL_MODULES=""
 pthread_lib_dir=""
+STATIC_LIB_EXT=".a"
+STATIC_LIB_CMD="ar cru"
+STATIC_LDFLAGS="-static"
+STATIC_LDLIBS="-ldl"
+SHARED_LIB_EXT=".so"
+SHARED_LIB_CMD="$CC -shared -o"
+SHARED_LDFLAGS=""
+SHARED_LDLIBS=""
+MODULE_LIBEXT="$STATIC_LIB_EXT"
+MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
+LIBLNK_LIBEXT="$SHARED_LIB_EXT"
+LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
+LDFLAGS="$SHARED_LDFLAGS"
+LDLIBS="$SHARED_LDLIBS"
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -184,7 +199,10 @@ tsil_inc_dir=""
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
+MODELS="all"
+# BEGIN: NOT EXPORTED ##########################################
 MODELS=""
+# END:   NOT EXPORTED ##########################################
 # addons that will be compiled
 ADDONS=""
 
@@ -873,8 +891,9 @@ check_algorithms() {
 
 #_____________________________________________________________________
 check_models() {
-    if test -z "${MODELS}"; then
+    if test -z "${MODELS}" -o ! -d "$BASEDIR"/models ; then
         logmsg "No models specified"
+        MODELS=""
         return 0
     fi
 
@@ -980,6 +999,22 @@ check_addons() {
 
     result "ok (${addon_names})"
     logmsg "   Addons: ${ADDONS}"
+}
+
+#_____________________________________________________________________
+check_librarylink() {
+    if [ "x$enable_librarylink" = "xautomatic" ] ; then
+        checking_msg "LibraryLink"
+        # building LibraryLink needs Mathematica headers
+        exists_in_path "$MATH"
+        if [ -n "$cmd" ] ; then
+            result "yes"
+            enable_librarylink=yes
+        else
+            result "no"
+            enable_librarylink=no
+        fi
+    fi
 }
 
 #_____________________________________________________________________
@@ -1167,11 +1202,12 @@ check_boost_thread_incl() {
 #_____________________________________________________________________
 check_std_threads() {
     # check for C++ std::thread and std::mutex
-    if test "x${enable_threads}" = "xyes" ; then
+    if test "x${enable_threads}" = "xyes" -o  "x${enable_threads}" = "xautomatic" ; then
         checking_msg "std::thread"
         if try_compile_cpp_program "#include <thread>
 #include <mutex>" "std::mutex mtx; std::thread thr;";
         then
+            enable_threads="yes"
             result "ok"
         else
             result "not available"
@@ -1260,7 +1296,7 @@ check_icpc_features() {
 
     # disable multi-threading for versions < 14.0.0
     if ! major_minor_patch_at_least $major $minor $patch "14" "0" "0" &&
-       [ "$enable_threads" = "yes" ]; then
+       [ "$enable_threads" = "yes" -o "$enable_threads" = "automatic" ]; then
 	message ""
 	message "   Warning: multi-threading support requires $compiler 14.0.0 or newer."
 	enable_threads="no"
@@ -1434,7 +1470,7 @@ check_cxxflags() {
         fi
     fi
 
-    if test "x$enable_static_libs" = "xno" ; then
+    if [ "x$enable_shared_libs" = "xyes" -o "x$enable_librarylink" = "xyes" ] ; then
         # check if -fPIC is in CXXFLAGS
         case "${CXX}" in
             g++*|clang++*|icpc*)
@@ -1542,8 +1578,8 @@ check_fflags() {
             ;;
     esac
 
-    if test "x$enable_static_libs" = "xno" ; then
-        # check if -fPIC is in FFLAGS
+    # check if -fPIC is in FFLAGS
+    if [ "x$enable_shared_libs" = "xyes" -o "x$enable_librarylink" = "xyes" ] ; then
         case "${FC}" in
             gfortran*|ifort*)
                 if contains_not "${FFLAGS}" "-fPIC" ; then
@@ -1575,6 +1611,33 @@ check_fortran_libs() {
         ifort)
             FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
     esac
+}
+
+#_____________________________________________________________________
+check_linking() {
+    if [ "x$enable_static" = xyes ] ; then
+        # static linking requires static libraries
+        [ "x$enable_shared_libs" = xyes ] && \
+            message "Note: Static libraries will be created, because they are needed for static linking (--enable-static)."
+        enable_shared_libs=no
+        LDFLAGS="$STATIC_LDFLAGS"
+        LDLIBS="$STATIC_LDLIBS"
+    else
+        LDFLAGS="$SHARED_LDFLAGS"
+        LDLIBS="$SHARED_LDLIBS"
+    fi
+
+    if [ "x$enable_shared_libs" = xyes ] ; then
+        MODULE_LIBEXT="$SHARED_LIB_EXT"
+        MODULE_MAKE_LIB_CMD="$SHARED_LIB_CMD"
+    else
+        MODULE_LIBEXT="$STATIC_LIB_EXT"
+        MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
+    fi
+
+    # LibraryLink lib must always be shared
+    LIBLNK_LIBEXT="$SHARED_LIB_EXT"
+    LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
 }
 
 #_____________________________________________________________________
@@ -1758,6 +1821,7 @@ find_symbol_using_pkgconfig() {
     local pkg
     local ldpaths
     local libnames
+    local pkg_flags=$([ "x$enable_static" = xyes ] && echo "--static")
     pkg="$1"
     linker_flags=""
     type pkg-config > /dev/null 2>&1 || {
@@ -1768,15 +1832,15 @@ find_symbol_using_pkgconfig() {
 	logmsg "pkg-config does not manage $pkg"
 	return 1
     }
-    ldpaths=$(pkg-config --libs-only-L "$pkg")
-    libnames=$(pkg-config --libs-only-l "$pkg")
+    ldpaths=$(pkg-config ${pkg_flags} --libs-only-L "$pkg")
+    libnames=$(pkg-config ${pkg_flags} --libs-only-l "$pkg")
     shift
     for symbol; do
 	for dopt in $default_lib_paths $ldpaths; do
 	    for lopt in $libnames; do
 		if check_symbol "$symbol" "$lopt" "$dopt"; then
 		    logmsg "found $symbol in $dopt $lopt"
-		    linker_flags=$(pkg-config --libs "$pkg")
+		    linker_flags=$(pkg-config ${pkg_flags} --libs "$pkg")
 		    continue 3
 		fi
 	    done
@@ -1811,26 +1875,33 @@ check_lapack_libs() {
 }
 
 #_____________________________________________________________________
-check_makelib() {
-    checking_msg "build library command $MAKELIB"
+check_static_lib_cmd() {
+    checking_msg "build static library command $STATIC_LIB_CMD"
     # strip arguments from the actual command
-    makelib_cmd=$(echo "$MAKELIB" | awk '{ print $1; }')
-
-    # check if $makelib_cmd can create shared libraries
-    if test "x$enable_static_libs" = "xno" ; then
-        if test "x$makelib_cmd" = "xar" ; then
-            message ""
-            message "   Error: $makelib_cmd cannot be used to create shared libraries!"
-            message "   Please use --with-make-lib-cmd=\"gcc -shared -o\" or something similar."
-            exit 1
-        fi
-    fi
+    makelib_cmd=$(echo "$STATIC_LIB_CMD" | awk '{ print $1; }')
 
     exists_in_path "$makelib_cmd"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Error: A program which builds libraries must be installed!"
-        message "   Use --with-make-lib-cmd= to specify the library creator program to be used."
+        message "Error: A program which builds static libraries must be installed!"
+        message "   Use --with-static-lib-cmd= to specify the program to be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_shared_lib_cmd() {
+    checking_msg "build shared library command $SHARED_LIB_CMD"
+    # strip arguments from the actual command
+    makelib_cmd=$(echo "$SHARED_LIB_CMD" | awk '{ print $1; }')
+
+    exists_in_path "$makelib_cmd"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A program which builds shared libraries must be installed!"
+        message "   Use --with-shared-lib-cmd= to specify the program to be used."
         exit 1
     else
         result "found $cmd"
@@ -2011,6 +2082,17 @@ enable_defines() {
     fi
     logmsg "   ${DEFINE_ENABLE_FFLITE}"
 
+    if test "x$enable_librarylink" = "xyes" ; then
+        DEFINE_ENABLE_LIBRARYLINK="#define ENABLE_LIBRARYLINK 1"
+        logmsg "Enabling LibraryLink"
+        logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
+    else
+        enable_librarylink=no
+        DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
+        message "Disabling LibraryLink"
+        logmsg "   ${DEFINE_ENABLE_LIBRARYLINK}"
+    fi
+
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
         message "Enabling usage of LoopTools"
@@ -2036,15 +2118,6 @@ enable_defines() {
         logmsg "   ${DEFINE_ENABLE_SILENT}"
     fi
 
-    if test "x$enable_static_libs" = "xno" ; then
-        # check the library extension
-        if test "x$LIBEXT" = "x.a" ; then
-            message "  Warning: library extension $LIBEXT is reserved for static libraries."
-            message "    Please consider using .so as library extension, or similar, e.g."
-            message "    --with-lib-ext=\".so\""
-        fi
-    fi
-
     if test "x$enable_verbose" = "xyes" ; then
         if test "x$enable_silent" = "xyes" ; then
             message "Warning: ignoring --enable-verbose because silent mode is enabled!"
@@ -2063,6 +2136,7 @@ enable_defines() {
         logmsg "Enabling sqlite"
         logmsg "   ${DEFINE_ENABLE_SQLITE}"
     else
+        enable_sqlite=no
         DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
         message "Disabling sqlite"
         logmsg "   ${DEFINE_ENABLE_SQLITE}"
@@ -2073,6 +2147,7 @@ enable_defines() {
         logmsg "Enabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
     else
+        enable_threads=no
         DEFINE_ENABLE_THREADS="#undef ENABLE_THREADS"
         message "Disabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
@@ -2083,6 +2158,7 @@ enable_defines() {
         message "Enabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     else
+        enable_tsil=no
         DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
         message "Disabling TSIL"
         logmsg "   ${DEFINE_ENABLE_TSIL}"
@@ -2130,6 +2206,7 @@ replace_markers() {
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
+	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
@@ -2148,10 +2225,13 @@ replace_markers() {
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
-	-e "s|@MAKELIB@|$MAKELIB|"         \
-	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
+	-e "s|@ENABLE_SHARED_LIBS@|$enable_shared_libs|" \
+	-e "s|@ENABLE_STATIC@|$enable_static|"           \
 	-e "s|@MATH@|$MATH|"               \
-	-e "s|@LIBEXT@|$LIBEXT|"
+	-e "s|@MODULE_LIBEXT@|$MODULE_LIBEXT|"  \
+	-e "s|@MODULE_MAKE_LIB_CMD@|$MODULE_MAKE_LIB_CMD|" \
+	-e "s|@LIBLNK_LIBEXT@|$LIBLNK_LIBEXT|"  \
+	-e "s|@LIBLNK_MAKE_LIB_CMD@|$LIBLNK_MAKE_LIB_CMD|"
 }
 
 #_____________________________________________________________________
@@ -2171,6 +2251,7 @@ enable/disable options, prefix with either --enable- or --disable-
   debug             Debug messages and assertions (no default)
   mass-error-check  Check mass eigenvalue precision (default: $enable_mass_error_check)
   fflite            Use fflite to compute the loop functions (default: $enable_fflite)
+  librarylink       Build LibraryLink library for Mathematica interface (default: $enable_librarylink)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
@@ -2181,7 +2262,8 @@ EOF
 cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
-  static-libs       Create static libraries (default: $enable_static_libs)
+  shared-libs       Create shared libraries (default: $enable_shared_libs)
+  static            Create statically linked executables (default: $enable_static)
   threads           Enable multi-threading (default: $enable_threads)
   tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
@@ -2208,12 +2290,8 @@ Package directories, compilation settings and model selection
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
-  --with-ldflags=           Linker flags (default: $LDFLAGS)
-  --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
-  --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
-  --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2227,8 +2305,16 @@ cat <<EOF
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
   --with-pthread-libdir=    Path to search for pthread library
+  --with-shared-ldflags=    Linker flags for shared library linking (default: $SHARED_LDFLAGS)
+  --with-shared-ldlibs=     Additional libraries to be linked during shared library linking (default: $SHARED_LDLIBS)
+  --with-shared-lib-cmd=    Command to make shared library (default: $SHARED_LIB_CMD)
+  --with-shared-lib-ext=    File extension for shared library (default: $SHARED_LIB_EXT)
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
+  --with-static-ldflags=    Linker flags for static linking (default: $STATIC_LDFLAGS)
+  --with-static-ldlibs=     Additional libraries to be linked during static linking (default: $STATIC_LDLIBS)
+  --with-static-lib-cmd=    Command to make static library (default: $STATIC_LIB_CMD)
+  --with-static-lib-ext=    File extension for static library (default: $STATIC_LIB_EXT)
   --with-tsil-libdir=       Path to search for TSIL library
   --with-tsil-incdir=       Path to search for TSIL header
 EOF
@@ -2317,18 +2403,22 @@ if test $# -gt 0 ; then
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
-            --with-ldflags=*)        LDFLAGS=$optarg ;;
-            --with-ldlibs=*)         LDLIBS=$optarg ;;
-            --with-lib-ext=*)        LIBEXT=$optarg ;;
+            --with-static-ldflags=*) STATIC_LDFLAGS=$optarg ;;
+            --with-static-ldlibs=*)  STATIC_LDLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
-            --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
+            --with-shared-ldflags=*) SHARED_LDFLAGS=$optarg ;;
+            --with-shared-ldlibs=*)  SHARED_LDLIBS=$optarg ;;
+            --with-shared-lib-cmd=*) SHARED_LIB_CMD=$optarg ;;
+            --with-shared-lib-ext=*) SHARED_LIB_EXT=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
+            --with-static-lib-cmd=*) STATIC_LIB_CMD=$optarg ;;
+            --with-static-lib-ext=*) STATIC_LIB_EXT=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
@@ -2348,6 +2438,7 @@ check_install_dir
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
+    check_librarylink
     check_cxx
     check_cxx_compiler_type
     check_cxx_compiler_version
@@ -2356,6 +2447,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_cc
     check_fc
     check_fflags
+    check_linking
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -2376,7 +2468,8 @@ if test "x${enable_compile}" = "xyes"; then
     fi
     check_sqlite
     check_tsil
-    check_makelib
+    check_static_lib_cmd
+    check_shared_lib_cmd
     check_random_number_generator
     check_std_threads
     check_thread_libs
@@ -2434,14 +2527,16 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@LDFLAGS@|$LDFLAGS|"         \
     -e "s|@LDLIBS@|$LDLIBS|"           \
+    -e "s|@LIBLNK_MAKE_LIB_CMD@|$LIBLNK_MAKE_LIB_CMD|" \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@SQLITELIBS@|$SQLITELIBS|"   \
     -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
-    -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
+    -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|" \
+    -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     < $FSCONFIG_TMPL > $FSCONFIG
 
@@ -2481,6 +2576,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
     -e "s|@DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@|$DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
+    -e "s|@DEFINE_ENABLE_LIBRARYLINK@|$DEFINE_ENABLE_LIBRARYLINK|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \

@@ -13,10 +13,12 @@ INSTALL_DIR        := @INSTALL_DIR@
 # Makefile switches
 ENABLE_COMPILE     := @ENABLE_COMPILE@
 ENABLE_FFLITE      := @ENABLE_FFLITE@
+ENABLE_LIBRARYLINK := @ENABLE_LIBRARYLINK@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
-ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_SHARED_LIBS := @ENABLE_SHARED_LIBS@
 ENABLE_SQLITE      := @ENABLE_SQLITE@
+ENABLE_STATIC      := @ENABLE_STATIC@
 ENABLE_THREADS     := @ENABLE_THREADS@
 ENABLE_TSIL        := @ENABLE_TSIL@
 
@@ -52,10 +54,12 @@ CFLAGS             := @CFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 FC                 := @FC@
 FFLAGS             := @FFLAGS@
 FLIBS              := @FLIBS@
-MAKELIB            := @MAKELIB@
+MODULE_LIBEXT      := @MODULE_LIBEXT@
+MODULE_MAKE_LIB_CMD:= @MODULE_MAKE_LIB_CMD@
 LDFLAGS            := @LDFLAGS@
 LDLIBS             := @LDLIBS@
-LIBEXT             := @LIBEXT@
+LIBLNK_LIBEXT      := @LIBLNK_LIBEXT@
+LIBLNK_MAKE_LIB_CMD:= @LIBLNK_MAKE_LIB_CMD@
 BLASLIBS           := @BLASLIBS@
 BOOSTTESTLIBS      := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS    := @BOOSTTHREADLIBS@
@@ -89,6 +93,8 @@ ALLSRC   :=
 ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
+# the modules add LibraryLink libraries to this variable
+ALLLL    :=
 # the modules add test executables to this variable
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
@@ -113,12 +119,19 @@ INSTALL_STRIPPED := config/install_stripped.sh
 # thereby enabling FlexibleSUSY to run on Cygwin
 CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 
-# README file
-README_FILE := README
+# script which finds Mathematica's include paths
+MATH_INC_PATHS := config/mathematica_include_paths.sh
 
-.PHONY:  all allsrc allexec alllib alltest clean clean-dep \
+# package information files
+README_FILE    := README
+AUTHORS_FILE   := AUTHORS
+COPYING_FILE   := COPYING
+ChangeLog_FILE := ChangeLog
+
+.PHONY:  all allsrc allexec alllib allll alltest clean clean-dep \
 	 clean-executables clean-generated clean-lib clean-obj \
-	 depend distclean release-tag release-head showbuild tag
+	 depend distclean librarylink release-tag release-head \
+	 showbuild tag
 
 all:
 ifeq ($(ENABLE_META),yes)
@@ -127,6 +140,9 @@ endif
 ifeq ($(ENABLE_COMPILE),yes)
 all:     alllib allexec
 endif
+ifeq ($(ENABLE_LIBRARYLINK),yes)
+all:     allll
+endif
 
 ifeq ($(INSTALL_DIR),)
 install-src::
@@ -134,8 +150,11 @@ install-src::
 else
 install-src::
 	install -d $(INSTALL_DIR)
-	$(INSTALL_STRIPPED) $(CONFIGURE_SCRIPT) $(INSTALL_DIR)/configure -m u=rwx,g=r,o=r
-	$(INSTALL_STRIPPED) $(README_FILE) $(INSTALL_DIR)/README -m u=rw,g=r,o=r
+	$(INSTALL_STRIPPED) $(CONFIGURE_SCRIPT) $(INSTALL_DIR) -m u=rwx,g=r,o=r
+	$(INSTALL_STRIPPED) $(README_FILE) $(INSTALL_DIR) -m u=rw,g=r,o=r
+	$(INSTALL_STRIPPED) $(AUTHORS_FILE) $(INSTALL_DIR) -m u=rw,g=r,o=r
+	$(INSTALL_STRIPPED) $(COPYING_FILE) $(INSTALL_DIR) -m u=rw,g=r,o=r
+	$(INSTALL_STRIPPED) $(ChangeLog_FILE) $(INSTALL_DIR) -m u=rw,g=r,o=r
 
 ifeq ($(ENABLE_META),yes)
 install-src:: allsrc
@@ -178,6 +197,7 @@ endif
 allsrc:   $(ALLSRC)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
+allll:    $(ALLLL)
 alltest:  $(ALLTST)
 
 clean-dep:
@@ -187,7 +207,7 @@ clean-executables:
 	-rm -f $(ALLEXE)
 
 clean-lib:
-	-rm -f $(ALLLIB)
+	-rm -f $(ALLLIB) $(ALLLL)
 
 depend:  clean-dep
 depend:  $(ALLDEP)
@@ -210,6 +230,9 @@ distclean::
 	-rm -f $(SARAH_DEP_GEN)
 	-rm -f config.boost config.log config.math config.sarah config.status
 
+librarylink: allll
+	@true
+
 showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
 	@echo "VERSION            = $(FLEXIBLESUSY_VERSION)"
@@ -227,10 +250,8 @@ showbuild:
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
-	@echo "MAKELIB            = $(MAKELIB)"
 	@echo "LDFLAGS            = $(LDFLAGS)"
 	@echo "LDLIBS             = $(LDLIBS)"
-	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
@@ -239,8 +260,12 @@ showbuild:
 	@echo "GSLLIBS            = $(GSLLIBS)"
 	@echo "GSLFLAGS           = $(GSLFLAGS)"
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
+	@echo "LIBLNK_MAKE_LIB_CMD= $(LIBLNK_MAKE_LIB_CMD)"
+	@echo "LIBLNK_LIBEXT      = $(LIBLNK_LIBEXT)"
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
+	@echo "MODULE_MAKE_LIB_CMD= $(MODULE_MAKE_LIB_CMD)"
+	@echo "MODULE_LIBEXT      = $(MODULE_LIBEXT)"
 	@echo "SQLITELIBS         = $(SQLITELIBS)"
 	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
@@ -252,11 +277,13 @@ showbuild:
 	@echo "ENABLE_DEBUG       = $(ENABLE_DEBUG)"
 	@echo "ENABLE_CHECK_EIGENVALUE_ERROR = $(ENABLE_CHECK_EIGENVALUE_ERROR)"
 	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
+	@echo "ENABLE_LIBRARYLINK = $(ENABLE_LIBRARYLINK)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
+	@echo "ENABLE_SHARED_LIBS = $(ENABLE_SHARED_LIBS)"
 	@echo "ENABLE_SILENT      = $(ENABLE_SILENT)"
 	@echo "ENABLE_SQLITE      = $(ENABLE_SQLITE)"
-	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
+	@echo "ENABLE_STATIC      = $(ENABLE_STATIC)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
 	@echo "ENABLE_TSIL        = $(ENABLE_TSIL)"
 	@echo "ENABLE_VERBOSE     = $(ENABLE_VERBOSE)"

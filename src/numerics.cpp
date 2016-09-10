@@ -755,19 +755,6 @@ double calcCL(double cl, const DoubleVector & l) {
   return likelihood;
 }
 
-int *ivector(long nl, long nh) {
-	int *v;
-
-	v=(int *)malloc((size_t) ((nh-nl+2)*sizeof(int)));
-	if (!v) throw flexiblesusy::OutOfMemoryError("allocation failure in ivector()");
-	return v-nl+1;
-}
-
-/* free an int vector allocated with ivector() */
-void free_ivector(int *v, long nl, long /* nh */) {
-	free((char *) (v+nl-1));
-}
-
 double calc1dFraction(double y, const DoubleVector & l) {
   double n = 0., lMax = l.max();
   double tot = 0.;

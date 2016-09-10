@@ -19,8 +19,8 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_observables.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"

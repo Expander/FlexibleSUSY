@@ -5569,7 +5569,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
 
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       tauF1ab = 
      $     (2.*BL*mu2/t*(mu2-BL+t)/delt(BL,mu2,t)
@@ -5608,7 +5610,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt  = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt  = s2t*(T1-T2)/2d0/Sqrt(t) - mu/sb/cb
@@ -5721,7 +5725,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
@@ -5837,7 +5843,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
@@ -6316,12 +6324,16 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
       At = sb**2*Xt+cb**2*Yt
-      if (At.eq.0d0) At=1d-10
+      if (At.eq.0d0) then
+         At=1d-10
+      endif
       
       ct2 = (1d0+c2t)/2d0
       st2 = (1d0-c2t)/2d0
@@ -6462,11 +6474,13 @@ c             running (DRbar) parameters, evaluated at the scale Q.
 
 c     ADDED by BEN: guards against NANs when sin theta is zero!
       if (dabs(st).lt.1.0d-10) then
-         if (st.ge.0.0d0) st=1.0d-10
+         if (st.ge.0.0d0) then
+            st=1.0d-10
          else 
             st=-1.0d-10
          endif
-         ct = sqrt(1.d0-st*st)
+      endif
+      ct = sqrt(1.d0-st*st)
 c     end of addition by BEN 13/6/12
       
       s2t = 2d0*ct*st
@@ -6523,12 +6537,15 @@ c$$$      k = 3d0*ht**2/(16d0*Pi**2)**2
       cb2 = cb**2
       mu2 = mu**2
 
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
 
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
       At = sb2*Xt+cb2*Yt
       
+
       F2l = (delt(mu2,t,T1)+2*mu2*t)/T1*phi(mu2,t,T1)
      $     -(delt(mu2,t,T2)+2*mu2*t)/T2*phi(mu2,t,T2)
      $     +A0*cb2*(2*Sqrt(t)+s2t*Yt)/4/s2t/T1/(T1-T2)*

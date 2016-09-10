@@ -19,6 +19,7 @@
 #ifndef linalg2_hpp
 #define linalg2_hpp
 
+#include "config.h"
 #include <limits>
 #include <cctype>
 #include <cmath>
@@ -274,7 +275,11 @@ void svd_internal
  Eigen::Matrix<Scalar, M, M> *u,
  Eigen::Matrix<Scalar, N, N> *vh)
 {
+#ifdef ENABLE_LIBRARYLINK
+    svd_eigen(m, s, u, vh);
+#else
     svd_lapack(m, s, u, vh);
+#endif
 }
 
 template<class Scalar>

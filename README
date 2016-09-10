@@ -210,28 +210,31 @@ Dynamic libraries
 =================
 
 If you want to create dynamic libraries (instead of static libraries)
-you have to pass all the following options to the ./configure script
+you need to pass the --enable-shared-libs option to the ./configure
+script.  The default file name extension for the shared libraries as
+well as the command to build the libraries can be overwritten using
+the
 
-   --disable-static-libs
-   --with-lib-ext=".so"
-   --with-make-lib-cmd="gcc -shared -o"
+   --with-shared-lib-ext=
+   --with-shared-lib-cmd=
 
-When using Intel compilers, replace `gcc' by `icc' or `icpc'.
+parameters.  For example, when Intel compilers should be used, replace
+`gcc' by `icc' or `icpc'.
 
 Example:
 
-   $ ./configure --with-models=MSSM,NMSSM \
-     --disable-static-libs \
-     --with-lib-ext=".so" \
-     --with-make-lib-cmd="gcc -shared -o"
+   $ ./configure --with-models=CMSSM,NMSSM \
+     --enable-shared-libs \
+     --with-shared-lib-ext=".so" \
+     --with-shared-lib-cmd="gcc -shared -o"
 
 Important remark:
 
 The libraries are linked to the executables with _absolute_ paths.
 This means that, if you move the package directory to another
-location, the executables will no longer work, because the libraries
-are now at another place.  To make the executables work again, you
-have to rebuild them via
+location, the executables will no longer find the libraries, because
+the libraries are now at another place.  To make the executables find
+the libraries again, you have to relink them via
 
    $ make clean-executables
    $ make allexec
@@ -240,20 +243,38 @@ have to rebuild them via
 Statically linked executables
 =============================
 
-External libraries can be statically linked to the spectrum generator
-executables by setting linker specific flags in LDFLAGS.  On some
-systems additional libraries have to be linked to the executables in
-such cases.  In FlexibleSUSY such additional libraries can be
-specified in the variable LDLIBS.
+External libraries can be linked statically to the spectrum generator
+executables by passing --enable-static to configure.
 
 Example (using g++ on Debian Jessie):
 
-   $ ./configure --with-models=CMSSM \
-     --with-ldflags="-static" \
-     --with-ldlibs="-lquadmath"
+   $ ./configure --with-models=CMSSM --enable-static
 
-This will create a standalone executable which does not depend on
-dynamic libraries.
+If --enable-static is used, the following linker flags and additional
+libraries will be used:
+
+   LDFLAGS = -static
+   LDLIBS  = -ldl
+
+These linker specific flags and additional libraries can be
+overwritten using
+
+   --with-static-ldflags=
+   --with-static-ldlibs=
+
+Example:
+
+   $ ./configure --with-models=CMSSM \
+     --enable-static \
+     --with-static-ldflags="-static" \
+     --with-static-ldlibs="-ldl"
+
+In case of dynamic linking, the options
+
+   --with-shared-ldflags=
+   --with-shared-ldlibs=
+
+must be used to set LDFLAGS and LDLIBS.
 
 
 Looptools
@@ -346,6 +367,56 @@ make compiles all source files and creates the addon library
 addons/<addon>/lib<addon>.a (including the object file file1.o from
 the above example) and an executable (addons/<addon>/run.x in the
 above example).
+
+
+Mathematica interface
+=====================
+
+FlexibleSUSY can be called from within Mathematica using Wolfram's
+LibraryLink.  By default, FlexibleSUSY creates a LibraryLink library
+for each spectrum genreator.  The generated library can be found in
+models/<model>/<model>_librarylink.so, where <model> is the model
+name.
+
+Example for the CMSSM:
+
+   Get["models/CMSSM/CMSSM_librarylink.m"];
+
+   (* Create a handle to a model given the input parameters.
+      See Options[FSCMSSMOpenHandle] for all default options. *)
+   handle = FSCMSSMOpenHandle[
+     fsSettings -> { precisionGoal -> 1.*^-4 },
+     fsSMParameters -> { Mt -> 173.3 },
+     fsModelParameters -> {
+         m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+   ];
+
+   (* calculate pole mass spectrum *)
+   FSCMSSMCalculateSpectrum[handle]
+
+   (* calculate observables *)
+   FSCMSSMCalculateObservables[handle]
+
+   (* close the model handle *)
+   FSCMSSMCloseHandle[handle];
+
+For each model, FlexibleSUSY creates an example Mathematica script
+which illustrates the use of the Mathematica interface.  The generated
+example can be found in
+
+   models/<model>/run_<model>.m
+
+which can be run for example as
+
+   $ math -run "<< \"models/<model>/run_<model>.m\""
+
+Before running it, the model parameters in the script should be set to
+reasonable values.  More advanced examples can be found in the
+FlexibleSUSY documentation.
+
+Note: In order to compile the library, Mathematica must be installed.
+To disable the LibraryLink interface, configure with
+--disable-librarylink .
 
 
 Cleaning

@@ -35,28 +35,38 @@ LIBFMSSMN_OBJ  := \
 LIBFMSSMN_DEP  := \
 		$(LIBFMSSMN_OBJ:.o=.d)
 
-LIBFMSSMN      := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFMSSMN      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
+		clean-$(MODNAME)-src distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFMSSMN)
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFMSSMN_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFMSSMN)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFMSSMN_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFMSSMN)
-
-distclean-$(MODNAME): clean-$(MODNAME)
+clean-$(MODNAME)-src:
 		-rm -f $(LIBFMSSMN_GENERATED_SRC)
 		-rm -f $(LIBFMSSMN_INC)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
+
+distclean-$(MODNAME): clean-$(MODNAME) clean-$(MODNAME)-src
+		@true
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+$(DIR)/fmssmn_lattice.o: $(DIR)/fmssmn_lattice_translator.inc
 
 $(DIR)/%.cpp : $(DIR)/%.cpp.m
 	$(MATH) -run 'filename="$@"; << $<; Quit[]'
@@ -72,7 +82,7 @@ $(LIBFMSSMN_DEP) $(LIBFMSSMN_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOST
 endif
 
 $(LIBFMSSMN): $(LIBFMSSMN_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ALLDEP += $(LIBFMSSMN_DEP)
 ALLLIB += $(LIBFMSSMN)
