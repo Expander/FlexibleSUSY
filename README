@@ -267,7 +267,7 @@ Example:
    $ ./configure --with-models=CMSSM \
      --enable-static \
      --with-static-ldflags="-static" \
-     --with-static-ldlibs="-ldl"
+     --with-static-ldlibs="-lquadmath -ldl"
 
 In case of dynamic linking, the options
 
