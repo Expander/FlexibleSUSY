@@ -1931,7 +1931,9 @@ check_math_cmd() {
 #_____________________________________________________________________
 check_mathematica_version() {
     local _math_version_check_progr="${BASEDIR}/check_math_version.m"
-    rm -f ${mathconfig} ${_math_version_check_progr}
+
+    at_exit "rm -f \"${_math_version_check_progr}\""
+
     cat <<EOF > ${_math_version_check_progr}
 error = 0;
 Put[\$VersionNumber, "${mathconfig}"];
@@ -1953,10 +1955,8 @@ EOF
     else
         result "not ok"
         message "Error: Mathematica ${required_mathematica_version} or higher needs to be installed!"
-        rm -f ${_math_version_check_progr}
         exit 1
     fi
-    rm -f ${_math_version_check_progr}
 }
 
 #_____________________________________________________________________
