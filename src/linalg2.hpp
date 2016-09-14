@@ -19,7 +19,6 @@
 #ifndef linalg2_hpp
 #define linalg2_hpp
 
-#include "config.h"
 #include <limits>
 #include <cctype>
 #include <cmath>
@@ -28,6 +27,7 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
+#include "config.h"
 #include "compare.hpp"
 
 namespace flexiblesusy {
@@ -60,6 +60,8 @@ void hermitian_eigen
     w = es.eigenvalues();
     if (z) *z = es.eigenvectors();
 }
+
+#ifdef ENABLE_LAPACK
 
 extern "C" void zgesvd_
 (const char& JOBU, const char& JOBVT, const int& M, const int& N,
@@ -149,6 +151,7 @@ def_svd_lapack(double, dgesvd_, MAX_(3*MIN_(M,N)+MAX_(M,N),5*MIN_(M,N)))
 def_hermitian_lapack(std::complex<double>, zheev_, 2*N-1, 3*N-2)
 def_hermitian_lapack(double, dsyev_, 3*N-1)
 
+#endif // ENABLE_LAPACK
 
 /**
  * Template version of DDISNA from LAPACK.
@@ -266,6 +269,8 @@ void svd_internal
     svd_eigen(m, s, u, vh);
 }
 
+#ifdef ENABLE_LAPACK
+
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
 template<class Scalar, int M, int N>
@@ -311,6 +316,8 @@ void svd_internal
 {
     svd_eigen(m, s, u, vh);
 }
+
+#endif // ENABLE_LAPACK
 
 template<class Real, class Scalar, int M, int N>
 void svd_errbd

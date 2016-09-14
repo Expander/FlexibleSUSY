@@ -59,6 +59,9 @@
 /* Enable fflite */
 @DEFINE_ENABLE_FFLITE@
 
+/* Enable LAPACK */
+@DEFINE_ENABLE_LAPACK@
+
 /* Enable LibraryLink */
 @DEFINE_ENABLE_LIBRARYLINK@
 
