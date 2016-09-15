@@ -65,6 +65,9 @@
 /* Enable LibraryLink */
 @DEFINE_ENABLE_LIBRARYLINK@
 
+/* Enable MKL ILP64 workaround */
+@DEFINE_ENABLE_ILP64MKL_WORKAROUND@
+
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
