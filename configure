@@ -1231,6 +1231,10 @@ check_thread_libs() {
             exit 1
         fi
         THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+        # need to link whole libpthread.a for static linking
+        if [ "x$enable_static" = xyes ] ; then
+            THREADLIBS="-Wl,--push-state,-z,muldefs,--whole-archive ${THREADLIBS} -Wl,--pop-state"
+        fi
         if [ -n "$pthread_lib_dir" ]; then
             THREADLIBS="-L$pthread_lib_dir $THREADLIBS"
         fi
