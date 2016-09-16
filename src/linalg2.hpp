@@ -19,7 +19,7 @@
 #ifndef linalg2_hpp
 #define linalg2_hpp
 
-#include "config.h"
+#include <cstdint>
 #include <limits>
 #include <cctype>
 #include <cmath>
@@ -28,6 +28,7 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
+#include "config.h"
 #include "compare.hpp"
 
 namespace flexiblesusy {
@@ -61,27 +62,41 @@ void hermitian_eigen
     if (z) *z = es.eigenvectors();
 }
 
+#ifdef ENABLE_LAPACK
+
+#   ifdef ENABLE_ILP64MKL_WORKAROUND
+typedef int64_t lapack_int;
+#   else
+typedef int lapack_int;
+#   endif
+
 extern "C" void zgesvd_
-(const char& JOBU, const char& JOBVT, const int& M, const int& N,
- std::complex<double> *A, const int& LDA, double *S, std::complex<double> *U,
- const int& LDU, std::complex<double> *VT, const int& LDVT,
- std::complex<double> *WORK, const int& LWORK, double *RWORK, int& INFO);
+(const char& JOBU, const char& JOBVT, const lapack_int& M, const lapack_int& N,
+ std::complex<double> *A, const lapack_int& LDA, double *S,
+ std::complex<double> *U, const lapack_int& LDU,
+ std::complex<double> *VT, const lapack_int& LDVT,
+ std::complex<double> *WORK, const lapack_int& LWORK, double *RWORK,
+ lapack_int& INFO);
 
 extern "C" void dgesvd_
-(const char& JOBU, const char& JOBVT, const int& M, const int& N,
- double *A, const int& LDA, double *S, double *U,
- const int& LDU, double *VT, const int& LDVT,
- double *WORK, const int& LWORK, int& INFO);
+(const char& JOBU, const char& JOBVT, const lapack_int& M, const lapack_int& N,
+ double *A, const lapack_int& LDA, double *S,
+ double *U, const lapack_int& LDU,
+ double *VT, const lapack_int& LDVT,
+ double *WORK, const lapack_int& LWORK,
+ lapack_int& INFO);
 
 extern "C" void zheev_
-(const char& JOBZ, const char& UPLO, const int& N, std::complex<double> *A,
- const int& LDA, double *W, std::complex<double> *WORK, const int& LWORK,
- double *RWORK, int& INFO);
+(const char& JOBZ, const char& UPLO, const lapack_int& N,
+ std::complex<double> *A, const lapack_int& LDA, double *W,
+ std::complex<double> *WORK, const lapack_int& LWORK, double *RWORK,
+ lapack_int& INFO);
 
 extern "C" void dsyev_
-(const char& JOBZ, const char& UPLO, const int& N, double *A,
- const int& LDA, double *W, double *WORK, const int& LWORK,
- int& INFO);
+(const char& JOBZ, const char& UPLO, const lapack_int& N,
+ double *A, const lapack_int& LDA, double *W,
+ double *WORK, const lapack_int& LWORK,
+ lapack_int& INFO);
 
 #define def_svd_lapack(t, f, ...)					\
 template<int M, int N>							\
@@ -94,15 +109,15 @@ void svd_lapack								\
     const     char JOBU  = u  ? 'A' : 'N';				\
     const     char JOBVT = vh ? 'A' : 'N';				\
     Eigen::Matrix<t, M, N> A = m;					\
-    const     int LDA   = M;						\
+    const     lapack_int LDA   = M;					\
               t   *U    = u ? u->data() : 0;				\
-    const     int LDU   = M;						\
+    const     lapack_int LDU   = M;					\
               t   *VT   = vh ? vh->data() : 0;				\
-    const     int LDVT  = N;						\
-    const     int LWORK = get_lwork(__VA_ARGS__,);			\
+    const     lapack_int LDVT  = N;					\
+    const     lapack_int LWORK = get_lwork(__VA_ARGS__,);		\
     Eigen::Array<t, LWORK, 1> WORK;					\
     decl_rwork(__VA_ARGS__);						\
-    int INFO;								\
+    lapack_int INFO;							\
     f(JOBU, JOBVT, M, N, A.data(), LDA, s.data(), U, LDU, VT, LDVT,	\
       WORK.data(), LWORK, put_rwork(__VA_ARGS__) INFO);			\
 }
@@ -117,11 +132,11 @@ void hermitian_lapack							\
     const     char JOBZ = z ? 'V' : 'N';				\
     const     char UPLO = 'L';						\
     Eigen::Matrix<s, N, N> A = m;					\
-    const     int LDA   = N;						\
-    const     int LWORK = get_lwork(__VA_ARGS__,);			\
+    const     lapack_int LDA   = N;					\
+    const     lapack_int LWORK = get_lwork(__VA_ARGS__,);		\
     Eigen::Array<s, LWORK, 1> WORK;					\
     decl_rwork(__VA_ARGS__);						\
-    int INFO;								\
+    lapack_int INFO;							\
     f(JOBZ, UPLO, N, A.data(), LDA, w.data(), WORK.data(), LWORK,	\
       put_rwork(__VA_ARGS__) INFO);					\
     if (z) *z = A;							\
@@ -149,6 +164,7 @@ def_svd_lapack(double, dgesvd_, MAX_(3*MIN_(M,N)+MAX_(M,N),5*MIN_(M,N)))
 def_hermitian_lapack(std::complex<double>, zheev_, 2*N-1, 3*N-2)
 def_hermitian_lapack(double, dsyev_, 3*N-1)
 
+#endif // ENABLE_LAPACK
 
 /**
  * Template version of DDISNA from LAPACK.
@@ -266,6 +282,8 @@ void svd_internal
     svd_eigen(m, s, u, vh);
 }
 
+#ifdef ENABLE_LAPACK
+
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
 template<class Scalar, int M, int N>
@@ -275,11 +293,7 @@ void svd_internal
  Eigen::Matrix<Scalar, M, M> *u,
  Eigen::Matrix<Scalar, N, N> *vh)
 {
-#ifdef ENABLE_LIBRARYLINK
-    svd_eigen(m, s, u, vh);
-#else
     svd_lapack(m, s, u, vh);
-#endif
 }
 
 template<class Scalar>
@@ -311,6 +325,8 @@ void svd_internal
 {
     svd_eigen(m, s, u, vh);
 }
+
+#endif // ENABLE_LAPACK
 
 template<class Real, class Scalar, int M, int N>
 void svd_errbd
