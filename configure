@@ -1825,8 +1825,6 @@ check_tsil_libs() {
     check_library "libtsil" "$tsil_lib_dir" \
        "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Warning: libtsil not found."
-        message "   Support for TSIL will be is disabled."
         return 1
     else
         local TSILLIBS_="-ltsil"
@@ -1845,8 +1843,6 @@ check_tsil_incl() {
     check_header "tsil.h" "$tsil_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        message "Warning: tsil.h not found in $tsil_inc_dir $default_inc_paths."
-        message "   Support for TSIL will be is disabled."
         return 1
     else
         # assume that the compiler will look in the default paths
@@ -1863,6 +1859,10 @@ check_tsil() {
         if check_tsil_incl && check_tsil_libs ; then
             enable_tsil=yes
         else
+            if [ "x$enable_tsil" = xyes ] ; then
+                message "Error: TSIL not found."
+                exit 1
+            fi
             enable_tsil=no
         fi
     fi
