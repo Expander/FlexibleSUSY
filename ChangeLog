@@ -1,4 +1,4 @@
-Flexiblesusy-1.7.0 [not released yet]
+FlexibleSUSY-1.7.0 [not released yet]
 
  * Feature: FlexibleSUSY is now able to generate custom spectrum
    generators using the FlexibleEFTHiggs method described in
@@ -50,11 +50,11 @@ Flexiblesusy-1.7.0 [not released yet]
    Eq. (20) of arxiv:1504.05200 has been used, which does not include
    these 2-loop pieces.
 
-Flexiblesusy-1.6.1 [August, 28 2016]
+FlexibleSUSY-1.6.1 [August, 28 2016]
 
  * Bugfix (commit db67c81): Fix compilation with --disable-threads .
 
-Flexiblesusy-1.6.0 [August, 27 2016]
+FlexibleSUSY-1.6.0 [August, 27 2016]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions
    of the model parameters on the r.h.s. of the constraints.  BETA[p]
@@ -106,7 +106,7 @@ Flexiblesusy-1.6.0 [August, 27 2016]
 
    Thanks to Dylan Harries.
 
-Flexiblesusy-1.5.1 [July, 12 2016]
+FlexibleSUSY-1.5.1 [July, 12 2016]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
    function in parameter regions with p << m1,m2 and m1 close to m2.
