@@ -27,6 +27,9 @@ Flexiblesusy-1.7.0 [not released yet]
 
    Please refer to the README file for more information.
 
+ * Bugfix (commit 39f8d36): Fix segfault when multi-threading is used
+   in statically linked executables.
+
  * Bugfix (commit 3126ac1): Catch NaNs from inside the MSSM 2L Higgs
    mass routines of Pietro Slavich.
 
