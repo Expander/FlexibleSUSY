@@ -13,7 +13,7 @@ Flexiblesusy-1.7.0 [not released yet]
    description about how to generate the documentation.
 
  * Change: The configure options for creating dynamic libraries and
-   statically linked executable has been changed.  By default, static
+   statically linked executable have been changed.  By default, static
    FlexibleSUSY libraries and dynamically linked executables are
    created.
 
