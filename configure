@@ -1017,8 +1017,7 @@ check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
         checking_msg "LibraryLink"
         # building LibraryLink needs Mathematica headers
-        exists_in_path "$MATH"
-        if [ -n "$cmd" ] ; then
+        if [ -n "$MATH" ] ; then
             result "yes"
             enable_librarylink=yes
         else
@@ -1973,7 +1972,10 @@ check_math_cmd() {
     exists_in_path "$MATH"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Error: Mathematica needs to be installed to run the meta code!"
+	MATH=""
+	[ "${enable_meta}" = "yes" -o "$enable_librarylink" = "yes" ] || return
+
+        message "Error: Mathematica needs to be installed to run the meta code or to enable LibraryLink!"
         message "   You can use the --with-math-cmd= option to specify the location of"
         message "   the math kernel."
         case "$operating_system" in
@@ -1989,6 +1991,8 @@ check_math_cmd() {
 
 #_____________________________________________________________________
 check_mathematica_info() {
+    [ -z "$MATH" ] && return 0
+
     local _math_info_check_progr="${BASEDIR}/check_math_info.m"
     local _ok=false
 
@@ -2528,9 +2532,10 @@ check_algorithms
 check_install
 check_install_dir
 
+check_math_cmd
+check_mathematica_info
+
 if test "x${enable_meta}" = "xyes"; then
-    check_math_cmd
-    check_mathematica_info
     check_sarah
     case "$operating_system" in
 	CYGWIN_NT*) check_cygpath ;;
