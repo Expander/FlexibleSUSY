@@ -461,7 +461,7 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@MATH_CMD="$$MATH" $< >> $@ 2>&1; \
+		@MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
