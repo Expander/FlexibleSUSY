@@ -350,7 +350,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::gsl_function(const gsl_v
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
    const Vector_t arg(to_eigen_vector(x));
-   Vector_t result = arg;
+   auto result = arg;
 
    try {
       result = (*fun)(arg);

@@ -79,10 +79,8 @@ public:
 private:
    std::size_t max_iterations; ///< maximum number of iterations
    double precision;           ///< precision goal
-   double initial_step_size;   ///< initial step size
    double minimum_value;       ///< minimum function value found
    GSL_vector minimum_point;   ///< GSL vector of minimum point
-   GSL_vector step_size;       ///< GSL vector of initial step size
    void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
    Solver_type solver_type;    ///< minimizer type
@@ -99,10 +97,8 @@ template <std::size_t dimension>
 Minimizer<dimension>::Minimizer()
    : max_iterations(100)
    , precision(1.0e-2)
-   , initial_step_size(1.0)
    , minimum_value(0.0)
    , minimum_point(dimension)
-   , step_size(dimension)
    , function(nullptr)
    , solver_type(GSLSimplex2)
 {
@@ -125,10 +121,8 @@ Minimizer<dimension>::Minimizer(
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , initial_step_size(1.0)
    , minimum_value(0.0)
    , minimum_point(dimension)
-   , step_size(dimension)
    , function(function_)
    , solver_type(solver_type_)
 {
@@ -153,7 +147,8 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
    minimum_point = to_GSL_vector(start);
 
    // Set initial step sizes
-   step_size.set_all(initial_step_size);
+   GSL_vector step_size(dimension);
+   step_size.set_all(1.0);
 
    // Initialize method and iterate
    minex_func.n = dimension;
@@ -230,12 +225,11 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
 
    Function_t* fun = static_cast<Function_t*>(params);
    const Vector_t arg(to_eigen_vector(x));
-   double result;
+   double result = std::numeric_limits<double>::max();
 
    try {
       result = (*fun)(arg);
    } catch (const flexiblesusy::Error&) {
-      result = std::numeric_limits<double>::max();
    }
 
    return result;

@@ -218,12 +218,12 @@ int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_
    int status = GSL_SUCCESS;
    const Vector_t arg(to_eigen_vector(x));
    Vector_t result;
+   result.setConstant(std::numeric_limits<double>::max());
 
    try {
       result = (*fun)(arg);
       status = result.allFinite() ? GSL_SUCCESS : GSL_EDOM;
    } catch (const flexiblesusy::Error&) {
-      result.setConstant(std::numeric_limits<double>::max());
       status = GSL_EDOM;
    }
 
