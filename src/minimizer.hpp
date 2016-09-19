@@ -66,7 +66,6 @@ public:
    virtual ~Minimizer() {}
 
    double get_minimum_value() const { return minimum_value; }
-   double get_minimum_point(std::size_t) const;
    void set_function(const Function_t& f) { function = f; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
@@ -208,14 +207,6 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
    std::cout << "\tIteration " << iteration
              << ": x = " << GSL_vector(minimizer->x)
              << ", f(x) = " << minimizer->fval << '\n';
-}
-
-template <std::size_t dimension>
-double Minimizer<dimension>::get_minimum_point(std::size_t i) const
-{
-   assert(i < dimension && "Minimizer<>::get_minimum_point: index out"
-          " of bounds");
-   return minimum_point[i];
 }
 
 template <std::size_t dimension>

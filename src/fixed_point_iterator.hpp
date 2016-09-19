@@ -196,7 +196,6 @@ public:
    Fixed_point_iterator(const Function_t&, std::size_t, const Convergence_tester&);
    virtual ~Fixed_point_iterator() {}
 
-   double get_fixed_point(std::size_t) const;
    void set_function(const Function_t& f) { function = f; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    int find_fixed_point(const Eigen::VectorXd&);
@@ -338,14 +337,6 @@ void Fixed_point_iterator<dimension,Convergence_tester>::print_state(std::size_t
    std::cout << "\tIteration n = " << iteration
              << ": x_{n} = " << xn
              << ", x_{n+1} = " << fixed_point << '\n';
-}
-
-template <std::size_t dimension, class Convergence_tester>
-double Fixed_point_iterator<dimension,Convergence_tester>::get_fixed_point(std::size_t i) const
-{
-   assert(i < dimension && "Fixed_point_iterator<>::get_fixed_point: index out"
-          " of bounds");
-   return fixed_point[i];
 }
 
 template <std::size_t dimension, class Convergence_tester>

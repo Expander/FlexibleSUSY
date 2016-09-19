@@ -70,7 +70,6 @@ public:
    Root_finder(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
    virtual ~Root_finder() {}
 
-   double get_root(std::size_t) const;
    void set_function(const Function_t& f) { function = f; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
@@ -205,14 +204,6 @@ void Root_finder<dimension>::print_state(const gsl_multiroot_fsolver* solver,
    std::cout << "\tIteration " << iteration
              << ": x = " << GSL_vector(solver->x)
              << ", f(x) = " << GSL_vector(solver->f) << '\n';
-}
-
-template <std::size_t dimension>
-double Root_finder<dimension>::get_root(std::size_t i) const
-{
-   assert(i < dimension && "Root_finder<>::get_root: index out"
-          " of bounds");
-   return root[i];
 }
 
 template <std::size_t dimension>
