@@ -1,4 +1,4 @@
-FlexibleSUSY-1.7.0 [not released yet]
+FlexibleSUSY-1.7.0 [September, 19 2016]
 
  * Feature: FlexibleSUSY is now able to generate custom spectrum
    generators using the FlexibleEFTHiggs method described in
