@@ -18,9 +18,10 @@ loopfuncflags="@LOOPFUNCFLAGS@"
 cxx="@CXX@"
 fc="@FC@"
 flibs="@FLIBS@"
-makelib="@MAKELIB@"
 math="@MATH@"
 packagename="@PKGNAME@"
+shared_lib_cmd="@SHARED_LIB_CMD@"
+static_lib_cmd="@STATIC_LIB_CMD@"
 threadlibs="@THREADLIBS@"
 
 usage="\
@@ -68,9 +69,10 @@ Options:
   --ldflags             Print LDFLAGS
   --ldlibs              Print LDLIBS
   --loopfuncflags       Print compiler flags for loop function library
-  --make-lib-cmd        Print make library command
   --math-cmd            Print Mathematica kernel command
   --threadlibs          Print thread library
+  --shared-lib-cmd      Print command to build shared library
+  --static-lib-cmd      Print command to build static library
   --with-<addon>        Test if <addon> is compiled in
   --with-<model>        Test if <model> is compiled in
   --version             Print the $packagename version
@@ -102,8 +104,9 @@ while test $# -gt 0; do
         --ldflags)       out="$out $ldflags"  ;;
         --ldlibs)        out="$out $ldlibs"   ;;
         --loopfuncflags) out="$out $loopfuncflags" ;;
-        --make-lib-cmd)  out="$out $makelib"  ;;
         --math-cmd)      out="$out $math"     ;;
+        --shared-lib-cmd) out="$out $shared_lib_cmd" ;;
+        --static-lib-cmd) out="$out $static_lib_cmd" ;;
         --threadlibs)    out="$out $threadlibs" ;;
         --with-*)
       ### Check for model

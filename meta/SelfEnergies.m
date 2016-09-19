@@ -613,9 +613,6 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
 tadpole_2l(0) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
 tadpole_2l(1) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
 
-if (!IsFinite(tadpole_2l))
-   tadpole_2l.setZero();
-
 return tadpole_2l;"
           ];
 
@@ -707,9 +704,6 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
 tadpole_2l(0) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
 tadpole_2l(1) *= " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
 tadpole_2l(2) *= " <>  svevStr <> ";
-
-if (!IsFinite(tadpole_2l))
-   tadpole_2l.setZero();
 
 return tadpole_2l;"
           ];

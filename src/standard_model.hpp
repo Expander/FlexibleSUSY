@@ -46,21 +46,47 @@ class EWSB_solver;
 
 namespace standard_model_info {
 
-enum Particles : unsigned {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
-   NUMBER_OF_PARTICLES};
+   enum Particles : unsigned {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
+      NUMBER_OF_PARTICLES};
 
-enum Parameters : unsigned {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
-   Yu1_1, Yu1_2, Yu2_0, Yu2_1, Yu2_2, Yd0_0, Yd0_1, Yd0_2, Yd1_0, Yd1_1, Yd1_2
-   , Yd2_0, Yd2_1, Yd2_2, Ye0_0, Ye0_1, Ye0_2, Ye1_0, Ye1_1, Ye1_2, Ye2_0,
-   Ye2_1, Ye2_2, mu2, v, NUMBER_OF_PARAMETERS};
+   enum Parameters : unsigned {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
+      Yu1_1, Yu1_2, Yu2_0, Yu2_1, Yu2_2, Yd0_0, Yd0_1, Yd0_2, Yd1_0, Yd1_1, Yd1_2
+      , Yd2_0, Yd2_1, Yd2_2, Ye0_0, Ye0_1, Ye0_2, Ye1_0, Ye1_1, Ye1_2, Ye2_0,
+      Ye2_1, Ye2_2, mu2, v, NUMBER_OF_PARAMETERS};
 
-extern const char* particle_names[NUMBER_OF_PARTICLES];
+   enum Mixings : unsigned {ReVd00, ImVd00, ReVd01, ImVd01, ReVd02, ImVd02,
+      ReVd10, ImVd10, ReVd11, ImVd11, ReVd12, ImVd12, ReVd20, ImVd20, ReVd21,
+      ImVd21, ReVd22, ImVd22, ReUd00, ImUd00, ReUd01, ImUd01, ReUd02, ImUd02,
+      ReUd10, ImUd10, ReUd11, ImUd11, ReUd12, ImUd12, ReUd20, ImUd20, ReUd21,
+      ImUd21, ReUd22, ImUd22, ReVu00, ImVu00, ReVu01, ImVu01, ReVu02, ImVu02,
+      ReVu10, ImVu10, ReVu11, ImVu11, ReVu12, ImVu12, ReVu20, ImVu20, ReVu21,
+      ImVu21, ReVu22, ImVu22, ReUu00, ImUu00, ReUu01, ImUu01, ReUu02, ImUu02,
+      ReUu10, ImUu10, ReUu11, ImUu11, ReUu12, ImUu12, ReUu20, ImUu20, ReUu21,
+      ImUu21, ReUu22, ImUu22, ReVe00, ImVe00, ReVe01, ImVe01, ReVe02, ImVe02,
+      ReVe10, ImVe10, ReVe11, ImVe11, ReVe12, ImVe12, ReVe20, ImVe20, ReVe21,
+      ImVe21, ReVe22, ImVe22, ReUe00, ImUe00, ReUe01, ImUe01, ReUe02, ImUe02,
+      ReUe10, ImUe10, ReUe11, ImUe11, ReUe12, ImUe12, ReUe20, ImUe20, ReUe21,
+      ImUe21, ReUe22, ImUe22, NUMBER_OF_MIXINGS};
 
-extern const char* parameter_names[NUMBER_OF_PARAMETERS];
+   extern const double normalization_g1;
+   extern const double normalization_g2;
+   extern const double normalization_g3;
+
+   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
+   extern const char* particle_names[NUMBER_OF_PARTICLES];
+   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
+   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
+   extern const char* particle_mixing_names[NUMBER_OF_MIXINGS];
+   extern const char* model_name;
+   extern const bool is_low_energy_model;
+   extern const bool is_supersymmetric_model;
 
 } // namespace standard_model_info
 
 namespace standard_model {
+
+template <class T>
+class StandardModel;
 
 /**
  * @class Standard_model
@@ -455,6 +481,28 @@ public:
 
    double ThetaW() const;
 
+   double calculate_delta_alpha_em(double alphaEm) const;
+   double calculate_delta_alpha_s(double alphaS) const;
+   void calculate_Lambdax_DRbar();
+   double calculate_theta_w(double alpha_em_drbar);
+   void calculate_Yu_DRbar();
+   void calculate_Yd_DRbar();
+   void calculate_Ye_DRbar();
+   void recalculate_mw_pole();
+
+protected:
+
+   // Running parameters
+   double g1;
+   double g2;
+   double g3;
+   double Lambdax;
+   Eigen::Matrix<double,3,3> Yu;
+   Eigen::Matrix<double,3,3> Yd;
+   Eigen::Matrix<double,3,3> Ye;
+   double mu2;
+   double v;
+
 private:
 
    static const int numberOfParameters = 33;
@@ -534,14 +582,6 @@ private:
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters();
-   void calculate_Yu_DRbar();
-   void calculate_Yd_DRbar();
-   void calculate_Ye_DRbar();
-   void calculate_Lambdax_DRbar();
-   double calculate_delta_alpha_em(double alphaEm) const;
-   double calculate_delta_alpha_s(double alphaS) const;
-   double calculate_theta_w(double alpha_em_drbar);
-   void recalculate_mw_pole();
    bool check_convergence(const Standard_model& old) const;
 
    // Passarino-Veltman loop functions
@@ -553,17 +593,6 @@ private:
    double H0(double, double, double) const;
    double F0(double, double, double) const;
    double G0(double, double, double) const;
-
-   // Running parameters
-   double g1;
-   double g2;
-   double g3;
-   double Lambdax;
-   Eigen::Matrix<double,3,3> Yu;
-   Eigen::Matrix<double,3,3> Yd;
-   Eigen::Matrix<double,3,3> Ye;
-   double mu2;
-   double v;
 
    // DR-bar masses
    double MVG;

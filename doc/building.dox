@@ -1,8 +1,8 @@
 /**
-\page building Generating a spectrum generator
+\page building Generating a FlexibleSUSY spectrum generator
 \tableofcontents
 
-\section generating_a_specgen Generating a spectrum generator
+\section generating_a_specgen Generating a FlexibleSUSY spectrum generator
 
 \subsection Requirements
 
@@ -72,7 +72,9 @@ created.
 
 \section running_the_sg Running the spectrum generator
 
-To run the spectrum generator execute
+\subsection running_the_sg_cmd_line Running the spectrum generator from the command line
+
+To run the spectrum generator at the command line, execute
 
     ./models/<model>/run_<model>.x --slha-input-file=<slha-input-file>
 
@@ -105,6 +107,10 @@ The output can also be written to an SQLite database using the
 
     ./models/NMSSM/run_NMSSM.x --slha-input-file=model_files/NMSSM/LesHouches.in.NMSSM --slha-output-file= --database-output-file=point.db
 
+\subsection running_the_sg_mathematica Running the spectrum generator from inside Mathematica
+
+Since version 1.7.0, FlexibleSUSY provides a Mathematica interface.
+Please see \ref librarylink for more details and examples.
 
 \section no_compilation Creating only the source code files -- no compilation
 
@@ -174,15 +180,15 @@ shall be packed.  After `make` has finished, the package file
 If you want to create dynamic libraries (instead of static libraries)
 you have to pass all the following options to the `configure` script
 
-    --disable-static-libs
-    --with-lib-ext=".so"
-    --with-make-lib-cmd="gcc -shared -o"
+    --enable-shared-libs
+    --with-shared-lib-ext=".so"
+    --with-shared-lib-cmd="gcc -shared -o"
 
 When using Intel compilers, replace `gcc` by `icc` or `icpc`.
 
 Example:
 
-    ./configure --with-models=MSSM,NMSSM --disable-static-libs --with-lib-ext=".so" --with-make-lib-cmd="gcc -shared -o"
+    ./configure --with-models=MSSM,NMSSM --enable-shared-libs --with-shared-lib-ext=".so" --with-shared-lib-cmd="gcc -shared -o"
 
 Important remark:
 
@@ -206,7 +212,7 @@ specified in the variable `LDLIBS`.
 
 Example (using `g++` on Debian Jessie):
 
-    ./configure --with-models=CMSSM --with-ldflags="-static" --with-ldlibs="-lquadmath"
+    ./configure --with-models=CMSSM --with-ldflags="-static" --with-ldlibs="-lquadmath -ldl"
 
 This will create a standalone executable which does not depend on
 dynamic libraries.
@@ -217,15 +223,18 @@ dynamic libraries.
 There are several make targets to remove generated files, compiled
 object files, libraries or executables:
 
-     make clean      # deletes all .d .o .a .x and generated files
+     make clean      # deletes all .d .o .a .x files
 
-     make distclean  # calls `make clean' and deletes in addition
+     make distclean  # does `clean' and `clean-generated'
+                     # and deletes in addition:
                      # Makefile flexiblesusy-config config.*
                      # config/list_sarah_model_files.sh
 
      make clean-dep  # deletes all .d files
 
      make clean-executables # deletes all .x files
+
+     make clean-generated   # deletes generated files
 
      make clean-lib  # deletes all libraries
 

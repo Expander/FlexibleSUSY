@@ -25,14 +25,15 @@
 #ifdef ENABLE_THREADS
    #include <mutex>
    #define LOCK_MUTEX() std::lock_guard<std::mutex> lg(mtx_mssm)
+   namespace flexiblesusy {namespace mssm_twoloophiggs {
+      static std::mutex mtx_mssm; /// locks MSSM fortran functions
+   }}
 #else
    #define LOCK_MUTEX()
 #endif
 
 namespace flexiblesusy {
 namespace mssm_twoloophiggs {
-
-static std::mutex mtx_mssm; /// locks MSSM fortran functions
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
    double mt2, double mg, double mst12, double mst22,
@@ -41,10 +42,15 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
 {
    Eigen::Matrix<double, 2, 1> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   ewsb2loop_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2,
-              &mu, &tanb, &vev2, &gs, &result(0), &result(1));
+      ewsb2loop_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2,
+                 &mu, &tanb, &vev2, &gs, &result(0), &result(1));
+   }
+
+   if (!result.allFinite())
+      result.setZero();
 
    return -result;
 }
@@ -57,11 +63,16 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
 {
    Eigen::Matrix<double, 2, 1> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   ddstad_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
-           &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
-           &result(0), &result(1));
+      ddstad_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+              &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
+              &result(0), &result(1));
+   }
+
+   if (!result.allFinite())
+      result.setZero();
 
    return -result;
 }
@@ -87,10 +98,15 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_atau_atau_mssm(
 {
    Eigen::Matrix<double, 2, 1> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   tausqtad_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
-             &costau, &scale2, &mu, &tanb, &vev2, &result(0), &result(1));
+      tausqtad_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
+                &costau, &scale2, &mu, &tanb, &vev2, &result(0), &result(1));
+   }
+
+   if (!result.allFinite())
+      result.setZero();
 
    return -result;
 }
@@ -102,11 +118,13 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
 {
    Eigen::Matrix<double, 2, 2> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   dszhiggs_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
-             &tanb, &vev2, &gs, &scheme,
-             &result(0,0), &result(1,1), &result(0,1));
+      dszhiggs_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
+                &tanb, &vev2, &gs, &scheme,
+                &result(0,0), &result(1,1), &result(0,1));
+   }
 
    result(1,0) = result(0,1);
 
@@ -121,11 +139,13 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
 {
    Eigen::Matrix<double, 2, 2> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   ddshiggs_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
-             &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
-             &result(0,0), &result(0,1), &result(1,1));
+      ddshiggs_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+                &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
+                &result(0,0), &result(0,1), &result(1,1));
+   }
 
    result(1,0) = result(0,1);
 
@@ -153,11 +173,13 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm_with_tadpoles
 {
    Eigen::Matrix<double, 2, 2> result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   tausqhiggs_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
-               &costau, &scale2, &mu, &tanb, &vev2, &scheme,
-               &result(0,0), &result(1,1), &result(0,1));
+      tausqhiggs_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
+                  &costau, &scale2, &mu, &tanb, &vev2, &scheme,
+                  &result(0,0), &result(1,1), &result(0,1));
+   }
 
    result(1,0) = result(0,1);
 
@@ -171,10 +193,12 @@ double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
 {
    double result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   dszodd_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
-           &tanb, &vev2, &gs, &result);
+      dszodd_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
+              &tanb, &vev2, &gs, &result);
+   }
 
    return -result;
 }
@@ -187,10 +211,12 @@ double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
 {
    double result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   ddsodd_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
-           &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2, &result);
+      ddsodd_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+              &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2, &result);
+   }
 
    return -result;
 }
@@ -212,10 +238,12 @@ double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
 {
    double result;
 
-   LOCK_MUTEX();
+   {
+      LOCK_MUTEX();
 
-   tausqodd_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
-             &costau, &scale2, &mu, &tanb, &vev2, &result);
+      tausqodd_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
+                &costau, &scale2, &mu, &tanb, &vev2, &result);
+   }
 
    return -result;
 }

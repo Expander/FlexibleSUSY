@@ -393,12 +393,7 @@ public:
   DoubleVector asy2by2(double & thetaL, double & thetaR) const;
   /// converts a list of entries into a vector
   DoubleVector vectorfy() const;
-  /// Determinant of your matrix
-  double determinant() const; 
 
-  /// Returns LU decomposition of a matrix. d gives whether there are an even
-  /// or odd number of permutations
-  DoubleMatrix ludcmp(double & d) const;
   /// fill array, starting at offset
   void fillArray(double* array, unsigned offset = 0) const;
   bool operator==(const DoubleMatrix& o) const {

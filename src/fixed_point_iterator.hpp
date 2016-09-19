@@ -139,8 +139,6 @@ public:
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
       assert(a.size() == b.size() && "Error: vectors have different size.");
 
-      double rel_diff = 0.;
-
       if (precision < 0.)
          GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);
 

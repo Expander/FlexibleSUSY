@@ -50,15 +50,86 @@ namespace flexiblesusy {
 
 namespace standard_model_info {
 
-const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
-   "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+   const double normalization_g1 = 0.7745966692414834;
+   const double normalization_g2 = 1;
+   const double normalization_g3 = 1;
 
-const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
-   "Lambdax", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)", "Yu(1,1)", "Yu(1,2)",
-   "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)", "Yd(0,2)", "Yd(1,0)"
-   , "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)", "Ye(0,0)",
-   "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)", "Ye(2,0)", "Ye(2,1)",
-   "Ye(2,2)", "mu2", "v"};
+   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
+      , 1, 1, 3, 3, 3, 1};
+
+   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
+      "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+
+   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g", "H^+",
+      "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
+
+   const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
+      "Lambdax", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)", "Yu(1,1)", "Yu(1,2)",
+      "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)", "Yd(0,2)", "Yd(1,0)"
+      , "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)", "Ye(0,0)",
+      "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)", "Ye(2,0)", "Ye(2,1)",
+      "Ye(2,2)", "mu2", "v"};
+
+   const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {   "Re(Vd(0,0))",
+      "Im(Vd(0,0))", "Re(Vd(0,1))", "Im(Vd(0,1))", "Re(Vd(0,2))", "Im(Vd(0,2))",
+      "Re(Vd(1,0))", "Im(Vd(1,0))", "Re(Vd(1,1))", "Im(Vd(1,1))", "Re(Vd(1,2))",
+      "Im(Vd(1,2))", "Re(Vd(2,0))", "Im(Vd(2,0))", "Re(Vd(2,1))", "Im(Vd(2,1))",
+      "Re(Vd(2,2))", "Im(Vd(2,2))", "Re(Ud(0,0))", "Im(Ud(0,0))", "Re(Ud(0,1))",
+      "Im(Ud(0,1))", "Re(Ud(0,2))", "Im(Ud(0,2))", "Re(Ud(1,0))", "Im(Ud(1,0))",
+      "Re(Ud(1,1))", "Im(Ud(1,1))", "Re(Ud(1,2))", "Im(Ud(1,2))", "Re(Ud(2,0))",
+      "Im(Ud(2,0))", "Re(Ud(2,1))", "Im(Ud(2,1))", "Re(Ud(2,2))", "Im(Ud(2,2))",
+      "Re(Vu(0,0))", "Im(Vu(0,0))", "Re(Vu(0,1))", "Im(Vu(0,1))", "Re(Vu(0,2))",
+      "Im(Vu(0,2))", "Re(Vu(1,0))", "Im(Vu(1,0))", "Re(Vu(1,1))", "Im(Vu(1,1))",
+      "Re(Vu(1,2))", "Im(Vu(1,2))", "Re(Vu(2,0))", "Im(Vu(2,0))", "Re(Vu(2,1))",
+      "Im(Vu(2,1))", "Re(Vu(2,2))", "Im(Vu(2,2))", "Re(Uu(0,0))", "Im(Uu(0,0))",
+      "Re(Uu(0,1))", "Im(Uu(0,1))", "Re(Uu(0,2))", "Im(Uu(0,2))", "Re(Uu(1,0))",
+      "Im(Uu(1,0))", "Re(Uu(1,1))", "Im(Uu(1,1))", "Re(Uu(1,2))", "Im(Uu(1,2))",
+      "Re(Uu(2,0))", "Im(Uu(2,0))", "Re(Uu(2,1))", "Im(Uu(2,1))", "Re(Uu(2,2))",
+      "Im(Uu(2,2))", "Re(Ve(0,0))", "Im(Ve(0,0))", "Re(Ve(0,1))", "Im(Ve(0,1))",
+      "Re(Ve(0,2))", "Im(Ve(0,2))", "Re(Ve(1,0))", "Im(Ve(1,0))", "Re(Ve(1,1))",
+      "Im(Ve(1,1))", "Re(Ve(1,2))", "Im(Ve(1,2))", "Re(Ve(2,0))", "Im(Ve(2,0))",
+      "Re(Ve(2,1))", "Im(Ve(2,1))", "Re(Ve(2,2))", "Im(Ve(2,2))", "Re(Ue(0,0))",
+      "Im(Ue(0,0))", "Re(Ue(0,1))", "Im(Ue(0,1))", "Re(Ue(0,2))", "Im(Ue(0,2))",
+      "Re(Ue(1,0))", "Im(Ue(1,0))", "Re(Ue(1,1))", "Im(Ue(1,1))", "Re(Ue(1,2))",
+      "Im(Ue(1,2))", "Re(Ue(2,0))", "Im(Ue(2,0))", "Re(Ue(2,1))", "Im(Ue(2,1))",
+      "Re(Ue(2,2))", "Im(Ue(2,2))"};
+
+   const char* model_name = "Standard_model";
+   const bool is_low_energy_model = false;
+   const bool is_supersymmetric_model = false;
+
+void print(std::ostream& ostr)
+{
+   ostr
+      << "Model information\n"
+      << "=================\n"
+      << "Model name:                " << model_name << '\n'
+      << "Is a low-energy model:     "
+      << (is_low_energy_model ? "yes" : "no") << '\n'
+      << "Is a supersymmetric model: "
+      << (is_supersymmetric_model ? "yes" : "no") << '\n'
+      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
+      ;
+
+   ostr << "\n"
+      "Multiplets:                ";
+   for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+      ostr << particle_names[i]
+           << '[' << particle_multiplicities[i] << ']';
+      if (i + 1 < NUMBER_OF_PARTICLES)
+         ostr << ", ";
+   }
+
+   ostr << "\n\n"
+      "Parameters:                ";
+   for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
+      ostr << parameter_names[i];
+      if (i + 1 < NUMBER_OF_PARAMETERS)
+         ostr << ", ";
+   }
+   ostr << '\n';
+}
 
 } // namespace standard_model_info
 
@@ -75,7 +146,7 @@ const int Standard_model::numberOfParameters;
 #define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
 #define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
-#define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
+#define TOP_POLE_QCD_CORRECTION          two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 Standard_model::Standard_model()
@@ -272,6 +343,8 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
    if (ewsb_loop_order > 0) {
       tadpole[0] -= Re(tadpole_hh());
    }
+
+   return tadpole;
 }
 
 /**
@@ -601,7 +674,7 @@ void Standard_model::calculate_pole_masses()
    fut_MFe.get();
    fut_MVWp.get();
 #else
-   
+
    calculate_MVG_pole();
    calculate_MFv_pole();
    calculate_Mhh_pole();
@@ -991,7 +1064,6 @@ void Standard_model::calculate_Ye_DRbar()
    }
 
    Ye = ((1.4142135623730951*downLeptonsDRbar)/v).transpose();
-
 }
 
 void Standard_model::calculate_Lambdax_DRbar()
@@ -5159,24 +5231,14 @@ std::complex<double> Standard_model::self_energy_Fe_PL(double p , unsigned gO1, 
 
 }
 
-std::complex<double> Standard_model::self_energy_VZ_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VZ_heavy(double) const
 {
-   std::complex<double> result;
-
-   result += 0;
-
-   return result * oneOver16PiSqr;
-
+   return 0.;
 }
 
-std::complex<double> Standard_model::self_energy_VWp_heavy(double p ) const
+std::complex<double> Standard_model::self_energy_VWp_heavy(double) const
 {
-   std::complex<double> result;
-
-   result += 0;
-
-   return result * oneOver16PiSqr;
-
+   return 0.;
 }
 
 std::complex<double> Standard_model::self_energy_Fd_1_heavy_rotated(double p , unsigned gO1, unsigned gO2) const
@@ -5972,20 +6034,32 @@ void Standard_model::calculate_MFd_pole()
 void Standard_model::calculate_MFu_pole()
 {
    // diagonalization with medium precision
-   const bool add_2loop_corrections = pole_mass_loop_order > 1 &&
-      TOP_2LOOP_CORRECTION_QCD;
-   const double currentScale = get_scale();
+   double qcd_1l = 0.;
 
-   const double qcd_1l = 0.025330295910584444*(-1.3333333333333333 + 1.*
-      Log(Sqr(MFu(2))/Sqr(currentScale)))*Sqr(g3);
+   {
+      const double currentScale = get_scale();
+      qcd_1l = -0.008443431970194815*(4. - 3.*Log(Sqr(MFu(2))/Sqr(
+         currentScale)))*Sqr(g3);
+   }
 
    double qcd_2l = 0.;
 
-   if (add_2loop_corrections) {
+   if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+      const double currentScale = get_scale();
       qcd_2l = -0.006995771808874528*Power(g3,4) -
-         0.004518101565212637*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
+         0.004518101565212638*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
          0.0008822328500119351*Power(g3,4)*Sqr(Log(Power(currentScale,2)/Sqr(
          MFu(2))));
+   }
+
+   double qcd_3l = 0.;
+
+   if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
+      const double currentScale = get_scale();
+      qcd_3l = Power(g3,6)*(-0.0017408026847411467 -
+         0.000984413176263005*Log(Sqr(currentScale)/Sqr(MFu(2))) -
+         0.00003352082872926087*Power(Log(Sqr(currentScale)/Sqr(MFu(2))),3) -
+         0.00029813221915266867*Sqr(Log(Power(currentScale,2)/Sqr(MFu(2)))));
    }
 
    Eigen::Matrix<double,3,3> self_energy_1;
@@ -6015,18 +6089,18 @@ void Standard_model::calculate_MFu_pole()
       }
       Eigen::Matrix<double,3,3> delta_M(- self_energy_PR * M_tree -
          M_tree * self_energy_PL - self_energy_1);
-      delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l);
-      const Eigen::Matrix<double,3,3> M_1loop(M_tree + delta_M);
+      delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l + qcd_3l);
+      const Eigen::Matrix<double,3,3> M_loop(M_tree + delta_M);
       Eigen::Array<double,3,1> eigen_values;
       decltype(Vu) mix_Vu;
       decltype(Uu) mix_Uu;
    #ifdef CHECK_EIGENVALUE_ERROR
       double eigenvalue_error;
-      fs_svd(M_1loop, eigen_values, mix_Vu, mix_Uu, eigenvalue_error);
+      fs_svd(M_loop, eigen_values, mix_Vu, mix_Uu, eigenvalue_error);
       problems.flag_bad_mass(standard_model_info::Fu, eigenvalue_error > precision
          * Abs(eigen_values(0)));
    #else
-      fs_svd(M_1loop, eigen_values, mix_Vu, mix_Uu);
+      fs_svd(M_loop, eigen_values, mix_Vu, mix_Uu);
    #endif
       if (es == 0) {
          PHYSICAL(Vu) = mix_Vu;
@@ -6157,17 +6231,27 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
       idx, idx));
 
    const double currentScale = get_scale();
-   const double qcd_1l = 0.025330295910584444*(-1.3333333333333333 + 1.*
-      Log(Sqr(MFu(idx))/Sqr(currentScale)))*Sqr(g3);
-   const double qcd_2l = -0.005855107113909601*Power(g3,4) -
-      0.004518101565212637*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx))) -
-      0.0017109970424473893*Power(g3,4)*Log(Sqr(MFu(idx))/Sqr(currentScale)) +
-      0.000641623890917771*Power(g3,4)*Sqr(Log(Power(MFu(idx),2)/Sqr(
-      currentScale))) - 0.0008822328500119351*Power(g3,4)*Sqr(Log(Power(
-      currentScale,2)/Sqr(MFu(idx))));
+   const double qcd_1l = -0.008443431970194815*(4. - 3.*Log(Sqr(MFu(idx))
+      /Sqr(currentScale)))*Sqr(g3);
+   double qcd_2l = 0., qcd_3l = 0.;
+
+   if (get_thresholds() > 1) {
+      qcd_2l = -0.005855107113909601*Power(g3,4) -
+         0.0028071045227652486*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
+         - 0.00024060895909416413*Power(g3,4)*Sqr(Log(Power(currentScale,2)
+         /Sqr(MFu(idx))));
+   }
+
+   if (get_thresholds() > 2) {
+      qcd_3l = -0.0013067805969741943*Power(g3,6) -
+         0.0004114970933517977*Power(g3,6)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
+         - 5.078913443827405e-6*Power(g3,6)*Power(Log(Sqr(currentScale)/Sqr(
+         MFu(idx))),3) - 0.00007466002762426286*Power(g3,6)*Sqr(Log(Power(
+         currentScale,2)/Sqr(MFu(idx))));
+   }
 
    const double m_susy_drbar = m_pole + self_energy_1 + m_pole * (
-      self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);
+      self_energy_PL + self_energy_PR + qcd_1l + qcd_2l + qcd_3l);
 
    return m_susy_drbar;
 }

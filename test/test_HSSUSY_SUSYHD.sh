@@ -7,7 +7,7 @@ output="$BASEDIR/test_HSSUSY_SUSYHD.out.dat"
 exe="$BASEDIR/../models/HSSUSY/run_HSSUSY.x"
 print_block="$BASEDIR/../utils/print_slha_block.awk"
 
-rel_error="0.0006"
+rel_error="0.00061"
 
 if test ! -x "$exe"; then
     echo "Error: HSSUSY spectrum generator not found: $exe"
