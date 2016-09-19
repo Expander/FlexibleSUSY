@@ -3,7 +3,7 @@ Needs["ReadSLHA`", "ReadSLHA.m"];
 
 Get["models/CMSSM/CMSSM_librarylink.m"];
 
-Print["Comparing SLHA output to MathLink output"];
+Print["Comparing SLHA output to LibraryLink output"];
 
 settings = {
     precisionGoal -> 0.0001,
