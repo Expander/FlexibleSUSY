@@ -245,11 +245,11 @@ remove model-specific files:
 
      make clean-<model>     # deletes .d .o .a .x and generated files
 
-     make distclean-<model> # same as `make clean-<model>'
+     make distclean-<model> # same as `make clean-<model> clean-<model>-src'
 
      make clean-<model>-dep # deletes .d files
 
-     make clean-<model>-lib # deletes library
+     make clean-<model>-lib # deletes model library
 
      make clean-<model>-obj # deletes .o files
 
