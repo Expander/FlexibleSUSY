@@ -29,9 +29,9 @@ Usage: `basename $0`\
  [--all-addons]\
  [--all-models]\
  [--boostflags]\
+ [--cppflags]\
  [--cxx]\
  [--cxxflags]\
- [--cppflags]\
  [--eigenflags]\
  [--fc]\
  [--fflags]\
