@@ -41,8 +41,9 @@ Usage: `basename $0`\
  [--ldflags]\
  [--ldlibs]\
  [--loopfuncflags]\
- [--make-lib-cmd]\
  [--math-cmd]\
+ [--shared-lib-cmd]\
+ [--static-lib-cmd]\
  [--threadlibs]\
  [--with-<addon>]\
  [--with-<model>]\
@@ -70,9 +71,9 @@ Options:
   --ldlibs              Print LDLIBS
   --loopfuncflags       Print compiler flags for loop function library
   --math-cmd            Print Mathematica kernel command
-  --threadlibs          Print thread library
   --shared-lib-cmd      Print command to build shared library
   --static-lib-cmd      Print command to build static library
+  --threadlibs          Print thread library
   --with-<addon>        Test if <addon> is compiled in
   --with-<model>        Test if <model> is compiled in
   --version             Print the $packagename version
