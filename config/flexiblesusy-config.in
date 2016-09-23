@@ -43,7 +43,7 @@ tsillibs="@TSILLIBS@"
 
 # creates full CPPFLAGS from list of modules
 create_cppflags_with_modules() {
-    cppflags_with_modules="$cppflags"
+    local cppflags_with_modules="$cppflags"
 
     for m in config src fflite legacy slhaea doc $models $addons ; do
         cppflags_with_modules="$cppflags_with_modules -I${m}"
@@ -59,6 +59,8 @@ create_cppflags_with_modules() {
 
     [ "x@ENABLE_LIBRARYLINK@" = xyes ] && \
         cppflags_with_modules="$cppflags_with_modules $(${CONFIGDIR}/mathematica_include_paths.sh --math-cmd="$math" -I --librarylink --mathlink)"
+
+    echo "$cppflags_with_modules"
 }
 
 # creates list of flexiblesusy libraries
@@ -75,9 +77,8 @@ create_flexiblesusylibs() {
     echo "$flexiblesusylibs"
 }
 
-create_cppflags_with_modules
-
 compile_cmd="$cxx $cppflags_with_modules $cxxflags"
+
 libs="$ldflags $(create_flexiblesusylibs) $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
 
 help() {
@@ -165,7 +166,7 @@ while test $# -gt 0; do
         --boostthreadlibs)       out="$out $boostthreadlibs" ;;
         --compile-cmd)           out="$out $compile_cmd" ;;
         --cppflags)              out="$out $cppflags" ;;
-        --cppflags-with-modules) out="$out $cppflags_with_modules" ;;
+        --cppflags-with-modules) out="$out $(create_cppflags_with_modules)" ;;
         --cxx)                   out="$out $cxx" ;;
         --cxxflags)              out="$out $cxxflags" ;;
         --eigenflags)            out="$out $eigenflags" ;;
