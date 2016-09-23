@@ -43,14 +43,32 @@ Usage: `basename $0` [options]
 Options:
   --algorithms          Print all algorithms that are used
   --addons              Print all addons that are build
-  --blaslibs            Print BLAS libraries
-  --boostflags          Print compiler flags for BOOST
-  --boosttestlibs       Print BOOST test libraries
-  --boostthreadlibs     Print BOOST thread libraries
+  --blaslibs            Print BLAS libraries, BLASLIBS
+  --boostflags          Print compiler flags for BOOST, BOOSTFLAGS
+  --boosttestlibs       Print BOOST test libraries, BOOSTTESTLIBS
+  --boostthreadlibs     Print BOOST thread libraries, BOOSTTHREADLIBS
   --cppflags            Print C preprocessor flags, CPPFLAGS
   --cxx                 Print C++ compiler, CXX
   --cxxflags            Print C++ compiler flags, CXXFLAGS
-  --eigenflags          Print compiler flags for Eigen
+  --eigenflags          Print compiler flags for Eigen, EIGENFLAGS
+  --enable-colors       Test if colors are enabled
+  --enable-compile      Test if compilation is enabled
+  --enable-compiler-warnings
+                        Test if compiler warnings are enabled
+  --enable-debug        Test if debug mode is enabled
+  --enable-fflite       Test if FFlite is enabled
+  --enable-lapack       Test if LAPACK is enabled
+  --enable-librarylink  Test if LibraryLink is enabled
+  --enable-looptools    Test if LoopTools is enabled
+  --enable-mass-error-check
+                        Test if mass error check is enabled
+  --enable-silent       Test if silet mode is enabled
+  --enable-shared-libs  Test if shared libraries are build
+  --enable-sqlite       Test if SQLite is enabled
+  --enable-static       Test if static executables are build
+  --enable-threads      Test if multi-threading is enabled
+  --enable-tsil         Test if TSIL is linked in
+  --enable-verbose      Test if verbose mode is enabled
   --fc                  Print Fortran compiler, FC
   --fflags              Print Fortran flags, FFLAGS
   --flibs               Print Fortran libraries, FLIBS
@@ -59,16 +77,16 @@ Options:
   --lapacklibs          Print LAPACK libraries, LAPACKLIBS
   --ldflags             Print flags for optional libraries, LDFLAGS
   --ldlibs              Print optional libraries, LDLIBS
-  --loopfuncflags       Print compiler flags for loop function library
-  --loopfunclibs        Print loop function libraries
-  --math-cmd            Print Mathematica kernel command
+  --loopfuncflags       Print compiler flags for loop function library, LOOPFUNCFLAGS
+  --loopfunclibs        Print loop function libraries, LOOPFUNCLIBS
+  --math-cmd            Print Mathematica kernel command, MATH
   --models              Print all models that are build
-  --module-make-lib-cmd Print command to build module libraries
-  --module-lib-ext      Print file name extension for module libraries
-  --shared-lib-cmd      Print command to build shared library
-  --sqliteflags         Print SQLite flags, SQLITEFLAGS
-  --sqlitelibs          Print SQLite libararies, SQLITELIBS
-  --static-lib-cmd      Print command to build static library
+  --module-make-lib-cmd Print command to build module libraries, MODULE_MAKE_LIB_CMD
+  --module-lib-ext      Print file name extension for module libraries, MODULE_LIBEXT
+  --shared-lib-cmd      Print command to build shared library, SHARED_LIB_CMD
+  --sqliteflags         Print SQLite flags, SQLITEFLAGS, SQLITEFLAGS
+  --sqlitelibs          Print SQLite libararies, SQLITELIBS, SQLITELIBS
+  --static-lib-cmd      Print command to build static library, STATIC_LIB_CMD
   --threadlibs          Print thread library, THREADLIBS
   --tsilflags           Print TSIL flags, TSILFLAGS
   --tsillibs            Print TSIL libraries, TSILLIBS
@@ -120,7 +138,7 @@ while test $# -gt 0; do
         --tsilflags)           out="$out $tsilflags" ;;
         --tsillibs)            out="$out $tsillibs" ;;
         --with-*)
-      ### Check for model
+      ### Check for models and addons
             f=`echo $1 | sed 's/--with-//'`
             for c in $models $addons ; do
                 if test "x`basename $c`" = "x$f" ; then
@@ -133,14 +151,30 @@ while test $# -gt 0; do
                 out="$out no"
             fi
             ;;
-        --version)       out="$out $version"  ;;
+      ### flags
+        --enable-colors)            out="$out @ENABLE_COLOR_PRINTOUT@" ;;
+        --enable-compile)           out="$out @ENABLE_COMPILE@" ;;
+        --enable-compiler-warnings) out="$out @ENABLE_COMPILER_WARNINGS@" ;;
+        --enable-debug)             out="$out @ENABLE_DEBUG@" ;;
+        --enable-fflite)            out="$out @ENABLE_FFLITE@" ;;
+        --enable-lapack)            out="$out @ENABLE_LAPACK@" ;;
+        --enable-librarylink)       out="$out @ENABLE_LIBRARYLINK@" ;;
+        --enable-looptools)         out="$out @ENABLE_LOOPTOOLS@" ;;
+        --enable-mass-error-check)  out="$out @ENABLE_CHECK_EIGENVALUE_ERROR@" ;;
+        --enable-silent)            out="$out @ENABLE_SILENT@" ;;
+        --enable-shared-libs)       out="$out @ENABLE_SHARED_LIBS@" ;;
+        --enable-sqlite)            out="$out @ENABLE_SQLITE@" ;;
+        --enable-static)            out="$out @ENABLE_STATIC@" ;;
+        --enable-threads)           out="$out @ENABLE_THREADS@" ;;
+        --enable-tsil)              out="$out @ENABLE_TSIL@" ;;
+        --enable-verbose)           out="$out @ENABLE_VERBOSE@" ;;
+
+        --version)                  out="$out $version"  ;;
         --help)
-      ### Print a help message
             help
             exit 0
             ;;
         *)
-      ### Give an error
             echo "Unknown argument: $1" 1>&2
             help
             exit 1

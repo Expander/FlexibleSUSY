@@ -2312,19 +2312,20 @@ replace_markers() {
         -e "s|@LDFLAGS@|$LDFLAGS|"         \
         -e "s|@LDLIBS@|$LDLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
+	-e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
+	-e "s|@ENABLE_COMPILER_WARNINGS@|$enable_compiler_warnings|" \
+	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
+	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
+	-e "s|@ENABLE_ILP64MKL_WORKAROUND@|$enable_ilp64mkl_workaround|" \
 	-e "s|@ENABLE_LAPACK@|$enable_lapack|" \
 	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
-	-e "s|@ENABLE_ILP64MKL_WORKAROUND@|$enable_ilp64mkl_workaround|" \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
-	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
-	-e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
-	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
-	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
 	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
+	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \
