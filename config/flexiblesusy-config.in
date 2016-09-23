@@ -2,6 +2,10 @@
 
 # Author: Alexander Voigt
 
+BASEDIR=$(dirname $0)
+ABSBASEDIR=$(cd ${BASEDIR}; pwd)
+CONFIGDIR="${BASEDIR}/config"
+
 packagename="@PKGNAME@"
 version="@FLEXIBLESUSY_VERSION@"
 
@@ -37,6 +41,43 @@ threadlibs="@THREADLIBS@"
 tsilflags="@TSILFLAGS@"
 tsillibs="@TSILLIBS@"
 
+# creates full CPPFLAGS from list of modules
+create_cppflags_with_modules() {
+    cppflags_with_modules="$cppflags"
+
+    for m in config src fflite legacy slhaea doc $models $addons ; do
+        cppflags_with_modules="$cppflags_with_modules -I${m}"
+    done
+
+    cppflags_with_modules="$cppflags_with_modules -I. $gslflags $eigenflags $boostflags"
+
+    [ "x@ENABLE_TSIL@" = xyes ] && \
+        cppflags_with_modules="$cppflags_with_modules $tsilflags"
+
+    [ "x@ENABLE_LOOPTOOLS@" = xyes -a "x@ENABLE_FFLITE@" = xyes ] && \
+        cppflags_with_modules="$cppflags_with_modules $loopfuncflags"
+
+    [ "x@ENABLE_LIBRARYLINK@" = xyes ] && \
+        cppflags_with_modules="$cppflags_with_modules $(${CONFIGDIR}/mathematica_include_paths.sh --math-cmd="$math" -I --librarylink --mathlink)"
+}
+
+# creates list of flexiblesusy libraries
+create_flexiblesusylibs() {
+    flexiblesusylibs=
+
+    for a in $models $addons legacy ; do
+        flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/lib$(basename $a)${module_lib_ext}"
+    done
+
+    flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"
+}
+
+create_cppflags_with_modules
+create_flexiblesusylibs
+
+compile_cmd="$cxx $cppflags_with_modules $cxxflags"
+linking_cmd="$cxx $ldflags $flexiblesusylibs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
+
 help() {
 cat <<EOF
 Usage: `basename $0` [options]
@@ -47,7 +88,11 @@ Options:
   --boostflags          Print compiler flags for BOOST, BOOSTFLAGS
   --boosttestlibs       Print BOOST test libraries, BOOSTTESTLIBS
   --boostthreadlibs     Print BOOST thread libraries, BOOSTTHREADLIBS
+  --compile-cmd         Print compilation command for object files
   --cppflags            Print C preprocessor flags, CPPFLAGS
+  --cppflags-with-modules
+                        Print C preprocessor flags together with -I directives
+                        for each model and addon
   --cxx                 Print C++ compiler, CXX
   --cxxflags            Print C++ compiler flags, CXXFLAGS
   --eigenflags          Print compiler flags for Eigen, EIGENFLAGS
@@ -79,6 +124,7 @@ Options:
   --lapacklibs          Print LAPACK libraries, LAPACKLIBS
   --ldflags             Print flags for optional libraries, LDFLAGS
   --ldlibs              Print optional libraries, LDLIBS
+  --linking-cmd         Print linking command for executables
   --loopfuncflags       Print compiler flags for loop function library, LOOPFUNCFLAGS
   --loopfunclibs        Print loop function libraries, LOOPFUNCLIBS
   --math-cmd            Print Mathematica kernel command, MATH
@@ -109,37 +155,40 @@ while test $# -gt 0; do
     esac
 
     case $1 in
-        --addons)              out="$out $addons" ;;
-        --algorithms)          out="$out $algorithms" ;;
-        --blaslibs)            out="$out $blaslibs" ;;
-        --boostflags)          out="$out $boostflags" ;;
-        --boosttestlibs)       out="$out $boosttestlibs" ;;
-        --boostthreadlibs)     out="$out $boostthreadlibs" ;;
-        --cppflags)            out="$out $cppflags" ;;
-        --cxx)                 out="$out $cxx" ;;
-        --cxxflags)            out="$out $cxxflags" ;;
-        --eigenflags)          out="$out $eigenflags" ;;
-        --fc)                  out="$out $fc" ;;
-        --fflags)              out="$out $fflags" ;;
-        --flibs)               out="$out $flibs" ;;
-        --gslflags)            out="$out $gslflags" ;;
-        --gsllibs)             out="$out $gsllibs" ;;
-        --lapacklibs)          out="$out $lapacklibs" ;;
-        --ldflags)             out="$out $ldflags" ;;
-        --ldlibs)              out="$out $ldlibs" ;;
-        --loopfuncflags)       out="$out $loopfuncflags" ;;
-        --loopfunclibs)        out="$out $loopfunclibs" ;;
-        --math-cmd)            out="$out $math" ;;
-        --models)              out="$out $models" ;;
-        --module-make-lib-cmd) out="$out $module_make_lib_cmd" ;;
-        --module-lib-ext)      out="$out $module_lib_ext" ;;
-        --shared-lib-cmd)      out="$out $shared_lib_cmd" ;;
-        --sqliteflags)         out="$out $sqliteflags" ;;
-        --sqlitelibs)          out="$out $sqlitelibs" ;;
-        --static-lib-cmd)      out="$out $static_lib_cmd" ;;
-        --threadlibs)          out="$out $threadlibs" ;;
-        --tsilflags)           out="$out $tsilflags" ;;
-        --tsillibs)            out="$out $tsillibs" ;;
+        --addons)                out="$out $addons" ;;
+        --algorithms)            out="$out $algorithms" ;;
+        --blaslibs)              out="$out $blaslibs" ;;
+        --boostflags)            out="$out $boostflags" ;;
+        --boosttestlibs)         out="$out $boosttestlibs" ;;
+        --boostthreadlibs)       out="$out $boostthreadlibs" ;;
+        --compile-cmd)           out="$out $compile_cmd" ;;
+        --cppflags)              out="$out $cppflags" ;;
+        --cppflags-with-modules) out="$out $cppflags_with_modules" ;;
+        --cxx)                   out="$out $cxx" ;;
+        --cxxflags)              out="$out $cxxflags" ;;
+        --eigenflags)            out="$out $eigenflags" ;;
+        --fc)                    out="$out $fc" ;;
+        --fflags)                out="$out $fflags" ;;
+        --flibs)                 out="$out $flibs" ;;
+        --gslflags)              out="$out $gslflags" ;;
+        --gsllibs)               out="$out $gsllibs" ;;
+        --lapacklibs)            out="$out $lapacklibs" ;;
+        --ldflags)               out="$out $ldflags" ;;
+        --ldlibs)                out="$out $ldlibs" ;;
+        --linking-cmd)           out="$out $linking_cmd" ;;
+        --loopfuncflags)         out="$out $loopfuncflags" ;;
+        --loopfunclibs)          out="$out $loopfunclibs" ;;
+        --math-cmd)              out="$out $math" ;;
+        --models)                out="$out $models" ;;
+        --module-make-lib-cmd)   out="$out $module_make_lib_cmd" ;;
+        --module-lib-ext)        out="$out $module_lib_ext" ;;
+        --shared-lib-cmd)        out="$out $shared_lib_cmd" ;;
+        --sqliteflags)           out="$out $sqliteflags" ;;
+        --sqlitelibs)            out="$out $sqlitelibs" ;;
+        --static-lib-cmd)        out="$out $static_lib_cmd" ;;
+        --threadlibs)            out="$out $threadlibs" ;;
+        --tsilflags)             out="$out $tsilflags" ;;
+        --tsillibs)              out="$out $tsillibs" ;;
         --with-*)
       ### Check for models and addons
             f=`echo $1 | sed 's/--with-//'`
