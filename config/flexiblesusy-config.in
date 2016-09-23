@@ -63,7 +63,7 @@ create_cppflags_with_modules() {
 
 # creates list of flexiblesusy libraries
 create_flexiblesusylibs() {
-    flexiblesusylibs=
+    local flexiblesusylibs=
 
     for a in $models $addons ; do
         flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/lib$(basename $a)${module_lib_ext}"
@@ -71,13 +71,14 @@ create_flexiblesusylibs() {
 
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/legacy/liblegacy${module_lib_ext}"
+
+    echo "$flexiblesusylibs"
 }
 
 create_cppflags_with_modules
-create_flexiblesusylibs
 
 compile_cmd="$cxx $cppflags_with_modules $cxxflags"
-linking_cmd="$cxx $ldflags $flexiblesusylibs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
+libs="$ldflags $(create_flexiblesusylibs) $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
 
 help() {
 cat <<EOF
@@ -176,7 +177,7 @@ while test $# -gt 0; do
         --lapacklibs)            out="$out $lapacklibs" ;;
         --ldflags)               out="$out $ldflags" ;;
         --ldlibs)                out="$out $ldlibs" ;;
-        --linking-cmd)           out="$out $linking_cmd" ;;
+        --libs)                  out="$out $libs" ;;
         --loopfuncflags)         out="$out $loopfuncflags" ;;
         --loopfunclibs)          out="$out $loopfunclibs" ;;
         --math-cmd)              out="$out $math" ;;
