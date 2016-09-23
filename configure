@@ -194,6 +194,8 @@ MODULE_LIBEXT="$STATIC_LIB_EXT"
 MODULE_MAKE_LIB_CMD="$STATIC_LIB_CMD"
 LIBLNK_LIBEXT="$SHARED_LIB_EXT"
 LIBLNK_MAKE_LIB_CMD="$SHARED_LIB_CMD"
+LOOPFUNCFLAGS=""
+LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
 sqlite_lib_dir=""
@@ -1772,6 +1774,24 @@ check_looptools_incl() {
 }
 
 #_____________________________________________________________________
+check_loop_functions() {
+    if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
+	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
+	exit 1
+    fi
+
+    if test "$enable_looptools" = "yes" ; then
+        LOOPFUNCFLAGS="$LOOPTOOLSFLAGS"
+        LOOPFUNCLIBS="$LOOPTOOLSLIBS"
+    fi
+
+    if test "$enable_fflite" = "yes" ; then
+        LOOPFUNCFLAGS=""
+        LOOPFUNCLIBS="fflite/libfflite${MODULE_LIBEXT}"
+    fi
+}
+
+#_____________________________________________________________________
 check_sqlite_libs() {
     check_library "libsqlite3" "$sqlite_lib_dir" \
        "$default_lib_paths"
@@ -2139,11 +2159,6 @@ enable_defines() {
         logmsg "   ${DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR}"
     fi
 
-    if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
-	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
-	exit 1
-    fi
-
     if test "x$enable_fflite" = "xyes" ; then
         DEFINE_ENABLE_FFLITE="#define ENABLE_FFLITE 1"
         message "Enabling usage of fflite"
@@ -2312,9 +2327,13 @@ replace_markers() {
 	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
+	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \
+	-e "s|@LOOPFUNCFLAGS@|$LOOPFUNCFLAGS|"    \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+        -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|"  \
+        -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|"  \
 	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
 	-e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"        \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
@@ -2573,6 +2592,7 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
     fi
+    check_loop_functions
     check_sqlite
     check_tsil
     check_static_lib_cmd
