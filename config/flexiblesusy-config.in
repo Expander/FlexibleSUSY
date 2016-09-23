@@ -34,6 +34,8 @@ Options:
   --enable-looptools    Test if LoopTools is enabled
   --enable-mass-error-check
                         Test if mass error check is enabled
+  --enable-ilp64mkl-workaround
+                        Test if ilp64 MKL workaround is enabled
   --enable-silent       Test if silet mode is enabled
   --enable-shared-libs  Test if shared libraries are build
   --enable-sqlite       Test if SQLite is enabled
@@ -125,24 +127,25 @@ while test $# -gt 0; do
             fi
             ;;
       ### flags
-        --enable-colors)            out="$out @ENABLE_COLOR_PRINTOUT@" ;;
-        --enable-compile)           out="$out @ENABLE_COMPILE@" ;;
-        --enable-compiler-warnings) out="$out @ENABLE_COMPILER_WARNINGS@" ;;
-        --enable-debug)             out="$out @ENABLE_DEBUG@" ;;
-        --enable-fflite)            out="$out @ENABLE_FFLITE@" ;;
-        --enable-lapack)            out="$out @ENABLE_LAPACK@" ;;
-        --enable-librarylink)       out="$out @ENABLE_LIBRARYLINK@" ;;
-        --enable-looptools)         out="$out @ENABLE_LOOPTOOLS@" ;;
-        --enable-mass-error-check)  out="$out @ENABLE_CHECK_EIGENVALUE_ERROR@" ;;
-        --enable-silent)            out="$out @ENABLE_SILENT@" ;;
-        --enable-shared-libs)       out="$out @ENABLE_SHARED_LIBS@" ;;
-        --enable-sqlite)            out="$out @ENABLE_SQLITE@" ;;
-        --enable-static)            out="$out @ENABLE_STATIC@" ;;
-        --enable-threads)           out="$out @ENABLE_THREADS@" ;;
-        --enable-tsil)              out="$out @ENABLE_TSIL@" ;;
-        --enable-verbose)           out="$out @ENABLE_VERBOSE@" ;;
+        --enable-colors)              out="$out @ENABLE_COLOR_PRINTOUT@" ;;
+        --enable-compile)             out="$out @ENABLE_COMPILE@" ;;
+        --enable-compiler-warnings)   out="$out @ENABLE_COMPILER_WARNINGS@" ;;
+        --enable-debug)               out="$out @ENABLE_DEBUG@" ;;
+        --enable-fflite)              out="$out @ENABLE_FFLITE@" ;;
+        --enable-lapack)              out="$out @ENABLE_LAPACK@" ;;
+        --enable-librarylink)         out="$out @ENABLE_LIBRARYLINK@" ;;
+        --enable-looptools)           out="$out @ENABLE_LOOPTOOLS@" ;;
+        --enable-mass-error-check)    out="$out @ENABLE_CHECK_EIGENVALUE_ERROR@" ;;
+        --enable-ilp64mkl-workaround) out="$out @ENABLE_ILP64MKL_WORKAROUND@" ;;
+        --enable-silent)              out="$out @ENABLE_SILENT@" ;;
+        --enable-shared-libs)         out="$out @ENABLE_SHARED_LIBS@" ;;
+        --enable-sqlite)              out="$out @ENABLE_SQLITE@" ;;
+        --enable-static)              out="$out @ENABLE_STATIC@" ;;
+        --enable-threads)             out="$out @ENABLE_THREADS@" ;;
+        --enable-tsil)                out="$out @ENABLE_TSIL@" ;;
+        --enable-verbose)             out="$out @ENABLE_VERBOSE@" ;;
 
-        --version)                  out="$out $version"  ;;
+        --version)                    out="$out $version"  ;;
         --help)
             help
             exit 0
