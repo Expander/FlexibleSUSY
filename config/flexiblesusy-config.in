@@ -91,6 +91,7 @@ Options:
   --tsilflags           Print TSIL flags, TSILFLAGS
   --tsillibs            Print TSIL libraries, TSILLIBS
   --with-<addon>        Test if <addon> is compiled in
+  --with-<algorithm>    Test if <algorithm> is compiled in
   --with-<model>        Test if <model> is compiled in
   --version             Print the $packagename version
   --help                Print this message
@@ -140,7 +141,7 @@ while test $# -gt 0; do
         --with-*)
       ### Check for models and addons
             f=`echo $1 | sed 's/--with-//'`
-            for c in $models $addons ; do
+            for c in $models $addons $algorithms ; do
                 if test "x`basename $c`" = "x$f" ; then
                     out="$out yes"
                     break
