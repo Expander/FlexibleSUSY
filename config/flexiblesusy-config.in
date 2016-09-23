@@ -77,6 +77,8 @@ create_flexiblesusylibs() {
     echo "$flexiblesusylibs"
 }
 
+cppflags_with_modules=$(create_cppflags_with_modules)
+
 compile_cmd="$cxx $cppflags_with_modules $cxxflags"
 
 libs="$ldflags $(create_flexiblesusylibs) $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
@@ -166,7 +168,7 @@ while test $# -gt 0; do
         --boostthreadlibs)       out="$out $boostthreadlibs" ;;
         --compile-cmd)           out="$out $compile_cmd" ;;
         --cppflags)              out="$out $cppflags" ;;
-        --cppflags-with-modules) out="$out $(create_cppflags_with_modules)" ;;
+        --cppflags-with-modules) out="$out $cppflags_with_modules" ;;
         --cxx)                   out="$out $cxx" ;;
         --cxxflags)              out="$out $cxxflags" ;;
         --eigenflags)            out="$out $eigenflags" ;;
