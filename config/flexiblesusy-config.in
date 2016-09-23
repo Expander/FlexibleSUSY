@@ -129,7 +129,7 @@ Options:
   --lapacklibs          Print LAPACK libraries, LAPACKLIBS
   --ldflags             Print flags for optional libraries, LDFLAGS
   --ldlibs              Print optional libraries, LDLIBS
-  --linking-cmd         Print linking command for executables
+  --libs                Print all libraries linked to an executable
   --loopfuncflags       Print compiler flags for loop function library, LOOPFUNCFLAGS
   --loopfunclibs        Print loop function libraries, LOOPFUNCLIBS
   --math-cmd            Print Mathematica kernel command, MATH
