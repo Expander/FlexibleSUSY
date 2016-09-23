@@ -2623,39 +2623,7 @@ replace_markers \
 
 # END:   NOT EXPORTED ##########################################
 
-sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
-    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
-    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
-    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
-    -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
-    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
-    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
-    -e "s|@ADDONS@|$ADDONS|"           \
-    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
-    -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
-    -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
-    -e "s|@CXX@|$CXX|"                 \
-    -e "s|@CFLAGS@|$CFLAGS|"           \
-    -e "s|@CC@|$CC|"                   \
-    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
-    -e "s|@FC@|$FC|"                   \
-    -e "s|@FFLAGS@|$FFLAGS|"           \
-    -e "s|@FLIBS@|$FLIBS|"             \
-    -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
-    -e "s|@GSLLIBS@|$GSLLIBS|"         \
-    -e "s|@LDFLAGS@|$LDFLAGS|"         \
-    -e "s|@LDLIBS@|$LDLIBS|"           \
-    -e "s|@LIBLNK_MAKE_LIB_CMD@|$LIBLNK_MAKE_LIB_CMD|" \
-    -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
-    -e "s|@SQLITELIBS@|$SQLITELIBS|"   \
-    -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|" \
-    -e "s|@TSILLIBS@|$TSILLIBS|"       \
-    -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
-    -e "s|@MATH@|$MATH|"               \
-    -e "s|@MODELS@|$MODELS|"           \
-    -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|" \
-    -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|" \
-    -e "s|@THREADLIBS@|$THREADLIBS|"   \
+replace_markers \
     < $FSCONFIG_TMPL > $FSCONFIG
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
