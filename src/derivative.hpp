@@ -165,7 +165,7 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
 /**
  * Calculates the 1st derivative of \f$f(x)\f$ up to order \a Order
  * using the central finite difference.  This function calls \f$f\f$
- * (Order + 2) times.
+ * 2 * (Order + 1) times.
  *
  * @param f function
  * @param x point at which derivative is to be calculated
