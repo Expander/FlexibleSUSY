@@ -46,7 +46,7 @@ namespace flexiblesusy {
  * @return derivative
  */
 template <class F, class A>
-auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
+auto derivative_forward_fx(const F& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
    -> decltype(f(x))
 {
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
@@ -71,7 +71,7 @@ auto derivative_forward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_l
  * @return derivative
  */
 template <class F, class A>
-auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
+auto derivative_backward_fx(const F& f, A x, decltype(f(x)) fx, A eps = std::numeric_limits<A>::epsilon())
    -> decltype(f(x))
 {
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
@@ -96,7 +96,7 @@ auto derivative_backward_fx(F&& f, A x, decltype(f(x)) fx, A eps = std::numeric_
  * @return derivative
  */
 template <int Order, int sign, class F, class A>
-auto derivative_one_sided(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
+auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
    static_assert(Order <= 5, "1st forward derivative with order > 5 not implemented");
    static_assert(sign == -1 || sign == +1, "sign must be either +1 or -1 for one-sided derivative");
@@ -139,9 +139,9 @@ auto derivative_one_sided(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
  * @return derivative
  */
 template <int Order, class F, class A>
-auto derivative_forward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
+auto derivative_forward(const F& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   return derivative_one_sided<Order, -1>(std::forward<F>(f), x, eps);
+   return derivative_one_sided<Order, -1>(f, x, eps);
 }
 
 /**
@@ -157,9 +157,9 @@ auto derivative_forward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -
  * @return derivative
  */
 template <int Order, class F, class A>
-auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
+auto derivative_backward(const F& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   return derivative_one_sided<Order, +1>(std::forward<F>(f), x, eps);
+   return derivative_one_sided<Order, +1>(f, x, eps);
 }
 
 /**
@@ -175,7 +175,7 @@ auto derivative_backward(F&& f, A x, A eps = std::numeric_limits<A>::epsilon()) 
  * @return derivative
  */
 template <int Order, class F, class A>
-auto derivative_central(F&& f, A x, A eps = std::numeric_limits<A>::epsilon())
+auto derivative_central(const F& f, A x, A eps = std::numeric_limits<A>::epsilon())
    -> decltype(f(x))
 {
    static_assert(Order <= 3, "1st central derivative with order > 3 not implemented");
