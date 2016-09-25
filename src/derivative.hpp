@@ -88,7 +88,7 @@ auto derivative_backward_fx(const F& f, A x, decltype(f(x)) fx, A eps = std::num
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5)
+ * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5, 6, 7)
  * @tparam sign direction (-1 = forward, +1 = backward derivative)
  * @tparam F function type
  * @tparam A function parameter type
@@ -98,7 +98,7 @@ auto derivative_backward_fx(const F& f, A x, decltype(f(x)) fx, A eps = std::num
 template <int Order, int sign, class F, class A>
 auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsilon()) -> decltype(f(x))
 {
-   static_assert(Order <= 5, "1st forward derivative with order > 5 not implemented");
+   static_assert(Order <= 7, "1st forward derivative with order > 7 not implemented");
    static_assert(sign == -1 || sign == +1, "sign must be either +1 or -1 for one-sided derivative");
 
    typedef decltype(f(x)) return_type;
@@ -111,7 +111,9 @@ auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsil
       {-11./6., 3., -3./2., 1./3.},
       {-25./12., 4., -3., 4./3., -1./4.},
       {-137./60., 5., -5., 10./3., -5./4., 1./5.},
-      {-49./20., 6., -15./2., 20./3., -15./4., 6./5., -1./6.}
+      {-49./20., 6., -15./2., 20./3., -15./4., 6./5., -1./6.},
+      {-363./140., 7., -21./2., 35./3., -35./4., 21./5., -7./6., 1./7.},
+      {-761./280., 8., -14., 56./3., -35./2., 56./5., -14./3., 8./7., -1./8.}
    };
 
    const double dsign = static_cast<double>(sign);
