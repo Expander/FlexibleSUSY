@@ -119,9 +119,9 @@ auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsil
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
    return_type result = 0;
 
-   for (unsigned i = 0; i < Order + 2; i++) {
+   for (int i = 0; i < Order + 2; i++) {
       const double coeff = coeffs[Order][i];
-      result += sign * coeff * f(x + sign*(i*h));
+      result += sign * coeff * f(x + sign*i*h);
    }
 
    return result / h;
