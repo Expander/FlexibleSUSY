@@ -63,8 +63,8 @@ create_cppflags_with_modules() {
     echo "$cppflags_with_modules"
 }
 
-# creates list of flexiblesusy libraries
-create_flexiblesusylibs() {
+# creates list of FlexibleSUSY module libraries
+create_flexiblesusy_libs() {
     local flexiblesusylibs=
 
     for a in $models $addons ; do
@@ -77,11 +77,12 @@ create_flexiblesusylibs() {
     echo "$flexiblesusylibs"
 }
 
-cppflags_with_modules=$(create_cppflags_with_modules)
+cppflags_with_modules="$(create_cppflags_with_modules)"
+flexiblesusy_libs="$(create_flexiblesusy_libs)"
 
 compile_cmd="$cxx $cppflags_with_modules $cxxflags"
 
-libs="$ldflags $(create_flexiblesusylibs) $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
+libs="$ldflags $flexiblesusy_libs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
 
 help() {
 cat <<EOF
@@ -123,6 +124,7 @@ Options:
   --enable-verbose      Test if verbose mode is enabled
   --fc                  Print Fortran compiler, FC
   --fflags              Print Fortran flags, FFLAGS
+  --flexiblesusylibs    Print FlexibleSUSY module libraries
   --flibs               Print Fortran libraries, FLIBS
   --gslflags            Print compiler flags for GSL, GSLFLAGS
   --gsllibs             Print GSL libraries, GSLLIBS
@@ -174,6 +176,7 @@ while test $# -gt 0; do
         --eigenflags)            out="$out $eigenflags" ;;
         --fc)                    out="$out $fc" ;;
         --fflags)                out="$out $fflags" ;;
+        --flexiblesusylibs)      out="$out $flexiblesusy_libs" ;;
         --flibs)                 out="$out $flibs" ;;
         --gslflags)              out="$out $gslflags" ;;
         --gsllibs)               out="$out $gsllibs" ;;
