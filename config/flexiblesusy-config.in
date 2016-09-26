@@ -15,7 +15,7 @@ blaslibs="@BLASLIBS@"
 boostflags="@BOOSTFLAGS@"
 boosttestlibs="@BOOSTTESTLIBS@"
 boostthreadlibs="@BOOSTTHREADLIBS@"
-cppflags="@CPPFLAGS@"
+cppflags_from_configure="@CPPFLAGS@"
 cxx="@CXX@"
 cxxflags="@CXXFLAGS@"
 eigenflags="@EIGENFLAGS@"
@@ -41,26 +41,29 @@ threadlibs="@THREADLIBS@"
 tsilflags="@TSILFLAGS@"
 tsillibs="@TSILLIBS@"
 
-# creates full CPPFLAGS from list of modules
-create_cppflags_with_modules() {
-    local cppflags_with_modules="$cppflags"
+create_include_directives_for_FS_modules() {
+    local incl=
 
     for m in config src fflite legacy slhaea doc $models $addons ; do
-        cppflags_with_modules="$cppflags_with_modules -I${m}"
+        incl="$incl -I${m}"
     done
 
-    cppflags_with_modules="$cppflags_with_modules -I. $gslflags $eigenflags $boostflags"
+    echo "$incl"
+}
+
+create_include_directives_for_external_modules() {
+    local incl="$gslflags $eigenflags $boostflags"
 
     [ "x@ENABLE_TSIL@" = xyes ] && \
-        cppflags_with_modules="$cppflags_with_modules $tsilflags"
+        incl="$incl $tsilflags"
 
     [ "x@ENABLE_LOOPTOOLS@" = xyes -a "x@ENABLE_FFLITE@" = xyes ] && \
-        cppflags_with_modules="$cppflags_with_modules $loopfuncflags"
+        incl="$incl $loopfuncflags"
 
     [ "x@ENABLE_LIBRARYLINK@" = xyes ] && \
-        cppflags_with_modules="$cppflags_with_modules $(${CONFIGDIR}/mathematica_include_paths.sh --math-cmd="$math" -I --librarylink --mathlink)"
+        incl="$incl $(${CONFIGDIR}/mathematica_include_paths.sh --math-cmd="$math" -I --librarylink --mathlink)"
 
-    echo "$cppflags_with_modules"
+    echo "$incl"
 }
 
 # creates list of FlexibleSUSY module libraries
@@ -77,11 +80,12 @@ create_flexiblesusy_libs() {
     echo "$flexiblesusylibs"
 }
 
-cppflags_with_modules="$(create_cppflags_with_modules)"
+incl_FS_modules="$(create_include_directives_for_FS_modules)"
+incl_external_modules="$(create_include_directives_for_external_modules)"
+cppflags_without_modules="$cppflags_from_configure $incl_external_modules"
+cppflags="$cppflags_from_configure $incl_FS_modules $incl_external_modules"
 flexiblesusy_libs="$(create_flexiblesusy_libs)"
-
-compile_cmd="$cxx $cppflags_with_modules $cxxflags"
-
+compile_cmd="$cxx $cppflags $cxxflags"
 libs="$ldflags $flexiblesusy_libs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
 
 help() {
@@ -96,9 +100,9 @@ Options:
   --boostthreadlibs     Print BOOST thread libraries, BOOSTTHREADLIBS
   --compile-cmd         Print compilation command for object files
   --cppflags            Print C preprocessor flags, CPPFLAGS
-  --cppflags-with-modules
-                        Print C preprocessor flags together with -I directives
-                        for each model and addon
+  --cppflags-without-modules
+                        Print C preprocessor flags without -I directives
+                        for FlexibleSUSY models and addons
   --cxx                 Print C++ compiler, CXX
   --cxxflags            Print C++ compiler flags, CXXFLAGS
   --eigenflags          Print compiler flags for Eigen, EIGENFLAGS
@@ -170,7 +174,7 @@ while test $# -gt 0; do
         --boostthreadlibs)       out="$out $boostthreadlibs" ;;
         --compile-cmd)           out="$out $compile_cmd" ;;
         --cppflags)              out="$out $cppflags" ;;
-        --cppflags-with-modules) out="$out $cppflags_with_modules" ;;
+        --cppflags-without-modules) out="$out $cppflags_without_modules" ;;
         --cxx)                   out="$out $cxx" ;;
         --cxxflags)              out="$out $cxxflags" ;;
         --eigenflags)            out="$out $eigenflags" ;;
