@@ -316,6 +316,11 @@ TEST_SH += \
 		$(DIR)/test_SMtower.sh
 endif
 
+ifeq ($(WITH_SM),yes)
+TEST_SH += \
+		$(DIR)/test_flexiblesusy-config.sh
+endif
+
 ifeq ($(WITH_THDMIIMSSMBC) $(WITH_THDMIIMSSMBCApprox) $(WITH_HGTHDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBCApprox),yes yes yes yes)
 
 TEST_SH += \
