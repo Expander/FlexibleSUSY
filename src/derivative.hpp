@@ -135,7 +135,7 @@ auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsil
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5)
+ * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5, 6, 7)
  *
  * @return derivative
  */
@@ -153,7 +153,7 @@ auto derivative_forward(const F& f, A x, A eps = std::numeric_limits<A>::epsilon
  * @param f function
  * @param x point at which derivative is to be calculated
  * @param eps measure for step size \f$h\f$
- * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5)
+ * @tparam Order order of accuracy (0, 1, 2, 3, 4, 5, 6, 7)
  *
  * @return derivative
  */
