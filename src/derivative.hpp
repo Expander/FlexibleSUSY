@@ -116,13 +116,12 @@ auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsil
       {-761./280., 8., -14., 56./3., -35./2., 56./5., -14./3., 8./7., -1./8.}
    };
 
-   const double dsign = static_cast<double>(sign);
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
    return_type result = 0;
 
    for (unsigned i = 0; i < Order + 2; i++) {
       const double coeff = coeffs[Order][i];
-      result += dsign * coeff * f(x + dsign*i*h);
+      result += sign * coeff * f(x + sign*(i*h));
    }
 
    return result / h;
