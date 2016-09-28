@@ -187,13 +187,13 @@ void Database::execute(const std::string& cmd, TCallback callback, void* data)
  */
 sqlite3* Database::open(const std::string& file_name)
 {
-   sqlite3* db = 0;
+   sqlite3* db = nullptr;
 
    const int rc = sqlite3_open(file_name.c_str(), &db);
 
    if (rc) {
       ERROR("Can't open database: " << sqlite3_errmsg(db));
-      db = 0;
+      db = nullptr;
    }
 
    return db;
@@ -232,7 +232,7 @@ namespace flexiblesusy {
 namespace database {
 
 Database::Database(const std::string&)
-   : db(NULL)
+   : db(nullptr)
 {
 }
 
@@ -262,7 +262,7 @@ void Database::execute(const std::string&, TCallback, void*) {}
 
 sqlite3* Database::open(const std::string&)
 {
-   return NULL;
+   return nullptr;
 }
 
 int Database::extract_callback(void*, int, char**, char**)
