@@ -153,7 +153,6 @@ public:
    };
 
    SLHA_io();
-   ~SLHA_io() {}
 
    void clear();
 
