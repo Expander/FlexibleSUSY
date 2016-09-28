@@ -225,18 +225,17 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    write_parameter_names_line(filestr);
 
    // write data
-   for (TData::const_iterator it = couplings.begin();
-        it != couplings.end(); ++it) {
+   for (const auto& c: couplings) {
       if (!filestr.good()) {
          ERROR("file " << file_name << " is corrupted");
          break;
       }
 
-      filestr << std::left << std::setw(width) << it->first;
+      filestr << std::left << std::setw(width) << c.first;
 
       // write all gauge couplings in order
-      for (int i = 0; i < it->second.size(); ++i) {
-         filestr << std::left << std::setw(width) << it->second(i);
+      for (int i = 0; i < c.second.size(); ++i) {
+         filestr << std::left << std::setw(width) << c.second(i);
       }
 
       filestr << '\n';

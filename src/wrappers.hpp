@@ -64,9 +64,8 @@ Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Abs(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Abs(*it);
+   for (auto& e: v)
+      e = Abs(e);
    return v;
 }
 
@@ -501,9 +500,8 @@ Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
 template <class T>
 std::vector<T> Sqrt(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Sqrt(*it);
+   for (auto& e: v)
+      e = Sqrt(e);
    return v;
 }
 
@@ -522,9 +520,8 @@ Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Sqr(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Sqr(*it);
+   for (auto& e: v)
+      e = Sqr(e);
    return v;
 }
 

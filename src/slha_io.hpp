@@ -273,32 +273,31 @@ double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Deri
    double scale = 0.;
 
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
+      for (const auto& line: *block) {
+         if (!line.is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
+            if (line.size() > 3 &&
+                to_lower(line[0]) == "block" && line[2] == "Q=")
+               scale = convert_to<double>(line[3]);
             continue;
          }
 
          if (cols == 1) {
             // vector
-            if (line->size() >= 2) {
-               const int i = convert_to<int>((*line)[0]) - 1;
+            if (line.size() >= 2) {
+               const int i = convert_to<int>(line[0]) - 1;
                if (0 <= i && i < rows) {
-                  const double value = convert_to<double>((*line)[1]);
+                  const double value = convert_to<double>(line[1]);
                   matrix(i,0) = value;
                }
             }
          } else {
             // martix
-            if (line->size() >= 3) {
-               const int i = convert_to<int>((*line)[0]) - 1;
-               const int k = convert_to<int>((*line)[1]) - 1;
+            if (line.size() >= 3) {
+               const int i = convert_to<int>(line[0]) - 1;
+               const int k = convert_to<int>(line[1]) - 1;
                if (0 <= i && i < rows && 0 <= k && k < cols) {
-                  const double value = convert_to<double>((*line)[2]);
+                  const double value = convert_to<double>(line[2]);
                   matrix(i,k) = value;
                }
             }
