@@ -79,86 +79,85 @@ CreateStartPoint[parameters_List, name_String] :=
                startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
                             CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
               ];
-           startPoint = "const double " <> name <> "[" <> dimStr <> "] = {" <>
-                        startPoint <> " };\n";
-           Return[startPoint];
+           "Eigen::VectorXd " <> name <> "(" <> dimStr <> ");\n" <>
+           name <> " << " <> startPoint <> " ;\n"
           ];
 
-SetModelParametersFromGSLVector[model_String, vector_String, parameters_List] :=
+SetModelParametersFromVector[model_String, vector_String, parameters_List] :=
     Module[{result = "", i, gslElement},
            For[i = 1, i <= Length[parameters], i++,
-               gslElement = "gsl_vector_get(" <> vector <> "," <> ToString[i-1] <> ")";
+               gslElement = vector <> "(" <> ToString[i-1] <> ")";
                result = result <> Parameters`SetParameter[parameters[[i]],gslElement,model];
               ];
            Return[result];
           ];
 
-SetGSLVectorFromExpressions[vector_String, expressions_List] :=
+SetVectorFromExpressions[vector_String, expressions_List] :=
     Module[{result = "", i, gslElement},
            For[i = 1, i <= Length[expressions], i++,
-               gslElement = "gsl_vector_set(" <> vector <> "," <>
-                            ToString[i-1] <> "," <>
-                            CConversion`RValueToCFormString[expressions[[i]]] <> ");\n";
+               gslElement = vector <> "(" <> ToString[i-1] <> ") = " <>
+                            CConversion`RValueToCFormString[expressions[[i]]] <> ";\n";
                result = result <> gslElement;
               ];
            Return[result];
           ];
 
-CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
-"struct " <> className <> " {
-   static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
-      if (!is_finite(x))
-         return std::numeric_limits<double>::max();
-
-      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
-" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_masses();
-" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
-      return " <> CConversion`RValueToCFormString[function] <> ";
-   }
+CreateMinimizationFunctionWrapper[functionName_String, dim_Integer, parameters_List, function_] :=
+    Module[{type, stype},
+           type  = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
+           stype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
+"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> stype <> " {
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+   MODEL->calculate_DRbar_masses();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
+   return " <> CConversion`RValueToCFormString[function] <> ";
 };
-";
+"
+          ];
+
+localFunctionWrapper = 0;
+
+CreateSolverName[] := "solver_" <> ToString[localFunctionWrapper++];
 
 ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_String] :=
-    Module[{callMinimizer, dim, dimStr, startPoint, functionWrapper},
+    Module[{callMinimizer, dim, dimStr, startPoint, functionWrapper, functionName},
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateMinimizationFunctionWrapper["LocalFunctionMinimizer","func",dimStr,parameters,function];
+           functionName = CreateSolverName[];
+           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,parameters,function];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
-                           "> minimizer(LocalFunctionMinimizer::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "> minimizer(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = minimizer.minimize(start_point);\n" <>
                            "VERBOSE_MSG(\"\\tminimizer status: \" << gsl_strerror(status));\n";
            Return[callMinimizer];
           ];
 
-CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_List] :=
-"struct " <> className <> " {
-   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f)
-   {
-      if (!is_finite(x))
-         return 1;
-
-      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
-" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_masses();
-" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
-" <> TextFormatting`IndentText[SetGSLVectorFromExpressions["f",function],6] <> "
-      return GSL_SUCCESS;
-   }
+CreateRootFinderFunctionWrapper[functionName_String, dim_Integer, parameters_List, function_List] :=
+    Module[{type},
+           type = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
+"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> type <> " {
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+   MODEL->calculate_DRbar_masses();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
+   "<> type <> " f;
+" <> TextFormatting`IndentText[SetVectorFromExpressions["f",function]] <> "
+   return f;
 };
-";
+"
+          ];
 
 ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelName_String] :=
-    Module[{callRootFinder, dim, dimStr, startPoint, functionWrapper},
+    Module[{callRootFinder, dim, dimStr, startPoint, functionWrapper, functionName},
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateRootFinderFunctionWrapper["LocalFunctionRootFinder","func",dimStr,parameters,function];
+           functionName = CreateSolverName[];
+           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,parameters,function];
            callRootFinder = functionWrapper <> "\n" <> startPoint <>
                            "Root_finder<" <> dimStr <>
-                           "> root_finder(LocalFunctionRootFinder::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "> root_finder(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = root_finder.find_root(start_point);\n" <>
                            "VERBOSE_MSG(\"\\troot finder status: \" << gsl_strerror(status));\n";
            Return[callRootFinder];

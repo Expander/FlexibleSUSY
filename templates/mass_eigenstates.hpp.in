@@ -43,7 +43,6 @@
 #include <iosfwd>
 #include <string>
 
-#include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -113,10 +112,12 @@ public:
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
 
+   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
+
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
+   EWSB_vector_t tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -127,11 +128,6 @@ public:
 @dependencePrototypes@
 
 private:
-   struct EWSB_args {
-      @ModelName@_mass_eigenstates* model;
-      unsigned ewsb_loop_order;
-   };
-
    class EEWSBStepFailed : public Error {
    public:
       virtual ~EEWSBStepFailed() {}
@@ -152,12 +148,10 @@ private:
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const EWSB_vector_t&);
    int solve_ewsb_tree_level_custom();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
-   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   EWSB_vector_t ewsb_initial_guess();
+   EWSB_vector_t ewsb_step() const;
    void copy_DRbar_masses_to_pole_masses();
 
    // Passarino-Veltman loop functions

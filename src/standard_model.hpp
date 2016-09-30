@@ -38,7 +38,6 @@
 #include <iosfwd>
 #include <string>
 
-#include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -553,10 +552,7 @@ private:
    double calc_beta_v_two_loop(const Beta_traces&) const;
    double calc_beta_v_three_loop(const Beta_traces&) const;
 
-   struct EWSB_args {
-      Standard_model* model;
-      unsigned ewsb_loop_order;
-   };
+   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
 
    class EEWSBStepFailed : public Error {
    public:
@@ -581,10 +577,8 @@ private:
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
    int solve_ewsb_tree_level_custom();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
-   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   EWSB_vector_t ewsb_initial_guess();
+   EWSB_vector_t ewsb_step() const;
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters();

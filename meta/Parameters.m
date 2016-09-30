@@ -1146,9 +1146,11 @@ SetParameter[parameter_, value_String, class_String, castToType_:None] :=
               If[GetIndices[parameter] =!= {} && targetType =!= None,
                  targetType = CConversion`GetScalarElementType[targetType];
                 ];
-              class <> "->set_" <> parameterStr <> "(" <>
+              If[class =!= "", class <> "->", ""] <>
+              "set_" <> parameterStr <> "(" <>
               AppendIfNotEmpty[ConcatIndices[GetIndices[parameter]],","] <>
-              CConversion`CastTo[value,targetType] <> ");\n",
+              CConversion`CastTo[value,targetType] <> ");\n"
+              ,
               ""
              ]
           ];
