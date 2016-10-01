@@ -148,7 +148,9 @@ public:
       if (max_rel_diff > precision)
          return GSL_CONTINUE;
 
-      if (max_rel_diff < std::numeric_limits<double>::epsilon())
+      static const double eps = 10*std::pow(10., -std::numeric_limits<double>::digits10);
+
+      if (max_rel_diff < eps)
          return GSL_SUCCESS;
 
       return check_tadpoles(a);
@@ -159,7 +161,8 @@ private:
    const Function_t tadpole_function; ///< function to calculate tadpole
 
    int check_tadpoles(const GSL_vector& x) const {
-      return gsl_multiroot_test_residual(x.raw(), precision);
+      const GSL_vector t(to_GSL_vector(tadpole_function(to_eigen_vector(x))));
+      return gsl_multiroot_test_residual(t.raw(), precision);
    }
 };
 
