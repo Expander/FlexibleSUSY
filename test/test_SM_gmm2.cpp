@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( test_zero )
    setup_SM_const(sm, input);
    sm.calculate_DRbar_masses();
 
-   const double amu = SM_GMuonMinus2::calculate_amuon(sm);
+   const double amu = SM_a_muon::calculate_amuon(sm);
 
    BOOST_CHECK_SMALL(amu, 1e-15);
 }

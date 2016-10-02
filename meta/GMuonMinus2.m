@@ -1,9 +1,6 @@
 
 BeginPackage["GMuonMinus2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
-GetVariableName::usage="The name of the c++ data type that stores the resulting magnetic moment";
-CreateVariableDefinition::usage="Returns the c++ code with declaration of the magnetic moment variable";
-
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
 CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
@@ -30,9 +27,6 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
 Begin["`Private`"];
 
 (************* Begin public interface *******************)
-
-GetVariableName[] := "GMuonMinus2";
-CreateVariableDefinition[] := "double " <> GMuonMinus2`GetVariableName[] <> ";";
 
 IsSMParticle[particle_] :=
     SARAH`SMQ[particle] || TreeMasses`IsSMGoldstone[particle];
