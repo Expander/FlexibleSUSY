@@ -262,16 +262,14 @@ int CLASSNAME::solve_ewsb_iteratively()
       return model->tadpole_equations();
    };
 
-   // bind this pointer
-   //
-   // @TODO: This may be changed if we improve the error handling for
-   // EWSB solver failures
-   auto ewsb_stepper = [this,&ewsb_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-      return ewsb_stepper_(this, ewsb_pars);
+   auto model_copy = *this;
+
+   auto ewsb_stepper = [model_copy, &ewsb_stepper_](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
+      return ewsb_stepper_(&model_copy, ewsb_pars);
    };
 
-   auto tadpole_stepper = [this,&tadpole_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-      return tadpole_stepper_(this, ewsb_pars);
+   auto tadpole_stepper = [model_copy, &tadpole_stepper_](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
+      return tadpole_stepper_(&model_copy, ewsb_pars);
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
@@ -327,6 +325,7 @@ int CLASSNAME::solve_ewsb_iteratively_with(
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
+   calculate_DRbar_masses();
 
    return status;
 }
