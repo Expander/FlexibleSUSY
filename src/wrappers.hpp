@@ -37,11 +37,11 @@
 
 namespace flexiblesusy {
 
-static const double Pi = M_PI;
-static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
-static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
-static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
-static const bool True = true;
+static constexpr double Pi = M_PI;
+static constexpr double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static constexpr double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
+static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static constexpr bool True = true;
 
 template <typename T>
 T Abs(T a)
@@ -69,7 +69,7 @@ std::vector<T> Abs(std::vector<T> v)
    return v;
 }
 
-inline double AbsSqr(double z)
+constexpr double AbsSqr(double z)
 {
    return z * z;
 }
@@ -169,7 +169,7 @@ inline double Arg(const std::complex<double>& z)
    return std::arg(z);
 }
 
-inline double Conj(double a)
+constexpr double Conj(double a)
 {
    return a;
 }
@@ -216,19 +216,19 @@ inline double Csc(double x)
    return 1./Sin(x);
 }
 
-inline int Delta(int i, int j)
+constexpr int Delta(int i, int j)
 {
    return i == j;
 }
 
 template <typename T>
-T If(bool c, T a, T b) { return c ? a : b; }
+constexpr T If(bool c, T a, T b) { return c ? a : b; }
 
 template <typename T>
-T If(bool c, int a, T b) { return c ? T(a) : b; }
+constexpr T If(bool c, int a, T b) { return c ? T(a) : b; }
 
 template <typename T>
-T If(bool c, T a, int b) { return c ? a : T(b); }
+constexpr T If(bool c, T a, int b) { return c ? a : T(b); }
 
 inline bool IsClose(double a, double b,
                     double eps = std::numeric_limits<double>::epsilon())
@@ -264,7 +264,7 @@ bool IsFinite(const Eigen::DenseBase<Derived>& m)
    return m.allFinite();
 }
 
-inline int KroneckerDelta(int i, int j)
+constexpr int KroneckerDelta(int i, int j)
 {
    return i == j;
 }
@@ -357,12 +357,12 @@ double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
    return x.cwiseAbs().maxCoeff();
 }
 
-inline int Sign(double x)
+constexpr int Sign(double x)
 {
    return (x >= 0.0 ? 1 : -1);
 }
 
-inline int Sign(int x)
+constexpr int Sign(int x)
 {
    return (x >= 0 ? 1 : -1);
 }
@@ -381,7 +381,7 @@ Base Power(Base base, Exponent exp)
 }
 
 
-inline double Re(double x)
+constexpr double Re(double x)
 {
    return x;
 }
@@ -407,7 +407,7 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-inline double Im(double)
+constexpr double Im(double)
 {
    return 0.;
 }
@@ -506,7 +506,7 @@ std::vector<T> Sqrt(std::vector<T> v)
 }
 
 template <typename T>
-T Sqr(T a)
+constexpr T Sqr(T a)
 {
    return a * a;
 }
@@ -631,19 +631,19 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
 
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
-unsigned UnitStep(T x)
+constexpr unsigned UnitStep(T x)
 {
    return x < T() ? 0 : 1;
 }
 
 template <typename T>
-T Which(bool cond, T value)
+constexpr T Which(bool cond, T value)
 {
    return cond ? value : T(0);
 }
 
 template<typename T, typename ... Trest>
-T Which(bool cond, T value, Trest... rest)
+constexpr T Which(bool cond, T value, Trest... rest)
 {
    return cond ? value : Which(rest...);
 }
