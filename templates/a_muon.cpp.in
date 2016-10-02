@@ -407,7 +407,7 @@ public:
 @GMuonMinus2_VertexFunctionData@
 }
 
-double @ModelName@_a_muon::calculate_amuon(const @ModelName@_mass_eigenstates& model_)
+double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
@@ -418,7 +418,7 @@ double @ModelName@_a_muon::calculate_amuon(const @ModelName@_mass_eigenstates& m
 namespace {
 /**
 * @defgroup LoopFunctions
-* @brief The loop functions necessary for GMM2 one-loop calculations.
+* @brief The loop functions necessary for \f$a_\mu\f$ one-loop calculations.
 *
 * These are OneLoopFunctionF1C(), OneLoopFunctionF2C(),
 * OneLoopFunctionF1N() and OneLoopFunctionF2N()
