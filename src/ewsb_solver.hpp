@@ -19,6 +19,7 @@
 #ifndef EWSB_SOLVER_H
 #define EWSB_SOLVER_H
 
+#include <string>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -32,6 +33,7 @@ public:
    enum Status : int { SUCCESS = 0, FAIL = 1 };
 
    virtual ~EWSB_solver() {}
+   virtual std::string name() const = 0;
    virtual int solve(const Eigen::VectorXd&) = 0;
    virtual Eigen::VectorXd get_solution() = 0;
 };

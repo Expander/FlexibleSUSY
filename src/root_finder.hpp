@@ -77,6 +77,7 @@ public:
    int find_root(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
+   virtual std::string name() const override { return "Root_finder"; };
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() override;
 

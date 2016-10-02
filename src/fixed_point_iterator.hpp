@@ -22,6 +22,7 @@
 #include <iostream>
 #include <cassert>
 #include <limits>
+#include <string>
 #include <Eigen/Core>
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
@@ -43,6 +44,8 @@ public:
    Convergence_tester_absolute(double precision_ = 1.0e-2)
       : precision(precision_)
    {}
+
+   std::string name() const { return "Convergence_tester_absolute"; }
 
    /**
     * Test whether the absolute value of the residual, defined by
@@ -79,6 +82,8 @@ public:
    Convergence_tester_relative(double precision_ = 1.0e-2)
       : precision(precision_)
    {}
+
+   std::string name() const { return "Convergence_tester_relative"; }
 
    /**
     * Test whether the relative difference is less than the set
@@ -123,6 +128,8 @@ public:
       : precision(precision_)
       , tadpole_function(tadpole_function_)
    {}
+
+   std::string name() const { return "Convergence_tester_tadpole"; }
 
    /**
     * Test whether the relative difference is less than the set
@@ -204,6 +211,7 @@ public:
    int find_fixed_point(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
+   virtual std::string name() const override { return "Fixed_point_iterator<" + convergence_tester.name() + ">"; };
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() override;
 

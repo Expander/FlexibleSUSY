@@ -73,6 +73,7 @@ public:
    int minimize(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
+   virtual std::string name() const override { return "Minimizer"; };
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() override;
 
