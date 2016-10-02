@@ -9,6 +9,12 @@ RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
+CalculateColorCoupling::usage="";
+CalculateElectromagneticCoupling::usage="";
+SetDRbarYukawaCouplings::usage="";
+
+CalculateGaugeCouplings::MissingRelation = "Warning: Coupling `1` is not\
+ releated to `2` via DependenceNum: `1` = `3`"
 
 Begin["`Private`"];
 
@@ -22,7 +28,14 @@ CalculateColorCoupling[scheme_] :=
     CalculateCoupling[TreeMasses`FindColorGaugeGroup[], scheme];
 
 CalculateElectromagneticCoupling[scheme_] :=
-    CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme];
+  Module[{conversion},
+          conversion = Switch[scheme,
+                              FlexibleSUSY`DRbar, 1/3,
+                              FlexibleSUSY`MSbar, 0,
+                              _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
+                             ];
+         CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme] + conversion
+        ];
 
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
@@ -67,16 +80,11 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
           ];
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=
-    Module[{result, deltaSusy, deltaSM, prefactor, topQuark, conversion = 0},
+    Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
            topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaEm / (2 Pi);
-           conversion = Switch[renormalizationScheme,
-                               FlexibleSUSY`DRbar, 1/3,
-                               FlexibleSUSY`MSbar, 0,
-                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
-                              ];
            deltaSM = -16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
-           deltaSusy = conversion + CalculateElectromagneticCoupling[renormalizationScheme];
+           deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
@@ -217,7 +225,7 @@ InvertMassRelation[fermion_, yukawa_] :=
               massMatrix = SARAH`MassMatrix[fermion];
              ];
            dim = Length[massMatrix];
-           If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
+           If[massMatrix === Table[0, {dim}, {dim}],
               Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
              ];
            polynom = Factor[massMatrix /. List -> Plus];
@@ -232,20 +240,17 @@ InvertMassRelation[fermion_, yukawa_] :=
           ];
 
 SetDRbarYukawaCouplingTop[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`topDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`upQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingBottom[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`bottomDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`downQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingElectron[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
+    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`downLeptonsDRbar, settings];
 
-SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
-    Module[{y, f},
-           f = Cases[settings, {yukawa, s_} :> s];
-           If[f === {}, Return[""];];
-           f = f[[1]];
-           If[f === Automatic,
+SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
+    Module[{y, f = setting},
+           If[setting === Automatic,
               {y, f} = InvertMassRelation[fermion, yukawa];
               f = f /. fermion -> mass;
               ,
@@ -253,6 +258,45 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
              ];
            Parameters`CreateLocalConstRefs[f] <>
            Parameters`SetParameter[yukawa, f, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplings[] :=
+    Module[{y, f, fermion, yukawa, mass, term = {0,0,0}, i},
+           fermion = {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron};
+           yukawa  = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
+           mass    = {Global`upQuarksDRbar, Global`downQuarksDRbar, Global`downLeptonsDRbar};
+           For[i = 1, i <= 3, i++,
+               {y, f} = InvertMassRelation[fermion[[i]], yukawa[[i]]];
+               term[[i]] = f /. fermion[[i]] -> mass[[i]];
+              ];
+           Parameters`CreateLocalConstRefs[term] <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[1]]] <> "(" <> CConversion`RValueToCFormString[term[[1]]] <> ");\n" <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[2]]] <> "(" <> CConversion`RValueToCFormString[term[[2]]] <> ");\n" <>
+           "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[3]]] <> "(" <> CConversion`RValueToCFormString[term[[3]]] <> ");\n"
+          ];
+
+SetDRbarYukawaCouplingFermionElement[{y_, expr_}] :=
+    Parameters`SetParameter[y, expr, "MODEL"];
+
+SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
+    Module[{f, p, i, result = ""},
+           (* check for matrix setting *)
+           f = Cases[settings, {yukawa, s_} :> s];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionMatrix[fermion, yukawa, mass, f[[i]]];
+                 ];
+              Return[result];
+             ];
+           (* check for matrix element setting *)
+           f = Cases[settings, p:{yukawa[__], s_} :> p];
+           If[Flatten[f] =!= {},
+              For[i = 1, i <= Length[f], i++,
+                  result = result <> SetDRbarYukawaCouplingFermionElement[f[[i]]];
+                 ];
+              Return[Parameters`CreateLocalConstRefs[(#[[2]])& /@ f] <> result];
+             ];
+           ""
           ];
 
 MultiplyBy[factor_ /; factor == 1] := "";
@@ -516,7 +560,16 @@ CalculateThetaWFromMW[] :=
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
+           (* read weinberg angle from DependenceNum *)
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           If[weinbergAngle === None || weinbergAngle === Null,
+              (* read weinberg angle from FSWeakMixingAngleExpr *)
+              weinbergAngle = Utils`FSGetOption[FlexibleSUSY`FSWeakMixingAngleOptions, FlexibleSUSY`FSWeakMixingAngleExpr] /. subst;
+              If[weinbergAngle === None || weinbergAngle === Null,
+                 Print["Warning: No expression for the Weinberg angle defined, setting it to 0."];
+                 weinbergAngle = 0;
+                ];
+             ];
            result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
                     "THETAW = " <>
                     CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
@@ -557,6 +610,11 @@ qedqcd.setPoleMW(mw_pole);"
 
 RecalculateMWPole[_,_] := "";
 
+WarnIfFreeQ[coupling_, expr_, sym_] :=
+    If[FreeQ[expr, sym],
+       Message[CalculateGaugeCouplings::MissingRelation, coupling, sym, expr];
+      ];
+
 CalculateGaugeCouplings[] :=
     Module[{subst, g1Def, g2Def, g3Def, result},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
@@ -564,18 +622,23 @@ CalculateGaugeCouplings[] :=
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
                      SARAH`Weinberg            -> FlexibleSUSY`ThetaWDRbar };
            g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]);
            g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`leftCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`leftCoupling]);
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
-                    / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
+                    / Parameters`GetGUTNormalization[SARAH`strongCoupling]);
+           WarnIfFreeQ[SARAH`hyperchargeCoupling, g1Def, SARAH`electricCharge];
+           WarnIfFreeQ[SARAH`hyperchargeCoupling, g1Def, SARAH`Weinberg];
+           WarnIfFreeQ[SARAH`leftCoupling       , g2Def, SARAH`electricCharge];
+           WarnIfFreeQ[SARAH`leftCoupling       , g2Def, SARAH`Weinberg];
+           WarnIfFreeQ[SARAH`strongCoupling     , g3Def, Parameters`GetParameterFromDescription["Alpha Strong"]];
+           g1Def = g1Def /. subst;
+           g2Def = g2Def /. subst;
+           g3Def = g3Def /. subst;
            result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
-                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 

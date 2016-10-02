@@ -20,36 +20,57 @@
 #define WRAPPERS_H
 
 #include <algorithm>
-#include <complex>
 #include <cmath>
+#include <complex>
 #include <functional>
 #include <limits>
+#include <numeric>
 #include <sstream>
 #include <string>
+#include <type_traits>
+#include <vector>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
 #include "dilog.hpp"
+#include "eigen_tensor.hpp"
 
 namespace flexiblesusy {
 
-static const double Pi = M_PI;
-static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
-static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
-static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
-static const bool True = true;
+static constexpr double Pi = M_PI;
+static constexpr double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static constexpr double oneLoop = oneOver16PiSqr;
+static constexpr double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
+static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static constexpr bool True = true;
 
-inline double Abs(double z)
+template <typename T>
+T Abs(T a)
 {
-   return std::fabs(z);
+   return std::abs(a);
 }
 
-inline double Abs(const std::complex<double>& z)
+template <typename T>
+T Abs(const std::complex<T>& z)
 {
    return std::abs(z);
 }
 
-inline double AbsSqr(double z)
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.cwiseAbs();
+}
+
+template <class T>
+std::vector<T> Abs(std::vector<T> v)
+{
+   for (auto& e: v)
+      e = Abs(e);
+   return v;
+}
+
+constexpr double AbsSqr(double z)
 {
    return z * z;
 }
@@ -90,19 +111,42 @@ double calculate_singlet_mass(T value)
 }
 
 /**
- * Calculates the mass of a singlet from a (possibly complex)
- * numerical value by taking the magnitude of the value.  The phase is
- * set to exp(i theta/2), where theta is the phase angle of the
- * complex value.
+ * Calculates the mass of a Majoran fermion singlet from a (possibly
+ * complex) numerical value by taking the magnitude of the value.
+ *
+ * The phase is set to exp(i theta/2), where theta is the phase angle
+ * of the complex value.  If the value is pure real, then the phase
+ * will be set to 1.  If the value is purely imaginary, then the phase
+ * will be set to \f$e^{i \pi/2}\f$.
  *
  * @param value numerical value
  * @param[out] phase phase
  * @return mass
  */
 template <typename T>
-double calculate_singlet_mass(T value, std::complex<double>& phase)
+double calculate_majorana_singlet_mass(T value, std::complex<double>& phase)
 {
    phase = std::polar(1., 0.5 * std::arg(std::complex<double>(value)));
+   return std::abs(value);
+}
+
+/**
+ * Calculates the mass of a Dirac fermion singlet from a (possibly
+ * complex) numerical value by taking the magnitude of the value.
+ *
+ * The phase is set to exp(i theta), where theta is the phase angle of
+ * the complex value.  If the value is pure real, then the phase will
+ * be set to 1.  If the value is purely imaginary, then the phase will
+ * be set to \f$e^{i \pi}\f$.
+ *
+ * @param value numerical value
+ * @param[out] phase phase
+ * @return mass
+ */
+template <typename T>
+double calculate_dirac_singlet_mass(T value, std::complex<double>& phase)
+{
+   phase = std::polar(1., std::arg(std::complex<double>(value)));
    return std::abs(value);
 }
 
@@ -126,7 +170,7 @@ inline double Arg(const std::complex<double>& z)
    return std::arg(z);
 }
 
-inline double Conj(double a)
+constexpr double Conj(double a)
 {
    return a;
 }
@@ -134,6 +178,12 @@ inline double Conj(double a)
 inline std::complex<double> Conj(const std::complex<double>& a)
 {
    return std::conj(a);
+}
+
+template <class T>
+T Conjugate(T a)
+{
+   return Conj(a);
 }
 
 template <typename T>
@@ -167,19 +217,19 @@ inline double Csc(double x)
    return 1./Sin(x);
 }
 
-inline int Delta(int i, int j)
+constexpr int Delta(int i, int j)
 {
    return i == j;
 }
 
 template <typename T>
-T If(bool c, T a, T b) { return c ? a : b; }
+constexpr T If(bool c, T a, T b) { return c ? a : b; }
 
 template <typename T>
-T If(bool c, int a, T b) { return c ? T(a) : b; }
+constexpr T If(bool c, int a, T b) { return c ? T(a) : b; }
 
 template <typename T>
-T If(bool c, T a, int b) { return c ? a : T(b); }
+constexpr T If(bool c, T a, int b) { return c ? a : T(b); }
 
 inline bool IsClose(double a, double b,
                     double eps = std::numeric_limits<double>::epsilon())
@@ -215,7 +265,7 @@ bool IsFinite(const Eigen::DenseBase<Derived>& m)
    return m.allFinite();
 }
 
-inline int KroneckerDelta(int i, int j)
+constexpr int KroneckerDelta(int i, int j)
 {
    return i == j;
 }
@@ -242,8 +292,8 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 
 inline double FiniteLog(double a)
 {
-   return (std::isfinite(a) && a > std::numeric_limits<double>::epsilon())
-      ? std::log(a) : 0;
+   const double l = std::log(a);
+   return std::isfinite(l) ? l : 0.;
 }
 
 /**
@@ -275,15 +325,12 @@ template <class Derived>
 double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
                   const Eigen::MatrixBase<Derived>& b)
 {
-   typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
+   typename Eigen::MatrixBase<Derived>::PlainObject sumTol(a.rows());
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
-      const double max = std::max(a(i), b(i));
-      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - std::min(a(i), b(i)) / max);
-      else
-         sumTol(i) = 0.;
-   }
+   assert(a.rows() == b.rows());
+
+   for (int i = 0; i < a.rows(); i++)
+      sumTol(i) = MaxRelDiff(a(i), b(i));
 
    return sumTol.maxCoeff();
 }
@@ -311,12 +358,12 @@ double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
    return x.cwiseAbs().maxCoeff();
 }
 
-inline int Sign(double x)
+constexpr int Sign(double x)
 {
    return (x >= 0.0 ? 1 : -1);
 }
 
-inline int Sign(int x)
+constexpr int Sign(int x)
 {
    return (x >= 0 ? 1 : -1);
 }
@@ -335,7 +382,7 @@ Base Power(Base base, Exponent exp)
 }
 
 
-inline double Re(double x)
+constexpr double Re(double x)
 {
    return x;
 }
@@ -361,7 +408,7 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-inline double Im(double)
+constexpr double Im(double)
 {
    return 0.;
 }
@@ -369,6 +416,22 @@ inline double Im(double)
 inline double Im(const std::complex<double>& x)
 {
    return std::imag(x);
+}
+
+template<int M, int N>
+Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>&)
+{
+   return Eigen::Matrix<double,M,N>::Zero();
+}
+
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Im(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.imag();
 }
 
 namespace {
@@ -417,15 +480,50 @@ Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
 }
 
-inline double Sqrt(double a)
+template <class T, typename = typename std::enable_if<std::is_floating_point<T>::value,T>::type>
+T Sqrt(T a)
 {
    return std::sqrt(a);
 }
 
+template <class T, typename = typename std::enable_if<std::is_integral<T>::value,T>::type>
+double Sqrt(T a)
+{
+   return std::sqrt(static_cast<double>(a));
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
+{
+   return m.unaryExpr(std::ptr_fun(Sqrt<Scalar>));
+}
+
+template <class T>
+std::vector<T> Sqrt(std::vector<T> v)
+{
+   for (auto& e: v)
+      e = Sqrt(e);
+   return v;
+}
+
 template <typename T>
-T Sqr(T a)
+constexpr T Sqr(T a)
 {
    return a * a;
+}
+
+template <typename Scalar, int M, int N>
+Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.unaryExpr(std::ptr_fun(Sqr<Scalar>));
+}
+
+template <class T>
+std::vector<T> Sqr(std::vector<T> v)
+{
+   for (auto& e: v)
+      e = Sqr(e);
+   return v;
 }
 
 #define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
@@ -466,11 +564,15 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 
 #define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
 #define ZEROMATRIX(rows,cols)        Eigen::Matrix<double,rows,cols>::Zero()
+#define ZEROTENSOR3(d1,d2,d3)        ZeroTensor3<double,d1,d2,d3>()
+#define ZEROTENSOR4(d1,d2,d3,d4)     ZeroTensor4<double,d1,d2,d3,d4>()
 #define ZEROVECTOR(rows)             Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows)              Eigen::Array<double,rows,1>::Zero()
 #define UNITMATRIXCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,rows>::Identity()
 #define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
+#define ZEROTENSOR3COMPLEX(d1,d2,d3) ZeroTensor3<std::complex<double>,d1,d2,d3>()
+#define ZEROTENSOR4COMPLEX(d1,d2,d3,d4) ZeroTensor4<std::complex<double>,d1,d2,d3,d4>()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
 
 // MxN matrix projection operator, which projects on the (X,Y)
@@ -498,21 +600,51 @@ std::string ToString(T a)
    return boost::lexical_cast<std::string>(a);
 }
 
+template <class T>
+T Total(const std::vector<T>& v)
+{
+   return std::accumulate(v.begin(), v.end(), T(0));
+}
+
+template <typename Scalar, int M, int N>
+Scalar Total(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.sum();
+}
+
+template <class Scalar, int M, int N>
+Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
+{
+   if (v.empty()) {
+      Eigen::Array<Scalar,M,N> result(0,0);
+      result.setZero();
+      return result;
+   }
+
+   Eigen::Array<Scalar,M,N> result(v[0].rows(), v[0].cols());
+   result.setZero();
+
+   for (std::size_t i = 0; i < v.size(); i++)
+      result += v[i];
+
+   return result;
+}
+
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
-unsigned UnitStep(T x)
+constexpr unsigned UnitStep(T x)
 {
    return x < T() ? 0 : 1;
 }
 
 template <typename T>
-T Which(bool cond, T value)
+constexpr T Which(bool cond, T value)
 {
    return cond ? value : T(0);
 }
 
 template<typename T, typename ... Trest>
-T Which(bool cond, T value, Trest... rest)
+constexpr T Which(bool cond, T value, Trest... rest)
 {
    return cond ? value : Which(rest...);
 }

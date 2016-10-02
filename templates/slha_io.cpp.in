@@ -36,8 +36,6 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -50,12 +48,18 @@ char const * const @ModelName@_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
 
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
+   , print_imaginary_parts_of_majorana_mixings(false)
 {
 }
 
 void @ModelName@_slha_io::clear()
 {
    slha_io.clear();
+}
+
+void @ModelName@_slha_io::set_print_imaginary_parts_of_majorana_mixings(bool flag)
+{
+   print_imaginary_parts_of_majorana_mixings = flag;
 }
 
 /**
@@ -236,6 +240,8 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 
 /**
  * Reads DR-bar parameters from a SLHA output file.
+ *
+ * @param model model class to be filled
  */
 void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_mass_eigenstates& model) const
 {
@@ -247,6 +253,8 @@ void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_mass_eigenstates& mo
 /**
  * Reads DR-bar parameters, pole masses and mixing matrices (in
  * Haber-Kane convention) from a SLHA output file.
+ *
+ * @param model model class to be filled
  */
 void @ModelName@_slha_io::fill(@ModelName@_mass_eigenstates& model) const
 {
@@ -259,10 +267,21 @@ void @ModelName@_slha_io::fill(@ModelName@_mass_eigenstates& model) const
 }
 
 /**
+ * Fill struct of extra physical input parameters from SLHA object
+ * (FlexibleSUSYInput block)
+ *
+ * @param input struct of physical non-SLHA input parameters
+ */
+void @ModelName@_slha_io::fill(Physical_input& input) const
+{
+   slha_io.fill(input);
+}
+
+/**
  * Fill struct of spectrum generator settings from SLHA object
  * (FlexibleSUSY block)
  *
- * @param settings struct of spectrum generator settings
+ * @param settings struct of spectrum generator settings to be filled
  */
 void @ModelName@_slha_io::fill(Spectrum_generator_settings& settings) const
 {
@@ -282,7 +301,7 @@ void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
 }
 
 /**
- * Reads pole masses and mixing matrices from a SLHA output file.
+ * Reads pole masses and mixing matrices from a SLHA output file to be filled.
  */
 void @ModelName@_slha_io::fill_physical(@ModelName@_physical& physical) const
 {

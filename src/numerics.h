@@ -26,14 +26,6 @@
 /// calculates root(1+x), where x<<1 accurately
 double accurateSqrt1Plusx(double x);
 
-/// Calculates log likelihood of a Poisson with k observed events, expecting
-/// lambda>0. 
-double lnLPoisson(unsigned k, double lambda);
-
-/// Calculates likelihood of a Poisson with k observed events, expecting
-/// lambda>0. 
-double LPoisson(unsigned k, double lambda);
-
 /// func is user-supplied, h is an estimate of what step-size to start with
 /// and err returns error flags
 double calcDerivative(double (*func)(double), 
@@ -100,15 +92,8 @@ inline double b22bar(double p, double m1, double m2, double q) {
   return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
 }
 
-/*inline double fB(const Complex & x) {
-  /// special case at 0
-  //  if (x.real() < EPSTOL * 10. && x.imag() < EPSTOL * 10.) return -1.;
-  return (log(Complex(1.0 - x)) - x * log(Complex(1.0 - 1.0 / x)) 
-         - Complex(1.0)).real();
-	 } */
 double fB(const softsusy::Complex & x);
 
-double dilogarg(double t);
 double dilog(double x);
 
 double integrandThreshbnr(double x);
@@ -160,24 +145,12 @@ softsusy::Complex dilog(const softsusy::Complex & x);
 /// Trapezoidal function integration to accuracy tol
 double trapzd(double (*func)(double), double a, double b, int n, 
 	      double tol = 1.0e-3);
-/// Driver for integration
-double qtrap(double (*func)(double), double a, double b, double tol);
 /// Mid point function integration
 double midpnt(double (*func)(double), double a, double b, int n);
-/// Integrate a function *func which is analytic to precision EPS between a
-/// and b 
-double qromb(double (*func)(double), double a, double b, double EPS);
-/// Identical copy to facilitate double integral
-double qromb2(double (*func)(double), double a, double b, double EPS);
 
 /// This sums two exponentials nof the arguments in a way that tries to avoid
 /// underflows. 
 double sumOfExp(double a, double b);
-
-/// Returns a value of the polynomial (y) and an error estimate (dy), given 
-/// a bunch of points (xa) and their y values (ya).
-void polint(const softsusy::DoubleVector&  xa, const softsusy::DoubleVector & ya, double x, 
-	    double & y, double & dy);
 
 /// Returns a 3 by 3 real mixing matrix. Input angles are standard CKM
 /// parameterisation. If the phase d is not zero, the result is only an
@@ -208,34 +181,12 @@ double den(double a, int b); /// 1/a^b
 double log1minusx(double x);
 /// sign of inputs
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
-/// returns a root of function func between x1 and x2 to accuracy xacc (x1 and
-/// x2 MUST bracket a root)
-double zriddr(double (*func)(double), double x1, double x2, double xacc);
 /// Forward difference approximation to Jacobian matrix. On input, x is the
 /// point to be evaluated, fvec is the vector of function values at the point,
 /// and  vecfunc(n, x, f) is the Jacobian array
 void fdjac(int n, softsusy::DoubleVector x, const softsusy::DoubleVector & fvec, DoubleMatrix & df,
 	   void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &));
-/// These are experimental things for trying the shooting method - returns
-/// F.F/2 evaluated at x. Boolean value on return is error flag
-bool lnsrch(const softsusy::DoubleVector & xold, double fold, const softsusy::DoubleVector & g, 
-	    softsusy::DoubleVector & p, 
-	    softsusy::DoubleVector & x, double & f, double stpmax, 
-	    void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &), 
-	    softsusy::DoubleVector & fvec);
-/* allocate an int vector with subscript range v[nl..nh] */
-int *ivector(long nl, long nh);
-/* free an int vector allocated with ivector() */
-void free_ivector(int *v, long nl, long nh);
 void lubksb(const DoubleMatrix & a, int n, int *indx, softsusy::DoubleVector & b);
-/// Multi-dimensional globally convergent multi-dimensional root solver for n
-/// variables. adjusts x so that f(x)=0, where f is the last function provided
-/// by vecfunc, given vector input x. If false on output, there is no
-/// error. If returns 1, a local minimum or saddle-point has been found
-/// (df/dx=0). The length of x should be equal to the number of parameters to
-/// vary AND the number of constraints ie the length of the vector in vecfunc.
-bool newt(softsusy::DoubleVector & x, 
-	  void (*vecfunc)(const softsusy::DoubleVector &, softsusy::DoubleVector &));
 /// calculates the n-vector y, given freely specifiable values v(1..n2) at x1
 void load(float x, const softsusy::DoubleVector & v, softsusy::DoubleVector & y);
 /// Gives a discrepancy vector f[1..n2] from ending boundary conditions at

@@ -101,6 +101,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
    input.SignMu = 1;
    input.Azero = 0.;
    CMSSM<Two_scale> m(input);
+   m.set_thresholds(2);
    m.do_calculate_sm_pole_masses(true);
    setup_CMSSM_const(m, input);
 

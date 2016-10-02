@@ -21,15 +21,40 @@
 
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
+#include <cassert>
 
 namespace flexiblesusy {
 
+class GSL_vector;
+
+/// Returns true if GSL_vector contains only finite elements, false otherwise
+bool is_finite(const GSL_vector&);
 /// Returns true if GSL vector contains only finite elements, false otherwise
 bool is_finite(const gsl_vector*);
-
 Eigen::ArrayXd to_eigen_array(const gsl_vector*);
-gsl_vector* to_gsl_vector(const Eigen::ArrayXd&);
-void copy(const Eigen::ArrayXd&, gsl_vector*);
+Eigen::ArrayXd to_eigen_array(const GSL_vector&);
+Eigen::VectorXd to_eigen_vector(const gsl_vector*);
+Eigen::VectorXd to_eigen_vector(const GSL_vector&);
+GSL_vector to_GSL_vector(const Eigen::VectorXd&);
+GSL_vector to_GSL_vector(const gsl_vector*);
+
+/**
+ * Copies values from an Eigen array/matrix to a GSL vector.
+ *
+ * @param src Eigen array/matrix
+ * @param dst GSL vector
+ */
+template <typename Derived>
+void copy(const Eigen::DenseBase<Derived>& src, gsl_vector* dst)
+{
+   const std::size_t dim = src.rows();
+
+   assert(dst);
+   assert(dim == dst->size);
+
+   for (std::size_t i = 0; i < dim; i++)
+      gsl_vector_set(dst, i, src(i));
+}
 
 }
 

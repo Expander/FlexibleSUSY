@@ -38,6 +38,7 @@ public:
    Eigen_model() : Beta_function(), pars(Eigen::ArrayXd::Zero(10)) {
       set_scale(100.);
       set_number_of_parameters(10);
+      set_loops(1);
    }
    virtual ~Eigen_model() {}
    virtual Eigen::ArrayXd get() const { return pars; }

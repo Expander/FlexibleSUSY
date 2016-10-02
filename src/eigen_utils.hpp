@@ -64,6 +64,22 @@ Eigen::Matrix<Scalar,M,N> div_save(
    return result;
 }
 
+template <class BinaryOp, class Derived>
+Derived binary_map(
+   const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Derived>& b, BinaryOp op)
+{
+   typename Derived::PlainObject result(a.rows(), b.cols());
+
+   assert(a.rows() == b.rows());
+   assert(a.cols() == b.cols());
+
+   for (int i = 0; i < a.rows(); i++)
+      for (int k = 0; k < a.cols(); k++)
+         result(i,k) = op(a(i,k), b(i,k));
+
+   return result;
+}
+
 /**
  * The element of v, which is closest to mass, is moved to the
  * position idx.

@@ -1,5 +1,6 @@
 DIR          := legacy
 MODNAME      := legacy
+WITH_$(MODNAME) := yes
 
 LIBLEGACY_HDR := \
 		$(DIR)/conversion.hpp \
@@ -21,13 +22,15 @@ LIBLEGACY_OBJ := \
 LIBLEGACY_DEP := \
 		$(LIBLEGACY_OBJ:.o=.d)
 
-LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBLEGACY     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBLEGACY_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBLEGACY)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -40,20 +43,25 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBLEGACY_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBLEGACY)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBLEGACY_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBLEGACY)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
 $(LIBLEGACY): $(LIBLEGACY_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 # add boost and eigen flags for the test object files and dependencies
 $(LIBLEGACY_OBJ) $(LIBLEGACY_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)

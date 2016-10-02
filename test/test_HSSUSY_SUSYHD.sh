@@ -5,9 +5,9 @@ BASEDIR=$(dirname $0)
 input="$BASEDIR/test_HSSUSY_SUSYHD.dat"
 output="$BASEDIR/test_HSSUSY_SUSYHD.out.dat"
 exe="$BASEDIR/../models/HSSUSY/run_HSSUSY.x"
-print_block="$BASEDIR/../config/print_slha_block.awk"
+print_block="$BASEDIR/../utils/print_slha_block.awk"
 
-rel_error="0.0006"
+rel_error="0.00061"
 
 if test ! -x "$exe"; then
     echo "Error: HSSUSY spectrum generator not found: $exe"
@@ -52,7 +52,7 @@ Block FlexibleSUSY
    10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
    12   0                    # force output
-   13   1                    # Top quark 2-loop corrections QCD
+   13   1                    # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
 Block SMINPUTS               # Standard Model inputs
     1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166380000e-05      # G_Fermi
@@ -81,6 +81,7 @@ Block EXTPAR                 # Input parameters
     6   173.34               # MEWSB
     7   ${At}                # At(MSUSY)
    25   ${TB}                # TanBeta(MSUSY)
+  100   2                    # LambdaLoopOrder
 Block MSQ2IN
   1  1     ${MS2}            # mq2(1,1)
   2  2     ${MS2}            # mq2(2,2)

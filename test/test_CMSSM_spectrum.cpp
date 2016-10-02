@@ -85,7 +85,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         VERBOSE_MSG(ss.str());
+         BOOST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -125,7 +125,7 @@ public:
       if (!high_constraint)
          high_constraint = new CMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm);
+         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm, qedqcd);
       if (!low_constraint)
          low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }
@@ -471,40 +471,34 @@ void CMSSM_iterative_low_scale_constraint::apply()
    calculate_DRbar_gauge_couplings();
    calculate_DRbar_yukawa_couplings();
 
-   struct Chi_sqr_mH_mZ {
-      static double func(const gsl_vector* x, void* params) {
-         if (!is_finite(x))
-            return std::numeric_limits<double>::max();
+   auto func = [this](const Eigen::Matrix<double,2,1>& x) {
+      const double vd = x(0);
+      const double vu = x(1);
 
-         CMSSM<Two_scale>* model = static_cast<CMSSM<Two_scale>*>(params);
+      if (vd < std::numeric_limits<double>::epsilon() ||
+          vu < std::numeric_limits<double>::epsilon())
+         return std::numeric_limits<double>::max();
 
-         const double vd = gsl_vector_get(x, 0);
-         const double vu = gsl_vector_get(x, 1);
+      model->set_vd(vd);
+      model->set_vu(vu);
 
-         if (vd < std::numeric_limits<double>::epsilon() ||
-             vu < std::numeric_limits<double>::epsilon())
-            return std::numeric_limits<double>::max();
+      model->calculate_DRbar_masses();
+      model->calculate_Mhh_pole();
+      model->calculate_MVZ_pole();
 
-         model->set_vd(vd);
-         model->set_vu(vu);
+      const double mH = model->get_physical().Mhh(0);
+      const double mZ = model->get_physical().MVZ;
 
-         model->calculate_DRbar_masses();
-         model->calculate_Mhh_pole();
-         model->calculate_MVZ_pole();
+      #define LowEnergyConstant(p) Electroweak_constants::p
+      #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
 
-         const double mH = model->get_physical().Mhh(0);
-         const double mZ = model->get_physical().MVZ;
-
-         #define LowEnergyConstant(p) Electroweak_constants::p
-         #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
-
-         return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
-              + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
-      }
+      return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+         + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
    };
 
-   Minimizer<2> minimizer(Chi_sqr_mH_mZ::func, model, 100, 1.0e-2);
-   const double start[2] = { model->get_vd(), model->get_vu() };
+   Minimizer<2> minimizer(func, 100, 1.0e-2);
+   Eigen::Matrix<double,2,1> start;
+   start << model->get_vd(), model->get_vu();
 
    const int status = minimizer.minimize(start);
 

@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_ewsb_tree_level_via_soft_higgs_masses )
    NmssmSoftsusy s;
    setup_SMSSM(m, s, input);
 
-   const int error = m.solve_ewsb_tree_level_via_soft_higgs_masses();
+   const int error = m.solve_ewsb_tree_level_custom();
 
    BOOST_CHECK_EQUAL(error, 0);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), 2.0e-09);

@@ -20,12 +20,6 @@ TestEquality[ToValidCSymbol[a[b]], ab];
 TestEquality[ToValidCSymbol[a[b,c]], abc];
 TestEquality[ToValidCSymbol[a[b,c][d]], abcd];
 
-(* SARAH sometimes appends indices [i1,i2] to express that a symbol is
-   of type matrix. These indices should be stripped before
-   conversion. *)
-TestEquality[ToValidCSymbol[a[Susyno`LieGroups`i1,SARAH`i2]], a];
-TestEquality[ToValidCSymbol[a[b,c][Susyno`LieGroups`i1,SARAH`i2]], abc];
-
 (* Test that symbols, which consist of greek letters are correctly
    converted. *)
 TestEquality[ToValidCSymbol[\[Lambda]3], Lambda3];
@@ -42,13 +36,6 @@ TestEquality[ToValidCSymbolString[a], "a"];
 TestEquality[ToValidCSymbolString[a[b]], "ab"];
 TestEquality[ToValidCSymbolString[a[b,c]], "abc"];
 TestEquality[ToValidCSymbolString[a[b,c][d]], "abcd"];
-
-(* SARAH sometimes appends indices [i1,i2] to express that a type is
-   of type matrix. These indices should be stripped before
-   conversion. *)
-TestEquality[ToValidCSymbolString[a[Susyno`LieGroups`i1,SARAH`i2]], "a"];
-TestEquality[ToValidCSymbolString[a[b][Susyno`LieGroups`i1,SARAH`i2]], "ab"];
-TestEquality[ToValidCSymbolString[a[b,c][Susyno`LieGroups`i1,SARAH`i2]], "abc"];
 
 Print["testing RValueToCFormString[] ..."];
 
@@ -69,13 +56,6 @@ TestEquality[RValueToCFormString[MatMul[Adj[A]]], "A.adjoint()"];
 TestEquality[RValueToCFormString[MatMul[A Adj[A]]], "A*A.adjoint()"];
 TestEquality[RValueToCFormString[trace[Adj[A]]], "(A.adjoint()).trace()"];
 TestEquality[RValueToCFormString[trace[A Adj[A]]], "(A*A.adjoint()).trace()"];
-
-(* SARAH sometimes appends indices [i1,i2] to express that a type is
-   of type matrix. These indices should be stripped before
-   conversion. *)
-TestEquality[RValueToCFormString[a[Susyno`LieGroups`i1,SARAH`i2]], "a"];
-TestEquality[RValueToCFormString[a[b][Susyno`LieGroups`i1,SARAH`i2]], "a(b)"];
-TestEquality[RValueToCFormString[a[b,c][Susyno`LieGroups`i1,SARAH`i2]], "a(b,c)"];
 
 (* test greek symbol conversion *)
 TestEquality[RValueToCFormString[\[Mu]], "Mu"];
@@ -159,6 +139,11 @@ TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
              ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[i k]]], "result", ScalarType[integerScalarCType], " = 0"]},
             "result", "int", "420"];
+TestCPPCode[{"int Abs(int n) { return n < 0 ? -n : n; }\nint Sqr(int n) { return n*n; }",
+             "int a = 2, b = 3;" <>
+             "int result = 0;" <>
+             ExpandSums[Abs[sum[i,1,3,a sum[k,1,2,b]]]^2, "result", ScalarType[integerScalarCType]]},
+            "result", "int", "1296"];
 
 Clear[SARAH`sum];
 

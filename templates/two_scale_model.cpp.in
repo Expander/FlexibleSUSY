@@ -78,4 +78,10 @@ void CLASSNAME::set_precision(double p)
    @ModelName@_mass_eigenstates::set_precision(p);
 }
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@<Two_scale>& model)
+{
+   model.print(ostr);
+   return ostr;
+}
+
 } // namespace flexiblesusy

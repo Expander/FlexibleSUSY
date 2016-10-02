@@ -21,6 +21,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    softsusy::GUTlambda = true;
    NMSSM<Two_scale> m;
    m.set_loops(2);
+   m.set_thresholds(2);
    SoftsusyNMSSM<Two_scale> snmssm;
 
    // create NMSSM initial guesser
@@ -35,7 +36,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 
    m.set_input_parameters(input);
    NMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, qedqcd);
-   NMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m);
+   NMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m, qedqcd);
    NMSSM_high_scale_constraint<Two_scale> high_constraint(&m);
 
    NMSSM_initial_guesser<Two_scale> guesser(&m, qedqcd, low_constraint,

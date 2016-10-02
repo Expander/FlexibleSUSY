@@ -159,7 +159,7 @@ public:
       if (!high_constraint)
          high_constraint = new NUTNMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm);
+         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm, qedqcd);
       if (!low_constraint)
          low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, qedqcd);
    }
@@ -443,8 +443,7 @@ void compare_tadpoles_2loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    const double tu_1_and_2loop_ss = ss.displayTadpole2Ms();
    const double ts_1_and_2loop_ss = ss.displayTadpoleSMs();
 
-   double two_loop_tadpole[3];
-   fs.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(fs.tadpole_hh_2loop());
 
    // check equality of 1-loop tadpoles again
    // works only if amu = the lightest CP-even Higgs,

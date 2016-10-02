@@ -57,6 +57,14 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    }
 }
 
+void test_weinberg_angle(CMSSM_mass_eigenstates m)
+{
+   m.calculate_DRbar_masses();
+
+   const double weinberg_angle = ArcTan(Sqrt(0.6) * m.get_g1() / m.get_g2());
+   TEST_EQUALITY(weinberg_angle, m.ThetaW());
+}
+
 void compare_anomalous_dimensions(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
 {
   DoubleMatrix gEE(3,3),gLL(3,3),gQQ(3,3),gDD(3,3),gUU(3,3);
@@ -558,7 +566,7 @@ void compare_selectron_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    TEST_CLOSE(Se_softsusy_se(5,4), Se_sarah_se(5,4), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(5,5), Se_sarah_se(5,5), 1.0e-10);
    // compare 3rd family
-   TEST_CLOSE(Se_softsusy_se(3,3), Se_sarah_se(3,3), 1.0e-10);
+   TEST_CLOSE(Se_softsusy_se(3,3), Se_sarah_se(3,3), 2.0e-10);
    TEST_CLOSE(Se_softsusy_se(3,6), Se_sarah_se(3,6), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,3), Se_sarah_se(6,3), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 2.0e-10);
@@ -632,10 +640,10 @@ void compare_sup_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
       Su_sarah_se(6,6) = m.self_energy_Su(p,5,5);
    }
 
-   TEST_CLOSE(Su_softsusy_se(3,3), Su_sarah_se(3,3), 1.0e-10);
-   TEST_CLOSE(Su_softsusy_se(3,6), Su_sarah_se(3,6), 1.0e-10);
-   TEST_CLOSE(Su_softsusy_se(6,3), Su_sarah_se(6,3), 1.0e-10);
-   TEST_CLOSE(Su_softsusy_se(6,6), Su_sarah_se(6,6), 1.0e-9);
+   TEST_CLOSE(Su_softsusy_se(3,3), Su_sarah_se(3,3), 1.0e-7);
+   TEST_CLOSE(Su_softsusy_se(3,6), Su_sarah_se(3,6), 1.0e-7);
+   TEST_CLOSE(Su_softsusy_se(6,3), Su_sarah_se(6,3), 1.0e-7);
+   TEST_CLOSE(Su_softsusy_se(6,6), Su_sarah_se(6,6), 1.0e-7);
 }
 
 void compare_sdown_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
@@ -707,10 +715,10 @@ void compare_sdown_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
       Sd_sarah_se(6,6) = m.self_energy_Sd(p,5,5);
    }
 
-   TEST_CLOSE(Sd_softsusy_se(3,3), Sd_sarah_se(3,3), 1.0e-10);
-   TEST_CLOSE(Sd_softsusy_se(3,6), Sd_sarah_se(3,6), 1.0e-10);
-   TEST_CLOSE(Sd_softsusy_se(6,3), Sd_sarah_se(6,3), 1.0e-10);
-   TEST_CLOSE(Sd_softsusy_se(6,6), Sd_sarah_se(6,6), 1.2e-10);
+   TEST_CLOSE(Sd_softsusy_se(3,3), Sd_sarah_se(3,3), 1.0e-7);
+   TEST_CLOSE(Sd_softsusy_se(3,6), Sd_sarah_se(3,6), 1.0e-7);
+   TEST_CLOSE(Sd_softsusy_se(6,3), Sd_sarah_se(6,3), 1.0e-7);
+   TEST_CLOSE(Sd_softsusy_se(6,6), Sd_sarah_se(6,6), 1.0e-7);
 }
 
 void compare_CP_even_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
@@ -900,6 +908,7 @@ void compare_top_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.calcDrBarPars();
    m.set_scale(MZ);
    m.calculate_DRbar_masses();
+   m.set_thresholds(2);
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();
@@ -1027,8 +1036,7 @@ void compare_tadpoles_2loop(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double td_1_and_2loop_ss = s.displayTadpole1Ms();
    const double tu_1_and_2loop_ss = s.displayTadpole2Ms();
 
-   double two_loop_tadpole[2];
-   m.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(m.tadpole_hh_2loop());
 
    // check equality of 1-loop tadpoles again
    TEST_CLOSE(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
@@ -1054,7 +1062,7 @@ void compare_loop_masses(MssmSoftsusy s, CMSSM<Two_scale> m)
 
    TEST_CLOSE(s.displayPhys().me.flatten().sort(), ToDoubleVector(m.get_physical().MSe), 1.0e-10);
    TEST_CLOSE(s.displayPhys().mu.flatten().sort(), ToDoubleVector(m.get_physical().MSu), 1.0e-10);
-   TEST_CLOSE(s.displayPhys().md.flatten().sort(), ToDoubleVector(m.get_physical().MSd), 1.0e-10);
+   TEST_CLOSE(s.displayPhys().md.flatten().sort(), ToDoubleVector(m.get_physical().MSd), 2.0e-10);
 
    TEST_EQUALITY(0.0, m.get_physical().MVG);
    TEST_EQUALITY(0.0, m.get_physical().MVP);
@@ -1268,8 +1276,7 @@ void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    model.set_ewsb_loop_order(2);
    model.solve_ewsb();
 
-   double two_loop_tadpole[2];
-   model.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(model.tadpole_hh_2loop());
 
    TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real()
               - two_loop_tadpole[0], 0.0, 0.007);
@@ -1319,32 +1326,47 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double Mu_ss = softSusy.displaySusyMu();
    const double BMu_ss = softSusy.displayM3Squared();
 
-   // prepare solvers
-   CMSSM<Two_scale>::EWSB_args params = {&model, ewsb_loop_order};
+   typedef Eigen::Matrix<double,2,1> EWSB_vector_t;
 
+   auto ewsb_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return model.ewsb_step();
+   };
+
+   auto tadpole_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return model.tadpole_equations();
+   };
+
+   // prepare solvers
    EWSB_solver* solvers[] = {
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrid),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybrid),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybridS),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLBroyden),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLNewton),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          ewsb_iteration_precision)
    };
 
-   double x_init[2];
-   model.ewsb_initial_guess(x_init);
+   const auto x_init(model.ewsb_initial_guess());
 
    // starting values for Mu, BMu
    const double Mu_0 = model.get_Mu();
@@ -1599,6 +1621,9 @@ void compare_models(int loopLevel)
    std::cout << "done\n";
    std::cout << "comparing beta functions ... ";
    test_beta_function_equality(softSusy, m);
+   std::cout << "done\n";
+   std::cout << "testing weak mixing angle ... ";
+   test_weinberg_angle(m);
    std::cout << "done\n";
 
    if (loopLevel < 3) {

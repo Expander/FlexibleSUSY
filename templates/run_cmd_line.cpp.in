@@ -19,13 +19,14 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_observables.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"
 #include "lowe.h"
 #include "logger.hpp"
+#include "physical_input.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -70,8 +71,15 @@ int main(int argc, char* argv[])
    @ModelName@_input_parameters input;
    set_command_line_parameters(argc, argv, input);
 
+   Physical_input physical_input;
    softsusy::QedQcd qedqcd;
-   qedqcd.toMz();
+
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
+   } catch (const Error& e) {
+      ERROR(e.what());
+      return EXIT_FAILURE;
+   }
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
@@ -94,7 +102,7 @@ int main(int argc, char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   const Observables observables(calculate_observables(model, qedqcd));
+   const @ModelName@_observables observables(calculate_observables(model, qedqcd, physical_input));
 
    // SLHA output
    SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales, observables));

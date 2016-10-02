@@ -21,6 +21,7 @@ using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 {
+   QedQcd qedqcd;
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
    NMSSM<Two_scale> m;
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 
    const double precision = m.get_ewsb_iteration_precision();
 
-   NMSSM_susy_scale_constraint<Two_scale> constraint(&m);
+   NMSSM_susy_scale_constraint<Two_scale> constraint(&m, qedqcd);
    constraint.apply();
 
    double tadpole[3];
@@ -52,8 +53,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    tadpole[2] = m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh(2));
 
    if (m.get_ewsb_loop_order() > 1) {
-      double two_loop_tadpole[3];
-      m.tadpole_hh_2loop(two_loop_tadpole);
+      const auto two_loop_tadpole(m.tadpole_hh_2loop());
       tadpole[0] -= two_loop_tadpole[0];
       tadpole[1] -= two_loop_tadpole[1];
       tadpole[2] -= two_loop_tadpole[2];

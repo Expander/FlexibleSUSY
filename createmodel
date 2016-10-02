@@ -330,7 +330,7 @@ search_default_model() {
 
     message -n "Searching for default SARAH model in $_file ... "
 
-    _sarah_model="`sed -n 's/FSDefaultSARAHModel *= *\([^;][^;]*\)/\1/p' < ${_file}`"
+    _sarah_model=$(sed -n 's/FSDefaultSARAHModel *= *\([^;][^;]*\)/\1/p' < ${_file} | tr -d '')
 
     if [ -z $_sarah_model ]; then
         message "not found"
@@ -481,8 +481,9 @@ set -- $(find $model_file_dir -type f -iname LesHouches.in\* -not -iname \*~ -ex
 SLHA_input_files="$*"
 
 SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
-    sed -e 's/ / \\\\\\n/g;' \
-        -e 's,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
+    sed -e 's/ / \\\\\\n/g' \
+        -e 's,^\(.\),		$(DIR)/\1,' \
+        -e 's,\\n\(.\),\\n		$(DIR)/\1,g')
 
 message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \

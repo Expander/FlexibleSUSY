@@ -1,20 +1,32 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = SM;
 
 (* SM input parameters *)
 
 MINPAR = { {1, LambdaIN} };
 
+EXTPAR = {
+    {0, Qin},
+    {1, QEWSB}
+};
+
 EWSBOutputParameters = { mu2 };
 
-SUSYScale = v;
+HighScale = Qin;
 
-SUSYScaleFirstGuess = 1000;
+HighScaleFirstGuess = Qin;
 
-SUSYScaleInput = {
+HighScaleInput = {
     {\[Lambda], LambdaIN}
 };
+
+SUSYScale = QEWSB;
+
+SUSYScaleFirstGuess = QEWSB;
+
+SUSYScaleInput = {};
 
 LowScale = LowEnergyConstant[MZ];
 
@@ -41,14 +53,21 @@ SMParticles = {
     hh (* Higgs *)
 };
 
-OnlyLowEnergyFlexibleSUSY = True;
 UseSM3LoopRGEs = True;
 UseHiggs2LoopSM = True;
 
 DefaultPoleMassPrecision = HighPrecision;
-HighPoleMassPrecision    = {};
+HighPoleMassPrecision    = {hh};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
+
+ExtraSLHAOutputBlocks = {
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+};
 
 SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],

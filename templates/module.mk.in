@@ -1,6 +1,7 @@
 DIR          := @DIR@
 MODNAME      := @CLASSNAME@
 SARAH_MODEL  := @MODEL@
+WITH_$(MODNAME) := yes
 
 @CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -18,6 +19,7 @@ SARAH_MODEL  := @MODEL@
 		$(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 
 @CLASSNAME@_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.@CLASSNAME@_generated \
 @SLHA_INPUT@
 
 @CLASSNAME@_GNUPLOT := \
@@ -29,11 +31,16 @@ SARAH_MODEL  := @MODEL@
 
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
+LL@CLASSNAME@_LIB  :=
+LL@CLASSNAME@_OBJ  :=
+LL@CLASSNAME@_SRC  :=
+LL@CLASSNAME@_MMA  :=
 
 LIB@CLASSNAME@_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
+		$(DIR)/@CLASSNAME@_effective_couplings.cpp \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.cpp \
 		$(DIR)/@CLASSNAME@_a_muon.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
@@ -42,6 +49,8 @@ LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
+		$(DIR)/@CLASSNAME@_standard_model_matching.cpp \
+		$(DIR)/@CLASSNAME@_standard_model_two_scale_matching.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp \
@@ -56,8 +65,9 @@ EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
 LIB@CLASSNAME@_HDR += \
-		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
+		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
+		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
 		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.hpp \
 		$(DIR)/@CLASSNAME@_info.hpp \
@@ -71,6 +81,8 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_slha_io.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator_interface.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
+		$(DIR)/@CLASSNAME@_standard_model_matching.hpp \
+		$(DIR)/@CLASSNAME@_standard_model_two_scale_matching.hpp \
 		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.hpp \
@@ -82,6 +94,12 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp
+LL@CLASSNAME@_SRC  += \
+		$(DIR)/@CLASSNAME@_librarylink.cpp
+
+LL@CLASSNAME@_MMA  += \
+		$(DIR)/@CLASSNAME@_librarylink.m \
+		$(DIR)/run_@CLASSNAME@.m
 
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
@@ -134,7 +152,13 @@ LIB@CLASSNAME@_DEP := \
 EXE@CLASSNAME@_DEP := \
 		$(EXE@CLASSNAME@_OBJ:.o=.d)
 
-LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LL@CLASSNAME@_DEP  := \
+		$(patsubst %.cpp, %.d, $(filter %.cpp, $(LL@CLASSNAME@_SRC)))
+
+LL@CLASSNAME@_OBJ  := $(LL@CLASSNAME@_SRC:.cpp=.o)
+LL@CLASSNAME@_LIB  := $(LL@CLASSNAME@_SRC:.cpp=$(LIBLNK_LIBEXT))
+
+LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 METACODE_STAMP_@CLASSNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -144,11 +168,12 @@ SARAH_MODEL_FILES_@CLASSNAME@ := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME) run-metacode-$(MODNAME) \
-		pack-$(MODNAME)-src
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib \
+		clean-$(MODNAME)-obj distclean-$(MODNAME) \
+		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIB@CLASSNAME@)
+all-$(MODNAME): $(LIB@CLASSNAME@) $(EXE@CLASSNAME@_EXE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -156,6 +181,8 @@ install-src::
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_MMA) $(@CLASSNAME@_INSTALL_DIR)
 		$(INSTALL_STRIPPED) $(@CLASSNAME@_MK) $(@CLASSNAME@_INSTALL_DIR) -m u=rw,g=r,o=r
 		install -m u=rw,g=r,o=r $(@CLASSNAME@_TWO_SCALE_MK) $(@CLASSNAME@_INSTALL_DIR)
 ifneq ($(@CLASSNAME@_SLHA_INPUT),)
@@ -167,28 +194,41 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIB@CLASSNAME@_DEP)
 		-rm -f $(EXE@CLASSNAME@_DEP)
+		-rm -f $(LL@CLASSNAME@_DEP)
+
+clean-$(MODNAME)-lib:
+		-rm -f $(LIB@CLASSNAME@)
+		-rm -f $(LL@CLASSNAME@_LIB)
 
 clean-$(MODNAME)-obj:
 		-rm -f $(LIB@CLASSNAME@_OBJ)
 		-rm -f $(EXE@CLASSNAME@_OBJ)
+		-rm -f $(LL@CLASSNAME@_OBJ)
 
 # BEGIN: NOT EXPORTED ##########################################
 clean-$(MODNAME)-src:
 		-rm -f $(LIB@CLASSNAME@_SRC)
 		-rm -f $(LIB@CLASSNAME@_HDR)
 		-rm -f $(EXE@CLASSNAME@_SRC)
+		-rm -f $(LL@CLASSNAME@_SRC)
+		-rm -f $(LL@CLASSNAME@_MMA)
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 		-rm -f $(@CLASSNAME@_TWO_SCALE_MK)
+		-rm -f $(@CLASSNAME@_SLHA_INPUT)
 		-rm -f $(@CLASSNAME@_GNUPLOT)
 
-clean-$(MODNAME): clean-$(MODNAME)-src
+distclean-$(MODNAME): clean-$(MODNAME)-src
 # END:   NOT EXPORTED ##########################################
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIB@CLASSNAME@)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXE@CLASSNAME@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		@true
+
+clean-generated:: clean-$(MODNAME)-src
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
@@ -201,7 +241,7 @@ pack-$(MODNAME)-src:
 		$(@CLASSNAME@_MK) $(@CLASSNAME@_TWO_SCALE_MK) \
 		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_GNUPLOT)
 
-$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)
 		@true
 
@@ -221,19 +261,33 @@ $(METACODE_STAMP_@CLASSNAME@):
 		@true
 endif
 
-$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
+	CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
-$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
+$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
+	CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
+$(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
+	CPPFLAGS += $(shell $(MATH_INC_PATHS) --math-cmd="$(MATH)" -I --librarylink --mathlink)
+
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(ADDONLIBS) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(LDLIBS)
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS) $(LDLIBS)
+
+$(LL@CLASSNAME@_LIB): $(LL@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(LIBLNK_MAKE_LIB_CMD) $@ $(CPPFLAGS) $(CFLAGS) $(call abspathx,$^) $(ADDONLIBS) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS) $(LDLIBS)
 
 ALLDEP += $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP)
 ALLSRC += $(LIB@CLASSNAME@_SRC) $(EXE@CLASSNAME@_SRC)
 ALLLIB += $(LIB@CLASSNAME@)
 ALLEXE += $(EXE@CLASSNAME@_EXE)
+
+ifeq ($(ENABLE_LIBRARYLINK),yes)
+ALLDEP += $(LL@CLASSNAME@_DEP)
+ALLSRC += $(LL@CLASSNAME@_SRC)
+ALLLL  += $(LL@CLASSNAME@_LIB)
+endif

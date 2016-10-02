@@ -23,12 +23,12 @@
 
 #include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_info.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
 #include "lowe.h"
-#include "observables.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -48,7 +48,6 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
-struct Observables;
 
 struct @ModelName@_scales {
    @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
@@ -66,19 +65,23 @@ public:
    void fill(@ModelName@_input_parameters&) const;
    void fill(@ModelName@_mass_eigenstates&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
+   void fill(Physical_input&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
    void read_from_stream(std::istream&);
+   void set_block(const std::string& str, SLHA_io::Position position = SLHA_io::back) { slha_io.set_block(str, position); }
+   void set_blocks(const std::vector<std::string>& vec, SLHA_io::Position position = SLHA_io::back) { slha_io.set_blocks(vec, position); }
    void set_extpar(const @ModelName@_input_parameters&);
-   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const Observables&);
+   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const @ModelName@_observables&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
+   void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
@@ -86,13 +89,14 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales& scales = @ModelName@_scales(), const Observables& = Observables());
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const Observables&);
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
+   bool print_imaginary_parts_of_majorana_mixings;
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
@@ -121,7 +125,7 @@ template <class T>
 void @ModelName@_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model,
    const softsusy::QedQcd& qedqcd, const @ModelName@_scales& scales,
-   const Observables& observables)
+   const @ModelName@_observables& observables)
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
@@ -144,7 +148,7 @@ void @ModelName@_slha_io::fill_slhaea(
 template <class T>
 SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
    const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
-   const @ModelName@_scales& scales, const Observables& observables)
+   const @ModelName@_scales& scales, const @ModelName@_observables& observables)
 {
    SLHAea::Coll slhaea;
    @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd, scales, observables);
@@ -161,17 +165,20 @@ template <class T>
 void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
 {
 @writeSLHAModelParametersBlocks@
+@writeSLHAPhasesBlocks@
 }
 
 /**
  * Writes extra SLHA blocks
  *
  * @param model model class
+ * @param scales struct of boundary condition scales
+ * @param observables struct of observables
  */
 template <class T>
 void @ModelName@_slha_io::set_extra(
    const @ModelName@_slha<T>& model, const @ModelName@_scales& scales,
-   const Observables& observables)
+   const @ModelName@_observables& observables)
 {
    const @ModelName@_physical physical(model.get_physical_slha());
 

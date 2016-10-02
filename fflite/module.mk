@@ -1,5 +1,6 @@
 DIR          := fflite
 MODNAME      := fflite
+WITH_$(MODNAME) := yes
 
 LIBFFLITE_HDR := \
 		$(DIR)/defs.h \
@@ -38,13 +39,15 @@ LIBFFLITE_OBJ := \
 LIBFFLITE_DEP := \
 		$(LIBFFLITE_OBJ:.o=.d)
 
-LIBFFLITE     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBFFLITE     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBFFLITE_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-dep \
+		clean-$(MODNAME)-lib clean-$(MODNAME)-obj distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFFLITE)
+		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
@@ -57,20 +60,25 @@ endif
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFFLITE_DEP)
 
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBFFLITE)
+
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBFFLITE_OBJ)
 
-clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-		-rm -f $(LIBFFLITE)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
+		@true
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-obj::     clean-$(MODNAME)-obj
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
 $(LIBFFLITE): $(LIBFFLITE_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ifeq ($(ENABLE_FFLITE),yes)
 ALLDEP += $(LIBFFLITE_DEP)

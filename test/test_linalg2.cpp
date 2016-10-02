@@ -16,6 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+#define BOOST_MPL_LIMIT_LIST_SIZE 30
+
 #include <limits>
 #include <cmath>
 #include <complex>
@@ -64,13 +67,17 @@ struct Test_svd {
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
+    Test_svd<complex<double>, 1, 1, svd, svd>,
     Test_svd<complex<double>, 2, 2, svd, svd>,
     Test_svd<complex<double>, 3, 3, svd, svd>,
+    Test_svd<double	    , 1, 1, svd, svd>,
     Test_svd<double	    , 2, 2, svd, svd>,
     Test_svd<double	    , 3, 3, svd, svd>,
 
+    Test_svd<complex<double>, 1, 1, reorder_svd, reorder_svd, true>,
     Test_svd<complex<double>, 2, 2, reorder_svd, reorder_svd, true>,
     Test_svd<complex<double>, 3, 3, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 1, 1, reorder_svd, reorder_svd, true>,
     Test_svd<double	    , 2, 2, reorder_svd, reorder_svd, true>,
     Test_svd<double	    , 3, 3, reorder_svd, reorder_svd, true>,
 
@@ -144,10 +151,15 @@ struct Test_diagonalize_symmetric {
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
     Test_diagonalize_symmetric
+	<complex<double>, 1, diagonalize_symmetric, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
 	<complex<double>, 2, diagonalize_symmetric, diagonalize_symmetric>,
     Test_diagonalize_symmetric
 	<complex<double>, 3, diagonalize_symmetric, diagonalize_symmetric>,
 
+    Test_diagonalize_symmetric
+	<complex<double>, 1,
+	 reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
     Test_diagonalize_symmetric
 	<complex<double>, 2,
 	 reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
@@ -260,12 +272,14 @@ struct Test_fs {
 };
 
 typedef boost::mpl::list<
+    Test_fs<double, complex<double>, 1>,
     Test_fs<double, complex<double>, 2>,
     Test_fs<double, complex<double>, 3>,
     Test_fs<double, complex<double>, 4>,
     Test_fs<double, complex<double>, 6>,
     Test_fs<double, complex<double>, 4, 6>,
     Test_fs<double, complex<double>, 6, 4>,
+    Test_fs<double, double	   , 1>,
     Test_fs<double, double	   , 2>,
     Test_fs<double, double	   , 3>,
     Test_fs<double, double	   , 4>,
@@ -273,10 +287,12 @@ typedef boost::mpl::list<
     Test_fs<double, double	   , 4, 6>,
     Test_fs<double, double	   , 6, 4>,
 
+    Test_fs<long double, complex<long double>, 1>,
     Test_fs<long double, complex<long double>, 3>,
     Test_fs<long double, complex<long double>, 6>,
     Test_fs<long double, complex<long double>, 4, 6>,
     Test_fs<long double, complex<long double>, 6, 4>,
+    Test_fs<long double, long double	     , 1>,
     Test_fs<long double, long double	     , 3>,
     Test_fs<long double, long double	     , 6>,
     Test_fs<long double, long double	     , 4, 6>,
@@ -315,6 +331,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 }
 
 typedef boost::mpl::list<
+    Test_fs<double, double, 1>,
     Test_fs<double, double, 2>,
     Test_fs<double, double, 3>,
     Test_fs<double, double, 4>,
@@ -322,6 +339,7 @@ typedef boost::mpl::list<
     Test_fs<double, double, 4, 6>,
     Test_fs<double, double, 6, 4>,
 
+    Test_fs<long double, long double, 1>,
     Test_fs<long double, long double, 3>,
     Test_fs<long double, long double, 6>,
     Test_fs<long double, long double, 4, 6>,
@@ -360,9 +378,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
+    Test_fs<double, complex<double>, 1>,
     Test_fs<double, complex<double>, 2>,
     Test_fs<double, complex<double>, 3>,
 
+    Test_fs<long double, complex<long double>, 1>,
     Test_fs<long double, complex<long double>, 2>,
     Test_fs<long double, complex<long double>, 3>,
     Test_fs<long double, complex<long double>, 4>,

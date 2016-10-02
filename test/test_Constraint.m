@@ -1,9 +1,13 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["Constraint`", "Constraint.m"];
 
-Constraint`SetInputParameters[{g0, m0}];
-Constraint`SetModelParameters[{g1, g2, Yu, Yd}];
-Constraint`SetOutputParameters[{VZ, Se}];
+BeginPackage["FlexibleSUSY`"];
+BETA;
+EndPackage[];
+
+Parameters`SetInputParameters[{g0, m0}];
+Parameters`SetModelParameters[{g1, g2, Yu, Yd}];
+Parameters`SetOutputParameters[{VZ, Se}];
 Constraint`SetBetaFunctions[
     { BetaFunction`BetaFunction[g1, CConversion`ScalarType["double"], 2 g1],
       BetaFunction`BetaFunction[g2, CConversion`ScalarType["double"], 3 g2],

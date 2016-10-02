@@ -1,10 +1,12 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`", "Utils`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
+InitialGuessAtLowScaleGaugeCouplings::usage="";
+IsFixed::usage="returns true if given parameter is fixed in given constraint";
 
 FindFixedParametersFromConstraint::usage="Returns a list of all
 parameters which are fixed by the given constraint";
@@ -20,6 +22,10 @@ RestrictScale::usage="";
 CheckPerturbativityForParameters::usage="";
 
 GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
+
+SetTemporarily::usage="set temporary variables";
+
+ResetTemporarily::usage="set temporary variables";
 
 Begin["`Private`"];
 
@@ -39,18 +45,18 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           ""
          ];
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
-                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`UpYukawa,
+                 value_ /; (!FreeQ[value, Global`upQuarksDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`DownYukawa,
-                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`DownYukawa,
+                 value_ /; (!FreeQ[value, Global`downQuarksDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
-                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
+ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYukawa,
+                 value_ /; (!FreeQ[value, Global`downLeptonsDRbar] || value === Automatic)},
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
@@ -73,86 +79,85 @@ CreateStartPoint[parameters_List, name_String] :=
                startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
                             CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
               ];
-           startPoint = "const double " <> name <> "[" <> dimStr <> "] = {" <>
-                        startPoint <> " };\n";
-           Return[startPoint];
+           "Eigen::VectorXd " <> name <> "(" <> dimStr <> ");\n" <>
+           name <> " << " <> startPoint <> " ;\n"
           ];
 
-SetModelParametersFromGSLVector[model_String, vector_String, parameters_List] :=
+SetModelParametersFromVector[model_String, vector_String, parameters_List] :=
     Module[{result = "", i, gslElement},
            For[i = 1, i <= Length[parameters], i++,
-               gslElement = "gsl_vector_get(" <> vector <> "," <> ToString[i-1] <> ")";
+               gslElement = vector <> "(" <> ToString[i-1] <> ")";
                result = result <> Parameters`SetParameter[parameters[[i]],gslElement,model];
               ];
            Return[result];
           ];
 
-SetGSLVectorFromExpressions[vector_String, expressions_List] :=
+SetVectorFromExpressions[vector_String, expressions_List] :=
     Module[{result = "", i, gslElement},
            For[i = 1, i <= Length[expressions], i++,
-               gslElement = "gsl_vector_set(" <> vector <> "," <>
-                            ToString[i-1] <> "," <>
-                            CConversion`RValueToCFormString[expressions[[i]]] <> ");\n";
+               gslElement = vector <> "(" <> ToString[i-1] <> ") = " <>
+                            CConversion`RValueToCFormString[expressions[[i]]] <> ";\n";
                result = result <> gslElement;
               ];
            Return[result];
           ];
 
-CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
-"struct " <> className <> " {
-   static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
-      if (!is_finite(x))
-         return std::numeric_limits<double>::max();
-
-      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
-" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_masses();
-" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
-      return " <> CConversion`RValueToCFormString[function] <> ";
-   }
+CreateMinimizationFunctionWrapper[functionName_String, dim_Integer, parameters_List, function_] :=
+    Module[{type, stype},
+           type  = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
+           stype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
+"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> stype <> " {
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+   MODEL->calculate_DRbar_masses();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
+   return " <> CConversion`RValueToCFormString[function] <> ";
 };
-";
+"
+          ];
+
+localFunctionWrapper = 0;
+
+CreateSolverName[] := "solver_" <> ToString[localFunctionWrapper++];
 
 ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_String] :=
-    Module[{callMinimizer, dim, dimStr, startPoint, functionWrapper},
+    Module[{callMinimizer, dim, dimStr, startPoint, functionWrapper, functionName},
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateMinimizationFunctionWrapper["LocalFunctionMinimizer","func",dimStr,parameters,function];
+           functionName = CreateSolverName[];
+           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,parameters,function];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
-                           "> minimizer(LocalFunctionMinimizer::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "> minimizer(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = minimizer.minimize(start_point);\n" <>
                            "VERBOSE_MSG(\"\\tminimizer status: \" << gsl_strerror(status));\n";
            Return[callMinimizer];
           ];
 
-CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_List] :=
-"struct " <> className <> " {
-   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f)
-   {
-      if (!is_finite(x))
-         return 1;
-
-      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
-" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_masses();
-" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
-" <> TextFormatting`IndentText[SetGSLVectorFromExpressions["f",function],6] <> "
-      return GSL_SUCCESS;
-   }
+CreateRootFinderFunctionWrapper[functionName_String, dim_Integer, parameters_List, function_List] :=
+    Module[{type},
+           type = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
+"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> type <> " {
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+   MODEL->calculate_DRbar_masses();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
+   "<> type <> " f;
+" <> TextFormatting`IndentText[SetVectorFromExpressions["f",function]] <> "
+   return f;
 };
-";
+"
+          ];
 
 ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelName_String] :=
-    Module[{callRootFinder, dim, dimStr, startPoint, functionWrapper},
+    Module[{callRootFinder, dim, dimStr, startPoint, functionWrapper, functionName},
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateRootFinderFunctionWrapper["LocalFunctionRootFinder","func",dimStr,parameters,function];
+           functionName = CreateSolverName[];
+           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,parameters,function];
            callRootFinder = functionWrapper <> "\n" <> startPoint <>
                            "Root_finder<" <> dimStr <>
-                           "> root_finder(LocalFunctionRootFinder::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "> root_finder(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = root_finder.find_root(start_point);\n" <>
                            "VERBOSE_MSG(\"\\troot finder status: \" << gsl_strerror(status));\n";
            Return[callRootFinder];
@@ -175,13 +180,47 @@ ApplyConstraint[p_, _] :=
          ];
 
 ApplyConstraints[settings_List] :=
-    Module[{result, noMacros},
-           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__] | FlexibleSUSY`FSSolveEWSBFor[__]];
+    Module[{result, noMacros, noTemp},
+           noMacros = DeleteCases[
+               settings,
+               FlexibleSUSY`FSMinimize[__] | \
+               FlexibleSUSY`FSFindRoot[__] | \
+               FlexibleSUSY`FSSolveEWSBFor[__] | \
+               {FlexibleSUSY`Temporary[_], _}
+           ];
+           noTemp = DeleteCases[
+               settings,
+               {FlexibleSUSY`Temporary[_], _}
+           ];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
+           result = result <> AddBetas[noMacros];
            result = result <> "\n";
-           (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
+           (result = result <> ApplyConstraint[#, "MODEL"])& /@ noTemp;
            Return[result];
           ];
+
+ContainsBetas[expr_] := !FreeQ[expr, FlexibleSUSY`BETA];
+
+(* -1 = current beta-function loop order *)
+MaxBetaLoopOrder[expr_] :=
+    Sort @ Cases[expr /. FlexibleSUSY`BETA[p_] :> FlexibleSUSY`BETA[-1,p],
+                 FlexibleSUSY`BETA[l_, _] | FlexibleSUSY`BETA[l_, _][___] :> l, {0, Infinity}];
+
+CallCalcBeta[-1] :=
+    "const " <> FlexibleSUSY`FSModelName <> "_soft_parameters beta_functions(MODEL->calc_beta());\n";
+
+CallCalcBeta[l_?IntegerQ] :=
+    Module[{lstr = ToString[l]},
+           "const " <> FlexibleSUSY`FSModelName <>
+           "_soft_parameters beta_functions_" <> lstr <>
+           "L(MODEL->calc_beta(" <> lstr <> "));\n"
+          ];
+
+AddBetas[expr_?ContainsBetas] :=
+    StringJoin[CallCalcBeta /@ MaxBetaLoopOrder[expr]] <>
+    Parameters`CreateLocalConstRefsForBetas[expr];
+
+AddBetas[_] := "";
 
 FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[parameter];
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
@@ -324,7 +363,7 @@ SanityCheck[settings_List, constraintName_String:""] :=
            setParameters = #[[1]]& /@ settings;
            (* check for unset Yukawa couplings *)
            For[y = 1, y <= Length[yukawas], y++,
-               If[ValueQ[yukawas[[y]]] &&
+               If[(ValueQ /@ yukawas)[[y]] &&
                   FreeQ[setParameters, yukawas[[y]]],
                   Print["Warning: Yukawa coupling ", yukawas[[y]],
                         " not set",
@@ -351,13 +390,6 @@ GetSMMatchingScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], qedqcd_Strin
 CalculateScale[s:FlexibleSUSY`LowEnergyConstant[_], scaleName_String] :=
     scaleName <> " = " <> GetSMMatchingScale[s, "qedqcd"] <> ";\n";
 
-(* Don't expand LowEnergyConstant[MZ] to the hard-coded value
-   LowEnergyConstant(MZ), because the pole MZ is an input parameter
-   and the user might want to vary it.
- *)
-CalculateScale[FlexibleSUSY`LowEnergyConstant[FlexibleSUSY`MZ], scaleName_String] :=
-    scaleName <> " = MZPole;";
-
 CalculateScale[expr_, scaleName_String] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[expr];
@@ -366,10 +398,16 @@ CalculateScale[expr_, scaleName_String] :=
            Return[result];
           ];
 
+CreateBetasForParsIn[expr_] :=
+    Module[{pars},
+           pars = Parameters`FSModelParameters /. Parameters`FindAllParametersClassified[expr];
+           FlexibleSUSY`BETA /@ pars
+          ];
+
 CalculateScale[expr_Equal, scaleName_String] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[expr];
-           result = result <> Parameters`CreateLocalConstRefsForBetas[expr];
+           result = result <> Parameters`CreateLocalConstRefsForBetas[CreateBetasForParsIn[expr]];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
@@ -400,7 +438,7 @@ CalculateScaleFromExprSymb[Equal[expr1_, expr2_]] :=
            parSeq = Sequence @@ parameters;
            F1[parSeq] := expr1;
            F2[parSeq] := expr2;
-           betaFunctions = Global`BETA /@ parameters;
+           betaFunctions = FlexibleSUSY`BETA /@ parameters;
            solution = Solve[Log[scale/Global`currentScale] *
                             (betaFunctions . D[F1[parSeq] - F2[parSeq],
                                                {parameters}])
@@ -469,6 +507,44 @@ InitializeInputParameters[defaultValues_List] :=
            Return[result];
           ];
 
+InitialGuessAtLowScaleGaugeCouplings[] :=
+    Module[{result = ""},
+           If[ValueQ[SARAH`hyperchargeCoupling],
+              result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`leftCoupling],
+              result = result <> Parameters`SetParameter[SARAH`leftCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL"];
+             ];
+           If[ValueQ[SARAH`strongCoupling],
+              result = result <> Parameters`SetParameter[SARAH`strongCoupling,
+                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL"];
+             ];
+           result
+          ];
+
+IsFixedIn[par_, {p_, _}] :=
+    Parameters`StripIndices[par] === Parameters`StripIndices[p];
+
+IsFixedIn[par_, FlexibleSUSY`FSMinimize[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSFindRoot[parameters_List, _]] :=
+    MemberQ[Parameters`StripIndices /@ parameters, Parameters`StripIndices[par]];
+
+IsFixedIn[par_, FlexibleSUSY`FSSolveEWSBFor[parameters___]] :=
+    MemberQ[Parameters`StripIndices /@ Flatten[{parameters}], Parameters`StripIndices[par]];
+
+IsFixedIn[par_, p___] :=
+    Block[{},
+          Print["Error: This is not a valid constraint setting: ", p];
+          Quit[1];
+         ];
+
+IsFixed[par_, constraint_List] :=
+    Or @@ (IsFixedIn[par, #]& /@ constraint);
+
 RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
     Module[{result = "", value},
            If[NumericQ[minimumScale],
@@ -516,6 +592,41 @@ if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
 CheckPerturbativityForParameters[pars_List, thresh_] :=
     Parameters`CreateLocalConstRefs[pars] <> "\n" <>
     StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
+
+SaveValue[par_[idx__], prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par],
+            parStrIdx = CConversion`ToValidCSymbolString[par[idx]]},
+           "const auto " <> prefix <> parStrIdx <> " = MODELPARAMETER(" <> parStr <> ")" <>
+           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");"
+          ];
+
+SaveValue[par_, prefix_String] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par]},
+           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <> parStr <> ");"
+          ];
+
+RestoreValue[par_, prefix_String] :=
+    Parameters`SetParameter[
+        par,
+        prefix <> CConversion`ToValidCSymbolString[par],
+        "MODEL"];
+
+SetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
+            set, savedVals},
+           If[tempSettings === {}, Return[""];];
+           set = ApplyConstraints[tempSettings];
+           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]], "old_"]& /@ tempSettings, "\n"];
+           "// temporary parameter re-definitons\n" <>
+           savedVals <> "\n{\n" <> IndentText[set] <> "}"
+          ];
+
+ResetTemporarily[settings_List] :=
+    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}]},
+           If[tempSettings === {}, Return[""];];
+           "// reset temporary parameter re-definitons\n" <>
+           StringJoin[RestoreValue[#[[1]], "old_"]& /@ tempSettings]
+          ];
 
 End[];
 

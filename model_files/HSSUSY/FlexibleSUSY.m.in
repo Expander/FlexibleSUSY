@@ -15,7 +15,8 @@ EXTPAR = {
     {5, mAInput},
     {6, MEWSB},
     {7, AtInput},
-    {25, TanBeta}
+    {25, TanBeta},
+    {100, LambdaLoopOrder}
 };
 
 FSExtraInputParameters = {
@@ -35,10 +36,11 @@ HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
-                + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi
-                                         + lambda1LChi1 + lambda1LChi2
-                                         + lambda1Lbottom + lambda1Ltau)
-                + UnitStep[THRESHOLD-2] (
+                + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (
+                    + lambda1LReg + lambda1LPhi
+                    + lambda1LChi1 + lambda1LChi2
+                    + lambda1Lbottom + lambda1Ltau)
+                + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] (
                     Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                           IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
                           IsCloseRel[SCALE,M3Input,0.01],
@@ -50,6 +52,9 @@ HighScaleInput = {
                           lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate,
                           IsCloseRel[M3Input^2,msu2[3,3],0.01],
                           lambda2LPhiHSSAlphaTAlphaSMUM3Degenerate,
+                          Not[IsClose[M3Input^2, 0]] &&
+                          IsCloseRel[msu2[3,3]/M3Input^2,msq2[3,3]/M3Input^2,0.01],
+                          lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate,
                           True,
                           lambda2LPhiHSSAlphaTAlphaSFull
                          ]
@@ -82,7 +87,7 @@ InitialGuessAtLowScale = {
    {Ye, Automatic}
 };
 
-DefaultPoleMassPrecision = MediumPrecision;
+DefaultPoleMassPrecision = HighPrecision;
 HighPoleMassPrecision    = {hh};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
@@ -96,6 +101,14 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
+
+ExtraSLHAOutputBlocks = {
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+};
 
 SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],
@@ -256,7 +269,7 @@ lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
    arXiv:1407.4081, provided by Pietro Slavich,
    in the limit M3 = MQ[3,3] = MU[3,3] != MSUSY *)
 lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -277,7 +290,7 @@ lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
    arXiv:1407.4081, provided by Pietro Slavich,
    General expression. *)
 lambda2LPhiHSSAlphaTAlphaSFull = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -352,10 +365,66 @@ lambda2LPhiHSSAlphaTAlphaSFull = With[{
 ];
 
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
+   in the limit MQ[3,3]/M3 = MU[3,3]/M3
+ *)
+lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate = With[{
+    htSM = Yu[3,3],
+    CF = 4/3,
+    Nc = 3,
+    as = g3^2 / (4 Pi),
+    g = M3Input^2,
+    x2 = msu2[3,3]/M3Input^2,
+    q2 = SCALE^2,
+    Xt = xt / M3Input
+    },
+    (as*CF*htSM^4*Nc*(24*x2^2 - 78*x2^3 + 72*x2^4 - 18*x2^5 - 
+   48*x2^2*Xt + 96*x2^3*Xt - 48*x2^4*Xt - 24*x2*Xt^2 + 
+   108*x2^2*Xt^2 - 96*x2^3*Xt^2 + 12*x2^4*Xt^2 + 8*x2*Xt^3 - 
+   72*x2^2*Xt^3 + 64*x2^3*Xt^3 + 4*Xt^4 - 13*x2*Xt^4 + 
+   10*x2^2*Xt^4 - x2^3*Xt^4 + 4*x2*Xt^5 - 4*x2^2*Xt^5 - 
+   24*x2^2*Log[g] + 72*x2^3*Log[g] - 72*x2^4*Log[g] + 
+   24*x2^5*Log[g] + 48*x2^2*Xt*Log[g] - 96*x2^3*Xt*Log[g] + 
+   48*x2^4*Xt*Log[g] + 24*x2*Xt^2*Log[g] - 120*x2^2*Xt^2*Log[g] + 
+   168*x2^3*Xt^2*Log[g] - 72*x2^4*Xt^2*Log[g] - 8*x2*Xt^3*Log[g] + 
+   16*x2^2*Xt^3*Log[g] - 8*x2^3*Xt^3*Log[g] - 4*Xt^4*Log[g] + 
+   14*x2*Xt^4*Log[g] - 16*x2^2*Xt^4*Log[g] + 6*x2^3*Xt^4*Log[g] - 
+   36*x2^3*Log[g]^2 + 72*x2^4*Log[g]^2 - 36*x2^5*Log[g]^2 + 
+   24*x2^2*Log[q2] - 72*x2^3*Log[q2] + 72*x2^4*Log[q2] - 
+   24*x2^5*Log[q2] - 48*x2^2*Xt*Log[q2] + 96*x2^3*Xt*Log[q2] - 
+   48*x2^4*Xt*Log[q2] - 24*x2*Xt^2*Log[q2] + 
+   120*x2^2*Xt^2*Log[q2] - 168*x2^3*Xt^2*Log[q2] + 
+   72*x2^4*Xt^2*Log[q2] + 8*x2*Xt^3*Log[q2] - 
+   16*x2^2*Xt^3*Log[q2] + 8*x2^3*Xt^3*Log[q2] + 4*Xt^4*Log[q2] - 
+   14*x2*Xt^4*Log[q2] + 16*x2^2*Xt^4*Log[q2] - 
+   6*x2^3*Xt^4*Log[q2] + 72*x2^3*Log[g]*Log[q2] - 
+   144*x2^4*Log[g]*Log[q2] + 72*x2^5*Log[g]*Log[q2] - 
+   36*x2^3*Log[q2]^2 + 72*x2^4*Log[q2]^2 - 36*x2^5*Log[q2]^2 + 
+   96*x2^2*Xt*Log[1 - (-1 + x2)/x2] + 
+   32*Xt^3*Log[1 - (-1 + x2)/x2] - 
+   72*x2*Xt^3*Log[1 - (-1 + x2)/x2] + 
+   48*x2^2*Xt^3*Log[1 - (-1 + x2)/x2] + 
+   8*Xt^4*Log[1 - (-1 + x2)/x2] - 
+   18*x2*Xt^4*Log[1 - (-1 + x2)/x2] + 
+   12*x2^2*Xt^4*Log[1 - (-1 + x2)/x2] + 84*x2^3*Log[x2] - 
+   72*x2^4*Log[x2] + 24*x2^5*Log[x2] + 96*x2^2*Xt*Log[x2] - 
+   144*x2^3*Xt*Log[x2] + 48*x2^4*Xt*Log[x2] - 
+   48*x2^2*Xt^2*Log[x2] + 168*x2^3*Xt^2*Log[x2] - 
+   72*x2^4*Xt^2*Log[x2] + 32*Xt^3*Log[x2] - 72*x2*Xt^3*Log[x2] - 
+   8*x2^3*Xt^3*Log[x2] + 8*Xt^4*Log[x2] - 12*x2*Xt^4*Log[x2] - 
+   4*x2^2*Xt^4*Log[x2] + 6*x2^3*Xt^4*Log[x2] + 4*x2*Xt^5*Log[x2] - 
+   72*x2^3*Log[g]*Log[x2] + 144*x2^4*Log[g]*Log[x2] - 
+   72*x2^5*Log[g]*Log[x2] + 72*x2^3*Log[q2]*Log[x2] - 
+   144*x2^4*Log[q2]*Log[x2] + 72*x2^5*Log[q2]*Log[x2] - 
+   36*x2^3*Log[x2]^2 + 72*x2^4*Log[x2]^2 - 36*x2^5*Log[x2]^2 - 
+   48*x2^3*PolyLog[2, (-1 + x2)/x2] + 
+   96*x2^3*Xt*PolyLog[2, (-1 + x2)/x2]))/(192*Pi^3*(-1 + x2)^2*x2^3)
+];
+
+(* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    in the limit MQ[3,3] = M3 (x1 -> 1), MU[3,3] != M3 (x2 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -413,7 +482,7 @@ lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
    in the limit MU[3,3] = M3 (x2 -> 1), MQ[3,3] != M3 (x1 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMUM3Degenerate = With[{
-    htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -486,6 +555,7 @@ lambda2LHSSAlphaT2 = With[{
     Xt = xt,
     gt = Yu[3,3] (* SM Yukawa coupling *)
     },
+    (
 (3*(1 + tan\[Beta]^2)*(1/2 - 8.34993159891064/(1 + tan\[Beta]^2) +
    (6*\[Mu]^2)/mst^2 +
    (Xt^6*(-1/2 + (1/2 - Log[mst^2/Q^2]/2)/(1 + tan\[Beta]^2) +
@@ -546,5 +616,5 @@ lambda2LHSSAlphaT2 = With[{
          (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
           (1 - \[Mu]^2/mst^2)])/(2*mst^2)))/mst^4)*gt^6)/
     (256*Pi^4*tan\[Beta]^2)
-    /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
+    ) /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
     ];

@@ -21,15 +21,22 @@
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_a_muon.hpp"
+#include "@ModelName@_effective_couplings.hpp"
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
 #include "numerics2.hpp"
+#include "wrappers.hpp"
 #include "lowe.h"
+#include "physical_input.hpp"
 
 #define MODEL model
 #define AMU a_muon
 #define AMUGM2CALC a_muon_gm2calc
 #define AMUGM2CALCUNCERTAINTY a_muon_gm2calc_uncertainty
+#define EFFCPHIGGSPHOTONPHOTON eff_cp_higgs_photon_photon
+#define EFFCPHIGGSGLUONGLUON eff_cp_higgs_gluon_gluon
+#define EFFCPPSEUDOSCALARPHOTONPHOTON eff_cp_pseudoscalar_photon_photon
+#define EFFCPPSEUDOSCALARGLUONGLUON eff_cp_pseudoscalar_gluon_gluon
 
 #define ALPHA_S_MZ qedqcd.displayAlpha(softsusy::ALPHAS)
 #define MWPole qedqcd.displayPoleMW()
@@ -41,10 +48,40 @@
 
 namespace flexiblesusy {
 
-Observables calculate_observables(const @ModelName@_mass_eigenstates& model,
-                                  const softsusy::QedQcd& qedqcd)
+const unsigned @ModelName@_observables::NUMBER_OF_OBSERVABLES;
+
+@ModelName@_observables::@ModelName@_observables()
+@observablesInit@
 {
-   Observables observables;
+}
+
+Eigen::ArrayXd @ModelName@_observables::get() const
+{
+@getObservables@
+   return vec;
+}
+
+std::vector<std::string> @ModelName@_observables::get_names()
+{
+@getObservablesNames@
+   return names;
+}
+
+void @ModelName@_observables::clear()
+{
+@clearObservables@
+}
+
+void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
+{
+@setObservables@
+}
+
+@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+                                              const softsusy::QedQcd& qedqcd,
+                                              const Physical_input& physical_input)
+{
+   @ModelName@_observables observables;
 
 @calculateObservables@
 

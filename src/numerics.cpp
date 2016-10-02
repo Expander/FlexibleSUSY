@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 #include "numerics.h"
 #include "dilog.hpp"
+#include "error.hpp"
 #include "rk.hpp"
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
@@ -19,20 +20,21 @@
 using namespace softsusy;
 using namespace Eigen;
 
-double lnLPoisson(unsigned k, double lambda) {
-  if (lambda < 6.66e-66) throw("In lnPoisson: lambda not positive\n");
-  double lnL = -lambda + double(k) * log(lambda);
-  for (unsigned i=2; i<=k; i++) lnL -= log(double(i));
+namespace flexiblesusy {
 
-  return lnL;
-}
+class SoftsusyNumericsError : public Error {
+public:
+   explicit SoftsusyNumericsError(std::string msg_)
+      : msg(msg_)
+      {}
+   virtual ~SoftsusyNumericsError() {}
+   virtual std::string what() const {
+      return msg;
+   }
+private:
+   std::string msg;
+};
 
-double LPoisson(unsigned k, double lambda) {
-  if (lambda < 6.66e-66) throw("In lnPoisson: lambda not positive\n");
-  double L = exp(-lambda) * pow(lambda,int(k));
-  for (unsigned i=2; i<=k; i++) L /= double(i);
-
-  return L;
 }
 
 double calcDerivative(double (*func)(double), double x, double h, double
@@ -44,7 +46,7 @@ double calcDerivative(double (*func)(double), double x, double h, double
   int i, j;
   double errt, fac, hh, ans = 0.0;
   
-  if (h == 0.0) throw "h must be nonzero in numerics.cpp:calcDerivative";
+  if (h == 0.0) throw flexiblesusy::SoftsusyNumericsError("h must be nonzero in numerics.cpp:calcDerivative");
 
 
   DoubleMatrix a(NTAB, NTAB);
@@ -164,16 +166,6 @@ Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
          - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
 }
 
-DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
-
-  const double eps = TOLERANCE * 1.0e-20;
-
-  DoubleVector dydx(1);
-  dydx(1) = -log(fabs(1 - t + eps)) / (t + eps);
-
-  return dydx;
-}
-
 namespace {
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
@@ -186,23 +178,6 @@ T divide_finite(T a, T b) {
 }
 
 } // anonymous namespace
-
-/*
-double dilog(double x) {
-  // Set global variables so that integration function can access them
-  double from = 0.0, to = x, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-
-  DoubleVector v(1); 
-  double eps = TOLERANCE * 1.0e-5;
-  v(1) = 1.0; 
-
-  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
-  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
-  integrateOdes(v, from, to, eps, guess, hmin, dilogarg, odeStepper); 
-  
-  return v(1) - 1.0;
-}
-*/
 
 // Returns real part of integral
 double bIntegral(int n1, double p, double m1, double m2, double mt) {
@@ -281,25 +256,25 @@ double b0(double p, double m1, double m2, double q) {
 
   const double pTest = divide_finite(pSq, mMaxSq);
   /// Decides level at which one switches to p=0 limit of calculations
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
     
     Complex xPlus, xMinus;
 
-    xPlus = (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon))) /
-      (2. * sqr(p));
-    xMinus = 2. * (sqr(mMax) - iEpsilon) / 
-      (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon)));
+    xPlus = (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) /
+      (2. * pSq);
+    xMinus = 2. * (mMaxSq - iEpsilon) /
+      (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
+      const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
@@ -414,12 +389,29 @@ double b1(double p, double m1, double m2, double q) {
   if (pTest > pTolerance) {
     ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
 	   * b0(p, m1, m2, q)) / (2.0 * p2);
-  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL)
-	     && fabs(m2) > 1.0e-15) { ///< checked
-    ans = 0.5 * (1. + log(q2 / m22) +
-		 sqr(m12 / (m12 - m22)) * log(m22 / m12) +
-		 0.5 * (m12 + m22) / (m12 - m22)
-		 );
+  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) { ///< checked
+    const double m14 = sqr(m12), m24 = sqr(m22);
+    const double m16 = m12*m14 , m26 = m22*m24;
+    const double m18 = sqr(m14), m28 = sqr(m24);
+    const double p4 = sqr(p2);
+    if (fabs(m12 - m22) < pTolerance * maximum(m12, m22)) {
+       ans = 0.08333333333333333*p2/m22
+          + 0.008333333333333333*p4/m24
+          + sqr(m12 - m22)*(0.041666666666666664/m24 +
+                            0.016666666666666666*p2/m26 +
+                            0.005357142857142856*p4/m28)
+          + (m12 - m22)*(-0.16666666666666666/m22 -
+                         0.03333333333333333*p2/m24 -
+                         0.007142857142857142*p4/m26)
+          - 0.5*log(m22/q2);
+    } else {
+       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*log(m12/m22))/(4.*sqr(m12 - m22))
+          + (p2*(4*pow(m12 - m22,3)*
+                 (2*m14 + 5*m12*m22 - m24) +
+                 (3*m18 + 44*m16*m22 - 36*m14*m24 - 12*m12*m26 + m28)*p2
+                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*log(m12/m22)))/
+          (24.*pow(m12 - m22,6)) - 0.5*log(m22/q2);
+    }
   } else {
     ans = bIntegral_threadsave(1, p, m1, m2, q);
   }
@@ -453,7 +445,7 @@ double b22(double p,  double m1, double m2, double q) {
   
   /// Decides level at which one switches to p=0 limit of calculations
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
-  const double pTolerance = 1.0e-6; 
+  const double pTolerance = 1.0e-10;
 
   if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy
@@ -503,9 +495,18 @@ double d0(double m1, double m2, double m3, double m4) {
   if (close(m1, m2, EPSTOL)) {
     double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
 
-    if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) 
+    if (close(m2,0.,EPSTOL)) {
+       // d0 is undefined for m1 == m2 == 0
+       return 0.;
+    } else if (close(m3,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m4));
+    } else if (close(m4,0.,EPSTOL)) {
+       return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
+          sqr(m2 * sqr(m2) - m2 * sqr(m3));
+    } else if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
-    else if (close(m2, m3, EPSTOL)) {
+    } else if (close(m2, m3, EPSTOL)) {
       return (sqr(m2sq) - sqr(m4sq) + 2.0 * m4sq * m2sq * log(m4sq / m2sq)) / 
 	(2.0 * m2sq * sqr(m2sq - m4sq) * (m2sq - m4sq));
     } else if (close(m2, m4, EPSTOL)) {
@@ -546,34 +547,58 @@ double c0(double m1, double m2, double m3) {
   double c0l = C0(psq, psq, psq, m1*m1, m2*m2, m3*m3).real();
 #endif
 
-  double ans;
+  double ans = 0.;
 
-  if (close(m2, m3, EPSTOL)) {
+  if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m2 == m3 == 0
+     ans = 0.;
+  } else if (close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m2 == m3 == 0
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m3 == 0
+     ans = 0.;
+  } else if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL)) {
+     // c0 is undefined for m1 == m2 == 0
+     ans= 0.;
+  } else if (close(m1,0.,EPSTOL)) {
+     if (close(m2,m3,EPSTOL)) {
+        ans = -1./sqr(m2);
+     } else {
+        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
+     }
+  } else if (close(m2,0.,EPSTOL)) {
+     if (close(m1,m3,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
+     }
+  } else if (close(m3,0.,EPSTOL)) {
+     if (close(m1,m2,EPSTOL)) {
+        ans = -1./sqr(m1);
+     } else {
+        ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
+     }
+  } else if (close(m2, m3, EPSTOL)) {
     if (close(m1, m2, EPSTOL)) {
       ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
-    }
-    else {
+    } else {
       ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
                + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
     }
+  } else if (close(m1, m2, EPSTOL)) {
+     ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
+             / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
+  } else if (close(m1, m3, EPSTOL)) {
+     ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
+             / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
+  } else {
+     ans = (1.0 / (sqr(m2) - sqr(m3)) *
+            (sqr(m2) / (sqr(m1) - sqr(m2)) *
+             log(sqr(m2) / sqr(m1)) -
+             sqr(m3) / (sqr(m1) - sqr(m3)) *
+             log(sqr(m3) / sqr(m1))) );
   }
-  else
-    if (close(m1, m2, EPSTOL)) {
-      ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-               / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
-    }
-    else
-      if (close(m1, m3, EPSTOL)) {
-        ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3))) 
-                 / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
-      }
-      else {
-	ans = (1.0 / (sqr(m2) - sqr(m3)) * 
-		   (sqr(m2) / (sqr(m1) - sqr(m2)) *
-		    log(sqr(m2) / sqr(m1)) -
-		    sqr(m3) / (sqr(m1) - sqr(m3)) *
-		    log(sqr(m3) / sqr(m1))) );
-      }
 
 #ifdef USE_LOOPTOOLS
   if (!close(c0l, ans, 1.0e-3)) {
@@ -730,19 +755,6 @@ double calcCL(double cl, const DoubleVector & l) {
   return likelihood;
 }
 
-int *ivector(long nl, long nh) {
-	int *v;
-
-	v=(int *)malloc((size_t) ((nh-nl+2)*sizeof(int)));
-	if (!v) throw("allocation failure in ivector()\n");
-	return v-nl+1;
-}
-
-/* free an int vector allocated with ivector() */
-void free_ivector(int *v, long nl, long /* nh */) {
-	free((char *) (v+nl-1));
-}
-
 double calc1dFraction(double y, const DoubleVector & l) {
   double n = 0., lMax = l.max();
   double tot = 0.;
@@ -769,7 +781,7 @@ double fps(double z) {
      dilog(1.0 - (1.0 + y) / (2.0 * zz)));
 
   /// answer should always be real
-  if (ans.imag() > EPSTOL) throw("Error in fps\n");
+  if (ans.imag() > EPSTOL) throw flexiblesusy::SoftsusyNumericsError("Error in fps");
   return ans.real();
 }
 
@@ -801,24 +813,6 @@ double trapzd(double (*func)(double), double a, double b, int n, double /* EPS *
 		s=0.5*(s+(b-a)*sum/tnm);
 		return s;
 	}
-}
-
-double qtrap(double (*func)(double), double a, double b, double EPS) {
-  //	double midpnt(double (*func)(double), double a, double b, int n);
-  //	void nrerror(char error_text[]);
-
-	int j;
-	double s,olds;
-
-	olds = -1.0e30;
-	for (j=1;j<=JMAX;j++) {
-		s=midpnt(func,a,b,j);
-		if (fabs(s-olds) < EPS*fabs(olds)) return s;
-		if (s == 0.0 && olds == 0.0 && j > 6) return s;
-		olds=s;
-	}
-	throw("Too many steps in routine qtrap\n");
-	return 0.0;
 }
 #undef JMAX
 
@@ -931,94 +925,6 @@ double lqlow(double mSq, double mChi1, double mSlep, double mChi2) {
 }
 
 
-
-#define JMAX 20
-#define JMAXP (JMAX+1)
-#define K 5
-
-double qromb(double (*func)(double), double a, double b, double EPS) {
-  double ss = 0.,dss = 0.;
-  DoubleVector s(JMAXP+1),h(JMAXP+1);
-  int j;
-  
-  h(1) = 1.0;
-  for (j=1; j<=JMAX; j++) {
-    s(j)=trapzd(func,a,b,j);
-    if (j >= K) {
-      DoubleVector h2(K), s2(K);
-      for (unsigned int ii=1; ii<=K; ii++) {
-	h2(ii) = h(j-K+ii); 
-	s2(ii) = s(j-K+ii);
-      }	
-      polint(h2,s2,0.0, ss, dss);
-      if (fabs(dss) <= EPS*fabs(ss)) return ss;
-    }
-    s(j+1)=s(j);
-    h(j+1)=0.25 * h(j);
-  }
-  throw("Too many steps in routine qromb\n");
-  return 0.0;
-}
-
-double qromb2(double (*func)(double), double a, double b, double EPS) {
-  double ss = 0.,dss = 0.;
-  DoubleVector s(JMAXP+1),h(JMAXP+1);
-  int j;
-  
-  h(1) = 1.0;
-  for (j=1; j<=JMAX; j++) {
-    s(j)=trapzd(func,a,b,j);
-    if (j >= K) {
-      DoubleVector h2(K), s2(K);
-      for (unsigned int ii=1; ii<=K; ii++) {
-	h2(ii) = h(j-K+ii); 
-	s2(ii) = s(j-K+ii);
-      }	
-      polint(h2,s2,0.0, ss, dss);
-      if (fabs(dss) <= EPS*fabs(ss)) return ss;
-    }
-    s(j+1)=s(j);
-    h(j+1)=0.25 * h(j);
-  }
-  throw("Too many steps in routine qromb\n");
-  return 0.0;
-}
-#undef JMAX
-#undef JMAXP
-#undef K
-
-void polint(const DoubleVector&  xa, const DoubleVector & ya, double x, 
-	    double & y, double & dy) {
-  if (xa.displayEnd() != ya.displayEnd()) throw("Incompatible vector lengths in numerics.cpp:polint\n");
-  
-  int n = xa.displayEnd();
-  int i,m,ns=1;
-  double den,dif,dift,ho,hp,w;
-  DoubleVector c(n), d(n);
-
-  dif=fabs(x-xa.display(1));
-  for (i=1;i<=n;i++) {
-    if ( (dift=fabs(x-xa.display(i))) < dif) {
-      ns=i;
-      dif=dift;
-    }
-    c(i)=ya.display(i);
-    d(i)=ya.display(i);
-  }
-  y=ya.display(ns--);
-  for (m=1;m<n;m++) {
-    for (i=1;i<=n-m;i++) {
-      ho=xa.display(i)-x;
-      hp=xa.display(i+m)-x;
-      w=c(i+1)-d(i);
-      if ( (den=ho-hp) == 0.0) throw("Error in routine polint\n");
-      den=w/den;
-      d(i)=hp*den;
-      c(i)=ho*den;
-    }
-    y += (dy=(2*ns < (n-m) ? c(ns+1) : d(ns--)));
-  }
-}
 
 DoubleMatrix display3x3RealMixing(double theta12, double theta13, 
 				  double theta23, double d) {
@@ -1144,55 +1050,6 @@ double fin(double mm1, double mm2) {
   else return 7.-sqr(PI)/6.;  
 }
 
-double zriddr(double (*func)(double), double x1, double x2, double xacc) {
-  const int MAXIT = 60;
-  const double UNUSED = -1.11e30;
-  int j;
-  double ans,fh,fl,fm,fnew,s,xh,xl,xm,xnew;
-  
-  fl=(*func)(x1);
-  fh=(*func)(x2);
-  if ((fl > 0.0 && fh < 0.0) || (fl < 0.0 && fh > 0.0)) {
-    xl=x1;
-    xh=x2;
-    ans=UNUSED;
-    for (j=1;j<=MAXIT;j++) {
-      xm=0.5*(xl+xh);
-      fm=(*func)(xm);
-      s=sqrt(fm*fm-fl*fh);
-      if (s == 0.0) return ans;
-      xnew=xm+(xm-xl)*((fl >= fh ? 1.0 : -1.0)*fm/s);
-      if (fabs(xnew-ans) <= xacc) return ans;
-      ans=xnew;
-      fnew=(*func)(ans);
-      if (fnew == 0.0) return ans;
-      if (SIGN(fm,fnew) != fm) {
-	xl=xm;
-	fl=fm;
-	xh=ans;
-	fh=fnew;
-      } else if (SIGN(fl,fnew) != fl) {
-	xh=ans;
-	fh=fnew;
-      } else if (SIGN(fh,fnew) != fh) {
-	xl=ans;
-	fl=fnew;
-      } else throw("In zriddr: never get here.");
-      if (fabs(xh-xl) <= xacc) return ans;
-    }
-    throw("zriddr exceeded maximum iterations\n");
-  }
-  else {
-    if (close(fl, 0.0, EPSTOL)) return x1;
-    if (close(fh, 0.0, EPSTOL)) return x2;
-    ostringstream s;
-    s << "Root must be bracketed in zriddr. f(" << x1 << ")=" << fl 
-      << ", fh(" << x2 << ")=" << fh << endl;
-    throw(s.str());
-  }
-  return 0.0;
-}
-
 /// You will need to clear this lot up....
 DoubleMatrix fdjac(int n, DoubleVector x, const DoubleVector & fvec,
 	   void (*vecfunc)(const DoubleVector &, DoubleVector &)) {
@@ -1213,67 +1070,6 @@ DoubleMatrix fdjac(int n, DoubleVector x, const DoubleVector & fvec,
     for (i=1; i<=n; i++) df(i, j) = (f(i) - fvec.display(i)) / h;
   }
   return df;
-}
-
-bool lnsrch(const DoubleVector & xold, double fold, const DoubleVector & g, 
-	    DoubleVector & p, 
-	    DoubleVector & x, double & f, double stpmax, 
-	    void (*vecfunc)(const DoubleVector &, DoubleVector &), 
-	    DoubleVector & fvec) {
-  double ALF = TOLERANCE;
-  double TOLX = TOLERANCE * 1.0e-3;
-  
-  int i;
-  double a,alam,alam2=0.0,alamin,b,disc,f2=0.0,fold2=0.0,rhs1,rhs2,slope,sum,temp,
-    test,tmplam;
-  
-  bool err = false;
-  sum = sqrt(p.dot(p));
-  if (sum > stpmax) p = (stpmax / sum) * p;
-
-  for (slope=0.0, i=1; i<=xold.displayEnd(); i++)
-    slope += g(i) * p(i);
-  test = 0.0;
-  for (i=1; i<=xold.displayEnd(); i++) {
-    temp=fabs(p(i)) / maximum(fabs(xold(i)), 1.0);
-    if (temp > test) test = temp;
-  }
-  alamin = TOLX / test;
-  alam = 1.0;
-  for (;;) {
-    x = xold + alam * p;
-    vecfunc(x, fvec); 
-    f = fvec.dot(fvec);
-    if (alam < alamin) {
-      x = xold;
-      err = true;
-      return err;
-    } else if (f <= fold + ALF * alam * slope) return err;
-    else {
-      if (alam == 1.0)
-	tmplam = -slope / (2.0 * (f - fold - slope));
-      else {
-	rhs1 = f - fold - alam * slope;
-	rhs2 = f2 - fold2 - alam2 * slope;
-	a=(rhs1 / (alam * alam) - rhs2 / (alam2 * alam2)) / (alam - alam2);
-	b=(-alam2 * rhs1 / (alam * alam) + alam * rhs2 / (alam2 * alam2)) / 
-	  (alam - alam2);
-	if (a == 0.0) tmplam = -slope / (2.0 * b);
-	else {
-	  disc = b * b - 3.0 * a * slope;
-	  if (disc < 0.0) throw("Roundoff problem in lnsrch.\n");
-	  else tmplam = (-b + sqrt(disc)) / (3.0 * a);
-	}
-	if (tmplam > 0.5 * alam)
-	  tmplam = 0.5 * alam;
-      }
-    }
-    alam2 = alam;
-    f2 = f;
-    fold2 = fold;
-    alam = maximum(tmplam, 0.1 * alam);
-  }
-  return err;
 }
 
 /// Get rid of int n
@@ -1315,7 +1111,7 @@ void ludcmp(DoubleMatrix & a, int n, int *indx, double & d) {
       ii.precision(6);
       ii << "Singular matrix in routine ludcmp: ";
       ii << a;
-      throw (ii.str());
+      throw flexiblesusy::SoftsusyNumericsError(ii.str());
     }
     vv(i)=1.0 / big;
   }
@@ -1355,229 +1151,12 @@ void ludcmp(DoubleMatrix & a, int n, int *indx, double & d) {
 }
 
 
-/// More work can be done on this: get rid of int n and in subfunctions too
-bool newt(DoubleVector & x, 
-	  void (*vecfunc)(const DoubleVector &, DoubleVector &)) {
-  bool err = false; 
-  const int MAXITS = 200;    ///< max iterations
-  double TOLF   = TOLERANCE; ///< convergence on function values
-  double TOLMIN = TOLF * 1.e-2; ///< spurious convergence to min of fmin
-  double TOLX   = TOLF * 1.e-3; ///< maximum dx convergence criterion
-  const double STPMX  = 100.0; ///< maximum step length allowed in line searches
-   
-  int n = x.displayEnd();
-  int i,its,j,*indx;
-  double d,den,f,fold,stpmax,sum=0.0,temp,test;
-  
-  indx = ivector(1, n);
-  DoubleMatrix fjac(n, n);
-  DoubleVector g(n), p(n), xold(n);
-  DoubleVector fvec(n);
-
-  vecfunc(x, fvec); 
-  f = 0.5 * fvec.dot(fvec);
-  test = 0.0;
-  test = fvec.apply(fabs).max();
-  if (test < 0.01 * TOLF) {
-    err = false;
-    free_ivector(indx, 1, n); return err;
-  }
-  sum += x.dot(x);
-  stpmax = STPMX * maximum(sqrt(sum), (double) n);
-  for (its=1; its<=MAXITS; its++) {
-    fjac = fdjac(n, x, fvec, vecfunc);
-    for (i=1;i<=n;i++) {
-      for (sum=0.0, j=1; j<=n; j++) sum += fjac(j, i) * fvec(j);
-      g(i) = sum;
-    }
-    for (i=1; i<=n; i++) xold(i) = x(i);
-    fold = f;
-    for (i=1; i<=n; i++) p(i) = -fvec(i);
-    ludcmp(fjac, n, indx, d);
-    lubksb(fjac, n, indx, p);
-    err = lnsrch(xold, fold, g, p, x, f, stpmax, vecfunc, fvec);
-    test = 0.0;
-    for (i=1; i<=n; i++)
-      if (fabs(fvec(i)) > test) test = fabs(fvec(i));
-    if (test < TOLF) {
-      err = false;
-      free_ivector(indx, 1, n);
-      return err;
-    }
-    if (err) {
-      test = 0.0;
-      den = maximum(f, 0.5 * n);
-      for (i=1; i<=n; i++) {
-	temp = fabs(g(i)) * maximum(fabs(x(i)), 1.0) / den;
-	if (temp > test) test = temp;
-      }
-      err = (test < TOLMIN ? true : false);
-      free_ivector(indx, 1, n);
-      return err;
-    }
-    /// Check points aren't getting too close together
-    test = 0.0;
-    for (i=1; i<=n; i++) {
-      temp = (fabs(x(i) - xold(i))) / maximum(fabs(x(i)), 1.0);
-      if (temp > test) test = temp;
-    }
-    if (test < TOLX) { 
-      free_ivector(indx, 1, n); 
-      return err; 
-    }
-  }
-
-  return true;
-}
-
 DoubleVector testDerivs(double /* x */, const DoubleVector & y) {
   DoubleVector dydx(3);
   dydx(1) = y(1) * y(2) * y(2);
   dydx(2) = y(2) * y(1) * y(3);
   dydx(3) = y(1);
   return dydx;
-}
-
-void broydn(DoubleVector x, int & check, 
-	    void (*vecfunc)(const DoubleVector &, DoubleVector &)) {
-  const int MAXITS = 200;
-  double TOLF =  TOLERANCE;
-  const double EPS = TOLF * 1.0e-3;
-  const double TOLX = EPS;
-  const double STPMX = 100.0;
-  double TOLMIN = TOLERANCE * 1.0e-2;
-
-  int n = x.displayEnd();
- 
-  /*	void fdjac(int n, float x[], float fvec[], float **df,
-		void (*vecfunc)(int, float [], float []));
-	float fmin(float x[]);
-	void lnsrch(int n, float xold[], float fold, float g[], float p[], float x[],
-		 float *f, float stpmax, int *check, float (*func)(float []));
-	void qrdcmp(float **a, int n, float *c, float *d, int *sing);
-	void qrupdt(float **r, float **qt, int n, float u[], float v[]);
-	void rsolv(float **a, int n, float d[], float b[]);
-	int i,its,j,k,restrt,sing,skip;
-	float den,f,fold,stpmax,sum,temp,test,*c,*d,*fvcold;
-	float *g,*p,**qt,**r,*s,*t,*w,*xold; */
-
-  DoubleVector c(n), d(n), fvcold(n), g(n), p(n), s(n), t(n), w(n), xold(n), 
-    fvec(n);
-  DoubleMatrix qt(n, n), r(n, n);
-
-  vecfunc(x, fvec); 
-  double f = 0.5 * fvec.dot(fvec);
-  
-  double test = fvec.apply(fabs).max();
-  if (test < 0.01 * TOLF) {
-    check = 0;
-    return;
-  }
-  double sum = x.dot(x);
-  double stpmax = STPMX * maximum(sqrt(sum), (double)n);
-  int restrt = 1, sing;
-  for (int its=1; its<=MAXITS; its++) {
-    if (restrt) {
-      r = fdjac(n, x, fvec, vecfunc);
-      qrdcmp(r, n, c, d, sing);
-      if (sing) throw("singular Jacobian in broydn\n");
-      for (int i=1; i<=n; i++) {
-	for (int j=1; j<=n; j++) qt(i, j) = 0.0;
-	qt(i, i) = 1.0;
-      }
-      for (int k=1; k<n; k++) {
-	if (c(k)) {
-	  for (int j=1; j<=n; j++) {
-	    sum = 0.0;
-	    for (int i=k; i<=n; i++)
-	      sum += r(i, k) * qt(i, j);
-	    sum /= c(k);
-	    for (int i=k; i<=n; i++)
-	      qt(i, j) -= sum*r(i, k);
-	  }
-	}
-      }
-      for (int i=1; i<=n; i++) {
-	r(i, i) = d(i);
-	for (int j=1; j<i; j++) r(i, j) = 0.0;
-      }
-    } else {
-      s = x - xold;
-      int j;
-      for (int i=1; i<=n; i++) {
-	for (sum=0.0, j=i; j<=n; j++) sum += r(i, j) * s(j);
-	t(i) = sum;
-      }
-      int skip = 1;
-      for (int i=1; i<=n; i++) {
-	for (sum=0.0, j=1; j<=n; j++) sum += qt(j, i) * t(j);
-	w(i) = fvec(i) - fvcold(i) - sum;
-	if (fabs(w(i)) >= EPS * (fabs(fvec(i))+fabs(fvcold(i)))) skip=0;
-	else w(i)=0.0;
-      }
-      if (!skip) {
-	for (int i=1; i<=n; i++) {
-	  for (sum=0.0, j=1; j<=n; j++) sum += qt(i, j) * w(j);
-	  t(i) = sum;
-	}
-	double den = 0.; den += s.dot(s);
-	s = s * (1. / den);
-	qrupdt(r,qt,n,t,s);
-	for (int i=1;i<=n;i++) {
-	  if (r(i, i) == 0.0) throw("r singular in broydn\n");
-	  d(i) = r(i, i);
-	}
-      }
-    }
-    int j;
-    for (int i=1; i<=n; i++) {
-      for (sum=0., j=1 ; j<=n; j++) sum += qt(i, j) * fvec(j);
-      g(i) = sum;
-    }
-    for (int i=n; i>=1; i--) {
-      for (sum=0.0, j=1; j<=i; j++) sum += r(j, i) * g(j);
-      g(i) = sum;
-    }
-    xold = x; 
-    fvcold = fvec;
-    double fold = f;
-    for (int i=1;i<=n;i++) {
-      for (sum=0.0,j=1;j<=n;j++) sum += qt(i, j) * fvec(j);
-      p(i) = -sum;
-    }
-    rsolv(r, n, d, p); 
-    DoubleVector fvec(n);
-    check = lnsrch(xold, fold, g, p, x, f, stpmax, vecfunc, fvec);
-    test = 0.0;
-    for (int i=1; i<=n; i++)
-      if (fabs(fvec(i)) > test) test = fabs(fvec(i));
-    if (test < TOLF) {
-      check=0;
-      return;
-    }
-    if (check) {
-      if (restrt) return;
-      else {
-	test = 0.0;
-	double den = maximum(f, 0.5 * n);
-	for (int i=1;i<=n;i++) {
-	  double temp = fabs(g(i)) * maximum(fabs(x(i)), 1.0) / den;
-	  if (temp > test) test = temp;
-	}
-	if (test < TOLMIN) return;
-	else restrt = 1;
-      }
-    } else {
-      restrt = 0;
-      test = 0.0;
-      for (int i=1; i<=n; i++) {
-	double temp = (fabs(x(i) - xold(i))) / maximum(fabs(x(i)), 1.0);
-	if (temp > test) test = temp;
-      }
-      if (test < TOLX) return;
-    }
-  }
-  throw("MAXITS exceeded in broydn\n");
 }
 
 void qrdcmp(DoubleMatrix & a, int n, DoubleVector & c, DoubleVector & d, 

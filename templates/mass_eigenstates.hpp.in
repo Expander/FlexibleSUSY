@@ -36,17 +36,13 @@
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
 #include "two_loop_corrections.hpp"
+#include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
 
 #include <iosfwd>
 #include <string>
 
-#ifdef ENABLE_THREADS
-#include <mutex>
-#endif
-
-#include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -70,6 +66,7 @@ public:
    void check_pole_masses_for_tachyons();
    virtual void clear();
    void clear_DRbar_parameters();
+   Eigen::ArrayXd get_DRbar_masses() const;
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void do_force_output(bool);
@@ -80,6 +77,7 @@ public:
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_DRbar_masses(const Eigen::ArrayXd&);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
    std::size_t get_number_of_ewsb_iterations() const;
@@ -101,7 +99,7 @@ public:
    void clear_problems();
    std::string name() const;
    void run_to(double scale, double eps = -1.0);
-   void print(std::ostream&) const;
+   void print(std::ostream& out = std::cout) const;
    void set_precision(double);
    double get_precision() const;
 
@@ -114,8 +112,12 @@ public:
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
 
+   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
+
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
+   /// calculates the tadpoles at current loop order
+   EWSB_vector_t tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -123,31 +125,14 @@ public:
 @threeLoopSelfEnergyPrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
-@dependenceNumPrototypes@
+@dependencePrototypes@
 
 private:
-   struct EWSB_args {
-      @ModelName@_mass_eigenstates* model;
-      unsigned ewsb_loop_order;
+   class EEWSBStepFailed : public Error {
+   public:
+      virtual ~EEWSBStepFailed() {}
+      virtual std::string what() const { return "Could not perform EWSB step."; }
    };
-
-#ifdef ENABLE_THREADS
-   struct Thread {
-      typedef void(@ModelName@_mass_eigenstates::*Memfun_t)();
-      @ModelName@_mass_eigenstates* model;
-      Memfun_t fun;
-
-      Thread(@ModelName@_mass_eigenstates* model_, Memfun_t fun_)
-         : model(model_), fun(fun_) {}
-      void operator()() {
-         try {
-            (model->*fun)();
-         } catch (...) {
-            model->thread_exception = std::current_exception();
-         }
-      }
-   };
-#endif
 
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
@@ -160,19 +145,13 @@ private:
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-#ifdef ENABLE_THREADS
-   std::exception_ptr thread_exception;
-   static std::mutex mtx_fortran; /// locks fortran functions
-#endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
-   int solve_ewsb_tree_level_via_soft_higgs_masses();
-   void ewsb_initial_guess(double[number_of_ewsb_equations]);
-   int ewsb_step(double[number_of_ewsb_equations]) const;
-   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const EWSB_vector_t&);
+   int solve_ewsb_tree_level_custom();
+   EWSB_vector_t ewsb_initial_guess();
+   EWSB_vector_t ewsb_step() const;
    void copy_DRbar_masses_to_pole_masses();
 
    // Passarino-Veltman loop functions
