@@ -39,6 +39,7 @@ namespace flexiblesusy {
 
 static constexpr double Pi = M_PI;
 static constexpr double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static constexpr double oneLoop = oneOver16PiSqr;
 static constexpr double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
 static constexpr bool True = true;
