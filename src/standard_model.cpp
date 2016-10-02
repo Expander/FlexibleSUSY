@@ -372,28 +372,22 @@ int Standard_model::solve_ewsb_iteratively()
       std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
    };
 
-   const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
    const auto x_init(ewsb_initial_guess());
 
-#ifdef ENABLE_VERBOSE
-   std::cout << "Solving EWSB equations ...\n"
-      "\tInitial guess: x_init =";
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      std::cout << ' ' << x_init[i];
-   std::cout << '\n';
-#endif
+   VERBOSE_MSG("Solving EWSB equations ...\n"
+               "\tInitial guess: x_init = " << x_init);
 
    int status;
-   for (std::size_t i = 0; i < number_of_solvers; ++i) {
-      VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solve_ewsb_iteratively_with(solvers[i].get(), x_init);
+   for (auto& solver: solvers) {
+      VERBOSE_MSG("\tStarting EWSB iteration using " << solver->name());
+      status = solve_ewsb_iteratively_with(solver.get(), x_init);
       if (status == EWSB_solver::SUCCESS) {
-         VERBOSE_MSG("\tSolver " << i << " finished successfully!");
+         VERBOSE_MSG("\t" << solver->name() << " finished successfully!");
          break;
       }
 #ifdef ENABLE_VERBOSE
       else {
-         WARNING("\tSolver " << i << " could not find a solution!"
+         WARNING("\t" << solver->name() << " could not find a solution!"
                  " (requested precision: " << ewsb_iteration_precision << ")");
       }
 #endif
