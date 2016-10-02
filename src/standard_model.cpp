@@ -375,7 +375,7 @@ int Standard_model::solve_ewsb_iteratively()
    const auto x_init(ewsb_initial_guess());
 
    VERBOSE_MSG("Solving EWSB equations ...\n"
-               "\tInitial guess: x_init = " << x_init);
+               "\tInitial guess: x_init = " << x_init.transpose());
 
    int status;
    for (auto& solver: solvers) {
