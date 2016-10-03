@@ -33,7 +33,7 @@ EOF
     exit 1
 }
 
-amu_fs=$(cat "${SLHA_OUT}" | awk -f "$print_block" -v block=FlexibleSUSYLowEnergy | awk '{ if ($1 == 1) print $2 }')
+amu_gm2calc_fs=$(cat "${SLHA_OUT}" | awk -f "$print_block" -v block=FlexibleSUSYLowEnergy | awk '{ if ($1 == 1) print $2 }')
 
 amu_gm2calc=$({ cat <<EOF
 Block GM2CalcConfig
@@ -49,22 +49,22 @@ EOF
 }
 
 # convert scientific notation to bc friendly notation
-amu_fs=$(echo "${amu_fs}" | sed -e 's/[eE]/\*10\^/')
+amu_gm2calc_fs=$(echo "${amu_gm2calc_fs}" | sed -e 's/[eE]/\*10\^/')
 amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
 
 diff=$(cat <<EOF | bc $BASEDIR/abs.bc
 scale=10
-abs((abs($amu_fs) - abs($amu_gm2calc)) / ($amu_fs)) < $rel_error
+abs((abs($amu_gm2calc_fs) - abs($amu_gm2calc)) / ($amu_gm2calc_fs)) < $rel_error
 EOF
     )
 
 if test $diff -ne 1 ; then
     echo "Error: relative difference between"
-    echo " $amu_fs and $amu_gm2calc is larger than $rel_error"
+    echo " $amu_gm2calc_fs and $amu_gm2calc is larger than $rel_error"
     echo "Test status: FAIL"
     exit 1
 else
-    echo "FlexibleSUSY: amu = $amu_fs"
+    echo "FlexibleSUSY: amu = $amu_gm2calc_fs"
     echo "GM2Calc     : amu = $amu_gm2calc"
     echo "Test status : OK"
 fi
