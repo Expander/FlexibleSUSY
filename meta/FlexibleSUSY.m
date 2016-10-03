@@ -1927,7 +1927,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
-               Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
+             Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
            gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
