@@ -165,7 +165,7 @@ template<> struct IndexBounds<0> {
    const_iterator end() const
    { return (begin()+1); }
 };
-IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex;
+IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex{};
 
 @GMuonMinus2_Particles@
 
