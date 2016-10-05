@@ -16,28 +16,29 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef EWSB_SOLVER_H
-#define EWSB_SOLVER_H
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE test_SM_gmm2
 
-#include <string>
-#include <Eigen/Core>
+#include <boost/test/unit_test.hpp>
 
-namespace flexiblesusy {
+#include "test_SM.hpp"
 
-/**
- * @class EWSB_solver
- * @brief interface for numeric EWSB solvers
- */
-class EWSB_solver {
-public:
-   enum Status : int { SUCCESS = 0, FAIL = 1 };
+#include "SM_two_scale_model.hpp"
+#include "SM_a_muon.hpp"
 
-   virtual ~EWSB_solver() {}
-   virtual std::string name() const = 0;
-   virtual int solve(const Eigen::VectorXd&) = 0;
-   virtual Eigen::VectorXd get_solution() const = 0;
-};
+using namespace flexiblesusy;
 
-} // namespace flexiblesusy
+BOOST_AUTO_TEST_CASE( test_zero )
+{
+   SM_input_parameters input;
+   input.LambdaIN = 0.25;
+   input.Qin = 1000;
 
-#endif
+   SM<Two_scale> sm;
+   setup_SM_const(sm, input);
+   sm.calculate_DRbar_masses();
+
+   const double amu = SM_a_muon::calculate_a_muon(sm);
+
+   BOOST_CHECK_SMALL(amu, 1e-15);
+}

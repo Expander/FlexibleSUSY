@@ -79,7 +79,7 @@ public:
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Root_finder"; };
    virtual int solve(const Eigen::VectorXd&) override;
-   virtual Eigen::VectorXd get_solution() override;
+   virtual Eigen::VectorXd get_solution() const override;
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -257,7 +257,7 @@ int Root_finder<dimension>::solve(const Eigen::VectorXd& start)
 }
 
 template <std::size_t dimension>
-Eigen::VectorXd Root_finder<dimension>::get_solution()
+Eigen::VectorXd Root_finder<dimension>::get_solution() const
 {
    return to_eigen_vector(root);
 }

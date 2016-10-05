@@ -42,6 +42,7 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_effective_couplings.cpp \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.cpp \
+		$(DIR)/@CLASSNAME@_a_muon.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_input_parameters.cpp \
 		$(DIR)/@CLASSNAME@_observables.cpp \
@@ -64,6 +65,7 @@ EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
 LIB@CLASSNAME@_HDR += \
+		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
 		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \

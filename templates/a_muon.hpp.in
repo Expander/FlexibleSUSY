@@ -16,28 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef EWSB_SOLVER_H
-#define EWSB_SOLVER_H
-
-#include <string>
-#include <Eigen/Core>
-
-namespace flexiblesusy {
+// File generated at @DateAndTime@
 
 /**
- * @class EWSB_solver
- * @brief interface for numeric EWSB solvers
+ * @file @ModelName@_a_muon.hpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
-class EWSB_solver {
-public:
-   enum Status : int { SUCCESS = 0, FAIL = 1 };
 
-   virtual ~EWSB_solver() {}
-   virtual std::string name() const = 0;
-   virtual int solve(const Eigen::VectorXd&) = 0;
-   virtual Eigen::VectorXd get_solution() const = 0;
-};
+#ifndef @ModelName@_G_MUON_MINUS_2_H
+#define @ModelName@_G_MUON_MINUS_2_H
 
+namespace flexiblesusy {
+class @ModelName@_mass_eigenstates;
+
+namespace @ModelName@_a_muon {
+/**
+* @fn calculate_a_muon
+* @brief Calculates \f$a_\mu = (g-2)_\mu/2\f$ of the muon.
+*/
+double calculate_a_muon(const @ModelName@_mass_eigenstates& model);
+} // namespace @ModelName@_a_muon
 } // namespace flexiblesusy
 
 #endif

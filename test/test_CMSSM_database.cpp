@@ -179,6 +179,7 @@ void test_input_parameter_equality(const T& a, const P& b, double eps)
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    CMSSM_observables obs1, obs2;
+   obs1.a_muon = 2e-9;
    obs1.eff_cp_higgs_photon_photon(0)     = std::complex<double>(1.,7.);
    obs1.eff_cp_higgs_photon_photon(1)     = std::complex<double>(2.,8.);
    obs1.eff_cp_higgs_gluon_gluon(0)       = std::complex<double>(3.,9.);

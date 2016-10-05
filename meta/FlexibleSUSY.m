@@ -1,4 +1,4 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "GMuonMinus2`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -1022,7 +1022,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
-              ];
+               ];
            higgsMassGetters =
                Utils`StringZipWithSeparator[
                    TreeMasses`CreateHiggsMassGetters[SARAH`HiggsBoson,""],
@@ -1302,6 +1302,28 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                                        "@clearObservables@" -> IndentText[clearObservables],
                                        "@setObservables@" -> IndentText[setObservables],
                                        "@calculateObservables@" -> IndentText[calculateObservables],
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+           ];
+
+(* Write the GMM2 c++ files *)
+WriteGMuonMinus2Class[vertexRules_List, files_List] :=
+    Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
+        definitions, calculationCode},
+           particles = GMuonMinus2`CreateParticles[];
+           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
+           diagrams = GMuonMinus2`CreateDiagrams[];
+           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
+           definitions = GMuonMinus2`CreateDefinitions[vertexRules];
+           calculationCode = GMuonMinus2`CreateCalculation[];
+           
+           WriteOut`ReplaceInFiles[files,
+                                   { "@GMuonMinus2_Particles@"               -> particles,
+                                     "@GMuonMinus2_MuonFunctionPrototypes@"  -> muonFunctionPrototypes,
+                                     "@GMuonMinus2_Diagrams@"                -> diagrams,
+                                     "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
+                                     "@GMuonMinus2_Definitions@"             -> definitions,
+                                     "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -1712,7 +1734,10 @@ PrepareTadpoles[eigenstates_] :=
            tadpoles = Get[tadpolesFile];
            Print["Converting tadpoles ..."];
            ConvertSarahTadpoles[tadpoles]
-          ];
+           ];
+
+(* Get all nPointFunctions that GMM2 needs *)
+PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
@@ -1859,6 +1884,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
+            gmm2Vertices = {},
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -1901,7 +1927,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
-	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
+             Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
+           (* GMM2 vertices *)
+           gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", GetParticles[]];
@@ -2498,7 +2526,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, extraVertices], Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
@@ -2564,6 +2592,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
+
+           Print["Creating class GMuonMinus2"];
+           WriteGMuonMinus2Class[vertexRules,
+                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";

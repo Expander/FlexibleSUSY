@@ -75,7 +75,7 @@ public:
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Minimizer"; };
    virtual int solve(const Eigen::VectorXd&) override;
-   virtual Eigen::VectorXd get_solution() override;
+   virtual Eigen::VectorXd get_solution() const override;
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -213,7 +213,7 @@ int Minimizer<dimension>::solve(const Eigen::VectorXd& start)
 }
 
 template <std::size_t dimension>
-Eigen::VectorXd Minimizer<dimension>::get_solution()
+Eigen::VectorXd Minimizer<dimension>::get_solution() const
 {
    return to_eigen_vector(minimum_point);
 }

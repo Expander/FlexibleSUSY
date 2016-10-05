@@ -57,6 +57,7 @@ META_SRC     := \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
+		$(DIR)/GMuonMinus2.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \

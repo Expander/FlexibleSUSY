@@ -191,6 +191,8 @@ std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
    }
 
    std::cout << ")";
+
+   return ostr;
 }
 
 void GSL_vector::move_assign(GSL_vector&& other) noexcept
