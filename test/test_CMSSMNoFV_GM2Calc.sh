@@ -56,6 +56,19 @@ amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
 
 ### test GM2Calc vs. FlexibleSUSY's embedded GM2Calc
 
+# Note: The agreement between vanilla GM2Calc and the GM2Calc version
+# embedded in FlexibleSUSY is not 100% perfect.  The reason is, that
+# the embedded GM2Calc version uses the exact smuon pole masses
+# (model.get_physical().MSm), while the vanilla GM2Calc uses the smuon
+# masses from the SLHA output.  These two pole masses are different,
+# because CMSSMNoFV writes the sfermion pole masses to the MASS block
+# in SLHA-1 convention, i.e. without the sfermion mixing.
+#
+# Example point:
+#
+# exact  MSm = (229.991  360.947)
+# SLHA-1 MSm = (230.002  360.937)
+
 rel_error=0.000000001
 
 diff_gm2calc=$(cat <<EOF | bc $BASEDIR/abs.bc
