@@ -21,8 +21,7 @@ LIBGM2Calc_SRC := \
 
 # main()
 EXEGM2Calc_SRC := \
-		$(DIR)/gm2calc.cpp \
-		$(DIR)/gm2scan.cpp
+		$(DIR)/gm2calc.cpp
 
 # header files
 LIBGM2Calc_HDR := \
