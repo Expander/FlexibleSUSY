@@ -213,7 +213,7 @@ public:
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Fixed_point_iterator<" + convergence_tester.name() + ">"; };
    virtual int solve(const Eigen::VectorXd&) override;
-   virtual Eigen::VectorXd get_solution() override;
+   virtual Eigen::VectorXd get_solution() const override;
 
 private:
    std::size_t max_iterations;       ///< maximum number of iterations
@@ -383,7 +383,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::solve(const Eigen::Vecto
 }
 
 template <std::size_t dimension, class Convergence_tester>
-Eigen::VectorXd Fixed_point_iterator<dimension,Convergence_tester>::get_solution()
+Eigen::VectorXd Fixed_point_iterator<dimension,Convergence_tester>::get_solution() const
 {
    return to_eigen_vector(fixed_point);
 }

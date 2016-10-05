@@ -35,7 +35,7 @@ public:
    virtual ~EWSB_solver() {}
    virtual std::string name() const = 0;
    virtual int solve(const Eigen::VectorXd&) = 0;
-   virtual Eigen::VectorXd get_solution() = 0;
+   virtual Eigen::VectorXd get_solution() const = 0;
 };
 
 } // namespace flexiblesusy
