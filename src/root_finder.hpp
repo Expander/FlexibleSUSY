@@ -77,7 +77,7 @@ public:
    int find_root(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual std::string name() const override { return "Root_finder"; };
+   virtual std::string name() const override { return "Root_finder<" + solver_type_name() + ">"; };
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() const override;
 
@@ -89,6 +89,7 @@ private:
    Solver_type solver_type;    ///< solver type
 
    void print_state(const gsl_multiroot_fsolver*, std::size_t) const;
+   std::string solver_type_name() const;
    const gsl_multiroot_fsolver_type* solver_type_to_gsl_pointer() const;
    static int gsl_function(const gsl_vector*, void*, gsl_vector*);
 };
@@ -231,6 +232,22 @@ int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_
    copy(result, f);
 
    return status;
+}
+
+template <std::size_t dimension>
+std::string Root_finder<dimension>::solver_type_name() const
+{
+   switch (solver_type) {
+   case GSLHybrid : return "GSLHybrid";
+   case GSLHybridS: return "GSLHybridS";
+   case GSLBroyden: return "GSLBroyden";
+   case GSLNewton : return "GSLNewton";
+   default:
+      throw SetupError("Unknown root solver type: "
+                       + std::to_string(solver_type));
+   }
+
+   return "unknown";
 }
 
 template <std::size_t dimension>
