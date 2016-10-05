@@ -322,12 +322,24 @@ int CLASSNAME::solve_ewsb_iteratively_with(
    EWSB_solver* solver, const EWSB_vector_t& x_init)
 {
    const int status = solver->solve(x_init);
+
+   if (status == EWSB_solver::SUCCESS)
+      set_ewsb_solution(solver);
+
+   return status;
+}
+
+/**
+ * sets EWSB output parameters from given solver
+ *
+ * @param solver solver
+ */
+void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
+{
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
    calculate_DRbar_masses();
-
-   return status;
 }
 
 int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
