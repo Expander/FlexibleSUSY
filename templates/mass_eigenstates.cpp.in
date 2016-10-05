@@ -353,18 +353,19 @@ void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
 template <typename It>
 void CLASSNAME::set_best_ewsb_solution(It first, It last)
 {
-      const auto best_solver =
-         std::min_element(first, last,
-                          [this](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
-                             CLASSNAME ma(*this), mb(*this);
-                             ma.set_ewsb_solution(a.get());
-                             mb.set_ewsb_solution(b.get());
-                             return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
-                          });
+   CLASSNAME ma(*this), mb(*this);
 
-      VERBOSE_MSG("\tUsing best solution from " << (*best_solver)->name());
+   const auto best_solver =
+      std::min_element(first, last,
+                       [this, &ma, &mb](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
+                          ma.set_ewsb_solution(a.get());
+                          mb.set_ewsb_solution(b.get());
+                          return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
+                       });
 
-      set_ewsb_solution(best_solver->get());
+   VERBOSE_MSG("\tUsing best solution from " << (*best_solver)->name());
+
+   set_ewsb_solution(best_solver->get());
 }
 
 int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
