@@ -300,22 +300,12 @@ int CLASSNAME::solve_ewsb_iteratively()
    if (status == EWSB_solver::SUCCESS) {
       problems.unflag_no_ewsb();
    } else {
+      set_best_ewsb_solution(std::begin(solvers), std::end(solvers));
       problems.flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
       WARNING("\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
-
-      const auto best_solver =
-         std::min_element(std::begin(solvers), std::end(solvers),
-                          [this](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
-                             CLASSNAME ma(*this), mb(*this);
-                             ma.set_ewsb_solution(a.get());
-                             mb.set_ewsb_solution(b.get());
-                             return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
-                          });
-
-      set_ewsb_solution(best_solver->get());
    }
 
    return status;
@@ -341,7 +331,7 @@ int CLASSNAME::solve_ewsb_iteratively_with(
 }
 
 /**
- * sets EWSB output parameters from given solver
+ * Sets EWSB output parameters from given solver.
  *
  * @param solver solver
  */
@@ -351,6 +341,30 @@ void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
 
 @setEWSBSolution@
    calculate_DRbar_masses();
+}
+
+/**
+ * Sets EWSB output parameters from the solver from the range [first,
+ * last), which minimizes the tadpole equations at most.
+ *
+ * @param first iterator to first solver
+ * @param last iterator to last solver
+ */
+template <typename It>
+void CLASSNAME::set_best_ewsb_solution(It first, It last)
+{
+      const auto best_solver =
+         std::min_element(first, last,
+                          [this](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
+                             CLASSNAME ma(*this), mb(*this);
+                             ma.set_ewsb_solution(a.get());
+                             mb.set_ewsb_solution(b.get());
+                             return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
+                          });
+
+      VERBOSE_MSG("\tUsing best solution from " << (*best_solver)->name());
+
+      set_ewsb_solution(best_solver->get());
 }
 
 int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
