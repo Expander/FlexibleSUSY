@@ -21,6 +21,7 @@
 #include "@ModelName@_standard_model_matching.hpp"
 #include "wrappers.hpp"
 #include "two_scale_matching.hpp"
+#include "two_loop_corrections.hpp"
 #include "standard_model.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_info.hpp"
@@ -46,18 +47,27 @@ public:
    {
       model_pole_mass_order = model.get_pole_mass_loop_order();
       model_ewsb_order = model.get_ewsb_loop_order();
+      tlc = model.get_two_loop_corrections();
+
+      // set top quark QCD corrections to given loop order
+      Two_loop_corrections tlc_new = tlc;
+      tlc_new.top_qcd = loop_order_ ? loop_order_ - 1 : 0;
+
       model.set_pole_mass_loop_order(loop_order);
       model.set_ewsb_loop_order(loop_order);
+      model.set_two_loop_corrections(tlc_new);
    }
 
    ~Loop_order_setter() {
       model.set_pole_mass_loop_order(model_pole_mass_order);
       model.set_ewsb_loop_order(model_ewsb_order);
+      model.set_two_loop_corrections(tlc);
       model.calculate_DRbar_masses();
       model.solve_ewsb();
    }
 private:
    T& model;
+   Two_loop_corrections tlc;       ///< 2-loop corrections
    unsigned loop_order;            ///< temporary loop order
    unsigned model_pole_mass_order; ///< old model pole mass loop order
    unsigned model_ewsb_order;      ///< old model EWSB loop order
