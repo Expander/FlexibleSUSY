@@ -305,6 +305,17 @@ int CLASSNAME::solve_ewsb_iteratively()
       WARNING("\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
+
+      const auto best_solver =
+         std::min_element(std::begin(solvers), std::end(solvers),
+                          [this](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
+                             CLASSNAME ma(*this), mb(*this);
+                             ma.set_ewsb_solution(a.get());
+                             mb.set_ewsb_solution(b.get());
+                             return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
+                          });
+
+      set_ewsb_solution(best_solver->get());
    }
 
    return status;
