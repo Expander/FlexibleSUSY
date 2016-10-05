@@ -1,3 +1,7 @@
+FlexibleSUSY-1.7.1 [not released yet]
+
+ * Change (commit b1efa8c): Updated to GM2Calc 1.3.0.
+
 FlexibleSUSY-1.7.0 [September, 19 2016]
 
  * Feature: FlexibleSUSY is now able to generate custom spectrum
