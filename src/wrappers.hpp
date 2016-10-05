@@ -62,6 +62,12 @@ Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
    return a.cwiseAbs();
 }
 
+template <typename Scalar, int M, int N>
+Eigen::Matrix<Scalar, M, N> Abs(const Eigen::Matrix<Scalar, M, N>& a)
+{
+   return a.cwiseAbs();
+}
+
 template <class T>
 std::vector<T> Abs(std::vector<T> v)
 {
@@ -600,6 +606,16 @@ std::string ToString(T a)
    return boost::lexical_cast<std::string>(a);
 }
 
+inline double Total(double a)
+{
+   return a;
+}
+
+inline std::complex<double> Total(const std::complex<double>& a)
+{
+   return a;
+}
+
 template <class T>
 T Total(const std::vector<T>& v)
 {
@@ -608,6 +624,12 @@ T Total(const std::vector<T>& v)
 
 template <typename Scalar, int M, int N>
 Scalar Total(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.sum();
+}
+
+template <typename Scalar, int M, int N>
+Scalar Total(const Eigen::Matrix<Scalar, M, N>& a)
 {
    return a.sum();
 }
