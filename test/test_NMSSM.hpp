@@ -151,7 +151,7 @@ void ensure_n_loop_ewsb(NMSSM<Two_scale>& m, int loop_level)
    } else if (loop_level == 2) {
       const auto two_loop_tadpole(m.tadpole_hh_2loop());
       BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(m.tadpole_hh(0)) - two_loop_tadpole[0], 1.5);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], 0.06);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], 0.7);
       BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh(2)) - two_loop_tadpole[2], 18.0);
    }
 }
