@@ -35,7 +35,7 @@ SetBetaFunctions[pars_List] := allBetaFunctions = pars;
 
 ApplyConstraint[{parameter_, value_}, modelName_String] :=
     Which[Parameters`IsModelParameter[parameter],
-          Parameters`SetParameter[parameter, value, modelName],
+          Parameters`SetParameter[parameter, value, modelName <> "->"],
           Parameters`IsInputParameter[parameter],
           Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
           Parameters`IsPhase[parameter],
@@ -63,7 +63,7 @@ ApplyConstraint[{parameter_ | parameter_[__] /; parameter === SARAH`ElectronYuka
 ApplyConstraint[{parameter_,
                  value_ /; !FreeQ[value, Global`neutrinoDRbar]}, modelName_String] :=
     "calculate_MNeutrino_DRbar();\n" <>
-    Parameters`SetParameter[parameter, value, modelName];
+    Parameters`SetParameter[parameter, value, modelName <> "->"];
 
 ApplyConstraint[{parameter_ /; !MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
     Block[{},
@@ -107,7 +107,7 @@ CreateMinimizationFunctionWrapper[functionName_String, dim_Integer, parameters_L
            type  = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
            stype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
 "auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> stype <> " {
-" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL->","x",parameters]] <> "
    MODEL->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
    return " <> CConversion`RValueToCFormString[function] <> ";
@@ -138,7 +138,7 @@ CreateRootFinderFunctionWrapper[functionName_String, dim_Integer, parameters_Lis
     Module[{type},
            type = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
 "auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> type <> " {
-" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL","x",parameters]] <> "
+" <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL->","x",parameters]] <> "
    MODEL->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
    "<> type <> " f;
@@ -511,15 +511,15 @@ InitialGuessAtLowScaleGaugeCouplings[] :=
     Module[{result = ""},
            If[ValueQ[SARAH`hyperchargeCoupling],
               result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL"];
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL->"];
              ];
            If[ValueQ[SARAH`leftCoupling],
               result = result <> Parameters`SetParameter[SARAH`leftCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL"];
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL->"];
              ];
            If[ValueQ[SARAH`strongCoupling],
               result = result <> Parameters`SetParameter[SARAH`strongCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL"];
+                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL->"];
              ];
            result
           ];
@@ -609,7 +609,7 @@ RestoreValue[par_, prefix_String] :=
     Parameters`SetParameter[
         par,
         prefix <> CConversion`ToValidCSymbolString[par],
-        "MODEL"];
+        "MODEL->"];
 
 SetTemporarily[settings_List] :=
     Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
