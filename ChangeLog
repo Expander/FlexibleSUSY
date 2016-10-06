@@ -1,3 +1,23 @@
+FlexibleSUSY 2.0.0 [not released yet]
+
+ * Feature: BSM contributions to the anomalous magnetic moment of the
+   muon, a_mu, at the 1L level in any given BSM model.  Note: Diagrams
+   with non-SM vector bosons are not taken into account.
+
+   In order to let FlexibleSUSY calculate a_mu, the symbol
+   FlexibleSUSYObservable`aMuon must be written into an SLHA output
+   block in the ExtraSLHAOutputBlocks variable in the FlexibleSUSY
+   model file.
+
+   Example:
+
+   ExtraSLHAOutputBlocks = {
+      {FlexibleSUSYLowEnergy,
+         {{21, FlexibleSUSYObservable`aMuon}}}
+   };
+
+   Thanks to Jobst Ziebell.
+
 FlexibleSUSY-1.7.1 [not released yet]
 
  * Change (commit b1efa8c): Updated to GM2Calc 1.3.0.

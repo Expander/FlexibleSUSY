@@ -36,8 +36,9 @@
 #include <boost/mpl/vector_c.hpp>
 #include <boost/mpl/at.hpp>
 
-#define MODELPARAMETER(p) context.model.get_##p();
-#define DERIVEDPARAMETER(p) context.model.p();
+#define INPUTPARAMETER(p) context.model.get_input().p
+#define MODELPARAMETER(p) context.model.get_##p()
+#define DERIVEDPARAMETER(p) context.model.p()
 
 /* Due to g++4.4 compatibility, we need the following workarounds:
 - no variadic non-template parameter packs :'-(

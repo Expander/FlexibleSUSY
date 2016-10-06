@@ -98,7 +98,7 @@ CreateMuonChargeGetter[] :=
                StringJoin @ Riffle[ParticleToCXXName /@ muonPhotonVertexParticles, ", "] <>
                "> VF;\n" <>
                If[muonDim === 1,
-                  "const std::array<unsigned, 0> indices;\n",
+                  "const std::array<unsigned, 0> indices{};\n",
                   "const std::array<unsigned, 2> indices{" <>
                   ToString[GetMuonIndex[]-1] <> ", " <> ToString[GetMuonIndex[]-1] <> "};\n"
                  ] <>
