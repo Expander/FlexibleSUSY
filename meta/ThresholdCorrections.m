@@ -257,7 +257,7 @@ SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
               y = yukawa;
              ];
            Parameters`CreateLocalConstRefs[f] <>
-           Parameters`SetParameter[yukawa, f, "MODEL"]
+           Parameters`SetParameter[yukawa, f, "MODEL->"]
           ];
 
 SetDRbarYukawaCouplings[] :=
@@ -276,7 +276,7 @@ SetDRbarYukawaCouplings[] :=
           ];
 
 SetDRbarYukawaCouplingFermionElement[{y_, expr_}] :=
-    Parameters`SetParameter[y, expr, "MODEL"];
+    Parameters`SetParameter[y, expr, "MODEL->"];
 
 SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
     Module[{f, p, i, result = ""},

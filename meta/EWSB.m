@@ -146,12 +146,6 @@ GetValueWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_
            Return[result];
           ];
 
-SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
-    Module[{value},
-           value = GetValueWithPhase[parameter, gslIntputVector, index, freePhases];
-           Parameters`SetParameter[parameter, value, "model"]
-          ];
-
 FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
     Module[{i, result = "", par, dim},
            dim = TreeMasses`GetDimension[higgs];
