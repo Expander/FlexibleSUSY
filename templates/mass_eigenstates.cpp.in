@@ -60,9 +60,9 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
-#define INPUT(parameter) model->get_input().parameter
+#define INPUT(parameter) model.get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
-#define MODELPARAMETER(parameter) model->get_##parameter()
+#define MODELPARAMETER(parameter) model.get_##parameter()
 
 #define HIGGS_2LOOP_CORRECTION_AT_AS     two_loop_corrections.higgs_at_as
 #define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
@@ -247,29 +247,24 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   auto ewsb_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+   auto model = *this;
+
+   auto ewsb_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (model->get_ewsb_loop_order() > 0)
-         model->calculate_DRbar_masses();
-      return model->ewsb_step();
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+
+      return model.ewsb_step();
    };
-   auto tadpole_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+
+   auto tadpole_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (model->get_ewsb_loop_order() > 0)
-         model->calculate_DRbar_masses();
-      return model->tadpole_equations();
-   };
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
 
-   auto model_copy = *this;
-
-   auto ewsb_stepper = [model_copy, &ewsb_stepper_](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
-      return ewsb_stepper_(&model_copy, ewsb_pars);
-   };
-
-   auto tadpole_stepper = [model_copy, &tadpole_stepper_](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
-      return tadpole_stepper_(&model_copy, ewsb_pars);
+      return model.tadpole_equations();
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
