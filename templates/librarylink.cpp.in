@@ -34,6 +34,7 @@
 #include "mathlink_utils.hpp"
 #include "WolframLibrary.h"
 
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -153,7 +154,7 @@ Handle_map handles;
 Handle_id get_new_handle()
 {
    static const std::size_t max_handles =
-      static_cast<std::size_t>(std::pow(2, 8*sizeof(Handle_id)) - 1);
+      static_cast<std::size_t>(std::exp2(8*sizeof(Handle_id)) - 1);
 
    if (handles.size() >= max_handles)
       throw ENotEnoughFreeHandles(handles.size());
