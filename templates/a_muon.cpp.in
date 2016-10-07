@@ -40,15 +40,6 @@
 #define MODELPARAMETER(p) context.model.get_##p()
 #define DERIVEDPARAMETER(p) context.model.p()
 
-/* Due to g++4.4 compatibility, we need the following workarounds:
-- no variadic non-template parameter packs :'-(
-- no constexpr (less code, no boost workarounds...) :'-(
-- We have to use typedef instead of using
-- no extended friend syntax
-- no nullptr
-- no extended using syntax
-*/
-
 using namespace flexiblesusy;
 
 namespace {
