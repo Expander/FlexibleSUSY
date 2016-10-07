@@ -107,45 +107,36 @@ CreateMuonChargeGetter[] :=
           ];
 
 muonFunctions = Null;
-CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototypes, definitions},
+CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototypes = "", definitions,
+                                                 contextMuonPole},
                                                 If[muonFunctions =!= Null, Return[muonFunctions]];
                                                 muonIndex = GetMuonIndex[];
                                                 muonFamily = GetMuonFamily[];
-                                                
-                                                prototypes = ("unsigned muonIndex();\n" <>
-                                                              "double muonPhysicalMass(EvaluationContext&);\n" <>
-                                                              "double muonCharge(EvaluationContext&);");
-                                                
-                                                definitions = ("unsigned muonIndex()\n" <>
-                                                               "{ unsigned muonIndex" <>
-                                                               If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
-                                                               "; return muonIndex; }\n\n" <>
+
+                                                contextMuonPole = ("context.model.get_physical().M" <>
+                                                                   ParticleToCXXName[muonFamily] <>
+                                                                   If[muonIndex =!= Null, "(muonIndex())", ""]);
+
+                                                definitions = ("constexpr unsigned muonIndex()\n" <>
+                                                               "{ return " <>
+                                                               If[muonIndex =!= Null, ToString[muonIndex-1], "0"] <>
+                                                               "; }\n\n" <>
                                                                "double muonPhysicalMass(EvaluationContext& context)\n" <>
                                                                "{\n" <>
                                                                IndentText @
-                                                               ("static double m_muon_pole = 0.0;\n\n" <>
+                                                               ("static double m_muon_pole = " <> contextMuonPole <> ";\n\n" <>
                                                                 
-                                                                "if(m_muon_pole == 0.0) {\n" <>
+                                                                "if (m_muon_pole == 0.0) {\n" <>
                                                                 IndentText @
-                                                                ("m_muon_pole = context.model.get_physical().M" <>
-                                                                 ParticleToCXXName[muonFamily] <>
-                                                                 If[muonIndex =!= Null, "(" <> ToString[muonIndex-1] <> ")", ""] <> ";\n\n" <>
-                                                                 
-                                                                 "if(m_muon_pole == 0.0) {\n" <>
-                                                                 IndentText @
-                                                                 ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
-                                                                  "m_muon_pole = context.model.get_physical().M" <>
-                                                                  ParticleToCXXName[muonFamily] <>
-                                                                  If[muonIndex =!= Null, "(" <> ToString[muonIndex-1] <> ")", ""] <> ";\n") <>
-                                                                 "}\n") <>
+                                                                ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
+                                                                  "m_muon_pole = " <> contextMuonPole <> ";\n") <>
                                                                 "}\n\n" <>
                                                                 
                                                                 "return m_muon_pole;\n") <>
                                                                "}\n\n" <>
                                                                CreateMuonChargeGetter[]);
                                                 
-                                                muonFunctions = {prototypes, definitions};
-                                                Return[muonFunctions];
+                                                {prototypes, definitions}
                                                 ];
 
 CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
