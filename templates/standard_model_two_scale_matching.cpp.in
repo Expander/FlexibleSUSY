@@ -25,21 +25,21 @@
 #include "error.hpp"
 #include "two_scale_constraint.hpp"
 
-#define CLASSNAME @ModelName@_standard_model_Matching<Two_scale>
-
 namespace flexiblesusy {
 
-CLASSNAME::@ModelName@_standard_model_Matching()
+#define CLASSNAME @ModelName@_standard_model_Matching_up<Two_scale>
+
+CLASSNAME::@ModelName@_standard_model_Matching_up()
    : model(0), eft(0), constraint(0), scale(0.)
-   , loop_order_up(0), loop_order_down(0)
+   , loop_order(0)
    , higgs_idx(0)
 {}
 
-CLASSNAME::@ModelName@_standard_model_Matching(
+CLASSNAME::@ModelName@_standard_model_Matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    Constraint<Two_scale>* constraint_,
-   unsigned loop_order_up_, unsigned loop_order_down_,
+   unsigned loop_order_,
    unsigned higgs_idx_)
    : model(high_)
    , eft(low_)
@@ -47,11 +47,10 @@ CLASSNAME::@ModelName@_standard_model_Matching(
    , scale(0.)
    , higgs_idx(higgs_idx_)
 {
-   set_loop_order_up(loop_order_up_);
-   set_loop_order_down(loop_order_down_);
+   set_loop_order(loop_order_);
 }
 
-CLASSNAME::~@ModelName@_standard_model_Matching()
+CLASSNAME::~@ModelName@_standard_model_Matching_up()
 {}
 
 double CLASSNAME::get_scale() const
@@ -71,7 +70,7 @@ void CLASSNAME::set_models(Two_scale_model* low, Two_scale_model* high)
    model = cast_model<@ModelName@<Two_scale>*>(high);
 }
 
-void CLASSNAME::match_high_to_low_scale_model()
+void CLASSNAME::match()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
@@ -81,42 +80,13 @@ void CLASSNAME::match_high_to_low_scale_model()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (model->get_thresholds() && loop_order_down)
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order_down, higgs_idx);
-   else
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
-}
-
-void CLASSNAME::match_low_to_high_scale_model()
-{
-   if (!model || !eft)
-      throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
-
-   eft->run_to(get_scale());
-   model->run_to(get_scale());
-
-   if (model->get_thresholds() && loop_order_up)
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order_up);
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order);
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
-void CLASSNAME::match_high_to_low_scale_model_tree_level()
-{
-   if (!model || !eft)
-      throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
-
-   eft->run_to(get_scale());
-   model->run_to(get_scale());
-
-   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
-}
-
-void CLASSNAME::match_low_to_high_scale_model_tree_level()
+void CLASSNAME::match_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
@@ -134,14 +104,9 @@ unsigned CLASSNAME::get_higgs_index() const
    return higgs_idx;
 }
 
-unsigned CLASSNAME::get_loop_order_up() const
+unsigned CLASSNAME::get_loop_order() const
 {
-   return loop_order_up;
-}
-
-unsigned CLASSNAME::get_loop_order_down() const
-{
-   return loop_order_down;
+   return loop_order;
 }
 
 void CLASSNAME::set_higgs_index(unsigned idx)
@@ -149,21 +114,122 @@ void CLASSNAME::set_higgs_index(unsigned idx)
    higgs_idx = idx;
 }
 
-void CLASSNAME::set_loop_order_up(unsigned loop_order_up_)
+void CLASSNAME::set_loop_order(unsigned loop_order_)
 {
-   loop_order_up = loop_order_up_;
+   loop_order = loop_order_;
 }
 
-void CLASSNAME::set_loop_order_down(unsigned loop_order_down_)
+void CLASSNAME::set_constraint(Constraint<Two_scale>* constraint_)
 {
-   if (loop_order_down_ > 1) {
-      WARNING("Matching loop order " << loop_order_down_
+   constraint = constraint_;
+}
+
+void CLASSNAME::set_scale(double scale_)
+{
+   scale = scale_;
+}
+
+#ifdef CLASSNAME
+#undef CLASSNAME
+#endif
+
+#define CLASSNAME @ModelName@_standard_model_Matching_down<Two_scale>
+
+CLASSNAME::@ModelName@_standard_model_Matching_down()
+   : model(0), eft(0), constraint(0), scale(0.)
+   , loop_order(0)
+   , higgs_idx(0)
+{}
+
+CLASSNAME::@ModelName@_standard_model_Matching_down(
+   standard_model::StandardModel<Two_scale>* low_,
+   @ModelName@<Two_scale>* high_,
+   Constraint<Two_scale>* constraint_,
+   unsigned loop_order_,
+   unsigned higgs_idx_)
+   : model(high_)
+   , eft(low_)
+   , constraint(constraint_)
+   , scale(0.)
+   , higgs_idx(higgs_idx_)
+{
+   set_loop_order(loop_order_);
+}
+
+CLASSNAME::~@ModelName@_standard_model_Matching_down()
+{}
+
+double CLASSNAME::get_scale() const
+{
+   if (scale != 0.)
+      return scale;
+
+   if (!constraint)
+      throw SetupError("Constraint pointer in matching class is NULL!");
+
+   return constraint->get_scale();
+}
+
+void CLASSNAME::set_models(Two_scale_model* high, Two_scale_model* low)
+{
+   eft = cast_model<standard_model::StandardModel<Two_scale>*>(low);
+   model = cast_model<@ModelName@<Two_scale>*>(high);
+}
+
+void CLASSNAME::match()
+{
+   if (!model || !eft)
+      throw SetupError("Model pointer in matching class is NULL!");
+   if (!constraint)
+      throw SetupError("Constraint pointer in matching class is NULL!");
+
+   eft->run_to(get_scale());
+   model->run_to(get_scale());
+
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order, higgs_idx);
+   else
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+}
+
+void CLASSNAME::match_tree_level()
+{
+   if (!model || !eft)
+      throw SetupError("Model pointer in matching class is NULL!");
+   if (!constraint)
+      throw SetupError("Constraint pointer in matching class is NULL!");
+
+   eft->run_to(get_scale());
+   model->run_to(get_scale());
+
+   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+}
+
+unsigned CLASSNAME::get_higgs_index() const
+{
+   return higgs_idx;
+}
+
+unsigned CLASSNAME::get_loop_order() const
+{
+   return loop_order;
+}
+
+void CLASSNAME::set_higgs_index(unsigned idx)
+{
+   higgs_idx = idx;
+}
+
+void CLASSNAME::set_loop_order(unsigned loop_order_)
+{
+   if (loop_order_ > 1) {
+      WARNING("Matching loop order " << loop_order_
               << " for downwards matching currently not"
               " supported!  I'm using 1-loop matching.");
-      loop_order_down = 1;
+      loop_order = 1;
    }
 
-   loop_order_down = loop_order_down_;
+   loop_order = loop_order_;
 }
 
 void CLASSNAME::set_constraint(Constraint<Two_scale>* constraint_)

@@ -28,47 +28,78 @@ class Two_scale_model;
 
 template <class T> class Constraint;
 template <class T> class @ModelName@;
-template <class T> class @ModelName@_standard_model_Matching;
+template <class T> class @ModelName@_standard_model_Matching_up;
+template <class T> class @ModelName@_standard_model_Matching_down;
 
 namespace standard_model {
 template <class T> class StandardModel;
 }
 
 template<>
-class @ModelName@_standard_model_Matching<Two_scale> : public Matching<Two_scale>
+class @ModelName@_standard_model_Matching_up<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_Matching();
+   @ModelName@_standard_model_Matching_up();
 
-   @ModelName@_standard_model_Matching(standard_model::StandardModel<Two_scale>*,
-                                       @ModelName@<Two_scale>*,
-                                       Constraint<Two_scale>*,
-                                       unsigned, unsigned, unsigned);
+   @ModelName@_standard_model_Matching_up(standard_model::StandardModel<Two_scale>*,
+                                          @ModelName@<Two_scale>*,
+                                          Constraint<Two_scale>*,
+                                          unsigned, unsigned);
 
-   virtual ~@ModelName@_standard_model_Matching();
+   virtual ~@ModelName@_standard_model_Matching_up();
 
-   virtual double get_scale() const;
-   virtual void set_models(Two_scale_model*, Two_scale_model*);
-   virtual void match_high_to_low_scale_model();
-   virtual void match_low_to_high_scale_model();
+   virtual double get_scale() const override;
+   virtual void set_models(Two_scale_model*, Two_scale_model*) override;
+   virtual void match() override;
 
    unsigned get_higgs_index() const;
-   unsigned get_loop_order_up() const;
-   unsigned get_loop_order_down() const;
+   unsigned get_loop_order() const;
    void set_higgs_index(unsigned);
-   void set_loop_order_up(unsigned);
-   void set_loop_order_down(unsigned);
+   void set_loop_order(unsigned);
    void set_scale(double);
    void set_constraint(Constraint<Two_scale>*);
-   void match_high_to_low_scale_model_tree_level();
-   void match_low_to_high_scale_model_tree_level();
+   void match_tree_level();
 
 private:
    @ModelName@<Two_scale>* model;
    standard_model::StandardModel<Two_scale>* eft;
    Constraint<Two_scale>* constraint;
    double scale;
-   unsigned loop_order_up, loop_order_down;
+   unsigned loop_order;
+   unsigned higgs_idx; ///< Higgs index
+};
+
+template<>
+class @ModelName@_standard_model_Matching_down<Two_scale> : public Matching<Two_scale>
+{
+public:
+   @ModelName@_standard_model_Matching_down();
+
+   @ModelName@_standard_model_Matching_down(standard_model::StandardModel<Two_scale>*,
+                                            @ModelName@<Two_scale>*,
+                                            Constraint<Two_scale>*,
+                                            unsigned, unsigned);
+
+   virtual ~@ModelName@_standard_model_Matching_down();
+
+   virtual double get_scale() const override;
+   virtual void set_models(Two_scale_model*, Two_scale_model*) override;
+   virtual void match() override;
+
+   unsigned get_higgs_index() const;
+   unsigned get_loop_order() const;
+   void set_higgs_index(unsigned);
+   void set_loop_order(unsigned);
+   void set_scale(double);
+   void set_constraint(Constraint<Two_scale>*);
+   void match_tree_level();
+
+private:
+   @ModelName@<Two_scale>* model;
+   standard_model::StandardModel<Two_scale>* eft;
+   Constraint<Two_scale>* constraint;
+   double scale;
+   unsigned loop_order;
    unsigned higgs_idx; ///< Higgs index
 };
 
