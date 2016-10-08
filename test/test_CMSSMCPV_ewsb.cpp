@@ -108,10 +108,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_one_loop )
    // this reason, tadpole[2] is not exactly zero, even if tadpole[3]
    // is exactly zero.
 
-   BOOST_CHECK_SMALL(Abs(tadpole[0]), 0.003);     // fixed by EWSB
-   BOOST_CHECK_SMALL(Abs(tadpole[1]), 0.0005);    // fixed by EWSB
+   BOOST_CHECK_SMALL(Abs(tadpole[0]), 0.05);      // fixed by EWSB
+   BOOST_CHECK_SMALL(Abs(tadpole[1]), 0.03);      // fixed by EWSB
    BOOST_CHECK_SMALL(Abs(tadpole[2]), 4.);
-   BOOST_CHECK_SMALL(Abs(tadpole[3]), precision); // fixed by EWSB
+   BOOST_CHECK_SMALL(Abs(tadpole[3]), 0.0004);    // fixed by EWSB
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_tadpoles )

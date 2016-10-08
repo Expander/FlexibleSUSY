@@ -1,10 +1,10 @@
 
 /** \file lowe.h
-   - Project:     SOFTSUSY 
-   - Author:      Ben Allanach 
-   - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305 
+   - Project:     SOFTSUSY
+   - Author:      Ben Allanach
+   - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
    - Webpage:     http://hepforge.cedar.ac.uk/softsusy/
-   \brief QedQcd object contains Standard Model quark and lepton 
+   \brief QedQcd object contains Standard Model quark and lepton
    masses. It integrates them using 3 loop qcd x 1 loop qed effective theory.
 
 */
@@ -32,7 +32,7 @@ const double MCHARM = 1.27; ///< default running quark mass from PDG
 const double MBOTTOM = 4.20; ///< default running quark mass from PDG
 const double MTOP = 165.0; ///< default running quark mass from PDG
 /// default pole lepton mass from PDG
-const double MELECTRON = 5.10998902e-4; 
+const double MELECTRON = 5.10998902e-4;
 const double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
 const double MTAU = 1.77699; ///< default pole lepton mass from PDG
 const double ALPHASMZ = 0.1184; ///< default running mass from PDG
@@ -71,7 +71,7 @@ DoubleVector gaugeDerivs(double, const DoubleVector &);
 DoubleVector smGaugeDerivs(double, const DoubleVector&);
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
-class QedQcd: public RGE 
+class QedQcd: public RGE
 {
 private:
   DoubleVector a;   ///< gauge couplings
@@ -103,7 +103,7 @@ public:
   void setPoleMW(double mw) { input(MW_pole) = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { input(MZ_pole) = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
-  void setMass(mass mno, double m) { mf(mno) = m; }; 
+  void setMass(mass mno, double m) { mf(mno) = m; };
   /// sets a neutrino pole mass
   void setNeutrinoPoleMass(int i, double m) { input(Mv1_pole + i - 1) = m; }
   /// sets QED or QCD structure constant
@@ -119,10 +119,10 @@ public:
   /// sets Fermi constant
   void setFermiConstant(double gf) { input(GFermi) = gf; }
   /// For exporting beta functions to Runge-Kutta
-  void set(const DoubleVector &); 
+  void set(const DoubleVector &);
   /// sets all input parameters
   void set_input(const Eigen::ArrayXd&);
-  
+
   /// Display pole top mass
   double displayPoleMt() const { return input(MT_pole); };
   /// Display pole tau mass
@@ -179,15 +179,15 @@ public:
   Eigen::Matrix<double,3,3> get_real_pmns() const { return pmns.get_real_pmns(); }
   /// Returns complex PMNS matrix
   Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
-  
+
   int flavours(double) const;  /// returns number of active flavours
-  
+
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
   void massBeta(DoubleVector &) const; ///< beta functions of masses
   /// Beta functions of both beta-functions and all MSbar masses
-  DoubleVector beta() const; 
-  
+  DoubleVector beta() const;
+
   /// Does not run the masses, just gauge couplings from start to end
   void runGauge(double start, double end);
   /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
@@ -223,8 +223,8 @@ istream & operator >>(istream &left, QedQcd &m);
 
 /// Reads in a QedQed-type object and returns it in oneset.
 /// Call with fname "" if you want it to come from standard input
-/// "massIn" is an example of a data initialisation file: 
-void readIn(QedQcd & oneset, const char fname[80]); 
+/// "massIn" is an example of a data initialisation file:
+void readIn(QedQcd & oneset, const char fname[80]);
 /// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
 /// including one-loop standard model correction only
 double getRunMt(double poleMt, double asmt);
@@ -243,14 +243,14 @@ inline QedQcd::QedQcd(const QedQcd &m)
    , ckm(m.ckm)
    , pmns(m.pmns)
 {
-  setPars(11); 
+  setPars(11);
   setMu(m.displayMu());
   setLoops(m.displayLoops());
   setThresholds(m.displayThresholds());
 }
 
 /// Returns diagonal fermion mass matrices given input object r
-void massFermions(const QedQcd & r, DoubleMatrix & mDon, 
+void massFermions(const QedQcd & r, DoubleMatrix & mDon,
 		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
 
 bool operator ==(const QedQcd&, const QedQcd&);

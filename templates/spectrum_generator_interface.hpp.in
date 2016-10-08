@@ -190,14 +190,13 @@ void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem
       const double parameter_value = error.get_parameter_value();
       const double scale = error.get_scale();
       model.get_problems().flag_non_perturbative_parameter(parameter_name, parameter_value, scale, -1);
+   } catch (const NonPerturbativeRunningQedQcdError& error) {
+      model.get_problems().flag_no_perturbative();
+      model.get_problems().flag_thrown(error.what());
    } catch (const NoRhoConvergenceError&) {
       model.get_problems().flag_no_rho_convergence();
    } catch (const Error& error) {
       model.get_problems().flag_thrown(error.what());
-   } catch (const std::string& str) {
-      model.get_problems().flag_thrown(str);
-   } catch (const char* str) {
-      model.get_problems().flag_thrown(str);
    } catch (const std::exception& error) {
       model.get_problems().flag_thrown(error.what());
    }

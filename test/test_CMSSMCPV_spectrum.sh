@@ -5,8 +5,8 @@
 BASEDIR=$(dirname $0)
 
 cmssmcpv_input="$BASEDIR/test_CMSSMCPV_wrong_higgs_state.in.spc"
-cmssmcpv_output="$BASEDIR/CMSSMCPV.out.spc"
-cmssm_output="$BASEDIR/CMSSM.out.spc"
+cmssmcpv_output="$BASEDIR/test_CMSSMCPV_wrong_higgs_state.out.spc"
+cmssm_output="$BASEDIR/test_CMSSM_wrong_higgs_state.out.spc"
 rel_error="0.0000001"
 
 cmssm_exe="$BASEDIR/../models/CMSSM/run_CMSSM.x"

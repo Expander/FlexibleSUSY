@@ -37,11 +37,12 @@
 
 namespace flexiblesusy {
 
-static const double Pi = M_PI;
-static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
-static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
-static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
-static const bool True = true;
+static constexpr double Pi = M_PI;
+static constexpr double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static constexpr double oneLoop = oneOver16PiSqr;
+static constexpr double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
+static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static constexpr bool True = true;
 
 template <typename T>
 T Abs(T a)
@@ -61,16 +62,21 @@ Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
    return a.cwiseAbs();
 }
 
+template <typename Scalar, int M, int N>
+Eigen::Matrix<Scalar, M, N> Abs(const Eigen::Matrix<Scalar, M, N>& a)
+{
+   return a.cwiseAbs();
+}
+
 template <class T>
 std::vector<T> Abs(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Abs(*it);
+   for (auto& e: v)
+      e = Abs(e);
    return v;
 }
 
-inline double AbsSqr(double z)
+constexpr double AbsSqr(double z)
 {
    return z * z;
 }
@@ -170,7 +176,7 @@ inline double Arg(const std::complex<double>& z)
    return std::arg(z);
 }
 
-inline double Conj(double a)
+constexpr double Conj(double a)
 {
    return a;
 }
@@ -217,19 +223,19 @@ inline double Csc(double x)
    return 1./Sin(x);
 }
 
-inline int Delta(int i, int j)
+constexpr int Delta(int i, int j)
 {
    return i == j;
 }
 
 template <typename T>
-T If(bool c, T a, T b) { return c ? a : b; }
+constexpr T If(bool c, T a, T b) { return c ? a : b; }
 
 template <typename T>
-T If(bool c, int a, T b) { return c ? T(a) : b; }
+constexpr T If(bool c, int a, T b) { return c ? T(a) : b; }
 
 template <typename T>
-T If(bool c, T a, int b) { return c ? a : T(b); }
+constexpr T If(bool c, T a, int b) { return c ? a : T(b); }
 
 inline bool IsClose(double a, double b,
                     double eps = std::numeric_limits<double>::epsilon())
@@ -265,7 +271,7 @@ bool IsFinite(const Eigen::DenseBase<Derived>& m)
    return m.allFinite();
 }
 
-inline int KroneckerDelta(int i, int j)
+constexpr int KroneckerDelta(int i, int j)
 {
    return i == j;
 }
@@ -292,8 +298,8 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 
 inline double FiniteLog(double a)
 {
-   return (std::isfinite(a) && a > std::numeric_limits<double>::epsilon())
-      ? std::log(a) : 0;
+   const double l = std::log(a);
+   return std::isfinite(l) ? l : 0.;
 }
 
 /**
@@ -358,12 +364,12 @@ double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
    return x.cwiseAbs().maxCoeff();
 }
 
-inline int Sign(double x)
+constexpr int Sign(double x)
 {
    return (x >= 0.0 ? 1 : -1);
 }
 
-inline int Sign(int x)
+constexpr int Sign(int x)
 {
    return (x >= 0 ? 1 : -1);
 }
@@ -382,7 +388,7 @@ Base Power(Base base, Exponent exp)
 }
 
 
-inline double Re(double x)
+constexpr double Re(double x)
 {
    return x;
 }
@@ -408,7 +414,7 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-inline double Im(double)
+constexpr double Im(double)
 {
    return 0.;
 }
@@ -419,7 +425,7 @@ inline double Im(const std::complex<double>& x)
 }
 
 template<int M, int N>
-Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>& x)
+Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>&)
 {
    return Eigen::Matrix<double,M,N>::Zero();
 }
@@ -501,14 +507,13 @@ Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
 template <class T>
 std::vector<T> Sqrt(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Sqrt(*it);
+   for (auto& e: v)
+      e = Sqrt(e);
    return v;
 }
 
 template <typename T>
-T Sqr(T a)
+constexpr T Sqr(T a)
 {
    return a * a;
 }
@@ -522,9 +527,8 @@ Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 template <class T>
 std::vector<T> Sqr(std::vector<T> v)
 {
-   for (typename std::vector<T>::iterator it = v.begin(),
-           end = v.end(); it != end; ++it)
-      *it = Sqr(*it);
+   for (auto& e: v)
+      e = Sqr(e);
    return v;
 }
 
@@ -602,6 +606,16 @@ std::string ToString(T a)
    return boost::lexical_cast<std::string>(a);
 }
 
+inline double Total(double a)
+{
+   return a;
+}
+
+inline std::complex<double> Total(const std::complex<double>& a)
+{
+   return a;
+}
+
 template <class T>
 T Total(const std::vector<T>& v)
 {
@@ -610,6 +624,12 @@ T Total(const std::vector<T>& v)
 
 template <typename Scalar, int M, int N>
 Scalar Total(const Eigen::Array<Scalar, M, N>& a)
+{
+   return a.sum();
+}
+
+template <typename Scalar, int M, int N>
+Scalar Total(const Eigen::Matrix<Scalar, M, N>& a)
 {
    return a.sum();
 }
@@ -634,19 +654,19 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
 
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
-unsigned UnitStep(T x)
+constexpr unsigned UnitStep(T x)
 {
    return x < T() ? 0 : 1;
 }
 
 template <typename T>
-T Which(bool cond, T value)
+constexpr T Which(bool cond, T value)
 {
    return cond ? value : T(0);
 }
 
 template<typename T, typename ... Trest>
-T Which(bool cond, T value, Trest... rest)
+constexpr T Which(bool cond, T value, Trest... rest)
 {
    return cond ? value : Which(rest...);
 }

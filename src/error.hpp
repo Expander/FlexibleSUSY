@@ -49,17 +49,19 @@ private:
  */
 class NoConvergenceError : public Error {
 public:
-   explicit NoConvergenceError(unsigned number_of_iterations_)
-      : number_of_iterations(number_of_iterations_) {}
+   explicit NoConvergenceError(unsigned number_of_iterations_, const std::string msg = "")
+      : message(msg), number_of_iterations(number_of_iterations_) {}
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
-      std::stringstream message;
-      message << "NoConvergenceError: no convergence"
-              << " after " << number_of_iterations << " iterations";
-      return message.str();
+      if (!message.empty())
+         return message;
+
+      return "NoConvergenceError: no convergence after "
+         + std::to_string(number_of_iterations) + " iterations";
    }
    unsigned get_number_of_iterations() const { return number_of_iterations; }
 private:
+   std::string message;
    unsigned number_of_iterations;
 };
 
@@ -135,6 +137,17 @@ private:
    int parameter_index; ///< index of parameter that becomes non-perturbative
 };
 
+class NonPerturbativeRunningQedQcdError : public Error {
+public:
+   explicit NonPerturbativeRunningQedQcdError(std::string msg_)
+      : msg(msg_)
+      {}
+   virtual ~NonPerturbativeRunningQedQcdError() {}
+   virtual std::string what() const { return msg; }
+private:
+   std::string msg;
+};
+
 /**
  * @class OutOfMemoryError
  * @brief Not enough memory
@@ -155,18 +168,40 @@ private:
 };
 
 /**
- * @class FailedDiagonalizationError
- * @brief Failed diagonalization of a matrix
+ * @class OutOfBoundsError
+ * @brief Out of bounds access
  */
-class FailedDiagonalizationError : public Error {
+class OutOfBoundsError : public Error {
 public:
-   explicit FailedDiagonalizationError()
+   explicit OutOfBoundsError(std::string msg_)
+      : msg(msg_)
       {}
-   virtual ~FailedDiagonalizationError() {}
-   virtual std::string what() const {
-      return std::string("FailedDiagonalizationError:"
-                         " Mass matrix diagonalization failed");
-   }
+   virtual ~OutOfBoundsError() {}
+   virtual std::string what() const { return msg; }
+private:
+   std::string msg;
+};
+
+/**
+ * @class DiagonalizationError
+ * @brief Diagonalization failed
+ */
+class DiagonalizationError : public Error {
+public:
+   explicit DiagonalizationError(const std::string& message_) : message(message_) {}
+   virtual ~DiagonalizationError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
+
+class ReadError : public Error {
+public:
+   ReadError(const std::string& message_) : message(message_) {}
+   virtual ~ReadError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
 };
 
 }

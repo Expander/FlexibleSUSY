@@ -431,6 +431,8 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
 GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
     CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
 
+GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
+
 GetType[FlexibleSUSY`M[sym_]] :=
     GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
@@ -1144,9 +1146,10 @@ SetParameter[parameter_, value_String, class_String, castToType_:None] :=
               If[GetIndices[parameter] =!= {} && targetType =!= None,
                  targetType = CConversion`GetScalarElementType[targetType];
                 ];
-              class <> "->set_" <> parameterStr <> "(" <>
+              class <> "set_" <> parameterStr <> "(" <>
               AppendIfNotEmpty[ConcatIndices[GetIndices[parameter]],","] <>
-              CConversion`CastTo[value,targetType] <> ");\n",
+              CConversion`CastTo[value,targetType] <> ");\n"
+              ,
               ""
              ]
           ];

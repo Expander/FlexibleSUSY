@@ -19,8 +19,8 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_observables.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"
@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
-   } catch (const std::string& s) {
-      ERROR(s);
+   } catch (const Error& e) {
+      ERROR(e.what());
       return EXIT_FAILURE;
    }
 

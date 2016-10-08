@@ -32,12 +32,26 @@ To run the NMSSM spectrum generator, run
 
 \section further_reading Documentation
 
+\subsection Documentation_Installation Installation
+
 - @ref install
 - @ref building
-- @ref model_file_options
-- @ref slha_input_fields
-- @ref addons
 - @ref documentation
+
+\subsection Documentation_ModelFiles Creating FlexibleSUSY models
+
+- @ref model_file_options
+- @ref FlexibleEFTHiggs
+- @ref slha_input_fields
+
+\subsection Documentation_Models FlexibleSUSY models
+
+- @ref hssusy
+
+\subsection Documentation_Extensions Extensions
+
+- @ref addons
+- @ref librarylink
 - @ref package
 - @ref utilities
 
@@ -77,5 +91,8 @@ The following people have made major contributions to FlexibleSUSY:
 
 - Dylan Harries (loop-induced effective vertices
   \f$h\rightarrow\gamma\gamma\f$ and \f$h\rightarrow gg\f$)
+- Tom Steudtner (FlexibleEFTHiggs)
+- Jobst Ziebell (1-loop BSM contributions to the anomalous magnetic
+  moment of the muon, \f$a_\mu\f$)
 
 */

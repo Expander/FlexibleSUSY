@@ -88,24 +88,15 @@ Derivative[1][m][Q] = (
     h^3 betam[[3]]
 )/Q;
 
-(* get 3L pole-mass contribution *)
-M3L = 1 / GetMTopMSbarOverMTopPole[{1, h, h^2, h^3}];
-M3L = Simplify[Normal[Series[M3L, {h, 0, 3}] /. gRules], ass] /.
-    FlexibleSUSY`M[Fu] -> m[Q];
-M3L = Simplify[Coefficient[M3L, h^3], ass];
-
 (* pole mass up to 3L order *)
 M = Simplify[
-    m[Q] (1 +
-          h^1 GetDeltaMPoleOverMRunningQCDOneLoopMSbar[TopQuark, Q] +
-          h^2 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[TopQuark, Q] +
-          h^3 M3L) /. gRules
+    m[Q] GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. gRules
     , ass];
 
 deriv = D[M, Q];
 
 deriv = FullSimplify[
-    Normal[Series[deriv, {h, 0, 3}]] /. FlexibleSUSY`M[Fu] -> m[Q],
+    Normal[Series[deriv, {h, 0, 3}]],
     ass
 ];
 

@@ -54,10 +54,8 @@ bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
 {
    bool precision_reached = true;
 
-   for (std::vector<Convergence_tester<Two_scale>*>::iterator
-           it = testers.begin(), end = testers.end();
-        it != end; ++it) {
-      const bool tester_result = (*it)->accuracy_goal_reached();
+   for (auto ct: testers) {
+      const bool tester_result = ct->accuracy_goal_reached();
       precision_reached = precision_reached && tester_result;
    }
 

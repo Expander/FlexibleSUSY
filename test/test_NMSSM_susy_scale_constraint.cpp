@@ -61,6 +61,6 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 
    // check that tree-level EWSB eqs. are fulfilled
    BOOST_CHECK_LT(std::fabs(tadpole[0]), 0.66);
-   BOOST_CHECK_LT(std::fabs(tadpole[1]), 0.03);
+   BOOST_CHECK_LT(std::fabs(tadpole[1]), 0.3);
    BOOST_CHECK_LT(std::fabs(tadpole[2]), 23.0);
 }

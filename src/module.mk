@@ -1,5 +1,6 @@
 DIR          := src
 MODNAME      := src
+WITH_$(MODNAME) := yes
 
 LIBFLEXI_MK  := \
 		$(DIR)/module.mk
@@ -17,10 +18,13 @@ LIBFLEXI_SRC := \
 		$(DIR)/error.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
+		$(DIR)/gsl_vector.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
-		$(DIR)/mssm_twoloophiggs.f \
+		$(DIR)/mssm_twoloophiggs.cpp \
+		$(DIR)/mssm_twoloophiggs_impl.f \
+		$(DIR)/nmssm_twoloophiggs.cpp \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
@@ -36,7 +40,10 @@ LIBFLEXI_SRC := \
 		$(DIR)/split_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
+		$(DIR)/standard_model_effective_couplings.cpp \
 		$(DIR)/standard_model_physical.cpp \
+		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
+		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -69,6 +76,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/functors.hpp \
 		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl_utils.hpp \
+		$(DIR)/gsl_vector.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
 		$(DIR)/two_loop_corrections.hpp \
 		$(DIR)/initial_guesser.hpp \
@@ -77,13 +85,17 @@ LIBFLEXI_HDR := \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
+		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
+		$(DIR)/mssm_twoloophiggs.hpp \
 		$(DIR)/mycomplex.h \
+		$(DIR)/nmssm_twoloophiggs.hpp \
 		$(DIR)/nmssm2loop.h \
-		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
+		$(DIR)/physical_input.hpp \
+		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
@@ -99,8 +111,11 @@ LIBFLEXI_HDR := \
 		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
+		$(DIR)/standard_model_effective_couplings.hpp \
+		$(DIR)/standard_model_low_scale_constraint.hpp \
 		$(DIR)/standard_model_physical.hpp \
-		$(DIR)/physical_input.hpp \
+		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
+		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
@@ -137,7 +152,7 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/libflexisusy$(LIBEXT)
+LIBFLEXI     := $(DIR)/libflexisusy$(MODULE_LIBEXT)
 
 LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -181,12 +196,12 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-ifeq ($(ENABLE_STATIC_LIBS),yes)
+ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS)
 else
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS)
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 
 ALLDEP += $(LIBFLEXI_DEP)

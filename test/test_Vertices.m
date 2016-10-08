@@ -19,7 +19,7 @@ Parameters`SetModelParameters[{
     MDBS, MDWBT, MDGoc}];
 
 FH := Vertices`Private`FieldHead;
-SFI := Vertices`Private`StripFieldIndices;
+SFI := Vertices`StripFieldIndices;
 
 CheckExternalField[extField_, cp:Cp[a_, b_, __]] /;
     FH[a] === FH[b] === extField &&

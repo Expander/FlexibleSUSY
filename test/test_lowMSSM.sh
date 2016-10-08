@@ -9,9 +9,9 @@ BASEDIR=$(dirname $0)
 UTILSDIR=${BASEDIR}/../utils
 
 mssm_input="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
-mssm_output="$BASEDIR/CMSSM.out.spc"
-lowmssm_input="$BASEDIR/lowMSSM.in.spc"
-lowmssm_output="$BASEDIR/lowMSSM.out.spc"
+mssm_output="$BASEDIR/test_lowMSSM_CMSSM.out.spc"
+lowmssm_input="$BASEDIR/test_lowMSSM_lowMSSM.in.spc"
+lowmssm_output="$BASEDIR/test_lowMSSM_lowMSSM.out.spc"
 rel_error="1.7e-2"
 
 sed_cmd=`command -v sed`

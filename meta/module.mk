@@ -53,8 +53,11 @@ META_SRC     := \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
+		$(DIR)/FlexibleEFTHiggsMatching.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/Format.m \
+		$(DIR)/FSMathLink.m \
+		$(DIR)/GMuonMinus2.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \

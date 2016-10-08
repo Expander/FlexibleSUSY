@@ -84,6 +84,8 @@ Out[]= {o1 -> x, o2 -> y, o3 -> z}
 
 FSImportString::usage = "Returns the content of a file in form of a string.  If the file does not exist, \"unknown\" is returned.";
 
+FSStringPadLeft::usage = "StringPadLeft[] for Mathematica 9 and below.";
+
 Begin["`Private`"];
 
 ApplyAndConcatenate[Func_, l_List] :=
@@ -151,6 +153,9 @@ FSImportString[fileName_String] :=
               "unknown"
              ]
           ];
+
+FSStringPadLeft[str_String, width_, pad_String] :=
+    StringJoin[PadLeft[Characters[str], width, pad]];
 
 ForceJoin[elem___] :=
     Join[Sequence @@ Select[{elem}, (Head[#] === List)&]];

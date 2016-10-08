@@ -16,10 +16,36 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef NMSSM_TWOLOOPHIGGS_H
-#define NMSSM_TWOLOOPHIGGS_H
+#ifndef PARALLEL_H
+#define PARALLEL_H
 
-#include "mssm_twoloophiggs.h"
-#include "nmssm2loop.h"
+#include "config.h"
+
+#ifdef ENABLE_THREADS
+
+#include <future>
+
+namespace flexiblesusy {
+
+template<typename F, typename... Ts>
+inline std::future<typename std::result_of<F(Ts...)>::type>
+run_async(F&& f, Ts&&... params)
+{
+   return std::async(std::launch::async,
+                     std::forward<F>(f),
+                     std::forward<Ts>(params)...);
+}
+
+// overload for g++ <= 4.7.4
+template<typename F, typename Ts>
+inline std::future<typename std::result_of<F(Ts)>::type>
+run_async(F f, Ts params)
+{
+   return std::async(std::launch::async, f, params);
+}
+
+} // namespace flexiblesusy
+
+#endif
 
 #endif

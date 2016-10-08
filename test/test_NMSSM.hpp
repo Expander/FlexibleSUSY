@@ -5,6 +5,7 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 #include "nmssmsoftsusy.h"
+#include "conversion.hpp"
 #include "NMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -27,7 +28,7 @@ void setup_NMSSM_const(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_
    const double cosBeta = cos(atan(tanBeta));
    const double M12 = input.m12;
    const double m0 = input.m0;
-   const double a0 = input.Azero;
+   const double a0 = input.Azero + 100;
    const double root2 = sqrt(2.0);
    const double vev = 246.0;
    const double vu = vev * sinBeta;
@@ -41,18 +42,23 @@ void setup_NMSSM_const(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_
    Yu_SS(3,3) = 165.0   * root2 / (vev * sinBeta);
    Yd_SS(3,3) = 2.9     * root2 / (vev * cosBeta);
    Ye_SS(3,3) = 1.77699 * root2 / (vev * cosBeta);
-   DoubleMatrix ID(3, 3), mm0_SS(3, 3);
-   for (int i=1; i<=3; i++) ID(i, i) = 1.0;
-   mm0_SS = ID * sqr(m0);
+   DoubleMatrix mm0_SS(3, 3), mm0_SSb(3, 3);
+   mm0_SS(1,1)  = sqr(m0 + 0);
+   mm0_SS(2,2)  = sqr(m0 + 1);
+   mm0_SS(3,3)  = sqr(m0 + 2);
+   mm0_SSb(1,1) = sqr(m0 + 3);
+   mm0_SSb(2,2) = sqr(m0 + 4);
+   mm0_SSb(3,3) = sqr(m0 + 5);
 
    Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero()),
       Yd(Eigen::Matrix<double,3,3>::Zero()),
       Ye(Eigen::Matrix<double,3,3>::Zero()),
-      mm0(Eigen::Matrix<double,3,3>::Zero());
+      mm0, mm0b;
    Yu(2,2) = 165.0   * root2 / (vev * sinBeta);
    Yd(2,2) = 2.9     * root2 / (vev * cosBeta);
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
-   mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
+   mm0  = ToEigenMatrix(mm0_SS);
+   mm0b = ToEigenMatrix(mm0_SSb);
 
    m.set_scale(scale);
    m.set_loops(1);
@@ -69,9 +75,9 @@ void setup_NMSSM_const(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_
    m.set_MassWB(M12);
    m.set_mq2(mm0);
    m.set_ml2(mm0);
-   m.set_md2(mm0);
+   m.set_md2(mm0b);
    m.set_mu2(mm0);
-   m.set_me2(mm0);
+   m.set_me2(mm0b);
    m.set_mHd2(Sqr(m0));
    m.set_mHu2(Sqr(m0));
    m.set_ms2(Sqr(m0));
@@ -101,9 +107,9 @@ void setup_NMSSM_const(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_
    s.setGauginoMass(3, M12);
    s.setSoftMassMatrix(mQl, mm0_SS);
    s.setSoftMassMatrix(mUr, mm0_SS);
-   s.setSoftMassMatrix(mDr, mm0_SS);
+   s.setSoftMassMatrix(mDr, mm0_SSb);
    s.setSoftMassMatrix(mLl, mm0_SS);
-   s.setSoftMassMatrix(mEr, mm0_SS);
+   s.setSoftMassMatrix(mEr, mm0_SSb);
    s.setMh1Squared(sqr(m0));
    s.setMh2Squared(sqr(m0));
    s.setMsSquared(sqr(m0));
@@ -145,7 +151,7 @@ void ensure_n_loop_ewsb(NMSSM<Two_scale>& m, int loop_level)
    } else if (loop_level == 2) {
       const auto two_loop_tadpole(m.tadpole_hh_2loop());
       BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(m.tadpole_hh(0)) - two_loop_tadpole[0], 1.5);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], 0.06);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], 0.7);
       BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh(2)) - two_loop_tadpole[2], 18.0);
    }
 }

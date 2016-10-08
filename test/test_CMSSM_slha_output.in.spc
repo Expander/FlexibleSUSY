@@ -12,7 +12,7 @@ Block FlexibleSUSY
    10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
    12   0                    # force output
-   13   1                    # Top quark 2-loop corrections QCD
+   13   1                    # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
 Block SOFTSUSY               # SOFTSUSY specific inputs
     1   1.000000000e-05      # tolerance
     2   2                    # up-quark mixing (=1) or down (=2)

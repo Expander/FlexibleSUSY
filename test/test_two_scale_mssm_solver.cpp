@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
 
    BOOST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
-   BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), std::string);
+   BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), flexiblesusy::Error);
    SoftSusy_tester softSusy_tester;
    // BOOST_CHECK_THROW(softSusy_tester.test(pp, qedqcd), SoftSusy_NonPerturbative_error);
    BOOST_CHECK_THROW(softSusy_tester.test(pp, qedqcd), SoftSusy_error);

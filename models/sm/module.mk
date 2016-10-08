@@ -1,5 +1,6 @@
 DIR          := models/sm
-MODNAME      := libsm
+MODNAME      := sm
+WITH_$(MODNAME) := sm
 
 LIBsm_SRC    :=
 
@@ -17,7 +18,7 @@ LIBsm_OBJ    := \
 LIBsm_DEP    := \
 		$(LIBsm_OBJ:.o=.d)
 
-LIBsm        := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBsm        := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -35,7 +36,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(LIBsm): $(LIBsm_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ALLDEP += $(LIBsm_DEP)
 ALLLIB += $(LIBsm)

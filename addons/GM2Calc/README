@@ -7,7 +7,7 @@ leading 2-loop level.
 
 Homepage:                https://gm2calc.hepforge.org
 Source code repository:  https://github.com/gm2calc
-References:              arxiv:XXXX.YYYY
+References:              arxiv:1510.08071
 
 
 Requirements
@@ -25,12 +25,12 @@ Optional:
 Compilation
 ===========
 
-To compile GM2Calc run
+To compile GM2Calc run GNU `make':
 
   $ make
 
 The used compiler and include paths can be passed as an argument to
-make.  For example:
+GNU `make'.  For example:
 
   $ make \
        CXX=icpc \
@@ -41,9 +41,10 @@ The following default values are set in the makefile:
 
   CXX             := g++
   CPPFLAGS        := -Isrc
-  CXXFLAGS        := -O2 -std=c++11
+  CXXFLAGS        := -O2 -std=c++11 -fPIC
   CXX_DEP_GEN     := g++
   MAKELIB         := ar cru
+  MAKESHAREDLIB   := $(CXX) -shared
   BOOSTFLAGS      := -I/usr/include
   EIGENFLAGS      := -I/usr/include/eigen3
 
@@ -57,15 +58,27 @@ stored in `make.args' run
 Compilation of the example programs
 -----------------------------------
 
-GM2Calc ships the two C++ example programs
+GM2Calc ships two C++ example programs:
 
-  src/example-gm2calc.cpp
-  src/example-slha.cpp
+  examples/example-gm2calc.cpp
+  examples/example-slha.cpp
 
-which illustrate how to use routines of GM2Calc at the C++ level.  The
-examples can be compiled by running
+and two C example programs:
+
+  examples/example-gm2calc_c.c
+  examples/example-slha_c.c
+
+These example programs illustrate how to use routines of GM2Calc at
+the C/C++ level.  The examples can be compiled by running
 
   $ make examples
+
+For the compilation of the C programs a C compiler is needed.  The
+used C compiler, the compiler flags and the linked libraries can be
+customized as:
+
+  $ make examples \
+       CC=icc CFLAGS="-O2 -std=c99" CLIBS="-lstdc++ -lm" LDLIBS="-lirc"
 
 
 Using LAPACK (optional)
@@ -142,6 +155,64 @@ GM2Calc reads the input parameters from the following blocks:
    Thomson limit, tan(beta), mu parameter, soft-breaking gaugino
    masses, soft-breaking Bmu parameter, soft-breaking sfermion masses,
    soft-breaking trilinear couplings
+
+
+C/C++ interface
+===============
+
+GM2Calc provides a C and a C++ interface.  To use the routines of
+GM2Calc in a C++ program, the following C++ header files have to be
+included:
+
+   src/gm2_1loop.hpp
+   src/gm2_2loop.hpp
+   src/gm2_uncertainty.hpp
+   src/MSSMNoFV_onshell.hpp
+
+To use the routines of GM2Calc in a C program, the following C header
+files have to be included:
+
+   src/gm2_1loop.h
+   src/gm2_2loop.h
+   src/gm2_uncertainty.h
+   src/MSSMNoFV_onshell.h
+
+Please refer to the content of these header files for a precise
+definition of all interface functions.  The C/C++ example programs
+also serve as an illustration of the interface routines.
+
+
+Mathematica interface
+=====================
+
+In order to use GM2Calc from within Mathematica, first create
+GM2Calc's MathLink executable by running
+
+  $ make mathlink
+
+By default the MathLink compiler is the bin/mcc script, which finds
+the location of the MathLink compiler for most UNIX-like environments
+using the Mathematica kernel.  The Mathematica kernel can be given via
+the MATH variable.  Alternatively, the MathLink compiler can be set
+explicitly via the MCC variable.
+
+Example:
+
+  $ make \
+       CXX=icpc CC=icc \
+       LDLIBS="-lboost_math_c99" \
+       MATH=math10.1
+
+The MathLink executable can be found in
+
+  bin/gm2calc.mx
+
+This executable can be installed in Mathematica by calling
+
+  Install["bin/gm2calc.mx"]
+
+Afterwards, the GM2Calc Mathematica interface functions can be used,
+see examples/example-slha.m and examples/example-gm2calc.m .
 
 
 Configuration options
