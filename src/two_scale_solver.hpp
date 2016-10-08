@@ -61,7 +61,8 @@ template<>
 class RGFlow<Two_scale> {
 public:
    RGFlow();
-   ~RGFlow();
+   RGFlow(const RGFlow&) = delete;
+   RGFlow(RGFlow&&) = delete;
 
    /// add constraint
    void add(Constraint<Two_scale>*, Two_scale_model*);
@@ -133,7 +134,6 @@ private:
    double running_precision;           ///< RG running precision
    double scale;                       ///< current scale
 
-   RGFlow(const RGFlow&) {}
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems

@@ -56,10 +56,6 @@ RGFlow<Two_scale>::RGFlow()
 {
 }
 
-RGFlow<Two_scale>::~RGFlow()
-{
-}
-
 /**
  * Adding a model constraint
  *
