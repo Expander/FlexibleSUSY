@@ -48,9 +48,9 @@ namespace flexiblesusy {
 RGFlow<Two_scale>::RGFlow()
    : sliders()
    , iteration(0)
-   , convergence_tester(NULL)
-   , initial_guesser(NULL)
-   , running_precision_calculator(NULL)
+   , convergence_tester(nullptr)
+   , initial_guesser(nullptr)
+   , running_precision_calculator(nullptr)
    , running_precision(1.0e-3)
    , scale(0)
 {
@@ -256,7 +256,7 @@ Two_scale_model* RGFlow<Two_scale>::get_model(double scale) const
                               { return s->get_scale() < scale; });
 
    if (it == sorted_sliders.end())
-      return NULL;
+      return nullptr;
 
    return (*it)->get_model();
 }
@@ -282,9 +282,9 @@ void RGFlow<Two_scale>::reset()
    sliders.clear();
 
    iteration = 0;
-   convergence_tester = NULL;
-   initial_guesser = NULL;
-   running_precision_calculator = NULL;
+   convergence_tester = nullptr;
+   initial_guesser = nullptr;
+   running_precision_calculator = nullptr;
    running_precision = 1.0e-3;
    scale = 0;
 }
