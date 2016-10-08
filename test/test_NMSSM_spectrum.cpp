@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(vs     , ss.displaySvev(), 0.004);
 

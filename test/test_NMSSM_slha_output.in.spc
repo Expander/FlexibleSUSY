@@ -1,5 +1,5 @@
 Block FlexibleSUSY
-    0   1.000000000e-05      # precision goal
+    0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   0                    # calculate SM pole masses
@@ -14,7 +14,7 @@ Block FlexibleSUSY
    12   0                    # force output
    13   1                    # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
 Block SOFTSUSY               # SOFTSUSY specific inputs
-    1   1.000000000e-05      # tolerance
+    1   1.000000000e-04      # tolerance
     2   2                    # up-quark mixing (=1) or down (=2)
     3   0                    # printout
     5   1                    # 2-loop running
