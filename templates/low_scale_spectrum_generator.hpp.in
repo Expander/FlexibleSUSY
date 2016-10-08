@@ -127,6 +127,11 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
 
    try {
       solver.solve();
+
+      // impose low-scale constraint one last time
+      model.run_to(low_scale_constraint.get_scale());
+      low_scale_constraint.apply();
+
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
