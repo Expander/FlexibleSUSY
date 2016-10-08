@@ -60,9 +60,9 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
-#define INPUT(parameter) model->get_input().parameter
+#define INPUT(parameter) model.get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
-#define MODELPARAMETER(parameter) model->get_##parameter()
+#define MODELPARAMETER(parameter) model.get_##parameter()
 
 #define HIGGS_2LOOP_CORRECTION_AT_AS     two_loop_corrections.higgs_at_as
 #define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
@@ -247,31 +247,24 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   auto ewsb_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+   auto model = *this;
+
+   auto ewsb_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (model->get_ewsb_loop_order() > 0)
-         model->calculate_DRbar_masses();
-      return model->ewsb_step();
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
+
+      return model.ewsb_step();
    };
-   auto tadpole_stepper_ = [](CLASSNAME* model, const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+
+   auto tadpole_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-      if (model->get_ewsb_loop_order() > 0)
-         model->calculate_DRbar_masses();
-      return model->tadpole_equations();
-   };
+      if (model.get_ewsb_loop_order() > 0)
+         model.calculate_DRbar_masses();
 
-   // bind this pointer
-   //
-   // @TODO: This may be changed if we improve the error handling for
-   // EWSB solver failures
-   auto ewsb_stepper = [this,&ewsb_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-      return ewsb_stepper_(this, ewsb_pars);
-   };
-
-   auto tadpole_stepper = [this,&tadpole_stepper_](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
-      return tadpole_stepper_(this, ewsb_pars);
+      return model.tadpole_equations();
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
@@ -302,6 +295,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    if (status == EWSB_solver::SUCCESS) {
       problems.unflag_no_ewsb();
    } else {
+      set_best_ewsb_solution(std::begin(solvers), std::end(solvers));
       problems.flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
       WARNING("\tCould not find a solution to the EWSB equations!"
@@ -324,11 +318,49 @@ int CLASSNAME::solve_ewsb_iteratively_with(
    EWSB_solver* solver, const EWSB_vector_t& x_init)
 {
    const int status = solver->solve(x_init);
+
+   if (status == EWSB_solver::SUCCESS)
+      set_ewsb_solution(solver);
+
+   return status;
+}
+
+/**
+ * Sets EWSB output parameters from given solver.
+ *
+ * @param solver solver
+ */
+void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
+{
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
+   calculate_DRbar_masses();
+}
 
-   return status;
+/**
+ * Sets EWSB output parameters from the solver from the range [first,
+ * last), which minimizes the tadpole equations at most.
+ *
+ * @param first iterator to first solver
+ * @param last iterator to last solver
+ */
+template <typename It>
+void CLASSNAME::set_best_ewsb_solution(It first, It last)
+{
+   CLASSNAME ma(*this), mb(*this);
+
+   const auto best_solver =
+      std::min_element(first, last,
+                       [this, &ma, &mb](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
+                          ma.set_ewsb_solution(a.get());
+                          mb.set_ewsb_solution(b.get());
+                          return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
+                       });
+
+   VERBOSE_MSG("\tUsing best solution from " << (*best_solver)->name());
+
+   set_ewsb_solution(best_solver->get());
 }
 
 int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)

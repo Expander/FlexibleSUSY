@@ -146,6 +146,8 @@ private:
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
 
+   void set_ewsb_solution(const EWSB_solver*);
+   template <typename It> void set_best_ewsb_solution(It, It);
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const EWSB_vector_t&);

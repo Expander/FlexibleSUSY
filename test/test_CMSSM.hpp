@@ -63,7 +63,7 @@ void ensure_n_loop_ewsb(CMSSM<Two_scale>& m, int loop_level)
 
    if (loop_level == 1) {
       TEST_CLOSE(m.get_ewsb_eq_hh_1() - m.tadpole_hh(0).real(), 0.0, 0.05);
-      TEST_CLOSE(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), 0.0, 0.004);
+      TEST_CLOSE(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), 0.0, 0.15);
    }
 }
 
