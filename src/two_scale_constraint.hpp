@@ -21,6 +21,7 @@
 
 #include "constraint.hpp"
 #include "logger.hpp"
+#include <string>
 #include <typeinfo>
 
 namespace flexiblesusy {
@@ -34,6 +35,7 @@ public:
    virtual ~Constraint() {}
    virtual void apply() = 0;                    ///< apply constraint
    virtual double get_scale() const = 0;        ///< get scale where to apply
+   virtual std::string name() const { return "unknown constraint"; } ///< name of constraint
    virtual void set_model(Two_scale_model*) = 0; ///< set model where to apply the constraint
 };
 

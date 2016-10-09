@@ -333,7 +333,7 @@ double RGFlow<Two_scale>::Constraint_slider::get_scale() {
 void RGFlow<Two_scale>::Constraint_slider::slide() {
    VERBOSE_MSG("> \trunning " << model->name() << " to scale " << constraint->get_scale() << " GeV");
    model->run_to(constraint->get_scale());
-   VERBOSE_MSG("> \tapplying constraint");
+   VERBOSE_MSG("> \tapplying " << constraint->name());
    constraint->apply();
 }
 
