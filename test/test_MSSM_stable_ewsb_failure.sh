@@ -32,4 +32,4 @@ else
     echo "Test result: FAIL"
 fi
 
-exit ${errors}
+exit ${error}
