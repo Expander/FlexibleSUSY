@@ -219,7 +219,7 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
       const double precision
          = Abs(rho_old / rho_new - 1.0) + Abs(sin_old / sin_new - 1.0);
 
-      VERBOSE_MSG("Iteration step " << iteration
+      VERBOSE_MSG("\t\tIteration step " << iteration
                   << ": prec=" << precision
                   << " dr=" << deltaR
                   << " drho=" << deltaRho
