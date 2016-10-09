@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum )
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0093);
 
    // comparing tree-level masses
@@ -901,7 +901,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_Softsusy_gauge_coupling
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0068);
 
    // comparing tree-level masses
@@ -970,7 +970,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_weinberg_angle )
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0068);
 
    // comparing tree-level masses
