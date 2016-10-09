@@ -273,20 +273,20 @@ int CLASSNAME::solve_ewsb_iteratively()
 
    const auto x_init(ewsb_initial_guess());
 
-   VERBOSE_MSG("Solving EWSB equations ...");
-   VERBOSE_MSG("\tInitial guess: x_init = " << x_init.transpose());
+   VERBOSE_MSG("\t\tSolving EWSB equations ...");
+   VERBOSE_MSG("\t\tInitial guess: x_init = " << x_init.transpose());
 
    int status;
    for (auto& solver: solvers) {
-      VERBOSE_MSG("\tStarting EWSB iteration using " << solver->name());
+      VERBOSE_MSG("\t\t\tStarting EWSB iteration using " << solver->name());
       status = solve_ewsb_iteratively_with(solver.get(), x_init);
       if (status == EWSB_solver::SUCCESS) {
-         VERBOSE_MSG("\t" << solver->name() << " finished successfully!");
+         VERBOSE_MSG("\t\t\t" << solver->name() << " finished successfully!");
          break;
       }
 #ifdef ENABLE_VERBOSE
       else {
-         WARNING("\t" << solver->name() << " could not find a solution!"
+         WARNING("\t\t\t" << solver->name() << " could not find a solution!"
                  " (requested precision: " << ewsb_iteration_precision << ")");
       }
 #endif
@@ -298,7 +298,7 @@ int CLASSNAME::solve_ewsb_iteratively()
       set_best_ewsb_solution(std::begin(solvers), std::end(solvers));
       problems.flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
-      WARNING("\tCould not find a solution to the EWSB equations!"
+      WARNING("\t\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
    }
@@ -358,7 +358,7 @@ void CLASSNAME::set_best_ewsb_solution(It first, It last)
                           return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
                        });
 
-   VERBOSE_MSG("\tUsing best solution from " << (*best_solver)->name());
+   VERBOSE_MSG("\t\tUsing best solution from " << (*best_solver)->name());
 
    set_ewsb_solution(best_solver->get());
 }
@@ -400,7 +400,7 @@ int CLASSNAME::solve_ewsb_one_loop()
 
 int CLASSNAME::solve_ewsb()
 {
-   VERBOSE_MSG("\tSolving EWSB at " << ewsb_loop_order << "-loop order");
+   VERBOSE_MSG("\t\tSolving @ModelName@ EWSB at " << ewsb_loop_order << "-loop order");
 
    if (ewsb_loop_order == 0)
       return solve_ewsb_tree_level();

@@ -374,20 +374,20 @@ int Standard_model::solve_ewsb_iteratively()
 
    const auto x_init(ewsb_initial_guess());
 
-   VERBOSE_MSG("Solving EWSB equations ...\n"
-               "\tInitial guess: x_init = " << x_init.transpose());
+   VERBOSE_MSG("\t\tSolving EWSB equations ...\n"
+               "\t\tInitial guess: x_init = " << x_init.transpose());
 
    int status;
    for (auto& solver: solvers) {
-      VERBOSE_MSG("\tStarting EWSB iteration using " << solver->name());
+      VERBOSE_MSG("\t\t\tStarting EWSB iteration using " << solver->name());
       status = solve_ewsb_iteratively_with(solver.get(), x_init);
       if (status == EWSB_solver::SUCCESS) {
-         VERBOSE_MSG("\t" << solver->name() << " finished successfully!");
+         VERBOSE_MSG("\t\t\t" << solver->name() << " finished successfully!");
          break;
       }
 #ifdef ENABLE_VERBOSE
       else {
-         WARNING("\t" << solver->name() << " could not find a solution!"
+         WARNING("\t\t\t" << solver->name() << " could not find a solution!"
                  " (requested precision: " << ewsb_iteration_precision << ")");
       }
 #endif
@@ -398,7 +398,7 @@ int Standard_model::solve_ewsb_iteratively()
    } else {
       problems.flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
-      WARNING("\tCould not find a solution to the EWSB equations!"
+      WARNING("\t\t\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
    }
@@ -466,7 +466,7 @@ int Standard_model::solve_ewsb_one_loop()
 
 int Standard_model::solve_ewsb()
 {
-   VERBOSE_MSG("\tSolving EWSB at " << ewsb_loop_order << "-loop order");
+   VERBOSE_MSG("\t\tSolving Standard model EWSB at " << ewsb_loop_order << "-loop order");
 
    if (ewsb_loop_order == 0)
       return solve_ewsb_tree_level();

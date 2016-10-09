@@ -31,19 +31,17 @@ private:
 
 class Trivial_matching_condition: public Matching<Two_scale> {
 public:
-   Trivial_matching_condition()
+   Trivial_matching_condition(double scale_ = 100.)
       : mLow(0)
       , mHigh(0)
+      , scale(scale_)
       {}
    virtual ~Trivial_matching_condition() {}
-   virtual void match_low_to_high_scale_model() {
+   virtual void match() {
       mHigh->set_parameters(mLow->get_parameters());
    }
-   virtual void match_high_to_low_scale_model() {
-      mLow->set_parameters(mHigh->get_parameters());
-   }
    virtual double get_scale() const {
-      return 100.0;
+      return scale;
    }
    virtual void set_models(Two_scale_model* mLow_, Two_scale_model* mHigh_) {
       mLow = cast_model<Static_model*>(mLow_);
@@ -51,6 +49,7 @@ public:
    }
 private:
    Static_model *mLow, *mHigh;
+   double scale;
 };
 
 class Counting_model: public Two_scale_model {
@@ -90,16 +89,12 @@ class Counting_matching_condition: public Matching<Two_scale> {
 public:
    Counting_matching_condition(double scale_)
       : scale(scale_)
-      , number_of_low_to_high_matches(0)
-      , number_of_high_to_low_matches(0)
+      , number_of_matches(0)
       , number_of_get_scale(0)
       {}
    virtual ~Counting_matching_condition() {}
-   virtual void match_low_to_high_scale_model() {
-      ++number_of_low_to_high_matches;
-   }
-   virtual void match_high_to_low_scale_model() {
-      ++number_of_high_to_low_matches;
+   virtual void match() {
+      ++number_of_matches;
    }
    virtual double get_scale() const {
       ++number_of_get_scale;
@@ -107,19 +102,15 @@ public:
    }
    virtual void set_models(Two_scale_model*, Two_scale_model*) {
    }
-   unsigned get_number_of_low_to_high_matches() const {
-      return number_of_low_to_high_matches;
-   }
-   unsigned get_number_of_high_to_low_matches() const {
-      return number_of_high_to_low_matches;
+   unsigned get_number_of_matches() const {
+      return number_of_matches;
    }
    unsigned get_number_of_get_scale() const {
       return number_of_get_scale;
    }
 private:
    double   scale;
-   unsigned number_of_low_to_high_matches;
-   unsigned number_of_high_to_low_matches;
+   unsigned number_of_matches;
    mutable unsigned number_of_get_scale;
 };
 
@@ -138,21 +129,6 @@ private:
    unsigned int iteration, maximum_iterations;
 };
 
-BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
-{
-   const DoubleVector parameters(10);
-   Static_model model(parameters);
-   Counting_convergence_tester ccc(10);
-
-   RGFlow<Two_scale> solver;
-   solver.add_model(&model);
-   solver.set_convergence_tester(&ccc);
-
-   BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
-   BOOST_CHECK_EQUAL(model.get_parameters(), parameters);
-   BOOST_CHECK_EQUAL(solver.get_model(), &model);
-}
-
 BOOST_AUTO_TEST_CASE( test_trival_matching )
 {
    DoubleVector parameters(10);
@@ -166,14 +142,17 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    // * low-energy model with parameters
    // * high-energy model with zeros
    Static_model model1(parameters), model2(zeros);
+   Counting_constraint cc(1000);
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
    Trivial_matching_condition mc;
+   mc.set_models(&model1, &model2);
 
    RGFlow<Two_scale> solver;
-   solver.add_model(&model1, &mc);
-   solver.add_model(&model2);
+   solver.add(&cc, &model1);
+   solver.add(&mc, &model1, &model2);
+   solver.add(&cc, &model2);
    solver.set_convergence_tester(&ccc);
 
    BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
@@ -191,22 +170,19 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       Counting_model model1, model2;
       Counting_constraint model1_c1(1000), model1_c2(2000);
       Counting_constraint model2_c1(4000), model2_c2(5000);
-
-      std::vector<Constraint<Two_scale>*> model1_constraints;
-      model1_constraints.push_back(&model1_c1);
-      model1_constraints.push_back(&model1_c2);
-
-      std::vector<Constraint<Two_scale>*> model2_constraints;
-      model2_constraints.push_back(&model2_c1);
-      model2_constraints.push_back(&model2_c2);
-
       Counting_matching_condition mc(3000);
       Counting_convergence_tester ccc(number_of_iterations);
 
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&ccc);
-      solver.add_model(&model1, &mc, model1_constraints);
-      solver.add_model(&model2, model2_constraints);
+      solver.add(&model1_c1, &model1);
+      solver.add(&model1_c2, &model1);
+      solver.add(&mc, &model1, &model2);
+      solver.add(&model2_c1, &model2);
+      solver.add(&model2_c2, &model2);
+      solver.add(&model2_c1, &model2);
+      solver.add(&mc, &model2, &model1);
+      solver.add(&model1_c2, &model1);
 
       if (number_of_iterations == 0) {
          try {
@@ -224,13 +200,11 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       BOOST_CHECK_EQUAL(solver.number_of_iterations_done(),
                         number_of_iterations);
       // check how often the matching is appied
-      BOOST_CHECK_EQUAL(mc.get_number_of_low_to_high_matches(),
-                        number_of_iterations);
-      BOOST_CHECK_EQUAL(mc.get_number_of_high_to_low_matches(),
-                        number_of_iterations);
+      BOOST_CHECK_EQUAL(mc.get_number_of_matches(),
+                        2*number_of_iterations);
       // lowest constraint applied first time and once in each iteration
       BOOST_CHECK_EQUAL(model1_c1.get_number_of_apply_calls(),
-                        (number_of_iterations == 0 ? 0 : number_of_iterations + 1));
+                        number_of_iterations);
       // highest constraint applied once in each iteration
       BOOST_CHECK_EQUAL(model2_c2.get_number_of_apply_calls(),
                         number_of_iterations);
@@ -249,15 +223,16 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_zero_models )
    int status = 0;
    try { solver.run_to(1000.); } catch (Error&) { status = 1; }
 
-   BOOST_CHECK_EQUAL(status, 1);
+   BOOST_CHECK_EQUAL(status, 0);
    BOOST_CHECK_EQUAL(solver.get_model(), (void*)NULL);
 }
 
 BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
 {
    Static_model model(DoubleVector(10));
+   Counting_constraint cc(1000);
    RGFlow<Two_scale> solver;
-   solver.add_model(&model);
+   solver.add(&cc, &model);
 
    int status = 0;
    try { solver.run_to(1000.); } catch (Error&) { status = 1; }
@@ -269,19 +244,28 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
 BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
 {
    Static_model model1(DoubleVector(10)), model2(DoubleVector(10));
-   Trivial_matching_condition mc;
+   Counting_constraint c1(50), c2(200);
+   Trivial_matching_condition mc(100);
    const double mc_scale = mc.get_scale();
 
    RGFlow<Two_scale> solver;
-   solver.add_model(&model1, &mc);
-   solver.add_model(&model2);
+   solver.add(&c1, &model1);
+   solver.add(&mc, &model1, &model2);
+   solver.add(&c2, &model2);
+   solver.add(&mc, &model2, &model1);
+
+   solver.run_to(c1.get_scale());
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to((c1.get_scale() + mc_scale) / 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
 
    solver.run_to(mc_scale);
    BOOST_CHECK_EQUAL(solver.get_model(), &model1);
 
-   solver.run_to(mc_scale / 2.);
-   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+   solver.run_to((mc_scale + c2.get_scale()) / 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model2);
 
-   solver.run_to(mc_scale * 2.);
+   solver.run_to(c2.get_scale());
    BOOST_CHECK_EQUAL(solver.get_model(), &model2);
 }

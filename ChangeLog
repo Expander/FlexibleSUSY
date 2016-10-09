@@ -18,6 +18,19 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Jobst Ziebell.
 
+ * Change: The interface for adding constraints and matching
+   conditions to the Two_scale_solver class has been simplified.
+   Constrains and matching conditions are now added using the add()
+   function.  The added constraints and matching conditions are
+   imposed in the given order.
+
+   Example: To first impose the low-scale, then the high-scale and
+   finally the susy-scale constraint call
+
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&high_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in

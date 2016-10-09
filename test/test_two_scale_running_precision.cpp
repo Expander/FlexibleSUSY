@@ -111,15 +111,12 @@ BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )
    Static_model model;
 
    Static_constraint c1(100), c2(200);
-   std::vector<Constraint<Two_scale>*> constraints;
-   constraints.push_back(&c1);
-   constraints.push_back(&c2);
-
    Static_convergence_tester ccc(10);
    Test_increasing_precision incr_prec;
 
    RGFlow<Two_scale> solver;
-   solver.add_model(&model, constraints);
+   solver.add(&c1, &model);
+   solver.add(&c2, &model);
    solver.set_convergence_tester(&ccc);
    solver.set_running_precision(&incr_prec);
 

@@ -130,7 +130,7 @@ const softsusy::QedQcd& Standard_model_low_scale_constraint<Two_scale>::get_sm_p
 void Standard_model_low_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
-   model = NULL;
+   model = nullptr;
    qedqcd = softsusy::QedQcd();
 }
 

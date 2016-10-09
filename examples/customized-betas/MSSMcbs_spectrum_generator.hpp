@@ -122,17 +122,6 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   std::vector<Constraint<T>*> upward_constraints {
-      &low_scale_constraint,
-      &high_scale_constraint
-   };
-
-   std::vector<Constraint<T>*> downward_constraints {
-      &high_scale_constraint,
-      &susy_scale_constraint,
-      &low_scale_constraint
-   };
-
    CMSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
@@ -148,7 +137,9 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model, upward_constraints, downward_constraints);
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&high_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
 
    high_scale = susy_scale = low_scale = 0.;
 
