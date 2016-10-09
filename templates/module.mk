@@ -35,10 +35,10 @@ TEMPLATES    := \
 		$(DIR)/plot_spectrum.gnuplot.in \
 		$(DIR)/standard_model_matching.hpp.in \
 		$(DIR)/standard_model_matching.cpp.in \
-		$(DIR)/standard_model_two_scale_initial_guesser.cpp.in \
-		$(DIR)/standard_model_two_scale_initial_guesser.hpp.in \
-		$(DIR)/standard_model_two_scale_initial_guesser_low_scale_model.cpp.in \
-		$(DIR)/standard_model_two_scale_initial_guesser_low_scale_model.hpp.in \
+		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.cpp.in \
+		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.hpp.in \
+		$(DIR)/standard_model_two_scale_low_scale_initial_guesser.cpp.in \
+		$(DIR)/standard_model_two_scale_low_scale_initial_guesser.hpp.in \
 		$(DIR)/spectrum_generator_interface.hpp.in \
 		$(DIR)/high_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
@@ -46,12 +46,12 @@ TEMPLATES    := \
 		$(DIR)/two_scale_convergence_tester.cpp.in \
 		$(DIR)/two_scale_high_scale_constraint.hpp.in \
 		$(DIR)/two_scale_high_scale_constraint.cpp.in \
-		$(DIR)/two_scale_initial_guesser.hpp.in \
-		$(DIR)/two_scale_initial_guesser.cpp.in \
-		$(DIR)/two_scale_initial_guesser_low_scale_model.hpp.in \
-		$(DIR)/two_scale_initial_guesser_low_scale_model.cpp.in \
+		$(DIR)/two_scale_high_scale_initial_guesser.hpp.in \
+		$(DIR)/two_scale_high_scale_initial_guesser.cpp.in \
 		$(DIR)/two_scale_low_scale_constraint.hpp.in \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
+		$(DIR)/two_scale_low_scale_initial_guesser.hpp.in \
+		$(DIR)/two_scale_low_scale_initial_guesser.cpp.in \
 		$(DIR)/standard_model_two_scale_matching.hpp.in \
 		$(DIR)/standard_model_two_scale_matching.cpp.in \
 		$(DIR)/standard_model_high_scale_spectrum_generator.hpp.in \

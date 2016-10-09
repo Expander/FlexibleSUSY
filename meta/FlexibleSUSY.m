@@ -2488,9 +2488,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for initial guesser ..."];
-           initialGuesserInputFile = "two_scale_initial_guesser";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
-              initialGuesserInputFile = initialGuesserInputFile <> "_low_scale_model";
+              initialGuesserInputFile = "two_scale_low_scale_initial_guesser";,
+              initialGuesserInputFile = "two_scale_high_scale_initial_guesser";
              ];
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
