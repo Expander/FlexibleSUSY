@@ -70,8 +70,8 @@ private:
    RGFlow<T> solver;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
-   @ModelName@_standard_model_Matching_up<T> matching_up;
-   @ModelName@_standard_model_Matching_down<T> matching_down;
+   @ModelName@_standard_model_matching_up<T> matching_up;
+   @ModelName@_standard_model_matching_down<T> matching_down;
    standard_model::StandardModel<T> eft;
    double susy_scale, low_scale;
 };

@@ -27,15 +27,15 @@
 
 namespace flexiblesusy {
 
-#define CLASSNAME @ModelName@_standard_model_Matching_up<Two_scale>
+#define CLASSNAME @ModelName@_standard_model_matching_up<Two_scale>
 
-CLASSNAME::@ModelName@_standard_model_Matching_up()
+CLASSNAME::@ModelName@_standard_model_matching_up()
    : model(0), eft(0), constraint(0), scale(0.)
    , loop_order(0)
    , higgs_idx(0)
 {}
 
-CLASSNAME::@ModelName@_standard_model_Matching_up(
+CLASSNAME::@ModelName@_standard_model_matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    Constraint<Two_scale>* constraint_,
@@ -50,7 +50,7 @@ CLASSNAME::@ModelName@_standard_model_Matching_up(
    set_loop_order(loop_order_);
 }
 
-CLASSNAME::~@ModelName@_standard_model_Matching_up()
+CLASSNAME::~@ModelName@_standard_model_matching_up()
 {}
 
 double CLASSNAME::get_scale() const
@@ -133,15 +133,15 @@ void CLASSNAME::set_scale(double scale_)
 #undef CLASSNAME
 #endif
 
-#define CLASSNAME @ModelName@_standard_model_Matching_down<Two_scale>
+#define CLASSNAME @ModelName@_standard_model_matching_down<Two_scale>
 
-CLASSNAME::@ModelName@_standard_model_Matching_down()
+CLASSNAME::@ModelName@_standard_model_matching_down()
    : model(0), eft(0), constraint(0), scale(0.)
    , loop_order(0)
    , higgs_idx(0)
 {}
 
-CLASSNAME::@ModelName@_standard_model_Matching_down(
+CLASSNAME::@ModelName@_standard_model_matching_down(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    Constraint<Two_scale>* constraint_,
@@ -156,7 +156,7 @@ CLASSNAME::@ModelName@_standard_model_Matching_down(
    set_loop_order(loop_order_);
 }
 
-CLASSNAME::~@ModelName@_standard_model_Matching_down()
+CLASSNAME::~@ModelName@_standard_model_matching_down()
 {}
 
 double CLASSNAME::get_scale() const

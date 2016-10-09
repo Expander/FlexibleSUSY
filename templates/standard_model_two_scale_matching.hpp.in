@@ -28,25 +28,25 @@ class Two_scale_model;
 
 template <class T> class Constraint;
 template <class T> class @ModelName@;
-template <class T> class @ModelName@_standard_model_Matching_up;
-template <class T> class @ModelName@_standard_model_Matching_down;
+template <class T> class @ModelName@_standard_model_matching_up;
+template <class T> class @ModelName@_standard_model_matching_down;
 
 namespace standard_model {
 template <class T> class StandardModel;
 }
 
 template<>
-class @ModelName@_standard_model_Matching_up<Two_scale> : public Matching<Two_scale>
+class @ModelName@_standard_model_matching_up<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_Matching_up();
+   @ModelName@_standard_model_matching_up();
 
-   @ModelName@_standard_model_Matching_up(standard_model::StandardModel<Two_scale>*,
+   @ModelName@_standard_model_matching_up(standard_model::StandardModel<Two_scale>*,
                                           @ModelName@<Two_scale>*,
                                           Constraint<Two_scale>*,
                                           unsigned, unsigned);
 
-   virtual ~@ModelName@_standard_model_Matching_up();
+   virtual ~@ModelName@_standard_model_matching_up();
 
    virtual double get_scale() const override;
    virtual void set_models(Two_scale_model*, Two_scale_model*) override;
@@ -70,17 +70,17 @@ private:
 };
 
 template<>
-class @ModelName@_standard_model_Matching_down<Two_scale> : public Matching<Two_scale>
+class @ModelName@_standard_model_matching_down<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_Matching_down();
+   @ModelName@_standard_model_matching_down();
 
-   @ModelName@_standard_model_Matching_down(standard_model::StandardModel<Two_scale>*,
+   @ModelName@_standard_model_matching_down(standard_model::StandardModel<Two_scale>*,
                                             @ModelName@<Two_scale>*,
                                             Constraint<Two_scale>*,
                                             unsigned, unsigned);
 
-   virtual ~@ModelName@_standard_model_Matching_down();
+   virtual ~@ModelName@_standard_model_matching_down();
 
    virtual double get_scale() const override;
    virtual void set_models(Two_scale_model*, Two_scale_model*) override;
