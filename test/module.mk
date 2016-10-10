@@ -448,27 +448,18 @@ execute-shell-tests: $(TEST_SH_LOG)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
-		@echo "**************************************************" >> $@;
-		@echo "* executing test: $< " >> $@;
-		@echo "**************************************************" >> $@;
 		@BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
 		$< --log_level=test_suite >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		@rm -f $@
-		@echo "**************************************************" >> $@;
-		@echo "* executing test: $< " >> $@;
-		@echo "**************************************************" >> $@;
 		@"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
 		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.sh.log: $(DIR)/%.sh
 		@rm -f $@
-		@echo "**************************************************" >> $@;
-		@echo "* executing test: $< " >> $@;
-		@echo "**************************************************" >> $@;
 		@MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
