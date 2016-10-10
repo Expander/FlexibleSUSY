@@ -46,6 +46,12 @@ GSL_vector::GSL_vector(std::size_t size)
          + " failed.");
 }
 
+/**
+ * Creates a new GSL_vector by copying the content of the given
+ * gsl_vector .
+ *
+ * @param v gsl_vector to copy elements from
+ */
 GSL_vector::GSL_vector(const gsl_vector* v)
    : vec(nullptr)
 {
@@ -91,6 +97,11 @@ GSL_vector::~GSL_vector()
    gsl_vector_free(vec);
 }
 
+/**
+ * Creates new GSL_vector with the content of the given pointer.
+ *
+ * @param other gsl_vector whose elements are copied
+ */
 void GSL_vector::assign(const gsl_vector* other)
 {
    if (!other) {
