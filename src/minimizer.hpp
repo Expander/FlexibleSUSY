@@ -61,7 +61,7 @@ public:
    typedef std::function<double(const Vector_t&)> Function_t;
    enum Solver_type { GSLSimplex, GSLSimplex2, GSLSimplex2Rand };
 
-   Minimizer();
+   Minimizer() = default;
    Minimizer(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
    virtual ~Minimizer() {}
 
@@ -78,31 +78,17 @@ public:
    virtual Eigen::VectorXd get_solution() const override;
 
 private:
-   std::size_t max_iterations; ///< maximum number of iterations
-   double precision;           ///< precision goal
-   double minimum_value;       ///< minimum function value found
-   GSL_vector minimum_point;   ///< GSL vector of minimum point
-   Function_t function;        ///< function to minimize
-   Solver_type solver_type;    ///< minimizer type
+   std::size_t max_iterations{100};     ///< maximum number of iterations
+   double precision{1.e-2};             ///< precision goal
+   double minimum_value{0.};            ///< minimum function value found
+   GSL_vector minimum_point{dimension}; ///< GSL vector of minimum point
+   Function_t function{nullptr};        ///< function to minimize
+   Solver_type solver_type{GSLSimplex2};///< solver type
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
    static double gsl_function(const gsl_vector*, void*);
    const gsl_multimin_fminimizer_type* solver_type_to_gsl_pointer() const;
 };
-
-/**
- * Default constructor
- */
-template <std::size_t dimension>
-Minimizer<dimension>::Minimizer()
-   : max_iterations(100)
-   , precision(1.0e-2)
-   , minimum_value(0.0)
-   , minimum_point(dimension)
-   , function(nullptr)
-   , solver_type(GSLSimplex2)
-{
-}
 
 /**
  * Constructor
@@ -121,8 +107,6 @@ Minimizer<dimension>::Minimizer(
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , minimum_value(0.0)
-   , minimum_point(dimension)
    , function(function_)
    , solver_type(solver_type_)
 {

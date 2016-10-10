@@ -66,7 +66,7 @@ public:
    typedef std::function<Vector_t(const Vector_t&)> Function_t;
    enum Solver_type { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton };
 
-   Root_finder();
+   Root_finder() = default;
    Root_finder(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
    virtual ~Root_finder() {}
 
@@ -82,30 +82,17 @@ public:
    virtual Eigen::VectorXd get_solution() const override;
 
 private:
-   std::size_t max_iterations; ///< maximum number of iterations
-   double precision;           ///< precision goal
-   GSL_vector root;            ///< GSL vector of root
-   Function_t function;        ///< function to minimize
-   Solver_type solver_type;    ///< solver type
+   std::size_t max_iterations{100};    ///< maximum number of iterations
+   double precision{1.e-2};            ///< precision goal
+   GSL_vector root{dimension};         ///< GSL vector of root
+   Function_t function{nullptr};       ///< function to minimize
+   Solver_type solver_type{GSLHybrid}; ///< solver type
 
    void print_state(const gsl_multiroot_fsolver*, std::size_t) const;
    std::string solver_type_name() const;
    const gsl_multiroot_fsolver_type* solver_type_to_gsl_pointer() const;
    static int gsl_function(const gsl_vector*, void*, gsl_vector*);
 };
-
-/**
- * Default constructor
- */
-template <std::size_t dimension>
-Root_finder<dimension>::Root_finder()
-   : max_iterations(100)
-   , precision(1.0e-2)
-   , root(dimension)
-   , function(nullptr)
-   , solver_type(GSLHybrid)
-{
-}
 
 /**
  * Constructor
@@ -124,7 +111,6 @@ Root_finder<dimension>::Root_finder(
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , root(dimension)
    , function(function_)
    , solver_type(solver_type_)
 {

@@ -202,7 +202,7 @@ public:
    typedef Eigen::Matrix<double,dimension,1> Vector_t;
    typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
-   Fixed_point_iterator();
+   Fixed_point_iterator() = default;
    Fixed_point_iterator(const Function_t&, std::size_t, const Convergence_tester&);
    virtual ~Fixed_point_iterator() {}
 
@@ -216,29 +216,16 @@ public:
    virtual Eigen::VectorXd get_solution() const override;
 
 private:
-   std::size_t max_iterations;       ///< maximum number of iterations
-   GSL_vector xn;                    ///< current iteration point
-   GSL_vector fixed_point;           ///< vector of fixed point estimate
-   Function_t function;              ///< function defining fixed point
-   Convergence_tester convergence_tester; ///< convergence tester
+   std::size_t max_iterations{100};         ///< maximum number of iterations
+   GSL_vector xn{dimension};                ///< current iteration point
+   GSL_vector fixed_point{dimension};       ///< vector of fixed point estimate
+   Function_t function{nullptr};            ///< function defining fixed point
+   Convergence_tester convergence_tester{}; ///< convergence tester
 
    int fixed_point_iterator_iterate();
    void print_state(std::size_t) const;
    static int gsl_function(const gsl_vector*, void*, gsl_vector*);
 };
-
-/**
- * Default constructor
- */
-template <std::size_t dimension, class Convergence_tester>
-Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator()
-   : max_iterations(100)
-   , xn(dimension)
-   , fixed_point(dimension)
-   , function(nullptr)
-   , convergence_tester(Convergence_tester())
-{
-}
 
 /**
  * Constructor
@@ -254,8 +241,6 @@ Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
    const Convergence_tester& convergence_tester_
 )
    : max_iterations(max_iterations_)
-   , xn(dimension)
-   , fixed_point(dimension)
    , function(function_)
    , convergence_tester(convergence_tester_)
 {
