@@ -82,7 +82,6 @@ private:
    double precision;           ///< precision goal
    double minimum_value;       ///< minimum function value found
    GSL_vector minimum_point;   ///< GSL vector of minimum point
-   void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
    Solver_type solver_type;    ///< minimizer type
 
