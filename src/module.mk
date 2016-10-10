@@ -75,6 +75,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
 		$(DIR)/gm2calc_interface.hpp \
+		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gsl_vector.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
