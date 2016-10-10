@@ -29,7 +29,7 @@ namespace flexiblesusy {
 
 class GSL_vector {
 public:
-   GSL_vector();
+   GSL_vector() = default;
    GSL_vector(std::size_t);
    GSL_vector(const gsl_vector*);        ///< create copy of given gsl_vector
    GSL_vector(const GSL_vector&);
@@ -52,7 +52,7 @@ public:
    std::size_t size() const noexcept;       ///< number of elements
 
 private:
-   gsl::owner<gsl_vector>* vec;             ///< raw gsl_vector
+   gsl::owner<gsl_vector>* vec{nullptr};    ///< raw gsl_vector
 
    void assign(const gsl_vector*);          ///< assign from gsl_vector
    void move_assign(GSL_vector&&) noexcept; ///< move assign

@@ -26,17 +26,10 @@
 
 namespace flexiblesusy {
 
-GSL_vector::GSL_vector()
-   : vec(nullptr)
-{
-}
-
 GSL_vector::GSL_vector(std::size_t size)
 {
-   if (!size) {
-      vec = nullptr;
+   if (!size)
       return;
-   }
 
    vec = gsl_vector_calloc(size);
 
@@ -53,7 +46,6 @@ GSL_vector::GSL_vector(std::size_t size)
  * @param v gsl_vector to copy elements from
  */
 GSL_vector::GSL_vector(const gsl_vector* v)
-   : vec(nullptr)
 {
    assign(v);
 }
@@ -77,10 +69,8 @@ GSL_vector::GSL_vector(GSL_vector&& other) noexcept
 
 GSL_vector::GSL_vector(std::initializer_list<double> list)
 {
-   if (list.size() == 0) {
-      vec = nullptr;
+   if (list.size() == 0)
       return;
-   }
 
    vec = gsl_vector_alloc(list.size());
 
