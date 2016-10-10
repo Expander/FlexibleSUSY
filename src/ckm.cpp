@@ -22,14 +22,6 @@
 
 namespace flexiblesusy {
 
-CKM_parameters::CKM_parameters()
-   : theta_12(0.)
-   , theta_13(0.)
-   , theta_23(0.)
-   , delta(0.)
-{
-}
-
 void CKM_parameters::reset_to_diagonal()
 {
    theta_12 = 0.;
