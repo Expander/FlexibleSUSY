@@ -47,6 +47,7 @@ public:
    bool empty() const noexcept;             ///< check if empty
    const gsl_vector* raw() const noexcept;  ///< get raw pointer
    gsl_vector* raw() noexcept;              ///< get raw pointer
+   gsl::owner<gsl_vector>* release() noexcept; ///< release raw pointer from this object
    void set_all(double) noexcept;           ///< set all elemets to same value
    std::size_t size() const noexcept;       ///< number of elements
 

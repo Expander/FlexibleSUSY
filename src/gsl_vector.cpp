@@ -175,6 +175,20 @@ std::size_t GSL_vector::size() const noexcept
    return vec->size;
 }
 
+/**
+ * Releases the encapsulated gsl_vector from this object.  The pointer
+ * to the gsl_vector is returned.  After this method has been called,
+ * this object will no longer delete the the gsl_vector .
+ *
+ * @return pointer to gsl_vector
+ */
+gsl::owner<gsl_vector>* GSL_vector::release() noexcept
+{
+   gsl_vector* raw = vec;
+   vec = nullptr;
+   return raw;
+}
+
 const gsl_vector* GSL_vector::raw() const noexcept
 {
    return vec;

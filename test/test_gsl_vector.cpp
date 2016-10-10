@@ -361,3 +361,18 @@ BOOST_AUTO_TEST_CASE( test_range_for )
 
    BOOST_CHECK_EQUAL(sum, 6.);
 }
+
+BOOST_AUTO_TEST_CASE( test_release )
+{
+   GSL_vector v(3);
+   v[0] = 1.;
+   v[1] = 2.;
+   v[2] = 3.;
+
+   gsl::owner<gsl_vector>* vp = v.release();
+
+   BOOST_CHECK(v.raw() == nullptr);
+   BOOST_CHECK(vp != nullptr);
+
+   gsl_vector_free(vp);
+}
