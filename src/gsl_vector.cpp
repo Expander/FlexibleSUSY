@@ -92,7 +92,7 @@ GSL_vector::GSL_vector(std::initializer_list<double> list)
    std::copy(list.begin(), list.end(), gsl_vector_ptr(vec, 0));
 }
 
-GSL_vector::~GSL_vector()
+GSL_vector::~GSL_vector() noexcept
 {
    gsl_vector_free(vec);
 }

@@ -35,7 +35,7 @@ public:
    GSL_vector(const GSL_vector&);
    GSL_vector(GSL_vector&&) noexcept;
    GSL_vector(std::initializer_list<double>);
-   ~GSL_vector();
+   ~GSL_vector() noexcept;
 
    const GSL_vector& operator=(const GSL_vector&);
    GSL_vector& operator=(GSL_vector&&) noexcept;
