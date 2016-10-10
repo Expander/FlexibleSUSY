@@ -208,9 +208,29 @@ void to_database(
       append(values, observables->get());
    }
 
-   database::Database db(file_name);
-   db.insert("Point", names, values);
+   try {
+      database::Database db(file_name);
+      db.insert("Point", names, values);
+   } catch(const flexiblesusy::Error& e) {
+      ERROR(e.what());
+   }
 }
+
+namespace {
+Eigen::ArrayXd extract_entry(const std::string& file_name, std::size_t entry)
+{
+   database::Database db(file_name);
+   Eigen::ArrayXd values;
+
+   try {
+      values = db.extract("Point", entry);
+   } catch (const flexiblesusy::Error& e) {
+      ERROR(e.what());
+   }
+
+   return values;
+}
+} // anonymous namespace
 
 /**
  * read mass eigenstates from database
@@ -248,8 +268,7 @@ void to_database(
       + number_of_low_energy_input_parameters
       + number_of_extra_physical_input_parameters + number_of_observables;
 
-   database::Database db(file_name);
-   const Eigen::ArrayXd values(db.extract("Point", entry));
+   const Eigen::ArrayXd values(extract_entry(file_name, entry));
 
    if (static_cast<std::size_t>(values.rows()) < total_entries) {
       ERROR("data set " << entry << " extracted from " << file_name

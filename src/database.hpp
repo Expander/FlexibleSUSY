@@ -51,6 +51,15 @@ private:
       std::string msg;
    };
 
+   class SQLiteReadError : Error {
+   public:
+      explicit SQLiteReadError(std::string msg_) : msg(msg_) {}
+      virtual ~SQLiteReadError() {}
+      virtual std::string what() const { return msg; }
+   private:
+      std::string msg;
+   };
+
    sqlite3* db; ///< pointer to database object
 
    sqlite3* open(const std::string&);

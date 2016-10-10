@@ -39,8 +39,7 @@ Database::Database(const std::string& file_name)
 
 Database::~Database()
 {
-   if (db)
-      sqlite3_close(db);
+   sqlite3_close(db);
 }
 
 /**
@@ -141,9 +140,6 @@ void Database::create_table(
  */
 void Database::execute(const std::string& cmd)
 {
-   if (!db)
-      return;
-
    char* zErrMsg = 0;
    const int rc = sqlite3_exec(db, cmd.c_str(), 0, 0, &zErrMsg);
 
@@ -164,9 +160,6 @@ void Database::execute(const std::string& cmd)
  */
 void Database::execute(const std::string& cmd, TCallback callback, void* data)
 {
-   if (!db)
-      return;
-
    char* zErrMsg = 0;
    const int rc = sqlite3_exec(db, cmd.c_str(), callback, data, &zErrMsg);
 
@@ -192,8 +185,8 @@ sqlite3* Database::open(const std::string& file_name)
    const int rc = sqlite3_open(file_name.c_str(), &db);
 
    if (rc) {
-      ERROR("Can't open database: " << sqlite3_errmsg(db));
-      db = nullptr;
+      throw SQLiteReadError("Cannot open sqlite3 database file "
+                            + file_name + ": " + sqlite3_errmsg(db));
    }
 
    return db;
