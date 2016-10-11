@@ -1,6 +1,8 @@
 #!/bin/sh
 
 BASEDIR=$(dirname $0)
+print_block="$BASEDIR/../utils/print_slha_block.awk"
+print_block_entry="$BASEDIR/../utils/print_slha_block_entry.awk"
 
 mssm_exe="$BASEDIR/../models/CMSSM/run_CMSSM.x"
 softsusy_exe="$BASEDIR/../models/SoftsusyNMSSM/run_softpoint.x"
@@ -35,8 +37,10 @@ echo "done"
 echo "SoftsusyNMSSM SLHA input file:  $input"
 echo "SoftsusyNMSSM SLHA output file: $softsusy_output"
 
-mg_mssm="`grep Glu $output | awk '{ print $2 }'`"
-mg_softsusy="`grep ~g  $softsusy_output | awk '{ print $2 }'`"
+mg_mssm=$(awk -f "$print_block" -v block="MASS" $output | \
+          awk -f "$print_block_entry" -v entries="1000021")
+mg_softsusy=$(awk -f "$print_block" -v block="MASS" $output | \
+              awk -f "$print_block_entry" -v entries="1000021")
 
 # convert scientific notation to bc friendly notation
 mg_mssm="`echo ${mg_mssm} | sed -e 's/[eE]+*/\\*10\\^/'`"
