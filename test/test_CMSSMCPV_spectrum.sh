@@ -3,6 +3,8 @@
 # spectrums are the same.
 
 BASEDIR=$(dirname $0)
+print_block="$BASEDIR/../utils/print_slha_block.awk"
+print_block_entry="$BASEDIR/../utils/print_slha_block_entry.awk"
 
 cmssmcpv_input="$BASEDIR/test_CMSSMCPV_wrong_higgs_state.in.spc"
 cmssmcpv_output="$BASEDIR/test_CMSSMCPV_wrong_higgs_state.out.spc"
@@ -34,8 +36,10 @@ echo "done"
 echo "CMSSM SLHA input file:  $cmssmcpv_input"
 echo "CMSSM SLHA output file: $cmssm_output"
 
-mh_cmssmcpv="`grep hh\(2\) $cmssmcpv_output | awk '{ print $2 }'`"
-mh_cmssm="`grep hh\(1\) $cmssm_output | awk '{ print $2 }'`"
+mh_cmssmcpv=$(awk -f "$print_block" -v block="MASS" $cmssmcpv_output | \
+              awk -f "$print_block_entry" -v entries="25")
+mh_cmssm=$(awk -f "$print_block" -v block="MASS" $cmssm_output | \
+           awk -f "$print_block_entry" -v entries="25")
 
 # convert scientific notation to bc friendly notation
 mh_cmssmcpv="`echo ${mh_cmssmcpv} | sed -e 's/[eE]+*/\\*10\\^/'`"
