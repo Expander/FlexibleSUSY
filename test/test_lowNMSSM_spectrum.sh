@@ -3,6 +3,8 @@
 # spectrums are the same.
 
 BASEDIR=$(dirname $0)
+print_block="$BASEDIR/../utils/print_slha_block.awk"
+print_block_entry="$BASEDIR/../utils/print_slha_block_entry.awk"
 
 lowmssm_input="$BASEDIR/test_lowNMSSM_pseudoscalar.in.spc"
 lowmssm_output="$BASEDIR/test_lowNMSSM_spectrum_lowNMSSM.out.spc"
@@ -34,8 +36,10 @@ echo "done"
 echo "SoftsusyNMSSM SLHA input file:  $lowmssm_input"
 echo "SoftsusyNMSSM SLHA output file: $softsusy_output"
 
-mh_lownmssm="`grep hh\(1\) $lowmssm_output | awk '{ print $2 }'`"
-mh_softsusy="`grep h0\(1\) $softsusy_output | awk '{ print $2 }'`"
+mh_lownmssm=$(awk -f "$print_block" -v block="MASS" $lowmssm_output | \
+              awk -f "$print_block_entry" -v entries="25")
+mh_softsusy=$(awk -f "$print_block" -v block="MASS" $lowmssm_output | \
+              awk -f "$print_block_entry" -v entries="25")
 
 # convert scientific notation to bc friendly notation
 mh_lownmssm="`echo ${mh_lownmssm} | sed -e 's/[eE]+*/\\*10\\^/'`"
