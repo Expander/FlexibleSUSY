@@ -4,9 +4,9 @@
 
 BASEDIR=$(dirname $0)
 
-lowmssm_input="$BASEDIR/../model_files/lowNMSSM/LesHouches.in.lowNMSSM.pseudoscalar"
-lowmssm_output="$BASEDIR/lowNMSSM.out.spc"
-softsusy_output="$BASEDIR/SoftsusyNMSSM.out.spc"
+lowmssm_input="$BASEDIR/test_lowNMSSM_pseudoscalar.in.spc"
+lowmssm_output="$BASEDIR/test_lowNMSSM_spectrum_lowNMSSM.out.spc"
+softsusy_output="$BASEDIR/test_lowNMSSM_spectrum_SoftsusyNMSSM.out.spc"
 rel_error="0.00005"
 
 softsusy_exe="$BASEDIR/../models/SoftsusyNMSSM/run_softpoint.x"
