@@ -91,7 +91,7 @@ private:
 };
 
 /// deletes duplicate elements from a vector (preseves order)
-template <typename Predicate>
+template <typename Predicate = Is_not_duplicate>
 std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
 {
    std::vector<std::string> unique_vector;
@@ -358,7 +358,7 @@ int main(int argc, char* argv[])
 
    paths.insert(paths.begin(), directory(file_name));
    paths.push_back(".");
-   paths = delete_duplicates<Is_not_duplicate>(paths);
+   paths = delete_duplicates(paths);
 
    // search for header inclusions (remove duplicate headers)
    std::vector<std::string> dependencies
