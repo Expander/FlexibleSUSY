@@ -38,7 +38,7 @@ namespace fixed_point_iterator {
 
 class Convergence_tester_absolute {
 public:
-   Convergence_tester_absolute(double precision_ = 1.0e-2)
+   explicit Convergence_tester_absolute(double precision_ = 1.0e-2)
       : precision(precision_)
    {}
 
@@ -74,7 +74,7 @@ private:
 
 class Convergence_tester_relative {
 public:
-   Convergence_tester_relative(double precision_ = 1.0e-2)
+   explicit Convergence_tester_relative(double precision_ = 1.0e-2)
       : precision(precision_)
    {}
 
