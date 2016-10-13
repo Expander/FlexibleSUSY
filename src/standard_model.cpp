@@ -394,7 +394,7 @@ int Standard_model::solve_ewsb_iteratively()
    EWSB_args params = {this, ewsb_loop_order};
 
    std::unique_ptr<EWSB_solver> solvers[] = {
-      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(Standard_model::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)),
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(Standard_model::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))),
       std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids)),
       std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(Standard_model::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, gsl_multiroot_fsolver_broyden))
    };
