@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
    paths = delete_duplicates(paths);
 
    // search for header inclusions (remove duplicate headers)
-   std::vector<std::string> dependencies
+   const std::vector<std::string> dependencies
       = delete_duplicates(
            search_includes(file_name, paths, ignore_non_existing),
            Is_not_duplicate_ignore_path());
