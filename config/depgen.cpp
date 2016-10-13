@@ -77,11 +77,12 @@ private:
 };
 
 /// deletes duplicate elements from a vector (preseves order)
-template <typename Predicate = Is_not_duplicate>
-std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
+template <typename Predicate = decltype(Is_not_duplicate())>
+std::vector<std::string> delete_duplicates(
+   const std::vector<std::string>& vec,
+   Predicate pred = Is_not_duplicate())
 {
    std::vector<std::string> unique_vector;
-   Predicate pred;
 
    std::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
                 std::ref(pred));
@@ -341,8 +342,9 @@ int main(int argc, char* argv[])
 
    // search for header inclusions (remove duplicate headers)
    std::vector<std::string> dependencies
-      = delete_duplicates<Is_not_duplicate_ignore_path>(
-           search_includes(file_name, paths, ignore_non_existing));
+      = delete_duplicates(
+           search_includes(file_name, paths, ignore_non_existing),
+           Is_not_duplicate_ignore_path());
 
    // add file name to dependency list
    std::vector<std::string> dependencies_and_main(dependencies);
