@@ -141,7 +141,7 @@ void print_usage(const std::string& program_name)
 /// print dependency list
 void print_dependencies(const std::string& target_name,
                         const std::vector<std::string>& dependencies,
-                        std::ostream& ostr = std::cout)
+                        std::ostream& ostr)
 {
    ostr << target_name << ':';
 
@@ -153,7 +153,7 @@ void print_dependencies(const std::string& target_name,
 
 /// print empty phony targets for each dependency
 void print_empty_phony_targets(const std::vector<std::string>& dependencies,
-                               std::ostream& ostr = std::cout)
+                               std::ostream& ostr)
 {
    for (const auto& d: dependencies)
       ostr << '\n' << d << ":\n";
