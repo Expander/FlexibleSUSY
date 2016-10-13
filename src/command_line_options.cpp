@@ -21,39 +21,12 @@
 #include "logger.hpp"
 
 #include <cstdio>
-#include <cstdlib>
 
 namespace flexiblesusy {
 
-Command_line_options::Command_line_options()
-   : do_exit(false)
-   , do_print_model_info(false)
-   , exit_status(EXIT_SUCCESS)
-   , program()
-   , database_output_file()
-   , rgflow_file()
-   , slha_input_file()
-   , slha_output_file("-")
-   , spectrum_file()
-{
-}
-
 Command_line_options::Command_line_options(int argc, char* argv[])
-   : do_exit(false)
-   , do_print_model_info(false)
-   , exit_status(EXIT_SUCCESS)
-   , program()
-   , database_output_file()
-   , rgflow_file()
-   , slha_input_file()
-   , slha_output_file("-")
-   , spectrum_file()
 {
    parse(argc, argv);
-}
-
-Command_line_options::~Command_line_options()
-{
 }
 
 /**
