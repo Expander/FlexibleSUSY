@@ -350,38 +350,41 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
    }
 
+   // select output stream
+   std::ofstream fstr(output_file);
+   std::ostream* ostr = &std::cout;
+
+   if (!output_file.empty()) {
+      if (!fstr.good()) {
+         std::cerr << "Error: cannot write to file " << output_file << '\n';
+         return EXIT_FAILURE;
+      }
+      ostr = &fstr;
+   }
+
+   // include paths
    paths.insert(paths.begin(), directory(file_name));
    paths.push_back(".");
    paths = delete_duplicates(paths);
 
-   // search for header inclusions (remove duplicate headers)
+   // search for header inclusions in file
    const std::vector<std::string> dependencies
       = delete_duplicates(
            search_includes(file_name, paths, ignore_non_existing),
            Is_not_duplicate_ignore_path());
 
-   // add file name to dependency list
+   // prepend file itself to dependency list
    std::vector<std::string> dependencies_and_main(dependencies);
    dependencies_and_main.insert(dependencies_and_main.begin(), file_name);
 
    if (target_name.empty())
       target_name = replace_extension(filename(file_name), "o");
 
-   if (output_file.empty()) {
-      print_dependencies(target_name, dependencies_and_main);
-      if (add_empty_phony_targets)
-         print_empty_phony_targets(dependencies);
-   } else {
-      std::ofstream ostr(output_file.c_str());
-      if (ostr.good()) {
-         print_dependencies(target_name, dependencies_and_main, ostr);
-         if (add_empty_phony_targets)
-            print_empty_phony_targets(dependencies, ostr);
-      } else {
-         std::cerr << "Error: cannot write to file " << output_file << '\n';
-         return EXIT_FAILURE;
-      }
-   }
+   // output
+   print_dependencies(target_name, dependencies_and_main, *ostr);
+
+   if (add_empty_phony_targets)
+      print_empty_phony_targets(dependencies, *ostr);
 
    return EXIT_SUCCESS;
 }
