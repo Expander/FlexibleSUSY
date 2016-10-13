@@ -110,7 +110,7 @@ std::string trim_left(const std::string& s)
 
    str.erase(str.begin(),
              std::find_if(str.begin(), str.end(),
-                          std::not1(std::ptr_fun<int, int>(std::isspace))));
+                          [] (std::string::value_type c) { return !std::isspace(c); }));
 
    return str;
 }
