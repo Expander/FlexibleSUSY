@@ -193,7 +193,7 @@ std::string get_filename_from_include(std::string line)
 /// extract include statements from file (ignoring system headers)
 std::vector<std::string> get_included_files(const std::string& file_name)
 {
-   std::ifstream istr(file_name.c_str());
+   std::ifstream istr(file_name);
    std::vector<std::string> includes;
    std::string line;
 

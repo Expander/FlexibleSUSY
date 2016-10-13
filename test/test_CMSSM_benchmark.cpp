@@ -21,7 +21,7 @@ struct Data {
 
 bool is_valid_spectrum(const std::string& slha_file)
 {
-   std::ifstream ifs(slha_file.c_str());
+   std::ifstream ifs(slha_file);
    SLHAea::Coll coll(ifs);
 
    // find SPINFO block
