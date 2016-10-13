@@ -38,7 +38,7 @@ Command_line_options::Command_line_options()
 {
 }
 
-Command_line_options::Command_line_options(int argc, const char* argv[])
+Command_line_options::Command_line_options(int argc, char* argv[])
    : do_exit(false)
    , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
@@ -63,7 +63,7 @@ Command_line_options::~Command_line_options()
  * @param argc number of program arguments
  * @param argv program arguments
  */
-void Command_line_options::parse(int argc, const char* argv[])
+void Command_line_options::parse(int argc, char* argv[])
 {
    assert(argc > 0);
    reset();

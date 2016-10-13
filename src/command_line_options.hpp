@@ -31,7 +31,7 @@ namespace flexiblesusy {
  *
  * Usage:
  * @code
- * int main(int argc, const char* argv[])
+ * int main(int argc, char* argv[])
  * {
  *    using namespace flexiblesusy;
  *    Command_line_options options(argc, argv);
@@ -44,13 +44,13 @@ namespace flexiblesusy {
 class Command_line_options {
 public:
    Command_line_options();
-   Command_line_options(int, const char*[]);
+   Command_line_options(int, char*[]);
    ~Command_line_options();
 
    bool must_exit() const { return do_exit; }
    bool must_print_model_info() const { return do_print_model_info; }
    int status() const { return exit_status; }
-   void parse(int, const char*[]);
+   void parse(int, char*[]);
    void print_build_info(std::ostream&) const;
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;
