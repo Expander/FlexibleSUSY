@@ -24,6 +24,7 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 /// returns directory from file name
@@ -158,34 +159,48 @@ void print_empty_phony_targets(const std::vector<std::string>& dependencies,
       ostr << '\n' << d << ":\n";
 }
 
+/// returns file name from #include "..." statement
+std::string get_filename_from_include(std::string line)
+{
+   line = trim_left(line);
+
+   if (line.empty() || line[0] != '#')
+      return "";
+
+   // skip `#' and following whitespace
+   line = trim_left(line.substr(1));
+
+   if (!starts_with(line, "include"))
+      return "";
+
+   // skip `include'
+   line = trim_left(line.substr(7));
+
+   // extract file name from "file-name"
+   std::size_t pos1 = line.find_first_of('"');
+   if (pos1 == std::string::npos)
+      return "";
+   pos1++;
+
+   std::size_t pos2 = line.find_first_of('"', pos1);
+   if (pos2 == std::string::npos)
+      return "";
+   pos2--;
+
+   return line.substr(pos1, pos2);
+}
+
 /// extract include statements from file (ignoring system headers)
-std::vector<std::string> get_includes(const std::string& file_name)
+std::vector<std::string> get_included_files(const std::string& file_name)
 {
    std::ifstream istr(file_name.c_str());
    std::vector<std::string> includes;
    std::string line;
 
    while (std::getline(istr, line)) {
-      const std::string tline(trim_left(line));
-      if (!tline.empty() && tline[0] == '#') {
-         const std::string ttline(trim_left(tline.substr(1)));
-         if (starts_with(ttline, "include")) {
-            // throw away `include'
-            const std::string header(trim_left(ttline.substr(7)));
-            // extract file name
-            std::size_t pos1 = header.find_first_of('"');
-            if (pos1 == std::string::npos)
-               continue;
-            pos1++;
-            std::size_t pos2 = header.find_first_of('"', pos1);
-            if (pos2 == std::string::npos)
-               continue;
-            pos2--;
-            const std::string file = header.substr(pos1, pos2);
-            if (!file.empty())
-               includes.push_back(file);
-         }
-      }
+      std::string file(get_filename_from_include(line));
+      if (!file.empty())
+         includes.push_back(std::move(file));
    }
 
    return includes;
@@ -231,7 +246,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
       return std::vector<std::string>();
 
    // find included files from #include statements
-   const std::vector<std::string> includes(get_includes(file_name));
+   const std::vector<std::string> includes(get_included_files(file_name));
 
    // select only files that exist in paths
    std::vector<std::string> existing;
