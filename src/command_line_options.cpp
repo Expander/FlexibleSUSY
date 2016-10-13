@@ -117,15 +117,7 @@ void Command_line_options::print_usage(std::ostream& ostr) const
  */
 void Command_line_options::reset()
 {
-   do_exit = false;
-   do_print_model_info = false;
-   exit_status = EXIT_SUCCESS;
-   program.clear();
-   database_output_file.clear();
-   rgflow_file.clear();
-   slha_input_file.clear();
-   slha_output_file = "-";
-   spectrum_file.clear();
+   *this = Command_line_options();
 }
 
 /**
