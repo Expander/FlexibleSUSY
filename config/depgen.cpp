@@ -26,20 +26,6 @@
 #include <string>
 #include <vector>
 
-namespace depgen {
-   template<class InputIt, class OutputIt, class UnaryPredicate>
-   OutputIt copy_if(InputIt first, InputIt last, OutputIt d_first,
-                    UnaryPredicate pred)
-   {
-      while (first != last) {
-         if (pred(*first))
-            *d_first++ = *first;
-         first++;
-      }
-      return d_first;
-   }
-} // namespace depgen
-
 /// returns directory from file name
 std::string directory(const std::string& file_name)
 {
@@ -97,8 +83,8 @@ std::vector<std::string> delete_duplicates(const std::vector<std::string>& vec)
    std::vector<std::string> unique_vector;
    Predicate pred;
 
-   depgen::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
-                   std::ref(pred));
+   std::copy_if(vec.begin(), vec.end(), std::back_inserter(unique_vector),
+                std::ref(pred));
 
    return unique_vector;
 }
@@ -233,8 +219,8 @@ std::vector<std::string> filter(const std::string& dir,
 
    std::vector<std::string> existing_files;
 
-   depgen::copy_if(files_in_dir.begin(), files_in_dir.end(),
-                   std::back_inserter(existing_files), pred);
+   std::copy_if(files_in_dir.begin(), files_in_dir.end(),
+                std::back_inserter(existing_files), pred);
 
    return existing_files;
 }
