@@ -250,9 +250,8 @@ std::vector<std::string> search_includes(const std::string& file_name,
 
    // select only files that exist in paths
    std::vector<std::string> existing;
-   for (std::vector<std::string>::const_iterator it = paths.begin(),
-           end = paths.end(); it != end; ++it) {
-      const std::vector<std::string> existing_in_path(filter(*it, includes, file_exists));
+   for (const auto& p: paths) {
+      const std::vector<std::string> existing_in_path(filter(p, includes, file_exists));
       existing.insert(existing.end(), existing_in_path.begin(), existing_in_path.end());
    }
 
