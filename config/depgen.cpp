@@ -143,10 +143,8 @@ void print_dependencies(const std::string& target_name,
 {
    ostr << target_name << ':';
 
-   for (std::vector<std::string>::const_iterator it = dependencies.begin(),
-           end = dependencies.end(); it != end; ++it) {
-      ostr << ' ' << *it;
-   }
+   for (const auto& d: dependencies)
+      ostr << ' ' << d;
 
    ostr << '\n';
 }
@@ -155,10 +153,8 @@ void print_dependencies(const std::string& target_name,
 void print_empty_phony_targets(const std::vector<std::string>& dependencies,
                                std::ostream& ostr = std::cout)
 {
-   for (std::vector<std::string>::const_iterator it = dependencies.begin(),
-           end = dependencies.end(); it != end; ++it) {
-      ostr << '\n' << *it << ":\n";
-   }
+   for (const auto& d: dependencies)
+      ostr << '\n' << d << ":\n";
 }
 
 /// extract include statements from file (ignoring system headers)
@@ -200,10 +196,8 @@ std::vector<std::string> prepend(const std::string& str,
 {
    std::vector<std::string> result(strings);
 
-   for (std::vector<std::string>::iterator it = result.begin(),
-           end = result.end(); it != end; ++it) {
-      *it = str + *it;
-   }
+   for (auto& s: result)
+      s = str + s;
 
    return result;
 }
@@ -248,10 +242,9 @@ std::vector<std::string> search_includes(const std::string& file_name,
 
    // search recursively for included files in existing headers
    const std::vector<std::string> tmp_existing(existing);
-   for (std::vector<std::string>::const_iterator it = tmp_existing.begin(),
-           end = tmp_existing.end(); it != end; ++it) {
+   for (const auto& f: tmp_existing) {
       const std::vector<std::string> sub_existing(
-         search_includes(*it, paths, ignore_non_existing, max_depth - 1));
+         search_includes(f, paths, ignore_non_existing, max_depth - 1));
       existing.insert(existing.end(), sub_existing.begin(), sub_existing.end());
    }
 
