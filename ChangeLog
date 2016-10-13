@@ -15,6 +15,9 @@ FlexibleSUSY-1.7.1 [not released yet]
    FlexibleEFTHiggs[13] is set automatically to FlexibleEFTHiggs[20] -
    1 when yt(BSM) is calculated in FlexibleEFTHiggs.
 
+ * Change (commit b533d67): Faster calculation of effective vertices h
+   -> photon photon and h -> gluon gluon.
+
 FlexibleSUSY-1.7.0 [September, 19 2016]
 
  * Feature: FlexibleSUSY is now able to generate custom spectrum
