@@ -288,7 +288,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
    return existing;
 }
 
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
    if (argc < 2) {
       std::cerr << "Error: no file given\n";
