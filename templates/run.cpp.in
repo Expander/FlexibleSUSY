@@ -74,7 +74,8 @@ int main(int argc, char* argv[])
    try {
       qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
    } catch (const Error& e) {
-      ERROR(e.what());
+      slha_io.set_spinfo({e.what()}, {});
+      slha_io.write_to(slha_output_file);
       return EXIT_FAILURE;
    }
 
