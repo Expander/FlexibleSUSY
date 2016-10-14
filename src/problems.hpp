@@ -318,6 +318,8 @@ std::vector<std::string> Problems<Number_of_particles>::get_problem_strings() co
       }
       strings.push_back(str);
    }
+
+   return strings;
 }
 
 template <unsigned Number_of_particles>
