@@ -30,7 +30,7 @@ Begin["`Private`"];
 IsSMParticle[particle_] :=
     SARAH`SMQ[particle] || TreeMasses`IsSMGoldstone[particle];
 
-CreateGoldstoneBosonFlags[particle_] :=
+CreateSMParticleFlags[particle_] :=
     Module[{result = "", i,
             numberOfGenerations = TreeMasses`GetDimension[particle]},
            For[i = 1, i <= numberOfGenerations, i++,
@@ -62,7 +62,7 @@ CreateParticles[] :=
                                                                  ] <> "\n};\n" <>
                                         "const bool " <> ParticleToCXXName[#] <> "::is_sm_particle[" <>
                                         ParticleToCXXName[#] <> "::numberOfGenerations] = " <>
-                                        CreateGoldstoneBosonFlags[#] <> ";\n"
+                                        CreateSMParticleFlags[#] <> ";\n"
                                         &) /@ particles, "\n"] <> "\n\n" <>
                    "// Special particle families\n" <>
                    "typedef " <> ParticleToCXXName @ GetPhoton[] <> " Photon;\n" <>
