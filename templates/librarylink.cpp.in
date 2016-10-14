@@ -356,17 +356,11 @@ void check_spectrum(const Model_data& data, MLINK link)
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = data.model.get_problems();
 
-   if (problems.have_problem()) {
-      std::ostringstream msg;
-      problems.print_problems(msg);
-      put_message(link, "FS@ModelName@CalculateSpectrum", "error", msg.str());
-   }
+   for (const auto& s: problems.get_problem_strings())
+      put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
 
-   if (problems.have_warning()) {
-      std::ostringstream msg;
-      problems.print_warnings(msg);
-      put_message(link, "FS@ModelName@CalculateSpectrum", "warning", msg.str());
-   }
+   for (const auto& s: problems.get_warning_strings())
+      put_message(link, "FS@ModelName@CalculateSpectrum", "warning", s);
 
    if (problems.have_problem() &&
        !data.settings.get(Spectrum_generator_settings::force_output))
