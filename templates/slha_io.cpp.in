@@ -184,13 +184,18 @@ void @ModelName@_slha_io::set_pmns(
 }
 
 /**
- * Write SLHA object to file.
+ * Write SLHA object to given output.  If output == "-", then the SLHA
+ * object is written to std::cout.  Otherwise, output is interpreted
+ * as a file name
  *
- * @param file_name file name
+ * @param output "-" for cout, or file name
  */
-void @ModelName@_slha_io::write_to_file(const std::string& file_name)
+void @ModelName@_slha_io::write_to(const std::string& output)
 {
-   slha_io.write_to_file(file_name);
+   if (output == "-")
+      write_to_stream(std::cout);
+   else
+      write_to_file(output);
 }
 
 /**

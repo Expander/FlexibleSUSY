@@ -113,11 +113,7 @@ int main(int argc, char* argv[])
          slha_io.set_extra(model, scales, observables);
       }
 
-      if (slha_output_file == "-") {
-         slha_io.write_to_stream(std::cout);
-      } else {
-         slha_io.write_to_file(slha_output_file);
-      }
+      slha_io.write_to(slha_output_file);
    }
 
    if (!database_output_file.empty() &&
