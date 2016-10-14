@@ -490,7 +490,8 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
       std::string msg =
          "Iteration to determine SM(5) parameters did not"
          " converge after " + std::to_string(max_iterations) +
-         " iterations";
+         " iterations (precision goal: " + std::to_string(precision_goal)
+         + ").";
       throw flexiblesusy::NoConvergenceError(max_iterations, msg);
    }
 }
