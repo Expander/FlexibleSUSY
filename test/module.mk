@@ -197,7 +197,8 @@ ifeq ($(WITH_CMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_CMSSM_slha_doubled_blocks.sh \
 		$(DIR)/test_CMSSM_memory_leaks.sh \
-		$(DIR)/test_CMSSM_profile.sh
+		$(DIR)/test_CMSSM_profile.sh \
+		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_slha.cpp \
