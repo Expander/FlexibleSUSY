@@ -81,6 +81,7 @@ public:
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
+   void set_spinfo(const std::vector<std::string>&, const std::vector<std::string>&);
    void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
