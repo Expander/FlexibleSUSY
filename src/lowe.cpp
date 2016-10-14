@@ -439,24 +439,25 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    unsigned it = 0;
    bool converged = false;
    DoubleVector qedqcd_old(display()), qedqcd_new(display());
+   const double running_precision = 0.1 * precision_goal;
 
    while (!converged && it < max_iterations) {
       // set alpha_i(MZ)
-      runto_safe(displayPoleMZ(), precision_goal);
+      runto_safe(displayPoleMZ(), running_precision);
       setAlpha(ALPHA, input(alpha_em_MSbar_at_MZ));
       setAlpha(ALPHAS, input(alpha_s_MSbar_at_MZ));
 
       // set mb(mb)
-      runto_safe(displayMbMb(), precision_goal);
+      runto_safe(displayMbMb(), running_precision);
       setMass(mBottom, displayMbMb());
       setPoleMb(extractPoleMb(displayAlpha(ALPHAS)));
 
       // set mc(mc)
-      runto_safe(displayMcMc(), precision_goal);
+      runto_safe(displayMcMc(), running_precision);
       setMass(mCharm, displayMcMc());
 
       // set mu, md, ms at 2 GeV
-      runto_safe(2.0, precision_goal);
+      runto_safe(2.0, running_precision);
       setMass(mUp, displayMu2GeV());
       setMass(mDown, displayMd2GeV());
       setMass(mStrange, displayMs2GeV());
@@ -467,7 +468,7 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
       setMass(mTau, displayPoleMtau());
 
       // check convergence
-      runto_safe(scale, precision_goal);
+      runto_safe(scale, running_precision);
       qedqcd_new = display();
 
       converged = flexiblesusy::MaxRelDiff(
