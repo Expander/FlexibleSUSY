@@ -118,8 +118,14 @@ public:
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "NonPerturbativeRunningError: non-perturbative running"
-         " of parameter " << parameter_index << " to scale " << scale;
+
+      if (parameter_index == -1)
+         message << "NonPerturbativeRunningError: scale Q = " << value;
+      else
+         message << "NonPerturbativeRunningError: non-perturbative running"
+                    " of parameter " << parameter_index
+                 << " to scale " << scale;
+
       return message.str();
    }
    std::string what(const std::string& parameter_name) const {
