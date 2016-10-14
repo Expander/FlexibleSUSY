@@ -30,9 +30,9 @@ Block FlexibleSUSY
    17   0        # pole mass scale
    18   0        # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
    19   0        # EFT matching scale (0 = SUSY scale)
-   20   1        # EFT loop order for upwards matching
-   21   1        # EFT loop order for downwards matching
-   22   1        # EFT index of SM-like Higgs in the BSM model
+   20   2        # EFT loop order for upwards matching (SM -> BSM)
+   21   1        # EFT loop order for downwards matching (BSM -> SM)
+   22   0        # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
