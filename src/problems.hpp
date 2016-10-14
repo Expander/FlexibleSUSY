@@ -36,7 +36,6 @@ template <unsigned Number_of_particles>
 class Problems {
 public:
    explicit Problems(const char**);
-   ~Problems() {}
 
    void flag_bad_mass(unsigned, bool flag = true);
    void flag_tachyon(unsigned, bool flag = true);
