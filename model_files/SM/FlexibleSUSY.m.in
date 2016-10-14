@@ -49,6 +49,7 @@ InitialGuessAtLowScale = {
 SMParticles = {
     Electron, TopQuark, BottomQuark,
     VectorP, VectorZ, VectorG, VectorW, Neutrino,
+    gP, gG, gZ, gWm, gWmC,
     Hp, Ah, (* goldstones *)
     hh (* Higgs *)
 };
