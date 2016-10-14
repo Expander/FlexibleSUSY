@@ -76,6 +76,10 @@ public:
    void clear();                      ///< clear all problems
    bool have_problem() const;         ///< problems which yield invalid spectrum
    bool have_warning() const;         ///< warnings
+   std::vector<std::string> get_problem_strings() const;
+   std::vector<std::string> get_warning_strings() const;
+   std::string get_problem_string() const;
+   std::string get_warning_string() const;
    void print_problems(std::ostream& = std::cout) const;
    void print_warnings(std::ostream& = std::cout) const;
 
@@ -99,6 +103,8 @@ private:
    bool failed_rho_convergence;        ///< rho-parameter not converged
    std::string exception_msg;          ///< exception message
    std::map<std::string, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
+
+   std::string concat(const std::vector<std::string>&, char) const; ///< concatenate strings
 };
 
 template <unsigned Number_of_particles>
@@ -275,42 +281,79 @@ void Problems<Number_of_particles>::unflag_no_pole_mass_convergence(
 }
 
 template <unsigned Number_of_particles>
+std::vector<std::string> Problems<Number_of_particles>::get_problem_strings() const
+{
+   std::vector<std::string> strings;
+
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (tachyons[i])
+         strings.push_back(std::string("tachyon ") + particle_names[i]);
+   }
+   if (failed_ewsb)
+      strings.push_back("no ewsb");
+   if (failed_convergence)
+      strings.push_back("no convergence");
+   if (non_perturbative)
+      strings.push_back("non-perturbative");
+   if (failed_rho_convergence)
+      strings.push_back("no rho convergence");
+   if (thrown)
+      strings.push_back("exception thrown(" + exception_msg + ")");
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (failed_pole_mass_convergence[i])
+         strings.push_back(std::string("no M") + particle_names[i] + " pole convergence");
+   }
+
+   for (const auto& par: non_pert_pars) {
+      std::string str("non-perturbative " + par.first);
+      if (par.second.threshold > 0) {
+         str += std::string(" [|") + par.first + "|(" +
+                std::to_string(par.second.scale) + ") = " +
+                std::to_string(par.second.value) +
+                " > " + std::to_string(par.second.threshold) + "]";
+      } else {
+         str += std::string(" [") + par.first + "(" +
+                std::to_string(par.second.scale) +
+                ") = " + std::to_string(par.second.value) + "]";
+      }
+      strings.push_back(str);
+   }
+}
+
+template <unsigned Number_of_particles>
+std::string Problems<Number_of_particles>::get_problem_string() const
+{
+   return concat(get_problem_strings(), '\n');
+}
+
+template <unsigned Number_of_particles>
+std::vector<std::string> Problems<Number_of_particles>::get_warning_strings() const
+{
+   std::vector<std::string> strings;
+
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (bad_masses[i])
+         strings.push_back(std::string("Warning: imprecise M") + particle_names[i]);
+   }
+
+   return strings;
+}
+
+template <unsigned Number_of_particles>
+std::string Problems<Number_of_particles>::get_warning_string() const
+{
+   return concat(get_warning_strings(), '\n');
+}
+
+template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
 {
    if (!have_problem())
       return;
 
-   ostr << "Problems: ";
-   for (unsigned i = 0; i < Number_of_particles; ++i) {
-      if (tachyons[i])
-         ostr << "tachyon " << particle_names[i] << ", ";
-   }
-   if (failed_ewsb)
-      ostr << "no ewsb, ";
-   if (failed_convergence)
-      ostr << "no convergence, ";
-   if (non_perturbative)
-      ostr << "non-perturbative, ";
-   if (failed_rho_convergence)
-      ostr << "no rho convergence, ";
-   if (thrown)
-      ostr << "exception thrown(" << exception_msg << ")";
-   for (unsigned i = 0; i < Number_of_particles; ++i) {
-      if (failed_pole_mass_convergence[i])
-         ostr << "no M" << particle_names[i] << " pole convergence, ";
-   }
-
-   for (const auto& par: non_pert_pars) {
-      ostr << "non-perturbative " << par.first;
-      if (par.second.threshold > 0) {
-         ostr << " [|" << par.first << "|(" << par.second.scale << ") = "
-              << par.second.value << " > " << par.second.threshold << "], ";
-      } else {
-         ostr << " [" << par.first << "(" << par.second.scale << ") = "
-              << par.second.value << "], ";
-      }
-   }
+   ostr << get_problem_string();
 }
+
 
 template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
@@ -318,11 +361,19 @@ void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
    if (!have_warning())
       return;
 
-   ostr << "Warnings: ";
-   for (unsigned i = 0; i < Number_of_particles; ++i) {
-      if (bad_masses[i])
-         ostr << "imprecise M" << particle_names[i] << ", ";
-   }
+   ostr << get_warning_string();
+}
+
+template <unsigned Number_of_particles>
+std::string Problems<Number_of_particles>::concat(
+   const std::vector<std::string>& strings, char separator) const
+{
+   std::string result;
+
+   for (const auto& s: strings)
+      result += s + separator;
+
+   return result;
 }
 
 template <unsigned Number_of_particles>
