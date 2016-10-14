@@ -586,37 +586,28 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          const double coeffA = std::norm(zL) + std::norm(zR);
          const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-         double muonMass;
-         if (MuonFamily::numberOfGenerations == 1)
-            muonMass = context.mass<MuonFamily>();
-         else
-            muonMass = context.mass<MuonFamily>(muonIndex());
+         const double muonMass =
+            MuonFamily::numberOfGenerations == 1 ?
+            context.mass<MuonFamily>() :
+            context.mass<MuonFamily>(muonIndex());
 
-         double photonEmitterMass;
-         if (PhotonEmitter::numberOfGenerations == 1)
-            photonEmitterMass = context.mass<PhotonEmitter>();
-         else {
-            unsigned generationIndex = photonEmitterIndices[0];
-            photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
-         }
+         const double photonEmitterMass =
+            PhotonEmitter::numberOfGenerations == 1 ?
+            context.mass<PhotonEmitter>() :
+            context.mass<PhotonEmitter>(photonEmitterIndices[0]);
 
-         double exchangeMass;
-         if (ExchangeParticle::numberOfGenerations == 1)
-            exchangeMass = context.mass<ExchangeParticle>();
-         else {
-            unsigned generationIndex = exchangeIndices[0];
-            exchangeMass = context.mass<ExchangeParticle>(generationIndex);
-         }
+         const double exchangeMass =
+            ExchangeParticle::numberOfGenerations == 1 ?
+            context.mass<ExchangeParticle>() :
+            context.mass<ExchangeParticle>(exchangeIndices[0]);
 
          const double massRatioSquared = Sqr(photonEmitterMass / exchangeMass);
 
          const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
 
-         double part2;
-         if (is_zero(massRatioSquared))
-            part2 = 0.0;
-         else
-            part2 = photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
+         const double part2 =
+            is_zero(massRatioSquared) ? 0. :
+            photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
          const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
             * muonPhysicalMass(context) / (exchangeMass * exchangeMass);
@@ -682,27 +673,20 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
          const double coeffA = std::norm(zL) + std::norm(zR);
          const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-         double muonMass;
-         if (MuonFamily::numberOfGenerations == 1)
-            muonMass = context.mass<MuonFamily>();
-         else
-            muonMass = context.mass<MuonFamily>(muonIndex());
+         const double muonMass =
+            MuonFamily::numberOfGenerations == 1 ?
+            context.mass<MuonFamily>() :
+            context.mass<MuonFamily>(muonIndex());
 
-         double photonEmitterMass;
-         if (PhotonEmitter::numberOfGenerations == 1)
-            photonEmitterMass = context.mass<PhotonEmitter>();
-         else {
-            unsigned generationIndex = photonEmitterIndices[0];
-            photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
-         }
+         const double photonEmitterMass =
+            PhotonEmitter::numberOfGenerations == 1 ?
+            context.mass<PhotonEmitter>() :
+            context.mass<PhotonEmitter>(photonEmitterIndices[0]);
 
-         double exchangeMass;
-         if (ExchangeParticle::numberOfGenerations == 1)
-            exchangeMass = context.mass<ExchangeParticle>();
-         else {
-            unsigned generationIndex = exchangeIndices[0];
-            exchangeMass = context.mass<ExchangeParticle>(generationIndex);
-         }
+         const double exchangeMass =
+            ExchangeParticle::numberOfGenerations == 1 ?
+            context.mass<ExchangeParticle>() :
+            context.mass<ExchangeParticle>(exchangeIndices[0]);
 
          const double massRatioSquared = Sqr(exchangeMass / photonEmitterMass);
 
