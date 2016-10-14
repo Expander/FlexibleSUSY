@@ -100,15 +100,21 @@ void @ModelName@_slha_io::set_sminputs(const softsusy::QedQcd& qedqcd)
  */
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
-   std::ostringstream warnings_str, problems_str;
+   std::vector<std::string> warnings_vec, problems_vec;
 
-   if (problems.have_warning())
-      problems.print_warnings(warnings_str);
+   if (problems.have_warning()) {
+      std::ostringstream ss;
+      problems.print_warnings(ss);
+      warnings_vec = { ss.str() };
+   }
 
-   if (problems.have_problem())
-      problems.print_problems(problems_str);
+   if (problems.have_problem()) {
+      std::ostringstream ss;
+      problems.print_problems(ss);
+      problems_vec = { ss.str() };
+   }
 
-   set_spinfo({problems_str.str()}, {warnings_str.str()});
+   set_spinfo(problems_vec, warnings_vec);
 }
 
 /**
