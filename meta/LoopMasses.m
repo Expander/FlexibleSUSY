@@ -795,8 +795,8 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
 CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "auto fut_" <> massStr <> " = run_async<Mem_fun_t, Obj_ptr_t>(&CLASSNAME::" <>
-           CreateLoopMassFunctionName[particle] <> ", " <> ptr <> ");\n"
+           "auto fut_" <> massStr <> " = run_async([obj_ptr] () { obj_ptr->" <>
+           CreateLoopMassFunctionName[particle] <> "(); });\n"
           ];
 
 JoinLoopMassFunctionThread[particle_Symbol] :=

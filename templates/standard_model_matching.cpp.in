@@ -183,25 +183,19 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
 static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
 #ifdef ENABLE_THREADS
-#define CLASSNAME @ModelName@_mass_eigenstates
-   typedef void (Standard_model::*SMMem_fun_t)();
-   typedef Standard_model* SMObj_ptr_t;
-   typedef void (CLASSNAME::*Mem_fun_t)();
-   typedef CLASSNAME* Obj_ptr_t;
+   @ModelName@_mass_eigenstates* obj_ptr = &model;
 
-   auto fut_Standard_model_MFu = run_async<SMMem_fun_t, SMObj_ptr_t>(&Standard_model::calculate_MFu_pole, &sm);
-   auto fut_Standard_model_MFd = run_async<SMMem_fun_t, SMObj_ptr_t>(&Standard_model::calculate_MFd_pole, &sm);
-   auto fut_Standard_model_MFe = run_async<SMMem_fun_t, SMObj_ptr_t>(&Standard_model::calculate_MFe_pole, &sm);
-   auto fut_Standard_model_MVW = run_async<SMMem_fun_t, SMObj_ptr_t>(&Standard_model::calculate_MVWp_pole, &sm);
-   auto fut_Standard_model_MVZ = run_async<SMMem_fun_t, SMObj_ptr_t>(&Standard_model::calculate_MVZ_pole, &sm);
+   auto fut_Standard_model_MFu = run_async([&sm] () { sm.calculate_MFu_pole(); });
+   auto fut_Standard_model_MFd = run_async([&sm] () { sm.calculate_MFd_pole(); });
+   auto fut_Standard_model_MFe = run_async([&sm] () { sm.calculate_MFe_pole(); });
+   auto fut_Standard_model_MVW = run_async([&sm] () { sm.calculate_MVWp_pole(); });
+   auto fut_Standard_model_MVZ = run_async([&sm] () { sm.calculate_MVZ_pole(); });
 @callAllSMPoleMassFunctionsThreads@
    fut_Standard_model_MFu.get();
    fut_Standard_model_MFd.get();
    fut_Standard_model_MFe.get();
    fut_Standard_model_MVW.get();
    fut_Standard_model_MVZ.get();
-
-#undef CLASSNAME
 #else
 @callAllSMPoleMassFunctions@
    sm.calculate_MFu_pole();

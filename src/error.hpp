@@ -71,8 +71,8 @@ private:
  */
 class NoRhoConvergenceError : public Error {
 public:
-   explicit NoRhoConvergenceError(unsigned number_of_iterations_,
-                                  double sin_theta_, double rho_hat_)
+   NoRhoConvergenceError(unsigned number_of_iterations_,
+                         double sin_theta_, double rho_hat_)
       : number_of_iterations(number_of_iterations_)
       , sin_theta(sin_theta_)
       , rho_hat(rho_hat_)
@@ -197,7 +197,7 @@ private:
 
 class ReadError : public Error {
 public:
-   ReadError(const std::string& message_) : message(message_) {}
+   explicit ReadError(const std::string& message_) : message(message_) {}
    virtual ~ReadError() {}
    virtual std::string what() const { return message; }
 private:

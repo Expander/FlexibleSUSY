@@ -32,7 +32,7 @@
 #include <iostream>
 #include <cstdlib>
 
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
    using namespace flexiblesusy;
    typedef Two_scale algorithm_type;
@@ -74,7 +74,8 @@ int main(int argc, const char* argv[])
    try {
       qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
    } catch (const Error& e) {
-      ERROR(e.what());
+      slha_io.set_spinfo({e.what()}, {});
+      slha_io.write_to(slha_output_file);
       return EXIT_FAILURE;
    }
 
@@ -113,11 +114,7 @@ int main(int argc, const char* argv[])
          slha_io.set_extra(model, scales, observables);
       }
 
-      if (slha_output_file == "-") {
-         slha_io.write_to_stream(std::cout);
-      } else {
-         slha_io.write_to_file(slha_output_file);
-      }
+      slha_io.write_to(slha_output_file);
    }
 
    if (!database_output_file.empty() &&

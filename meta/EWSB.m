@@ -628,10 +628,10 @@ CreateNewEWSBRootFinder[] :=
     "new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, ";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIRelative] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIAbsolute] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPITadpole] :=
     "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations> >(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations>(ewsb_iteration_precision, tadpole_stepper))";

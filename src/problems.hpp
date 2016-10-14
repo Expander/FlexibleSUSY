@@ -35,8 +35,7 @@ namespace flexiblesusy {
 template <unsigned Number_of_particles>
 class Problems {
 public:
-   Problems(const char**);
-   ~Problems() {}
+   explicit Problems(const char**);
 
    void flag_bad_mass(unsigned, bool flag = true);
    void flag_tachyon(unsigned, bool flag = true);

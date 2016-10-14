@@ -56,6 +56,16 @@ FlexibleSUSY-1.7.1 [not released yet]
    FlexibleEFTHiggs[13] is set automatically to FlexibleEFTHiggs[20] -
    1 when yt(BSM) is calculated in FlexibleEFTHiggs.
 
+ * Change (commit b533d67): Faster calculation of effective vertices h
+   -> photon photon and h -> gluon gluon.
+
+ * Bugfix (commit 8b04191): Improve numerical stability of low-scale
+   iteration which determines the SM(5) parameters by using a higher
+   RG running precision than the precision goal for the convergence.
+
+ * Bugfix (commit 44d2f01): Print SLHA output even if QedQcd class
+   throws an exception.
+
 FlexibleSUSY-1.7.0 [September, 19 2016]
 
  * Feature: FlexibleSUSY is now able to generate custom spectrum

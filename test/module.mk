@@ -199,7 +199,9 @@ ifeq ($(WITH_CMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_CMSSM_slha_doubled_blocks.sh \
 		$(DIR)/test_CMSSM_memory_leaks.sh \
-		$(DIR)/test_CMSSM_profile.sh
+		$(DIR)/test_CMSSM_profile.sh \
+		$(DIR)/test_CMSSM_QedQcd_exception.sh \
+		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_slha.cpp \
@@ -331,12 +333,21 @@ TEST_SH += \
 endif
 
 
+ifeq ($(shell $(FSCONFIG) --with-HGTHDMIIMSSMBC --with-MSSM),yes yes)
+TEST_META += \
+		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-THDMIIMSSMBC --with-MSSM),yes yes)
+TEST_META += \
+		$(DIR)/test_THDM_threshold_corrections_scale_invariance.m
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
-		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m \
 		$(DIR)/test_HSSUSY_thresholds.m \
 		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_MSSM_2L_analytic.m \
@@ -347,7 +358,6 @@ TEST_META := \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_THDM_threshold_corrections.m \
 		$(DIR)/test_THDM_threshold_corrections_gauge.m \
-		$(DIR)/test_THDM_threshold_corrections_scale_invariance.m \
 		$(DIR)/test_ThreeLoopQCD.m \
 		$(DIR)/test_ThresholdCorrections.m \
 		$(DIR)/test_TreeMasses.m \

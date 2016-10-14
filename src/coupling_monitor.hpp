@@ -212,9 +212,9 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    const std::ios_base::openmode openmode
       = (overwrite ? std::ios::out : std::ios::app);
 
-   std::ofstream filestr(file_name.c_str(), openmode);
+   std::ofstream filestr(file_name, openmode);
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: opening file: "
-               << file_name.c_str());
+               << file_name);
    if (filestr.fail()) {
       ERROR("can't open file " << file_name
             << " for writing running couplings");
@@ -243,7 +243,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
 
    filestr.close();
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: file written: "
-               << file_name.c_str());
+               << file_name);
 }
 
 /**

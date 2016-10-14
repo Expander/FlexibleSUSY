@@ -21,39 +21,12 @@
 #include "logger.hpp"
 
 #include <cstdio>
-#include <cstdlib>
 
 namespace flexiblesusy {
 
-Command_line_options::Command_line_options()
-   : do_exit(false)
-   , do_print_model_info(false)
-   , exit_status(EXIT_SUCCESS)
-   , program()
-   , database_output_file()
-   , rgflow_file()
-   , slha_input_file()
-   , slha_output_file("-")
-   , spectrum_file()
-{
-}
-
-Command_line_options::Command_line_options(int argc, const char* argv[])
-   : do_exit(false)
-   , do_print_model_info(false)
-   , exit_status(EXIT_SUCCESS)
-   , program()
-   , database_output_file()
-   , rgflow_file()
-   , slha_input_file()
-   , slha_output_file("-")
-   , spectrum_file()
+Command_line_options::Command_line_options(int argc, char* argv[])
 {
    parse(argc, argv);
-}
-
-Command_line_options::~Command_line_options()
-{
 }
 
 /**
@@ -63,7 +36,7 @@ Command_line_options::~Command_line_options()
  * @param argc number of program arguments
  * @param argv program arguments
  */
-void Command_line_options::parse(int argc, const char* argv[])
+void Command_line_options::parse(int argc, char* argv[])
 {
    assert(argc > 0);
    reset();
@@ -144,15 +117,7 @@ void Command_line_options::print_usage(std::ostream& ostr) const
  */
 void Command_line_options::reset()
 {
-   do_exit = false;
-   do_print_model_info = false;
-   exit_status = EXIT_SUCCESS;
-   program.clear();
-   database_output_file.clear();
-   rgflow_file.clear();
-   slha_input_file.clear();
-   slha_output_file = "-";
-   spectrum_file.clear();
+   *this = Command_line_options();
 }
 
 /**
@@ -184,7 +149,7 @@ bool Command_line_options::get_parameter_value(const std::string& str,
                                                double& parameter)
 {
    if (starts_with(str, prefix)) {
-      parameter = atof(str.substr(prefix.length()).c_str());
+      parameter = stod(str.substr(prefix.length()));
       return true;
    }
    return false;
@@ -205,7 +170,7 @@ bool Command_line_options::get_parameter_value(const std::string& str,
                                                int& parameter)
 {
    if (starts_with(str, prefix)) {
-      parameter = atoi(str.substr(prefix.length()).c_str());
+      parameter = stoi(str.substr(prefix.length()));
       return true;
    }
    return false;

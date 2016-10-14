@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_parabola1 )
    const double precision = 1.0e-4;
    Eigen::Matrix<double,2,1> start;
    start << 9, 9;
-   Fixed_point_iterator<2> fpi(parabola1, 1000, precision);
+   Fixed_point_iterator<2> fpi(parabola1, 1000, fixed_point_iterator::Convergence_tester_relative(precision));
    int status = GSL_SUCCESS;
 
    reset();
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_parabola2 )
    const double precision = 1.0e-4;
    Eigen::Matrix<double,2,1> start;
    start << 9, 9;
-   Fixed_point_iterator<2> fpi(parabola2, 1000, precision);
+   Fixed_point_iterator<2> fpi(parabola2, 1000, fixed_point_iterator::Convergence_tester_relative(precision));
    int status = GSL_SUCCESS;
 
    reset();
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    const double precision = 1.0e-4;
    Eigen::Matrix<double,2,1> start;
    start << 10, 10;
-   Fixed_point_iterator<2> fpi(perturbation, 1000, precision);
+   Fixed_point_iterator<2> fpi(perturbation, 1000, fixed_point_iterator::Convergence_tester_relative(precision));
    int status = GSL_SUCCESS;
 
    reset();

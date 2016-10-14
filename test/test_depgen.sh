@@ -46,11 +46,11 @@ flags="-MM"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
 
-flags="-I. -MM"
+flags="-I${BASEDIR}/depgen -MM"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
 
-flags="-I. -Isubdir -MM"
+flags="-I${BASEDIR}/depgen -I${BASEDIR}/depgen/subdir -MM"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/base.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
 
@@ -60,11 +60,11 @@ flags="-MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
 
-flags="-I. -MM -MG"
+flags="-I${BASEDIR}/depgen -MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
 
-flags="-I. -Isubdir -MM -MG"
+flags="-I${BASEDIR}/depgen -I${BASEDIR}/depgen/subdir -MM -MG"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/nonexisting.cpp"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/nonexisting.cpp"
 

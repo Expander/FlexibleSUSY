@@ -535,8 +535,7 @@ void CLASSNAME::calculate_DRbar_parameters()
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   typedef void (CLASSNAME::*Mem_fun_t)();
-   typedef CLASSNAME* Obj_ptr_t;
+   CLASSNAME* obj_ptr = this;
 
 @callAllLoopMassFunctionsInThreads@
 #else

@@ -30,9 +30,9 @@ Block FlexibleSUSY
    17   0        # pole mass scale
    18   0        # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
    19   0        # EFT matching scale (0 = SUSY scale)
-   20   1        # EFT loop order for upwards matching
-   21   1        # EFT loop order for downwards matching
-   22   1        # EFT index of SM-like Higgs in the BSM model
+   20   2        # EFT loop order for upwards matching (SM -> BSM)
+   21   1        # EFT loop order for downwards matching (BSM -> SM)
+   22   0        # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -68,7 +68,7 @@ index | description                          | possible values              | de
 21    | EFT loop order for downwards matching| 0, 1                         | 1 (= 1-loop)
 22    | EFT Higgs index                      | any integer >= 0             | 0 (= lightest)
 
-### Precision goal ###
+### Precision goal (`FlexibleSUSY[0]`) ###
 
 FlexibleSUSY solves the given boundary value problem (BVP) by running
 all model parameters to each scale and imposing the corresponding
@@ -84,7 +84,7 @@ determines
 - to test whether the BVP solver has found a convergent solution.
 
 
-### Maximum number of iterations ###
+### Maximum number of iterations (`FlexibleSUSY[1]`) ###
 
 FlexibleSUSY solves the given boundary value problem (BVP) by running
 to each scale and imposing the corresponding boundary conditions until
@@ -97,14 +97,15 @@ iterations is set to \f[N_{\text{max.it.}} = -10 \log_{10}p,\f] where
 \f$p\f$ is the precision goal specified in `FlexibleSUSY[0]`.
 
 
-### Threshold correction loop order ###
+### Threshold correction loop order (`FlexibleSUSY[7]`) ###
 
 Using the flag `FlexibleSUSY[7]` the loop order of the threshold
-corrections can be selected.  The threshold corrections affect the
-determination of model parameters \f$\alpha_{\text{em}}, \alpha_s,
-\sin(\theta_W), y_e, y_\mu, y_\tau, y_b, y_t, v\f$ at the low-energy
-scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
-\f$\overline{\text{DR}}\f$ scheme.
+corrections of the SM to the full BSM model can be selected.  The
+threshold corrections affect the determination of the running BSM
+model parameters \f$\alpha_{\text{em}}\f$, \f$\alpha_s\f$,
+\f$\sin(\theta_W)\f$, \f$y_e\f$, \f$y_\mu\f$, \f$y_\tau\f$, \f$y_b\f$,
+\f$y_t\f$, \f$v\f$ at the low-energy scale \f$Q_{\text{low}}\f$ in the
+\f$\overline{\text{MS}}\f$ or \f$\overline{\text{DR}}\f$ scheme.
 
 - \f$\alpha_{\text{em}}(Q_{\text{low}})\f$: If the threshold
   correction loop order is set to `0`,
@@ -113,26 +114,26 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
   Standard Model with 5 active quark flavours.  If the threshold
   correction loop order is set to `1`,
   \f$\alpha_{\text{em}}(Q_{\text{low}})\f$ is calculated from
-  \f$\alpha_{\text{em}}^{\text{SM}(5)}(Q_{\text{low}})\f$ using 1-loop
-  threshold corrections.
+  \f$\alpha_{\text{em}}^{\text{SM}(5)}(Q_{\text{low}})\f$ using the
+  full 1-loop threshold correction.
 
 - \f$\alpha_s(Q_{\text{low}})\f$: If the threshold correction loop
   order is set to `0`, \f$\alpha_s(Q_{\text{low}})\f$ is set to
   \f$\alpha_s^{\text{SM}(5)}(Q_{\text{low}})\f$ in the Standard Model
   with 5 active quark flavours.  If the threshold correction loop
   order is set to `1`, \f$\alpha_s(Q_{\text{low}})\f$ is calculated
-  from \f$\alpha_s^{\text{SM}(5)}(Q_{\text{low}})\f$ using 1-loop
-  threshold corrections.
+  from \f$\alpha_s^{\text{SM}(5)}(Q_{\text{low}})\f$ using the full
+  1-loop threshold correction.
 
 - \f$\sin(\theta_W)(Q_{\text{low}})\f$: If the threshold correction
   loop order is set to `0`, the weak mixing angle is calculated from
   either (i) \f$\{G_F,M_Z\}\f$ or (ii) \f$\{M_W,M_Z\}\f$ (depending on
   the choice of the weak mixing angle calculation in the FlexibleSUSY
-  model file @ref model_file_options) using the corresponding
+  model file, see @ref model_file_options) using the corresponding
   tree-level relation.
 
   If the threshold correction loop order is set to `1`, the the weak
-  mixing angle is calculated taking into account
+  mixing angle is calculated at the 1-loop level, taking into account
 
   - (i): complete 1-loop corrections to the W and Z self-energies
     \f$\Pi_{ZZ}^T, \Pi_{ZZ}^T\f$ as well as 1-loop corrections to
@@ -143,43 +144,45 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
   - (ii): complete 1-loop corrections to the W and Z self-energies
     \f$\Pi_{ZZ}^T, \Pi_{ZZ}^T\f$.
 
-  If the threshold correction loop order is set to `2`, the the weak
-  mixing angle is calculated taking into account
+  If the threshold correction loop order is set to `2`, the weak
+  mixing angle is calculated at the 1-loop level, as above, and the
+  following 2-loop correction is taken into account:
 
   - (i): 2-loop corrections to \f$\Delta r\f$ of the order
     \f$O(\alpha_{\text{em}} \alpha_s + y_t^4)\f$ from
-    [arxiv:hep-ph/9606211 Eqs. (C.5), (C.6)].
+    [arxiv:hep-ph/9606211, Eqs. (C.5), (C.6)].
 
-- \f$y_e(Q_{\text{low}}), y_\mu(Q_{\text{low}}),
-  y_\tau(Q_{\text{low}})\f$: If the threshold correction loop order is
-  set to `0`, the lepton Yukawa couplings \f$y_e(Q_{\text{low}}),
-  y_\mu(Q_{\text{low}}), y_\tau(Q_{\text{low}})\f$ are calculated from
-  the lepton pole masses in the Standard Model with 5 active quark
-  flavours using the tree-level relation.
+- \f$y_e(Q_{\text{low}})\f$, \f$y_\mu(Q_{\text{low}})\f$,
+  \f$y_\tau(Q_{\text{low}})\f$: If the threshold correction loop order
+  is set to `0`, the lepton Yukawa couplings
+  \f$y_e(Q_{\text{low}})\f$, \f$y_\mu(Q_{\text{low}})\f$,
+  \f$y_\tau(Q_{\text{low}})\f$ are calculated from the lepton pole
+  masses in the Standard Model with 5 active quark flavours using the
+  tree-level relation.
 
   If the threshold correction loop order is set to `1`,
-  \f$y_e(Q_{\text{low}}), y_\mu(Q_{\text{low}}),
-  y_\tau(Q_{\text{low}})\f$ are calculated at the scale
+  \f$y_e(Q_{\text{low}})\f$, \f$y_\mu(Q_{\text{low}})\f$,
+  \f$y_\tau(Q_{\text{low}})\f$ are calculated at the scale
   \f$Q_{\text{low}}\f$ at the 1-loop level from the running lepton
   masses in Standard Model with 5 active quark flavours.
 
 - \f$y_b(Q_{\text{low}})\f$: If the threshold correction loop order is
   set to `0`, the bottom Yukawa couplings \f$y_b(Q_{\text{low}})\f$ is
   calculated from the running bottom mass in the Standard Model with 5
-  active quark flavours, \f$m_b(Q_{\text{low}})\f$, using the
+  active quark flavours, \f$m_b^{(5)}(Q_{\text{low}})\f$, using the
   tree-level relation.
 
   If the threshold correction loop order is set to `1`,
   \f$y_b(Q_{\text{low}})\f$ is calculated at the scale
-  \f$Q_{\text{low}}\f$ from \f$m_b(Q_{\text{low}})\f$ taking the
+  \f$Q_{\text{low}}\f$ from \f$m_b^{(5)}(Q_{\text{low}})\f$ taking the
   complete 1-loop correction into account.
 
 - \f$y_t(Q_{\text{low}})\f$: If the threshold correction loop order is
-  set to `0`, the top Yukawa couplings \f$y_t(Q_{\text{low}})\f$ is
-  calculated from the top pole mass, \f$M_t\f$, using the tree-level
-  relation.
+  set to `0`, the running top Yukawa coupling
+  \f$y_t(Q_{\text{low}})\f$ is calculated from the top pole mass,
+  \f$M_t\f$, using the tree-level relation.
 
-  If the threshold correction loop order is set to `1`,
+  If the threshold correction loop order is set to `1`, the running
   \f$y_t(Q_{\text{low}})\f$ is calculated at the scale
   \f$Q_{\text{low}}\f$ from \f$M_t\f$ taking the complete 1-loop
   correction into account as
@@ -191,10 +194,10 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
       \text{Re\;}\Sigma_{t}^{R}(M_t) + \Delta
       m_t^{(1),\text{QCD}} \right] ,
   \f}
-  where \f$\Sigma_{t}^{S}(p), \Sigma_{t}^{L}(p), \Sigma_{t}^{R}(p)\f$
-  denote the scalar, left- and right-handed parts of the top
-  self-energy without the gluon contribution.  The 1-loop QCD
-  contribution \f$m_t^{(1),\text{QCD}}\f$ reads in the
+  where \f$\Sigma_{t}^{S}(p)\f$, \f$\Sigma_{t}^{L}(p)\f$,
+  \f$\Sigma_{t}^{R}(p)\f$ denote the scalar, left- and right-handed
+  parts of the top self-energy without the gluon contribution.  The
+  1-loop SM-QCD contribution \f$m_t^{(1),\text{QCD}}\f$ reads in the
   \f$\overline{\text{DR}}\f$ scheme
   \f{align*}{
     \Delta m_t^{(1),\text{QCD}} &=
@@ -203,11 +206,11 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
   and in the \f$\overline{\text{MS}}\f$ scheme
   \f{align*}{
     \Delta m_t^{(1),\text{QCD}} &=
-       -\frac{g_3^2}{12 \pi^2} \left[4-3 \log\left(\frac{m_t^2}{Q^2}\right)\right],
+       -\frac{g_3^2}{12 \pi^2} \left[4-3 \log\left(\frac{m_t^2}{Q^2}\right)\right].
   \f}
 
   If the threshold correction loop order is set to `2`,
-  2-loop QCD corrections are taken into count as
+  2-loop SM-QCD corrections are taken into count as
   \f{align*}{
     m_t(Q) &= M_t +
     \text{Re\;}\Sigma_{t}^{S}(M_t)
@@ -234,9 +237,10 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
     - 2028 \log\left(\frac{m_t^2}{Q^2}\right)
     - 48 \zeta(3) + 2821 + 16 \pi^2 (1+\log 4)\Bigg] \,.
   \f}
-  If the threshold correction loop order is set to `3` in non-SUSY
-  models, the 3-loop QCD corrections from Ref. [arxiv:hep-ph/9912391,
-  arxiv:hep-ph/9911434] are taken into count as
+  If the threshold correction loop order is set to `3` in _non-SUSY_
+  models, the 3-loop SM-QCD corrections from
+  Refs. [arxiv:hep-ph/9912391, arxiv:hep-ph/9911434] are taken into
+  count as
   \f{align*}{
     m_t(Q) &= M_t +
     \text{Re\;}\Sigma_{t}^{S}(M_t)
@@ -259,7 +263,10 @@ scale \f$Q_{\text{low}}\f$ in the \f$\overline{\text{MS}}\f$ or
         ^4\right\}}{9953280 \pi^6}
   \f}
 
-### Pole mass scale ###
+\note The 1-, 2-, and 3-loop QCD corrections can be found in
+Mathematica form in `meta/TwoLoopQCD.m` and `meta/ThreeLoopQCD.m`.
+
+### Pole mass scale (`FlexibleSUSY[17]`) ###
 
 Using `FlexibleSUSY[17]`, the renormalization scale at which the pole
 mass spectrum is calculated can be overwritten.  By default the
@@ -268,7 +275,7 @@ model file).  If `FlexibleSUSY[17]` is set to `0`, the value given by
 the `SUSYScale` variable is used.  If `FlexibleSUSY[17]` is set to a
 non-zero value, then this value is used as renormalization scale.
 
-### EFT pole mass scale ###
+### EFT pole mass scale (`FlexibleSUSY[18]`) ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 
@@ -277,7 +284,7 @@ Standard Model pole mass spectrum is calculated in the EFT can be
 overwritten.  If unspecified or set to `0`, the minimum of the top
 pole mass and the `SUSYScale` is used.
 
-### EFT matching scale ###
+### EFT matching scale (`FlexibleSUSY[19]`) ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 
@@ -285,7 +292,7 @@ Using `FlexibleSUSY[19]`, the renormalization scale at which the full
 model is matched to the Standard Model can be overwritten.  If
 unspecified or set to `0`, the `SUSYScale` is used.
 
-### EFT upwards matching loop order ###
+### EFT upwards matching loop order (`FlexibleSUSY[20]`) ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 
@@ -303,7 +310,7 @@ and the full model are set equal to determine
 in order to reproduce the results of the pure EFT approaches
 (FlexibleSUSY/HSSUSY or SUSYHD) with FlexibleEFTHiggs.
 
-### EFT downwards matching loop order ###
+### EFT downwards matching loop order (`FlexibleSUSY[21]`) ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 
@@ -311,7 +318,7 @@ Using `FlexibleSUSY[21]`, the loop order for the matching of the BSM
 model to the Standard Model can be selected ("downwards matching").
 If unspecified, the loop order is set to `1`.
 
-### EFT index of SM-like Higgs ###
+### EFT index of SM-like Higgs (`FlexibleSUSY[22]`) ###
 
 \note Only used if `FlexibleEFTHiggs == True`
 

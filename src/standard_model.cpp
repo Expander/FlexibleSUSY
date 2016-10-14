@@ -367,7 +367,7 @@ int Standard_model::solve_ewsb_iteratively()
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
-      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, ewsb_iteration_precision)),
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))),
       std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
       std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
    };
@@ -646,18 +646,15 @@ void Standard_model::calculate_DRbar_parameters()
 void Standard_model::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   typedef void (Standard_model::*Mem_fun_t)();
-   typedef Standard_model* Obj_ptr_t;
-
-   auto fut_MVG = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVG_pole, this);
-   auto fut_MFv = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFv_pole, this);
-   auto fut_Mhh = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_Mhh_pole, this);
-   auto fut_MVP = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVP_pole, this);
-   auto fut_MVZ = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVZ_pole, this);
-   auto fut_MFd = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFd_pole, this);
-   auto fut_MFu = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFu_pole, this);
-   auto fut_MFe = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MFe_pole, this);
-   auto fut_MVWp = run_async<Mem_fun_t, Obj_ptr_t>(&Standard_model::calculate_MVWp_pole, this);
+   auto fut_MVG = run_async([this] () { calculate_MVG_pole(); });
+   auto fut_MFv = run_async([this] () { calculate_MFv_pole(); });
+   auto fut_Mhh = run_async([this] () { calculate_Mhh_pole(); });
+   auto fut_MVP = run_async([this] () { calculate_MVP_pole(); });
+   auto fut_MVZ = run_async([this] () { calculate_MVZ_pole(); });
+   auto fut_MFd = run_async([this] () { calculate_MFd_pole(); });
+   auto fut_MFu = run_async([this] () { calculate_MFu_pole(); });
+   auto fut_MFe = run_async([this] () { calculate_MFe_pole(); });
+   auto fut_MVWp = run_async([this] () { calculate_MVWp_pole(); });
    fut_MVG.get();
    fut_MFv.get();
    fut_Mhh.get();
