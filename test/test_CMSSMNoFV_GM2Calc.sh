@@ -49,10 +49,26 @@ EOF
     exit 1
 }
 
+amu_gm2calc_1L=$({ cat <<EOF
+Block GM2CalcConfig
+     0  0  # minimal output
+     1  1  # loop order (0, 1 or 2)
+     2  0  # disable/enable tan(beta) resummation (0 or 1)
+     4  0  # verbose output
+EOF
+  cat "${SLHA_OUT}";
+      } | "${GM2CALC_EXE}" --slha-input-file=-)
+
+[ $? = 0 ] || {
+    echo "Error: ${GM2CALC_EXE} failed!"
+    exit 1
+}
+
 # convert scientific notation to bc friendly notation
 amu_fs=$(echo "${amu_fs}" | sed -e 's/[eE]/\*10\^/')
 amu_gm2calc_fs=$(echo "${amu_gm2calc_fs}" | sed -e 's/[eE]/\*10\^/')
 amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
+amu_gm2calc_1L=$(echo "${amu_gm2calc_1L}" | sed -e 's/[eE]/\*10\^/')
 
 ### test GM2Calc vs. FlexibleSUSY's embedded GM2Calc
 
@@ -69,20 +85,35 @@ amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
 # exact  MSm = (229.991  360.947)
 # SLHA-1 MSm = (230.002  360.937)
 
-rel_error=0.000000001
+rel_error=0.0001
 
-diff_gm2calc=$(cat <<EOF | bc $BASEDIR/abs.bc
-scale=10
+diff=$(cat <<EOF | bc $BASEDIR/abs.bc
+scale=100
 abs((abs($amu_gm2calc_fs) - abs($amu_gm2calc)) / ($amu_gm2calc_fs)) < $rel_error
 EOF
     )
 
 errors=0
 
-if test $diff_gm2calc -ne 1 ; then
+if test $diff -ne 1 ; then
     echo "Error: relative difference between"
     echo " $amu_gm2calc_fs and $amu_gm2calc is larger than $rel_error"
-    echo "Test status: FAIL"
+    errors=1
+fi
+
+### test FlexibleSUSY 1L vs. GM2Calc 1L w/o tan(beta) resummation
+
+rel_error=0.03
+
+diff=$(cat <<EOF | bc $BASEDIR/abs.bc
+scale=100
+abs((abs($amu_fs) - abs($amu_gm2calc_1L)) / ($amu_fs)) < $rel_error
+EOF
+    )
+
+if test $diff -ne 1 ; then
+    echo "Error: relative difference between"
+    echo " $amu_fs and $amu_gm2calc_1L is larger than $rel_error"
     errors=1
 fi
 
@@ -90,22 +121,27 @@ fi
 
 rel_error=0.12
 
-diff_gm2calc_fs=$(cat <<EOF | bc $BASEDIR/abs.bc
-scale=10
+diff=$(cat <<EOF | bc $BASEDIR/abs.bc
+scale=100
 abs((abs($amu_gm2calc_fs) - abs($amu_fs)) / ($amu_fs)) < $rel_error
 EOF
     )
 
-if test $diff_gm2calc_fs -ne 1 ; then
+if test $diff -ne 1 ; then
     echo "Error: relative difference between"
     echo " $amu_gm2calc_fs and $amu_fs is larger than $rel_error"
-    echo "Test status: FAIL"
     errors=1
 fi
 
-echo "FlexibleSUSY 1L : amu = $amu_fs"
-echo "embedded GM2Calc: amu = $amu_gm2calc_fs"
-echo "original GM2Calc: amu = $amu_gm2calc"
-echo "Test status     : OK"
+echo "FlexibleSUSY 1L                                : amu = $amu_fs"
+echo "embedded GM2Calc                               : amu = $amu_gm2calc_fs"
+echo "original GM2Calc                               : amu = $amu_gm2calc"
+echo "original GM2Calc (1L, no tan(beta) resummation): amu = $amu_gm2calc_1L"
+
+if test $errors -eq 0 ; then
+    echo "Test status: OK"
+else
+    echo "Test status: FAIL"
+fi
 
 exit ${errors}
