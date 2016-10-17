@@ -94,11 +94,11 @@ options="                    \
    enable_compile            \
    enable_compiler_warnings  \
    enable_debug              \
-   enable_mass_error_check   \
    enable_fflite             \
    enable_lapack             \
    enable_librarylink        \
    enable_looptools          \
+   enable_mass_error_check   \
    enable_silent             \
    enable_shared_libs        \
    enable_sqlite             \
@@ -2519,8 +2519,6 @@ if test $# -gt 0 ; then
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
-            --with-static-ldflags=*) STATIC_LDFLAGS=$optarg ;;
-            --with-static-ldlibs=*)  STATIC_LDLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
@@ -2533,6 +2531,8 @@ if test $# -gt 0 ; then
             --with-shared-lib-ext=*) SHARED_LIB_EXT=$optarg ;;
             --with-sqlite-libdir=*)  sqlite_lib_dir=$optarg ;;
             --with-sqlite-incdir=*)  sqlite_inc_dir=$optarg ;;
+            --with-static-ldflags=*) STATIC_LDFLAGS=$optarg ;;
+            --with-static-ldlibs=*)  STATIC_LDLIBS=$optarg ;;
             --with-static-lib-cmd=*) STATIC_LIB_CMD=$optarg ;;
             --with-static-lib-ext=*) STATIC_LIB_EXT=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
