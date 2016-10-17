@@ -39,6 +39,7 @@ namespace mssm_twoloophiggs {
 namespace {
 
 template <typename T> T sqr(T a) { return a * a; }
+template <typename T> T logabs(T x) { return std::log(std::abs(x)); }
 
 double phi(double x, double y, double z)
 {
@@ -253,6 +254,120 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_general(
    return -result;
 }
 
+/// limit st -> 0 and mst1 -> mst2
+Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
+   double mt2, double mg, double mst12, double /* mst22 */,
+   double /* sxt */, double /* cxt */, double scale2, double mu,
+   double tanb, double vev2, double gs, int /* scheme */)
+{
+   using std::sqrt;
+   using std::atan;
+   using std::log;
+   using std::sin;
+   using std::pow;
+   using gm2calc::dilog;
+
+   constexpr double Pi2 = M_PI * M_PI;
+   constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
+   const double g = sqr(mg);
+   const double g2 = sqr(g);
+   const double q = scale2;
+   const double t = mt2;
+   const double tsq = sqr(t);
+   const double T = mst12;
+   const double Tsq = sqr(mst12);
+   const double del = g2 + tsq + Tsq - 2*(g*t + g*T + t*T);
+   const double rdel = sqrt(del);
+   const double sb = sin(atan(tanb));
+   const double ht2 = 2./vev2*mt2/sqr(sb);
+
+   Eigen::Matrix<double, 2, 2> result;
+
+   result(0,0) = 0.;
+
+   result(0,1) = (sqr(gs)*ht2*mg*mt2*mu* (-1 + logabs(t/q) -
+      (T*((2*(g2 + sqr(t - T) - 2*g*(t + T))* (-(logabs(t/g)/T) -
+      (2*(g + t - T + g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))*
+      logabs((g + t - T - g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))/
+      (2.*g)))/ (g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2)* (t - T +
+      g*(-1 + sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2)))) +
+      (2*logabs((g - t + T - g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/ (2.*g)))/(g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))
+      - (2*((g + t - T + g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))*
+      logabs((g + t - T + g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))/
+      (2.*g)) + (g - t + T - g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))* logabs((g - t + T + g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/ (2.*g))))/ (g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2)* (t - T + g*(-1 + sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))))))/ g2 + (2*(g + t - T)*(Pi2 -
+      3*logabs(t/g)*logabs(T/g) + 6*logabs((g + t - T - g*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/g2))/ (2.*g))*logabs((g - t + T -
+      g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))/(2.*g)) - 6*dilog((g
+      + t - T - g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))/ (2.*g)) -
+      6*dilog((g - t + T - g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/(2.*g))))/ (3.*g2)))/(2.*pow((g2 + sqr(t - T) - 2*g*(t
+      + T))/g2,1.5))))/ (8.*Pi4*T);
+
+   result(1,0) = result(0,1);
+
+   result(1,1) = (sqr(gs)*ht2*mt2*(-2 - (8*(g + t)*(-1 +
+      logabs(g/q)))/T + 8*logabs(t/g) + 6*(-1 + logabs(t/q)) +
+      8*sqr(logabs(t/q)) - 4*logabs(T/g) + (4*((g2*T - sqr(t - T)*(2*t
+      + T) + 2*g*t*(t + 5*T))*logabs(t/g) +
+      4*g2*T*logabs(T/g)))/(del*T) + 2*logabs(T/q) -
+      8*sqr(logabs(T/q)) + 5*logabs(Tsq/tsq) + sqr(logabs(Tsq/tsq)) +
+      (4*g2*(g + t - T)*(Pi2 - 6*dilog((g + t - T - g*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/g2))/ (2.*g)) - 6*dilog((g - t + T
+      - g*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2))/(2.*g)) -
+      3*logabs(t/g)*logabs(T/g) + 6*logabs((-rdel + g + t -
+      T)/(2.*g))* logabs((-rdel + g - t +
+      T)/(2.*g))))/(3.*pow(del,1.5)) + (4*g*(g + t - T)*(Pi2 -
+      6*dilog((g + t - T - g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/(2.*g)) - 6*dilog((g - t + T - g*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/g2))/ (2.*g)) - 3*logabs(t/g)*logabs(T/g) +
+      6*logabs((g + t - T - g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/(2.*g))* logabs((g - t + T - g*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/g2))/(2.*g))))/ (3.*del*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/g2)) + (8*mg*mu*(1/T - logabs(t/q)/T + (g*(g + t -
+      T)* (Pi2 - 6*dilog((g + t - T - g*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/g2))/(2.*g)) - 6*dilog((g - t + T - g*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/g2))/ (2.*g)) -
+      3*logabs(t/g)*logabs(T/g) + 6*logabs((-rdel + g + t -
+      T)/(2.*g))*logabs((-rdel + g - t + T)/(2.*g))))/
+      (3.*pow(del,1.5)) + (g*(-(logabs(t/g)/T) - (2*(-(g*logabs(4)) +
+      (rdel + g + t - T)*logabs((-rdel + g + t - T)/g) + (-rdel + g -
+      t + T)*logabs((-rdel + g - t + T)/g)))/ (rdel*(rdel - g + t -
+      T)) - 2*(((rdel + g + t - T)* logabs((g + t - T + g*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/g2))/ (2.*g)))/ (rdel*(t - T + g*(-1 +
+      sqrt((g2 + sqr(t - T) - 2*g*(t + T))/g2)))) - ((rdel - g - t +
+      T)* logabs((g - t + T + g*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/g2))/ (2.*g)))/ (rdel*(-t + T + g*(-1 + sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/g2)))))))/ rdel))/tanb))/(32.*Pi4);
+
+   return -result;
+}
+
+/// Pietro Slavich implementation
+Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_general(
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
+   double tanb, double vev2, double gs, int scheme)
+{
+   Eigen::Matrix<double, 2, 2> result;
+
+   {
+      LOCK_MUTEX();
+
+      dszhiggs_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
+                &tanb, &vev2, &gs, &scheme,
+                &result(0,0), &result(1,1), &result(0,1));
+   }
+
+   result(1,0) = result(0,1);
+
+   return -result;
+}
+
 } // anonymous namespace
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
@@ -334,19 +449,12 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
    double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs, int scheme)
 {
-   Eigen::Matrix<double, 2, 2> result;
+   if (std::abs((mst12 - mst22)/mst12) < 1e-4)
+      return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
+         mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs, scheme);
 
-   {
-      LOCK_MUTEX();
-
-      dszhiggs_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
-                &tanb, &vev2, &gs, &scheme,
-                &result(0,0), &result(1,1), &result(0,1));
-   }
-
-   result(1,0) = result(0,1);
-
-   return -result;
+   return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_general(
+      mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs, scheme);
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(

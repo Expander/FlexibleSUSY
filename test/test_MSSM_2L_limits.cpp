@@ -140,3 +140,33 @@ BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0 )
    BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
    BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
 }
+
+BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0_mst1_eq_mst2 )
+{
+   Point p_close, p_exact;
+   p_close.st = 0.0000001;
+   p_close.mst12 = sqr(4000);
+   p_close.mst22 = sqr(4000.01);
+   p_exact.st = 0;
+   p_exact.mst12 = sqr(4000);
+   p_exact.mst22 = sqr(4000);
+
+   const auto dMh_ps       = calc_dMh_at_as_PS(p_close);
+   const auto dMh_fs_close = calc_dMh_at_as_FS(p_close);
+   const auto dMh_fs_exact = calc_dMh_at_as_FS(p_exact);
+
+   BOOST_CHECK_SMALL(dMh_ps(0,0), 1e-6);
+   BOOST_CHECK_SMALL(dMh_fs_close(0,0), 1e-6);
+   BOOST_CHECK_CLOSE(dMh_ps(0,1), dMh_fs_close(0,1), 1e-3);
+   BOOST_CHECK_CLOSE(dMh_ps(1,0), dMh_fs_close(1,0), 1e-3);
+   BOOST_CHECK_CLOSE(dMh_ps(1,1), dMh_fs_close(1,1), 2e-3);
+
+   BOOST_CHECK_SMALL(dMh_ps(0,0), 1e-3);
+   BOOST_CHECK_SMALL(dMh_fs_exact(0,0), 1e-3);
+   BOOST_CHECK_CLOSE(dMh_ps(0,1), dMh_fs_exact(0,1), 1e-3);
+   BOOST_CHECK_CLOSE(dMh_ps(1,0), dMh_fs_exact(1,0), 1e-3);
+   BOOST_CHECK_CLOSE(dMh_ps(1,1), dMh_fs_exact(1,1), 2e-3);
+
+   BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
+   BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
+}
