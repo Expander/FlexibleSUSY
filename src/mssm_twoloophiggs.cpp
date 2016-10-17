@@ -255,7 +255,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_general(
 }
 
 /// limit st -> 0 and mst1 -> mst2
-Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
+Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_0_mst1_eq_mst2(
    double mt2, double mg, double mst12, double /* mst22 */,
    double /* sxt */, double /* cxt */, double scale2, double mu,
    double tanb, double vev2, double gs, int /* scheme */)
@@ -437,7 +437,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
    double tanb, double vev2, double gs, int scheme)
 {
    if (std::abs((mst12 - mst22)/mst12) < 1e-4)
-      return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
+      return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_0_mst1_eq_mst2(
          mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs, scheme);
 
    return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_general(
