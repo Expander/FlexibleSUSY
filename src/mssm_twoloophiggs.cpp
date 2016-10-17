@@ -66,7 +66,6 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0(
    using std::sin;
    using std::cos;
 
-   constexpr double Pi = M_PI;
    constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
    const double g = sqr(mg);
    const double q = scale2;
@@ -119,7 +118,6 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
    using std::cos;
    using gm2calc::dilog;
 
-   constexpr double Pi = M_PI;
    constexpr double Pi2 = M_PI * M_PI;
    constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
    const double g = sqr(mg);
