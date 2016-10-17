@@ -55,7 +55,42 @@ strG2lcStr = "(4*(g+t+2*T1)+s2t**2*(T1-T2)
        $     +(2*g/T1*(g+t-T1-2*mg*mt*s2t)
        $     +mg/mt*s2t*del/T1)*phi(g,t,T1)";
 
-exprStr = ("(" <> # <> ")")& /@ {F2lStr, G2lStr, strF2lcStr, strG2lcStr};
+(**********************************************)
+(* CP-even dMh O(at*as) in the limit s2t -> 0 *)
+(**********************************************)
+
+(* Fortran expressions from Pietro Slavich *)
+
+S12Str = "ht**2*mt*mu*F2s";
+
+S22Str = "2 * ht**2 * mt**2 * F1 +
+       $        2 * ht**2 * mt * A * F2s";
+
+F1Str = "strF1ab(t,T1,T2,s2t,c2t,q) 
+       $     + strF1c(t,mg,T1,s2t,q)
+       $     + strF1c(t,mg,T2,-s2t,q)";
+
+strF1abStr = "-6*(1-Log(t/q))+5*Log(T1*T2/t**2)+Log(T1*T2/t**2)**2
+       $     +8*Log(t/q)**2-4*Log(T1/q)**2-4*Log(T2/q)**2
+       $     -c2t**2*(2-Log(T1/q)-Log(T2/q)-Log(T1/T2)**2)
+       $     -s2t**2*(T1/T2*(1-Log(T1/q))+T2/T1*(1-Log(T2/q)))";
+
+strF1cStr = "+4*(t+g-mg*mt*s2t)/T1*(1-Log(g/q))
+       $     +4*Log(t/g) - 2*Log(T1/g)
+       $     +2/del*(4*g**2*Log(T1/g)
+       $     +(g**2-T1**2+t*(10*g+3*t+2*t*g/T1-2*t**2/T1))*Log(t/g))
+       $     +2*mg/mt*s2t*(Log(T1/q)**2+2*Log(t/q)*Log(T1/q))
+       $     +4*mg/mt*s2t/del*(g*(T1-t-g)
+       $     *Log(T1/g)+t*(T1-3*g-2*t-(t*g-t**2)/T1)*Log(t/g))
+       $     +(4*g*(t+g-T1-2*mg*mt*s2t)/del
+       $     -4*mg/mt*s2t)*phi(t,T1,g)";
+
+F2sStr = "-8*mg*mt/(T1-T2)*(
+       $     (Log(T1/q)-Log(t/q)*Log(T1/q)+phi(t,T1,g))-
+       $     (Log(T2/q)-Log(t/q)*Log(T2/q)+phi(t,T2,g)))";
+
+exprStr = ("(" <> # <> ")") &/@ {F2lStr, G2lStr, strF2lcStr, strG2lcStr,
+                                 S12Str, S22Str, F1Str, strF1abStr, strF1cStr, F2sStr};
 
 NoBracket[c_String] := !MemberQ[{"(", ")"}, c];
 
@@ -68,7 +103,9 @@ exprInputForm = \
         {MakeFunc["Log"],
          MakeFunc["strF2lc"],
          MakeFunc["strG2lc"],
-         MakeFunc["phi"]}
+         MakeFunc["phi"],
+         MakeFunc["strF1ab"],
+         MakeFunc["strF1c"]}
     ];
 
 expr = ToExpression /@ exprInputForm;
@@ -77,6 +114,13 @@ F2l = expr[[1]];
 G2l = expr[[2]];
 strF2lc[t_, mg_, T1_, T2_, s2t_, c2t_, q_] := Evaluate[expr[[3]]];
 strG2lc[t_, mg_, T1_, T2_, s2t_, q_] := Evaluate[expr[[4]]];
+
+S12 = expr[[5]];
+S22 = expr[[6]];
+F1 = expr[[7]];
+strF1ab[t_, T1_, T2_, s2t_, c2t_, q_] := Evaluate[expr[[8]]];
+strF1c[t_, mg_, T1_, s2t_, q_] := Evaluate[expr[[9]]];
+F2s = expr[[10]];
 
 k = 4 gs^2/(16 Pi^2)^2;
 
@@ -89,8 +133,15 @@ S2 = S2/v2^2;
 S1 = k*S1;
 S2 = k*S2;
 
+S11 = 0;
+S12 = k*S12;
+S22 = k*S22;
+
 (* CP-even tadpoles O(at*as) *)
 tadpoles = {S1, S2};
+
+(* CP-even dMh O(at*as) in the limit s2t -> 0 *)
+selfEnergy = {S11, S12, S22} /. s2t -> 0 /. c2t -> 1;
 
 (* Limits *)
 (* s2t -> 0 *)
@@ -104,5 +155,11 @@ tadpolesS2t0T1eqT2 =
              Series[tadpolesS2t0 /. phi -> phiExpr /. T1 -> T2 + eps,
                     {eps, 0, 0}] /. T2 -> T];
 
+(* s2t -> 0 and mst1 -> mst2 *)
+selfEnergyS2t0T1eqT2 = 
+    Simplify[Normal /@
+             Series[selfEnergy /. T1 -> T2 + eps, {eps, 0, 0}] /. T2 -> T];
+
 Print[CForm /@ FullSimplify[tadpolesS2t0]];
 Print[CForm /@ Simplify[tadpolesS2t0T1eqT2]];
+Print[CForm /@ Simplify[selfEnergyS2t0T1eqT2]];
