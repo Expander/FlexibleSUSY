@@ -19,6 +19,7 @@
 #include "mssm_twoloophiggs.hpp"
 #include "mssm_twoloophiggs.h"
 #include "config.h"
+#include "dilog.hpp"
 #include <cmath>
 #include <utility>
 
@@ -35,7 +36,78 @@
 namespace flexiblesusy {
 namespace mssm_twoloophiggs {
 
-Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
+namespace {
+
+template <typename T> T sqr(T a) { return a * a; }
+
+double phi(double x, double y, double z)
+{
+   using std::log;
+   using gm2calc::dilog;
+
+   const double u = x/z, v = y/z;
+   const double lambda = std::sqrt(sqr(1 - u - v) - 4*u*v);
+   const double xp = 0.5 * (1 + (u - v) - lambda);
+   const double xm = 0.5 * (1 - (u - v) - lambda);
+
+   return 1./lambda * (2*log(xp)*log(xm) - log(u)*log(v) -
+                       2*(dilog(xp) + dilog(xm)) + M_PI*M_PI/3.);
+}
+
+/// limit st -> 0
+Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0(
+   double mt2, double mg, double mst12, double mst22,
+   double /* sxt */, double /* cxt */, double scale2,
+   double mu, double tanb, double vev2, double gs)
+{
+   using std::sqrt;
+   using std::atan;
+   using std::log;
+   using std::sin;
+   using std::cos;
+
+   constexpr double Pi = M_PI;
+   constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
+   const double g = sqr(mg);
+   const double q = scale2;
+   const double t = mt2;
+   const double T1 = mst12;
+   const double T2 = mst22;
+   const double v = std::sqrt(vev2);
+   const double beta = std::atan(tanb);
+   const double v2 = v * std::sin(beta);
+   const double v1 = v * std::cos(beta);
+
+   const double t1 = (sqr(gs)*mg*mt2*mu*(T1*T2*(5*(T1 - T2) + (-T1 +
+      T2)*log(g/q)*log(t/q) + ((-g + t)*log(t/g) + T1*(-4 +
+      log((g*t)/sqr(q))))*log(T1/q) + ((g - t)*log(t/g) - T2*(-4 +
+      log((g*t)/sqr(q))))*log(T2/q)) + (sqr(g) + sqr(t - T1) - 2*g*(t
+      + T1))*T2*phi(g,t,T1) - T1*(sqr(g) + sqr(t - T2) - 2*g*(t +
+      T2))*phi(g,t,T2)))/(16.*Pi4*T1*(T1 - T2)*T2*tanb*sqr(v1));
+
+   const double t2 = (sqr(gs)*mt2*(T1*T2*(-((T1 - T2)*(5*mg*mu + (2*g
+      + 5*(-2*t + T1 + T2))*tanb)) + 6*t*(T1 - T2)*tanb*sqr(log(t/q))
+      + (4*mg*mu*T1 + 2*(g + t + 2*T1)*(T1 - T2)*tanb + g*(-T1 +
+      T2)*tanb*log(g/q) + mg*mu*((g - t)*log(t/g) -
+      T1*log((g*t)/sqr(q))))*log(T1/q) + T1*(-T1 +
+      T2)*tanb*sqr(log(T1/q)) + log(T2/q)*(-4*mg*mu*T2 + 2*(T1 -
+      T2)*(g + t + 2*T2)*tanb + g*(-T1 + T2)*tanb*log(g/q) +
+      mg*mu*((-g + t)*log(t/g) + T2*log((g*t)/sqr(q))) + T2*(-T1 +
+      T2)*tanb*log(T2/q)) - (T1 - T2)*log(t/q)*(12*t*tanb - (mg*mu +
+      2*g*tanb)*log(g/q) + (g + 2*t)*tanb*(log(T1/q) + log(T2/q)))) -
+      T2*(mg*mu*(sqr(g) + sqr(t - T1) - 2*g*(t + T1)) - g*(g + t -
+      T1)*(T1 - T2)*tanb)*phi(g,t,T1) + T1*(mg*mu*(sqr(g) + sqr(t -
+      T2) - 2*g*(t + T2)) + g*(g + t - T2)*(T1 -
+      T2)*tanb)*phi(g,t,T2)))/(16.*Pi4*T1*(T1 - T2)*T2*tanb*sqr(v2));
+
+   Eigen::Matrix<double, 2, 1> result;
+   result << t1, t2;
+
+   return -result;
+}
+
+/// Pietro Slavich implementation
+Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_general(
    double mt2, double mg, double mst12, double mst22,
    double sxt, double cxt, double scale2,
    double mu, double tanb, double vev2, double gs)
@@ -53,6 +125,21 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
       result.setZero();
 
    return -result;
+}
+
+} // anonymous namespace
+
+Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2,
+   double mu, double tanb, double vev2, double gs)
+{
+   if (std::abs(sxt) < 1e-7)
+      return tadpole_higgs_2loop_at_as_mssm_st_0(
+         mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
+   else
+      return tadpole_higgs_2loop_at_as_mssm_general(
+         mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
 }
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
@@ -249,10 +336,6 @@ double self_energy_pseudoscalar_2loop_atau_atau_mssm_with_tadpoles(
 }
 
 // self-energies without tadpoles
-
-namespace {
-template <typename T> T sqr(T a) { return a * a; }
-}
 
 Eigen::Matrix<double, 2, 2> rotate_scalar(
    double self_energy, double tanb)
