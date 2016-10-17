@@ -106,6 +106,134 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0(
    return -result;
 }
 
+/// limit st -> 0 and mst1 -> mst2
+Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
+   double mt2, double mg, double mst12, double /* mst22 */,
+   double /* sxt */, double /* cxt */, double scale2,
+   double mu, double tanb, double vev2, double gs)
+{
+   using std::sqrt;
+   using std::atan;
+   using std::log;
+   using std::sin;
+   using std::cos;
+   using gm2calc::dilog;
+
+   constexpr double Pi = M_PI;
+   constexpr double Pi2 = M_PI * M_PI;
+   constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
+   const double g = sqr(mg);
+   const double g2 = sqr(g);
+   const double q = scale2;
+   const double q2 = sqr(q);
+   const double t = mt2;
+   const double tsq = sqr(t);
+   const double T = mst12;
+   const double Tsq = sqr(mst12);
+   const double v = std::sqrt(vev2);
+   const double beta = std::atan(tanb);
+   const double v2 = v * std::sin(beta);
+   const double v1 = v * std::cos(beta);
+
+   const double t1 = (sqr(gs)*mg*mt2*mu*(T*((-g + t)*log(t/g) + T*(1 -
+      log(g/q)*log(t/q) - 4*log(T/q) + log((g*t)/q2)*(1 + log(T/q))))
+      + T*(((g2 + g*(-2*t + T*(-2 + sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))) + (t - T)*(t + T*(-1 + sqrt((g2 + sqr(t - T) - 2*g*(t
+      + T))/Tsq))))* log(g/T) + (g2 + g*(-2*t + T*(-2 + sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/Tsq))) + (t - T)*(t + T*(-1 + sqrt((g2
+      + sqr(t - T) - 2*g*(t + T))/Tsq))))* log(t/T) - 2*(g*(g - t - T
+      + T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))* log((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) + t*(-g + t
+      - T + T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))* log((-g + t
+      + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) +
+      g2*log((g - t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/(2.*T)) - g*t*log((g - t + T + T*sqrt((g2 + sqr(t - T)
+      - 2*g*(t + T))/Tsq))/ (2.*T)) - g*T*log((g - t + T + T*sqrt((g2
+      + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) + g*T*sqrt((g2 + sqr(t
+      - T) - 2*g*(t + T))/Tsq)* log((g - t + T + T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/(2.*T)) - g*t*log((-g + t + T +
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/ (2.*T)) +
+      tsq*log((-g + t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/(2.*T)) - t*T*log((-g + t + T + T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/ (2.*T)) + t*T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq)* log((-g + t + T + T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq))/(2.*T)) ))/(g + t - T + T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq)) + ((g2 - 2*g*t + tsq - 3*g*T - 3*t*T +
+      2*Tsq)* (Pi2 - 3*log(g/T)*log(t/T) + 6*log((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T))* log((-g +
+      t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      6*dilog((g - t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/(2.*T)) - 6*dilog((-g + t + T - T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/ (2.*T))))/(3.*T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq))) - (Tsq*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq)* (Pi2 - 3*log(g/T)*log(t/T) + 6*log((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T))* log((-g +
+      t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      6*dilog((g - t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) - 6*dilog((-g + t + T - T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/(2.*T))))/3.))/
+      (16.*Pi4*Tsq*tanb*sqr(v1));
+
+   const double t2 = (sqr(gs)*mt2*(T*(-(mg*mu*T) - 2*g*T*tanb +
+      10*t*T*tanb - 10*Tsq*tanb + g*mg*mu*log(t/g) - mg*mu*t*log(t/g)
+      - mg*mu*T*log((g*t)/q2) - 12*t*T*tanb*log(t/q) +
+      mg*mu*T*log(g/q)*log(t/q) + 2*g*T*tanb*log(g/q)*log(t/q) +
+      6*t*T*tanb*sqr(log(t/q)) + 4*mg*mu*T*log(T/q) +
+      4*g*T*tanb*log(T/q) + 4*t*T*tanb*log(T/q) + 8*Tsq*tanb*log(T/q)
+      - 2*g*T*tanb*log(g/q)*log(T/q) - mg*mu*T*log((g*t)/q2)*log(T/q)
+      - 2*g*T*tanb*log(t/q)*log(T/q) - 4*t*T*tanb*log(t/q)*log(T/q) -
+      2*Tsq*tanb*sqr(log(T/q)) + (g*(g + t - T)*tanb*(Pi2 -
+      3*log(g/T)*log(t/T) + 6*log((g - t + T - T*sqrt((g2 + sqr(t - T)
+      - 2*g*(t + T))/Tsq))/(2.*T))* log((-g + t + T - T*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) - 6*dilog((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      6*dilog((-g + t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T))))/(3.*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))) + T*(-((mg*mu*((g2 + g*(-2*t + T*(-2 + sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/Tsq))) + (t - T)*(t + T*(-1 + sqrt((g2
+      + sqr(t - T) - 2*g*(t + T))/Tsq))))* log(g/T) + (g2 + g*(-2*t +
+      T*(-2 + sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))) + (t - T)*(t
+      + T*(-1 + sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))))* log(t/T)
+      - 2*(g*(g - t - T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))* log((g - t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) + t*(-g + t - T + T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq))* log((-g + t + T - T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq))/ (2.*T)) + g2* log((g - t + T + T*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/Tsq))/ (2.*T)) - g*t*log((g - t + T +
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      g*T*log((g - t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) + g*T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq)* log((g - t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) - g*t*log((-g + t + T + T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/(2.*T)) + tsq*log((-g + t + T +
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      t*T*log((-g + t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) + t*T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq)* log((-g + t + T + T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)))))/ (g + t - T + T*sqrt((g2 + sqr(t - T) -
+      2*g*(t + T))/Tsq))) - ((mg*mu*(tsq - 3*t*T + 2*Tsq) + g2*(mg*mu
+      - T*tanb) - g*(mg*mu*(2*t + 3*T) + (t - T)*T*tanb))* (Pi2 -
+      3*log(g/T)*log(t/T) + 6*log((g - t + T - T*sqrt((g2 + sqr(t - T)
+      - 2*g*(t + T))/Tsq))/(2.*T))* log((-g + t + T - T*sqrt((g2 +
+      sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) - 6*dilog((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      6*dilog((-g + t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T))))/(3.*T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))) + (mg*mu*Tsq*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq)* (Pi2 - 3*log(g/T)*log(t/T) + 6*log((g - t + T -
+      T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T))* log((-g +
+      t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t + T))/Tsq))/(2.*T)) -
+      6*dilog((g - t + T - T*sqrt((g2 + sqr(t - T) - 2*g*(t +
+      T))/Tsq))/ (2.*T)) - 6*dilog((-g + t + T - T*sqrt((g2 + sqr(t -
+      T) - 2*g*(t + T))/Tsq))/(2.*T))))/3.))/
+      (16.*Pi4*Tsq*tanb*sqr(v2));
+
+   Eigen::Matrix<double, 2, 1> result;
+   result << t1, t2;
+
+   return -result;
+}
+
 /// Pietro Slavich implementation
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_general(
    double mt2, double mg, double mst12, double mst22,
@@ -134,12 +262,17 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
    double sxt, double cxt, double scale2,
    double mu, double tanb, double vev2, double gs)
 {
-   if (std::abs(sxt) < 1e-7)
+   if (std::abs(sxt) < 1e-7) {
+      if (std::abs((mst12 - mst22)/mst12) < 1e-4)
+         return tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
+            mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
+
       return tadpole_higgs_2loop_at_as_mssm_st_0(
          mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
-   else
+   } else {
       return tadpole_higgs_2loop_at_as_mssm_general(
          mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
+   }
 }
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
