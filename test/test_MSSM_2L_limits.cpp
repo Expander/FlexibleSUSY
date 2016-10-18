@@ -131,8 +131,8 @@ BOOST_AUTO_TEST_CASE( MSSM_tadpole_at_as_st_0_mst1_eq_mst2 )
    BOOST_CHECK_CLOSE(tad_ps(0), tad_fs_exact(0), 1e-3);
    BOOST_CHECK_CLOSE(tad_ps(1), tad_fs_exact(1), 1e-3);
 
-   BOOST_MESSAGE("Pietro Slavich: " << tad_ps.transpose());
-   BOOST_MESSAGE("Limit st -> 0 : " << tad_fs_exact.transpose());
+   BOOST_MESSAGE("Pietro Slavich                : " << tad_ps.transpose());
+   BOOST_MESSAGE("Limit st -> 0 and mst1 -> mst2: " << tad_fs_exact.transpose());
 }
 
 BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0 )
@@ -186,15 +186,31 @@ BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0_mst1_eq_mst2 )
    BOOST_CHECK_CLOSE(dMh_ps(1,0), dMh_fs_exact(1,0), 1e-3);
    BOOST_CHECK_CLOSE(dMh_ps(1,1), dMh_fs_exact(1,1), 2e-3);
 
-   BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
-   BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
+   BOOST_MESSAGE("Pietro Slavich                 :\n" << dMh_ps);
+   BOOST_MESSAGE("Limit st -> 0 and mst1 -> mst2 :\n" << dMh_fs_exact);
 }
 
-BOOST_AUTO_TEST_CASE( MSSM_dMA_at_as_st_0 )
+// calculate st such that At = 0
+double calc_st(Point p)
+{
+   if (p.mu == 0.)
+      return 0.;
+
+   return std::sqrt(p.mt2) * p.mu / (p.ct * (p.mst12 - p.mst22) * p.tb);
+}
+
+BOOST_AUTO_TEST_CASE( MSSM_dMA_at_as_At_0_mst1_eq_mst2 )
 {
    Point p_close, p_exact;
-   p_close.st = 0.0000001;
-   p_exact.st = 0;
+   p_close.mu = p_exact.mu = 0;
+   p_close.mst12 = sqr(4000);
+   p_close.mst22 = sqr(4000.01);
+   p_exact.mst12 = sqr(4000);
+   p_exact.mst22 = sqr(4000);
+
+   // fix st such that At = 0
+   p_close.st = calc_st(p_close);
+   p_exact.st = calc_st(p_exact);
 
    const auto dMA_ps       = calc_dMA_at_as_PS(p_close);
    const auto dMA_fs_close = calc_dMA_at_as_FS(p_close);
@@ -203,6 +219,29 @@ BOOST_AUTO_TEST_CASE( MSSM_dMA_at_as_st_0 )
    BOOST_CHECK_EQUAL(dMA_ps, dMA_fs_close);
    BOOST_CHECK_CLOSE(dMA_ps, dMA_fs_exact, 1e-3);
 
-   BOOST_MESSAGE("Pietro Slavich: " << dMA_ps);
-   BOOST_MESSAGE("Limit st -> 0 : " << dMA_fs_exact);
+   BOOST_MESSAGE("Pietro Slavich                : " << dMA_ps);
+   BOOST_MESSAGE("Limit At -> 0 and mst1 -> mst2: " << dMA_fs_exact);
+}
+
+BOOST_AUTO_TEST_CASE( MSSM_dMA_at_as_mst1_eq_mst2 )
+{
+   // At != 0
+
+   Point p_close, p_exact;
+   p_close.st = 0.0000001;
+   p_close.mst12 = sqr(4000);
+   p_close.mst22 = sqr(4000.01);
+   p_exact.st = 0;
+   p_exact.mst12 = sqr(4000);
+   p_exact.mst22 = sqr(4000);
+
+   const auto dMA_ps       = calc_dMA_at_as_PS(p_close);
+   const auto dMA_fs_close = calc_dMA_at_as_FS(p_close);
+   const auto dMA_fs_exact = calc_dMA_at_as_FS(p_exact);
+
+   BOOST_CHECK_CLOSE(dMA_ps, dMA_fs_close, 1e-3);
+   BOOST_CHECK_CLOSE(dMA_ps, dMA_fs_exact, 1e-3);
+
+   BOOST_MESSAGE("Pietro Slavich    : " << dMA_ps);
+   BOOST_MESSAGE("Limit mst1 -> mst2: " << dMA_fs_exact);
 }
