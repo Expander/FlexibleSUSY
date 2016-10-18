@@ -42,6 +42,17 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_PS(Point p)
    return -result;
 }
 
+// Pietro Slavich implementation of CP-odd MA correction O(at*as)
+double calc_dMA_at_as_PS(Point p)
+{
+   double result;
+
+   dszodd_(&p.mt2, &p.mg, &p.mst12, &p.mst22, &p.st, &p.ct, &p.q2,
+           &p.mu, &p.tb, &p.v2, &p.g3, &result);
+
+   return -result;
+}
+
 // Pietro Slavich implementation of CP-even tadpoles O(at*as)
 Eigen::Matrix<double, 2, 1> calc_tad_at_as_PS(Point p)
 {
@@ -70,6 +81,14 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_FS(Point p)
    return mssm_twoloophiggs::self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
       p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb,
       p.v2, p.g3, 0);
+}
+
+// FlexibleSUSY wrapper for CP-odd MA correction O(at*as)
+double calc_dMA_at_as_FS(Point p)
+{
+   return mssm_twoloophiggs::self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
+      p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb,
+      p.v2, p.g3);
 }
 
 BOOST_AUTO_TEST_CASE( MSSM_tadpole_at_as_st_0 )
@@ -169,4 +188,21 @@ BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0_mst1_eq_mst2 )
 
    BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
    BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
+}
+
+BOOST_AUTO_TEST_CASE( MSSM_dMA_at_as_st_0 )
+{
+   Point p_close, p_exact;
+   p_close.st = 0.0000001;
+   p_exact.st = 0;
+
+   const auto dMA_ps       = calc_dMA_at_as_PS(p_close);
+   const auto dMA_fs_close = calc_dMA_at_as_FS(p_close);
+   const auto dMA_fs_exact = calc_dMA_at_as_FS(p_exact);
+
+   BOOST_CHECK_EQUAL(dMA_ps, dMA_fs_close);
+   BOOST_CHECK_CLOSE(dMA_ps, dMA_fs_exact, 1e-3);
+
+   BOOST_MESSAGE("Pietro Slavich: " << dMA_ps);
+   BOOST_MESSAGE("Limit st -> 0 : " << dMA_fs_exact);
 }
