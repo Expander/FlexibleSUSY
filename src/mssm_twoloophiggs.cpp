@@ -21,6 +21,7 @@
 #include "config.h"
 #include "dilog.hpp"
 #include <cmath>
+#include <limits>
 #include <utility>
 
 #ifdef ENABLE_THREADS
@@ -81,6 +82,16 @@ double dphi_010(double t, double T, double g)
       T)/g) - rabbr*g*logabs((g + rabbr*g - t + T)/g) - t*logabs((g +
       rabbr*g - t + T)/g) + T*logabs((g + rabbr*g - t + T)/g)) ) ) /
       (T*(g - rabbr*g - t + T)))/(3.*pow(abbr,1.5)*g2);
+}
+
+double calc_At(double mt2, double mst12, double mst22,
+   double sxt, double cxt, double mu, double tanb)
+{
+   const double s2t = 2*cxt*sxt;
+   const double Xt = (mst12 - mst22)*s2t/2./sqrt(mt2);
+   const double At = Xt - mu/tanb;
+
+   return At;
 }
 
 /// limit st -> 0
@@ -383,6 +394,56 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_gen
    return -result;
 }
 
+double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
+   double tanb, double vev2, double gs)
+{
+   using std::atan;
+   using std::log;
+   using std::sin;
+
+   constexpr double Pi2 = M_PI * M_PI;
+   const double g = sqr(mg);
+   const double g2 = sqr(g);
+   const double q = scale2;
+   const double q2 = sqr(scale2);
+   const double t = mt2;
+   const double T = mst12;
+   const double sb = sin(atan(tanb));
+   const double ht2 = 2./vev2*mt2/sqr(sb);
+   const double At = calc_At(mt2, mst12, mst22, sxt, cxt, mu, tanb);
+
+   const double result =
+      (-2*(g*(2*At*g + 2*At*t - At*T + mg*T + mg*(g - t)*log(g/t) -
+      At*T*log(g/q)*log(t/q) - mg*T*log(g/q)*log(t/q) -
+      4*mg*T*log(T/q) - 2*At*T*sqr(log(T/q)) + log((g*t)/q2)*(-(At*(g
+      + t - T)) + mg*T + (At + mg)*T*log(T/q))) - 2*(At + mg)*(g + t -
+      T)*T*phi(t,T,g) + T*(At*(g2 + sqr(t - T) - 2*g*T) + mg*(g2 +
+      sqr(t - T) - 2*g*(t + T)))*dphi_010(t,T,g)))/ (g*T);
+
+   const double pref = 4*sqr(gs)/sqr(16*Pi2) * ht2*mu*(1./tanb + tanb);
+
+   return -pref * result;
+}
+
+double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles_general(
+   double mt2, double mg, double mst12, double mst22,
+   double sxt, double cxt, double scale2, double mu,
+   double tanb, double vev2, double gs)
+{
+   double result;
+
+   {
+      LOCK_MUTEX();
+
+      dszodd_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
+              &tanb, &vev2, &gs, &result);
+   }
+
+   return -result;
+}
+
 } // anonymous namespace
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
@@ -527,78 +588,16 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_atau_atau_mssm_with_tadpoles
    return -result;
 }
 
-double calc_At(double mt2, double mst12, double mst22,
-   double sxt, double cxt, double mu, double tanb)
-{
-   const double s2t = 2*cxt*sxt;
-   const double Xt = (mst12 - mst22)*s2t/2./sqrt(mt2);
-   const double At = Xt - mu/tanb;
-
-   return At;
-}
-
-double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
-   double mt2, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double mu,
-   double tanb, double vev2, double gs)
-{
-   using std::atan;
-   using std::log;
-   using std::sin;
-
-   constexpr double Pi2 = M_PI * M_PI;
-   const double g = sqr(mg);
-   const double g2 = sqr(g);
-   const double q = scale2;
-   const double q2 = sqr(scale2);
-   const double t = mt2;
-   const double T = mst12;
-   const double sb = sin(atan(tanb));
-   const double ht2 = 2./vev2*mt2/sqr(sb);
-   const double At = calc_At(mt2, mst12, mst22, sxt, cxt, mu, tanb);
-
-   const double result =
-      (-2*(g*(2*At*g + 2*At*t - At*T + mg*T + mg*(g - t)*log(g/t) -
-      At*T*log(g/q)*log(t/q) - mg*T*log(g/q)*log(t/q) -
-      4*mg*T*log(T/q) - 2*At*T*sqr(log(T/q)) + log((g*t)/q2)*(-(At*(g
-      + t - T)) + mg*T + (At + mg)*T*log(T/q))) - 2*(At + mg)*(g + t -
-      T)*T*phi(t,T,g) + T*(At*(g2 + sqr(t - T) - 2*g*T) + mg*(g2 +
-      sqr(t - T) - 2*g*(t + T)))*dphi_010(t,T,g)))/ (g*T);
-
-   const double pref = 4*sqr(gs)/sqr(16*Pi2) * ht2*mu*(1./tanb + tanb);
-
-   return -pref * result;
-}
-
-double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles_general(
-   double mt2, double mg, double mst12, double mst22,
-   double sxt, double cxt, double scale2, double mu,
-   double tanb, double vev2, double gs)
-{
-   double result;
-
-   {
-      LOCK_MUTEX();
-
-      dszodd_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2, &mu,
-              &tanb, &vev2, &gs, &result);
-   }
-
-   return -result;
-}
-
 double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
    double mt2, double mg, double mst12, double mst22,
    double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs)
 {
-   using std::sqrt;
-   using std::abs;
-
-   if (abs((mst12 - mst22)/mst12) < 1e-4) {
+   if (std::abs((mst12 - mst22)/mst12) < 1e-4) {
       const double At = calc_At(mt2, mst12, mst22, sxt, cxt, mu, tanb);
 
-      if (abs(At) < std::numeric_limits<double>::epsilon())
+      // if At = 0 => mu = 0 => dMA(2L) = 0
+      if (std::abs(At) < std::numeric_limits<double>::epsilon())
          return 0.;
 
       return self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles_mst1_eq_mst2(
