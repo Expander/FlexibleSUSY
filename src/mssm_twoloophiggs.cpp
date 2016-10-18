@@ -39,7 +39,7 @@ namespace mssm_twoloophiggs {
 
 namespace {
 
-template <typename T> T sqr(T a) { return a * a; }
+template <typename T> T constexpr sqr(T a) { return a * a; }
 template <typename T> T sqrtabs(T a) { return std::sqrt(std::abs(a)); }
 template <typename T> T logabs(T x) { return std::log(std::abs(x)); }
 
@@ -69,7 +69,7 @@ double dphi_010(double t, double T, double g)
    constexpr double Pi2 = M_PI * M_PI;
    const double g2 = sqr(g);
    const double abbr = (-4*t*T)/g2 + sqr(1 - t/g - T/g);
-   const double rabbr = sqrt(abbr);
+   const double rabbr = sqrtabs(abbr);
 
    return ((g + t - T)*(Pi2 - 6*dilog((g - rabbr*g + t - T)/(2.*g)) -
       6*dilog((g - rabbr*g - t + T)/(2.*g)) -
@@ -90,7 +90,7 @@ double calc_At(double mt2, double mst12, double mst22,
    double sxt, double cxt, double mu, double tanb)
 {
    const double s2t = 2*cxt*sxt;
-   const double Xt = (mst12 - mst22)*s2t/2./sqrt(mt2);
+   const double Xt = (mst12 - mst22)*s2t/2./sqrtabs(mt2);
    const double At = Xt - mu/tanb;
 
    return At;
@@ -114,7 +114,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0(
    const double t = mt2;
    const double T1 = mst12;
    const double T2 = mst22;
-   const double v = std::sqrt(vev2);
+   const double v = sqrtabs(vev2);
    const double beta = std::atan(tanb);
    const double v2 = v * std::sin(beta);
    const double v1 = v * std::cos(beta);
@@ -173,7 +173,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
    const double tsq = sqr(t);
    const double T = mst12;
    const double Tsq = sqr(mst12);
-   const double v = std::sqrt(vev2);
+   const double v = sqrtabs(vev2);
    const double beta = std::atan(tanb);
    const double v2 = v * std::sin(beta);
    const double v1 = v * std::cos(beta);
@@ -674,8 +674,8 @@ Eigen::Matrix<double, 2, 2> rotate_scalar(
    double self_energy, double tanb)
 {
    const double tanb2 = sqr(tanb);
-   const double sinb = tanb / std::sqrt(1. + tanb2);
-   const double cosb = 1. / std::sqrt(1. + tanb2);
+   const double sinb = tanb / sqrtabs(1. + tanb2);
+   const double cosb = 1. / sqrtabs(1. + tanb2);
 
    Eigen::Matrix<double, 2, 2> result;
 
@@ -796,8 +796,8 @@ Eigen::Matrix<double, 2, 2> rotate_pseudoscalar(
    double self_energy, double tanb)
 {
    const double tanb2 = sqr(tanb);
-   const double sinb = tanb / std::sqrt(1. + tanb2);
-   const double cosb = 1. / std::sqrt(1. + tanb2);
+   const double sinb = tanb / sqrtabs(1. + tanb2);
+   const double cosb = 1. / sqrtabs(1. + tanb2);
 
    Eigen::Matrix<double, 2, 2> result;
 
