@@ -54,13 +54,6 @@ void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)
 
 } // namespace utilities
 
-@ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
-   : spectrum()
-   , scale(0.0)
-   , width(16)
-{
-}
-
 
 void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@_mass_eigenstates& model)
 {
