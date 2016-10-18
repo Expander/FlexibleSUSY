@@ -473,10 +473,10 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
 
       return tadpole_higgs_2loop_at_as_mssm_st_0(
          mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
-   } else {
-      return tadpole_higgs_2loop_at_as_mssm_general(
-         mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
    }
+
+   return tadpole_higgs_2loop_at_as_mssm_general(
+      mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
 }
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
