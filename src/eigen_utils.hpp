@@ -170,8 +170,8 @@ std::string print_scientific(const Eigen::DenseBase<Derived>& v,
 {
    std::ostringstream sstr;
 
-   for (std::size_t i = 0; i < v.rows(); i++) {
-      for (std::size_t k = 0; k < v.cols(); k++) {
+   for (std::size_t k = 0; k < v.cols(); k++) {
+      for (std::size_t i = 0; i < v.rows(); i++) {
          sstr << std::setprecision(number_of_digits)
               << std::scientific << v(i,k) << ' ';
       }
