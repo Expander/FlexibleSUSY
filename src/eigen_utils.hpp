@@ -40,30 +40,6 @@ unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
    return pos;
 }
 
-/**
- * Divides a by b element wise.  If the quotient is not finite, it is
- * set to zero.
- *
- * @param a numerator
- * @param b denominator
- */
-template <typename Scalar, int M, int N>
-Eigen::Matrix<Scalar,M,N> div_save(
-   const Eigen::Matrix<Scalar,M,N>& a, const Eigen::Matrix<Scalar,M,N>& b)
-{
-   Eigen::Matrix<Scalar,M,N> result(Eigen::Matrix<Scalar,M,N>::Zero());
-
-   for (int i = 0; i < M; i++) {
-      for (int k = 0; k < N; k++) {
-         const double quotient = a(i,k) / b(i,k);
-         if (std::isfinite(quotient))
-            result(i,k) = quotient;
-      }
-   }
-
-   return result;
-}
-
 template <class BinaryOp, class Derived>
 Derived binary_map(
    const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Derived>& b, BinaryOp op)
@@ -78,6 +54,23 @@ Derived binary_map(
          result(i,k) = op(a(i,k), b(i,k));
 
    return result;
+}
+
+/**
+ * Divides a by b element wise.  If the quotient is not finite, it is
+ * set to zero.
+ *
+ * @param a numerator
+ * @param b denominator
+ */
+template <typename Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> div_safe(
+   const Eigen::Matrix<Scalar,M,N>& a, const Eigen::Matrix<Scalar,M,N>& b)
+{
+   return binary_map(a, b, [](Scalar x, Scalar y){
+         const Scalar q = x / y;
+         return std::isfinite(q) ? q : Scalar{};
+      });
 }
 
 /**
