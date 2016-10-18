@@ -60,6 +60,7 @@ double phi(double x, double y, double z)
 /// First derivative of phi[t,T,g] w.r.t. T
 double dphi_010(double t, double T, double g)
 {
+   using std::abs;
    using std::sqrt;
    using std::log;
    using std::pow;
@@ -82,7 +83,7 @@ double dphi_010(double t, double T, double g)
       T*logabs((g - rabbr*g - t + T)/g) + g*logabs((g + rabbr*g - t +
       T)/g) - rabbr*g*logabs((g + rabbr*g - t + T)/g) - t*logabs((g +
       rabbr*g - t + T)/g) + T*logabs((g + rabbr*g - t + T)/g)) ) ) /
-      (T*(g - rabbr*g - t + T)))/(3.*pow(abbr,1.5)*g2);
+      (T*(g - rabbr*g - t + T)))/(3.*pow(abs(abbr),1.5)*g2);
 }
 
 double calc_At(double mt2, double mst12, double mst22,
@@ -311,6 +312,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
    double /* sxt */, double /* cxt */, double scale2, double mu,
    double tanb, double vev2, double gs, int /* scheme */)
 {
+   using std::abs;
    using std::sqrt;
    using std::atan;
    using std::log;
@@ -328,7 +330,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
    const double T = mst12;
    const double Tsq = sqr(mst12);
    const double del = g2 + tsq + Tsq - 2*(g*t + g*T + t*T);
-   const double rdel = sqrt(del);
+   const double rdel = sqrtabs(del);
    const double sb = sin(atan(tanb));
    const double ht2 = 2./vev2*mt2/sqr(sb);
 
@@ -350,7 +352,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
       g*sqrtabs(del/g2))/(2.*g))*logabs((g - t + T -
       g*sqrtabs(del/g2))/(2.*g)) - 6*dilog((g + t - T -
       g*sqrtabs(del/g2))/(2.*g)) - 6*dilog((g - t + T -
-      g*sqrtabs(del/g2))/(2.*g))))/ (3.*g2)))/(2.*pow(del/g2,1.5))))/
+      g*sqrtabs(del/g2))/(2.*g))))/ (3.*g2)))/(2.*pow(abs(del)/g2,1.5))))/
       (8.*Pi4*T);
 
    result(1,0) = result(0,1);
@@ -365,7 +367,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
       g*sqrtabs(del/g2))/ (2.*g)) - 6*dilog((g - t + T -
       g*sqrtabs(del/g2))/(2.*g)) - 3*logabs(t/g)*logabs(T/g) +
       6*logabs((-rdel + g + t - T)/(2.*g))* logabs((-rdel + g - t +
-      T)/(2.*g))))/(3.*pow(del,1.5)) + (4*g*(g + t - T)*(Pi2 -
+      T)/(2.*g))))/(3.*pow(abs(del),1.5)) + (4*g*(g + t - T)*(Pi2 -
       6*dilog((g + t - T - g*sqrtabs(del/g2))/(2.*g)) - 6*dilog((g - t
       + T - g*sqrtabs(del/g2))/ (2.*g)) - 3*logabs(t/g)*logabs(T/g) +
       6*logabs((g + t - T - g*sqrtabs(del/g2))/(2.*g))* logabs((g - t
@@ -374,7 +376,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
       6*dilog((g + t - T - g*sqrtabs(del/g2))/(2.*g)) - 6*dilog((g - t
       + T - g*sqrtabs(del/g2))/ (2.*g)) - 3*logabs(t/g)*logabs(T/g) +
       6*logabs((-rdel + g + t - T)/(2.*g))*logabs((-rdel + g - t +
-      T)/(2.*g))))/ (3.*pow(del,1.5)) + (g*(-(logabs(t/g)/T) -
+      T)/(2.*g))))/ (3.*pow(abs(del),1.5)) + (g*(-(logabs(t/g)/T) -
       (2*(-(g*logabs(4.)) + (rdel + g + t - T)*logabs((-rdel + g + t -
       T)/g) + (-rdel + g - t + T)*logabs((-rdel + g - t + T)/g)))/
       (rdel*(rdel - g + t - T)) - 2*(((rdel + g + t - T)* logabs((g +
