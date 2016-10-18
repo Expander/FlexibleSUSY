@@ -49,8 +49,8 @@ Derived binary_map(
    assert(a.rows() == b.rows());
    assert(a.cols() == b.cols());
 
-   for (int i = 0; i < a.rows(); i++)
-      for (int k = 0; k < a.cols(); k++)
+   for (int k = 0; k < a.cols(); k++)
+      for (int i = 0; i < a.rows(); i++)
          result(i,k) = op(a(i,k), b(i,k));
 
    return result;
