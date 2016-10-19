@@ -49,6 +49,21 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_PS(Point p)
    return -result;
 }
 
+// Pietro Slavich implementation of CP-even Mh correction O(at*at)
+Eigen::Matrix<double, 2, 2> calc_dMh_at_at_PS(Point p)
+{
+   double S11, S22, S12;
+
+   ddshiggs_(&p.mt2, &p.mb2, &p.mA2, &p.mst12, &p.mst22, &p.msb12, &p.msb22,
+             &p.st, &p.ct, &p.sb, &p.cb, &p.q2, &p.mu, &p.tb, &p.v2,
+             &S11, &S12, &S22);
+
+   Eigen::Matrix<double, 2, 2> result;
+   result << S11, S12, S12, S22;
+
+   return -result;
+}
+
 // Pietro Slavich implementation of CP-odd MA correction O(at*as)
 double calc_dMA_at_as_PS(Point p)
 {
@@ -111,6 +126,14 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_FS(Point p)
    return mssm_twoloophiggs::self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
       p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb,
       p.v2, p.g3, 0);
+}
+
+// FlexibleSUSY wrapper for CP-even Mh correction O(at*at)
+Eigen::Matrix<double, 2, 2> calc_dMh_at_at_FS(Point p)
+{
+   return mssm_twoloophiggs::self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
+      p.mt2, p.mb2, p.mA2, p.mst12, p.mst22, p.msb12, p.msb22,
+      p.st, p.ct, p.sb, p.cb, p.q2, p.mu, p.tb, p.v2);
 }
 
 // FlexibleSUSY wrapper for CP-odd MA correction O(at*as)
@@ -229,6 +252,30 @@ BOOST_AUTO_TEST_CASE( MSSM_dMh_at_as_st_0 )
    BOOST_CHECK_CLOSE(dMh_ps(0,1), dMh_fs_exact(0,1), 1e-3);
    BOOST_CHECK_CLOSE(dMh_ps(1,0), dMh_fs_exact(1,0), 1e-3);
    BOOST_CHECK_CLOSE(dMh_ps(1,1), dMh_fs_exact(1,1), 1e-3);
+
+   BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
+   BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
+}
+
+BOOST_AUTO_TEST_CASE( MSSM_dMh_at_at_st_0 )
+{
+   Point p_close, p_exact;
+   p_close.st = 0.00000001;
+   p_exact.st = 0;
+
+   const auto dMh_ps       = calc_dMh_at_at_PS(p_close);
+   const auto dMh_fs_close = calc_dMh_at_at_FS(p_close);
+   const auto dMh_fs_exact = calc_dMh_at_at_FS(p_exact);
+
+   BOOST_CHECK_EQUAL(dMh_ps(0,0), dMh_fs_close(0,0));
+   BOOST_CHECK_EQUAL(dMh_ps(0,1), dMh_fs_close(0,1));
+   BOOST_CHECK_EQUAL(dMh_ps(1,0), dMh_fs_close(1,0));
+   BOOST_CHECK_EQUAL(dMh_ps(1,1), dMh_fs_close(1,1));
+
+   BOOST_CHECK_CLOSE(dMh_ps(0,0), dMh_fs_exact(0,0), 5e-2);
+   BOOST_CHECK_CLOSE(dMh_ps(0,1), dMh_fs_exact(0,1), 5e-4);
+   BOOST_CHECK_CLOSE(dMh_ps(1,0), dMh_fs_exact(1,0), 5e-4);
+   BOOST_CHECK_CLOSE(dMh_ps(1,1), dMh_fs_exact(1,1), 1e-5);
 
    BOOST_MESSAGE("Pietro Slavich:\n" << dMh_ps);
    BOOST_MESSAGE("Limit st -> 0 :\n" << dMh_fs_exact);
