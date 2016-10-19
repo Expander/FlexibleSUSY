@@ -42,7 +42,6 @@ public:
    };
 
    Physical_input();
-   ~Physical_input() {}
 
    double get(Input) const;    ///< get value of input parameter
    Eigen::ArrayXd get() const; ///< get all input parameter values
