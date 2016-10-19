@@ -42,7 +42,7 @@ unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 
 template <class BinaryOp, class Derived>
 Derived binary_map(
-   const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Derived>& b, BinaryOp op)
+   const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b, BinaryOp op)
 {
    typename Derived::PlainObject result(a.rows(), b.cols());
 
@@ -63,10 +63,12 @@ Derived binary_map(
  * @param a numerator
  * @param b denominator
  */
-template <typename Scalar, int M, int N>
-Eigen::Matrix<Scalar,M,N> div_safe(
-   const Eigen::Matrix<Scalar,M,N>& a, const Eigen::Matrix<Scalar,M,N>& b)
+template <class Derived>
+Derived div_safe(
+   const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b)
 {
+   typedef typename Derived::Scalar Scalar;
+
    return binary_map(a, b, [](Scalar x, Scalar y){
          const Scalar q = x / y;
          return std::isfinite(q) ? q : Scalar{};
