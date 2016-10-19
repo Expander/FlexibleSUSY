@@ -19,6 +19,7 @@
 #ifndef PHYSICAL_INPUT_H
 #define PHYSICAL_INPUT_H
 
+#include <array>
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -51,7 +52,7 @@ public:
    void reset();              ///< resets all input parameters to their defaults
 
 private:
-   double values[NUMBER_OF_INPUT_PARAMETERS]; ///< input parameter values
+   std::array<double, NUMBER_OF_INPUT_PARAMETERS> values; ///< input parameter values
 };
 
 } // namespace flexiblesusy
