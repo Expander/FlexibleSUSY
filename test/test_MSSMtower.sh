@@ -112,6 +112,8 @@ Block EXTPAR
 
 run_sg() {
     local SG="$1"
+    local type="$2"
+    local calcBSM=$(test "x$type" = xtower ; echo $?)
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
     local Au=$(echo "scale=10; (1./${TB} + 0) * ${MS}" | bc)
@@ -138,6 +140,8 @@ Block EXTPAR                 # Input parameters
     7   ${At}                # At(MSUSY)
    14   ${Xt}                # Xt / Ms
    25   ${TB}                # TanBeta(MSUSY)
+Block FlexibleSUSY
+   23   ${calcBSM}           # calculate BSM pole masses
 Block MSQ2IN
   1  1     ${MS2}   # mq2(1,1)
   2  2     ${MS2}   # mq2(2,2)
@@ -198,9 +202,9 @@ e(l($start) + (l($stop) - l($start))*${i} / $steps)
 EOF
           )
 
-        MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-        MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
-        MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x")
+        MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+        MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
+        MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
 
         printf "%16s %16s %16s %16s\n" "$MS" "$MhMSSMtower" "$MhMSSMMuBMu" "$MhHSSUSY"
     done
@@ -229,35 +233,35 @@ error=0
 
 # check equality of MSSMtower and MSSMuBMu for low MS
 MS=91.1876
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.003" || error=$(expr $error + 1)
 
 MS=173.34
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.002" || error=$(expr $error + 1)
 
 MS=250.0
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.01" || error=$(expr $error + 1)
 
 # check equality of MSSMtower and HSSUSY for high MS
 
 MS=1000
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
 
 MS=10000
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.01" || error=$(expr $error + 1)
 
 MS=100000
-MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x")
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x")
+MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
+MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
 CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
