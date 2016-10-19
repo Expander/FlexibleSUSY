@@ -40,6 +40,7 @@
 
 #include "sm_twoloophiggs.hpp"
 
+#include <array>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -494,7 +495,7 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
  */
 Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_model::ewsb_step() const
 {
-   double tadpole[number_of_ewsb_equations] = { 0. };
+   std::array<double, number_of_ewsb_equations> tadpole{};
    Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
    if (ewsb_loop_order > 0) {

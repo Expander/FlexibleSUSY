@@ -47,6 +47,7 @@
 @twoLoopHiggsHeaders@
 @threeLoopHiggsHeaders@
 
+#include <array>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -427,7 +428,7 @@ CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_initial_guess()
  */
 CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_step() const
 {
-   double tadpole[number_of_ewsb_equations] = { 0. };
+   std::array<double, number_of_ewsb_equations> tadpole{};
    EWSB_vector_t ewsb_parameters(EWSB_vector_t::Zero());
 
    if (ewsb_loop_order > 0) {
