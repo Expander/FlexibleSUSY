@@ -468,7 +468,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
 }
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
-   double mt2, double rmbsq, double mA2, double mst12,
+   double mt2, double mb2, double mA2, double mst12,
    double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
    double scale2, double mu, double tanb, double vev2)
@@ -478,7 +478,7 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
    {
       LOCK_MUTEX();
 
-      ddstad_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+      ddstad_(&mt2, &mb2, &mA2, &mst12, &mst22, &msb12, &msb22,
               &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
               &result(0), &result(1));
    }
@@ -490,12 +490,12 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
 }
 
 Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb12, double msb22,
+   double mb2, double mg, double msb12, double msb22,
    double sxb, double cxb, double scale2,
    double mu, double cotb, double vev2, double gs)
 {
    Eigen::Matrix<double, 2, 1> result(tadpole_higgs_2loop_at_as_mssm(
-      rmbsq, mg, msb12, msb22, sxb, cxb, scale2,
+      mb2, mg, msb12, msb22, sxb, cxb, scale2,
       mu, cotb, vev2, gs));
 
    std::swap(result(0), result(1));
@@ -533,7 +533,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
-   double mt2, double rmbsq, double mA2, double mst12,
+   double mt2, double mb2, double mA2, double mst12,
    double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
    double scale2, double mu, double tanb, double vev2)
@@ -543,7 +543,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
    {
       LOCK_MUTEX();
 
-      ddshiggs_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+      ddshiggs_(&mt2, &mb2, &mA2, &mst12, &mst22, &msb12, &msb22,
                 &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2,
                 &result(0,0), &result(0,1), &result(1,1));
    }
@@ -554,12 +554,12 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm_with_tadpoles(
-   double rmbsq, double mg, double msb12, double msb22,
+   double mb2, double mg, double msb12, double msb22,
    double sxb, double cxb, double scale2, double mu,
    double cotb, double vev2, double gs, int scheme)
 {
    Eigen::Matrix<double, 2, 2> result(self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
-      rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu,
+      mb2, mg, msb12, msb22, sxb, cxb, scale2, mu,
       cotb, vev2, gs, scheme));
 
    std::swap(result(0,0), result(1,1));
@@ -604,7 +604,7 @@ double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
 }
 
 double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
-   double mt2, double rmbsq, double mA2, double mst12,
+   double mt2, double mb2, double mA2, double mst12,
    double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
    double scale2, double mu, double tanb, double vev2)
@@ -614,7 +614,7 @@ double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
    {
       LOCK_MUTEX();
 
-      ddsodd_(&mt2, &rmbsq, &mA2, &mst12, &mst22, &msb12, &msb22,
+      ddsodd_(&mt2, &mb2, &mA2, &mst12, &mst22, &msb12, &msb22,
               &sxt, &cxt, &sxb, &cxb, &scale2, &mu, &tanb, &vev2, &result);
    }
 
@@ -622,12 +622,12 @@ double self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
 }
 
 double self_energy_pseudoscalar_2loop_ab_as_mssm_with_tadpoles(
-   double rmbsq, double mg, double msb12, double msb22,
+   double mb2, double mg, double msb12, double msb22,
    double sxb, double cxb, double scale2, double mu,
    double cotb, double vev2, double gs)
 {
    return self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
-      rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu,
+      mb2, mg, msb12, msb22, sxb, cxb, scale2, mu,
       cotb, vev2, gs);
 }
 
@@ -695,23 +695,23 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm(
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm(
-   double mt2, double rmbsq, double mA2, double mst12,
+   double mt2, double mb2, double mA2, double mst12,
    double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
    double scale2, double mu, double tanb, double vev2)
 {
    const Eigen::Matrix<double, 2, 2> result =
       self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
-         mt2, rmbsq, mA2, mst12, mst22, msb12, msb22,
+         mt2, mb2, mA2, mst12, mst22, msb12, msb22,
          sxt, cxt, sxb, cxb, scale2, mu, tanb, vev2);
 
    const double dMA = self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
-      mt2, rmbsq, mA2, mst12, mst22, msb12, msb22,
+      mt2, mb2, mA2, mst12, mst22, msb12, msb22,
       sxt, cxt, sxb, cxb, scale2, mu, tanb, vev2);
 
    const Eigen::Matrix<double, 2, 1> tadpoles =
       tadpole_higgs_2loop_at_at_mssm(
-         mt2, rmbsq, mA2, mst12, mst22, msb12, msb22,
+         mt2, mb2, mA2, mst12, mst22, msb12, msb22,
          sxt, cxt, sxb, cxb, scale2, mu, tanb, vev2);
 
    const Eigen::Matrix<double, 2, 2> tM =
@@ -721,21 +721,21 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_at_mssm(
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb12, double msb22,
+   double mb2, double mg, double msb12, double msb22,
    double sxb, double cxb, double scale2, double mu,
    double cotb, double vev2, double gs, int scheme)
 {
    const Eigen::Matrix<double, 2, 2> result =
       self_energy_higgs_2loop_ab_as_mssm_with_tadpoles(
-         rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu,
+         mb2, mg, msb12, msb22, sxb, cxb, scale2, mu,
          cotb, vev2, gs, scheme);
 
    const double dMA = self_energy_pseudoscalar_2loop_ab_as_mssm_with_tadpoles(
-      rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
+      mb2, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
 
    const Eigen::Matrix<double, 2, 1> tadpoles =
       tadpole_higgs_2loop_ab_as_mssm(
-         rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
+         mb2, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
 
    const Eigen::Matrix<double, 2, 2> tM =
       subtract_mssm_tadpoles_scalar(dMA, tadpoles, 1./cotb);
@@ -809,34 +809,34 @@ Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_at_as_mssm(
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_at_at_mssm(
-   double mt2, double rmbsq, double mA2, double mst12,
+   double mt2, double mb2, double mA2, double mst12,
    double mst22, double msb12, double msb22,
    double sxt, double cxt, double sxb, double cxb,
    double scale2, double mu, double tanb, double vev2)
 {
    const double se = self_energy_pseudoscalar_2loop_at_at_mssm_with_tadpoles(
-      mt2, rmbsq, mA2, mst12, mst22, msb12, msb22,
+      mt2, mb2, mA2, mst12, mst22, msb12, msb22,
       sxt, cxt, sxb, cxb, scale2, mu, tanb, vev2);
 
    const Eigen::Matrix<double, 2, 1> tadpoles =
       tadpole_higgs_2loop_at_at_mssm(
-         mt2, rmbsq, mA2, mst12, mst22, msb12, msb22,
+         mt2, mb2, mA2, mst12, mst22, msb12, msb22,
          sxt, cxt, sxb, cxb, scale2, mu, tanb, vev2);
 
    return subtract_mssm_tadpoles_pseudoscalar(se, tadpoles, tanb);
 }
 
 Eigen::Matrix<double, 2, 2> self_energy_pseudoscalar_2loop_ab_as_mssm(
-   double rmbsq, double mg, double msb12, double msb22,
+   double mb2, double mg, double msb12, double msb22,
    double sxb, double cxb, double scale2, double mu,
    double cotb, double vev2, double gs)
 {
    const double se = self_energy_pseudoscalar_2loop_ab_as_mssm_with_tadpoles(
-      rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
+      mb2, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
 
    const Eigen::Matrix<double, 2, 1> tadpoles =
       tadpole_higgs_2loop_ab_as_mssm(
-         rmbsq, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
+         mb2, mg, msb12, msb22, sxb, cxb, scale2, mu, cotb, vev2, gs);
 
    return subtract_mssm_tadpoles_pseudoscalar(se, tadpoles, 1./cotb);
 }
