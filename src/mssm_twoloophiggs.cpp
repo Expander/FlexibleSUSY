@@ -454,8 +454,8 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm(
    double sxt, double cxt, double scale2,
    double mu, double tanb, double vev2, double gs)
 {
-   if (std::abs(sxt) < 1e-7) {
-      if (std::abs((mst12 - mst22)/mst12) < 1e-4)
+   if (std::abs(sxt) < 1e-8) {
+      if (std::abs((mst12 - mst22)/mst12) < 1e-6)
          return tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
             mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs);
 
@@ -524,7 +524,7 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
    double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs, int scheme)
 {
-   if (std::abs((mst12 - mst22)/mst12) < 1e-6)
+   if (std::abs((mst12 - mst22)/mst12) < 1e-8)
       return self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_0_mst1_eq_mst2(
          mt2, mg, mst12, mst22, sxt, cxt, scale2, mu, tanb, vev2, gs, scheme);
 
@@ -588,7 +588,7 @@ double self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
    double sxt, double cxt, double scale2, double mu,
    double tanb, double vev2, double gs)
 {
-   if (std::abs((mst12 - mst22)/mst12) < 1e-6) {
+   if (std::abs((mst12 - mst22)/mst12) < 1e-8) {
       const double At = calc_At(mt2, mst12, mst22, sxt, cxt, mu, tanb);
 
       // if At = 0 => mu = 0 => dMA(2L) = 0
