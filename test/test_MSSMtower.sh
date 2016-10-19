@@ -95,13 +95,14 @@ Block FlexibleSUSY
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
-   12   1                    # force output
+   12   0                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1.000000000e-11      # beta-function zero threshold
    15   0                    # calculate observables (a_muon, ...)
    20   2                    # EFT loop order for upwards matching
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
+   23   1                    # calculate BSM pole masses
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu

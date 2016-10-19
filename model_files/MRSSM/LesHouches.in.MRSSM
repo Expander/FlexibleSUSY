@@ -36,6 +36,7 @@ Block FlexibleSUSY
    20   2                    # EFT loop order for upwards matching
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
+   23   1                    # calculate BSM pole masses
 Block SPhenoInput         # SPheno specific input
     1 -1          # error level
     2  1          # SPA conventions

@@ -58,6 +58,7 @@ public:
       eft_matching_loop_order_up, ///< [20] loop order at which the gauge and Yukawa couplings of the full model are calculated from the EFT ones (upwards matching)
       eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
       eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
+      calculate_bsm_masses,  ///< [23] calculate BSM pole masses
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
