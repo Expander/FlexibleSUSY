@@ -18,7 +18,6 @@
 
 #include "spectrum_generator_settings.hpp"
 
-#include <cassert>
 #include <iostream>
 
 namespace flexiblesusy {
@@ -36,14 +35,12 @@ Spectrum_generator_settings::Spectrum_generator_settings()
 
 double Spectrum_generator_settings::get(Settings o) const
 {
-   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
-   return values[o];
+   return values.at(o);
 }
 
 void Spectrum_generator_settings::set(Settings o, double value)
 {
-   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
-   values[o] = value;
+   values.at(o) = value;
 }
 
 /**

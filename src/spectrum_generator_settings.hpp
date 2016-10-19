@@ -20,6 +20,7 @@
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
 #include "two_loop_corrections.hpp"
+#include <array>
 #include <iosfwd>
 
 namespace flexiblesusy {
@@ -72,7 +73,7 @@ public:
    void set_two_loop_corrections(const Two_loop_corrections&);
 
 private:
-   double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings
+   std::array<double, NUMBER_OF_OPTIONS> values; ///< spectrum generator settings
 };
 
 std::ostream& operator<<(std::ostream&, const Spectrum_generator_settings&);
