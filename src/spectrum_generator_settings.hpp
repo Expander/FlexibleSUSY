@@ -63,7 +63,6 @@ public:
    };
 
    Spectrum_generator_settings();
-   ~Spectrum_generator_settings() {}
 
    double get(Settings) const; ///< get value of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
