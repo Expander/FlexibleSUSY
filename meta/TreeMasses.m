@@ -1286,7 +1286,7 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
            If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
            " < 0.) " <>
-           "problems.flag_tachyon(" <> particleName <> ");\n"
+           "problems.flag_pole_tachyon(" <> particleName <> ");\n"
           ];
 
 CheckPoleMassesForTachyons[macro_String] :=
@@ -1375,7 +1375,7 @@ CreateHiggsMassGetters[particle_, macro_String] :=
           ];
 
 FlagTachyon[particle_String] :=
-    "problems.flag_tachyon(" <>
+    "problems.flag_running_tachyon(" <>
     FlexibleSUSY`FSModelName <> "_info::" <> particle <>
     ");\n";
 

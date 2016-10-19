@@ -708,7 +708,7 @@ void Standard_model::copy_DRbar_masses_to_pole_masses()
  */
 void Standard_model::check_pole_masses_for_tachyons()
 {
-   if (PHYSICAL(Mhh) < 0.) problems.flag_tachyon(standard_model_info::hh);
+   if (PHYSICAL(Mhh) < 0.) problems.flag_pole_tachyon(standard_model_info::hh);
 
 }
 
@@ -1079,7 +1079,7 @@ void Standard_model::recalculate_mw_pole()
    const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(qedqcd.displayPoleMW()));
 
    if (mw_pole_sqr < 0.)
-      problems.flag_tachyon(standard_model_info::VWp);
+      problems.flag_pole_tachyon(standard_model_info::VWp);
 
    const double mw_pole = AbsSqrt(mw_pole_sqr);
 
@@ -1819,7 +1819,7 @@ void Standard_model::calculate_MHp()
    MHp = calculate_singlet_mass(mass_matrix_Hp);
 
    if (MHp < 0.) {
-      problems.flag_tachyon(standard_model_info::Hp);
+      problems.flag_running_tachyon(standard_model_info::Hp);
    }
 
    MHp = AbsSqrt(MHp);
@@ -1860,7 +1860,7 @@ void Standard_model::calculate_MAh()
    MAh = calculate_singlet_mass(mass_matrix_Ah);
 
    if (MAh < 0.) {
-      problems.flag_tachyon(standard_model_info::Ah);
+      problems.flag_running_tachyon(standard_model_info::Ah);
    }
 
    MAh = AbsSqrt(MAh);
@@ -1879,7 +1879,7 @@ void Standard_model::calculate_Mhh()
    Mhh = calculate_singlet_mass(mass_matrix_hh);
 
    if (Mhh < 0.) {
-      problems.flag_tachyon(standard_model_info::hh);
+      problems.flag_running_tachyon(standard_model_info::hh);
    }
 
    Mhh = AbsSqrt(Mhh);
@@ -1912,7 +1912,7 @@ void Standard_model::calculate_MVZ()
    MVZ = calculate_singlet_mass(mass_matrix_VZ);
 
    if (MVZ < 0.) {
-      problems.flag_tachyon(standard_model_info::VZ);
+      problems.flag_running_tachyon(standard_model_info::VZ);
    }
 
    MVZ = AbsSqrt(MVZ);
@@ -2027,7 +2027,7 @@ void Standard_model::calculate_MVWp()
    MVWp = calculate_singlet_mass(mass_matrix_VWp);
 
    if (MVWp < 0.) {
-      problems.flag_tachyon(standard_model_info::VWp);
+      problems.flag_running_tachyon(standard_model_info::VWp);
    }
 
    MVWp = AbsSqrt(MVWp);
@@ -5927,7 +5927,7 @@ void Standard_model::calculate_MFv_pole()
 
 void Standard_model::calculate_Mhh_pole()
 {
-   if (!force_output && problems.is_tachyon(standard_model_info::hh))
+   if (!force_output && problems.is_running_tachyon(standard_model_info::hh))
       return;
 
    // diagonalization with high precision
@@ -5966,7 +5966,7 @@ void Standard_model::calculate_MVP_pole()
 
 void Standard_model::calculate_MVZ_pole()
 {
-   if (!force_output && problems.is_tachyon(standard_model_info::VZ))
+   if (!force_output && problems.is_running_tachyon(standard_model_info::VZ))
       return;
 
    // diagonalization with medium precision
@@ -5976,7 +5976,7 @@ void Standard_model::calculate_MVZ_pole()
    const double mass_sqr = M_tree - self_energy;
 
    if (mass_sqr < 0.)
-      problems.flag_tachyon(standard_model_info::VZ);
+      problems.flag_pole_tachyon(standard_model_info::VZ);
 
    PHYSICAL(MVZ) = AbsSqrt(mass_sqr);
 }
@@ -6144,7 +6144,7 @@ void Standard_model::calculate_MFe_pole()
 
 void Standard_model::calculate_MVWp_pole()
 {
-   if (!force_output && problems.is_tachyon(standard_model_info::VWp))
+   if (!force_output && problems.is_running_tachyon(standard_model_info::VWp))
       return;
 
    // diagonalization with medium precision
@@ -6154,35 +6154,35 @@ void Standard_model::calculate_MVWp_pole()
    const double mass_sqr = M_tree - self_energy;
 
    if (mass_sqr < 0.)
-      problems.flag_tachyon(standard_model_info::VWp);
+      problems.flag_pole_tachyon(standard_model_info::VWp);
 
    PHYSICAL(MVWp) = AbsSqrt(mass_sqr);
 }
 
 double Standard_model::calculate_MVWp_pole(double p)
 {
-   if (!force_output && problems.is_tachyon(standard_model_info::VWp))
+   if (!force_output && problems.is_running_tachyon(standard_model_info::VWp))
       return 0.;
 
    const double self_energy = Re(self_energy_VWp(p));
    const double mass_sqr = get_mass_matrix_VWp() - self_energy;
 
    if (mass_sqr < 0.)
-      problems.flag_tachyon(standard_model_info::VWp);
+      problems.flag_pole_tachyon(standard_model_info::VWp);
 
    return AbsSqrt(mass_sqr);
 }
 
 double Standard_model::calculate_MVZ_pole(double p)
 {
-   if (!force_output && problems.is_tachyon(standard_model_info::VZ))
+   if (!force_output && problems.is_running_tachyon(standard_model_info::VZ))
       return 0.;
 
    const double self_energy = Re(self_energy_VZ(p));
    const double mass_sqr = get_mass_matrix_VZ() - self_energy;
 
    if (mass_sqr < 0.)
-      problems.flag_tachyon(standard_model_info::VZ);
+      problems.flag_pole_tachyon(standard_model_info::VZ);
 
    return AbsSqrt(mass_sqr);
 }
@@ -6278,7 +6278,7 @@ double Standard_model::calculate_MVZ_DRbar(double m_pole)
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
    if (mass_sqr < 0.) {
-      problems.flag_tachyon(standard_model_info::VZ);
+      problems.flag_running_tachyon(standard_model_info::VZ);
       return m_pole;
    }
 
@@ -6292,7 +6292,7 @@ double Standard_model::calculate_MVWp_DRbar(double m_pole)
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
    if (mass_sqr < 0.) {
-      problems.flag_tachyon(standard_model_info::VWp);
+      problems.flag_running_tachyon(standard_model_info::VWp);
       return m_pole;
    }
 
@@ -6307,7 +6307,7 @@ double Standard_model::calculate_Mhh_DRbar(double m_pole)
    const double mass_sqr = Sqr(m_pole) + self_energy - tadpole/v;
 
    if (mass_sqr < 0.) {
-      problems.flag_tachyon(standard_model_info::hh);
+      problems.flag_running_tachyon(standard_model_info::hh);
       return m_pole;
    }
 

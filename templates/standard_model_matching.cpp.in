@@ -264,14 +264,14 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    const double mZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
 
    if (mZ2_1L < 0.)
-      model.get_problems().flag_tachyon(@ModelName@_info::@VectorZ@);
+      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
    else
-      model.get_problems().unflag_tachyon(@ModelName@_info::@VectorZ@);
+      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorZ@);
 
    if (mW2_1L < 0.)
-      model.get_problems().flag_tachyon(@ModelName@_info::@VectorW@);
+      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
    else
-      model.get_problems().unflag_tachyon(@ModelName@_info::@VectorW@);
+      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
 
 @setRunningFermionMasses@
 
