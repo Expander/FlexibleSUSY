@@ -85,7 +85,7 @@ public:
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
    struct TScaleComp {
-      bool operator() const (const TData::value_type& i,const TData::value_type& j) {
+      bool operator() (const TData::value_type& i,const TData::value_type& j) const {
          return i.first < j.first;
       }
    };
