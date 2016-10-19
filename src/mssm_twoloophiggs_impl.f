@@ -39,11 +39,34 @@ c
      $     ,pi,k
       double precision F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb
      $     ,FAp
+      double precision, parameter :: eps_st = 1d-5
+      double precision, parameter :: eps_t1 = 1d-5
       
       pi = 3.14159265897d0
       
       mt = dsqrt(t)
       mb = dsqrt(b)
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(st).lt.eps_st) then
+         if (st.ge.0.0d0) then
+            st = eps_st
+         else
+            st = -eps_st
+         endif
+      endif
+      ct = sqrt(1.d0-st*st)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when T1 == T2
+      if (dabs((T1-T2)/T1).lt.eps_t1) then
+         if (T1.gt.T2) then
+            T1 = T2 / (1d0 - eps_t1)
+         else
+            T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
       
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
@@ -104,12 +127,35 @@ c
      $     ,pi,k
       double precision F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb
      $     ,FAp
+      double precision, parameter :: eps_st = 1d-5
+      double precision, parameter :: eps_t1 = 1d-5
       
       pi = 3.14159265897d0
       
       mt = dsqrt(t)
       mb = dsqrt(b)
       
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(st).lt.eps_st) then
+         if (st.ge.0.0d0) then
+            st = eps_st
+         else
+            st = -eps_st
+         endif
+      endif
+      ct = sqrt(1.d0-st*st)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when T1 == T2
+      if (dabs((T1-T2)/T1).lt.eps_t1) then
+         if (T1.gt.T2) then
+            T1 = T2 / (1d0 - eps_t1)
+         else
+            T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
+
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
       c2t = ct**2 - st**2
