@@ -57,7 +57,6 @@ struct @ModelName@_scales {
 class @ModelName@_slha_io {
 public:
    @ModelName@_slha_io();
-   ~@ModelName@_slha_io() {}
 
    void clear();
 
