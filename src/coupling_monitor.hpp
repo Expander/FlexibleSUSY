@@ -72,7 +72,6 @@ public:
    typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
 
    Coupling_monitor(const Model&, const DataGetter&);
-   ~Coupling_monitor() {}
 
    /// get couplings at all scales
    void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
