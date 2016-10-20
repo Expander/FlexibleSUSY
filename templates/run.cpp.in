@@ -89,8 +89,7 @@ int main(int argc, char* argv[])
    const @ModelName@_slha<algorithm_type> model(
       spectrum_generator.get_model(),
       spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-      = spectrum_generator.get_problems();
+   const auto& problems = spectrum_generator.get_problems();
 
    @ModelName@_scales scales;
    scales.HighScale = spectrum_generator.get_high_scale();

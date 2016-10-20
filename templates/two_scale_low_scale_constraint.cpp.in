@@ -20,6 +20,7 @@
 
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_info.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
@@ -243,15 +244,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    AlphaS = alpha_s_drbar;
    EDRbar = e_drbar;
    ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
-
-   if (IsFinite(ThetaWDRbar)) {
-      model->get_problems().unflag_non_perturbative_parameter(
-         "sin(theta_W)");
-   } else {
-      model->get_problems().flag_non_perturbative_parameter(
-         "sin(theta_W)", ThetaWDRbar, model->get_scale(), 0);
-      ThetaWDRbar = ArcSin(Electroweak_constants::sinThetaW);
-   }
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
@@ -274,6 +266,22 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
    calculate_threshold_corrections();
 
 @calculateGaugeCouplings@
+
+   if (IsFinite(new_g1)) {
+      model->get_problems().unflag_non_perturbative_parameter(@ModelName@_info::g1);
+   } else {
+      model->get_problems().flag_non_perturbative_parameter(
+         @ModelName@_info::g1, new_g1, get_scale());
+      new_g1 = Electroweak_constants::g1;
+   }
+
+   if (IsFinite(new_g2)) {
+      model->get_problems().unflag_non_perturbative_parameter(@ModelName@_info::g2);
+   } else {
+      model->get_problems().flag_non_perturbative_parameter(
+         @ModelName@_info::g2, new_g2, get_scale());
+      new_g2 = Electroweak_constants::g2;
+   }
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const

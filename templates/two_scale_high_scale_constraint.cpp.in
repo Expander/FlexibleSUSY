@@ -20,6 +20,7 @@
 
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_info.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"

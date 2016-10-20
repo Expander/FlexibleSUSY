@@ -161,7 +161,7 @@ Standard_model::Standard_model()
    , precision(1.0e-4)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
-   , problems(standard_model_info::particle_names)
+   , problems(standard_model_info::particle_names, standard_model_info::parameter_names)
    , two_loop_corrections()
    , qedqcd()
    , input()
@@ -196,7 +196,7 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
-   , problems(standard_model_info::particle_names)
+   , problems(standard_model_info::particle_names, standard_model_info::parameter_names)
    , two_loop_corrections()
    , qedqcd()
    , input()
@@ -320,12 +320,12 @@ void Standard_model::set_physical(const Standard_model_physical& physical_)
    physical = physical_;
 }
 
-const Problems<standard_model_info::NUMBER_OF_PARTICLES>& Standard_model::get_problems() const
+const Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& Standard_model::get_problems() const
 {
    return problems;
 }
 
-Problems<standard_model_info::NUMBER_OF_PARTICLES>& Standard_model::get_problems()
+Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& Standard_model::get_problems()
 {
    return problems;
 }
@@ -829,16 +829,7 @@ void Standard_model::initialise_from_input()
       const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
       const double alpha_s_drbar  = alpha_s / (1.0 - delta_alpha_s);
       const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
-      double theta_w_drbar        = calculate_theta_w(alpha_em_drbar);
-
-      if (IsFinite(theta_w_drbar)) {
-         problems.unflag_non_perturbative_parameter(
-            "sin(theta_W)");
-      } else {
-         problems.flag_non_perturbative_parameter(
-            "sin(theta_W)", theta_w_drbar, get_scale(), 0);
-         theta_w_drbar = ArcSin(Electroweak_constants::sinThetaW);
-      }
+      const double theta_w_drbar  = calculate_theta_w(alpha_em_drbar);
 
       v = Re((2 * mz_run) / Sqrt(0.6 * Sqr(g1) + Sqr(g2)));
 
@@ -852,6 +843,22 @@ void Standard_model::initialise_from_input()
       g1 = 1.2909944487358056 * e_drbar * Sec(theta_w_drbar);
       g2 = e_drbar * Csc(theta_w_drbar);
       g3 = 3.5449077018110318 * Sqrt(alpha_s_drbar);
+
+      if (IsFinite(g1)) {
+         problems.unflag_non_perturbative_parameter(standard_model_info::g1);
+      } else {
+         problems.flag_non_perturbative_parameter(
+            standard_model_info::g1, g1, get_scale());
+         g1 = Electroweak_constants::g1;
+      }
+
+      if (IsFinite(g2)) {
+         problems.unflag_non_perturbative_parameter(standard_model_info::g2);
+      } else {
+         problems.flag_non_perturbative_parameter(
+            standard_model_info::g2, g2, get_scale());
+         g2 = Electroweak_constants::g2;
+      }
 
       recalculate_mw_pole();
 

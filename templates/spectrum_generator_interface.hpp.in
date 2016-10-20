@@ -51,7 +51,7 @@ public:
 
    const @ModelName@<T>& get_model() const { return model; }
    @ModelName@<T>& get_model() { return model; }
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const {
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const {
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); }
@@ -184,12 +184,9 @@ void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem
       model.get_problems().flag_no_convergence();
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
-      const int parameter_index = error.get_parameter_index();
-      const std::string parameter_name =
-         parameter_index < 0 ? "Q" : @ModelName@_info::parameter_names[parameter_index];
-      const double parameter_value = error.get_parameter_value();
-      const double scale = error.get_scale();
-      model.get_problems().flag_non_perturbative_parameter(parameter_name, parameter_value, scale, -1);
+      model.get_problems().flag_non_perturbative_parameter(
+         error.get_parameter_index(), error.get_parameter_value(),
+         error.get_scale());
    } catch (const NonPerturbativeRunningQedQcdError& error) {
       model.get_problems().flag_no_perturbative();
       model.get_problems().flag_thrown(error.what());

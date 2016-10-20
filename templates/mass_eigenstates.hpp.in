@@ -89,8 +89,8 @@ public:
    double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
    @ModelName@_physical& get_physical();
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const;
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
@@ -136,14 +136,14 @@ private:
 
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
-   unsigned ewsb_loop_order;
-   unsigned pole_mass_loop_order;
+   unsigned ewsb_loop_order;      ///< loop order for EWSB
+   unsigned pole_mass_loop_order; ///< loop order for pole masses
    bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
    bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
-   double ewsb_iteration_precision;
+   double ewsb_iteration_precision; ///< precision goal of EWSB solution
    @ModelName@_physical physical; ///< contains the pole masses and mixings
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems; ///< problems
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
 
    void set_ewsb_solution(const EWSB_solver*);

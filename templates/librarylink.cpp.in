@@ -353,8 +353,7 @@ void put_observables(const @ModelName@_observables& observables, MLINK link)
 
 void check_spectrum(const Model_data& data, MLINK link)
 {
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-      = data.model.get_problems();
+   const auto& problems = data.model.get_problems();
 
    for (const auto& s: problems.get_problem_strings())
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);

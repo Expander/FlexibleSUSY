@@ -80,7 +80,7 @@ public:
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
-   void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
+   void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>&);
    void set_spinfo(const std::vector<std::string>&, const std::vector<std::string>&);
    void set_print_imaginary_parts_of_majorana_mixings(bool);
    void write_to(const std::string&);
@@ -131,8 +131,7 @@ void @ModelName@_slha_io::fill_slhaea(
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-      = model.get_problems();
+   const auto& problems = model.get_problems();
    const bool error = problems.have_problem();
 
    slha_io.set_spinfo(problems);

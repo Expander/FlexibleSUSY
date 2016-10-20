@@ -574,19 +574,25 @@ if (" <> scaleName <> " > " <> value <> ") {
            Return[result];
           ];
 
-CheckPerturbativityForParameter[par_, thresh_, model_String:"model", problem_String:"problem"] :=
-    Module[{snippet, parStr, threshStr},
-           parStr = CConversion`ToValidCSymbolString[par];
+PerturbativityCheckSnippet[par_, thresh_, model_String, problem_String] :=
+    Module[{parStr, parEnum, threshStr},
+           parStr = CConversion`RValueToCFormString[par];
+           parEnum = FlexibleSUSY`FSModelName <> "_info::" <> Parameters`CreateEnumName[par];
            threshStr = CConversion`RValueToCFormString[thresh];
-           snippet = "\
+           "\
 if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
    " <> problem <> " = true;
-   " <> model <> "->get_problems().flag_non_perturbative_parameter(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
+   " <> model <> "->get_problems().flag_non_perturbative_parameter(" <> parEnum <> ", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
 } else {
-   " <> model <> "->get_problems().unflag_non_perturbative_parameter(\"" <> parStr <> "\");
+   " <> model <> "->get_problems().unflag_non_perturbative_parameter(" <> parEnum <> ");
 }
-";
-           snippet
+"
+          ];
+
+CheckPerturbativityForParameter[par_, thresh_, model_String:"model", problem_String:"problem"] :=
+    Module[{snippet, parStr, threshStr},
+           Utils`StringJoinWithSeparator[
+               PerturbativityCheckSnippet[#, thresh, model, problem]& /@ Parameters`DecomposeParameter[par, GetType[par]], "\n"]
           ];
 
 CheckPerturbativityForParameters[pars_List, thresh_] :=

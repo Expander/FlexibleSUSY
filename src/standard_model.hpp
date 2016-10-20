@@ -128,8 +128,8 @@ public:
    double get_ewsb_loop_order() const;
    const Standard_model_physical& get_physical() const;
    Standard_model_physical& get_physical();
-   const Problems<standard_model_info::NUMBER_OF_PARTICLES>& get_problems() const;
-   Problems<standard_model_info::NUMBER_OF_PARTICLES>& get_problems();
+   const Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& get_problems() const;
+   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
@@ -569,7 +569,7 @@ private:
    double precision;              ///< RG running precision
    double ewsb_iteration_precision;
    Standard_model_physical physical; ///< contains the pole masses and mixings
-   Problems<standard_model_info::NUMBER_OF_PARTICLES> problems;
+   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    softsusy::QedQcd qedqcd;
    Physical_input input;
