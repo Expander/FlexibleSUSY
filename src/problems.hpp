@@ -111,10 +111,14 @@ public:
       { return pole_tachyons.at(particle); }
    bool have_bad_mass() const
       { return std::any_of(bad_masses.cbegin(), bad_masses.cend(), [](bool x){ return x; }); }
-   bool have_tachyon() const {
-      return std::any_of(running_tachyons.cbegin(), running_tachyons.cend(), [](bool x){ return x; }) ||
-             std::any_of(pole_tachyons.cbegin(), pole_tachyons.cend(), [](bool x){ return x; });
+   bool have_running_tachyon() const {
+      return std::any_of(running_tachyons.cbegin(), running_tachyons.cend(), [](bool x){ return x; });
    }
+   bool have_pole_tachyon() const {
+      return std::any_of(pole_tachyons.cbegin(), pole_tachyons.cend(), [](bool x){ return x; });
+   }
+   bool have_tachyon() const
+      { return have_running_tachyon() || have_pole_tachyon(); }
    bool have_thrown() const
       { return thrown; }
    bool have_non_perturbative_parameter() const
@@ -136,7 +140,14 @@ public:
    void print_problems(std::ostream& = std::cout) const;
    void print_warnings(std::ostream& = std::cout) const;
 
-   std::array<bool, Number_of_particles> get_bad_masses() const { return bad_masses; }
+   std::array<bool, Number_of_particles> get_bad_masses() const
+      { return bad_masses; }
+   std::array<bool, Number_of_particles> get_running_tachyons() const
+      { return running_tachyons; }
+   std::array<bool, Number_of_particles> get_pole_tachyons() const
+      { return pole_tachyons; }
+   std::array<bool, Number_of_particles> get_failed_pole_mass_convergence() const
+      { return failed_pole_mass_convergence; }
 
 private:
    struct NonPerturbativeValue {

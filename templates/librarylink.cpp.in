@@ -334,7 +334,8 @@ void put_input_parameters(const Model_data& data, MLINK link)
 template <typename P>
 unsigned number_of_problems(const P& problems)
 {
-   return problems.have_tachyon()
+   return problems.have_running_tachyon()
+      + problems.have_pole_tachyon()
       + problems.no_ewsb()
       + problems.no_convergence()
       + problems.no_perturbative()
@@ -380,8 +381,10 @@ void put_problems(const Model_data& data, MLINK link)
 
    MLPutFunction(link, "List", n_problems);
 
-   if (problems.have_tachyon())
-      MLPutRuleTo(link, "True", "Tachyons");
+   if (problems.have_running_tachyon())
+      put_masses(link, problems.get_running_tachyons(), "Tachyons", {"M"});
+   if (problems.have_pole_tachyon())
+      put_masses(link, problems.get_pole_tachyons(), "Tachyons", {"Pole", "M"});
    if (problems.no_ewsb())
       MLPutRuleTo(link, "True", "NoEWSB");
    if (problems.no_convergence())
@@ -393,7 +396,7 @@ void put_problems(const Model_data& data, MLINK link)
    if (problems.have_thrown())
       MLPutRuleTo(link, "True", "Exceptions");
    if (problems.have_failed_pole_mass_convergence())
-      MLPutRuleTo(link, "True", "NoPoleMassConvergence");
+      put_masses(link, problems.get_failed_pole_mass_convergence(), "NoPoleMassConvergence", {"Pole", "M"});
    if (problems.have_non_perturbative_parameter())
       MLPutRuleTo(link, "True", "NonPerturbativeParameters");
 
