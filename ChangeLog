@@ -18,6 +18,11 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Jobst Ziebell.
 
+ * Feature: Two new functions, FS<model>GetProblems[] and
+   FS<model>GetWarnings[], have been added to FlexibleSUSY's spectrum
+   generator Mathematica interface.  These functions return details
+   about problems / warnings for the given parameter point.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
