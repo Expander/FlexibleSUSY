@@ -758,10 +758,10 @@ DecomposeParameter[name_, CConversion`ScalarType[CConversion`realScalarCType | C
 DecomposeParameter[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     { Re[name], Im[name] };
 
-DecomposeParameter[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)[CConversion`realScalarCType, rows_]] :=
     Array[name, rows, 0];
 
-DecomposeParameter[name_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
+DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)`VectorType[CConversion`complexScalarCType, rows_]] :=
     Flatten[{Re[#], Im[#]}& /@ Array[name, rows, 0]];
 
 DecomposeParameter[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
