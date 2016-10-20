@@ -179,7 +179,7 @@ private:
  */
 class OutOfBoundsError : public Error {
 public:
-   explicit OutOfBoundsError(std::string msg_)
+   OutOfBoundsError(std::string msg_)
       : msg(msg_)
       {}
    virtual ~OutOfBoundsError() {}
