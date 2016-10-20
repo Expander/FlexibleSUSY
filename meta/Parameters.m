@@ -634,22 +634,22 @@ CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`compl
 DisplayAssignParSet[str_String, startIndex_, currIdx_, struct_String] :=
     struct <> "(" <> ToString[startIndex + currIdx - 1] <> ") = " <> str <> ";\n";
 
-(* creates parameter name and calls DisplayAssignParSet[] *)
-DisplayAssignPar[(h:(Re|Im))[(par_String)[idx__]], startIndex_, currIdx_, struct_String] :=
-    DisplayAssignParSet[ToString[h] <> "(" <> par <> "(" <>
-                        Utils`StringJoinWithSeparator[{idx}, ","] <>
-                        "))", startIndex, currIdx, struct];
+(* creates parameter name and calls SetterFunc[] (= DisplayAssignParSet[] by default) *)
+DisplayAssignPar[(h:(Re|Im))[(par_String)[idx__]], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[ToString[h] <> "(" <> par <> "(" <>
+         Utils`StringJoinWithSeparator[{idx}, ","] <>
+         "))", startIndex, currIdx, struct];
 
-DisplayAssignPar[(par_String)[idx__], startIndex_, currIdx_, struct_String] :=
-    DisplayAssignParSet[par <> "(" <>
-                        Utils`StringJoinWithSeparator[{idx}, ","] <>
-                        ")", startIndex, currIdx, struct];
+DisplayAssignPar[(par_String)[idx__], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[par <> "(" <>
+         Utils`StringJoinWithSeparator[{idx}, ","] <>
+         ")", startIndex, currIdx, struct];
 
-DisplayAssignPar[(h:(Re|Im))[par_String], startIndex_, currIdx_, struct_String] :=
-    DisplayAssignParSet[ToString[h] <> "(" <> par <> ")", startIndex, currIdx, struct];
+DisplayAssignPar[(h:(Re|Im))[par_String], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[ToString[h] <> "(" <> par <> ")", startIndex, currIdx, struct];
 
-DisplayAssignPar[par_, startIndex_, currIdx_, struct_String] :=
-    DisplayAssignParSet[CConversion`RValueToCFormString[par], startIndex, currIdx, struct];
+DisplayAssignPar[par_, startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[CConversion`RValueToCFormString[par], startIndex, currIdx, struct];
 
 CreateDisplayAssignment[name_, startIndex_, type_, struct_:"pars"] :=
     { StringJoin @
@@ -658,85 +658,20 @@ CreateDisplayAssignment[name_, startIndex_, type_, struct_:"pars"] :=
       Length[DecomposeParameter[name, type]]
     };
 
-CreateStdVectorNamesAssignment[name_, startIndex_, parameterType_, struct_:"names"] :=
-    Block[{},
-          Print["Error: CreateStdVectorNamesAssignment: unknown parameter type: ",
-                ToString[parameterType]];
-          Quit[1];
-          ];
+(* assigns the string (str) to the std container element *)
+DisplayAssignNameSet[str_String, startIndex_, currIdx_, struct_String] :=
+    struct <> "[" <> ToString[startIndex + currIdx - 1] <> "] = \"" <> str <> "\";\n";
 
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"names"] :=
-    Module[{ass = ""},
-           ass = struct <> "[" <> ToString[startIndex] <> "] = \""
-                 <> name <> "\";\n";
-           Return[{ass, 1}];
-          ];
+(* creates parameter name and calls DisplayAssignNameSet[] *)
+DisplayAssignName[par_, startIndex_, currIdx_, struct_String] :=
+    DisplayAssignPar[par, startIndex, currIdx, struct, DisplayAssignNameSet];
 
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"names"] :=
-    Module[{ass = ""},
-           ass = struct <> "[" <> ToString[startIndex] <> "] = \"Re(" <> name <> ")\";\n" <>
-                 struct <> "[" <> ToString[startIndex + 1] <> "] = \"Im(" <> name <> ")\";\n";
-           Return[{ass, 2}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"names"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
-                     <> name <> "(" <> ToString[i] <> ")\";\n";
-              ];
-           If[rows != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, rows}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"names"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
-                     <> name <> "(" <> ToString[i] <> "))\";\n";
-               ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
-                     <> name <> "(" <> ToString[i] <> "))\";\n";
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"names"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
-                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                          <> ")\";\n";
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateStdVectorAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"names"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "))\";\n";
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "))\";\n";
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
+CreateStdVectorNamesAssignment[name_, startIndex_, type_, struct_:"names"] :=
+    { StringJoin @
+        MapIndexed[DisplayAssignName[#1,startIndex,First[#2],struct]&,
+                   DecomposeParameter[name, type]],
+      Length[DecomposeParameter[name, type]]
+    };
 
 CreateParameterSARAHNameStr[par_] :=
     "\"" <> CConversion`RValueToCFormString[par] <> "\"";
@@ -761,7 +696,7 @@ DecomposeParameter[name_, CConversion`ScalarType[CConversion`complexScalarCType]
 DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)[CConversion`realScalarCType, rows_]] :=
     Array[name, rows, 0];
 
-DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)`VectorType[CConversion`complexScalarCType, rows_]] :=
+DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)[CConversion`complexScalarCType, rows_]] :=
     Flatten[{Re[#], Im[#]}& /@ Array[name, rows, 0]];
 
 DecomposeParameter[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
