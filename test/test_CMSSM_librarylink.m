@@ -54,6 +54,8 @@ handle = FSCMSSMOpenHandle[
 
 specML = FSCMSSMCalculateSpectrum[handle];
 obsML = FSCMSSMCalculateObservables[handle];
+probML = FSCMSSMGetProblems[handle];
+warnML = FSCMSSMGetWarnings[handle];
 
 FSCMSSMCloseHandle[handle];
 
@@ -126,6 +128,9 @@ TestCloseRel[{CpHPP1, CpHPP2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsPho
 TestCloseRel[{CpHGG1, CpHGG2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGluonGluon] /. obsML, delta];
 TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton  /. obsML], delta];
 TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
+
+TestEquality[probML, {}];
+TestEquality[warnML, {}];
 
 Print["Check re-calculation of spectrum yields the same"];
 
