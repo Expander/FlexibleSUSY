@@ -115,7 +115,8 @@ CreateCompareFunction[parameters_List] :=
               Print["Error: no parameters specified for the convergence test!"];
               Return["return 0.;"];
              ];
-           result = "double diff[" <> ToString[numberOfParameters] <> "] = { 0 };\n\n";
+           ctype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
+           result = "std::array<" <> ctype <> ", " <> ToString[numberOfParameters] <> "> diff{};\n\n";
            For[i = 1, i <= Length[parameters], i++,
                result = result <> CalcDifference[parameters[[i]], offset, "diff"];
                offset += CountNumberOfParameters[parameters[[i]]];
@@ -125,8 +126,7 @@ CreateCompareFunction[parameters_List] :=
               Print["  numberOfParameters = ", numberOfParameters, ", offset = ", offset];
              ];
            result = result <>
-                    "\nreturn *std::max_element(diff, diff + " <>
-                    ToString[numberOfParameters] <> ");\n";
+                    "\nreturn *std::max_element(diff.cbegin(), diff.cend());\n";
            Return[result];
           ];
 
