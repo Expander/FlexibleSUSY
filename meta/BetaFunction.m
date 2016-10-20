@@ -359,17 +359,11 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
           ];
 
 CreateParameterNames[betaFunctions_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               par = GetName[betaFunctions[[i]]];
-               type = GetType[betaFunctions[[i]]];
-               name = Parameters`CreateParameterNamesStr[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           result = "const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterNamesStr[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
+           "const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {" <>
+           result <> "};\n"
           ];
 
 CreateParameterEnum[betaFunctions_List] :=
