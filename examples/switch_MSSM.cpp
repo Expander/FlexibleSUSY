@@ -43,12 +43,12 @@ public:
 	{}
     void set_input(const MSSM_input_parameters&) {}
     void do_calculate_sm_pole_masses(bool) {}
-    const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const
+    const Problems<MSSM_info::NUMBER_OF_PARTICLES, MSSM_info::NUMBER_OF_PARAMETERS>& get_problems() const
     { return problems; }
-    Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems()
+    Problems<MSSM_info::NUMBER_OF_PARTICLES, MSSM_info::NUMBER_OF_PARAMETERS>& get_problems()
     { return problems; }
 private:
-    Problems<MSSM_info::NUMBER_OF_PARTICLES> problems;
+    Problems<MSSM_info::NUMBER_OF_PARTICLES, MSSM_info::NUMBER_OF_PARAMETERS> problems;
 };
 
 // auxiliary class for initializing own members before the base class
@@ -305,7 +305,7 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const MSSM<T>& get_model() const { return model; }
-   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
+   const Problems<MSSM_info::NUMBER_OF_PARTICLES, MSSM_info::NUMBER_OF_PARAMETERS>& get_problems() const {
       return model.get_problems();
    }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }

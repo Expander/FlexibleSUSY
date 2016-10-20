@@ -89,8 +89,7 @@ int main(int argc, char* argv[])
 
    const MSSMcbs<algorithm_type>& model
       = spectrum_generator.get_model();
-   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& problems
-      = spectrum_generator.get_problems();
+   const auto& problems = spectrum_generator.get_problems();
 
    // output
    slha_io.set_spinfo(problems);

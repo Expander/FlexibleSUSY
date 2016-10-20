@@ -84,8 +84,7 @@ int main(int argc, char* argv[])
 
    const MSSMD5O<algorithm_type>& model_1
       = spectrum_generator.get_model_1();
-   const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES>& problems
-      = spectrum_generator.get_problems();
+   const auto& problems = spectrum_generator.get_problems();
 
    // output
    slha_io_1.set_spinfo(problems);
