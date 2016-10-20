@@ -331,22 +331,6 @@ void put_input_parameters(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_running_mass(MLINK link, const std::string particle)
-{
-   MLPutHeads(link, {"M"});
-   MLPutSymbol(link, particle.c_str());
-}
-
-/******************************************************************/
-
-void put_pole_mass(MLINK link, const std::string particle)
-{
-   MLPutHeads(link, {"Pole", "M"});
-   MLPutSymbol(link, particle.c_str());
-}
-
-/******************************************************************/
-
 template <typename P>
 unsigned number_of_problems(const P& problems)
 {
@@ -366,6 +350,25 @@ template <typename P>
 unsigned number_of_warnings(const P& problems)
 {
    return problems.have_bad_mass();
+}
+
+/******************************************************************/
+
+template <typename F>
+void put_masses(MLINK link, const F& flags, const std::string& rule,
+                const std::vector<std::string>& heads = {})
+{
+   const unsigned n_masses = std::count(flags.cbegin(), flags.cend(), true);
+
+   MLPutRule(link, rule);
+   MLPutFunction(link, "List", n_masses);
+
+   for (unsigned i = 0; i < flags.size(); i++) {
+      if (flags[i]) {
+         MLPutHeads(link, heads);
+         MLPutSymbol(link, @ModelName@_info::particle_names[i].c_str());
+      }
+   }
 }
 
 /******************************************************************/
@@ -399,23 +402,6 @@ void put_problems(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-template <typename P>
-void put_bad_masses(const P& problems, MLINK link)
-{
-   const auto bm = problems.get_bad_masses();
-   const unsigned n_bad_masses = std::count(bm.cbegin(), bm.cend(), true);
-
-   MLPutRule(link, "ImpreciseMasses");
-   MLPutFunction(link, "List", n_bad_masses);
-
-   for (unsigned i = 0; i < bm.size(); i++) {
-      if (bm[i])
-         put_running_mass(link, @ModelName@_info::particle_names[i]);
-   }
-}
-
-/******************************************************************/
-
 void put_warnings(const Model_data& data, MLINK link)
 {
    const auto& problems = data.model.get_problems();
@@ -424,7 +410,7 @@ void put_warnings(const Model_data& data, MLINK link)
    MLPutFunction(link, "List", n_warnings);
 
    if (problems.have_bad_mass())
-      put_bad_masses(problems, link);
+      put_masses(link, problems.get_bad_masses(), "ImpreciseMasses", {"M"});
 
    MLEndPacket(link);
 }
