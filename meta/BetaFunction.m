@@ -367,7 +367,7 @@ CreateParameterNames[betaFunctions_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> name;
               ];
-           result = "const char* parameter_names[NUMBER_OF_PARAMETERS] = {" <>
+           result = "const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {" <>
                     result <> "};\n";
            Return[result];
           ];

@@ -1083,7 +1083,7 @@ CreateInputParameterNames[inputParameters_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> name;
               ];
-           result = "const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {" <>
+           result = "const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names = {" <>
                     result <> "};\n";
            Return[result];
           ];

@@ -32,6 +32,7 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <iterator>
 
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
@@ -40,9 +41,10 @@ namespace flexiblesusy {
 
 namespace utilities {
 
-void append(std::vector<std::string>& a, const std::vector<std::string>& b)
+template <typename Iterable>
+void append(std::vector<std::string>& a, const Iterable& b)
 {
-   a.insert(a.end(), b.begin(), b.end());
+   a.insert(a.end(), begin(b), end(b));
 }
 
 void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)

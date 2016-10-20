@@ -40,7 +40,6 @@
 
 #include "sm_twoloophiggs.hpp"
 
-#include <array>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -55,23 +54,25 @@ namespace standard_model_info {
    const double normalization_g2 = 1;
    const double normalization_g3 = 1;
 
-   const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {1, 1, 3, 1, 1
-      , 1, 1, 3, 3, 3, 1};
+   const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {
+      1, 1, 3, 1, 1, 1, 1, 3, 3, 3, 1};
 
-   const char* particle_names[NUMBER_OF_PARTICLES] = {"VG", "Hp", "Fv", "Ah",
-      "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
+   const std::array<std::string, NUMBER_OF_PARTICLES> particle_names = {
+      "VG", "Hp", "Fv", "Ah", "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
 
-   const char* particle_latex_names[NUMBER_OF_PARTICLES] = {   "g", "H^+",
-      "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
+   const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names = {
+      "g", "H^+", "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
 
-   const char* parameter_names[NUMBER_OF_PARAMETERS] = {"g1", "g2", "g3",
+   const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {
+      "g1", "g2", "g3",
       "Lambdax", "Yu(0,0)", "Yu(0,1)", "Yu(0,2)", "Yu(1,0)", "Yu(1,1)", "Yu(1,2)",
       "Yu(2,0)", "Yu(2,1)", "Yu(2,2)", "Yd(0,0)", "Yd(0,1)", "Yd(0,2)", "Yd(1,0)"
       , "Yd(1,1)", "Yd(1,2)", "Yd(2,0)", "Yd(2,1)", "Yd(2,2)", "Ye(0,0)",
       "Ye(0,1)", "Ye(0,2)", "Ye(1,0)", "Ye(1,1)", "Ye(1,2)", "Ye(2,0)", "Ye(2,1)",
       "Ye(2,2)", "mu2", "v"};
 
-   const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {   "Re(Vd(0,0))",
+   const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names = {
+      "Re(Vd(0,0))",
       "Im(Vd(0,0))", "Re(Vd(0,1))", "Im(Vd(0,1))", "Re(Vd(0,2))", "Im(Vd(0,2))",
       "Re(Vd(1,0))", "Im(Vd(1,0))", "Re(Vd(1,1))", "Im(Vd(1,1))", "Re(Vd(1,2))",
       "Im(Vd(1,2))", "Re(Vd(2,0))", "Im(Vd(2,0))", "Re(Vd(2,1))", "Im(Vd(2,1))",
@@ -95,7 +96,7 @@ namespace standard_model_info {
       "Im(Ue(1,2))", "Re(Ue(2,0))", "Im(Ue(2,0))", "Re(Ue(2,1))", "Im(Ue(2,1))",
       "Re(Ue(2,2))", "Im(Ue(2,2))"};
 
-   const char* model_name = "Standard_model";
+   const std::string model_name = "Standard_model";
    const bool is_low_energy_model = false;
    const bool is_supersymmetric_model = false;
 

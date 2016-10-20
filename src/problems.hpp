@@ -36,7 +36,7 @@ namespace flexiblesusy {
 template <unsigned Number_of_particles>
 class Problems {
 public:
-   explicit Problems(const char**);
+   explicit Problems(const std::array<std::string, Number_of_particles>&);
 
    void flag_bad_mass(unsigned particle, bool flag = true)
       { bad_masses.at(particle) = flag; }
@@ -141,7 +141,7 @@ private:
    std::array<bool, Number_of_particles> failed_pole_mass_convergence; ///< no convergence during pole mass calculation
    std::map<std::string, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
    std::string exception_msg;          ///< exception message
-   const char** particle_names;        ///< particle names
+   std::array<std::string, Number_of_particles> particle_names; ///< particle names
    bool thrown;                        ///< excepton thrown
    bool failed_ewsb;                   ///< no EWSB
    bool failed_convergence;            ///< no convergence
@@ -152,7 +152,7 @@ private:
 };
 
 template <unsigned Number_of_particles>
-Problems<Number_of_particles>::Problems(const char** particle_names_)
+Problems<Number_of_particles>::Problems(const std::array<std::string, Number_of_particles>& particle_names_)
    : bad_masses() // intializes all elements to zero (= false)
    , running_tachyons()
    , pole_tachyons()

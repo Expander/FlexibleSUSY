@@ -21,7 +21,9 @@
 #ifndef @ModelName@_INFO_H
 #define @ModelName@_INFO_H
 
+#include <array>
 #include <iosfwd>
+#include <string>
 
 namespace flexiblesusy {
 
@@ -32,13 +34,13 @@ namespace @ModelName@_info {
 @particleMixingEnum@
 @inputParameterEnum@
 @gaugeCouplingNormalizationDecls@
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-   extern const char* particle_mixing_names[NUMBER_OF_MIXINGS];
-   extern const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS];
-   extern const char* model_name;
+   extern const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_names;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names;
+   extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;
+   extern const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names;
+   extern const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names;
+   extern const std::string model_name;
    extern const bool is_low_energy_model;
    extern const bool is_supersymmetric_model;
 

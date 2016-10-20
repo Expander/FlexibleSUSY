@@ -897,7 +897,7 @@ CreateParticleNames[particles_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> "\"" <> name <> "\"";
               ];
-           result = "const char* particle_names[NUMBER_OF_PARTICLES] = {" <>
+           result = "const std::array<std::string, NUMBER_OF_PARTICLES> particle_names = {" <>
                     result <> "};\n";
            Return[result];
           ];
@@ -910,7 +910,7 @@ CreateParticleMultiplicity[particles_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> mult;
               ];
-           result = "const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {" <>
+           result = "const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
                     result <> "};\n";
            Return[result];
           ];
@@ -923,7 +923,7 @@ CreateParticleLaTeXNames[particles_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> "\"" <> latexName <> "\"";
               ];
-           result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {" <>
+           result = "const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names = {" <>
                     IndentText[result] <> "};\n";
            Return[result];
           ];
@@ -940,7 +940,7 @@ CreateParticleMixingNames[mixings_List] :=
                    result = result <> name;
                   ];
               ];
-           result = "const char* particle_mixing_names[NUMBER_OF_MIXINGS] = {" <>
+           result = "const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names = {" <>
                     IndentText[result] <> "};\n";
            Return[result];
           ];

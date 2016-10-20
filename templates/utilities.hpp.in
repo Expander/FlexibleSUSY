@@ -26,6 +26,7 @@
 #include "wrappers.hpp"
 
 #include <Eigen/Core>
+#include <array>
 #include <string>
 #include <vector>
 #include <valarray>
@@ -45,15 +46,11 @@ public:
    Eigen::ArrayXd get_parameters(const @ModelName@_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names() const {
-      using namespace @ModelName@_info;
-      return std::vector<std::string>(parameter_names,
-                                      parameter_names + NUMBER_OF_PARAMETERS);
+   std::array<std::string, @ModelName@_info::NUMBER_OF_PARAMETERS> get_parameter_names() const {
+      return @ModelName@_info::parameter_names;
    }
-   std::vector<std::string> get_particle_names() const {
-      using namespace @ModelName@_info;
-      return std::vector<std::string>(particle_names,
-                                      particle_names + NUMBER_OF_PARTICLES);
+   std::array<std::string, @ModelName@_info::NUMBER_OF_PARTICLES> get_particle_names() const {
+      return @ModelName@_info::particle_names;
    }
    std::vector<std::string> get_mass_names() const {
       using namespace @ModelName@_info;
@@ -68,19 +65,14 @@ public:
       }
       return masses;
    }
-   std::vector<std::string> get_mixing_names() const {
-      using namespace @ModelName@_info;
-      return std::vector<std::string>(particle_mixing_names,
-                                      particle_mixing_names + NUMBER_OF_MIXINGS);
+   std::array<std::string, @ModelName@_info::NUMBER_OF_MIXINGS> get_mixing_names() const {
+      return @ModelName@_info::particle_mixing_names;
    }
-   std::vector<std::string> get_input_parameter_names() const {
-      using namespace @ModelName@_info;
-      return std::vector<std::string>(input_parameter_names,
-                                      input_parameter_names + NUMBER_OF_INPUT_PARAMETERS);
+   std::array<std::string, @ModelName@_info::NUMBER_OF_INPUT_PARAMETERS> get_input_parameter_names() const {
+      return @ModelName@_info::input_parameter_names;
    }
    std::size_t get_number_of_masses() const {
-      using namespace @ModelName@_info;
-      return NUMBER_OF_MASSES;
+      return @ModelName@_info::NUMBER_OF_MASSES;
    }
 };
 

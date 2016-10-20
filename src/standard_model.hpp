@@ -35,6 +35,7 @@
 #include "lowe.h"
 #include "physical_input.hpp"
 
+#include <array>
 #include <iosfwd>
 #include <string>
 
@@ -72,12 +73,12 @@ namespace standard_model_info {
    extern const double normalization_g2;
    extern const double normalization_g3;
 
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-   extern const char* particle_mixing_names[NUMBER_OF_MIXINGS];
-   extern const char* model_name;
+   extern const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_names;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names;
+   extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;
+   extern const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names;
+   extern const std::string model_name;
    extern const bool is_low_energy_model;
    extern const bool is_supersymmetric_model;
 
