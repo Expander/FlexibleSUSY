@@ -374,18 +374,11 @@ CreateParameterNames[betaFunctions_List] :=
 
 CreateParameterEnum[betaFunctions_List] :=
     Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               par = GetName[betaFunctions[[i]]];
-               type = GetType[betaFunctions[[i]]];
-               name = Parameters`CreateParameterEnums[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           (* append enum state for the number of betaFunctions *)
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterEnums[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            If[Length[betaFunctions] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_PARAMETERS";
            result = "enum Parameters : unsigned {" <>
-                    result <> "};\n";
+                    result <> " NUMBER_OF_PARAMETERS };\n";
            Return[result];
           ];
 

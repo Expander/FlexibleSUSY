@@ -17,6 +17,9 @@ CreateStdVectorNamesAssignment::usage="";
 CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
 
+CreateEnumName::usage="Creates enum symbol for given parameter";
+DecomposeParameter::usage="decomposes parameter into its real components";
+
 SetParameter::usage="set model parameter";
 SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
 SetInputParameter::usage="set input parameter to value";
@@ -940,132 +943,57 @@ CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`complexScalarC
            Return[ass];
           ];
 
-CreateParameterEnums[name_, parameterType_] :=
+(* decomposes a parameter into its real pieces *)
+DecomposeParameter[par_, parameterType_] :=
     Block[{},
-          Print["Error: CreateParameterEnums: unknown parameter type: ",
+          Print["Error: DecomposeParameter: unknown parameter type: ",
                 ToString[parameterType]];
           Quit[1];
           ];
 
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
-    CConversion`ToValidCSymbolString[name];
+DecomposeParameter[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
+    { name };
 
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
-    CConversion`ToValidCSymbolString[Im[name]];
+DecomposeParameter[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
+    { Re[name], Im[name] };
 
-CreateParameterEnums[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> CConversion`ToValidCSymbolString[name[i]];
-              ];
-           If[rows != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+    Array[name, rows, 0];
 
-CreateParameterEnums[name_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> CConversion`ToValidCSymbolString[Re[name[i]]] <> ", "
-                         <> CConversion`ToValidCSymbolString[Im[name[i]]];
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
+    Flatten[{Re[#], Im[#]}& /@ Array[name, rows, 0]];
 
-CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[name] <> ToString[i] <> "_" <> ToString[j];
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
+    Flatten[Array[name, {rows, cols}, 0]];
 
-CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> ", "
-                             <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j];
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
+    Flatten[{Re[#], Im[#]}& /@ Flatten[Array[name, {rows,cols}, 0]]];
 
-CreateParameterEnums[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count++,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> CConversion`ToValidCSymbolString[name] <>
-                             ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
-                      ];
-                  ];
-              ];
-           If[dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`TensorType[CConversion`realScalarCType, dims__]] :=
+    Flatten[Array[name, {dims}, 0]];
 
-CreateParameterEnums[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count+=2,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k] <> ", "
-                                 <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
-                      ];
-                  ];
-              ];
-           If[2 * dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
+DecomposeParameter[name_, CConversion`TensorType[CConversion`complexScalarCType, dims__]] :=
+    Flatten[{Re[#], Im[#]}& /@ Flatten[Array[name, {dims}, 0]]];
+
+CreateEnumName[(h:(Re|Im))[par_]] :=
+    CreateEnumName[h] <> CreateEnumName[par];
+
+CreateEnumName[par_[idx__]] :=
+    CreateEnumName[par] <>
+    Utils`StringJoinWithSeparator[{idx}, "_", CConversion`ToValidCSymbolString];
+
+CreateEnumName[par_] :=
+    CConversion`ToValidCSymbolString[par];
+
+CreateParameterEnums[name_, type_] :=
+    Utils`StringJoinWithSeparator[CreateEnumName /@ DecomposeParameter[name, type], ", "];
 
 CreateInputParameterEnum[inputParameters_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[inputParameters], i++,
-               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
-                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
-                        inputParameters[[i]]];
-                  Quit[1];
-                 ];
-               par  = inputParameters[[i,1]];
-               type = inputParameters[[i,3]];
-               name = Parameters`CreateParameterEnums[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_INPUT_PARAMETERS";
            result = "enum Input_parameters : unsigned {" <>
-                    result <> "};\n";
+                    result <> " NUMBER_OF_INPUT_PARAMETERS };\n";
            Return[result];
           ];
 
