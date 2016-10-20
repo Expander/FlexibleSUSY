@@ -23,16 +23,6 @@
 #include <cmath>
 #include <utility>
 
-#ifdef ENABLE_THREADS
-   #include <mutex>
-   #define LOCK_MUTEX() std::lock_guard<std::mutex> lg(mtx_nmssm)
-   namespace flexiblesusy {namespace nmssm_twoloophiggs {
-      static std::mutex mtx_nmssm; /// locks MSSM fortran functions
-   }}
-#else
-   #define LOCK_MUTEX()
-#endif
-
 using namespace flexiblesusy::mssm_twoloophiggs;
 
 namespace flexiblesusy {
@@ -162,12 +152,8 @@ Eigen::Matrix<double, 3, 3> self_energy_higgs_2loop_at_as_nmssm_with_tadpoles(
    double vev = std::sqrt(0.5 * vev2);
    double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 
-   {
-      LOCK_MUTEX();
-
-      effpot_(&loop, &rmt, &mg, &mst12, &mst22, &sxt, &cxt,
-              &scale2, &tanb, &vev, &lam, &svev, &as, &DMS, &DMP);
-   }
+   effpot_(&loop, &rmt, &mg, &mst12, &mst22, &sxt, &cxt,
+           &scale2, &tanb, &vev, &lam, &svev, &as, &DMS, &DMP);
 
    Eigen::Matrix<double, 3, 3> result;
    result << DMS[0][0], DMS[0][1], DMS[0][2],
@@ -204,12 +190,8 @@ Eigen::Matrix<double, 3, 3> self_energy_pseudoscalar_2loop_at_as_nmssm_with_tadp
    double vev = std::sqrt(0.5 * vev2);
    double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 
-   {
-      LOCK_MUTEX();
-
-      effpot_(&loop, &rmt, &mg, &mst12, &mst22, &sxt, &cxt,
-              &scale2, &tanb, &vev, &lam, &svev, &as, &DMS, &DMP);
-   }
+   effpot_(&loop, &rmt, &mg, &mst12, &mst22, &sxt, &cxt,
+           &scale2, &tanb, &vev, &lam, &svev, &as, &DMS, &DMP);
 
    Eigen::Matrix<double, 3, 3> result;
    result << DMP[0][0], DMP[0][1], DMP[0][2],

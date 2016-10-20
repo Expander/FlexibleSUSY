@@ -19,6 +19,7 @@
 #ifndef PHYSICAL_INPUT_H
 #define PHYSICAL_INPUT_H
 
+#include <array>
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -42,7 +43,6 @@ public:
    };
 
    Physical_input();
-   ~Physical_input() {}
 
    double get(Input) const;    ///< get value of input parameter
    Eigen::ArrayXd get() const; ///< get all input parameter values
@@ -52,7 +52,7 @@ public:
    void reset();              ///< resets all input parameters to their defaults
 
 private:
-   double values[NUMBER_OF_INPUT_PARAMETERS]; ///< input parameter values
+   std::array<double, NUMBER_OF_INPUT_PARAMETERS> values; ///< input parameter values
 };
 
 } // namespace flexiblesusy

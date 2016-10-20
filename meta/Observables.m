@@ -388,11 +388,11 @@ FillGM2CalcInterfaceData[struct_String] :=
            struct <> ".md2   = MODEL.get_" <> CConversion`RValueToCFormString[md2] <> "();\n" <>
            struct <> ".ml2   = MODEL.get_" <> CConversion`RValueToCFormString[ml2] <> "();\n" <>
            struct <> ".me2   = MODEL.get_" <> CConversion`RValueToCFormString[me2] <> "();\n" <>
-           struct <> ".Au    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[tu] <>
+           struct <> ".Au    = div_safe(MODEL.get_" <> CConversion`RValueToCFormString[tu] <>
                                "(), MODEL.get_" <> CConversion`RValueToCFormString[yu] <> "());\n" <>
-           struct <> ".Ad    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[td] <>
+           struct <> ".Ad    = div_safe(MODEL.get_" <> CConversion`RValueToCFormString[td] <>
                                "(), MODEL.get_" <> CConversion`RValueToCFormString[yd] <> "());\n" <>
-           struct <> ".Ae    = div_save(MODEL.get_" <> CConversion`RValueToCFormString[te] <>
+           struct <> ".Ae    = div_safe(MODEL.get_" <> CConversion`RValueToCFormString[te] <>
                                "(), MODEL.get_" <> CConversion`RValueToCFormString[ye] <> "());\n";
            "GM2Calc_data " <> struct <> ";\n" <> filling
           ];

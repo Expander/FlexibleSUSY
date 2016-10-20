@@ -73,6 +73,7 @@ Block FlexibleSUSY
    20   2                    # EFT loop order for upwards matching
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
+   23   1                    # calculate BSM pole masses
 BLOCK SMINPUTS	 	 # 
 1	128.962	 	 # 
 2	0.000011663900000000002	 	 # 

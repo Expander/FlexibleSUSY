@@ -39,7 +39,28 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Peter Athron and Pat Scott.
 
-FlexibleSUSY-1.7.1 [not released yet]
+FlexibleSUSY-1.7.2 [not released yet]
+
+ * Feature (commit b052e35): New flag FlexibleSUSY[23] to disable the
+   pole mass calculation of the non-SM particles.  This flag is useful
+   in FlexibleEFTHiggs, when the SUSY scale is so high that the non-SM
+   particle masses become unreliable or tachyonic: If a non-SM pole
+   mass becomes tachyonic (maybe because the loop corrections become
+   too large) FlexibleSUSY would flag the given parameter point as
+   unphysical.  However, one might still be interested in the value of
+   the SM-like Higgs mass, which is valid in FlexibleEFTHiggs even for
+   very large SUSY scales.  In such a case FlexibleSUSY[23] could be
+   set to 0 to suppress the calculation of the non-SM pole masses.
+
+ * Change (commit 189f508): Speed-up the calculation of the 2L Higgs
+   mass corrections in the MSSM and NMSSM, if multi-threading is used,
+   by locking the mutex only for the O(at*at) corrections.
+
+ * Change: The limits sin(2*theta) = 0 and m_stop1 = m_stop2 have been
+   implemented for the 2L O(at*as) Higgs pole mass corrections in the
+   MSSM.
+
+FlexibleSUSY-1.7.1 [October, 15 2016]
 
  * Change (commit b1efa8c): Updated to GM2Calc 1.3.0.
 

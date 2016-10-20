@@ -72,7 +72,6 @@ public:
    typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
 
    Coupling_monitor(const Model&, const DataGetter&);
-   ~Coupling_monitor() {}
 
    /// get couplings at all scales
    void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
@@ -85,8 +84,8 @@ public:
 
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
-   struct TDataComp {
-      bool operator() (const TData::value_type& i,const TData::value_type& j) {
+   struct TScaleComp {
+      bool operator() (const TData::value_type& i,const TData::value_type& j) const {
          return i.first < j.first;
       }
    };
@@ -127,7 +126,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
 
    // find gauge couplings at the greatest scale
    TData::const_iterator maxScale
-      = max_element(couplings.begin(), couplings.end(), TDataComp());
+      = max_element(couplings.begin(), couplings.end(), TScaleComp());
 
    return *maxScale;
 }
@@ -273,7 +272,7 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
       couplings.push_back(TData::value_type(scale, data_getter.get_parameters(model)));
    }
 
-   std::sort(couplings.begin(), couplings.end(), TDataComp());
+   std::sort(couplings.begin(), couplings.end(), TScaleComp());
 }
 
 }

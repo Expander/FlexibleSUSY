@@ -6,6 +6,16 @@ FillSMFermionPoleMasses::usage = "";
 
 Begin["`Private`"];
 
+DefineFutureAndCallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
+    Module[{massStr},
+           massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+          "auto fut_" <> massStr <> " = run_async([obj_ptr] () { obj_ptr->" <>
+           CreateLoopMassFunctionName[particle] <> "(); });\n"
+          ];
+
+JoinFutures[particle_Symbol] :=
+    "fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".get();\n";
+
 CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, result, Selector},
            Selector[p_] := SARAH`SMQ[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
@@ -13,8 +23,8 @@ CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
            If[enablePoleMassThreads =!= True,
               result = StringJoin[LoopMasses`CallPoleMassFunction[#,"model."]& /@ particles];
               ,
-              result = StringJoin[LoopMasses`CallThreadedPoleMassFunction[#,"&model"]& /@ particles] <> "\n" <>
-                       StringJoin[LoopMasses`JoinLoopMassFunctionThread /@ particles];
+              result = StringJoin[DefineFutureAndCallThreadedPoleMassFunction[#,"&model"]& /@ particles] <> "\n" <>
+                       StringJoin[JoinFutures /@ particles];
              ];
            result
           ];

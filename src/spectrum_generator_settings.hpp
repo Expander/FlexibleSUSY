@@ -20,6 +20,7 @@
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
 #include "two_loop_corrections.hpp"
+#include <array>
 #include <iosfwd>
 
 namespace flexiblesusy {
@@ -58,11 +59,11 @@ public:
       eft_matching_loop_order_up, ///< [20] loop order at which the gauge and Yukawa couplings of the full model are calculated from the EFT ones (upwards matching)
       eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
       eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
+      calculate_bsm_masses,  ///< [23] calculate BSM pole masses
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
    Spectrum_generator_settings();
-   ~Spectrum_generator_settings() {}
 
    double get(Settings) const; ///< get value of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
@@ -72,7 +73,7 @@ public:
    void set_two_loop_corrections(const Two_loop_corrections&);
 
 private:
-   double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings
+   std::array<double, NUMBER_OF_OPTIONS> values; ///< spectrum generator settings
 };
 
 std::ostream& operator<<(std::ostream&, const Spectrum_generator_settings&);

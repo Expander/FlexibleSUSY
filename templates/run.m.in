@@ -23,6 +23,7 @@ handle = FS@ModelName@OpenHandle[
         eftMatchingLoopOrderUp -> 2,       (* FlexibleSUSY[20] *)
         eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
         eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
+        calculateBSMMasses -> 1,           (* FlexibleSUSY[23] *)
         parameterOutputScale -> 0          (* MODSEL[12] *)
     },
     fsSMParameters -> {

@@ -35,16 +35,14 @@ Physical_input::Physical_input()
 
 double Physical_input::get(Input o) const
 {
-   assert(o < NUMBER_OF_INPUT_PARAMETERS && "Input parameter index out of range");
-   return values[o];
+   return values.at(o);
 }
 
 Eigen::ArrayXd Physical_input::get() const
 {
-   Eigen::ArrayXd vec(static_cast<unsigned>(NUMBER_OF_INPUT_PARAMETERS));
+   Eigen::ArrayXd vec(values.size());
 
-   for (std::size_t i = 0; i < NUMBER_OF_INPUT_PARAMETERS; i++)
-      vec(i) = values[i];
+   std::copy(values.cbegin(), values.cend(), vec.data());
 
    return vec;
 }
@@ -59,16 +57,13 @@ std::vector<std::string> Physical_input::get_names()
 
 void Physical_input::set(Input o, double value)
 {
-   assert(o < NUMBER_OF_INPUT_PARAMETERS && "Input parameter index out of range");
-   values[o] = value;
+   values.at(o) = value;
 }
 
 void Physical_input::set(const Eigen::ArrayXd& vec)
 {
-   assert(vec.rows() >= NUMBER_OF_INPUT_PARAMETERS && "Parameters array too small");
-
-   for (std::size_t i = 0; i < NUMBER_OF_INPUT_PARAMETERS; i++)
-      values[i] = vec(i);
+   assert(vec.size() == values.size() && "Parameters array has wrong size");
+   std::copy(vec.data(), vec.data() + vec.size(), values.begin());
 }
 
 /**

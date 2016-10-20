@@ -244,7 +244,7 @@ void put_message(MLINK link,
 
 void put_settings(const Model_data& data, MLINK link)
 {
-   MLPutFunction(link, "List", 22);
+   MLPutFunction(link, "List", 23);
 
    MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::precision), "precisionGoal");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
@@ -267,6 +267,7 @@ void put_settings(const Model_data& data, MLINK link)
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::eft_matching_loop_order_up), "eftMatchingLoopOrderUp");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::eft_matching_loop_order_down), "eftMatchingLoopOrderDown");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::eft_higgs_index), "eftHiggsIndex");
+   MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::calculate_bsm_masses), "calculateBSMMasses");
    MLPutRuleTo(link, data.parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(link);
@@ -395,7 +396,7 @@ Model_data fill(double* pars, mint npars)
 {
    Model_data data;
 
-   const mint n_settings = 22, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const mint n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (npars != n_total)
@@ -424,6 +425,7 @@ Model_data fill(double* pars, mint npars)
    data.settings.set(Spectrum_generator_settings::eft_matching_loop_order_up, pars[c++]);
    data.settings.set(Spectrum_generator_settings::eft_matching_loop_order_down, pars[c++]);
    data.settings.set(Spectrum_generator_settings::eft_higgs_index, pars[c++]);
+   data.settings.set(Spectrum_generator_settings::calculate_bsm_masses, pars[c++]);
    data.parameter_output_scale = pars[c++];
 
    data.qedqcd.setAlpha(softsusy::ALPHA, pars[c]);

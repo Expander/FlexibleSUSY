@@ -69,6 +69,8 @@ public:
    Eigen::ArrayXd get_DRbar_masses() const;
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
+   void do_calculate_bsm_pole_masses(bool);
+   bool do_calculate_bsm_pole_masses() const;
    void do_force_output(bool);
    bool do_force_output() const;
    void reorder_DRbar_masses();
@@ -139,6 +141,7 @@ private:
    unsigned ewsb_loop_order;      ///< loop order for EWSB
    unsigned pole_mass_loop_order; ///< loop order for pole masses
    bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
+   bool calculate_bsm_pole_masses;///< switch to calculate the pole masses of the BSM particles
    bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
    double ewsb_iteration_precision; ///< precision goal of EWSB solution

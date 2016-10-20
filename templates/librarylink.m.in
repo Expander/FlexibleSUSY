@@ -43,6 +43,7 @@ fsDefaultSettings = {
       eftMatchingLoopOrderUp -> 2,       (* FlexibleSUSY[20] *)
       eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
       eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
+      calculateBSMMasses -> 1,           (* FlexibleSUSY[23] *)
       parameterOutputScale -> 0          (* MODSEL[12] *)
 };
 
@@ -116,6 +117,7 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[eftMatchingLoopOrderUp],
             OptionValue[eftMatchingLoopOrderDown],
             OptionValue[eftHiggsIndex],
+            OptionValue[calculateBSMMasses],
             OptionValue[parameterOutputScale],
 
             (* Standard Model input parameters *)

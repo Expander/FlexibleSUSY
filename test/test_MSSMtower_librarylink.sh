@@ -34,6 +34,7 @@ Block FlexibleSUSY
    20   2                    # EFT loop order for upwards matching
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
+   23   0                    # calculate BSM pole masses
 Block SMINPUTS               # Standard Model inputs
     1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166380000e-05      # G_Fermi
@@ -126,6 +127,7 @@ handle = FSMSSMtowerOpenHandle[
         eftMatchingLoopOrderUp -> 2,       (* FlexibleSUSY[20] *)
         eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
         eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
+        calculateBSMMasses -> 0,           (* FlexibleSUSY[23] *)
         parameterOutputScale -> 0          (* MODSEL[12] *)
     },
     fsSMParameters -> {
