@@ -19,6 +19,7 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_two_scale_convergence_tester.hpp"
+#include <array>
 #include <cmath>
 #include <algorithm>
 #include "wrappers.hpp"
