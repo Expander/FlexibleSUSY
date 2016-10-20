@@ -36,6 +36,11 @@ namespace flexiblesusy {
 template <unsigned Number_of_particles, unsigned Number_of_parameters>
 class Problems {
 public:
+   enum : unsigned {
+      NUMBER_OF_PARTICLES = Number_of_particles,
+      NUMBER_OF_PARAMETERS = Number_of_parameters
+   };
+
    Problems(const std::array<std::string, Number_of_particles>&,
             const std::array<std::string, Number_of_parameters>&);
 
@@ -130,6 +135,8 @@ public:
    std::string get_warning_string() const { return concat(get_warning_strings(), '\n'); }
    void print_problems(std::ostream& = std::cout) const;
    void print_warnings(std::ostream& = std::cout) const;
+
+   std::array<bool, Number_of_particles> get_bad_masses() const { return bad_masses; }
 
 private:
    struct NonPerturbativeValue {
