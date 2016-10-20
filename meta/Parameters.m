@@ -8,7 +8,7 @@ FindSymbolDef::usage="";
 
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
-CreateParameterNamesStr::usage="";
+CreateParameterSARAHNames::usage="";
 CreateParameterEnums::usage="";
 CreateInputParameterEnum::usage="";
 CreateInputParameterNames::usage="";
@@ -676,7 +676,7 @@ CreateStdVectorNamesAssignment[name_, startIndex_, type_, struct_:"names"] :=
 CreateParameterSARAHNameStr[par_] :=
     "\"" <> CConversion`RValueToCFormString[par] <> "\"";
 
-CreateParameterNamesStr[name_, type_] :=
+CreateParameterSARAHNames[name_, type_] :=
     Utils`StringJoinWithSeparator[CreateParameterSARAHNameStr /@ DecomposeParameter[name, type], ", "];
 
 (* decomposes a parameter into its real pieces *)
@@ -732,19 +732,8 @@ CreateInputParameterEnum[inputParameters_List] :=
           ];
 
 CreateInputParameterNames[inputParameters_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[inputParameters], i++,
-               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
-                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
-                        inputParameters[[i]]];
-                  Quit[1];
-                 ];
-               par  = inputParameters[[i,1]];
-               type = inputParameters[[i,3]];
-               name = Parameters`CreateParameterNamesStr[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterSARAHNames[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            "const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names = {" <>
            result <> "};\n"
           ];

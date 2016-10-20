@@ -904,20 +904,12 @@ CreateParticleLaTeXNames[particles_List] :=
           ];
 
 CreateParticleMixingNames[mixings_List] :=
-    Module[{flatMixings, i, m, mix, name, type, result = ""},
-           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
-           For[i = 1, i <= Length[flatMixings], i++,
-               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
-               type = GetMixingMatrixType[flatMixings[[i]]];
-               For[m = 1, m <= Length[mix], m++,
-                   name = Parameters`CreateParameterNamesStr[mix[[m]],type];
-                   If[result != "", result = result <> ", ";];
-                   result = result <> name;
-                  ];
-              ];
-           result = "const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names = {" <>
-                    IndentText[result] <> "};\n";
-           Return[result];
+    Module[{nonNullMixings, result},
+           nonNullMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterSARAHNames[#[[1]], #[[2]]]& /@ GetMixingMatricesAndTypesFrom[nonNullMixings], ", "];
+           "const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names = {" <>
+           IndentText[result] <> "};\n"
           ];
 
 FillSpectrumVector[particles_List] :=

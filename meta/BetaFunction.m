@@ -361,7 +361,7 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
 CreateParameterNames[betaFunctions_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[
-               Parameters`CreateParameterNamesStr[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
+               Parameters`CreateParameterSARAHNames[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            "const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {" <>
            result <> "};\n"
           ];
