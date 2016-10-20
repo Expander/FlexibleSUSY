@@ -3,6 +3,8 @@ lib@ModelName@ = FileNameJoin[{Directory[], "models", "@ModelName@", "@ModelName
 FS@ModelName@GetSettings = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSettings", LinkObject, LinkObject];
 FS@ModelName@GetSMInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSMInputParameters", LinkObject, LinkObject];
 FS@ModelName@GetInputParameters = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetInputParameters", LinkObject, LinkObject];
+FS@ModelName@GetProblems = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetProblems", LinkObject, LinkObject];
+FS@ModelName@GetWarnings = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetWarnings", LinkObject, LinkObject];
 
 FS@ModelName@OpenHandleLib = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@OpenHandle", {{Real,1}}, Integer];
 FS@ModelName@CloseHandle = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@CloseHandle", {Integer}, Void];

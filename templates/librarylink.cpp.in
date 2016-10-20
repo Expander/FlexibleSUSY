@@ -330,6 +330,73 @@ void put_input_parameters(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
+template <typename P>
+unsigned number_of_problems(const P& problems)
+{
+   return problems.have_tachyon()
+      + problems.no_ewsb()
+      + problems.no_convergence()
+      + problems.no_perturbative()
+      + problems.no_rho_convergence()
+      + problems.have_thrown()
+      + problems.have_failed_pole_mass_convergence()
+      + problems.have_non_perturbative_parameter();
+}
+
+/******************************************************************/
+
+template <typename P>
+unsigned number_of_warnings(const P& problems)
+{
+   return problems.have_bad_mass();
+}
+
+/******************************************************************/
+
+void put_problems(const Model_data& data, MLINK link)
+{
+   const auto& problems = data.model.get_problems();
+   const unsigned n_problems = number_of_problems(problems);
+
+   MLPutFunction(link, "List", n_problems);
+
+   if (problems.have_tachyon())
+      MLPutRuleTo(link, "True", "Tachyons");
+   if (problems.no_ewsb())
+      MLPutRuleTo(link, "True", "NoEWSB");
+   if (problems.no_convergence())
+      MLPutRuleTo(link, "True", "NoConvergence");
+   if (problems.no_perturbative())
+      MLPutRuleTo(link, "True", "NonPerturbative");
+   if (problems.no_rho_convergence())
+      MLPutRuleTo(link, "True", "NoRhoConvergence");
+   if (problems.have_thrown())
+      MLPutRuleTo(link, "True", "Exceptions");
+   if (problems.have_failed_pole_mass_convergence())
+      MLPutRuleTo(link, "True", "NoPoleMassConvergence");
+   if (problems.have_non_perturbative_parameter())
+      MLPutRuleTo(link, "True", "NonPerturbativeParameters");
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
+void put_warnings(const Model_data& data, MLINK link)
+{
+   const auto& problems = data.model.get_problems();
+   const unsigned n_warnings = number_of_warnings(problems);
+
+   MLPutFunction(link, "List", n_warnings);
+
+   if (problems.have_bad_mass())
+      MLPutRuleTo(link, "True", "ImpreciseMasses");
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
 {
    MLPutFunction(link, "List", @numberOfSpectrumEntries@);
@@ -642,6 +709,44 @@ DLLEXPORT int FS@ModelName@Set(
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@GetProblems(
+   WolframLibraryData /* libData */, MLINK link)
+{
+   if (!check_number_of_args(link, 1, "FS@ModelName@GetProblems"))
+      return LIBRARY_TYPE_ERROR;
+
+   const Handle_id hid = get_handle_from(link);
+
+   try {
+      put_problems(find_data(hid), link);
+   } catch (const flexiblesusy::Error&) {
+      put_error_output(link);
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
+DLLEXPORT int FS@ModelName@GetWarnings(
+   WolframLibraryData /* libData */, MLINK link)
+{
+   if (!check_number_of_args(link, 1, "FS@ModelName@GetWarnings"))
+      return LIBRARY_TYPE_ERROR;
+
+   const Handle_id hid = get_handle_from(link);
+
+   try {
+      put_warnings(find_data(hid), link);
+   } catch (const flexiblesusy::Error&) {
+      put_error_output(link);
    }
 
    return LIBRARY_NO_ERROR;
