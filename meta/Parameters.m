@@ -630,122 +630,33 @@ CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`compl
            Return[{ass, count}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
-    Block[{},
-          Print["Error: CreateDisplayAssignment: unknown parameter type: ",
-                ToString[parameterType]];
-          Quit[1];
-          ];
+(* assigns the parameter (str) to the container element *)
+DisplayAssignParSet[str_String, startIndex_, currIdx_, struct_String] :=
+    struct <> "(" <> ToString[startIndex + currIdx - 1] <> ") = " <> str <> ";\n";
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"pars"] :=
-    Module[{ass = ""},
-           ass = struct <> "(" <> ToString[startIndex] <> ") = "
-                 <> name <> ";\n";
-           Return[{ass, 1}];
-          ];
+(* creates parameter name and calls DisplayAssignParSet[] *)
+DisplayAssignPar[(h:(Re|Im))[(par_String)[idx__]], startIndex_, currIdx_, struct_String] :=
+    DisplayAssignParSet[ToString[h] <> "(" <> par <> "(" <>
+                        Utils`StringJoinWithSeparator[{idx}, ","] <>
+                        "))", startIndex, currIdx, struct];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"pars"] :=
-    Module[{ass = ""},
-           ass = struct <> "(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
-                 struct <> "(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
-           Return[{ass, 2}];
-          ];
+DisplayAssignPar[(par_String)[idx__], startIndex_, currIdx_, struct_String] :=
+    DisplayAssignParSet[par <> "(" <>
+                        Utils`StringJoinWithSeparator[{idx}, ","] <>
+                        ")", startIndex, currIdx, struct];
 
-CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"pars"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
-                     <> name <> "(" <> ToString[i] <> ");\n";
-              ];
-           If[rows != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, rows}];
-          ];
+DisplayAssignPar[(h:(Re|Im))[par_String], startIndex_, currIdx_, struct_String] :=
+    DisplayAssignParSet[ToString[h] <> "(" <> par <> ")", startIndex, currIdx, struct];
 
-CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"pars"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
-                     <> name <> "(" <> ToString[i] <> "));\n";
-               ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
-                     <> name <> "(" <> ToString[i] <> "));\n";
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
+DisplayAssignPar[par_, startIndex_, currIdx_, struct_String] :=
+    DisplayAssignParSet[CConversion`RValueToCFormString[par], startIndex, currIdx, struct];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"pars"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
-                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                          <> ");\n";
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"pars"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "));\n";
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "));\n";
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[2 rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count++,
-                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
-                              <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                              <> ");\n";
-                      ];
-                  ];
-              ];
-           If[dim1 * dim2 * dim3 != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count+=2,
-                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
-                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                             <> "));\n";
-                       ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
-                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                             <> "));\n";
-                      ];
-                  ];
-              ];
-           If[2 * dim1 * dim2 * dim3 != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[2 dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
+CreateDisplayAssignment[name_, startIndex_, type_, struct_:"pars"] :=
+    { StringJoin @
+        MapIndexed[DisplayAssignPar[#1,startIndex,First[#2],struct]&,
+                   DecomposeParameter[name, type]],
+      Length[DecomposeParameter[name, type]]
+    };
 
 CreateStdVectorNamesAssignment[name_, startIndex_, parameterType_, struct_:"names"] :=
     Block[{},

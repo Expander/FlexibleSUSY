@@ -346,7 +346,7 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            For[i = 1, i <= Length[betaFunctions], i++,
                beta = GetAllBetaFunctions[betaFunctions[[i]]];
                type = GetType[betaFunctions[[i]]];
-               name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
+               name = GetName[betaFunctions[[i]]];
                {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
                display = display <> assignment;
                paramCount += nAssignments;
