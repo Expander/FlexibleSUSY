@@ -10,7 +10,7 @@ using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_initialization )
 {
-   const char* names[3] = {"", "", ""};
+   const std::array<std::string,3> names = {"", "", ""};
    Problems<3> problems(names);
 
    BOOST_CHECK(!problems.is_running_tachyon(0));
