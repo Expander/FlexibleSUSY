@@ -114,7 +114,7 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    CMSSM_physical get_physical() const { return mssm.get_physical(); }
-   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& get_problems() const { return mssm.get_problems(); }
+   const Problems<CMSSM_info::NUMBER_OF_PARTICLES, CMSSM_info::NUMBER_OF_PARAMETERS>& get_problems() const { return mssm.get_problems(); }
    CMSSM<Two_scale> get_model() const { return mssm; }
    void set_ewsb_loop_order(unsigned l) { ewsb_loop_order = l; }
    void set_pole_mass_loop_order(unsigned l) { pole_mass_loop_order = l; }
