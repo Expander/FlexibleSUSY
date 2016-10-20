@@ -488,6 +488,37 @@ _Output_:
     6.71448*10^-6 + 8.41625*10^-7 I }
 ~~~~~~~~~~~~~~~~~~~~
 
+\subsubsection FS_model_GetProblems FS<model>GetProblems and FS<model>GetWarnings
+
+After the spectrum has been calculated, one should check for problems
+or warnings.  They can be obtained for a given handle using the
+`FS<model>GetProblems[handle]` and `FS<model>GetWarnings[handle]`
+functions, respectively.  These functions return the empty list if no
+problems / warnings occurred.
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsModelParameters -> { m0 -> 1000, m12 -> 500, Azero -> -10000, TanBeta -> 2, SignMu -> 1 }
+];
+FSCMSSMCalculateSpectrum[handle];
+FSCMSSMGetProblems[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ Tachyons -> {M[Sd], M[Su]},
+  NoPoleMassConvergence -> {Pole[M[hh]]} }
+~~~~~~~~~~~~~~~~~~~~
+
+This list of problems states, that the running up-type and down-type
+squarks are tachyonic for this parameter point.  Thus, the spectrum
+calculated by FlexibleSUSY for this point cannot be trusted.
+Furthermore, the iteration to determine the Higgs pole mass did not
+converge.  Thus, the calculated Higgs pole mass cannot be trusted
+either for this parameter point.
+
 \subsection redirecting_msg_output Redirecting info messages to a file
 
 When FlexibleSUSY is configured with `--enable-verbose`, a lot of
