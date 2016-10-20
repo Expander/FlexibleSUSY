@@ -101,9 +101,9 @@ public:
    bool is_bad_mass(unsigned particle) const
       { return bad_masses.at(particle); }
    bool is_running_tachyon(unsigned particle) const
-      { running_tachyons.at(particle); }
+      { return running_tachyons.at(particle); }
    bool is_pole_tachyon(unsigned particle) const
-      { pole_tachyons.at(particle); }
+      { return pole_tachyons.at(particle); }
    bool have_bad_mass() const
       { return std::any_of(bad_masses.cbegin(), bad_masses.cend(), [](bool x){ return x; }); }
    bool have_tachyon() const {
