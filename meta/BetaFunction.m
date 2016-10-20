@@ -377,7 +377,7 @@ CreateParameterEnum[betaFunctions_List] :=
            result = Utils`StringJoinWithSeparator[
                Parameters`CreateParameterEnums[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            If[Length[betaFunctions] > 0, result = result <> ", ";];
-           "enum Parameters : unsigned {" <> result <> " NUMBER_OF_PARAMETERS };\n"
+           "enum Parameters : unsigned { " <> result <> "NUMBER_OF_PARAMETERS };\n"
           ];
 
 (* create setters *)
