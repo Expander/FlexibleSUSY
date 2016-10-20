@@ -109,14 +109,14 @@ public:
 
 class EWrongNumberOfParameters : public Error {
 public:
-   EWrongNumberOfParameters(unsigned pars_, unsigned expected_)
+   EWrongNumberOfParameters(mint pars_, mint expected_)
       : pars(pars_), expected(expected_) {}
    virtual ~EWrongNumberOfParameters() {}
    virtual std::string what() const {
       return "Wrong number of arguments: " + ToString(pars)
          + ".  Expected: " + ToString(expected);
    }
-   unsigned pars, expected;
+   mint pars, expected;
 };
 
 class EInvalidSpectrum : public Error {
