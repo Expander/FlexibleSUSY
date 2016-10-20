@@ -334,8 +334,7 @@ void put_input_parameters(const Model_data& data, MLINK link)
 template <typename P>
 unsigned number_of_problems(const P& problems)
 {
-   return problems.have_running_tachyon()
-      + problems.have_pole_tachyon()
+   return problems.have_tachyon()
       + problems.no_ewsb()
       + problems.no_convergence()
       + problems.no_perturbative()
@@ -356,20 +355,44 @@ unsigned number_of_warnings(const P& problems)
 /******************************************************************/
 
 template <typename F>
-void put_masses(MLINK link, const F& flags, const std::string& rule,
+void put_masses(MLINK link, const F& flags,
                 const std::vector<std::string>& heads = {})
 {
-   const unsigned n_masses = std::count(flags.cbegin(), flags.cend(), true);
-
-   MLPutRule(link, rule);
-   MLPutFunction(link, "List", n_masses);
-
    for (unsigned i = 0; i < flags.size(); i++) {
       if (flags[i]) {
          MLPutHeads(link, heads);
          MLPutSymbol(link, @ModelName@_info::particle_names[i].c_str());
       }
    }
+}
+
+/******************************************************************/
+
+template <typename F>
+void put_masses(MLINK link, const std::string& rule, const F& flags,
+                const std::vector<std::string>& heads)
+{
+   const unsigned n_masses = std::count(flags.cbegin(), flags.cend(), true);
+
+   MLPutRule(link, rule);
+   MLPutFunction(link, "List", n_masses);
+   put_masses(link, flags, heads);
+}
+
+/******************************************************************/
+
+template <typename F>
+void put_masses(MLINK link, const std::string& rule,
+                const F& flags1, const std::vector<std::string>& heads1,
+                const F& flags2, const std::vector<std::string>& heads2)
+{
+   const unsigned n_masses = std::count(flags1.cbegin(), flags1.cend(), true)
+                           + std::count(flags2.cbegin(), flags2.cend(), true);
+
+   MLPutRule(link, rule);
+   MLPutFunction(link, "List", n_masses);
+   put_masses(link, flags1, heads1);
+   put_masses(link, flags2, heads2);
 }
 
 /******************************************************************/
@@ -381,10 +404,10 @@ void put_problems(const Model_data& data, MLINK link)
 
    MLPutFunction(link, "List", n_problems);
 
-   if (problems.have_running_tachyon())
-      put_masses(link, problems.get_running_tachyons(), "Tachyons", {"M"});
-   if (problems.have_pole_tachyon())
-      put_masses(link, problems.get_pole_tachyons(), "Tachyons", {"Pole", "M"});
+   if (problems.have_tachyon())
+      put_masses(link, "Tachyons",
+                 problems.get_running_tachyons(), {"M"},
+                 problems.get_pole_tachyons(), {"Pole", "M"});
    if (problems.no_ewsb())
       MLPutRuleTo(link, "True", "NoEWSB");
    if (problems.no_convergence())
@@ -396,9 +419,9 @@ void put_problems(const Model_data& data, MLINK link)
    if (problems.have_thrown())
       MLPutRuleTo(link, "True", "Exceptions");
    if (problems.have_failed_pole_mass_convergence())
-      put_masses(link, problems.get_failed_pole_mass_convergence(), "NoPoleMassConvergence", {"Pole", "M"});
+      put_masses(link, "NoPoleMassConvergence", problems.get_failed_pole_mass_convergence(), {"Pole", "M"});
    if (problems.have_non_perturbative_parameter())
-      MLPutRuleTo(link, "True", "NonPerturbativeParameters");
+      MLPutRuleTo(link, "True", "NonPerturbative");
 
    MLEndPacket(link);
 }
@@ -413,7 +436,7 @@ void put_warnings(const Model_data& data, MLINK link)
    MLPutFunction(link, "List", n_warnings);
 
    if (problems.have_bad_mass())
-      put_masses(link, problems.get_bad_masses(), "ImpreciseMasses", {"M"});
+      put_masses(link, "ImpreciseMasses", problems.get_bad_masses(), {"M"});
 
    MLEndPacket(link);
 }
