@@ -108,13 +108,20 @@ void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
    }
 }
 
+/********************* put single heads *********************/
+
+void MLPutHeads(MLINK link, const std::vector<std::string>& heads = {})
+{
+   for (const auto& h: heads)
+      MLPutFunction(link, h.c_str(), 1);
+}
+
 /********************* put rules to types *********************/
 
 void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
 {
    MLPutFunction(link, "Rule", 2);
-   for (std::size_t i = 0; i < heads.size(); i++)
-      MLPutFunction(link, heads[i].c_str(), 1);
+   MLPutHeads(link, heads);
    MLPutUTF8Symbol(link, (const unsigned char*)(name.c_str()), name.size());
 }
 
