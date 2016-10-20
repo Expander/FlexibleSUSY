@@ -28,6 +28,11 @@
 
 /********************* put types *********************/
 
+void MLPut(MLINK link, const std::string& s)
+{
+   MLPutSymbol(link, s.c_str());
+}
+
 void MLPut(MLINK link, int c)
 {
    MLPutInteger(link, c);
