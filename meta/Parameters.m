@@ -992,9 +992,7 @@ CreateInputParameterEnum[inputParameters_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           result = "enum Input_parameters : unsigned {" <>
-                    result <> " NUMBER_OF_INPUT_PARAMETERS };\n";
-           Return[result];
+           "enum Input_parameters : unsigned { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
           ];
 
 CreateInputParameterNames[inputParameters_List] :=
@@ -1011,9 +1009,8 @@ CreateInputParameterNames[inputParameters_List] :=
                If[i > 1, result = result <> ", ";];
                result = result <> name;
               ];
-           result = "const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names = {" <>
-                    result <> "};\n";
-           Return[result];
+           "const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names = {" <>
+           result <> "};\n"
           ];
 
 SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=

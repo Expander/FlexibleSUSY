@@ -373,13 +373,11 @@ CreateParameterNames[betaFunctions_List] :=
           ];
 
 CreateParameterEnum[betaFunctions_List] :=
-    Module[{i, par, type, name, result = ""},
+    Module[{result},
            result = Utils`StringJoinWithSeparator[
                Parameters`CreateParameterEnums[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            If[Length[betaFunctions] > 0, result = result <> ", ";];
-           result = "enum Parameters : unsigned {" <>
-                    result <> " NUMBER_OF_PARAMETERS };\n";
-           Return[result];
+           "enum Parameters : unsigned {" <> result <> " NUMBER_OF_PARAMETERS };\n"
           ];
 
 (* create setters *)

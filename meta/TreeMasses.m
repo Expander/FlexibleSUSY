@@ -830,102 +830,77 @@ CreateSLHAPoleMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
     CreateMassGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"];
 
 CreateParticleEnum[particles_List] :=
-    Module[{i, par, name, result = ""},
-           For[i = 1, i <= Length[particles], i++,
-               par = particles[[i]];
-               name = CConversion`ToValidCSymbolString[par];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           (* append enum state for the number of particles *)
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CConversion`ToValidCSymbolString /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_PARTICLES";
-           result = "enum Particles : unsigned {" <>
-                    result <> "};\n";
-           Return[result];
+           "enum Particles : unsigned { " <> result <> "NUMBER_OF_PARTICLES };\n"
           ];
+
+DecomposeParticle[particle_] :=
+    If[GetDimension[particle] == 1,
+       { particle },
+       Array[particle, GetDimension[particle]]
+      ];
+
+CreateParticleMassEnumName[particle_[idx_]] :=
+    CreateParticleMassEnumName[particle] <> "_" <> ToString[idx];
+
+CreateParticleMassEnumName[particle_] :=
+    "M" <> CConversion`ToValidCSymbolString[particle];
 
 CreateParticleMassEnum[particles_List] :=
-    Module[{i, par, name, result = "", d, dim},
-           For[i = 1, i <= Length[particles], i++,
-               par = particles[[i]];
-               name = CConversion`ToValidCSymbolString[FlexibleSUSY`M[par]];
-               dim = GetDimension[par];
-               If[dim == 1,
-                  If[i > 1, result = result <> ", ";];
-                  result = result <> name;
-                  ,
-                  For[d = 1, d <= dim, d++,
-                      If[i > 1 || d > 1, result = result <> ", ";];
-                      result = result <> name <> "_" <> ToString[d];
-                     ];
-                 ];
-              ];
-           (* append enum state for the number of particles *)
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParticleMassEnum /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_MASSES";
-           result = "enum Masses : unsigned {" <>
-                    result <> "};\n";
-           Return[result];
+           "enum Masses : unsigned { " <> result <> "NUMBER_OF_MASSES };\n"
           ];
+
+CreateParticleMassEnum[p_] :=
+    Utils`StringJoinWithSeparator[CreateParticleMassEnumName /@ DecomposeParticle[p], ", "];
+
+DecomposeMixingMatrix[mm_List, type_] := { #, type }& /@ mm;
+DecomposeMixingMatrix[mm_    , type_] := {{ mm, type }};
+
+GetMixingMatrixAndTypeFrom[mixing_] :=
+    DecomposeMixingMatrix[GetMixingMatrixSymbol[mixing], GetMixingMatrixType[mixing]];
+
+GetMixingMatricesAndTypesFrom[mixings_List] :=
+    Join @@ (GetMixingMatrixAndTypeFrom /@ mixings);
 
 CreateParticleMixingEnum[mixings_List] :=
-    Module[{flatMixings, i, m, mix, name, type, result = ""},
-           flatMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
-           For[i = 1, i <= Length[flatMixings], i++,
-               mix  = Flatten[{GetMixingMatrixSymbol[flatMixings[[i]]]}];
-               type = GetMixingMatrixType[flatMixings[[i]]];
-               For[m = 1, m <= Length[mix], m++,
-                   name = Parameters`CreateParameterEnums[mix[[m]],type];
-                   If[result != "", result = result <> ", ";];
-                   result = result <> name;
-                  ];
-              ];
-           (* append enum state for the number of mixing matrices *)
-           If[Length[flatMixings] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_MIXINGS";
-           result = "enum Mixings : unsigned {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{nonNullMixings, result},
+           nonNullMixings = Select[mixings, (GetMixingMatrixSymbol[#] =!= Null)&];
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterEnums[#[[1]], #[[2]]]& /@ GetMixingMatricesAndTypesFrom[nonNullMixings], ", "];
+           If[Length[nonNullMixings] > 0, result = result <> ", ";];
+           "enum Mixings : unsigned { " <> result <> "NUMBER_OF_MIXINGS };\n"
           ];
 
+SARAHNameStr[p_] :=
+    "\"" <> CConversion`ToValidCSymbolString[p] <> "\"";
+
 CreateParticleNames[particles_List] :=
-    Module[{i, par, name, result = ""},
-           For[i = 1, i <= Length[particles], i++,
-               par = particles[[i]];
-               name = CConversion`ToValidCSymbolString[par];
-               If[i > 1, result = result <> ", ";];
-               result = result <> "\"" <> name <> "\"";
-              ];
-           result = "const std::array<std::string, NUMBER_OF_PARTICLES> particle_names = {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[SARAHNameStr /@ particles, ", "];
+           "const std::array<std::string, NUMBER_OF_PARTICLES> particle_names = {" <>
+           result <> "};\n"
           ];
 
 CreateParticleMultiplicity[particles_List] :=
-    Module[{i, par, mult, result = ""},
-           For[i = 1, i <= Length[particles], i++,
-               par = particles[[i]];
-               mult = CConversion`ToValidCSymbolString[GetDimension[par]];
-               If[i > 1, result = result <> ", ";];
-               result = result <> mult;
-              ];
-           result = "const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[GetDimension /@ particles, ", "];
+           "const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
+           result <> "};\n"
           ];
 
+TeXNameStr[p_] :=
+    "\"" <> StringReplace[SARAH`getLaTeXField[p], "\\" -> "\\\\"] <> "\"";
+
 CreateParticleLaTeXNames[particles_List] :=
-    Module[{i, par, latexName, result = ""},
-           For[i = 1, i <= Length[particles], i++,
-               par = particles[[i]];
-               latexName = StringReplace[SARAH`getLaTeXField[par], "\\" -> "\\\\"];
-               If[i > 1, result = result <> ", ";];
-               result = result <> "\"" <> latexName <> "\"";
-              ];
-           result = "const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names = {" <>
-                    IndentText[result] <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[TeXNameStr /@ particles, ", "];
+           "const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names = {" <>
+           IndentText[result] <> "};\n"
           ];
 
 CreateParticleMixingNames[mixings_List] :=
