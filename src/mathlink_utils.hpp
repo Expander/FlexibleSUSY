@@ -110,7 +110,7 @@ void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
 
 /********************* put single heads *********************/
 
-void MLPutHeads(MLINK link, const std::vector<std::string>& heads = {})
+void MLPutHeads(MLINK link, const std::vector<std::string>& heads)
 {
    for (const auto& h: heads)
       MLPutFunction(link, h.c_str(), 1);
