@@ -26,6 +26,7 @@
 #include <array>
 #include <iostream>
 #include <map>
+#include <vector>
 
 namespace flexiblesusy {
 
