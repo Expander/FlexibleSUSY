@@ -44,7 +44,7 @@
 *
 * where PolyLog(x)=PolyLog(x,2)=Spence(1-x) dilogarifm function
 
-   resmt =
+Local resmt =
 
        + cs2t^2 * (
           - 640/9
