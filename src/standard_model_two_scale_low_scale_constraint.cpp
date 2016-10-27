@@ -103,8 +103,7 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    model->set_g2(e_drbar*Csc(theta_w));
    model->set_g3(3.5449077018110318*Sqrt(alpha_s_drbar));
 
-   model->recalculate_mw_pole();
-   qedqcd.setPoleMW(model->get_low_energy_data().displayPoleMW());
+   qedqcd.setPoleMW(model->recalculate_mw_pole());
 }
 
 double Standard_model_low_scale_constraint<Two_scale>::get_scale() const
