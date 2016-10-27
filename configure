@@ -219,7 +219,7 @@ cxx_compiler_version="unknown"
 
 # required C++ compiler versions
 required_cxx_compiler_version="unknown"
-required_gpp_compiler_version="4.4.7"
+required_gpp_compiler_version="4.7.2"
 required_clang_compiler_version="3.1.0"
 required_icpc_compiler_version="12.1.0"
 

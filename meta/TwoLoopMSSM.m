@@ -69,11 +69,17 @@ Parameters:
   Example: parameters -> {At -> 0, sin2Theta -> 0}
 ";
 
-GetDeltaMPoleOverMRunningMSSMSQCDDRbar::usage = "Returns two-loop
- SUSY-QCD contributions (from squarks and gluino) to Delta M_f/m_f in
- the MSSM in DR-bar scheme.  Taken from hep-ph/0210258 Eq. (59), (62).
- (mst[i] = i'th running stop mass, mg = gluino DR-bar mass, Q =
- ren. scale).
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar2LUniversalMSUSY::usage =
+ "Returns two-loop SUSY-QCD contributions (from squarks and gluino) to
+ Delta M_f/m_f in the MSSM in DR-bar scheme for universal SUSY mass
+ parameters.  Taken from hep-ph/0210258, Eq. (62).  (mst[i] = i'th
+ running stop mass, mg = gluino DR-bar mass, Q = ren. scale).";
+
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar::usage = "Returns the general
+ one- and two-loop SUSY-QCD contributions (from squarks and gluino) to
+ Delta M_f/m_f in the MSSM in DR-bar scheme.  Taken from the files
+ mt.res and mb.res from hep-ph/0210258.  (mst[i] = i'th running stop
+ mass, mg = gluino DR-bar mass, Q = ren. scale).
 
 Parameters:
 
@@ -91,7 +97,7 @@ Parameters:
 { ht, Mu, mt, mb, At, mQ33, mU33, TanBeta, g3, Q, M3, signMu, BMu };
 
 (* Stop mass parameters *)
-{ sin2Theta, cos2Theta, mst1, mst2 };
+{ sin2Theta, cos2Theta, sin4Theta, cos4Theta, mst1, mst2 };
 
 (* Sbottom mass parameters *)
 { msb1, msb2 };
@@ -103,7 +109,7 @@ Parameters:
 { loopOrder, corrections, parameters, abbreviations };
 
 (* DR-bar parameters for Delta M_t / m_t *)
-{ mg, mst, MSUSY }
+{ mg, mst, msb, msq, MSUSY, den, fin };
 
 Begin["TwoLoopMSSM`Private`"];
 
@@ -538,7 +544,7 @@ GetDeltaMPoleOverMRunningMSSMSQCDDRbar1L[] :=
         ];
 
 (* hep-ph/0210258, Eq. (62) *)
-GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[] :=
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar2LUniversalMSUSY[] :=
     With[{CF = 4/3, CA = 3, as = g3^2/(4 Pi), mq = mt, aq = Xt, M = MSUSY},
          CF (as/(4 Pi))^2 (
              47/3 + 20 Log[M^2/Q^2] + 6 Log[M^2/Q^2] Log[M^2/mq^2]
@@ -552,14 +558,41 @@ GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[] :=
          )
         ];
 
+resmt = Get[FileNameJoin[{"meta", "MSSM", "mt.m"}]];
+
+GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[] :=
+    With[{as = g3^2/(4 Pi)},
+         (as/(4 Pi))^2 resmt /. {
+             Log[x_] :> Log[x/Q^2] (* TODO: Is this correct? *)
+         } //. {
+             zt2 -> Zeta[2], zt3 -> Zeta[3],
+             mmt -> mt^2, mmb -> mb^2,
+             mgl -> mg, mmgl -> mgl^2,
+             mmst1 -> mst[1]^2, mmst2 -> mst[2]^2,
+             mmsb1 -> msb[1]^2, mmsb2 -> msb[2]^2,
+             mmsusy -> msq^2, TwoLoopMSSM`Private`mmu -> Q^2,
+             cst -> ct, snt -> st, csb -> cb, snb -> sb,
+             cs2t -> c2t, sn2t -> s2t, cs2b -> c2b, sn2b -> s2b,
+             cs4t -> c4t, sn4t -> s4t, cs4b -> c4b, sn4b -> s4b,
+             c2t -> cos2Theta, s2t -> sin2Theta,
+             c4t -> cos4Theta, s4t -> sin4Theta
+         }
+        ];
+
 Options[GetDeltaMPoleOverMRunningMSSMSQCDDRbar] = {
     loopOrder -> {1, 1},
-    parameters -> { sin2Theta -> 2 mt Xt/(mst[1]^2 - mst[2]^2) }
+    parameters -> {
+        sin2Theta -> 2 mt Xt/(mst[1]^2 - mst[2]^2),
+        sin4Theta -> 2 sin2Theta cos2Theta,
+        cos2Theta -> Sqrt[1 - sin2Theta^2],
+        cos4Theta -> 1 - 2 sin2Theta^2,
+        den[x_, n_] :> x^(-n)
+    }
 };
 
 GetDeltaMPoleOverMRunningMSSMSQCDDRbar[OptionsPattern[]] := (
     OptionValue[loopOrder][[1]] GetDeltaMPoleOverMRunningMSSMSQCDDRbar1L[] +
     OptionValue[loopOrder][[2]] GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[]
-    ) /. OptionValue[parameters];
+    ) //. OptionValue[parameters];
 
 End[];

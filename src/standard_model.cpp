@@ -860,7 +860,8 @@ void Standard_model::initialise_from_input()
          g2 = Electroweak_constants::g2;
       }
 
-      recalculate_mw_pole();
+      if (get_thresholds())
+         qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 
       converged = check_convergence(old);
       old = *this;
@@ -1077,22 +1078,17 @@ void Standard_model::calculate_Lambdax_DRbar()
    Lambdax = Sqr(higgsDRbar) / Sqr(v);
 }
 
-void Standard_model::recalculate_mw_pole()
+double Standard_model::recalculate_mw_pole(double mw_pole)
 {
-   if (!get_thresholds())
-      return;
-
    calculate_MVWp();
 
    const double mw_drbar    = MVWp;
-   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(qedqcd.displayPoleMW()));
+   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(mw_pole));
 
    if (mw_pole_sqr < 0.)
       problems.flag_pole_tachyon(standard_model_info::VWp);
 
-   const double mw_pole = AbsSqrt(mw_pole_sqr);
-
-   qedqcd.setPoleMW(mw_pole);
+   return AbsSqrt(mw_pole_sqr);
 }
 
 bool Standard_model::check_convergence(const Standard_model& old) const

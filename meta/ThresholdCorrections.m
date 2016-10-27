@@ -603,9 +603,7 @@ const double mw_pole_sqr = Sqr(mw_drbar) - self_energy_w_at_mw;
 if (mw_pole_sqr < 0.)
    MODEL->get_problems().flag_pole_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> wStr <> ");
 
-const double mw_pole = AbsSqrt(mw_pole_sqr);
-
-qedqcd.setPoleMW(mw_pole);"
+return AbsSqrt(mw_pole_sqr);"
           ];
 
 RecalculateMWPole[_,_] := "";
