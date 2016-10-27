@@ -81,7 +81,7 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
 void QedQcd::set(const DoubleVector & y) {
   a(ALPHA) = y.display(1);
   a(ALPHAS) = y.display(2);
-  int i; for (i=3; i<=11; i++)
+  for (int i=3; i<=11; i++)
     mf(i-2) = y.display(i);
 }
 
@@ -89,7 +89,7 @@ const DoubleVector QedQcd::display() const {
   DoubleVector y(11);
   y(1) = a.display(ALPHA);
   y(2) = a.display(ALPHAS);
-  int i; for (i=3; i<=11; i++)
+  for (int i=3; i<=11; i++)
     y(i) = mf.display(i-2);
   return y;
 }
@@ -246,23 +246,26 @@ void QedQcd::massBeta(DoubleVector & x) const {
            140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
       INVPI / 64.0;
 
-  double qcd = -2.0 * a.display(ALPHAS) * (qg1  + qg2 * a.display(ALPHAS) +
-                                           qg3 * sqr(a.display(ALPHAS)));
-  double qed = -a.display(ALPHA) * INVPI / 2;
+  const double qcd = -2.0 * a.display(ALPHAS) * (
+     qg1  + qg2 * a.display(ALPHAS) + qg3 * sqr(a.display(ALPHAS)));
+  const double qed = -a.display(ALPHA) * INVPI / 2;
 
-  int i;
-  for (i=1;i<=3;i++)   // up quarks
+  for (int i=1;i<=3;i++)   // up quarks
     x(i) = (qcd + 4.0 * qed / 3.0) * mf.display(i);
-  for (i=4;i<=6;i++)   // down quarks
+  for (int i=4;i<=6;i++)   // down quarks
     x(i) = (qcd + qed / 3.0) * mf.display(i);
-  for (i=7;i<=9;i++)   // leptons
+  for (int i=7;i<=9;i++)   // leptons
     x(i) = 3.0 * qed * mf.display(i);
 
   // switch off relevant beta functions
   if (displayThresholds() > 0)
-    for(i=1;i<=9;i++) if (displayMu() < displayMass().display(i)) x(i) = 0.0;
+    for(int i=1;i<=9;i++) {
+      if (displayMu() < displayMass().display(i))
+         x(i) = 0.0;
+    }
   // nowadays, u,d,s masses defined at 2 GeV: don't run them below that
-  if (displayMu() < 2.0) x(1) = x(4) = x(5) = 0.0;
+  if (displayMu() < 2.0)
+     x(1) = x(4) = x(5) = 0.0;
 }
 
 DoubleVector QedQcd::beta() const {
@@ -271,7 +274,7 @@ DoubleVector QedQcd::beta() const {
   dydx(2) = qcdBeta();
   DoubleVector y(9);
   massBeta(y);
-  int i; for (i=3; i<=11; i++)
+  for (int i=3; i<=11; i++)
     dydx(i) = y(i-2);
   return dydx;
 }
