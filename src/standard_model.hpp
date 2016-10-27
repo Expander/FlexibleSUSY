@@ -32,7 +32,6 @@
 #include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
-#include "lowe.h"
 #include "physical_input.hpp"
 
 #include <iosfwd>
@@ -40,6 +39,10 @@
 
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
+
+namespace softsusy {
+   class QedQcd;
+}
 
 namespace flexiblesusy {
 
@@ -151,14 +154,11 @@ public:
    void set_precision(double);
    double get_precision() const;
 
-   void set_low_energy_data(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
-   const softsusy::QedQcd& get_low_energy_data() const { return qedqcd; }
-   softsusy::QedQcd& get_low_energy_data() { return qedqcd; }
    void set_physical_input(const Physical_input& input_) { input = input_; }
    const Physical_input& get_physical_input() const { return input; }
    Physical_input& get_physical_input() { return input; }
 
-   void initialise_from_input();
+   void initialise_from_input(const softsusy::QedQcd&);
 
    void set_g1(double g1_) { g1 = g1_; }
    void set_g2(double g2_) { g2 = g2_; }
@@ -485,11 +485,10 @@ public:
    double calculate_delta_alpha_em(double alphaEm) const;
    double calculate_delta_alpha_s(double alphaS) const;
    void calculate_Lambdax_DRbar();
-   double calculate_theta_w(double alpha_em_drbar);
-   void calculate_Yu_DRbar();
-   void calculate_Yd_DRbar();
-   void calculate_Ye_DRbar();
-   void recalculate_mw_pole();
+   double calculate_theta_w(const softsusy::QedQcd&, double alpha_em_drbar);
+   void calculate_Yu_DRbar(const softsusy::QedQcd&);
+   void calculate_Yd_DRbar(const softsusy::QedQcd&);
+   void calculate_Ye_DRbar(const softsusy::QedQcd&);
    double recalculate_mw_pole(double);
 
 protected:
@@ -575,7 +574,6 @@ private:
    Standard_model_physical physical; ///< contains the pole masses and mixings
    Problems<standard_model_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-   softsusy::QedQcd qedqcd;
    Physical_input input;
 
    int solve_ewsb_iteratively();
@@ -588,7 +586,7 @@ private:
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
-   void initial_guess_for_parameters();
+   void initial_guess_for_parameters(const softsusy::QedQcd&);
    bool check_convergence(const Standard_model& old) const;
 
    // Passarino-Veltman loop functions

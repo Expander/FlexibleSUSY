@@ -62,7 +62,6 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
           " model pointer must not be zero");
 
    qedqcd.runto(scale, 1.0e-5);
-   model->set_low_energy_data(qedqcd);
    model->calculate_DRbar_masses();
 
    const double alpha_em = qedqcd.displayAlpha(softsusy::ALPHA);
@@ -84,7 +83,7 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    const double g2 = model->get_g2();
    const double mZ = model->get_thresholds() ?
       model->calculate_MVZ_DRbar(mz_pole) : mz_pole;
-   double theta_w = model->calculate_theta_w(alpha_em_drbar);
+   double theta_w = model->calculate_theta_w(qedqcd, alpha_em_drbar);
 
    if (IsFinite(theta_w)) {
       model->get_problems().unflag_non_perturbative_parameter(
@@ -96,9 +95,9 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    }
 
    model->set_v(Re((2*mZ)/Sqrt(0.6*Sqr(g1) + Sqr(g2))));
-   model->calculate_Yu_DRbar();
-   model->calculate_Yd_DRbar();
-   model->calculate_Ye_DRbar();
+   model->calculate_Yu_DRbar(qedqcd);
+   model->calculate_Yd_DRbar(qedqcd);
+   model->calculate_Ye_DRbar(qedqcd);
    model->set_g1(1.2909944487358056*e_drbar*Sec(theta_w));
    model->set_g2(e_drbar*Csc(theta_w));
    model->set_g3(3.5449077018110318*Sqrt(alpha_s_drbar));

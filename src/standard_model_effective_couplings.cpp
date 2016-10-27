@@ -53,6 +53,7 @@ Standard_model_effective_couplings::~Standard_model_effective_couplings()
 
 void Standard_model_effective_couplings::calculate_effective_couplings()
 {
+   const standard_model::Standard_model sm(initialise_SM());
    const double scale = model.get_scale();
    const Eigen::ArrayXd saved_parameters(model.get());
 
@@ -60,9 +61,9 @@ void Standard_model_effective_couplings::calculate_effective_couplings()
    PHYSICAL(MFu(2)) = qedqcd.displayPoleMt();
 
    const auto Mhh = PHYSICAL(Mhh);
-   run_SM_strong_coupling_to(0.5 * Mhh);
+   run_SM_strong_coupling_to(sm, 0.5 * Mhh);
    calculate_eff_CphhVPVP();
-   run_SM_strong_coupling_to(Mhh);
+   run_SM_strong_coupling_to(sm, Mhh);
    calculate_eff_CphhVGVG();
 
    PHYSICAL(MFu(2)) = saved_mt;
@@ -89,22 +90,23 @@ void Standard_model_effective_couplings::copy_mixing_matrices_from_model()
 
 }
 
-void Standard_model_effective_couplings::run_SM_strong_coupling_to(double m)
+standard_model::Standard_model Standard_model_effective_couplings::initialise_SM() const
 {
-   using namespace standard_model;
-
-   Standard_model sm;
+   standard_model::Standard_model sm;
 
    sm.set_loops(2);
    sm.set_thresholds(2);
-   sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_input);
 
-   sm.initialise_from_input();
+   sm.initialise_from_input(qedqcd);
+
+   return sm;
+}
+
+void Standard_model_effective_couplings::run_SM_strong_coupling_to(standard_model::Standard_model sm, double m)
+{
    sm.run_to(m);
-
    model.set_g3(sm.get_g3());
-
 }
 
 std::complex<double> Standard_model_effective_couplings::scalar_scalar_qcd_factor(double m_decay, double m_loop) const

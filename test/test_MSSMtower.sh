@@ -210,7 +210,7 @@ EOF
     done
 }
 
-scan "$start" "$stop" "$steps" | tee "$scan_data"
+# scan "$start" "$stop" "$steps" | tee "$scan_data"
 
 cat <<EOF | gnuplot
 set terminal pdf enhanced

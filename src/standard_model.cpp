@@ -26,6 +26,7 @@
 #include "eigen_utils.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
+#include "lowe.h"
 #include "numerics2.hpp"
 #include "logger.hpp"
 #include "error.hpp"
@@ -163,7 +164,6 @@ Standard_model::Standard_model()
    , physical()
    , problems(standard_model_info::particle_names)
    , two_loop_corrections()
-   , qedqcd()
    , input()
    , g1(0), g2(0), g3(0), Lambdax(0), Yu(Eigen::Matrix<double,3,3>::Zero()), Yd
    (Eigen::Matrix<double,3,3>::Zero()), Ye(Eigen::Matrix<double,3,3>::Zero())
@@ -198,7 +198,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    , physical()
    , problems(standard_model_info::particle_names)
    , two_loop_corrections()
-   , qedqcd()
    , input()
    , g1(g1_), g2(g2_), g3(g3_), Lambdax(Lambdax_), Yu(Yu_), Yd(Yd_), Ye(Ye_)
    , mu2(mu2_), v(v_)
@@ -869,13 +868,14 @@ std::string Standard_model::name() const
    return "Standard model";
 }
 
-void Standard_model::initialise_from_input()
+void Standard_model::initialise_from_input(const softsusy::QedQcd& qedqcd_)
 {
    const double scale = get_scale();
+   auto qedqcd = qedqcd_;
 
    // initial guess
    qedqcd.to(qedqcd.displayPoleMZ());
-   initial_guess_for_parameters();
+   initial_guess_for_parameters(qedqcd);
    run_to(qedqcd.displayPoleMZ());
 
    // determine Standard model parameters iteratively
@@ -907,7 +907,7 @@ void Standard_model::initialise_from_input()
       const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
       const double alpha_s_drbar  = alpha_s / (1.0 - delta_alpha_s);
       const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
-      double theta_w_drbar        = calculate_theta_w(alpha_em_drbar);
+      double theta_w_drbar        = calculate_theta_w(qedqcd, alpha_em_drbar);
 
       if (IsFinite(theta_w_drbar)) {
          problems.unflag_non_perturbative_parameter(
@@ -920,9 +920,9 @@ void Standard_model::initialise_from_input()
 
       v = Re((2 * mz_run) / Sqrt(0.6 * Sqr(g1) + Sqr(g2)));
 
-      calculate_Yu_DRbar();
-      calculate_Yd_DRbar();
-      calculate_Ye_DRbar();
+      calculate_Yu_DRbar(qedqcd);
+      calculate_Yd_DRbar(qedqcd);
+      calculate_Ye_DRbar(qedqcd);
       calculate_Lambdax_DRbar();
 
       solve_ewsb();
@@ -931,7 +931,8 @@ void Standard_model::initialise_from_input()
       g2 = e_drbar * Csc(theta_w_drbar);
       g3 = 3.5449077018110318 * Sqrt(alpha_s_drbar);
 
-      recalculate_mw_pole();
+      if (get_thresholds())
+         qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 
       converged = check_convergence(old);
       old = *this;
@@ -942,7 +943,7 @@ void Standard_model::initialise_from_input()
       run_to(scale);
 }
 
-void Standard_model::initial_guess_for_parameters()
+void Standard_model::initial_guess_for_parameters(const softsusy::QedQcd& qedqcd)
 {
    const double MZ = qedqcd.displayPoleMZ();
    const double MW = qedqcd.displayPoleMW();
@@ -1017,7 +1018,7 @@ double Standard_model::calculate_delta_alpha_s(double alphaS) const
 
 }
 
-double Standard_model::calculate_theta_w(double alpha_em_drbar)
+double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double alpha_em_drbar)
 {
    double theta_w = 0.;
 
@@ -1093,7 +1094,7 @@ double Standard_model::calculate_theta_w(double alpha_em_drbar)
    return theta_w;
 }
 
-void Standard_model::calculate_Yu_DRbar()
+void Standard_model::calculate_Yu_DRbar(const softsusy::QedQcd& qedqcd)
 {
    Eigen::Matrix<double,3,3> upQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
    upQuarksDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
@@ -1107,7 +1108,7 @@ void Standard_model::calculate_Yu_DRbar()
    Yu = -((1.4142135623730951*upQuarksDRbar)/v).transpose();
 }
 
-void Standard_model::calculate_Yd_DRbar()
+void Standard_model::calculate_Yd_DRbar(const softsusy::QedQcd& qedqcd)
 {
    Eigen::Matrix<double,3,3> downQuarksDRbar(Eigen::Matrix<double,3,3>::Zero());
    downQuarksDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
@@ -1121,7 +1122,7 @@ void Standard_model::calculate_Yd_DRbar()
    Yd = ((1.4142135623730951*downQuarksDRbar)/v).transpose();
 }
 
-void Standard_model::calculate_Ye_DRbar()
+void Standard_model::calculate_Ye_DRbar(const softsusy::QedQcd& qedqcd)
 {
    Eigen::Matrix<double,3,3> downLeptonsDRbar(Eigen::Matrix<double,3,3>::Zero());
    downLeptonsDRbar(0,0) = qedqcd.displayPoleMel();
@@ -1146,12 +1147,6 @@ void Standard_model::calculate_Lambdax_DRbar()
    }
 
    Lambdax = Sqr(higgsDRbar) / Sqr(v);
-}
-
-void Standard_model::recalculate_mw_pole()
-{
-   if (get_thresholds())
-      qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 }
 
 double Standard_model::recalculate_mw_pole(double mw_pole)
