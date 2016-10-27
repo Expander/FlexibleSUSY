@@ -65,7 +65,7 @@ public:
 private:
    @ModelName@<Two_scale>* model; ///< pointer to model class
    standard_model::StandardModel<Two_scale>* eft; ///< pointer to effective low energy model
-   softsusy::QedQcd oneset; ///< Standard Model low-energy data
+   softsusy::QedQcd qedqcd; ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
    double mc_guess; ///< guessed DR-bar mass of charm-quark
    double mt_guess; ///< guessed DR-bar mass of top-quark
