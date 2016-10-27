@@ -116,7 +116,7 @@ GSL_vector to_GSL_vector(const Eigen::VectorXd& v)
 {
    GSL_vector v2(v.rows());
 
-   for (std::size_t i = 0; i < v.rows(); i++)
+   for (Eigen::VectorXd::Index i = 0; i < v.rows(); i++)
       v2[i] = v(i);
 
    return v2;
