@@ -47,11 +47,12 @@ Eigen::ArrayXd Physical_input::get() const
    return vec;
 }
 
-std::vector<std::string> Physical_input::get_names()
+std::array<std::string, Physical_input::NUMBER_OF_INPUT_PARAMETERS> Physical_input::get_names()
 {
-   std::vector<std::string> names(NUMBER_OF_INPUT_PARAMETERS);
-   names[0] = "alpha_em(0)";
-   names[1] = "mh_pole";
+   static const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> names = {
+      "alpha_em(0)",
+      "mh_pole"
+   };
    return names;
 }
 

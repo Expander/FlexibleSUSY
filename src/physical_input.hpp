@@ -21,7 +21,6 @@
 
 #include <array>
 #include <string>
-#include <vector>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -46,7 +45,7 @@ public:
 
    double get(Input) const;    ///< get value of input parameter
    Eigen::ArrayXd get() const; ///< get all input parameter values
-   static std::vector<std::string> get_names(); ///< get names of input parameters
+   static std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> get_names(); ///< get names of input parameters
    void set(Input, double);   ///< set value of input parameter
    void set(const Eigen::ArrayXd&); ///< set all input parameter values
    void reset();              ///< resets all input parameters to their defaults
