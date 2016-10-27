@@ -14,7 +14,7 @@
 
 namespace softsusy {
 
-const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] = {
+const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names = {
    "alpha_em_MSbar_at_MZ",
    "alpha_s_MSbar_at_MZ",
    "GFermi",
@@ -25,9 +25,53 @@ const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS] =
    "MD_2GeV", "mc_mc", "mb_mb"
 };
 
+namespace {
+
 ///  external object temp used to get objects into external routines, however:
 ///  don't use it!
-static QedQcd *tempLe;
+QedQcd *tempLe;
+
+DoubleVector gaugeDerivs(double x, const DoubleVector & y) {
+  using std::exp;
+  tempLe->setMu(exp(x));
+  tempLe->setAlpha(ALPHA, y.display(1));
+  tempLe->setAlpha(ALPHAS, y.display(2));
+  DoubleVector dydx(2);
+  dydx(1) = tempLe->qedBeta();
+  dydx(2) = tempLe->qcdBeta();
+
+  return dydx;
+}
+
+// SM beta functions for the gauge couplings, neglecting Yukawa
+// contributions, from arXiv:1208.3357 [hep-ph].
+DoubleVector smGaugeDerivs(double x, const DoubleVector & y) {
+  const double oneO4Pi = 1.0 / (4.0 * PI);
+
+  const double scale = std::exp(x);
+
+  tempLe->setMu(scale);
+
+  const double a1 = y(1);
+  const double a2 = y(2);
+  const double a3 = y(3);
+
+  const int nG = 3;
+
+  DoubleVector dydx(3);
+
+  dydx(1) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
+    + 1.8 * a2 + nG * (38.0 * a1 / 15.0 + 1.2 * a2 + 88.0 * a3 / 15.0)));
+  dydx(2) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
+    (0.6 * a1 - 259.0 * a2 / 3.0 + nG * (0.4 * a1 + 98.0 * a2 / 3.0 + 8.0
+    * a3)));
+  dydx(3) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
+    * a3 + nG * (11.0 * a1 / 15.0 + 3.0 * a2 + 152.0 * a3 / 3.0)));
+
+  return dydx;
+}
+
+} // anonymous namespace
 
 QedQcd::QedQcd()
   : a(2)
@@ -616,46 +660,6 @@ void readIn(QedQcd &mset, const char fname[80]) {
 
 }
 
-DoubleVector gaugeDerivs(double x, const DoubleVector & y) {
-  using std::exp;
-  tempLe->setMu(exp(x));
-  tempLe->setAlpha(ALPHA, y.display(1));
-  tempLe->setAlpha(ALPHAS, y.display(2));
-  DoubleVector dydx(2);
-  dydx(1) = tempLe->qedBeta();
-  dydx(2) = tempLe->qcdBeta();
-
-  return dydx;
-}
-
-// SM beta functions for the gauge couplings, neglecting Yukawa
-// contributions, from arXiv:1208.3357 [hep-ph].
-DoubleVector smGaugeDerivs(double x, const DoubleVector & y) {
-  const double oneO4Pi = 1.0 / (4.0 * PI);
-
-  const double scale = std::exp(x);
-
-  tempLe->setMu(scale);
-
-  const double a1 = y(1);
-  const double a2 = y(2);
-  const double a3 = y(3);
-
-  const int nG = 3;
-
-  DoubleVector dydx(3);
-
-  dydx(1) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
-    + 1.8 * a2 + nG * (38.0 * a1 / 15.0 + 1.2 * a2 + 88.0 * a3 / 15.0)));
-  dydx(2) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
-    (0.6 * a1 - 259.0 * a2 / 3.0 + nG * (0.4 * a1 + 98.0 * a2 / 3.0 + 8.0
-    * a3)));
-  dydx(3) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
-    * a3 + nG * (11.0 * a1 / 15.0 + 3.0 * a2 + 152.0 * a3 / 3.0)));
-
-  return dydx;
-}
-
 // Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
 double getRunMtFromMz(double poleMt, double asMZ) {
   return getRunMt(poleMt, getAsmt(poleMt, asMZ));
@@ -701,11 +705,9 @@ Eigen::ArrayXd QedQcd::display_input() const
    return input;
 }
 
-std::vector<std::string> QedQcd::display_input_parameter_names()
+std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd::display_input_parameter_names()
 {
-   return std::vector<std::string>(QedQcd_input_parmeter_names,
-                                   QedQcd_input_parmeter_names
-                                   + NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS);
+   return QedQcd_input_parmeter_names;
 }
 
 bool operator ==(const QedQcd& a, const QedQcd& b)

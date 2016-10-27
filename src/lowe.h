@@ -22,6 +22,7 @@
 #include "rge.h"
 #include "ckm.hpp"
 #include "pmns.hpp"
+#include <array>
 #include <Eigen/Core>
 
 namespace softsusy {
@@ -63,12 +64,7 @@ enum QedQcd_input_parmeters : unsigned {
    NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
 };
 
-extern const char* QedQcd_input_parmeter_names[NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS];
-
-/// Returns beta functions of alpha, alpha_s only
-DoubleVector gaugeDerivs(double, const DoubleVector &);
-/// Returns SM beta functions of alpha_i, i = 1, 2, 3
-DoubleVector smGaugeDerivs(double, const DoubleVector&);
+extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names;
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
 class QedQcd: public RGE
@@ -156,7 +152,7 @@ public:
   /// returns vector of all input parameters
   Eigen::ArrayXd display_input() const;
   /// returns vector of all parameter names
-  static std::vector<std::string> display_input_parameter_names();
+  static std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> display_input_parameter_names();
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return input(mb_mb); }
   /// Returns mc(mc) MSbar
