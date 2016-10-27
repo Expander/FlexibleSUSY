@@ -931,7 +931,8 @@ void Standard_model::initialise_from_input()
       g2 = e_drbar * Csc(theta_w_drbar);
       g3 = 3.5449077018110318 * Sqrt(alpha_s_drbar);
 
-      qedqcd.setPoleMW(recalculate_mw_pole());
+      if (get_thresholds())
+         qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 
       converged = check_convergence(old);
       old = *this;
@@ -1148,15 +1149,12 @@ void Standard_model::calculate_Lambdax_DRbar()
    Lambdax = Sqr(higgsDRbar) / Sqr(v);
 }
 
-double Standard_model::recalculate_mw_pole()
+double Standard_model::recalculate_mw_pole(double mw_pole)
 {
-   if (!get_thresholds())
-      return qedqcd.displayPoleMW();
-
    calculate_MVWp();
 
    const double mw_drbar    = MVWp;
-   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(qedqcd.displayPoleMW()));
+   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(mw_pole));
 
    if (mw_pole_sqr < 0.)
       problems.flag_tachyon(standard_model_info::VWp);

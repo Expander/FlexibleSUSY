@@ -489,7 +489,7 @@ public:
    void calculate_Yu_DRbar();
    void calculate_Yd_DRbar();
    void calculate_Ye_DRbar();
-   double recalculate_mw_pole();
+   double recalculate_mw_pole(double);
 
 protected:
 
