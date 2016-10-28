@@ -1162,7 +1162,7 @@ double Standard_model::recalculate_mw_pole(double mw_pole)
    return AbsSqrt(mw_pole_sqr);
 }
 
-bool Standard_model::check_convergence(const Standard_model& old) const
+double Standard_model::max_rel_diff(const Standard_model& old) const
 {
    double diff[12] = { 0 };
 
@@ -1175,9 +1175,12 @@ bool Standard_model::check_convergence(const Standard_model& old) const
    }
    diff[11] = MaxRelDiff(old.MVWp, MVWp);
 
-   const double max_diff = *std::max_element(diff, diff + 12);
+   return *std::max_element(diff, diff + 12);
+}
 
-   return max_diff < precision;
+bool Standard_model::check_convergence(const Standard_model& old) const
+{
+   return max_rel_diff(old) < precision;
 }
 
 Eigen::ArrayXd Standard_model::get() const

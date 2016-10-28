@@ -587,6 +587,7 @@ private:
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters(const softsusy::QedQcd&);
+   double max_rel_diff(const Standard_model& old) const;
    bool check_convergence(const Standard_model& old) const;
 
    // Passarino-Veltman loop functions
