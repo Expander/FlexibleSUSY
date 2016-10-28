@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "two_scale_composite_convergence_tester.hpp"
-#include <cassert>
 #include <algorithm>
 
 namespace flexiblesusy {
@@ -80,9 +79,8 @@ unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
 
 void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester<Two_scale>* t)
 {
-   assert(t && "<Composite_convergence_tester<Two_scale>::add_convergence_tester> "
-          "convergence tester must not be zero");
-   testers.push_back(t);
+   if (t)
+      testers.push_back(t);
 }
 
-}
+} // namespace flexiblesusy
