@@ -80,10 +80,9 @@ void Standard_model_tester::run_SM_gauge_couplings_to(double m)
 
    sm.set_loops(2);
    sm.set_thresholds(2);
-   sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_inputs);
 
-   sm.initialise_from_input();
+   sm.initialise_from_input(qedqcd);
    sm.run_to(m);
 
    model.set_g3(sm.get_g3());
