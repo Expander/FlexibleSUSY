@@ -70,7 +70,7 @@ bool compare_max_iterations(const Convergence_tester<Two_scale>* a,
    return a->max_iterations() < b->max_iterations();
 }
 
-}
+} // anonymous namespace
 
 unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
 {
