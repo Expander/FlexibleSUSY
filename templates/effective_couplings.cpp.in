@@ -68,10 +68,9 @@ standard_model::Standard_model @ModelName@_effective_couplings::initialise_SM() 
 
    sm.set_loops(2);
    sm.set_thresholds(2);
-   sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_input);
 
-   sm.initialise_from_input();
+   sm.initialise_from_input(qedqcd);
 
    return sm;
 }

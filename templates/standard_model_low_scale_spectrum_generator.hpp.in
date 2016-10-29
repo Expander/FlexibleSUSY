@@ -30,6 +30,8 @@
 #include "@ModelName@_standard_model_two_scale_matching.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "standard_model_two_scale_low_scale_constraint.hpp"
+#include "standard_model_two_scale_convergence_tester.hpp"
+#include "two_scale_composite_convergence_tester.hpp"
 
 #include "lowe.h"
 #include "error.hpp"
@@ -37,6 +39,7 @@
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 
+#include <algorithm>
 #include <limits>
 
 namespace flexiblesusy {
@@ -84,11 +87,11 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
- * @param oneset Standard Model input parameters
+ * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -120,7 +123,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&eft);
 
-   low_scale_constraint .set_sm_parameters(oneset);
+   low_scale_constraint .set_sm_parameters(qedqcd);
 
    const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
 
@@ -139,21 +142,33 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-
-   @ModelName@_convergence_tester<T> convergence_tester(
+   // convergence tester for @ModelName@
+   @ModelName@_convergence_tester<T> model_ct(
       &model, this->settings.get(Spectrum_generator_settings::precision));
-   if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
-      convergence_tester.set_max_iterations(
-         this->settings.get(Spectrum_generator_settings::max_iterations));
 
-   @ModelName@_standard_model_initial_guesser<T> initial_guesser(&model, &eft, oneset,
+   // convergence tester for Standard Model
+   standard_model::Standard_model_convergence_tester<T> eft_ct(
+      &eft, this->settings.get(Spectrum_generator_settings::precision));
+
+   if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0) {
+      model_ct.set_max_iterations(
+         this->settings.get(Spectrum_generator_settings::max_iterations));
+      eft_ct.set_max_iterations(
+         this->settings.get(Spectrum_generator_settings::max_iterations));
+   }
+
+   Composite_convergence_tester<Two_scale> cct;
+   cct.add_convergence_tester(&model_ct);
+   cct.add_convergence_tester(&eft_ct);
+
+   @ModelName@_standard_model_initial_guesser<T> initial_guesser(&model, &eft, qedqcd,
                                                   low_scale_constraint,
                                                   susy_scale_constraint);
    Two_scale_increasing_precision precision(
       10.0, this->settings.get(Spectrum_generator_settings::precision));
 
    solver.reset();
-   solver.set_convergence_tester(&convergence_tester);
+   solver.set_convergence_tester(&cct);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
    solver.add(&low_scale_constraint, &eft);
@@ -173,7 +188,8 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
 
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
-      this->reached_precision = convergence_tester.get_current_accuracy();
+      this->reached_precision = std::max(model_ct.get_current_accuracy(),
+                                         eft_ct.get_current_accuracy());
 
       const double mass_scale =
          this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?

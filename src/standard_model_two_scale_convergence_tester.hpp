@@ -16,39 +16,33 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
-#define TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
+// File generated at Fri 28 Oct 2016 12:11:14
 
-#include "composite_convergence_tester.hpp"
-#include "two_scale_convergence_tester.hpp"
-#include <vector>
+#ifndef STANDARD_MODEL_TWO_SCALE_CONVERGENCE_TESTER_H
+#define STANDARD_MODEL_TWO_SCALE_CONVERGENCE_TESTER_H
+
+#include "standard_model_convergence_tester.hpp"
+#include "standard_model_two_scale_model.hpp"
+#include "two_scale_convergence_tester_drbar.hpp"
 
 namespace flexiblesusy {
 
 class Two_scale;
 
-/**
- * @class Composite_convergence_tester
- * @brief A composite convergence tester
- *
- * This class collects convergence testers that will be checked when
- * Composite_convergence_tester::accuracy_goal_reached() is called.
- */
+namespace standard_model {
 
 template<>
-class Composite_convergence_tester<Two_scale> : public Convergence_tester<Two_scale> {
+class Standard_model_convergence_tester<Two_scale>
+   : public Convergence_tester_DRbar<StandardModel<Two_scale> > {
 public:
-   Composite_convergence_tester();
-   virtual ~Composite_convergence_tester();
+   Standard_model_convergence_tester(StandardModel<Two_scale>*, double);
+   virtual ~Standard_model_convergence_tester();
 
-   virtual bool accuracy_goal_reached() override;
-   virtual unsigned int max_iterations() const override;
-   void add_convergence_tester(Convergence_tester<Two_scale>*);
-
-private:
-   std::vector<Convergence_tester<Two_scale>*> testers;
+protected:
+   virtual double max_rel_diff() const;
 };
 
-}
+} // namespace standard_model
+} // namespace flexiblesusy
 
 #endif

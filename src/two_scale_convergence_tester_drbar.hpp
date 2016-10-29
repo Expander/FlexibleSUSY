@@ -35,9 +35,9 @@ public:
    Convergence_tester_DRbar(Model<Two_scale>*, double);
    virtual ~Convergence_tester_DRbar();
 
-   virtual bool accuracy_goal_reached();
+   virtual bool accuracy_goal_reached() override;
    virtual double get_accuracy_goal() const;
-   virtual unsigned int max_iterations() const;
+   virtual unsigned int max_iterations() const override;
    double get_current_accuracy() const;
    void set_max_iterations(unsigned);           ///< set maximum number of iterations
 
