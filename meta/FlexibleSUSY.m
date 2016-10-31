@@ -175,6 +175,9 @@ FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
 FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + tadpoles *)
 FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 
+(* macros *)
+SUM;
+
 (* input value for the calculation of the weak mixing angle *)
 FSFermiConstant;
 FSMassW;

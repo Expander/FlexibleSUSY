@@ -558,7 +558,7 @@ CreateLocalConstRefsIgnoringMixings[expr_, mixings_List] :=
 CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, localExpr, body = "", functionName = "", i,
-            type, typeStr, initialValue},
+            type, typeStr},
            indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
            functionName = CConversion`ToValidCSymbolString[CConversion`GetHead[symbol]];
@@ -572,8 +572,8 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
               ];
            functionName = functionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType]; initialValue = " = 0.0";,
-              type = CConversion`ScalarType[CConversion`complexScalarCType]; initialValue = "";];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> functionName <> " const;\n";
            definition = typeStr <> " " <> FlexibleSUSY`FSModelName
@@ -581,9 +581,9 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
            localExpr = expr /. (Rule[#[],#]& /@ Parameters`GetDependenceSPhenoSymbols[]);
            localExpr = localExpr /. Parameters`GetDependenceSPhenoRules[];
            body = CreateLocalConstRefsIgnoringMixings[localExpr, mixings] <> "\n" <>
-                  typeStr <> " result" <> initialValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[localExpr, "result"];
-           body = body <> "\nreturn result;\n";
+                  "const " <> typeStr <> " result = " <>
+                  Parameters`ExpressionToString[localExpr] <> ";\n\n" <>
+                  "return result;\n";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            definition = definition <> body <> "}\n";
            {prototype, definition}

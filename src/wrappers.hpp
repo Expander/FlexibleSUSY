@@ -34,6 +34,7 @@
 
 #include "dilog.hpp"
 #include "eigen_tensor.hpp"
+#include "sum.hpp"
 
 namespace flexiblesusy {
 
@@ -587,6 +588,13 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define DEFINE_PROJECTOR(M,N,X,Y)                                       \
    Eigen::Matrix<double,M,N> Proj(Eigen::Matrix<double,M,N>::Zero());   \
    Proj(X-1,Y-1) = 1;
+
+/// step function (1 for a <= b, 0 otherwise)
+template <typename T1, typename T2>
+constexpr bool ThetaStep(T1 a, T2 b)
+{
+   return a <= b;
+}
 
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)

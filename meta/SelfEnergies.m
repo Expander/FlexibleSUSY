@@ -260,7 +260,7 @@ CreateCouplingSymbol[coupling_] :=
 CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
-            type, typeStr, initalValue},
+            type, typeStr},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
@@ -275,15 +275,15 @@ CreateCouplingFunction[coupling_, expr_] :=
               ];
            cFunctionName = cFunctionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType];    initalValue = " = 0.0";,
-              type = CConversion`ScalarType[CConversion`complexScalarCType]; initalValue = "";];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
            body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
-                  typeStr <> " result" <> initalValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[expr, "result"];
-           body = body <> "\nreturn result;\n";
+                  "const " <> typeStr <> " result = " <>
+                  Parameters`ExpressionToString[expr] <> ";\n\n" <>
+                  "return result;\n";
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
            Return[{prototype, definition,
@@ -427,14 +427,14 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
-           body = type <> " result;\n\n" <>
-                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
-                             vertexRules /.
-                             a_[List[i__]] :> a[i] /.
-                             ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
-                             C -> 1
-                             ,"result"] <>
-                  "\nreturn result * oneOver16PiSqr;";
+           body = "const " <> type <> " result = " <>
+                  ExpressionToString[expr /.
+                                     vertexRules /.
+                                     a_[List[i__]] :> a[i] /.
+                                     ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
+                                     C -> 1,
+                                     TreeMasses`GetParticles[]]  <>
+                  ";\n\nreturn result * oneOver16PiSqr;";
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];

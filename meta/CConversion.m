@@ -34,7 +34,6 @@ Sqr::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
-IndexSum::usage="";
 TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
@@ -93,9 +92,6 @@ CreateConstExternDecl::usage="";
 CreateConstDef::usage="";
 
 SetToDefault::usage="set parameter to default value";
-
-ExpandSums::usage="expands expressions that contain sum symbols of the
-form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
@@ -788,6 +784,7 @@ RValueToCFormString[expr_] :=
               };
              ];
            result = Block[{Which, If}, expr /. greekSymbolsRules] /.
+                    SARAH`sum -> FlexibleSUSY`SUM /.
                     SARAH`Mass -> FlexibleSUSY`M //. {
                     SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
                     SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
@@ -855,118 +852,6 @@ CreateUniqueCVariable[] :=
            sumVariableCounter++;
            Return[variable];
           ];
-
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
-
-ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{result, tmpSum, idxStr, startStr, stopStr},
-           idxStr   = ToValidCSymbolString[index];
-           startStr = ToValidCSymbolString[start];
-           stopStr  = ToValidCSymbolString[stop + 1];
-           tmpSum   = CreateUniqueCVariable[];
-           result = CConversion`CreateCType[type] <> " " <> tmpSum <>
-                    initialValue <> ";\n" <>
-                    "for (unsigned " <> idxStr <> " = " <>
-                    startStr <> "; " <> idxStr <> " < " <> stopStr <>
-                    "; ++" <> idxStr <> ") {\n" <>
-                    IndentText[ExpandSums[expr,tmpSum,type,initialValue]] <> "}\n" <>
-                    variable <> " += " <> tmpSum <> ";\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_Plus, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{summands},
-           summands = List @@ expr;
-           StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
-          ];
-
-ToCondition[SARAH`ThetaStep[i1_,i2_Integer]] := ToString[i1] <> " < " <> ToString[i2+1];
-ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " <= " <> ToString[i2];
-
-StripThetaStep[expr_] :=
-      Module[{thetas, strippedExpr, i, condition = ""},
-           thetas = Cases[ThetaMark expr, SARAH`ThetaStep[_,_], Infinity];
-           strippedExpr = DeleteCases[ThetaMark expr, SARAH`ThetaStep[_,_], Infinity] /. ThetaMark -> 1;
-           (* create condition *)
-           For[i = 1, i <= Length[thetas], i++,
-               If[i > 1, condition = condition <> " && ";];
-               condition = condition <> ToCondition[thetas[[i]]];
-              ];
-           Return[{strippedExpr, condition}];
-          ];
-
-ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{strippedExpr, condition, result, expandedExpr},
-           expandedExpr = Expand[expr];
-           If[expandedExpr === expr,
-              {strippedExpr, condition} = StripThetaStep[expr];
-              result = "if (" <> condition <> ") {\n" <>
-                       IndentText[ExpandSums[strippedExpr, variable, type, initialValue]] <>
-                       "}\n";
-              ,
-              result = ExpandSums[expandedExpr, variable, type, initialValue];
-             ];
-           Return[result];
-          ];
-
-ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
-           factors = List @@ expr;
-           sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
-           rest = Complement[factors, sums];
-           expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
-           expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;
-           (* add for loops *)
-           result = StringJoin[(CConversion`CreateCType[type] <> " " <>
-                                #[[2]] <> initialValue <> ";\n" <> #[[1]])& /@ expandedSums];
-           result = result <> variable <> " += (" <> RValueToCFormString[Times @@ rest] <> ")";
-           (* multiply the sums *)
-           For[i = 1, i <= Length[expandedSums], i++,
-               result = result <> " * " <> expandedSums[[i,2]];
-              ];
-           result = result <>";\n";
-           Return[result];
-          ];
-
-ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{var, result = ""},
-           var = CreateUniqueCVariable[];
-           result = CConversion`CreateCType[type] <> " " <> var <> ";\n" <>
-                    ExpandSums[expr, var, type, initialValue] <>
-                    variable <> " = " <> ToString[Fun] <> "(" <> var <>
-                    If[{rest} === {}, "", ","] <>
-                    Utils`StringJoinWithSeparator[RValueToCFormString /@ {rest}, ","] <>
-                    ");\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{strippedExpr, i, condition = "", result},
-           {strippedExpr, condition} = StripThetaStep[expr];
-           result = "if (" <> condition <> ") {\n" <>
-                    IndentText[variable <> " += " <>
-                               RValueToCFormString[strippedExpr] <> ";\n"] <>
-                    "}\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    variable <> " += " <> RValueToCFormString[expr] <> ";\n";
 
 ProtectTensorProducts[expr_, idx1_, idx2_] :=
     Expand[expr] //.

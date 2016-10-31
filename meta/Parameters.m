@@ -108,6 +108,9 @@ IncreaseIndexLiterals::usage="";
 
 DecreaseSumIndices::usage="";
 
+ExpressionToString::usage="Converts an expression to a valid C++
+string.";
+
 GetEffectiveMu::usage="";
 GetEffectiveMASqr::usage="";
 
@@ -1010,7 +1013,16 @@ DecreaseIndexLiterals[expr_, heads_List] :=
     IncreaseIndexLiterals[expr, -1, heads];
 
 DecreaseSumIndices[expr_] :=
-    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
+    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> FlexibleSUSY`SUM[idx, start - 1, stop - 1, exp];
+
+(* Converts an expression to a valid C++ string. *)
+ExpressionToString[expr_] :=
+    CConversion`RValueToCFormString[
+        Simplify[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr]]]];
+
+ExpressionToString[expr_, heads_] :=
+    CConversion`RValueToCFormString[
+        Simplify[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr], heads]]];
 
 GetEffectiveMu[] :=
     Module[{},

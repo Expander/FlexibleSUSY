@@ -585,10 +585,10 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
-                                       "std::complex<double> result;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       TreeMasses`ExpressionToString[expr, "result"] <> "\n" <>
+                                       "const std::complex<double> result = " <>
+                                       Parameters`ExpressionToString[expr] <> ";\n\n" <>
                                        "return vertex_type(result);",
 
                                        "LeftAndRightComponentedVertex",
@@ -596,11 +596,12 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
-                                       "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprL, "left"] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprR, "right"] <> "\n" <>
+                                       "const std::complex<double> left = " <>
+                                       Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+                                       "const std::complex<double> right = " <>
+                                       Parameters`ExpressionToString[exprR] <> ";\n\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahParticles = SARAH`getParticleName /@ particles;
