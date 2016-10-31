@@ -34,6 +34,7 @@
 
 #include "dilog.hpp"
 #include "eigen_tensor.hpp"
+#include "if.hpp"
 #include "sum.hpp"
 
 namespace flexiblesusy {
