@@ -419,6 +419,12 @@ CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
     CreateFunctionName[tadpole] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
 
+ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
+    StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
+
+ExpressionToStringSequentially[expr_, heads_, result_String] :=
+    result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
+
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
     Module[{decl, expr, field, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
@@ -427,14 +433,14 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
-           body = "const " <> type <> " result = " <>
-                  ExpressionToString[expr /.
+           body = type <> " result;\n\n" <>
+                  ExpressionToStringSequentially[expr /.
                                      vertexRules /.
                                      a_[List[i__]] :> a[i] /.
                                      ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
                                      C -> 1,
-                                     TreeMasses`GetParticles[]]  <>
-                  ";\n\nreturn result * oneOver16PiSqr;";
+                                     TreeMasses`GetParticles[], "result"]  <>
+                  "\nreturn result * oneOver16PiSqr;";
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];
