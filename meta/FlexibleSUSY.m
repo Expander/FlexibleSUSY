@@ -2258,7 +2258,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
                          "two_scale_susy_beta_.cpp.in",
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
                            FileNameJoin[{FSOutputDir, "two_scale_susy.mk"}]}}
                         ];
 
@@ -2269,7 +2269,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
                          "two_scale_soft_beta_.cpp.in",
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
                            FileNameJoin[{FSOutputDir, "two_scale_soft.mk"}]}},
                          If[Head[SARAH`TraceAbbr] === List, SARAH`TraceAbbr, {}],
                          numberOfSusyParameters];
