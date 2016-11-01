@@ -175,6 +175,11 @@ FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
 FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + tadpoles *)
 FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 
+(* BVP solvers *)
+TwoScaleSolver; (* two-scale algorithm *)
+LatticeSolver;  (* lattice algorithm *)
+FSBVPSolvers = { TwoScaleSolver };
+
 (* input value for the calculation of the weak mixing angle *)
 FSFermiConstant;
 FSMassW;
@@ -235,6 +240,11 @@ GetBetaFunctions[] := allBetaFunctions;
 allOutputParameters = {};
 
 numberOfModelParameters = 0;
+
+allEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton,
+                   FPIRelative, FPIAbsolute, FPITadpole };
+
+allBVPSolvers = { TwoScaleSolver, LatticeSolver };
 
 PrintHeadline[text_] :=
     Block[{},
@@ -352,6 +362,24 @@ CheckWeakMixingAngleInputRequirements[input_] :=
                FlexibleSUSY`FSMassW
           ];
 
+CheckEWSBSolvers[solvers_List] :=
+    Module[{invalidSolvers},
+           invalidSolvers = Complement[solvers, allEWSBSolvers];
+           If[invalidSolvers =!= {},
+              Print["Error: invalid EWSB solvers requested: ", invalidSolvers];
+              Quit[1];
+             ];
+          ];
+
+CheckBVPSolvers[solvers_List] :=
+    Module[{invalidSolvers},
+           invalidSolvers = Complement[solvers, allBVPSolvers];
+           If[invalidSolvers =!= {},
+              Print["Error: invalid BVP solvers requested: ", invalidSolvers];
+              Quit[1];
+             ];
+          ];
+
 CheckModelFileSettings[] :=
     Module[{},
            (* FlexibleSUSY model name *)
@@ -448,6 +476,8 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
+           CheckEWSBSolvers[FlexibleSUSY`FSEWSBSolvers];
+           CheckBVPSolvers[FlexibleSUSY`FSBVPSolvers];
           ];
 
 ReplaceIndicesInUserInput[rules_] :=
