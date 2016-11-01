@@ -315,10 +315,11 @@ EOF
     fi
 }
 
-# searches for string of the form
-#    FSDefaultSARAHModel = XXX;
-# and sets $2 to XXX
+#_____________________________________________________________________
 search_default_model() {
+    # searches for string of the form
+    #    FSDefaultSARAHModel = XXX;
+    # and sets $2 to XXX
     if test $# -ne 2 ; then
         echo "Error: search_default_model expects 2 arguments"
         exit ${exit_syntax_error}
