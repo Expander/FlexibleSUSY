@@ -489,7 +489,7 @@ SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
 message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
-    -e "s|@CLASSNAME@|$name|g"			  \
+    -e "s|@MODELNAME@|$name|g"			  \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"

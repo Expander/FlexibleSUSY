@@ -656,7 +656,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile, sarahTraces];
-          Print["Creating makefile module for the two-scale method ..."];
+          Print["Creating makefile module for the beta functions ..."];
           WriteMakefileModule[singleBetaFunctionsDefsFiles,
                               makefileModuleTemplates];
          ];
@@ -1443,6 +1443,11 @@ WriteMakefileModule[rgeFile_List, files_List] :=
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
+
+WriteBVPSolverMakefile[files_List] :=
+    WriteOut`ReplaceInFiles[files,
+                          { Sequence @@ GeneralReplacementRules[]
+                          } ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                     extraSLHAOutputBlocks_List, files_List] :=
@@ -2606,6 +2611,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
                                }];
+
+           Print["Creating makefile module for two-scale method ..."];
+           WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                                    FileNameJoin[{FSOutputDir, "two_scale.mk"}]}}];
 
            Print["Creating observables"];
            (* @note separating this out for now for simplicity *)
