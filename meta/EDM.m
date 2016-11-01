@@ -143,10 +143,10 @@ CreateDiagrams[] :=
 CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] :=
-    ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
+    ("template<class EDMParticle, class PhotonEmitter, class ExchangeParticle>\n" <>
      "struct DiagramEvaluator<OneLoopDiagram<" <>
      ToString @ type[[1]] <>
-     ">, PhotonEmitter, ExchangeParticle>\n" <>
+     ">, EDMParticle, PhotonEmitter, ExchangeParticle>\n" <>
      "{ static double value(EvaluationContext& context); };");
 
 calculationCode = Null;
@@ -155,7 +155,7 @@ CreateCalculation[] :=
            (* If we have been here before return the old result *)
            If[calculationCode =!= Null, Return[calculationCode]];
 
-           code = "/********** GMuonMinus2.m generated calculation code **********/\n\n";
+           code = "/********** EDM.m generated calculation code **********/\n\n";
 
            (* Generate code that simply adds up all contributions *)
            code = (code <>
@@ -681,15 +681,18 @@ ContributingDiagrams[] :=
            Return[cachedContributingDiagrams];
           ];
 
-(* Returns a list of all concrete diagram evaluators (as strings)
- e.g. "DiagramEvaluator<OneLoopDiagram<1>, Fe, VP>"
+(* Returns a list of all concrete diagram evaluators
+ format: {{edmParticle1, {"DiagramEvaluator<OneLoopDiagram<1>, Fe, VP>", "...", ... }},
+          {edmParticle2, {"...", ... }},
+          ...}
  that need to be invoked in our calculation *)
 ConcreteDiagramEvaluators[] :=
-    (("DiagramEvaluator<" <> SymbolName @ Head @ #[[1]] <> "<" <>
-      ToString @ #[[1,1]] <> ">, " <>
-      StringJoin @ (Riffle[ParticleToCXXName /@ ReplacePart[#[[2;;]], 0 -> List], ", "]) <>
-      ">" &)
-     /@ ContributingDiagrams[]);
+     ({#[[1]],
+         (("DiagramEvaluator<" <> SymbolName @ Head @ #[[1]] <> "<" <>
+           ToString @ #[[1,1]] <> ">, " <>
+           StringJoin @ (Riffle[ParticleToCXXName /@ ReplacePart[#[[2;;]], 0 -> List], ", "]) <>
+           ">" &)
+          /@ #[[2]]) &) /@ ContributingDiagrams[]);
 
 End[];
 
