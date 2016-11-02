@@ -680,7 +680,12 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
                             "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB = { " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
-                            );];
+                            );
+               ,
+               prototype = (prototype <> "\n" <>
+                            "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB{};"
+                            );
+              ];
             definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
                           functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
                           "{\n" <>
