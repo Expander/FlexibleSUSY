@@ -405,15 +405,15 @@ CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
     CreateFunctionName[tadpole] <>

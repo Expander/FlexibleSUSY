@@ -1739,7 +1739,8 @@ FindLeftGaugeCoupling[] := SARAH`leftCoupling;
 FindHyperchargeGaugeCoupling[] := SARAH`hyperchargeCoupling;
 
 CreateDependencePrototype[(Rule | RuleDelayed)[parameter_, _]] :=
-    "double " <> ToValidCSymbolString[parameter] <> "() const;\n";
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
+    " " <> ToValidCSymbolString[parameter] <> "() const;\n";
 
 CreateDependencePrototypes[massMatrices_List] :=
     Module[{dependencies, result = ""},
@@ -1753,7 +1754,8 @@ CreateDependenceFunction[(Rule | RuleDelayed)[parameter_, value_]] :=
            parStr = ToValidCSymbolString[parameter];
            body = Parameters`CreateLocalConstRefsForInputParameters[value, "LOCALINPUT"] <> "\n" <>
                   "return " <> RValueToCFormString[Simplify[value]] <> ";\n";
-           result = "double CLASSNAME::" <> parStr <> "() const\n{\n" <>
+           result = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
+                    " CLASSNAME::" <> parStr <> "() const\n{\n" <>
                     IndentText[body] <> "}\n\n";
            Return[result];
           ];
