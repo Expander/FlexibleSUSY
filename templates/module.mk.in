@@ -1,63 +1,63 @@
 DIR          := @DIR@
-MODNAME      := @MODELNAME@
+MODNAME      := @CLASSNAME@
 SARAH_MODEL  := @MODEL@
 WITH_$(MODNAME) := yes
 
-@MODELNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+@CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
-@MODELNAME@_MK     := \
+@CLASSNAME@_MK     := \
 		$(DIR)/module.mk
 
-@MODELNAME@_TWO_SCALE_SUSY_MK := \
+@CLASSNAME@_TWO_SCALE_SUSY_MK := \
 		$(DIR)/two_scale_susy.mk
 
-@MODELNAME@_TWO_SCALE_SOFT_MK := \
+@CLASSNAME@_TWO_SCALE_SOFT_MK := \
 		$(DIR)/two_scale_soft.mk
 
-@MODELNAME@_INCLUDE_MK := \
-		$(@MODELNAME@_TWO_SCALE_SUSY_MK) \
-		$(@MODELNAME@_TWO_SCALE_SOFT_MK)
+@CLASSNAME@_INCLUDE_MK := \
+		$(@CLASSNAME@_TWO_SCALE_SUSY_MK) \
+		$(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 
-@MODELNAME@_SLHA_INPUT := \
-		$(DIR)/LesHouches.in.@MODELNAME@_generated \
+@CLASSNAME@_SLHA_INPUT := \
+		$(DIR)/LesHouches.in.@CLASSNAME@_generated \
 @SLHA_INPUT@
 
-@MODELNAME@_GNUPLOT := \
-		$(DIR)/@MODELNAME@_plot_rgflow.gnuplot \
-		$(DIR)/@MODELNAME@_plot_spectrum.gnuplot
+@CLASSNAME@_GNUPLOT := \
+		$(DIR)/@CLASSNAME@_plot_rgflow.gnuplot \
+		$(DIR)/@CLASSNAME@_plot_spectrum.gnuplot
 
-@MODELNAME@_TARBALL := \
+@CLASSNAME@_TARBALL := \
 		$(MODNAME).tar.gz
 
-LIB@MODELNAME@_SRC := \
-		$(DIR)/@MODELNAME@_a_muon.cpp \
-		$(DIR)/@MODELNAME@_effective_couplings.cpp \
-		$(DIR)/@MODELNAME@_info.cpp \
-		$(DIR)/@MODELNAME@_input_parameters.cpp \
-		$(DIR)/@MODELNAME@_mass_eigenstates.cpp \
-		$(DIR)/@MODELNAME@_observables.cpp \
-		$(DIR)/@MODELNAME@_physical.cpp \
-		$(DIR)/@MODELNAME@_utilities.cpp \
-		$(DIR)/@MODELNAME@_two_scale_susy_parameters.cpp \
-		$(DIR)/@MODELNAME@_two_scale_soft_parameters.cpp \
+LIB@CLASSNAME@_SRC := \
+		$(DIR)/@CLASSNAME@_a_muon.cpp \
+		$(DIR)/@CLASSNAME@_effective_couplings.cpp \
+		$(DIR)/@CLASSNAME@_info.cpp \
+		$(DIR)/@CLASSNAME@_input_parameters.cpp \
+		$(DIR)/@CLASSNAME@_mass_eigenstates.cpp \
+		$(DIR)/@CLASSNAME@_observables.cpp \
+		$(DIR)/@CLASSNAME@_physical.cpp \
+		$(DIR)/@CLASSNAME@_utilities.cpp \
+		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
+		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
 
-EXE@MODELNAME@_SRC :=
-LL@MODELNAME@_LIB  :=
-LL@MODELNAME@_OBJ  :=
-LL@MODELNAME@_SRC  :=
-LL@MODELNAME@_MMA  :=
+EXE@CLASSNAME@_SRC :=
+LL@CLASSNAME@_LIB  :=
+LL@CLASSNAME@_OBJ  :=
+LL@CLASSNAME@_SRC  :=
+LL@CLASSNAME@_MMA  :=
 
-LIB@MODELNAME@_HDR := \
-		$(DIR)/@MODELNAME@_a_muon.hpp \
-		$(DIR)/@MODELNAME@_effective_couplings.hpp \
-		$(DIR)/@MODELNAME@_info.hpp \
-		$(DIR)/@MODELNAME@_input_parameters.hpp \
-		$(DIR)/@MODELNAME@_mass_eigenstates.hpp \
-		$(DIR)/@MODELNAME@_observables.hpp \
-		$(DIR)/@MODELNAME@_physical.hpp \
-		$(DIR)/@MODELNAME@_utilities.hpp \
-		$(DIR)/@MODELNAME@_two_scale_soft_parameters.hpp \
-		$(DIR)/@MODELNAME@_two_scale_susy_parameters.hpp \
+LIB@CLASSNAME@_HDR := \
+		$(DIR)/@CLASSNAME@_a_muon.hpp \
+		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
+		$(DIR)/@CLASSNAME@_info.hpp \
+		$(DIR)/@CLASSNAME@_input_parameters.hpp \
+		$(DIR)/@CLASSNAME@_mass_eigenstates.hpp \
+		$(DIR)/@CLASSNAME@_observables.hpp \
+		$(DIR)/@CLASSNAME@_physical.hpp \
+		$(DIR)/@CLASSNAME@_utilities.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 -include $(DIR)/two_scale.mk
@@ -70,17 +70,17 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(@MODELNAME@_TWO_SCALE_SUSY_MK)
--include $(@MODELNAME@_TWO_SCALE_SOFT_MK)
+-include $(@CLASSNAME@_TWO_SCALE_SUSY_MK)
+-include $(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(@MODELNAME@_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(@MODELNAME@_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif
@@ -94,39 +94,39 @@ endif
 endif
 
 # remove duplicates in case all algorithms are used
-LIB@MODELNAME@_SRC := $(sort $(LIB@MODELNAME@_SRC))
-EXE@MODELNAME@_SRC := $(sort $(EXE@MODELNAME@_SRC))
+LIB@CLASSNAME@_SRC := $(sort $(LIB@CLASSNAME@_SRC))
+EXE@CLASSNAME@_SRC := $(sort $(EXE@CLASSNAME@_SRC))
 
-LIB@MODELNAME@_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@MODELNAME@_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIB@MODELNAME@_SRC)))
+LIB@CLASSNAME@_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@CLASSNAME@_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIB@CLASSNAME@_SRC)))
 
-EXE@MODELNAME@_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXE@MODELNAME@_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(EXE@MODELNAME@_SRC)))
+EXE@CLASSNAME@_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXE@CLASSNAME@_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(EXE@CLASSNAME@_SRC)))
 
-EXE@MODELNAME@_EXE := \
-		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXE@MODELNAME@_SRC))) \
-		$(patsubst %.f, %.x, $(filter %.f, $(EXE@MODELNAME@_SRC)))
+EXE@CLASSNAME@_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXE@CLASSNAME@_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXE@CLASSNAME@_SRC)))
 
-LIB@MODELNAME@_DEP := \
-		$(LIB@MODELNAME@_OBJ:.o=.d)
+LIB@CLASSNAME@_DEP := \
+		$(LIB@CLASSNAME@_OBJ:.o=.d)
 
-EXE@MODELNAME@_DEP := \
-		$(EXE@MODELNAME@_OBJ:.o=.d)
+EXE@CLASSNAME@_DEP := \
+		$(EXE@CLASSNAME@_OBJ:.o=.d)
 
-LL@MODELNAME@_DEP  := \
-		$(patsubst %.cpp, %.d, $(filter %.cpp, $(LL@MODELNAME@_SRC)))
+LL@CLASSNAME@_DEP  := \
+		$(patsubst %.cpp, %.d, $(filter %.cpp, $(LL@CLASSNAME@_SRC)))
 
-LL@MODELNAME@_OBJ  := $(LL@MODELNAME@_SRC:.cpp=.o)
-LL@MODELNAME@_LIB  := $(LL@MODELNAME@_SRC:.cpp=$(LIBLNK_LIBEXT))
+LL@CLASSNAME@_OBJ  := $(LL@CLASSNAME@_SRC:.cpp=.o)
+LL@CLASSNAME@_LIB  := $(LL@CLASSNAME@_SRC:.cpp=$(LIBLNK_LIBEXT))
 
-LIB@MODELNAME@     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
+LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
-METACODE_STAMP_@MODELNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
+METACODE_STAMP_@CLASSNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
 ifeq ($(ENABLE_META),yes)
-SARAH_MODEL_FILES_@MODELNAME@ := \
+SARAH_MODEL_FILES_@CLASSNAME@ := \
 		$(shell $(SARAH_DEP_GEN) $(SARAH_MODEL))
 endif
 
@@ -135,56 +135,56 @@ endif
 		clean-$(MODNAME)-obj distclean-$(MODNAME) \
 		run-metacode-$(MODNAME) pack-$(MODNAME)-src
 
-all-$(MODNAME): $(LIB@MODELNAME@) $(EXE@MODELNAME@_EXE)
+all-$(MODNAME): $(LIB@CLASSNAME@) $(EXE@CLASSNAME@_EXE)
 		@true
 
 ifneq ($(INSTALL_DIR),)
 install-src::
-		install -d $(@MODELNAME@_INSTALL_DIR)
-		install -m u=rw,g=r,o=r $(LIB@MODELNAME@_SRC) $(@MODELNAME@_INSTALL_DIR)
-		install -m u=rw,g=r,o=r $(LIB@MODELNAME@_HDR) $(@MODELNAME@_INSTALL_DIR)
-		install -m u=rw,g=r,o=r $(EXE@MODELNAME@_SRC) $(@MODELNAME@_INSTALL_DIR)
-		install -m u=rw,g=r,o=r $(LL@MODELNAME@_SRC) $(@MODELNAME@_INSTALL_DIR)
-		install -m u=rw,g=r,o=r $(LL@MODELNAME@_MMA) $(@MODELNAME@_INSTALL_DIR)
-		$(INSTALL_STRIPPED) $(@MODELNAME@_MK) $(@MODELNAME@_INSTALL_DIR) -m u=rw,g=r,o=r
-		install -m u=rw,g=r,o=r $(@MODELNAME@_INCLUDE_MK) $(@MODELNAME@_INSTALL_DIR)
-ifneq ($(@MODELNAME@_SLHA_INPUT),)
-		install -m u=rw,g=r,o=r $(@MODELNAME@_SLHA_INPUT) $(@MODELNAME@_INSTALL_DIR)
+		install -d $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_MMA) $(@CLASSNAME@_INSTALL_DIR)
+		$(INSTALL_STRIPPED) $(@CLASSNAME@_MK) $(@CLASSNAME@_INSTALL_DIR) -m u=rw,g=r,o=r
+		install -m u=rw,g=r,o=r $(@CLASSNAME@_INCLUDE_MK) $(@CLASSNAME@_INSTALL_DIR)
+ifneq ($(@CLASSNAME@_SLHA_INPUT),)
+		install -m u=rw,g=r,o=r $(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_INSTALL_DIR)
 endif
-		install -m u=rw,g=r,o=r $(@MODELNAME@_GNUPLOT) $(@MODELNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(@CLASSNAME@_GNUPLOT) $(@CLASSNAME@_INSTALL_DIR)
 endif
 
 clean-$(MODNAME)-dep:
-		-rm -f $(LIB@MODELNAME@_DEP)
-		-rm -f $(EXE@MODELNAME@_DEP)
-		-rm -f $(LL@MODELNAME@_DEP)
+		-rm -f $(LIB@CLASSNAME@_DEP)
+		-rm -f $(EXE@CLASSNAME@_DEP)
+		-rm -f $(LL@CLASSNAME@_DEP)
 
 clean-$(MODNAME)-lib:
-		-rm -f $(LIB@MODELNAME@)
-		-rm -f $(LL@MODELNAME@_LIB)
+		-rm -f $(LIB@CLASSNAME@)
+		-rm -f $(LL@CLASSNAME@_LIB)
 
 clean-$(MODNAME)-obj:
-		-rm -f $(LIB@MODELNAME@_OBJ)
-		-rm -f $(EXE@MODELNAME@_OBJ)
-		-rm -f $(LL@MODELNAME@_OBJ)
+		-rm -f $(LIB@CLASSNAME@_OBJ)
+		-rm -f $(EXE@CLASSNAME@_OBJ)
+		-rm -f $(LL@CLASSNAME@_OBJ)
 
 # BEGIN: NOT EXPORTED ##########################################
 clean-$(MODNAME)-src:
-		-rm -f $(LIB@MODELNAME@_SRC)
-		-rm -f $(LIB@MODELNAME@_HDR)
-		-rm -f $(EXE@MODELNAME@_SRC)
-		-rm -f $(LL@MODELNAME@_SRC)
-		-rm -f $(LL@MODELNAME@_MMA)
-		-rm -f $(METACODE_STAMP_@MODELNAME@)
-		-rm -f $(@MODELNAME@_INCLUDE_MK)
-		-rm -f $(@MODELNAME@_SLHA_INPUT)
-		-rm -f $(@MODELNAME@_GNUPLOT)
+		-rm -f $(LIB@CLASSNAME@_SRC)
+		-rm -f $(LIB@CLASSNAME@_HDR)
+		-rm -f $(EXE@CLASSNAME@_SRC)
+		-rm -f $(LL@CLASSNAME@_SRC)
+		-rm -f $(LL@CLASSNAME@_MMA)
+		-rm -f $(METACODE_STAMP_@CLASSNAME@)
+		-rm -f $(@CLASSNAME@_INCLUDE_MK)
+		-rm -f $(@CLASSNAME@_SLHA_INPUT)
+		-rm -f $(@CLASSNAME@_GNUPLOT)
 
 distclean-$(MODNAME): clean-$(MODNAME)-src
 # END:   NOT EXPORTED ##########################################
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
-		-rm -f $(EXE@MODELNAME@_EXE)
+		-rm -f $(EXE@CLASSNAME@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		@true
@@ -198,59 +198,59 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 pack-$(MODNAME)-src:
-		tar -czf $(@MODELNAME@_TARBALL) \
-		$(LIB@MODELNAME@_SRC) $(LIB@MODELNAME@_HDR) \
-		$(EXE@MODELNAME@_SRC) \
-		$(@MODELNAME@_MK) $(@MODELNAME@_INCLUDE_MK) \
-		$(@MODELNAME@_SLHA_INPUT) $(@MODELNAME@_GNUPLOT)
+		tar -czf $(@CLASSNAME@_TARBALL) \
+		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) \
+		$(EXE@CLASSNAME@_SRC) \
+		$(@CLASSNAME@_MK) $(@CLASSNAME@_INCLUDE_MK) \
+		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_GNUPLOT)
 
-$(LIB@MODELNAME@_SRC) $(LIB@MODELNAME@_HDR) $(EXE@MODELNAME@_SRC) $(LL@MODELNAME@_SRC) $(LL@MODELNAME@_MMA) \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)
 		@true
 
-run-metacode-$(MODNAME): $(METACODE_STAMP_@MODELNAME@)
+run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
 		@true
 
 ifeq ($(ENABLE_META),yes)
-$(METACODE_STAMP_@MODELNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES) $(SARAH_MODEL_FILES_@MODELNAME@)
+$(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES) $(SARAH_MODEL_FILES_@CLASSNAME@)
 		"$(MATH)" -run "Get[\"$<\"]; Quit[]"
-		@touch "$(METACODE_STAMP_@MODELNAME@)"
-		@echo "Note: to regenerate @MODELNAME@ source files," \
+		@touch "$(METACODE_STAMP_@CLASSNAME@)"
+		@echo "Note: to regenerate @CLASSNAME@ source files," \
 		      "please remove the file "
-		@echo "\"$(METACODE_STAMP_@MODELNAME@)\" and run make"
+		@echo "\"$(METACODE_STAMP_@CLASSNAME@)\" and run make"
 		@echo "---------------------------------"
 else
-$(METACODE_STAMP_@MODELNAME@):
+$(METACODE_STAMP_@CLASSNAME@):
 		@true
 endif
 
-$(LIB@MODELNAME@_DEP) $(EXE@MODELNAME@_DEP) $(LL@MODELNAME@_DEP) $(LIB@MODELNAME@_OBJ) $(EXE@MODELNAME@_OBJ) $(LL@MODELNAME@_OBJ) $(LL@MODELNAME@_LIB): \
+$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
 	CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
-$(LIB@MODELNAME@_DEP) $(EXE@MODELNAME@_DEP) $(LL@MODELNAME@_DEP) $(LIB@MODELNAME@_OBJ) $(EXE@MODELNAME@_OBJ) $(LL@MODELNAME@_OBJ) $(LL@MODELNAME@_LIB): \
+$(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
 	CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(LL@MODELNAME@_OBJ) $(LL@MODELNAME@_LIB): \
+$(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
 	CPPFLAGS += $(shell $(MATH_INC_PATHS) --math-cmd="$(MATH)" -I --librarylink --mathlink)
 
-$(LIB@MODELNAME@): $(LIB@MODELNAME@_OBJ)
+$(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIB@MODELNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/%.x: $(DIR)/%.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^ $(ADDONLIBS)) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS) $(LDLIBS)
 
-$(LL@MODELNAME@_LIB): $(LL@MODELNAME@_OBJ) $(LIB@MODELNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(LL@CLASSNAME@_LIB): $(LL@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(LIBLNK_MAKE_LIB_CMD) $@ $(CPPFLAGS) $(CFLAGS) $(call abspathx,$^) $(ADDONLIBS) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS) $(LDLIBS)
 
-ALLDEP += $(LIB@MODELNAME@_DEP) $(EXE@MODELNAME@_DEP)
-ALLSRC += $(LIB@MODELNAME@_SRC) $(EXE@MODELNAME@_SRC)
-ALLLIB += $(LIB@MODELNAME@)
-ALLEXE += $(EXE@MODELNAME@_EXE)
+ALLDEP += $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP)
+ALLSRC += $(LIB@CLASSNAME@_SRC) $(EXE@CLASSNAME@_SRC)
+ALLLIB += $(LIB@CLASSNAME@)
+ALLEXE += $(EXE@CLASSNAME@_EXE)
 
 ifeq ($(ENABLE_LIBRARYLINK),yes)
-ALLDEP += $(LL@MODELNAME@_DEP)
-ALLSRC += $(LL@MODELNAME@_SRC)
-ALLLL  += $(LL@MODELNAME@_LIB)
+ALLDEP += $(LL@CLASSNAME@_DEP)
+ALLSRC += $(LL@CLASSNAME@_SRC)
+ALLLL  += $(LL@CLASSNAME@_LIB)
 endif
