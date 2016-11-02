@@ -98,7 +98,8 @@ endif
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyFlavourMSSM) $(WITH_CMSSMCKM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCKM_high_scale_constraint.cpp \
-		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp
+		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp \
+		$(DIR)/test_CMSSMCKM_tree_level_spectrum.cpp
 endif
 
 ifeq ($(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes)
@@ -613,9 +614,15 @@ $(DIR)/test_CMSSM_slha.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$
 
 $(DIR)/test_CMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMCKM_high_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMCKM_high_scale_constraint.x \
+$(DIR)/test_CMSSMCKM_low_scale_constraint.x \
+$(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
+	CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
 
-$(DIR)/test_CMSSMCKM_low_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMCKM_high_scale_constraint.x \
+$(DIR)/test_CMSSMCKM_low_scale_constraint.x \
+$(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
+	$(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
