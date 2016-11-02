@@ -37,7 +37,7 @@ HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi)
                 + UnitStep[THRESHOLD-2] (
-                  If[IsCloseRel[msq2[3,3],msu2[3,3],0.01],
+                  IF[IsCloseRel[msq2[3,3],msu2[3,3],0.01],
                      lambda2LPhiMSqMSuDegenerate, lambda2LPhiFull])},
     {gYu      , gYuTree + UnitStep[THRESHOLD-1] gYu1L},
     {gYd      , gYdTree + UnitStep[THRESHOLD-1] gYd1L},
