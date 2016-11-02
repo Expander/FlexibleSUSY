@@ -511,6 +511,7 @@ message -n "  Creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
 sed -e "s|@DIR@|$targetdir|g"               \
     -e "s|@ModelName@|$sarah_model|g"       \
     -e "s|@CLASSNAME@|$name|g"              \
+    -e "s|FSModelName\([[:blank:]]*=[[:blank:]]*\)[^;][^;]*|FSModelName\1\"$name\"|g" \
     < $model_file_dir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
 message "done"
 
