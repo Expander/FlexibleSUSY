@@ -148,8 +148,9 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    m.set_Mu(susyMu);
    m.set_BMu(BMu);
 
-   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu.real()));
-   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd.real()));
+   // CHECK: Yukawa couplings are transposed
+   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu.transpose().real()));
+   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd.transpose().real()));
    s.setYukawaMatrix(YE, ToDoubleMatrix(Ye.real()));
    s.setTanb(tanBeta);
    s.setHvev(vev);
@@ -178,6 +179,7 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    m.set_MassWB(input.MassWBInput);
    m.set_MassG(input.MassGInput);
 
+   // CHECK: trilinear couplings are transposed
    s.setGauginoMass(1, input.MassBInput);
    s.setGauginoMass(2, input.MassWBInput);
    s.setGauginoMass(3, input.MassGInput);
@@ -189,8 +191,8 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    s.setMh1Squared(input.mHd2IN);
    s.setMh2Squared(input.mHu2IN);
    s.setTrilinearMatrix(EA, ToDoubleMatrix(input.TYeInput));
-   s.setTrilinearMatrix(DA, ToDoubleMatrix(input.TYdInput));
-   s.setTrilinearMatrix(UA, ToDoubleMatrix(input.TYuInput));
+   s.setTrilinearMatrix(DA, ToDoubleMatrix(input.TYdInput.transpose()));
+   s.setTrilinearMatrix(UA, ToDoubleMatrix(input.TYuInput.transpose()));
    s.setMw(s.displayMwRun());
 }
 
@@ -202,16 +204,47 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    softsusy::PRINTOUT = 2;
    FlavourMssmSoftsusy s;
    CMSSMCKM<Two_scale> m0;
-   m0.set_pole_mass_loop_order(0); // set loop-order to 0
-   m0.set_ewsb_loop_order(0);
    m0.do_force_output(true);
    setup(m0, s);
 
    m0.calculate_DRbar_masses();
-   m0.calculate_spectrum();
    s.calcDrBarPars();
 
-   CMSSMCKM_slha<Two_scale> m(m0);
+   CMSSMCKM_slha<Two_scale> m(m0); // converts to SLHA-2
+
+   // re-set model parameters to super-CKM basis
+   m.set_Yu(m.get_Yu_slha().matrix().cast<std::complex<double> >().asDiagonal());
+   m.set_Yd(m.get_Yd_slha().matrix().cast<std::complex<double> >().asDiagonal());
+   m.set_Ye(m.get_Ye_slha().matrix().cast<std::complex<double> >().asDiagonal());
+
+   m.set_mq2(m.get_mq2_slha().cast<std::complex<double> >());
+   m.set_ml2(m.get_ml2_slha().cast<std::complex<double> >());
+   m.set_md2(m.get_md2_slha().cast<std::complex<double> >());
+   m.set_mu2(m.get_mu2_slha().cast<std::complex<double> >());
+   m.set_me2(m.get_me2_slha().cast<std::complex<double> >());
+
+   m.set_TYu(m.get_TYu_slha().cast<std::complex<double> >());
+   m.set_TYd(m.get_TYd_slha().cast<std::complex<double> >());
+   m.set_TYe(m.get_TYe_slha().cast<std::complex<double> >());
+
+   BOOST_MESSAGE("super-CKM: Yu = " << m.get_Yu());
+   BOOST_MESSAGE("super-CKM: Yd = " << m.get_Yd());
+   BOOST_MESSAGE("super-CKM: Ye = " << m.get_Ye());
+   BOOST_MESSAGE("super-CKM: mq2 = " << m.get_mq2());
+   BOOST_MESSAGE("super-CKM: mu2 = " << m.get_mu2());
+   BOOST_MESSAGE("super-CKM: md2 = " << m.get_md2());
+   BOOST_MESSAGE("super-CKM: ml2 = " << m.get_ml2());
+   BOOST_MESSAGE("super-CKM: me2 = " << m.get_me2());
+   BOOST_MESSAGE("super-CKM: TYu = " << m.get_TYu());
+   BOOST_MESSAGE("super-CKM: TYd = " << m.get_TYd());
+   BOOST_MESSAGE("super-CKM: TYe = " << m.get_TYe());
+
+   m.calculate_DRbar_masses();
+
+   // Now CMSSMCKM down-type sfermion masses should be in super-CKM
+   // basis.  The up-type sfermion masses are still wrong, because the
+   // upper-left corner of the mass matrix is wrong, see Eq. (11) of
+   // SLHA-2.
 
    // neutral CP even Higgs
    const DoubleVector hh(ToDoubleVector(m.get_Mhh()));
@@ -258,7 +291,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    BOOST_CHECK_EQUAL(vg, 0.0);
 
    // down-type squarks
-   const DoubleVector Sd(ToDoubleVector(m.get_MSd_pole_slha()));
+   const DoubleVector Sd(ToDoubleVector(m.get_MSd()));
    const DoubleVector md(s.displayDrBarPars().md.flatten().sort());
    BOOST_CHECK_CLOSE(Sd(1), md(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(2), md(2), 1.0e-12);
@@ -268,7 +301,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    BOOST_CHECK_CLOSE(Sd(6), md(6), 1.0e-12);
 
    // up-type squarks
-   const DoubleVector Su(ToDoubleVector(m.get_MSu_pole_slha()));
+   const DoubleVector Su(ToDoubleVector(m.get_MSu()));
    const DoubleVector mu(s.displayDrBarPars().mu.flatten().sort());
    BOOST_CHECK_CLOSE(Su(1), mu(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(2), mu(2), 1.0e-12);
@@ -278,7 +311,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    BOOST_CHECK_CLOSE(Su(6), mu(6), 1.0e-12);
 
    // down-type sleptons
-   const DoubleVector Se(ToDoubleVector(m.get_MSe_pole_slha()));
+   const DoubleVector Se(ToDoubleVector(m.get_MSe()));
    const DoubleVector me(s.displayDrBarPars().me.flatten().sort());
    BOOST_CHECK_CLOSE(Se(1), me(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(2), me(2), 1.0e-12);
@@ -293,20 +326,20 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    BOOST_CHECK_CLOSE(MGlu, mGluino, 1.0e-12);
 
    // neutrinos
-   const DoubleVector MFv(ToDoubleVector(m.get_MFv_pole_slha()));
+   const DoubleVector MFv(ToDoubleVector(m.get_MFv()));
    BOOST_CHECK_EQUAL(MFv(1), 0.0);
    BOOST_CHECK_EQUAL(MFv(2), 0.0);
    BOOST_CHECK_EQUAL(MFv(3), 0.0);
 
    // leptons
-   const DoubleVector MFe(ToDoubleVector(m.get_MFe_pole_slha()));
+   const DoubleVector MFe(ToDoubleVector(m.get_MFe()));
    BOOST_CHECK_CLOSE(MFe(3), s.displayDrBarPars().mtau, 1.0e-12);
 
    // ups
-   const DoubleVector MFu(ToDoubleVector(m.get_MFu_pole_slha()));
+   const DoubleVector MFu(ToDoubleVector(m.get_MFu()));
    BOOST_CHECK_CLOSE(MFu(3), s.displayDrBarPars().mt, 1.0e-12);
 
    // downs
-   const DoubleVector MFd(ToDoubleVector(m.get_MFd_pole_slha()));
+   const DoubleVector MFd(ToDoubleVector(m.get_MFd()));
    BOOST_CHECK_CLOSE(MFd(3), s.displayDrBarPars().mb, 1.0e-12);
 }
