@@ -19,17 +19,9 @@
 #ifndef IF_H
 #define IF_H
 
-#include <cstddef>
-
 namespace flexiblesusy {
 
-#define IF(cond,a,b) lazy_if([&](){ return (cond) ? (a) : (b); })
-
-template<class Function>
-auto lazy_if(Function f) -> decltype(f())
-{
-   return f();
-}
+#define IF(cond,a,b) ((cond) ? (a) : (b))
 
 } // namespace flexiblesusy
 
