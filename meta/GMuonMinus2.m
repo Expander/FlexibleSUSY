@@ -1,4 +1,4 @@
-BeginPackage["GMuonMinus2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
+BeginPackage["GMuonMinus2`", {"SARAH`", "CConversion`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
 CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
@@ -559,6 +559,9 @@ DeclareIndices[indexedParticles_List, arrayName_String] :=
            decl
           ];
 
+GetComplexScalarCType[] :=
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+
 (* ParsedVertex structure:
  ParsedVertex[
               {numP1Indices, numP2Indices, ...},
@@ -587,7 +590,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       "const std::complex<double> result = " <>
+                                       "const " <> GetComplexScalarCType[] <> " result = " <>
                                        Parameters`ExpressionToString[expr] <> ";\n\n" <>
                                        "return vertex_type(result);",
 
@@ -598,9 +601,9 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       "const std::complex<double> left = " <>
+                                       "const " <> GetComplexScalarCType[] <> " left = " <>
                                        Parameters`ExpressionToString[exprL] <> ";\n\n" <>
-                                       "const std::complex<double> right = " <>
+                                       "const " <> GetComplexScalarCType[] <> " right = " <>
                                        Parameters`ExpressionToString[exprR] <> ";\n\n" <>
                                        "return vertex_type(left, right);"];
 

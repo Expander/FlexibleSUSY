@@ -173,31 +173,31 @@ CreateCType[CConversion`ScalarType[realScalarCType]] :=
     "double";
 
 CreateCType[CConversion`ScalarType[complexScalarCType]] :=
-    "std::complex<double>";
+    "std::complex<" <> CreateCType[CConversion`ScalarType[realScalarCType]] <> ">";
 
 CreateCType[CConversion`ArrayType[realScalarCType, entries_]] :=
     EigenArray["double", ToString[entries]];
 
 CreateCType[CConversion`ArrayType[complexScalarCType, entries_]] :=
-    EigenArray["std::complex<double>", ToString[entries]];
+    EigenArray[CreateCType[CConversion`ScalarType[complexScalarCType]], ToString[entries]];
 
 CreateCType[CConversion`VectorType[realScalarCType, entries_]] :=
     EigenVector["double", ToString[entries]];
 
 CreateCType[CConversion`VectorType[complexScalarCType, entries_]] :=
-    EigenVector["std::complex<double>", ToString[entries]];
+    EigenVector[CreateCType[CConversion`ScalarType[complexScalarCType]], ToString[entries]];
 
 CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
     EigenMatrix["double", ToString[dim1], ToString[dim2]];
 
 CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
-    EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
+    EigenMatrix[CreateCType[CConversion`ScalarType[complexScalarCType]], ToString[dim1], ToString[dim2]];
 
 CreateCType[CConversion`TensorType[realScalarCType, dims__]] :=
     EigenTensor["double", Sequence @@ (ToString /@ {dims})];
 
 CreateCType[CConversion`TensorType[complexScalarCType, dims__]] :=
-    EigenTensor["std::complex<double>", Sequence @@ (ToString /@ {dims})];
+    EigenTensor[CreateCType[CConversion`ScalarType[complexScalarCType]], Sequence @@ (ToString /@ {dims})];
 
 CastTo[expr_String, toType_ /; toType === None] := expr;
 
@@ -219,7 +219,7 @@ CastTo[expr_String, toType_] :=
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
            CConversion`MatrixType[CConversion`complexScalarCType,__]|
            CConversion`TensorType[CConversion`complexScalarCType,__],
-           "(" <> expr <> ").cast<std::complex<double> >()"
+           "(" <> expr <> ").cast<" <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> " >()"
            ,
            _,
            Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
@@ -268,25 +268,25 @@ CreateInlineElementSetter[parameter_String, CConversion`ArrayType[realScalarCTyp
     CreateInlineElementSetter[parameter, "double", entries];
 
 CreateInlineElementSetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", entries];
 
 CreateInlineElementSetter[parameter_String, CConversion`VectorType[realScalarCType, entries_]] :=
     CreateInlineElementSetter[parameter, "double", entries];
 
 CreateInlineElementSetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", entries];
 
 CreateInlineElementSetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
     CreateInlineElementSetter[parameter, "double", dim1, dim2];
 
 CreateInlineElementSetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", dim1, dim2];
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", dim1, dim2];
 
 CreateInlineElementSetter[parameter_String, CConversion`TensorType[realScalarCType, dims__]] :=
     CreateInlineElementSetter[parameter, "double", dims];
 
 CreateInlineElementSetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", dims];
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", dims];
 
 (* Creates a C++ setter *)
 CreateInlineSetter[parameter_String, type_String] :=
@@ -318,31 +318,31 @@ CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCTy
     CreateInlineGetter[parameter, "double", postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`ScalarType[complexScalarCType], postFix_String:"", wrapper_String:""] :=
-    CreateInlineGetter[parameter, "const std::complex<double>&", postFix, wrapper];
+    CreateInlineGetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
+    CreateInlineElementGetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", entries, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`VectorType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
+    CreateInlineElementGetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", entries, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "double", dim1, dim2, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, wrapper];
+    CreateInlineElementGetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", dim1, dim2, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`TensorType[realScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
     CreateInlineElementGetter[parameter, "double", dims, postFix, wrapper];
 
 CreateInlineElementGetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", dims, postFix, wrapper];
+    CreateInlineElementGetter[parameter, "const " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "&", dims, postFix, wrapper];
 
 (* Creates a C++ inline getter *)
 CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_String:""] :=

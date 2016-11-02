@@ -727,13 +727,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  ];
 
               Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(0.75,0.);\n\n";
+                    body = body <> "result *= 0.75;\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
                            <> TextFormatting`IndentText["result *= scalar_scaling_factor(decay_mass);"] <> "\n}\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
-                    body = body <> "result *= std::complex<double>(2.0,0.);\n";,
+                    body = body <> "result *= 2.0;\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(1.5,0.);\n\n";
+                    body = body <> "result *= 1.5;\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
                            <> TextFormatting`IndentText["result *= pseudoscalar_scaling_factor(decay_mass);"] <> "\n}\n";
                    ];
