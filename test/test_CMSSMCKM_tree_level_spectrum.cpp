@@ -242,9 +242,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    m.calculate_DRbar_masses();
 
    // Now CMSSMCKM down-type sfermion masses should be in super-CKM
-   // basis.  The up-type sfermion masses are still wrong, because the
-   // upper-left corner of the mass matrix is wrong, see Eq. (11) of
-   // SLHA-2.
+   // basis.
 
    // neutral CP even Higgs
    const DoubleVector hh(ToDoubleVector(m.get_Mhh()));
@@ -300,16 +298,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    BOOST_CHECK_CLOSE(Sd(5), md(5), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(6), md(6), 1.0e-12);
 
-   // up-type squarks
-   const DoubleVector Su(ToDoubleVector(m.get_MSu()));
-   const DoubleVector mu(s.displayDrBarPars().mu.flatten().sort());
-   BOOST_CHECK_CLOSE(Su(1), mu(1), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(2), mu(2), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(3), mu(3), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(4), mu(4), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(5), mu(5), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(6), mu(6), 1.0e-12);
-
    // down-type sleptons
    const DoubleVector Se(ToDoubleVector(m.get_MSe()));
    const DoubleVector me(s.displayDrBarPars().me.flatten().sort());
@@ -342,4 +330,30 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    // downs
    const DoubleVector MFd(ToDoubleVector(m.get_MFd()));
    BOOST_CHECK_CLOSE(MFd(3), s.displayDrBarPars().mb, 1.0e-12);
+
+   // Now set CMSSMCKM up-type sfermion masses to super-CKM basis, as
+   // in Eq. (11) of SLHA-2.
+
+   const auto mq2_super_CKM = m.get_mq2();
+   const auto ZUL = m.get_ZUL_slha();
+   const auto ZDL = m.get_ZDL_slha();
+   const auto VCKM = ZUL * ZDL.adjoint();
+   const auto mq2_up = VCKM * mq2_super_CKM * VCKM.adjoint();
+
+   m.set_mq2(mq2_up);
+
+   BOOST_MESSAGE("SLHA-2: mq2 = " << m.get_mq2());
+   BOOST_MESSAGE("SLHA-2: mu2 = " << m.get_mu2());
+
+   m.calculate_DRbar_masses();
+
+   // up-type squarks
+   const DoubleVector Su(ToDoubleVector(m.get_MSu()));
+   const DoubleVector mu(s.displayDrBarPars().mu.flatten().sort());
+   BOOST_CHECK_CLOSE(Su(1), mu(1), 1.0e-12);
+   BOOST_CHECK_CLOSE(Su(2), mu(2), 1.0e-12);
+   BOOST_CHECK_CLOSE(Su(3), mu(3), 1.0e-12);
+   BOOST_CHECK_CLOSE(Su(4), mu(4), 1.0e-12);
+   BOOST_CHECK_CLOSE(Su(5), mu(5), 1.0e-12);
+   BOOST_CHECK_CLOSE(Su(6), mu(6), 1.0e-12);
 }
