@@ -334,7 +334,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    // Now set CMSSMCKM up-type sfermion masses to super-CKM basis, as
    // in Eq. (11) of SLHA-2.
 
-   // m.calculate_ckm_matrix();
    const auto VCKM = m.get_ckm_matrix();
    const auto mq2_super_CKM = m.get_mq2();
    const auto mq2_up = VCKM * mq2_super_CKM * VCKM.adjoint();
