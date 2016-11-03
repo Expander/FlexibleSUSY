@@ -60,10 +60,10 @@ TEMPLATES    := \
 		$(DIR)/two_scale_model.cpp.in \
 		$(DIR)/two_scale_model_slha.hpp.in \
 		$(DIR)/two_scale_model_slha.cpp.in \
-		$(DIR)/two_scale_soft_beta_.cpp.in \
+		$(DIR)/soft_beta_.cpp.in \
 		$(DIR)/soft_parameters.hpp.in \
 		$(DIR)/soft_parameters.cpp.in \
-		$(DIR)/two_scale_susy_beta_.cpp.in \
+		$(DIR)/susy_beta_.cpp.in \
 		$(DIR)/susy_parameters.hpp.in \
 		$(DIR)/susy_parameters.cpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
