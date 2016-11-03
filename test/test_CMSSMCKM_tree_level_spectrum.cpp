@@ -148,7 +148,7 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    m.set_Mu(susyMu);
    m.set_BMu(BMu);
 
-   // CHECK: Yukawa couplings are transposed
+   // CHECK: Quark Yukawa couplings are transposed
    s.setYukawaMatrix(YU, ToDoubleMatrix(Yu.transpose().real()));
    s.setYukawaMatrix(YD, ToDoubleMatrix(Yd.transpose().real()));
    s.setYukawaMatrix(YE, ToDoubleMatrix(Ye.real()));
@@ -190,7 +190,7 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    s.setSoftMassMatrix(mEr, ToDoubleMatrix(input.me2Input));
    s.setMh1Squared(input.mHd2IN);
    s.setMh2Squared(input.mHu2IN);
-   s.setTrilinearMatrix(EA, ToDoubleMatrix(input.TYeInput));
+   s.setTrilinearMatrix(EA, ToDoubleMatrix(input.TYeInput.transpose()));
    s.setTrilinearMatrix(DA, ToDoubleMatrix(input.TYdInput.transpose()));
    s.setTrilinearMatrix(UA, ToDoubleMatrix(input.TYuInput.transpose()));
    s.setMw(s.displayMwRun());
