@@ -1,5 +1,6 @@
 DIR          := models/SoftsusyFlavourMSSM
 MODNAME      := SoftsusyFlavourMSSM
+WITH_$(MODNAME) := yes
 
 LIBSoftsusyFlavourMSSM_SRC  := \
 		$(DIR)/flavoursoft.cpp
