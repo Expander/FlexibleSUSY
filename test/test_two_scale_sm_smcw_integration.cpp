@@ -161,7 +161,7 @@ private:
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
 {
-   BOOST_MESSAGE("test if trivial matching condition leaves parameters invariant");
+   BOOST_TEST_MESSAGE("test if trivial matching condition leaves parameters invariant");
 
    const double vev = 246;
    const double root2 = sqrt(2.0);
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
 BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
 {
-   BOOST_MESSAGE("test if SM and SMCW constraints are applied correctly");
+   BOOST_TEST_MESSAGE("test if SM and SMCW constraints are applied correctly");
 
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
 
 BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 {
-   BOOST_MESSAGE("test if two scale solver with SM and SMCW converges");
+   BOOST_TEST_MESSAGE("test if two scale solver with SM and SMCW converges");
 
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
-   BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
+   BOOST_TEST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
    BOOST_CHECK_EQUAL(solver.number_of_iterations_done(), 3u);
 
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 
 BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
 {
-   BOOST_MESSAGE("test if two scale solver with SM and SMCW and dynamic MC converges");
+   BOOST_TEST_MESSAGE("test if two scale solver with SM and SMCW and dynamic MC converges");
 
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
-   BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
+   BOOST_TEST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
    BOOST_CHECK_EQUAL(solver.number_of_iterations_done(), 3u);
 

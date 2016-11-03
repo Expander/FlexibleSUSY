@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE( test_output )
    v[1] = 2.;
    v[2] = 3.;
 
-   BOOST_MESSAGE(v);
+   BOOST_TEST_MESSAGE(v);
 }
 
 BOOST_AUTO_TEST_CASE( test_empty_bounds_check )

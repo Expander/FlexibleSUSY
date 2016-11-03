@@ -316,8 +316,8 @@ BOOST_AUTO_TEST_CASE( test_processor_vs_loop )
 
    check_array(array, number_of_entries);
 
-   BOOST_MESSAGE("time using the tuple processor: " << processor_time << " s");
-   BOOST_MESSAGE("time using the for loop: " << loop_time << " s");
+   BOOST_TEST_MESSAGE("time using the tuple processor: " << processor_time << " s");
+   BOOST_TEST_MESSAGE("time using the for loop: " << loop_time << " s");
 
    BOOST_CHECK_LT(1000. * processor_time, loop_time);
 }
@@ -443,7 +443,7 @@ void convert_symmetric_fermion_mixings_to_slha_rediagonalization(
          stopwatch.stop();                                         \
          time += stopwatch.get_time_in_seconds();                  \
       }                                                            \
-      BOOST_MESSAGE("conversion via " #type ": " << time << " s"); \
+      BOOST_TEST_MESSAGE("conversion via " #type ": " << time << " s"); \
    } while (0)
 
 BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_conversion_speed )

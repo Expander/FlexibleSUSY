@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_parabola1 )
    BOOST_REQUIRE(status == GSL_SUCCESS);
    BOOST_CHECK_LT(residual_1, 100*precision);
    BOOST_CHECK_LT(residual_2, 100*precision);
-   BOOST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
+   BOOST_TEST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
 }
 
 BOOST_AUTO_TEST_CASE( test_parabola2 )
@@ -140,6 +140,6 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
    BOOST_CHECK_CLOSE_FRACTION(fixed_point(0), 1.0, 0.02);
    BOOST_CHECK_CLOSE_FRACTION(fixed_point(1), 2.0, 0.04);
 
-   BOOST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
+   BOOST_TEST_MESSAGE("fixed point iterator used " << get_number_of_calls() << " calls");
    BOOST_CHECK(get_number_of_calls() < 6);
 }

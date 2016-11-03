@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_b0_b0_fast)
       const double speedup = args[i].speedup;
       volatile double ss, fs;
 
-      BOOST_MESSAGE("testing B0(" << p2 << "," << m12 << "," << m22 << "," << q2 << ")");
+      BOOST_TEST_MESSAGE("testing B0(" << p2 << "," << m12 << "," << m22 << "," << q2 << ")");
 
       stopwatch.start();
       for (unsigned i = 0; i < 100000; i++)

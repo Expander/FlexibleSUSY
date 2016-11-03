@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE( test_to )
 
    BOOST_CHECK_CLOSE(lowe_Mz.displayPoleMb(), lowe_Mz_new.displayPoleMb(), 0.5);
 
-   BOOST_MESSAGE(lowe_Mz);
-   BOOST_MESSAGE(lowe_Mz_new);
+   BOOST_TEST_MESSAGE(lowe_Mz);
+   BOOST_TEST_MESSAGE(lowe_Mz_new);
 }
 
 BOOST_AUTO_TEST_CASE( test_to_recall )
@@ -54,6 +54,6 @@ BOOST_AUTO_TEST_CASE( test_to_recall )
    BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(flexiblesusy::ToEigenArray(lowe_Mz.display()),
                                            flexiblesusy::ToEigenArray(lowe_Mz_new.display())), 1e-10);
 
-   BOOST_MESSAGE(lowe_Mz);
-   BOOST_MESSAGE(lowe_Mz_new);
+   BOOST_TEST_MESSAGE(lowe_Mz);
+   BOOST_TEST_MESSAGE(lowe_Mz_new);
 }

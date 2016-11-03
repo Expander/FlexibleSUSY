@@ -227,17 +227,17 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    m.set_TYd(m.get_TYd_slha().cast<std::complex<double> >());
    m.set_TYe(m.get_TYe_slha().cast<std::complex<double> >());
 
-   BOOST_MESSAGE("super-CKM: Yu = " << m.get_Yu());
-   BOOST_MESSAGE("super-CKM: Yd = " << m.get_Yd());
-   BOOST_MESSAGE("super-CKM: Ye = " << m.get_Ye());
-   BOOST_MESSAGE("super-CKM: mq2 = " << m.get_mq2());
-   BOOST_MESSAGE("super-CKM: mu2 = " << m.get_mu2());
-   BOOST_MESSAGE("super-CKM: md2 = " << m.get_md2());
-   BOOST_MESSAGE("super-CKM: ml2 = " << m.get_ml2());
-   BOOST_MESSAGE("super-CKM: me2 = " << m.get_me2());
-   BOOST_MESSAGE("super-CKM: TYu = " << m.get_TYu());
-   BOOST_MESSAGE("super-CKM: TYd = " << m.get_TYd());
-   BOOST_MESSAGE("super-CKM: TYe = " << m.get_TYe());
+   BOOST_TEST_MESSAGE("super-CKM: Yu = " << m.get_Yu());
+   BOOST_TEST_MESSAGE("super-CKM: Yd = " << m.get_Yd());
+   BOOST_TEST_MESSAGE("super-CKM: Ye = " << m.get_Ye());
+   BOOST_TEST_MESSAGE("super-CKM: mq2 = " << m.get_mq2());
+   BOOST_TEST_MESSAGE("super-CKM: mu2 = " << m.get_mu2());
+   BOOST_TEST_MESSAGE("super-CKM: md2 = " << m.get_md2());
+   BOOST_TEST_MESSAGE("super-CKM: ml2 = " << m.get_ml2());
+   BOOST_TEST_MESSAGE("super-CKM: me2 = " << m.get_me2());
+   BOOST_TEST_MESSAGE("super-CKM: TYu = " << m.get_TYu());
+   BOOST_TEST_MESSAGE("super-CKM: TYd = " << m.get_TYd());
+   BOOST_TEST_MESSAGE("super-CKM: TYe = " << m.get_TYe());
 
    m.calculate_DRbar_masses();
 
@@ -340,8 +340,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
 
    m.set_mq2(mq2_up);
 
-   BOOST_MESSAGE("SLHA-2: mq2 = " << m.get_mq2());
-   BOOST_MESSAGE("SLHA-2: mu2 = " << m.get_mu2());
+   BOOST_TEST_MESSAGE("SLHA-2: mq2 = " << m.get_mq2());
+   BOOST_TEST_MESSAGE("SLHA-2: mu2 = " << m.get_mu2());
 
    m.calculate_DRbar_masses();
 

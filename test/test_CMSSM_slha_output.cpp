@@ -13,15 +13,15 @@
 int run_cmd(const std::string& cmd)
 {
    if (!system(NULL)) {
-      BOOST_MESSAGE("Error: command processor not available!");
+      BOOST_TEST_MESSAGE("Error: command processor not available!");
       return -1;
    }
 
-   BOOST_MESSAGE("Runnign command \"" << cmd << "\" ...");
+   BOOST_TEST_MESSAGE("Runnign command \"" << cmd << "\" ...");
 
    const int status = system(cmd.c_str());
 
-   BOOST_MESSAGE("Command \"" << cmd << "\" returned with exit code " << status);
+   BOOST_TEST_MESSAGE("Command \"" << cmd << "\" returned with exit code " << status);
 
    return status;
 }
@@ -36,7 +36,7 @@ int run_point(const std::string& slha_file,
                     slha_file + " --slha-output-file=" + flexiblesusy_output_file);
 
    if (status) {
-      BOOST_MESSAGE("FlexibleSUSY failed with exit code " << status);
+      BOOST_TEST_MESSAGE("FlexibleSUSY failed with exit code " << status);
       return status;
    }
 
@@ -44,7 +44,7 @@ int run_point(const std::string& slha_file,
                     slha_file + " > " + softsusy_output_file);
 
    if (status) {
-      BOOST_MESSAGE("Softsusy failed with exit code " << status);
+      BOOST_TEST_MESSAGE("Softsusy failed with exit code " << status);
       return status;
    }
 
@@ -71,7 +71,7 @@ void compare_2component_block(const std::string& name,
 
       if (std::find(exclude.begin(), exclude.end(), SLHAea::to<int>(index))
           != exclude.end()) {
-         BOOST_MESSAGE("  Note: skipping key " << index);
+         BOOST_TEST_MESSAGE("  Note: skipping key " << index);
          continue;
       }
 
@@ -82,19 +82,19 @@ void compare_2component_block(const std::string& name,
       key.push_back(index);
       SLHAea::Block::const_iterator line2 = coll2.at(name).find(key);
       if (line2 == coll2.at(name).end()) {
-         BOOST_MESSAGE("Error: there is no line with key " << index << " in coll2");
+         BOOST_TEST_MESSAGE("Error: there is no line with key " << index << " in coll2");
          BOOST_CHECK(false);
          continue;
       }
 
       if (line2->size() < 2) {
-         BOOST_MESSAGE("Error: line2 (key = " << index << ") contains no value");
+         BOOST_TEST_MESSAGE("Error: line2 (key = " << index << ") contains no value");
          BOOST_CHECK(false);
          continue;
       }
 
       if (line->size() >= 3 && line2->size() >= 3)
-         BOOST_MESSAGE("  comparing key " << index << " (" << (*line)[2]
+         BOOST_TEST_MESSAGE("  comparing key " << index << " (" << (*line)[2]
                        << " vs " << (*line2)[2] << ")");
 
       const double value2 = std::fabs(SLHAea::to<double>((*line2)[1]));

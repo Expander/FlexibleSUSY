@@ -525,7 +525,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    const double tol = 1.0e-8;
    const int maxTries = 20;
 
-   BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
+   BOOST_TEST_MESSAGE("running MssmSoftsusy::rhohat() ...");
    const double rho_start = 1.0, sin_start = 0.48;
    double outrho = rho_start, outsin = sin_start;
    stopwatch.start();
@@ -537,15 +537,15 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
              tol, maxTries);
    stopwatch.stop();
    const double ss_time = stopwatch.get_time_in_seconds();
-   BOOST_MESSAGE("MssmSoftsusy::rhohat() finished!");
-   BOOST_MESSAGE("MssmSoftsusy::rhohat() takes " << ss_time << " seconds");
+   BOOST_TEST_MESSAGE("MssmSoftsusy::rhohat() finished!");
+   BOOST_TEST_MESSAGE("MssmSoftsusy::rhohat() takes " << ss_time << " seconds");
 
    Weinberg_angle weinberg;
    weinberg.set_number_of_iterations(maxTries);
    weinberg.set_precision_goal(tol);
    weinberg.set_data(data);
 
-   BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
+   BOOST_TEST_MESSAGE("running Weinberg_angle::calculate() ...");
 
    stopwatch.start();
    const int error = weinberg.calculate(rho_start, sin_start);
@@ -555,8 +555,8 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_REQUIRE(error == 0);
    const double fs_sintheta = weinberg.get_sin_theta();
 
-   BOOST_MESSAGE("running Weinberg_angle::calculate() finished!");
-   BOOST_MESSAGE("Weinberg_angle::calculate() takes " << fs_time
+   BOOST_TEST_MESSAGE("running Weinberg_angle::calculate() finished!");
+   BOOST_TEST_MESSAGE("Weinberg_angle::calculate() takes " << fs_time
                  << " seconds");
 
    const double fs_rhohat = weinberg.get_rho_hat();

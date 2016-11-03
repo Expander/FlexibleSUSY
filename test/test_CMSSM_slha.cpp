@@ -357,8 +357,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
    const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(ZUL_slha * ZDL_slha.adjoint());
    const Eigen::Matrix<std::complex<double>,3,3> ckm_slha(model.get_ckm_matrix());
 
-   BOOST_MESSAGE("ckm_matrix =\n" << ckm_matrix);
-   BOOST_MESSAGE("ckm_slha =\n" << ckm_slha);
+   BOOST_TEST_MESSAGE("ckm_matrix =\n" << ckm_matrix);
+   BOOST_TEST_MESSAGE("ckm_slha =\n" << ckm_slha);
 
    // check that SLHA mixing matrix is in PDG convention
    BOOST_CHECK(Re(ckm_slha(0,0)) > 0.);
