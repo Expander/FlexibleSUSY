@@ -151,6 +151,8 @@ DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
+DEFINE_ENABLE_TWO_SCALE_SOLVER="#undef ENABLE_TWO_SCALE_SOLVER"
+DEFINE_ENABLE_LATTICE_SOLVER="#undef ENABLE_LATTICE_SOLVER"
 DEFINE_ENABLE_ADDONS=""
 
 boost_lib_dir=""
@@ -2272,6 +2274,29 @@ enable_defines() {
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     fi
 
+    for s in ${SOLVERS}; do
+	case "$s" in
+	    all)
+		DEFINE_ENABLE_TWO_SCALE_SOLVER="#define ENABLE_TWO_SCALE_SOLVER 1"
+		DEFINE_ENABLE_LATTICE_SOLVER="#define ENABLE_LATTICE_SOLVER 1"
+		logmsg "   ${DEFINE_ENABLE_TWO_SCALE_SOLVER}"
+		logmsg "   ${DEFINE_ENABLE_LATTICE_SOLVER}"
+		break ;;
+	    two_scale)
+		DEFINE_ENABLE_TWO_SCALE_SOLVER="#define ENABLE_TWO_SCALE_SOLVER 1";
+		logmsg "   ${DEFINE_ENABLE_TWO_SCALE_SOLVER}"
+		continue ;;
+	    lattice)
+		DEFINE_ENABLE_LATTICE_SOLVER="#define ENABLE_LATTICE_SOLVER 1";
+		logmsg "   ${DEFINE_ENABLE_LATTICE_SOLVER}"
+		continue ;;
+	    *)
+		message "Error: unknown solver: $a";
+                message "Available solvers: $available_solvers";
+                exit 1 ;;
+	esac
+    done
+
     for a in ${ADDONS}; do
         local addon_name="$(basename ${a})"
         DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
@@ -2675,6 +2700,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
+    -e "s|@DEFINE_ENABLE_TWO_SCALE_SOLVER@|$DEFINE_ENABLE_TWO_SCALE_SOLVER|" \
+    -e "s|@DEFINE_ENABLE_LATTICE_SOLVER@|$DEFINE_ENABLE_LATTICE_SOLVER|" \
     -e "s|@DEFINE_ENABLE_ADDONS@|$DEFINE_ENABLE_ADDONS|"       \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
