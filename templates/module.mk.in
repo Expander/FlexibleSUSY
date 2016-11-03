@@ -38,8 +38,8 @@ LIB@CLASSNAME@_SRC := \
 		$(DIR)/@CLASSNAME@_observables.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
+		$(DIR)/@CLASSNAME@_susy_parameters.cpp \
+		$(DIR)/@CLASSNAME@_soft_parameters.cpp \
 
 EXE@CLASSNAME@_SRC :=
 LL@CLASSNAME@_LIB  :=
@@ -56,8 +56,8 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_observables.hpp \
 		$(DIR)/@CLASSNAME@_physical.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp \
-		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
+		$(DIR)/@CLASSNAME@_soft_parameters.hpp \
+		$(DIR)/@CLASSNAME@_susy_parameters.hpp \
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 -include $(DIR)/two_scale.mk

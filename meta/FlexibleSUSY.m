@@ -2258,10 +2258,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
-                          {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_parameters.hpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_parameters.cpp"}]}},
                          "two_scale_susy_beta_.cpp.in",
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
                            FileNameJoin[{FSOutputDir, "two_scale_susy.mk"}]}}
@@ -2269,10 +2269,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {},
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_soft_parameters.hpp.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.hpp"}]},
-                          {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
-                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters.hpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters.hpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters.cpp"}]}},
                          "two_scale_soft_beta_.cpp.in",
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
                            FileNameJoin[{FSOutputDir, "two_scale_soft.mk"}]}},
