@@ -8,15 +8,15 @@ WITH_$(MODNAME) := yes
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
 
-@CLASSNAME@_TWO_SCALE_SUSY_MK := \
-		$(DIR)/two_scale_susy.mk
+@CLASSNAME@_SUSY_BETAS_MK := \
+		$(DIR)/susy_betas.mk
 
-@CLASSNAME@_TWO_SCALE_SOFT_MK := \
-		$(DIR)/two_scale_soft.mk
+@CLASSNAME@_SOFT_BETAS_MK := \
+		$(DIR)/soft_betas.mk
 
 @CLASSNAME@_INCLUDE_MK := \
-		$(@CLASSNAME@_TWO_SCALE_SUSY_MK) \
-		$(@CLASSNAME@_TWO_SCALE_SOFT_MK)
+		$(@CLASSNAME@_SUSY_BETAS_MK) \
+		$(@CLASSNAME@_SOFT_BETAS_MK)
 
 @CLASSNAME@_SLHA_INPUT := \
 		$(DIR)/LesHouches.in.@CLASSNAME@_generated \
@@ -70,17 +70,17 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(@CLASSNAME@_TWO_SCALE_SUSY_MK)
--include $(@CLASSNAME@_TWO_SCALE_SOFT_MK)
+-include $(@CLASSNAME@_SUSY_BETAS_MK)
+-include $(@CLASSNAME@_SOFT_BETAS_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(@CLASSNAME@_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
+$(@CLASSNAME@_SUSY_BETAS_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(@CLASSNAME@_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
+$(@CLASSNAME@_SOFT_BETAS_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif

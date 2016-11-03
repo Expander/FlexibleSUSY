@@ -2263,8 +2263,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_parameters.cpp"}]}},
                          "susy_beta_.cpp.in",
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
-                           FileNameJoin[{FSOutputDir, "two_scale_susy.mk"}]}}
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "betas.mk.in"}],
+                           FileNameJoin[{FSOutputDir, "susy_betas.mk"}]}}
                         ];
 
            Print["Creating class for soft parameters ..."];
@@ -2274,8 +2274,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters.cpp"}]}},
                          "soft_beta_.cpp.in",
-                         {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_betas.mk.in"}],
-                           FileNameJoin[{FSOutputDir, "two_scale_soft.mk"}]}},
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "betas.mk.in"}],
+                           FileNameJoin[{FSOutputDir, "soft_betas.mk"}]}},
                          If[Head[SARAH`TraceAbbr] === List, SARAH`TraceAbbr, {}],
                          numberOfSusyParameters];
 
