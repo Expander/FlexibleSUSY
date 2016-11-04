@@ -346,7 +346,8 @@ vertexTypes = {
 (* There is no bounds check done on the integers, so they have to fit
  into a standard c++ unsigned (!) int *)
 contributingDiagramTypes = {
-    OneLoopDiagram[0]
+    OneLoopDiagram[0],
+    OneLoopDiagram[1]
 };
 
 (* Find all diagrams of the type type_, testing all corresponding combinations of particles *)
@@ -355,7 +356,7 @@ contributingDiagramTypes = {
   {edmParticle2, {...}},
   ...} *)
 
-ContributingDiagramsOfType[OneLoopDiagram[0]] :=
+ContributingDiagramsOfType[type : (OneLoopDiagram[0] | OneLoopDiagram[1])] :=
     Module[{edmParticle = #, diagrams = SARAH`InsFields[
                            {{C[#, SARAH`AntiField[SARAH`FieldToInsert[1]],
                                SARAH`AntiField[SARAH`FieldToInsert[2]]],
@@ -365,7 +366,7 @@ ContributingDiagramsOfType[OneLoopDiagram[0]] :=
                                SARAH`AntiField[#]]}}]},
            {edmParticle, DeleteDuplicates[(Module[{photonEmitter = #[[1,3,1]],
                                                    exchangeParticle = #[[1,3,2]]},
-                  Diagram[OneLoopDiagram[0], edmParticle, photonEmitter, exchangeParticle]]
+                  Diagram[type, edmParticle, photonEmitter, exchangeParticle]]
            &) /@ diagrams]}] & /@ edmParticles;
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
@@ -635,17 +636,16 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
 (* Find all contributing diagrams *)
 cachedContributingDiagrams = Null;
 ContributingDiagrams[] :=
-    Module[{particles, fermions, scalars, vectors},
+       Module[{diagrams},
            If[cachedContributingDiagrams =!= Null, Return[cachedContributingDiagrams]];
 
-           particles = TreeMasses`GetParticles[];
-           fermions = Select[particles, TreeMasses`IsFermion];
-           scalars = Select[particles, TreeMasses`IsScalar];
-           vectors = Select[particles, TreeMasses`IsVector];
-
-           cachedContributingDiagrams = Flatten[(ContributingDiagramsOfType[#, fermions, scalars, vectors] &)
+           cachedContributingDiagrams = Flatten[(ContributingDiagramsOfType[#] &)
                                                 /@ contributingDiagramTypes
                                                 , 1];
+           cachedContributingDiagrams = ({#, Union @
+                   ReplacePart[Cases[cachedContributingDiagrams,
+                         {#, diagrams_List} -> diagrams], 0 -> Sequence]} &) /@ edmParticles;
+           
            Return[cachedContributingDiagrams];
           ];
 
