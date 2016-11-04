@@ -97,10 +97,10 @@ CreateParticles[] :=
 
 CreateChargeGetters[particles_List] :=
     StringJoin @ Riffle[
-        Module[{photonVertexParticles, particleDim = TreeMasses`GetDimension[#]},
+        (Module[{photonVertexParticles, particleDim = TreeMasses`GetDimension[#]},
            photonVertexParticles = {GetPhoton[], #, AntiParticle[#]};
            "template<>\n" <>
-           "double charge<" <> ParticleToCXXName[#] <>
+           "double charge<" <> ParticleToCXXName[#] <> ">" <>
            If[particleDim === 1, "(",
               "( unsigned index, "] <> "EvaluationContext& context)\n{\n" <>
            IndentText[
@@ -113,7 +113,7 @@ CreateChargeGetters[particles_List] :=
                  ] <>
                "return VF::vertex(indices, context).left().real();"
            ] <> "\n}"
-          ],
+          ] &) /@ particles,
                         "\n\n"]
 
 CreateDiagrams[] :=
