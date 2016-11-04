@@ -32,7 +32,7 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
 (************* Begin public interface *******************)
 
 edmParticles = Null;
-SetEDMParticles[particles_List] := (edmParticles = particles);
+SetEDMParticles[particles_List] := (edmParticles = particles;)
 
 IsSMParticle[particle_] :=
     SARAH`SMQ[particle] || TreeMasses`IsSMGoldstone[particle];
@@ -95,14 +95,18 @@ CreateParticles[] :=
            Return[code];
           ];
 
-CreateChargeGetters[particles_List] :=
+CreateChargeGetters[] :=
+    "template<class Particle>\n" <>
+    "double charge( EvaluationContext & );\n\n" <>
+    "template<class Particle>\n" <>
+    "double charge( unsigned, EvaluationContext & );\n\n" <>
     StringJoin @ Riffle[
         (Module[{photonVertexParticles, particleDim = TreeMasses`GetDimension[#]},
            photonVertexParticles = {GetPhoton[], #, AntiParticle[#]};
            "template<>\n" <>
            "double charge<" <> ParticleToCXXName[#] <> ">" <>
-           If[particleDim === 1, "(",
-              "( unsigned index, "] <> "EvaluationContext& context)\n{\n" <>
+           If[particleDim === 1, "( ",
+              "( unsigned index, "] <> "EvaluationContext& context )\n{\n" <>
            IndentText[
                "typedef VertexFunction<" <>
                StringJoin @ Riffle[ParticleToCXXName /@ photonVertexParticles, ", "] <>
@@ -113,7 +117,7 @@ CreateChargeGetters[particles_List] :=
                  ] <>
                "return VF::vertex(indices, context).left().real();"
            ] <> "\n}"
-          ] &) /@ particles,
+          ] &) /@ edmParticles,
                         "\n\n"]
 
 CreateDiagrams[] :=
@@ -170,7 +174,6 @@ CreateCalculation[] :=
 
 CreateDefinitions[vertexRules_List] :=
     (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-     CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>
      CreateVertices[vertexRules][[2]]);
 
 nPointFunctions = Null;
