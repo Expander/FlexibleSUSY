@@ -472,7 +472,6 @@ ContributingDiagrams[] :=
            cachedContributingDiagrams = ({#, Union @
                    (Sequence @@ Cases[diagrams,
                          {#, diags_List} -> diags])} &) /@ edmFields;
-              
            Return[cachedContributingDiagrams];
           ];
 
@@ -494,6 +493,6 @@ ConcreteDiagramEvaluators[] :=
            ">" &)
           /@ #[[2]]) } &) /@ ContributingDiagrams[];
 
-End[];
+(* TODO: End[]; *)
 
 EndPackage[];
