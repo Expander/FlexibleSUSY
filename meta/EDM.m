@@ -346,24 +346,27 @@ vertexTypes = {
 (* There is no bounds check done on the integers, so they have to fit
  into a standard c++ unsigned (!) int *)
 contributingDiagramTypes = {
-    OneLoopDiagram[3], (* Photon is emitted by a fermion, exchange particle is a scalar *)
-    OneLoopDiagram[4]  (* Photon is emitted by a scalar, exchange particle is a fermion *)
+    OneLoopDiagram[0]
 };
-
-(* This is just a convenient way to help ContributingDiagramsOfType[] *)
-OneLoopDiagram[3][fermions_, scalars_, vectors_] := {fermions, scalars};
-OneLoopDiagram[4][fermions_, scalars_, vectors_] := {scalars, fermions};
 
 (* Find all diagrams of the type type_, testing all corresponding combinations of particles *)
 (* IMPORTANT: Return value should have the format
  {{edmParticle1, {Diagram[DIAGRAMTYPENAME[_Integer], Particles___], Diagram[...], ...}},
   {edmParticle2, {...}},
-  ...}
- This is important for the c++ conversion that assumes every argument after the type
- is a particle and uses ParticleToCXXName for conversion *)
+  ...} *)
 
-ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermions_, scalars_, vectors_] :=
-    Module[];
+ContributingDiagramsOfType[OneLoopDiagram[0]] :=
+    Module[{edmParticle = #, diagrams = SARAH`InsFields[
+                           {{C[#, SARAH`AntiField[SARAH`FieldToInsert[1]],
+                               SARAH`AntiField[SARAH`FieldToInsert[2]]],
+                             C[SARAH`FieldToInsert[1], GetPhoton[],
+                               SARAH`AntiField[SARAH`FieldToInsert[1]]],
+                             C[SARAH`FieldToInsert[1], SARAH`FieldToInsert[2],
+                               SARAH`AntiField[#]]}}]},
+           {edmParticle, DeleteDuplicates[(Module[{photonEmitter = #[[1,3,1]],
+                                                   exchangeParticle = #[[1,3,2]]},
+                  Diagram[OneLoopDiagram[0], edmParticle, photonEmitter, exchangeParticle]]
+           &) /@ diagrams]}] & /@ edmParticles;
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
  The returned value is a list {prototypes, definitions}. *)
