@@ -346,8 +346,7 @@ vertexTypes = {
 (* There is no bounds check done on the integers, so they have to fit
  into a standard c++ unsigned (!) int *)
 contributingDiagramTypes = {
-    OneLoopDiagram[0],
-    OneLoopDiagram[1]
+    OneLoopDiagram[0]
 };
 
 (* Find all diagrams of the type type_, testing all corresponding combinations of particles *)
@@ -356,17 +355,18 @@ contributingDiagramTypes = {
   {edmParticle2, {...}},
   ...} *)
 
-ContributingDiagramsOfType[type : (OneLoopDiagram[0] | OneLoopDiagram[1])] :=
+ContributingDiagramsOfType[OneLoopDiagram[0]] :=
     Module[{edmParticle = #, diagrams = SARAH`InsFields[
                            {{C[#, SARAH`AntiField[SARAH`FieldToInsert[1]],
                                SARAH`AntiField[SARAH`FieldToInsert[2]]],
                              C[SARAH`FieldToInsert[1], GetPhoton[],
                                SARAH`AntiField[SARAH`FieldToInsert[1]]],
                              C[SARAH`FieldToInsert[1], SARAH`FieldToInsert[2],
-                               SARAH`AntiField[#]]}}]},
-           {edmParticle, DeleteDuplicates[(Module[{photonEmitter = #[[1,3,1]],
-                                                   exchangeParticle = #[[1,3,2]]},
-                  Diagram[type, edmParticle, photonEmitter, exchangeParticle]]
+                               SARAH`AntiField[#]]},
+                            {SARAH`FieldToInsert[1], SARAH`FieldToInsert[2]}}]},
+           {edmParticle, DeleteDuplicates[(Module[{photonEmitter = #[[2,1]],
+                                                   exchangeParticle = #[[2,2]]},
+                  Diagram[OneLoopDiagram[0], edmParticle, photonEmitter, exchangeParticle]]
            &) /@ diagrams]}] & /@ edmParticles;
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
