@@ -142,8 +142,6 @@ CreateDiagrams[] :=
            Return[code];
           ];
 
-CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
-
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] :=
     ("template<class EDMParticle, class PhotonEmitter, class ExchangeParticle>\n" <>
      "struct DiagramEvaluator<OneLoopDiagram<" <>
@@ -151,22 +149,30 @@ CreateDiagramEvaluatorClass[type_OneLoopDiagram] :=
      ">, EDMParticle, PhotonEmitter, ExchangeParticle>\n" <>
      "{ static double value(EvaluationContext& context); };");
 
+CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
+
 calculationCode = Null;
 CreateCalculation[] :=
-    Module[{code},
+    Module[{code, evaluators},
            (* If we have been here before return the old result *)
            If[calculationCode =!= Null, Return[calculationCode]];
-
-           code = "/********** EDM.m generated calculation code **********/\n\n";
-
-           (* Generate code that simply adds up all contributions *)
-           code = (code <>
-                   "EvaluationContext context{ model };\n" <>
-                   "double val = 0.0;\n\n" <>
-                   StringJoin @ Riffle[("val += " <> # <> "::value(context);" &) /@ ConcreteDiagramEvaluators[],
-                                       "\n"] <> "\n\n" <>
-                   "return val;"
-                  );
+           
+           evaluators = ConcreteDiagramEvaluators[];
+           
+           code = "/********** EDM.m generated calculation code **********/\n\n" <>
+                  "template<class Particle> double edm( void );\n\n";
+           
+           code = code <> StringJoin @ Riffle[
+                  Module[{pEvaluators = Cases[evaluators, {#, ev_List} -> ev]},
+                   "template<> double edm<" <> ParticleToCXXName[#] <> ">( void )\n" <>
+                   "{\n" <>
+                   IndentText["EvaluationContext context{ model };\n" <>
+                              "double val = 0.0\n\n;" <>
+                              StringJoin @ Riffle[("val += " <> # <> "::value(context);" &) /@ pEvaluators,
+                                                  "\n"] <> "\n\n" <>
+                              "return val;"
+                   ] <>
+                   "}"] & /@ evaluators, "\n\n"];
 
            calculationCode = code;
            Return[code];
