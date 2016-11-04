@@ -22,14 +22,12 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
  - Write the c++ class for the new vertex type
 
  When adding support for new diagram types, do the following:
- - Add the new types to contributingFeynmanDiagramTypes
+ - Add the new types to contributingDiagramTypes
  - Write new overloads for CreateDiagramEvaluatorClass[], ContributingDiagramsOfType[] and VerticesForDiagram[]
  - Write the necessary c++ code: loop functions, DiagramEvaluator<> specialisations
  **********)
 
-Test[] := Print["blablabla" <> ToString @ SARAH`InsFields[{{C[Fe, SARAH`FieldToInsert[1], VP]}}]];
-
-Begin["`Private`"];
+(* TODO: privatize interface again Begin["`Private`"]; *)
 
 (************* Begin public interface *******************)
 
@@ -120,7 +118,7 @@ CreateChargeGetters[particles_List] :=
 
 CreateDiagrams[] :=
     Module[{diagramTypes, diagramTypeHeads, code},
-           diagrams = contributingFeynmanDiagramTypes;
+           diagrams = contributingDiagramTypes;
            diagramHeads = DeleteDuplicates @ (Head /@ diagrams);
 
            code = "// The different diagram types that contribute to the muon magnetic moment\n";
@@ -135,7 +133,7 @@ CreateDiagrams[] :=
                                        /@ diagrams, "\n"]);
 
            code = (code <> "\n\n" <>
-                   StringJoin @ Riffle[CreateDiagramEvaluatorClass /@ contributingFeynmanDiagramTypes, "\n\n"]);
+                   StringJoin @ Riffle[CreateDiagramEvaluatorClass /@ contributingDiagramTypes, "\n\n"]);
 
            Return[code];
           ];
@@ -338,67 +336,25 @@ vertexTypes = {
 (* They need to be called DIAGRAMTYPENAME[_Integer]! See CreateDiagramClasses[] below. *)
 (* There is no bounds check done on the integers, so they have to fit
  into a standard c++ unsigned (!) int *)
-contributingFeynmanDiagramTypes = {
+contributingDiagramTypes = {
     OneLoopDiagram[3], (* Photon is emitted by a fermion, exchange particle is a scalar *)
     OneLoopDiagram[4]  (* Photon is emitted by a scalar, exchange particle is a fermion *)
 };
-
-(* IMPORTANT: If you want to add support for type 1 and 2 diagrams, hardly any
- changes are necessary here. Just add the diagram types to contributingFeynmanDiagramTypes,
- write corresponding helper lines as below and have ContributingDiagramsOfType[]
- operate on type 1 and 2 diagrams as well.
- You should not have to modify the actual code in ContributingDiagramsOfType[]
- unless you are adding type 5 and 6 diagrams or completely other diagram types. *)
 
 (* This is just a convenient way to help ContributingDiagramsOfType[] *)
 OneLoopDiagram[3][fermions_, scalars_, vectors_] := {fermions, scalars};
 OneLoopDiagram[4][fermions_, scalars_, vectors_] := {scalars, fermions};
 
 (* Find all diagrams of the type type_, testing all corresponding combinations of particles *)
-(* For now only LoopDiagrams 3 through 4 (see further above) are supported.
- If you are adding more diagram types, you should probably make a new overload
- of ContributingDiagramsOfType[] instead of extending this one. *)
-(* IMPORTANT: Return value should be a list of Diagram[DIAGRAMTYPENAME[_Integer], Particles___]
+(* IMPORTANT: Return value should have the format
+ {{edmParticle1, {Diagram[DIAGRAMTYPENAME[_Integer], Particles___], Diagram[...], ...}},
+  {edmParticle2, {...}},
+  ...}
  This is important for the c++ conversion that assumes every argument after the type
  is a particle and uses ParticleToCXXName for conversion *)
 
 ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermions_, scalars_, vectors_] :=
-    Module[{photonEmitters, exchangeParticles, photonVertices, muonVertices, test},
-           (* Get the photon emitter and the exchange particle categories corresponding to the
-            diagram type *)
-           {photonEmitters, exchangeParticles} = type[fermions, scalars, vectors];
-
-           (* For every potential photon emitter, check whether it actually can emit a photon *)
-           photonVertices = (MemoizingVertex[{GetPhoton[], #, AntiParticle[#]},
-                              SARAH`UseDependences -> True,
-                              SARAH`Eigenstates -> FlexibleSUSY`FSEigenstates] &) /@ photonEmitters;
-           photonVertices = Select[photonVertices, IsNonZeroVertex];
-
-           (* From SARAH's more or less cryptically formatted result extract the particles' names *)
-           photonEmitters = (Vertices`StripFieldIndices /@ photonVertices)[[All, 1]][[All, 2]];
-
-           (* Since we do not know anything about the particles, we have to include their
-            corresponding antiparticles as well *)
-           photonEmitters = Union[photonEmitters, AntiParticle[photonEmitters]];
-           exchangeParticles = Union[exchangeParticles, AntiParticle[exchangeParticles]];
-
-           (* Now we check which of the photon emitting particles actually can interact with
-            a muon in the way we want. *)
-           muonVertices = Outer[(MemoizingVertex[{GetMuonFamily[], #1, #2},
-                                                 SARAH`UseDependences -> True,
-                                                 SARAH`Eigenstates -> FlexibleSUSY`FSEigenstates] &),
-                                photonEmitters, exchangeParticles];
-           muonVertices = Select[#, IsNonZeroVertex] & /@ muonVertices;
-           muonVertices = Cases[muonVertices, Except[{}]];
-
-           (* We return the antiparticles of the particles we just found to *)
-           (* This is just a convention and nothing serious. The returned
-            particles are the decay products of the muon:
-            i.e. if muon ---> p1 + p2
-            Then p1 and p2 are returned *)
-           test = (Diagram[type, AntiParticle[#[[1]]], AntiParticle[#[[2]]]] &) /@
-                (Vertices`StripFieldIndices /@ # &) /@ Flatten[muonVertices[[All, All, 1, 2 ;;]], 1]
-           ];
+    Module[];
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
  The returned value is a list {prototypes, definitions}. *)
@@ -676,7 +632,7 @@ ContributingDiagrams[] :=
            vectors = Select[particles, TreeMasses`IsVector];
 
            cachedContributingDiagrams = Flatten[(ContributingDiagramsOfType[#, fermions, scalars, vectors] &)
-                                                /@ contributingFeynmanDiagramTypes
+                                                /@ contributingDiagramTypes
                                                 , 1];
            Return[cachedContributingDiagrams];
           ];
@@ -692,8 +648,8 @@ ConcreteDiagramEvaluators[] :=
            ToString @ #[[1,1]] <> ">, " <>
            StringJoin @ (Riffle[ParticleToCXXName /@ ReplacePart[#[[2;;]], 0 -> List], ", "]) <>
            ">" &)
-          /@ #[[2]]) &) /@ ContributingDiagrams[]);
+          /@ #[[2]]) } &) /@ ContributingDiagrams[];
 
-End[];
+(* TODO: End[]; *)
 
 EndPackage[];
