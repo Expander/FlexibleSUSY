@@ -395,15 +395,17 @@ CreateVertices[vertexRules_List] :=
 (* Returns the vertices that are present in the specified diagram.
  This function should be overloaded for future diagram types.
  IMPORTANT: Lorentz indices have to be stripped away (They are unnecessary anyway) *)
-VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, photonEmitter_, exchangeParticle_]] :=
-    Module[{photonVertex, muonVertex},
-           photonVertex = MemoizingVertex[{GetPhoton[], photonEmitter, AntiParticle[photonEmitter]}];
-           muonVertex = MemoizingVertex[{GetMuonFamily[], AntiParticle[photonEmitter], AntiParticle[exchangeParticle]}];
+VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmParticle_, photonEmitter_, exchangeParticle_]] :=
+    Module[{edmVertex1, photonVertex, edmVertex2},
+           edmVertex1 = CachedVertex[{edmParticle, AntiParticle[photonEmitter], AntiParticle[exchangeParticle]}];
+           photonVertex = CachedVertex[{GetPhoton[], photonEmitter, AntiParticle[photonEmitter]}];
+           edmVertex2 = CachedVertex[{AntiParticle[edmParticle], photonEmitter, exchangeParticle}];
 
+           edmVertex1 = StripLorentzIndices @ edmVertex1[[1]];
            photonVertex = StripLorentzIndices @ photonVertex[[1]];
-           muonVertex = StripLorentzIndices @ muonVertex[[1]];
+           edmVertex2 = StripLorentzIndices @ edmVertex2[[1]];
 
-           Return[{photonVertex, muonVertex}];
+           Return[{edmVertex1, photonVertex, edmVertex2}];
            ];
 
 (* Returns the vertex type for a vertex with a given list of particles *)
