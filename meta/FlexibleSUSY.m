@@ -1443,6 +1443,35 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                    } ];
            ];
 
+(* Write the EDM c++ files *)
+WriteEDMClass[vertexRules_List, files_List] :=
+Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
+    definitions, calculationCode},
+       edmParticles = {SARAH`Electron};
+       
+       SetEDMParticles[edmParticles];
+       
+       Print[EDM`CreateVertices[vertexRules]];
+       (*
+        particles = EDM`CreateParticles[];
+        chargeGetters = EDM`CreateChargeGetters[];
+        diagrams = EDM`CreateDiagrams[];
+        
+        vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
+        definitions = EDM`CreateDefinitions[vertexRules];
+        calculationCode = EDM`CreateCalculation[];
+        
+        WriteOut`ReplaceInFiles[files,
+                                { "@EDM_Particles@"                 -> particles,
+                                    "@EDM_ChargeGetters@"           -> chargeGetters,
+                                    "@EDM_Diagrams@"                -> diagrams,
+                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
+                                    "@EDM_Definitions@"             -> definitions,
+                                    "@EDM_Calculation@"             -> IndentText[calculationCode],
+                                    Sequence @@ GeneralReplacementRules[]
+                                } ];*)
+       ];
+
 EnableForBVPSolver[solver_, statements_String] :=
     Module[{result = "#ifdef "},
            Switch[solver,
@@ -1997,6 +2026,9 @@ PrepareTadpoles[eigenstates_] :=
 (* Get all nPointFunctions that GMM2 needs *)
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
+(* Get all nPointFunctions that EDM needs *)
+PrepareEDM[] := EDM`NPointFunctions[];
+
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
            nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
@@ -2144,7 +2176,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            gmm2Vertices = {},
+            gmm2Vertices = {}, edmVertices = {},
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -2191,6 +2223,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
            gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
+           (* EDM vertices *)
+           edmVertices = StripInvalidFieldIndices @ PrepareEDM[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", GetParticles[]];
@@ -2700,10 +2734,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
+<<<<<<< 2f6a3062c3ce3b875f83065972915e93fa9ee0fd
               Put[vertexRules =
                       Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
                   vertexRuleFileName],
               vertexRules = Get[vertexRuleFileName];
+=======
+	      Put[vertexRules =
+		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, edmVertices, extraVertices], Lat$massMatrices],
+		  vertexRuleFileName],
+	      vertexRules = Get[vertexRuleFileName];
+>>>>>>> First steps towards integrating the EDM module.
               effectiveCouplings = Get[effectiveCouplingsFileName];
              ];
 
