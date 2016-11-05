@@ -181,20 +181,6 @@ CXXNameOfField[p_] := SymbolName[p];
 CXXNameOfField[SARAH`bar[p_]] := "anti<" <> SymbolName[p] <> ">::type";
 CXXNameOfField[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::type";
 
-(**************** Other Functions ***************)
-
-AddIndexPattern[SARAH`bar[p_]] := SARAH`bar[AddIndexPattern[p]];
-AddIndexPattern[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[AddIndexPattern[p]];
-AddIndexPattern[field_] := SARAH`getFull[SARAH`getBlank[field]] /. subIndexPattern;
-
-CachedVertex[fields_List] :=
-Module[{
-    vertexPattern = Alternatives @@ ({#, ___} &) /@
-    Permutations[AddIndexPattern /@ fields],
-    vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[fields]]},
-       FirstCase[vertexList, vertexPattern]
-       ];
-
 CreateEvaluationContextSpecializations[] :=
 Module[{fields, code},
        fields = Select[TreeMasses`GetParticles[], (! TreeMasses`IsGhost[#] &)];
@@ -255,8 +241,6 @@ CreateVertices[vertexRules_List] :=
 
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
-           
-           (* TODO: Add every permutation of the above vertices *)
 
            {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
