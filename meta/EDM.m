@@ -426,7 +426,7 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
                          IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
                          "}");
            
-           AppendTo[vertexFunctions, particles];
+           AppendTo[createdVertexFunctions, particles];
           ];
 
 (* Creates local declarations of field indices, whose values are taken
