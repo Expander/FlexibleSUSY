@@ -609,7 +609,7 @@ Protect[Power];
 
 Unprotect[If];
 Format[If[c_,a_,b_],CForm] :=
-    Format["If(" <> ToString[CForm[c]] <> ", " <>
+    Format["IF(" <> ToString[CForm[c]] <> ", " <>
            ToString[CForm[Evaluate[a]]] <> ", " <>
            ToString[CForm[Evaluate[b]]] <> ")", OutputForm];
 Protect[If];
