@@ -1451,7 +1451,6 @@ Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
        EDM`SetEDMFields[edmParticles];
        
        fields = EDM`CreateFields[];
-       
        chargeGetters = EDM`CreateChargeGetters[];
        diagrams = EDM`CreateDiagrams[];
        
@@ -2024,6 +2023,9 @@ PrepareTadpoles[eigenstates_] :=
 (* Get all nPointFunctions that GMM2 needs *)
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
+(* Get all nPointFunctions that EDM needs *)
+PrepareEDM[] := EDM`NPointFunctions[];
+
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
            nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
@@ -2171,7 +2173,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            gmm2Vertices = {},
+            gmm2Vertices = {}, edmVertices = {},
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -2218,6 +2220,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
            gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
+           (* EDM vertices *)
+           edmVertices = StripInvalidFieldIndices @ PrepareEDM[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", GetParticles[]];
