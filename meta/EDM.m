@@ -301,6 +301,14 @@ OrderVertex[vertex_, ordering_] :=
            Return[newVertex];
           ];
 
+CachedVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
+    Module[{vertexPattern = ReplacePart[({#, ___} &) /@
+                                        Permutations[(#[___] &) /@ particles],
+                                        0 -> Alternatives],
+            vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[particles]]},
+           FirstCase[vertexList, vertexPattern];
+           ];
+
 (* MemoizingVertex[] works just like SARAH`Vertex[], but it caches the results *)
 (* MemoizingVertex[] only works when __no__ indices are specified!!! *)
 (* Use of memoization gives ~30% speedup for the MSSM! *)
