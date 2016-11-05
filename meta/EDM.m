@@ -184,15 +184,16 @@ CreateDefinitions[vertexRules_List] :=
 
 nPointFunctions = Null;
 NPointFunctions[] :=
-    Module[{contributingDiagrams, vertices},
+    Module[{contributingDiagrams, vertices, vertexParticles},
            If[nPointFunctions =!= Null, Return[nPointFunctions]];
 
            contributingDiagrams = ContributingDiagrams[];
 
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
-
-           nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
+           vertexParticles = vertices[[All, 1]];
+           
+           nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertexParticles)];
            Return[nPointFunctions];
           ];
 
@@ -355,7 +356,12 @@ VertexTypeForParticles[particles_List] :=
                  Return[LeftAndRightComponentedVertex]]];
            If[fermionCount === 0 && scalarCount === 2 && vectorCount === 1,
               Return[SingleComponentedVertex]];
-
+           
+           (* TODO: Add support for 1 scalar, two vector vertices *)
+           
+           Print[particles];
+           Print[fermionCount, scalarCount, vectorCount];
+           
            Return[Null];
            ];
 
