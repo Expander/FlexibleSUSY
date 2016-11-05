@@ -617,5 +617,5 @@ lambda2LHSSAlphaT2 = With[{
          (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
           (1 - \[Mu]^2/mst^2)])/(2*mst^2)))/mst^4)*gt^6)/
     (256*Pi^4*tan\[Beta]^2)
-    ) /. Piecewise[{{val_, cond_}}, default_] :> IF[cond, val, default]
+    ) /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
     ];
