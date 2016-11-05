@@ -315,6 +315,8 @@ CreateVertices[vertexRules_List] :=
 
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
+           
+           (* TODO: Add every permutation of the above vertices *)
 
            {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
@@ -328,17 +330,12 @@ CreateVertices[vertexRules_List] :=
           ];
 
 (* Returns the vertices that are present in the specified diagram.
- This function should be overloaded for future diagram types.
- IMPORTANT: Lorentz indices have to be stripped away (They are unnecessary anyway) *)
+ This function should be overloaded for future diagram types. *)
 VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmParticle_, photonEmitter_, exchangeParticle_]] :=
     Module[{edmVertex1, photonVertex, edmVertex2},
            edmVertex1 = CachedVertex[{edmParticle, AntiField[photonEmitter], AntiField[exchangeParticle]}];
            photonVertex = CachedVertex[{photonEmitter, GetPhoton[], AntiField[photonEmitter]}];
            edmVertex2 = CachedVertex[{photonEmitter, exchangeParticle, AntiField[edmParticle]}];
-           
-           edmVertex1 = StripLorentzIndices @ edmVertex1[[1]];
-           photonVertex = StripLorentzIndices @ photonVertex[[1]];
-           edmVertex2 = StripLorentzIndices @ edmVertex2[[1]];
 
            Return[{edmVertex1, photonVertex, edmVertex2}];
            ];
@@ -380,51 +377,56 @@ CouplingsForParticles[particles_List] :=
            ];
 
 (* Creates the actual c++ code for a vertex with given particles.
+ If the c++ for the particle list has already been created, two
+ empty strings are returned.
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
-vertexFunctions = {};
+createdVertexFunctions = {};
 CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
-    Module[{prototypes, definitions = "", ordering, particles, orderedParticles,
-             orderedIndexedParticles, addSpacing = True},
-            particles = Vertices`StripFieldIndices /@ indexedParticles;
-            If[MemberQ[vertexFunctions, particles], Return[{"",""}]];
+    Module[{prototype, definition,
+        particles = Vertices`StripFieldIndices /@ indexedParticles,
+        parsedVertex, dataClassName, functionClassName, particleIndexStartF,
+        particleIndexStart, indexBounds},
+            If[MemberQ[createdVertexFunctions, particles], Return[{"",""}]];
 
-            ordering = Ordering[particles];
-            orderedParticles = particles[[ordering]];
-            orderedIndexedParticles = OrderParticles[indexedParticles, ordering];
-
-            If[MemberQ[vertexFunctions, orderedParticles] === True,
-               (* There is already an entry *)
-               prototypes = "";
-               addSpacing = False,
-               (* There is no entry yet, create it *)
-               {prototypes, definitions} = CreateOrderedVertexFunction[orderedIndexedParticles, vertexRules];
-               AppendTo[vertexFunctions, orderedParticles];
-               ];
-
-            If[ordering === Table[i, {i, 1, Length[ordering]}],
-               Return[{prototypes, definitions}]];
-
-            orderedVertexFunction = ("VertexFunction<" <>
-                                     StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <>
-                                     ">");
-
-            prototypes = (prototypes <> If[addSpacing, "\n\n", ""] <>
-                          "template<> struct VertexFunctionData<" <>
-                          StringJoin @ Riffle[ParticleToCXXName /@ particles, ", "] <>
-                          ">\n" <>
-                          "{\n" <>
-                          IndentText @
-                          ("static const bool is_permutation = true;\n" <>
-                           "typedef " <> orderedVertexFunction <> " orig_type;\n" <>
-                           "typedef boost::mpl::vector_c<unsigned, " <>
-                           StringJoin @ Riffle[ToString /@ (Ordering[ordering] - 1), ", "] <>
-                           "> particlePermutation;\n"
-                           ) <>
-                          "};");
-
-            AppendTo[vertexFunctions, particles];
-            Return[{prototypes, definitions}];
+           parsedVertex = ParseVertex[indexedParticles, vertexRules];
+           dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[ParticleToCXXName /@ particles, ", "] <> ">";
+           functionClassName = "VertexFunction<" <> StringJoin @ Riffle[ParticleToCXXName /@ particles, ", "] <> ">";
+           
+           particleIndexStartF[1] = 0;
+           particleIndexStartF[pIndex_] := particleIndexStartF[pIndex-1] + NumberOfIndices[parsedVertex, pIndex-1];
+           particleIndexStartF[Length[particles]+1] = NumberOfIndices[parsedVertex];
+           
+           particleIndexStart = Table[particleIndexStartF[i], {i, 1, Length[particles] + 1}];
+           
+           prototype = ("template<> struct " <> dataClassName <> "\n" <>
+                        "{\n" <>
+                        IndentText @
+                        ("static const bool is_permutation = false;\n" <>
+                         "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
+                         "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
+                         "typedef boost::mpl::vector_c<unsigned, " <>
+                         StringJoin @ Riffle[ToString /@ particleIndexStart, ", "] <>
+                         "> particleIndexStart;\n" <>
+                         "static const index_bounds indexB;\n"
+                         ) <>
+                        "};");
+           
+           indexBounds = IndexBounds[parsedVertex];
+           
+           If[NumberOfIndices[parsedVertex] =!= 0,
+              prototype = (prototype <> "\n" <>
+                           "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB = { " <>
+                           "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
+                           "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
+                           );];
+           definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
+                         functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
+                         "{\n" <>
+                         IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
+                         "}");
+           
+           AppendTo[vertexFunctions, particles];
           ];
 
 (* Creates local declarations of field indices, whose values are taken
@@ -524,51 +526,6 @@ IndexBounds[parsedVertex_ParsedVertex] := parsedVertex[[2]];
 VertexClassName[parsedVertex_ParsedVertex] := parsedVertex[[3]];
 VertexFunctionBody[parsedVertex_ParsedVertex] := parsedVertex[[4]];
 (** End getters **)
-
-(* Create the c++ code for a canonically ordered vertex *)
-CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
-    Module[{prototype, definition, orderedParticles, dataClassName, functionClassName,
-            parsedVertex, particleIndexStartF, particleIndexStart, indexBounds},
-            orderedParticles = Vertices`StripFieldIndices /@ orderedIndexedParticles;
-            parsedVertex = ParseVertex[orderedIndexedParticles, vertexRules];
-            dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
-            functionClassName = "VertexFunction<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
-
-            particleIndexStartF[1] = 0;
-            particleIndexStartF[pIndex_] := particleIndexStartF[pIndex-1] + NumberOfIndices[parsedVertex, pIndex-1];
-            particleIndexStartF[Length[orderedParticles]+1] = NumberOfIndices[parsedVertex];
-
-            particleIndexStart = Table[particleIndexStartF[i], {i, 1, Length[orderedParticles] + 1}];
-
-            prototype = ("template<> struct " <> dataClassName <> "\n" <>
-                         "{\n" <>
-                         IndentText @
-                         ("static const bool is_permutation = false;\n" <>
-                          "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
-                          "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
-                          "typedef boost::mpl::vector_c<unsigned, " <>
-                             StringJoin @ Riffle[ToString /@ particleIndexStart, ", "] <>
-                          "> particleIndexStart;\n" <>
-                          "static const index_bounds indexB;\n"
-                          ) <>
-                         "};");
-
-            indexBounds = IndexBounds[parsedVertex];
-
-            If[NumberOfIndices[parsedVertex] =!= 0,
-               prototype = (prototype <> "\n" <>
-                            "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB = { " <>
-                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
-                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
-                            );];
-            definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
-                          functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
-                          "{\n" <>
-                          IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
-                          "}");
-
-            Return[{prototype, definition}];
-            ];
 
 (* Find all contributing diagrams *)
 cachedContributingDiagrams = Null;
