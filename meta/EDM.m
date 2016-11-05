@@ -75,7 +75,7 @@ CreateParticles[] :=
                    "typedef " <> ParticleToCXXName @ GetPhoton[] <> " Photon;\n" <>
                    "typedef " <> ParticleToCXXName @ GetMuonFamily[] <> " MuonFamily;\n\n" <>
 
-                   "// AntiParticles\n" <>
+                   "// AntiFields\n" <>
                    "template<class P> struct anti : public Particle\n" <>
                    "{\n" <>
                    IndentText @
@@ -84,11 +84,11 @@ CreateParticles[] :=
                    "};\n" <>
                    "template<class P> struct anti<anti<P>> { typedef P type; };\n\n" <>
 
-                   "// Particles that are their own antiparticles\n" <>
+                   "// Particles that are their own AntiFields\n" <>
                    StringJoin @ Riffle[("template<> struct " <>
                                         "anti<" <> ParticleToCXXName[#] <> ">" <>
                                         " { typedef " <> ParticleToCXXName[#] <> " type; };"
-                                        &) /@ Select[particles, (# == AntiParticle[#] &)],
+                                        &) /@ Select[particles, (# == AntiField[#] &)],
                                        "\n"]
                   );
 
@@ -102,7 +102,7 @@ CreateChargeGetters[] :=
     "double charge( unsigned, EvaluationContext & );\n\n" <>
     StringJoin @ Riffle[
         (Module[{photonVertexParticles, particleDim = TreeMasses`GetDimension[#]},
-           photonVertexParticles = {GetPhoton[], #, AntiParticle[#]};
+           photonVertexParticles = {GetPhoton[], #, AntiField[#]};
            "template<>\n" <>
            "double charge<" <> ParticleToCXXName[#] <> ">" <>
            If[particleDim === 1, "( ",
@@ -201,7 +201,6 @@ NPointFunctions[] :=
            Return[nPointFunctions];
           ];
 
-
 (**************** End public interface *****************)
 
 (* Effectively generate all mass calculation functions *)
@@ -222,16 +221,6 @@ Module[{particles, code},
 
 (************************ Begin helper routines *******************************)
 
-(* Return the name of the SARAH particle family containing the muon *)
-GetMuonFamily[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1,
-                        SARAH`Electron,
-                        Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
-                              {p_, {Description -> "Muon", ___}} -> p, 1][[1]]
-                        ];
-(* If the muon has a generation index, return it, otherwise return Null.
- e.g. CMSSMNoFV has no muon generation index *)
-GetMuonIndex[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1, 2, Null];
-
 GetPhoton[] := SARAH`Photon;
 
 IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __];
@@ -246,15 +235,6 @@ StripLorentzIndices[p_] := Module[{remainingIndices},
                                   ];
 SetAttributes[StripLorentzIndices, {Listable}];
 
-(* Takes a SARAH particle and returns its antiparticle *)
-AntiParticle[SARAH`bar[p_]] := p;
-AntiParticle[Susyno`LieGroups`conj[p_]] := p;
-AntiParticle[p_] := Module[{pNoIndices = Vertices`StripFieldIndices[p]},
-                           If[IsScalar[pNoIndices] || IsVector[pNoIndices],
-                              Susyno`LieGroups`conj[p],
-                              SARAH`bar[p]]];
-SetAttributes[AntiParticle, {Listable}];
-
 (* Return a string corresponding to the c++ class name of the particle.
  Note that "bar" and "conj" get turned into anti<...>::type! *)
 ParticleToCXXName[p_] := SymbolName[p];
@@ -267,12 +247,18 @@ ParticleToSARAHString[p_] := SymbolName[p];
 ParticleToSARAHString[SARAH`bar[p_]] := "bar" <> SymbolName[p];
 ParticleToSARAHString[Susyno`LieGroups`conj[p_]] := "conj" <> SymbolName[p];
 
-CachedVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
-    Module[{vertexPattern = ReplacePart[({#, ___} &) /@
-                                        Permutations[(#[___] &) /@ particles],
+subIndexPattern = (ReplacePart[SARAH`subIndizes[[All, 1]], 0 -> Alternatives] -> ___);
+AddIndexPattern[SARAH`bar[p_]] := SARAH`bar[AddIndexPattern[p]];
+AddIndexPattern[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[AddIndexPattern[p]];
+AddIndexPattern[particle_] := SARAH`getFull[SARAH`getBlank[particle]] /. subIndexPattern;
+
+CachedVertex[particles_List] :=
+    Module[{
+        vertexPattern = ReplacePart[({#, ___} &) /@
+                                        Permutations[AddIndexPattern /@ particles],
                                         0 -> Alternatives],
             vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[particles]]},
-           FirstCase[vertexList, vertexPattern];
+           FirstCase[vertexList, vertexPattern]
            ];
 
 (* Returns the name of the coupling function that FlexibleSUSY generates for
@@ -327,11 +313,11 @@ CreateVertices[vertexRules_List] :=
            If[createdVertices =!= Null, Return[createdVertices]];
            contributingDiagrams = ContributingDiagrams[];
 
-           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
-           AppendTo[vertices, StripLorentzIndices @ MemoizingVertex[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}][[1]]];
-           vertices = DeleteDuplicates[vertices];
+           vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
+                                                 Flatten @ contributingDiagrams[[All, 2]], 1];
 
-           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
+           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
+               ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
            vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
            vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
 
@@ -346,10 +332,10 @@ CreateVertices[vertexRules_List] :=
  IMPORTANT: Lorentz indices have to be stripped away (They are unnecessary anyway) *)
 VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmParticle_, photonEmitter_, exchangeParticle_]] :=
     Module[{edmVertex1, photonVertex, edmVertex2},
-           edmVertex1 = CachedVertex[{edmParticle, AntiParticle[photonEmitter], AntiParticle[exchangeParticle]}];
-           photonVertex = CachedVertex[{GetPhoton[], photonEmitter, AntiParticle[photonEmitter]}];
-           edmVertex2 = CachedVertex[{AntiParticle[edmParticle], photonEmitter, exchangeParticle}];
-
+           edmVertex1 = CachedVertex[{edmParticle, AntiField[photonEmitter], AntiField[exchangeParticle]}];
+           photonVertex = CachedVertex[{photonEmitter, GetPhoton[], AntiField[photonEmitter]}];
+           edmVertex2 = CachedVertex[{photonEmitter, exchangeParticle, AntiField[edmParticle]}];
+           
            edmVertex1 = StripLorentzIndices @ edmVertex1[[1]];
            photonVertex = StripLorentzIndices @ photonVertex[[1]];
            edmVertex2 = StripLorentzIndices @ edmVertex2[[1]];
@@ -362,9 +348,9 @@ VertexTypeForParticles[particles_List] :=
     Module[{strippedParticles, scalars, vectors, fermions, scalarCount, vectorCount, fermionCount},
            strippedParticles = Vertices`StripFieldIndices /@ particles;
 
-           scalars = Select[strippedParticles, (TreeMasses`IsScalar[#] || TreeMasses`IsScalar[AntiParticle[#]] &)];
-           vectors = Select[strippedParticles, (TreeMasses`IsVector[#] || TreeMasses`IsVector[AntiParticle[#]] &)];
-           fermions = Select[strippedParticles, (TreeMasses`IsFermion[#] || TreeMasses`IsFermion[AntiParticle[#]] &)];
+           scalars = Select[strippedParticles, (TreeMasses`IsScalar[#] || TreeMasses`IsScalar[AntiField[#]] &)];
+           vectors = Select[strippedParticles, (TreeMasses`IsVector[#] || TreeMasses`IsVector[AntiField[#]] &)];
+           fermions = Select[strippedParticles, (TreeMasses`IsFermion[#] || TreeMasses`IsFermion[AntiField[#]] &)];
 
            scalarCount = Length[scalars];
            vectorCount = Length[vectors];
@@ -373,7 +359,7 @@ VertexTypeForParticles[particles_List] :=
            If[fermionCount === 2 && scalarCount === 1 && vectorCount === 0,
               Return[LeftAndRightComponentedVertex]];
            If[fermionCount === 2 && scalarCount === 0 && vectorCount === 1,
-              If[fermions[[1]] === AntiParticle[fermions[[2]]],
+              If[fermions[[1]] === AntiField[fermions[[2]]],
                  Return[LeftAndRightComponentedVertex]]];
            If[fermionCount === 0 && scalarCount === 2 && vectorCount === 1,
               Return[SingleComponentedVertex]];
