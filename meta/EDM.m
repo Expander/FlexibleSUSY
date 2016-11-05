@@ -241,6 +241,8 @@ CreateVertices[vertexRules_List] :=
 
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
+           
+           (* TODO: Add every permutation of the above vertices *)
 
            {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
