@@ -267,40 +267,6 @@ ParticleToSARAHString[p_] := SymbolName[p];
 ParticleToSARAHString[SARAH`bar[p_]] := "bar" <> SymbolName[p];
 ParticleToSARAHString[Susyno`LieGroups`conj[p_]] := "conj" <> SymbolName[p];
 
-(* Change Symbol[indexNameNUMBEROLD] to Symbol[indexNameNUMBERNEW] *)
-ChangeIndexNumber[index_Symbol, number_Integer] := Symbol @ StringReplace[ToString[index],
-                       Shortest[name__] ~~ NumberString :> name ~~ ToString[number]];
-
-(* Returns the rules to change p[{iN,jN,kN}] to p[{iM,jM,kM}] *)
-IndexReplacementRulesForNewParticleIndexNumber[particle_, number_Integer] :=
-    ((# -> ChangeIndexNumber[#, number] &) /@ Vertices`FieldIndexList[particle]);
-
-(* Returns the rules that are needed to change order of a prticle list.
- i.e turn {p1[{i1,j1,k1}], p2[{l2,m2,n2}]} to {p2[{l1,m1,n1}], p1[{i2,j2,k2}]}
- For some reason SARAH expects the indices to always be in that order... *)
-IndexReplacementRulesForParticleReordering[particles_List, ordering_] :=
-Module[{indices = Table[i, {i, Length[particles]}], index, fieldIndexList},
-       Flatten[(IndexReplacementRulesForNewParticleIndexNumber[particles[[ordering[[#]]]], #] &) /@ indices]];
-
-(* Perform the actual transformation initiated by IndexReplacementRulesForParticleReordering[] *)
-OrderParticles[particles_List, ordering_] := Module[{indexRules},
-       indexRules = IndexReplacementRulesForParticleReordering[particles, ordering];
-       Return[particles[[ordering]] /. indexRules];
-                                                    ];
-
-(* Essentially the same as above, but using the obtained rules,
- transform a whole vertex expression, as returned by SARAH`Vertex[] *)
-OrderVertex[vertex_, ordering_] :=
-    Module[{indexRules, particles, expr, newVertex},
-           indexRules = IndexReplacementRulesForParticleReordering[vertex[[1]], ordering];
-
-           particles = vertex[[1]][[ordering]];
-           expr = vertex[[2;;]];
-
-           newVertex = (Join[{particles}, expr] /. indexRules);
-           Return[newVertex];
-          ];
-
 CachedVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
     Module[{vertexPattern = ReplacePart[({#, ___} &) /@
                                         Permutations[(#[___] &) /@ particles],
@@ -308,31 +274,6 @@ CachedVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
             vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[particles]]},
            FirstCase[vertexList, vertexPattern];
            ];
-
-(* MemoizingVertex[] works just like SARAH`Vertex[], but it caches the results *)
-(* MemoizingVertex[] only works when __no__ indices are specified!!! *)
-(* Use of memoization gives ~30% speedup for the MSSM! *)
-memoizedVertices = {};
-MemoizingVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
-    Module[{memo, ordering, orderedParticles},
-           (* First we sort the particles *)
-           ordering = Ordering[particles];
-           orderedParticles = particles[[ordering]];
-
-           memo = Select[memoizedVertices, MatchesMemoizedVertex[orderedParticles], 1];
-           If[memo =!= {}, memo = memo[[1]],
-              (* Create a new entry *)
-              memo = SARAH`Vertex[orderedParticles, options];
-              AppendTo[memoizedVertices, memo];];
-
-           (* Now return the particles to their original order *)
-           memo = OrderVertex[memo, Ordering[ordering]];
-           Return[memo]];
-
-MatchesMemoizedVertex[particles_List][vertex_] := MatchQ[particles, Vertices`StripFieldIndices /@ vertex[[1]]];
-
-(* Test whether a SARAH Vertex[] result is nonzero (exact) *)
-IsNonZeroVertex[v_] := MemberQ[v[[2 ;;]][[All, 1]], Except[0]];
 
 (* Returns the name of the coupling function that FlexibleSUSY generates for
  a specific vertex in a canonical order! *)
