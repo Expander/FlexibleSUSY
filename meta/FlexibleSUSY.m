@@ -2945,7 +2945,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                  {{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                                   {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
+                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
+           
+           Print["Creating class EDM"];
+           WriteGMuonMinus2Class[vertexRules,
+                                 {}];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
