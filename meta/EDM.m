@@ -189,13 +189,8 @@ NPointFunctions[] :=
 
            contributingDiagrams = ContributingDiagrams[];
 
-           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
-           AppendTo[vertices, StripLorentzIndices @ MemoizingVertex[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}][[1]]];
-           vertices = DeleteDuplicates[vertices];
-
-           vertices = (OrderParticles[#, Ordering[(Vertices`StripFieldIndices /@ #)]] &) /@ vertices;
-           vertices = DeleteDuplicates[vertices,
-                                       (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
+           vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
+                                                 Flatten @ contributingDiagrams[[All, 2]], 1];
 
            nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
            Return[nPointFunctions];
