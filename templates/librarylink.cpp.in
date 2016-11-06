@@ -494,7 +494,9 @@ void calculate_spectrum(Model_data& data, MLINK link)
       qedqcd.to(qedqcd.displayPoleMZ());
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", e.what());
-      throw EInvalidSpectrum();
+      data.model.clear();
+      data.model.get_problems().flag_no_perturbative();
+      return;
    }
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
