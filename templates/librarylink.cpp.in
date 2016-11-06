@@ -172,7 +172,7 @@ Handle_id get_new_handle()
 
 Model_data find_data(Handle_id hid)
 {
-   const Handle_map::iterator handle = handles.find(hid);
+   const auto handle = handles.find(hid);
 
    if (handle == handles.end())
       throw EUnknownHandle(hid);
@@ -481,7 +481,7 @@ void check_spectrum(const Model_data& data, MLINK link)
 
 void calculate_spectrum(Model_data& data, MLINK link)
 {
-   softsusy::QedQcd qedqcd(data.qedqcd);
+   auto qedqcd = data.qedqcd;
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ());
@@ -624,7 +624,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const auto data = find_data(hid);
       put_settings(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -644,7 +644,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const auto data = find_data(hid);
       put_sm_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -664,7 +664,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const auto data = find_data(hid);
       put_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -689,8 +689,8 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      Model_data data = fill(libData->MTensor_getRealData(pars),
-                             libData->MTensor_getDimensions(pars)[0]);
+      auto data = fill(libData->MTensor_getRealData(pars),
+                       libData->MTensor_getDimensions(pars)[0]);
 
       const Handle_id hid = get_new_handle();
 
@@ -715,7 +715,7 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
    const Handle_id hid = MArgument_getInteger(Args[0]);
 
-   const Handle_map::iterator handle = handles.find(hid);
+   const auto handle = handles.find(hid);
 
    if (handle != handles.end())
       handles.erase(handle);
@@ -738,7 +738,7 @@ DLLEXPORT int FS@ModelName@Set(
        libData->MTensor_getRank(pars) != 1)
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_map::iterator handle = handles.find(hid);
+   const auto handle = handles.find(hid);
 
    if (handle == handles.end()) {
       std::cerr << "Error: FS@ModelName@Set: Unknown handle: "
@@ -806,7 +806,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      Model_data data = find_data(hid);
+      auto data = find_data(hid);
 
       {
          Redirect_output crd(link);
@@ -835,7 +835,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      Model_data data = find_data(hid);
+      auto data = find_data(hid);
 
       if (data.model.get_scale() == 0.) {
          put_message(link,
