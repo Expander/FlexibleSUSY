@@ -182,14 +182,14 @@ auto find_handle(Handle_id hid) -> decltype(handles.find(hid))
 
 /******************************************************************/
 
-Model_data find_data(Handle_id hid)
+Model_data& find_data(Handle_id hid)
 {
    return find_handle(hid)->second;
 }
 
 /******************************************************************/
 
-static Handle_id get_handle_from(MLINK link)
+Handle_id get_handle_from(MLINK link)
 {
    Handle_id hid;
    MLGet(link, &hid);
@@ -199,7 +199,7 @@ static Handle_id get_handle_from(MLINK link)
 
 /******************************************************************/
 
-static long number_of_args(MLINK link, const std::string& head)
+long number_of_args(MLINK link, const std::string& head)
 {
    long argc;
 
@@ -228,7 +228,7 @@ bool check_number_of_args(MLINK link, long number_of_arguments,
 
 /******************************************************************/
 
-static void put_error_output(MLINK link)
+void put_error_output(MLINK link)
 {
    MLPutSymbol(link, "$Failed");
 }
@@ -631,8 +631,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const auto data = find_data(hid);
-      put_settings(data, link);
+      put_settings(find_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -651,8 +650,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const auto data = find_data(hid);
-      put_sm_input_parameters(data, link);
+      put_sm_input_parameters(find_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -671,8 +669,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const auto data = find_data(hid);
-      put_input_parameters(data, link);
+      put_input_parameters(find_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -746,8 +743,7 @@ DLLEXPORT int FS@ModelName@Set(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      const auto handle = find_handle(hid);
-      handle->second = fill(libData->MTensor_getRealData(pars),
+      find_data(hid) = fill(libData->MTensor_getRealData(pars),
                             libData->MTensor_getDimensions(pars)[0]);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
