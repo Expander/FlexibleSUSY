@@ -769,7 +769,8 @@ DLLEXPORT int FS@ModelName@GetProblems(
 
    try {
       put_problems(find_data(hid), link);
-   } catch (const flexiblesusy::Error&) {
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
       put_error_output(link);
    }
 
@@ -788,7 +789,8 @@ DLLEXPORT int FS@ModelName@GetWarnings(
 
    try {
       put_warnings(find_data(hid), link);
-   } catch (const flexiblesusy::Error&) {
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
       put_error_output(link);
    }
 
