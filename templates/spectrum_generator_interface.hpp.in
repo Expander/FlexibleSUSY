@@ -96,7 +96,7 @@ public:
    }
    void set_settings(const Spectrum_generator_settings&);
 
-   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
+   void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename, double, double) const;
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
@@ -107,6 +107,7 @@ protected:
    double reached_precision; ///< the precision that was reached
 
    void translate_exception_to_problem(@ModelName@<T>& model);
+   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
 };
 
 /**
@@ -122,6 +123,26 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
    model.set_pole_mass_loop_order(settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    model.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
    model.set_two_loop_corrections(settings.get_two_loop_corrections());
+}
+
+/**
+ * @brief Run's the RG solver with the given input parameters
+ *
+ * This function calls run_except() from the derived class and
+ * translates an emitted exception into an problem code.
+ *
+ * @param qedqcd Standard Model input parameters
+ * @param input model input parameters
+ */
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::run(
+   const softsusy::QedQcd& qedqcd, const @ModelName@_input_parameters& input)
+{
+   try {
+      this->run_except(qedqcd, input);
+   } catch (...) {
+      this->translate_exception_to_problem(model);
+   }
 }
 
 /**

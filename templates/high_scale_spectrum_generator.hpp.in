@@ -59,8 +59,10 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
 
-   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
+
+protected:
+   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
    @ModelName@_high_scale_constraint<T> high_scale_constraint;
@@ -81,7 +83,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
+void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -135,37 +137,32 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    high_scale = susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
-   try {
-      solver.solve();
+   solver.solve();
 
-      // impose low-scale constraint one last time
-      model.run_to(low_scale_constraint.get_scale());
-      low_scale_constraint.apply();
+   // impose low-scale constraint one last time
+   model.run_to(low_scale_constraint.get_scale());
+   low_scale_constraint.apply();
 
-      high_scale = high_scale_constraint.get_scale();
-      susy_scale = susy_scale_constraint.get_scale();
-      low_scale  = low_scale_constraint.get_scale();
-      this->reached_precision = convergence_tester.get_current_accuracy();
+   high_scale = high_scale_constraint.get_scale();
+   susy_scale = susy_scale_constraint.get_scale();
+   low_scale  = low_scale_constraint.get_scale();
+   this->reached_precision = convergence_tester.get_current_accuracy();
 
-      const double mass_scale =
-         this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
-         this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+   const double mass_scale =
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
 
-      model.run_to(mass_scale);
-      model.solve_ewsb();
-      model.calculate_spectrum();
+   model.run_to(mass_scale);
+   model.solve_ewsb();
+   model.calculate_spectrum();
 
-      // copy calculated W pole mass
-      model.get_physical().M@VectorW@
-         = low_scale_constraint.get_sm_parameters().displayPoleMW();
+   // copy calculated W pole mass
+   model.get_physical().M@VectorW@
+      = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
-      // run to output scale (if scale > 0)
-      if (!is_zero(this->parameter_output_scale)) {
-         model.run_to(this->parameter_output_scale);
-      }
-   } catch (...) {
-      this->translate_exception_to_problem(model);
-   }
+   // run to output scale (if scale > 0)
+   if (!is_zero(this->parameter_output_scale))
+      model.run_to(this->parameter_output_scale);
 }
 
 /**

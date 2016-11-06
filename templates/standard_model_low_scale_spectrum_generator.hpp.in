@@ -66,8 +66,10 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
 
-   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
+
+protected:
+   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
    RGFlow<T> solver;
@@ -91,7 +93,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
+void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -179,76 +181,72 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
-   try {
-      solver.solve();
+   solver.solve();
 
-      // impose low-scale constraint one last time
-      eft.run_to(low_scale_constraint.get_scale());
-      low_scale_constraint.apply();
+   // impose low-scale constraint one last time
+   eft.run_to(low_scale_constraint.get_scale());
+   low_scale_constraint.apply();
 
-      susy_scale = susy_scale_constraint.get_scale();
-      low_scale  = low_scale_constraint.get_scale();
-      this->reached_precision = std::max(model_ct.get_current_accuracy(),
-                                         eft_ct.get_current_accuracy());
+   susy_scale = susy_scale_constraint.get_scale();
+   low_scale  = low_scale_constraint.get_scale();
+   this->reached_precision = std::max(model_ct.get_current_accuracy(),
+                                      eft_ct.get_current_accuracy());
 
-      const double mass_scale =
-         this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
-         this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+   const double mass_scale =
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
 
-      model.run_to(mass_scale);
-      model.solve_ewsb();
-      model.calculate_spectrum();
+   model.run_to(mass_scale);
+   model.solve_ewsb();
+   model.calculate_spectrum();
 
-      // start logarithmic resummation
-      {
-         double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
+   // start logarithmic resummation
+   {
+      double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
 
-         if (Q_higgs == 0.) {
-            const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-            Q_higgs = std::min(susy_scale, Mt);
-         }
+      if (Q_higgs == 0.) {
+         const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
+         Q_higgs = std::min(susy_scale, Mt);
+      }
 
-         eft.run_to(Q_higgs);
+      eft.run_to(Q_higgs);
 
-         // computation of pole mass spectrum in the SM
-         const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
-         const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
+      // computation of pole mass spectrum in the SM
+      const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
+      const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
 
-         if (eft_pole_loops > 1) {
-            WARNING("Pole mass loop order " << eft_pole_loops
-                    << " in the EFT is currently not supported!  I'm using 1-loop.");
-            eft.set_pole_mass_loop_order(1);
-         }
-         if (eft_ewsb_loops > 1) {
-            WARNING("EWSB loop order " << eft_ewsb_loops
-                    << " in the EFT is currently not supported!  I'm using 1-loop.");
-            eft.set_ewsb_loop_order(1);
-         }
+      if (eft_pole_loops > 1) {
+         WARNING("Pole mass loop order " << eft_pole_loops
+                 << " in the EFT is currently not supported!  I'm using 1-loop.");
+         eft.set_pole_mass_loop_order(1);
+      }
+      if (eft_ewsb_loops > 1) {
+         WARNING("EWSB loop order " << eft_ewsb_loops
+                 << " in the EFT is currently not supported!  I'm using 1-loop.");
+         eft.set_ewsb_loop_order(1);
+      }
 
-         eft.calculate_DRbar_masses();
-         eft.solve_ewsb();
-         eft.calculate_spectrum();
+      eft.calculate_DRbar_masses();
+      eft.solve_ewsb();
+      eft.calculate_spectrum();
 
-         eft.set_pole_mass_loop_order(eft_pole_loops);
-         eft.set_ewsb_loop_order(eft_ewsb_loops);
+      eft.set_pole_mass_loop_order(eft_pole_loops);
+      eft.set_ewsb_loop_order(eft_ewsb_loops);
 
-         this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
-         this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
-         this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
+      this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
+      this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
+      this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
 @fillSMFermionPoleMasses@
-      }
+   }
 
-      // copy calculated W pole mass
-      model.get_physical().M@VectorW@
-         = low_scale_constraint.get_sm_parameters().displayPoleMW();
+   // copy calculated W pole mass
+   model.get_physical().M@VectorW@
+      = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
-      // run to output scale (if scale > 0)
-      if (!is_zero(this->parameter_output_scale)) {
-         model.run_to(this->parameter_output_scale);
-         eft.run_to(this->parameter_output_scale);
-      }
-   } catch (...) {
-      this->translate_exception_to_problem(model);
+   // run to output scale (if scale > 0)
+   if (!is_zero(this->parameter_output_scale)) {
+      model.run_to(this->parameter_output_scale);
+      eft.run_to(this->parameter_output_scale);
    }
 }
 
