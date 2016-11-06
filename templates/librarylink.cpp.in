@@ -170,14 +170,21 @@ Handle_id get_new_handle()
 
 /******************************************************************/
 
-Model_data find_data(Handle_id hid)
+auto find_handle(Handle_id hid) -> decltype(handles.find(hid))
 {
    const auto handle = handles.find(hid);
 
    if (handle == handles.end())
       throw EUnknownHandle(hid);
 
-   return handle->second;
+   return handle;
+}
+
+/******************************************************************/
+
+Model_data find_data(Handle_id hid)
+{
+   return find_handle(hid)->second;
 }
 
 /******************************************************************/
@@ -738,15 +745,8 @@ DLLEXPORT int FS@ModelName@Set(
        libData->MTensor_getRank(pars) != 1)
       return LIBRARY_TYPE_ERROR;
 
-   const auto handle = handles.find(hid);
-
-   if (handle == handles.end()) {
-      std::cerr << "Error: FS@ModelName@Set: Unknown handle: "
-                << hid << std::endl;
-      return LIBRARY_FUNCTION_ERROR;
-   }
-
    try {
+      const auto handle = find_handle(hid);
       handle->second = fill(libData->MTensor_getRealData(pars),
                             libData->MTensor_getDimensions(pars)[0]);
    } catch (const flexiblesusy::Error& e) {
