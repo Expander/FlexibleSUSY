@@ -22,7 +22,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
-#include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
 

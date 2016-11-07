@@ -21,7 +21,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
-#include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_utilities.hpp"
 
 #include "physical_input.hpp"

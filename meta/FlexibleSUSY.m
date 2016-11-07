@@ -1945,7 +1945,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
 	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
-	    Lat$massMatrices},
+	    Lat$massMatrices, spectrumGeneratorFiles, spectrumGeneratorInputFile},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2648,24 +2648,35 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
-           spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
-           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
-              spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
-           If[FlexibleSUSY`FlexibleEFTHiggs === True,
-              spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
+           spectrumGeneratorFiles = {};
+           If[HaveBVPSolver[FlexibleSUSY`TwoScaleSolver],
+              spectrumGeneratorInputFile = "high_scale_spectrum_generator";
+              If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 spectrumGeneratorInputFile = "low_scale_spectrum_generator";];
+              If[FlexibleSUSY`FlexibleEFTHiggs === True,
+                 spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
+                ];
+              spectrumGeneratorFiles = Join[spectrumGeneratorFiles,
+                                            {{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
+                                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.hpp"}]},
+                                             {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".cpp.in"}],
+                                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.cpp"}]}
+                                            }];
              ];
+
            WriteUserExample[inputParameters,
-                            {{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, "run_cmd_line_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "scan.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
-                            }];
+                            Join[{{FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, "run_cmd_line_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "scan.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
+                                 }, spectrumGeneratorFiles]
+                           ];
 
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
            WriteMathLink[inputParameters, extraSLHAOutputBlocks,

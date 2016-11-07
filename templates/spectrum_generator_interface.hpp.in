@@ -21,7 +21,6 @@
 #ifndef @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 #define @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 
-#include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
@@ -29,6 +28,8 @@
 #include "two_loop_corrections.hpp"
 #include "error.hpp"
 #include "logger.hpp"
+
+#include <string>
 
 namespace softsusy {
    class QedQcd;
@@ -38,7 +39,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 
-template <class T>
+template <class Model>
 class @ModelName@_spectrum_generator_interface {
 public:
    @ModelName@_spectrum_generator_interface()
@@ -49,8 +50,8 @@ public:
    {}
    virtual ~@ModelName@_spectrum_generator_interface() {}
 
-   const @ModelName@<T>& get_model() const { return model; }
-   @ModelName@<T>& get_model() { return model; }
+   const Model& get_model() const { return model; }
+   Model& get_model() { return model; }
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const {
       return model.get_problems();
    }
@@ -101,12 +102,12 @@ public:
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 protected:
-   @ModelName@<T> model;
+   Model model;
    Spectrum_generator_settings settings;
    double parameter_output_scale; ///< output scale for running parameters
    double reached_precision; ///< the precision that was reached
 
-   void translate_exception_to_problem(@ModelName@<T>& model);
+   void translate_exception_to_problem(Model& model);
 };
 
 /**
@@ -114,8 +115,8 @@ protected:
  *
  * @param settings_ spectrum generator settings
  */
-template <class T>
-void @ModelName@_spectrum_generator_interface<T>::set_settings(
+template <class Model>
+void @ModelName@_spectrum_generator_interface<Model>::set_settings(
    const Spectrum_generator_settings& settings_)
 {
    settings = settings_;
@@ -132,8 +133,8 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
  * @param start lowest scale
  * @param stop highest scale
  */
-template <class T>
-void @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
+template <class Model>
+void @ModelName@_spectrum_generator_interface<Model>::write_running_couplings(
    const std::string& filename,
    double start, double stop) const
 {
@@ -159,8 +160,9 @@ void @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
  *
  * @param filename output file name
  */
-template <class T>
-void @ModelName@_spectrum_generator_interface<T>::write_spectrum(const std::string& filename) const
+template <class Model>
+void @ModelName@_spectrum_generator_interface<Model>::write_spectrum(
+   const std::string& filename) const
 {
    @ModelName@_spectrum_plotter plotter;
    plotter.extract_spectrum(model);
@@ -175,8 +177,8 @@ void @ModelName@_spectrum_generator_interface<T>::write_spectrum(const std::stri
  *
  * @param model model class
  */
-template <class T>
-void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem(@ModelName@<T>& model)
+template <class Model>
+void @ModelName@_spectrum_generator_interface<Model>::translate_exception_to_problem(Model& model)
 {
    try {
       throw;

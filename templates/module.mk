@@ -21,6 +21,8 @@ BASE_TEMPLATES := \
 		$(DIR)/soft_beta_.cpp.in \
 		$(DIR)/soft_parameters.hpp.in \
 		$(DIR)/soft_parameters.cpp.in \
+		$(DIR)/spectrum_generator.hpp.in \
+		$(DIR)/spectrum_generator_interface.hpp.in \
 		$(DIR)/susy_beta_.cpp.in \
 		$(DIR)/susy_parameters.hpp.in \
 		$(DIR)/susy_parameters.cpp.in \
@@ -31,11 +33,13 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/high_scale_spectrum_generator.hpp.in \
+		$(DIR)/high_scale_spectrum_generator.cpp.in \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/librarylink.cpp.in \
 		$(DIR)/librarylink.m.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
+		$(DIR)/low_scale_spectrum_generator.cpp.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model_slha.hpp.in \
 		$(DIR)/run.cpp.in \
@@ -44,9 +48,10 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
 		$(DIR)/slha_io.cpp.in \
-		$(DIR)/spectrum_generator_interface.hpp.in \
 		$(DIR)/standard_model_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/standard_model_high_scale_spectrum_generator.cpp.in \
 		$(DIR)/standard_model_low_scale_spectrum_generator.hpp.in \
+		$(DIR)/standard_model_low_scale_spectrum_generator.cpp.in \
 		$(DIR)/standard_model_matching.hpp.in \
 		$(DIR)/standard_model_matching.cpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.cpp.in \
