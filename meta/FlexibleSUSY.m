@@ -250,6 +250,10 @@ allEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton,
 
 allBVPSolvers = { TwoScaleSolver, LatticeSolver };
 
+HaveEWSBSolver[solver_] := MemberQ[FlexibleSUSY`FSEWSBSolvers, solver];
+
+HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
+
 PrintHeadline[text_] :=
     Block[{},
           Print[""];
