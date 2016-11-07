@@ -65,6 +65,7 @@ public:
    double get_high_scale() const { return 0.; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
+   double get_eft_pole_mass_scale() const;
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
@@ -80,6 +81,19 @@ private:
    standard_model::StandardModel<T> eft;
    double susy_scale, low_scale;
 };
+
+template <class T>
+double @ModelName@_spectrum_generator<T>::get_eft_pole_mass_scale() const
+{
+   double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
+
+   if (Q_higgs == 0.) {
+      const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
+      Q_higgs = std::min(susy_scale, Mt);
+   }
+
+   return Q_higgs;
+}
 
 /**
  * @brief Run's the RG solver with the given input parameters
@@ -202,14 +216,7 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
 
    // start logarithmic resummation
    {
-      double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
-
-      if (Q_higgs == 0.) {
-         const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-         Q_higgs = std::min(susy_scale, Mt);
-      }
-
-      eft.run_to(Q_higgs);
+      eft.run_to(get_eft_pole_mass_scale());
 
       // computation of pole mass spectrum in the SM
       const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
