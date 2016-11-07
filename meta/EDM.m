@@ -5,7 +5,7 @@ Test::usage="";
 SetEDMParticles::usage="Set the particles for which the EDMs shall be calculated.";
 
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
-CreateEDMParticleFunctions::usage="Returns the c++ code that contains all EDM particle functions";
+CreateChargeGetters::usage="Returns the c++ code that contains the charge functions for the different EDM particles.";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
 CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
 
@@ -73,7 +73,6 @@ CreateParticles[] :=
                                         &) /@ particles, "\n"] <> "\n\n" <>
                    "// Special particle families\n" <>
                    "typedef " <> ParticleToCXXName @ GetPhoton[] <> " Photon;\n" <>
-                   "typedef " <> ParticleToCXXName @ GetMuonFamily[] <> " MuonFamily;\n\n" <>
 
                    "// AntiFields\n" <>
                    "template<class P> struct anti : public Particle\n" <>
@@ -122,8 +121,7 @@ CreateChargeGetters[] :=
 
 CreateDiagrams[] :=
     Module[{diagramTypes, diagramTypeHeads, code},
-           diagrams = contributingDiagramTypes;
-           diagramHeads = DeleteDuplicates @ (Head /@ diagrams);
+           diagramHeads = DeleteDuplicates @ (Head /@ contributingDiagramTypes);
 
            code = "// The different diagram types that contribute to the muon magnetic moment\n";
            code = (code <>
@@ -134,7 +132,7 @@ CreateDiagrams[] :=
            code = (code <> "// Indexed diagram types\n" <>
                    StringJoin @ Riffle[("template<> class " <> SymbolName[Head[#]] <>
                                         "<" <> ToString @ #[[1]] <> "> {};" &)
-                                       /@ diagrams, "\n"]);
+                                       /@ contributingDiagramTypes, "\n"]);
 
            code = (code <> "\n\n" <>
                    StringJoin @ Riffle[CreateDiagramEvaluatorClass /@ contributingDiagramTypes, "\n\n"]);
@@ -243,16 +241,15 @@ ParticleToSARAHString[p_] := SymbolName[p];
 ParticleToSARAHString[SARAH`bar[p_]] := "bar" <> SymbolName[p];
 ParticleToSARAHString[Susyno`LieGroups`conj[p_]] := "conj" <> SymbolName[p];
 
-subIndexPattern = (ReplacePart[SARAH`subIndizes[[All, 1]], 0 -> Alternatives] -> ___);
+subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);
 AddIndexPattern[SARAH`bar[p_]] := SARAH`bar[AddIndexPattern[p]];
 AddIndexPattern[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[AddIndexPattern[p]];
 AddIndexPattern[particle_] := SARAH`getFull[SARAH`getBlank[particle]] /. subIndexPattern;
 
 CachedVertex[particles_List] :=
     Module[{
-        vertexPattern = ReplacePart[({#, ___} &) /@
+        vertexPattern = Alternatives @@ ({#, ___} &) /@
                                         Permutations[AddIndexPattern /@ particles],
-                                        0 -> Alternatives],
             vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[particles]]},
            FirstCase[vertexList, vertexPattern]
            ];
@@ -369,7 +366,7 @@ VertexTypeForParticles[particles_List] :=
 CouplingsForParticles[particles_List] :=
     Module[{vertexType, couplings},
            vertexType = VertexTypeForParticles[particles];
-           couplings = {ReplacePart[particles, 0 -> SARAH`Cp]};
+           couplings = {SARAH`Cp @@ particles};
 
            couplings = Switch[vertexType,
                               SingleComponentedVertex, couplings,
@@ -538,8 +535,8 @@ ContributingDiagrams[] :=
                                                 /@ contributingDiagramTypes
                                                 , 1];
            cachedContributingDiagrams = ({#, Union @
-                   ReplacePart[Cases[cachedContributingDiagrams,
-                         {#, diagrams_List} -> diagrams], 0 -> Sequence]} &) /@ edmParticles;
+                   (Sequence @@ Cases[cachedContributingDiagrams,
+                         {#, diagrams_List} -> diagrams])} &) /@ edmParticles;
            
            Return[cachedContributingDiagrams];
           ];
@@ -553,7 +550,7 @@ ConcreteDiagramEvaluators[] :=
      ({#[[1]],
          (("DiagramEvaluator<" <> SymbolName @ Head @ #[[1]] <> "<" <>
            ToString @ #[[1,1]] <> ">, " <>
-           StringJoin @ (Riffle[ParticleToCXXName /@ ReplacePart[#[[2;;]], 0 -> List], ", "]) <>
+           StringJoin @ (Riffle[ParticleToCXXName /@ List @@ #[[2;;]], ", "]) <>
            ">" &)
           /@ #[[2]]) } &) /@ ContributingDiagrams[];
 
