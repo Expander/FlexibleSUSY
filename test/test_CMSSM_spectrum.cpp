@@ -85,7 +85,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         BOOST_MESSAGE(ss.str());
+         BOOST_TEST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -498,9 +498,9 @@ void CMSSM_iterative_low_scale_constraint::apply()
    const int status = minimizer.minimize(start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
-   BOOST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
-   BOOST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
-   BOOST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
+   BOOST_TEST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
+   BOOST_TEST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
+   BOOST_TEST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
 
    model->set_g1(new_g1);
    model->set_g2(new_g2);
@@ -545,6 +545,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_EWSB_problems )
 
    if (mssm_tester.get_problems().no_ewsb()) {
       BOOST_ERROR("no ewsb");
-      BOOST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
+      BOOST_TEST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
    }
 }

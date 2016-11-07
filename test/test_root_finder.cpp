@@ -66,6 +66,6 @@ BOOST_AUTO_TEST_CASE( test_number_of_calls )
       BOOST_REQUIRE(status == GSL_SUCCESS);
       BOOST_CHECK_CLOSE_FRACTION(root(0), 5.0, precision);
       BOOST_CHECK_CLOSE_FRACTION(root(1), 1.0, precision);
-      BOOST_MESSAGE("solver type " << i << " used " << number_of_calls << " calls");
+      BOOST_TEST_MESSAGE("solver type " << i << " used " << number_of_calls << " calls");
    }
 }

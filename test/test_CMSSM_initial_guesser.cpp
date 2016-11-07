@@ -66,19 +66,19 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugeCoupling(3), m.get_g3(), 1.0e-5);
 
    // test off-diagonal elements
-   BOOST_MESSAGE("testing off-diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing off-diagonal yukawa elements");
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
          if (i == k)
             continue;
-         BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
+         BOOST_TEST_MESSAGE("testing yukawa elements " << i << ", " << k);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), smssm.displayYukawaMatrix(YU)(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), smssm.displayYukawaMatrix(YD)(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), smssm.displayYukawaMatrix(YE)(i,k), 1.0e-10);
       }
    }
 
-   BOOST_MESSAGE("testing diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), smssm.displayYukawaMatrix(YU)(1,1), 5.0e-6);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), smssm.displayYukawaMatrix(YD)(1,1), 8.0e-6);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), smssm.displayYukawaMatrix(YE)(1,1), 1.8e-7);

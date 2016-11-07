@@ -180,6 +180,10 @@ TwoScaleSolver; (* two-scale algorithm *)
 LatticeSolver;  (* lattice algorithm *)
 FSBVPSolvers = { TwoScaleSolver };
 
+(* macros *)
+IF;
+SUM;
+
 (* input value for the calculation of the weak mixing angle *)
 FSFermiConstant;
 FSMassW;

@@ -161,7 +161,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         BOOST_MESSAGE(ss.str());
+         BOOST_TEST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -242,7 +242,7 @@ void test_point(const SoftsusyMSSM_parameter_point& pp)
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 {
    SoftsusyMSSM_parameter_point pp;
-   BOOST_MESSAGE("testing " << pp);
+   BOOST_TEST_MESSAGE("testing " << pp);
    test_point(pp);
 }
 
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
    SoftsusyMSSM_parameter_point pp;
    for (double tanb = 3.0; tanb <= 44.; tanb += 3.0) {
       pp.tanBeta = tanb;
-      BOOST_MESSAGE("testing " << pp);
+      BOOST_TEST_MESSAGE("testing " << pp);
       BOOST_CHECK_NO_THROW(test_point(pp));
    }
 }
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    qedqcd.setMass(mBottom, mbmb);
    qedqcd.toMz();
 
-   BOOST_MESSAGE("testing slow convergent " << pp);
+   BOOST_TEST_MESSAGE("testing slow convergent " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), NoConvergenceError);
    SoftSusy_tester softSusy_tester;
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    QedQcd qedqcd;
    qedqcd.setPoleMt(173.5);
 
-   BOOST_MESSAGE("testing non-perturbative " << pp);
+   BOOST_TEST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), flexiblesusy::Error);
    SoftSusy_tester softSusy_tester;

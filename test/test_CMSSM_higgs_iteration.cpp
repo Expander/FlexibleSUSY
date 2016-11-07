@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_higgs_iteration )
    const int status = minimizer.minimize(start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
-   BOOST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
-   BOOST_MESSAGE("Predicted tan(beta) = " << model.get_vu() / model.get_vd());
+   BOOST_TEST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
+   BOOST_TEST_MESSAGE("Predicted tan(beta) = " << model.get_vu() / model.get_vd());
 
    // check how close we got
    model.calculate_DRbar_masses();

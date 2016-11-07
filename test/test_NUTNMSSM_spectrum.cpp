@@ -100,7 +100,7 @@ public:
          softSusy.lowOrg(NmssmSemiMsugraNoSoftHiggsMassBcs, mxGuess, pars,
                          nmpars, 1, pp.TanBeta, qedqcd, gaugeUnification);
       } catch (const std::string& str) {
-         BOOST_MESSAGE("SoftSusy problem: " << str);
+         BOOST_TEST_MESSAGE("SoftSusy problem: " << str);
          throw SoftSusy_error(str);
       }
 
@@ -111,7 +111,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         BOOST_MESSAGE(ss.str());
+         BOOST_TEST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -210,10 +210,10 @@ public:
          mssm.run_to(Electroweak_constants::MZ);
       } catch (const Error& error) {
          mssm.get_problems().flag_thrown(error.what());
-         BOOST_MESSAGE("FlexibleSUSY error: " << error.what());
+         BOOST_TEST_MESSAGE("FlexibleSUSY error: " << error.what());
       } catch (const std::string& str) {
          mssm.get_problems().flag_thrown(str);
-         BOOST_MESSAGE("FlexibleSUSY error: " << str);
+         BOOST_TEST_MESSAGE("FlexibleSUSY error: " << str);
       }
 
       mx = high_constraint->get_scale();
@@ -573,8 +573,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    const DoubleVector mA0(ss.displayDrBarPars().mA0);
    const DoubleVector mh0(ss.displayDrBarPars().mh0);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh0 << " mA_tree = " << mA0);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh0 << " mA_tree = " << mA0);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.002);
@@ -664,8 +664,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    const DoubleVector mA0_1l(ss.displayPhys().mA0);
    const DoubleVector mh0_1l(ss.displayPhys().mh0);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh0_1l << " mA_1l = " << mA0_1l);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh0_1l << " mA_1l = " << mA0_1l);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0016);
@@ -756,8 +756,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.004);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
 void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
@@ -821,8 +821,8 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00078);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
 
    // comparing 1-loop pole masses
 
@@ -843,8 +843,8 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0008);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
 
    // comparing 2-loop pole masses
 
@@ -879,15 +879,15 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0008);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
+   BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
+   BOOST_TEST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_fermi_constant_input )
 {
    // standard NUTNMSSM testing point S1
    {
-      BOOST_MESSAGE("testing S1 ...");
+      BOOST_TEST_MESSAGE("testing S1 ...");
       softsusy::QedQcd qedqcd;
       NUTNMSSM_input_parameters pp;
       set_S1(pp, qedqcd);
@@ -896,7 +896,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_fermi_constant_input )
 
    // // NUTNMSSM point BP1
    // {
-   //    BOOST_MESSAGE("testing BP1 ...");
+   //    BOOST_TEST_MESSAGE("testing BP1 ...");
    //    softsusy::QedQcd qedqcd;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP1(pp, qedqcd);
@@ -905,7 +905,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_fermi_constant_input )
 
    // // NUTNMSSM point BP2
    // {
-   //    BOOST_MESSAGE("testing BP2 ...");
+   //    BOOST_TEST_MESSAGE("testing BP2 ...");
    //    softsusy::QedQcd qedqcd;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP2(pp, qedqcd);
@@ -914,7 +914,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_fermi_constant_input )
 
    // // NUTNMSSM point BP3
    // {
-   //    BOOST_MESSAGE("testing BP3 ...");
+   //    BOOST_TEST_MESSAGE("testing BP3 ...");
    //    softsusy::QedQcd qedqcd;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP3(pp, qedqcd);

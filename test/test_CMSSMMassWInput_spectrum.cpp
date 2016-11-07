@@ -59,7 +59,7 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
    model->calculate_DRbar_masses();
 
    if (model->get_problems().have_problem()) {
-      BOOST_MESSAGE("Problem in CMSSMMassWInput_precise_gauge_couplings_"
+      BOOST_TEST_MESSAGE("Problem in CMSSMMassWInput_precise_gauge_couplings_"
                     "low_scale_constraint::apply(): "
                     << model->get_problems());
    }
@@ -98,21 +98,21 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
            "low_scale_constraint::apply(): "
            "error while calculating the sparticle thresholds: "
          << softsusy.displayProblem();
-      BOOST_MESSAGE(ss.str());
+      BOOST_TEST_MESSAGE(ss.str());
    }
 
-   BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
                  << new_g1 - softsusy.displayGaugeCoupling(1));
-   BOOST_MESSAGE("Difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
                  << new_g2 - softsusy.displayGaugeCoupling(2));
-   BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
                  << new_g3 - softsusy.displayGaugeCoupling(3));
 
-   BOOST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
                  << ToDoubleMatrix(new_Yu) - softsusy.displayYukawaMatrix(YU));
-   BOOST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
                  << ToDoubleMatrix(new_Yd) - softsusy.displayYukawaMatrix(YD));
-   BOOST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
                  << ToDoubleMatrix(new_Ye) - softsusy.displayYukawaMatrix(YE));
 
    model->set_g1(softsusy.displayGaugeCoupling(1));
@@ -167,9 +167,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    const double g1_gf_mz = new_g1;
    const double g2_gf_mz = new_g2;
 
-   BOOST_MESSAGE("Difference (g1_mw_mz - g1_gf_mz)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g1_mw_mz - g1_gf_mz)(MZ) = "
                  << g1_mw_mz - g1_gf_mz);
-   BOOST_MESSAGE("Difference (g2_mw_mz - g2_gf_mz)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g2_mw_mz - g2_gf_mz)(MZ) = "
                  << g2_mw_mz - g2_gf_mz);
 
    const auto TanBeta = model->get_input().TanBeta;
@@ -202,16 +202,16 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
            "low_scale_constraint::apply(): "
            "error while calculating the sparticle thresholds: "
          << softsusy.displayProblem();
-      BOOST_MESSAGE(ss.str());
+      BOOST_TEST_MESSAGE(ss.str());
    }
 
    // save gauge couplings calculated from GF, MZ with Softsusy
    const double g1_ss = softsusy.displayGaugeCoupling(1);
    const double g2_ss = softsusy.displayGaugeCoupling(2);
 
-   BOOST_MESSAGE("Difference (g1_gf_mz - g1_ss)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g1_gf_mz - g1_ss)(MZ) = "
                  << g1_gf_mz - g1_ss);
-   BOOST_MESSAGE("Difference (g2_gf_mz - g2_ss)(MZ) = "
+   BOOST_TEST_MESSAGE("Difference (g2_gf_mz - g2_ss)(MZ) = "
                  << g2_gf_mz - g2_ss);
 
    model->set_g1(new_g1);
@@ -267,10 +267,10 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_
    new_g2 = EDRbar*Csc(ThetaW);
    new_g3 = 3.5449077018110318*Sqrt(AlphaS);
 
-   BOOST_MESSAGE("ThetaW = " << ThetaW);
-   BOOST_MESSAGE("EDRbar = " << EDRbar);
-   BOOST_MESSAGE("=> g1 = " << new_g1);
-   BOOST_MESSAGE("   g2 = " << new_g2);
+   BOOST_TEST_MESSAGE("ThetaW = " << ThetaW);
+   BOOST_TEST_MESSAGE("EDRbar = " << EDRbar);
+   BOOST_TEST_MESSAGE("=> g1 = " << new_g1);
+   BOOST_TEST_MESSAGE("   g2 = " << new_g2);
 }
 
 void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
@@ -433,13 +433,13 @@ void CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint::apply()
    const double new_Mu  = softsusy.displaySusyMu();
    const double new_BMu = softsusy.displayM3Squared();
 
-   BOOST_MESSAGE("Difference (Mu_FlexibleSUSY - Mu_softsusy)(Msusy) = "
+   BOOST_TEST_MESSAGE("Difference (Mu_FlexibleSUSY - Mu_softsusy)(Msusy) = "
                  << model->get_Mu() - new_Mu);
-   BOOST_MESSAGE("Difference (BMu_FlexibleSUSY - BMu_softsusy)(Msusy) = "
+   BOOST_TEST_MESSAGE("Difference (BMu_FlexibleSUSY - BMu_softsusy)(Msusy) = "
                  << model->get_BMu() - new_BMu);
-   BOOST_MESSAGE("Difference (mt_FlexibleSUSY - mt_softsusy)(Msusy) = "
+   BOOST_TEST_MESSAGE("Difference (mt_FlexibleSUSY - mt_softsusy)(Msusy) = "
                  << model->get_MFu()(2) - mt);
-   BOOST_MESSAGE("Difference (Msusy_FlexibleSUSY - Msusy_softsusy)(Msusy) = "
+   BOOST_TEST_MESSAGE("Difference (Msusy_FlexibleSUSY - Msusy_softsusy)(Msusy) = "
                  << get_scale() - new_Msusy);
 
    model->set_Mu(new_Mu);
@@ -1056,9 +1056,9 @@ void CMSSMMassWInput_iterative_low_scale_constraint::apply()
    const int status = minimizer.minimize(start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
-   BOOST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
-   BOOST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
-   BOOST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
+   BOOST_TEST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
+   BOOST_TEST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
+   BOOST_TEST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
 
    model->set_g1(new_g1);
    model->set_g2(new_g2);
@@ -1103,6 +1103,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_EWSB_problems )
 
    if (mssm_tester.get_problems().no_ewsb()) {
       BOOST_ERROR("no ewsb");
-      BOOST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
+      BOOST_TEST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
    }
 }

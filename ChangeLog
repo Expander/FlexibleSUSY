@@ -36,6 +36,9 @@ FlexibleSUSY 2.0.0 [not released yet]
    solver.add(&high_scale_constraint, &model);
    solver.add(&susy_scale_constraint, &model);
 
+ * Change: The readability of the vertices and the self-energies has
+   been improved by using the SUM() and IF() macros.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in

@@ -300,12 +300,12 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    }
 
    // test off-diagonal elements
-   BOOST_MESSAGE("testing off-diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing off-diagonal yukawa elements");
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
          if (i == k)
             continue;
-         BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
+         BOOST_TEST_MESSAGE("testing yukawa elements " << i << ", " << k);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(i-1,k-1)), s.displayYukawaMatrix(YU)(i,k), 0.0001);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(i-1,k-1)), s.displayYukawaMatrix(YD)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(i-1,k-1)), s.displayYukawaMatrix(YE)(i,k), 0.00001);
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
       }
    }
 
-   BOOST_MESSAGE("testing diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(0,0)), s.displayYukawaMatrix(YU)(1,1), 0.00001);
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(0,0)), s.displayYukawaMatrix(YD)(1,1), 0.00001);
    // BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(0,0)), s.displayYukawaMatrix(YE)(1,1), 0.00001);

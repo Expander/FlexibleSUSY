@@ -125,10 +125,18 @@ public:
     return m;
   }
 
+  DoubleVector abs() const {
+    return DoubleVector(std::abs(x), start, end);
+  }
+
+  double absmax(int & p) const {
+    return abs().max(p);
+  }
+
   double min(int & p) const;///< minimum element in vector
   double sum() const { return x.sum(); }
   /// Returns sum of absolute values of all elements
-  double sumElements() const { return abs(x).sum(); }  
+  double sumElements() const { return std::abs(x).sum(); }  
   std::size_t size() const { return x.size(); }
   
   void swap(int i, int j); ///< swaps ith and jth elements of a vector

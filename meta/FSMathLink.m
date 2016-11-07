@@ -26,7 +26,8 @@ PutInputParameters[inputPars_List, linkName_String] :=
 CreateComponent[CConversion`realScalarCType | CConversion`integerScalarCType, pars_String:"pars", count_String:"c"] :=
     pars <> "[" <> count <> "++];\n";
 CreateComponent[CConversion`complexScalarCType, pars_String:"pars", count_String:"c"] :=
-    "std::complex<double>(" <> pars <> "[" <> count <> "], " <> pars <> "[" <> count <> "+1]); " <> count <> " += 2;\n";
+    CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+    "(" <> pars <> "[" <> count <> "], " <> pars <> "[" <> count <> "+1]); " <> count <> " += 2;\n";
 
 SetInputParameterFromArguments[{par_, CConversion`ScalarType[st_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},

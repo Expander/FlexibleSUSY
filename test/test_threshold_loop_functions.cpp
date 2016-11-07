@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( test_C0 )
    };
 
    for (int i = 0; i < sizeof(value)/sizeof(value[0]); i++) {
-      BOOST_MESSAGE("> m1 = " << value[i].m1
+      BOOST_TEST_MESSAGE("> m1 = " << value[i].m1
                     << ", m2 = " << value[i].m2
                     << ", m3 = " << value[i].m3);
       BOOST_CHECK_CLOSE(c0(value[i].m1, value[i].m2, value[i].m3),

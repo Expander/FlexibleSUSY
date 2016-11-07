@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
       const double fs_sin = weinberg.get_sin_theta();
 
       BOOST_REQUIRE(error == 0);
-      BOOST_MESSAGE("SM sin(ThetaW) " << loops << "-loop = " << fs_sin);
+      BOOST_TEST_MESSAGE("SM sin(ThetaW) " << loops << "-loop = " << fs_sin);
 
       if (loops == 0)
          BOOST_CHECK_CLOSE_FRACTION(fs_sin, sin_theta_tree, 1.0e-10);

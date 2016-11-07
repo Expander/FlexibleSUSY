@@ -196,7 +196,7 @@ std::string ToString_lexical_cast(T a)
          stopwatch.stop();                                         \
          time += stopwatch.get_time_in_seconds();                  \
       }                                                            \
-      BOOST_MESSAGE("ToString via " #type ": " << time << " s");   \
+      BOOST_TEST_MESSAGE("ToString via " #type ": " << time << " s");   \
    } while (0)
 
 BOOST_AUTO_TEST_CASE(test_ToString)

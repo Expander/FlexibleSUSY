@@ -1,4 +1,4 @@
-BeginPackage["GMuonMinus2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
+BeginPackage["GMuonMinus2`", {"SARAH`", "CConversion`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
 CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
@@ -559,6 +559,9 @@ DeclareIndices[indexedParticles_List, arrayName_String] :=
            decl
           ];
 
+GetComplexScalarCType[] :=
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+
 (* ParsedVertex structure:
  ParsedVertex[
               {numP1Indices, numP2Indices, ...},
@@ -585,10 +588,10 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
-                                       "std::complex<double> result;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       TreeMasses`ExpressionToString[expr, "result"] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " result = " <>
+                                       Parameters`ExpressionToString[expr] <> ";\n\n" <>
                                        "return vertex_type(result);",
 
                                        "LeftAndRightComponentedVertex",
@@ -596,11 +599,12 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
-                                       "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprL, "left"] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprR, "right"] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " left = " <>
+                                       Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " right = " <>
+                                       Parameters`ExpressionToString[exprR] <> ";\n\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahParticles = SARAH`getParticleName /@ particles;
@@ -676,7 +680,12 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
                             "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB = { " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
-                            );];
+                            );
+               ,
+               prototype = (prototype <> "\n" <>
+                            "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB{};"
+                            );
+              ];
             definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
                           functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
                           "{\n" <>

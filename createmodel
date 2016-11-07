@@ -151,8 +151,23 @@ message() {
 }
 
 #_____________________________________________________________________
-exists_in_path () {
-    # This function will try to locate an executable [$1] in $PATH.
+string_contains() {
+    # Tests if [$2] is contained in [$1]
+    if test $# -lt 2 ; then
+        echo "string_contains: 2 arguments expected"
+        return 1
+    fi
+
+    case "$1" in
+        *"$2"*) return 0 ;;
+    esac
+
+    return 1
+}
+
+#_____________________________________________________________________
+is_executable () {
+    # This function checks if [$1] is an executable.
     #
     # The result of the search is stored in cmd, which should be
     # immediately copied, since the variables value will be
@@ -160,16 +175,11 @@ exists_in_path () {
 
     # Assert that we got enough arguments
     if test $# -ne 1 ; then
-        echo "exists_in_path: Exactly one argument required"
+        echo "is_executable: Exactly one argument required"
         return 1
     fi
 
     cmd=$(command -v -- "$1")
-    case "$cmd" in
-	/*) return 0 ;;
-	alias\ *) return 1 ;; # alias
-	*) return 1 ;; # built-in or function
-    esac
 }
 
 #_____________________________________________________________________
@@ -230,11 +240,18 @@ check_sarah_model() {
 
     message -n "Checking SARAH model ${_sarah_model} ... "
 
-    if ! exists_in_path "$mathematica_kernel"; then
+    if ! is_executable "$mathematica_kernel" ; then
         message "error"
         message "Error: could not find Mathematica kernel \"${mathematica_kernel}\""
         message "    Please specify the Mathematica kernel via --with-math-cmd="
         exit 1
+    fi
+
+    if string_contains "$mathematica_kernel" "MathematicaScript" ; then
+        message "warning"
+        message "Warning: You are using $mathematica_kernel as Mathematica kernel."
+        message "    This is probably the wrong executable."
+        message "    Please consider using $(dirname ${mathematica_kernel})/MathKernel instead."
     fi
 
     # checking SARAH installation

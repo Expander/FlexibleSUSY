@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_beta_functions_benchmark )
    stopwatch.stop();
    const double fs_time = stopwatch.get_time_in_seconds();
 
-   BOOST_MESSAGE("Calcultating the NMSSM beta-functions " << N_calls
+   BOOST_TEST_MESSAGE("Calcultating the NMSSM beta-functions " << N_calls
                  << " times with\n"
                  "Softsusy    : " << ss_time << "s\n"
                  "FlexibleSUSY: " << fs_time << "s\n");

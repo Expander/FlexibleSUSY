@@ -34,7 +34,6 @@ Sqr::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
-IndexSum::usage="";
 TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
@@ -93,9 +92,6 @@ CreateConstExternDecl::usage="";
 CreateConstDef::usage="";
 
 SetToDefault::usage="set parameter to default value";
-
-ExpandSums::usage="expands expressions that contain sum symbols of the
-form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
@@ -177,31 +173,19 @@ CreateCType[CConversion`ScalarType[realScalarCType]] :=
     "double";
 
 CreateCType[CConversion`ScalarType[complexScalarCType]] :=
-    "std::complex<double>";
+    "std::complex<" <> CreateCType[CConversion`ScalarType[realScalarCType]] <> ">";
 
-CreateCType[CConversion`ArrayType[realScalarCType, entries_]] :=
-    EigenArray["double", ToString[entries]];
+CreateCType[CConversion`ArrayType[t_, entries_]] :=
+    EigenArray[CreateCType[ScalarType[t]], ToString[entries]];
 
-CreateCType[CConversion`ArrayType[complexScalarCType, entries_]] :=
-    EigenArray["std::complex<double>", ToString[entries]];
+CreateCType[CConversion`VectorType[t_, entries_]] :=
+    EigenVector[CreateCType[ScalarType[t]], ToString[entries]];
 
-CreateCType[CConversion`VectorType[realScalarCType, entries_]] :=
-    EigenVector["double", ToString[entries]];
+CreateCType[CConversion`MatrixType[t_, dim1_, dim2_]] :=
+    EigenMatrix[CreateCType[ScalarType[t]], ToString[dim1], ToString[dim2]];
 
-CreateCType[CConversion`VectorType[complexScalarCType, entries_]] :=
-    EigenVector["std::complex<double>", ToString[entries]];
-
-CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
-    EigenMatrix["double", ToString[dim1], ToString[dim2]];
-
-CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
-    EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
-
-CreateCType[CConversion`TensorType[realScalarCType, dims__]] :=
-    EigenTensor["double", Sequence @@ (ToString /@ {dims})];
-
-CreateCType[CConversion`TensorType[complexScalarCType, dims__]] :=
-    EigenTensor["std::complex<double>", Sequence @@ (ToString /@ {dims})];
+CreateCType[CConversion`TensorType[t_, dims__]] :=
+    EigenTensor[CreateCType[ScalarType[t]], Sequence @@ (ToString /@ {dims})];
 
 CastTo[expr_String, toType_ /; toType === None] := expr;
 
@@ -223,7 +207,7 @@ CastTo[expr_String, toType_] :=
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
            CConversion`MatrixType[CConversion`complexScalarCType,__]|
            CConversion`TensorType[CConversion`complexScalarCType,__],
-           "(" <> expr <> ").cast<std::complex<double> >()"
+           "(" <> expr <> ").cast<" <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> " >()"
            ,
            _,
            Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
@@ -268,29 +252,17 @@ CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, di
     "void set_" <> parameter <> "(int i, int k, int l, int j, " <> elementType <>
     " value) { " <> parameter <> "(i,k,l,j) = value; }\n";
 
-CreateInlineElementSetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "double", entries];
+CreateInlineElementSetter[parameter_String, CConversion`ArrayType[t_, entries_]] :=
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[ScalarType[t]] <> "&", entries];
 
-CreateInlineElementSetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
+CreateInlineElementSetter[parameter_String, CConversion`VectorType[t_, entries_]] :=
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[ScalarType[t]] <> "&", entries];
 
-CreateInlineElementSetter[parameter_String, CConversion`VectorType[realScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "double", entries];
+CreateInlineElementSetter[parameter_String, CConversion`MatrixType[t_, dim1_, dim2_]] :=
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[ScalarType[t]] <> "&", dim1, dim2];
 
-CreateInlineElementSetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
-
-CreateInlineElementSetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
-    CreateInlineElementSetter[parameter, "double", dim1, dim2];
-
-CreateInlineElementSetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", dim1, dim2];
-
-CreateInlineElementSetter[parameter_String, CConversion`TensorType[realScalarCType, dims__]] :=
-    CreateInlineElementSetter[parameter, "double", dims];
-
-CreateInlineElementSetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__]] :=
-    CreateInlineElementSetter[parameter, "const std::complex<double>&", dims];
+CreateInlineElementSetter[parameter_String, CConversion`TensorType[t_, dims__]] :=
+    CreateInlineElementSetter[parameter, "const " <> CreateCType[ScalarType[t]] <> "&", dims];
 
 (* Creates a C++ setter *)
 CreateInlineSetter[parameter_String, type_String] :=
@@ -318,35 +290,20 @@ CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, di
     elementType <> " get_" <> parameter <> postFix <> "(int i, int k, int l, int j) const" <>
     " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k,l,j)" <> If[wrapper != "", ")", ""] <> "; }\n";
 
-CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCType], postFix_String:"", wrapper_String:""] :=
-    CreateInlineGetter[parameter, "double", postFix, wrapper];
+CreateInlineElementGetter[parameter_String, CConversion`ScalarType[t_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineGetter[parameter, CreateCType[ScalarType[t]], postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ScalarType[complexScalarCType], postFix_String:"", wrapper_String:""] :=
-    CreateInlineGetter[parameter, "const std::complex<double>&", postFix, wrapper];
+CreateInlineElementGetter[parameter_String, CConversion`ArrayType[t_, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, CreateCType[ScalarType[t]], entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
+CreateInlineElementGetter[parameter_String, CConversion`VectorType[t_, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, CreateCType[ScalarType[t]], entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
+CreateInlineElementGetter[parameter_String, CConversion`MatrixType[t_, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, CreateCType[ScalarType[t]], dim1, dim2, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`VectorType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
-
-CreateInlineElementGetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
-
-CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "double", dim1, dim2, postFix, wrapper];
-
-CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, wrapper];
-
-CreateInlineElementGetter[parameter_String, CConversion`TensorType[realScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "double", dims, postFix, wrapper];
-
-CreateInlineElementGetter[parameter_String, CConversion`TensorType[complexScalarCType, dims__], postFix_String:"", wrapper_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", dims, postFix, wrapper];
+CreateInlineElementGetter[parameter_String, CConversion`TensorType[t_, dims__], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, CreateCType[ScalarType[t]], dims, postFix, wrapper];
 
 (* Creates a C++ inline getter *)
 CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_String:""] :=
@@ -652,7 +609,7 @@ Protect[Power];
 
 Unprotect[If];
 Format[If[c_,a_,b_],CForm] :=
-    Format["If(" <> ToString[CForm[c]] <> ", " <>
+    Format["IF(" <> ToString[CForm[c]] <> ", " <>
            ToString[CForm[Evaluate[a]]] <> ", " <>
            ToString[CForm[Evaluate[b]]] <> ")", OutputForm];
 Protect[If];
@@ -788,6 +745,7 @@ RValueToCFormString[expr_] :=
               };
              ];
            result = Block[{Which, If}, expr /. greekSymbolsRules] /.
+                    SARAH`sum -> FlexibleSUSY`SUM /.
                     SARAH`Mass -> FlexibleSUSY`M //. {
                     SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
                     SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
@@ -826,7 +784,8 @@ RValueToCFormString[expr_] :=
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
-                                                SARAH`trace[a__]  :> SARAH`trace[times[a]] }]
+                                                SARAH`trace[a__]  :> SARAH`trace[times[a]],
+                                                Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default] }]
                           /. times -> Times
                          ];
            ToString[HoldForm @@ result]
@@ -855,118 +814,6 @@ CreateUniqueCVariable[] :=
            sumVariableCounter++;
            Return[variable];
           ];
-
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
-
-ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{result, tmpSum, idxStr, startStr, stopStr},
-           idxStr   = ToValidCSymbolString[index];
-           startStr = ToValidCSymbolString[start];
-           stopStr  = ToValidCSymbolString[stop + 1];
-           tmpSum   = CreateUniqueCVariable[];
-           result = CConversion`CreateCType[type] <> " " <> tmpSum <>
-                    initialValue <> ";\n" <>
-                    "for (unsigned " <> idxStr <> " = " <>
-                    startStr <> "; " <> idxStr <> " < " <> stopStr <>
-                    "; ++" <> idxStr <> ") {\n" <>
-                    IndentText[ExpandSums[expr,tmpSum,type,initialValue]] <> "}\n" <>
-                    variable <> " += " <> tmpSum <> ";\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_Plus, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{summands},
-           summands = List @@ expr;
-           StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
-          ];
-
-ToCondition[SARAH`ThetaStep[i1_,i2_Integer]] := ToString[i1] <> " < " <> ToString[i2+1];
-ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " <= " <> ToString[i2];
-
-StripThetaStep[expr_] :=
-      Module[{thetas, strippedExpr, i, condition = ""},
-           thetas = Cases[ThetaMark expr, SARAH`ThetaStep[_,_], Infinity];
-           strippedExpr = DeleteCases[ThetaMark expr, SARAH`ThetaStep[_,_], Infinity] /. ThetaMark -> 1;
-           (* create condition *)
-           For[i = 1, i <= Length[thetas], i++,
-               If[i > 1, condition = condition <> " && ";];
-               condition = condition <> ToCondition[thetas[[i]]];
-              ];
-           Return[{strippedExpr, condition}];
-          ];
-
-ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{strippedExpr, condition, result, expandedExpr},
-           expandedExpr = Expand[expr];
-           If[expandedExpr === expr,
-              {strippedExpr, condition} = StripThetaStep[expr];
-              result = "if (" <> condition <> ") {\n" <>
-                       IndentText[ExpandSums[strippedExpr, variable, type, initialValue]] <>
-                       "}\n";
-              ,
-              result = ExpandSums[expandedExpr, variable, type, initialValue];
-             ];
-           Return[result];
-          ];
-
-ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
-           factors = List @@ expr;
-           sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
-           rest = Complement[factors, sums];
-           expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
-           expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;
-           (* add for loops *)
-           result = StringJoin[(CConversion`CreateCType[type] <> " " <>
-                                #[[2]] <> initialValue <> ";\n" <> #[[1]])& /@ expandedSums];
-           result = result <> variable <> " += (" <> RValueToCFormString[Times @@ rest] <> ")";
-           (* multiply the sums *)
-           For[i = 1, i <= Length[expandedSums], i++,
-               result = result <> " * " <> expandedSums[[i,2]];
-              ];
-           result = result <>";\n";
-           Return[result];
-          ];
-
-ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{var, result = ""},
-           var = CreateUniqueCVariable[];
-           result = CConversion`CreateCType[type] <> " " <> var <> ";\n" <>
-                    ExpandSums[expr, var, type, initialValue] <>
-                    variable <> " = " <> ToString[Fun] <> "(" <> var <>
-                    If[{rest} === {}, "", ","] <>
-                    Utils`StringJoinWithSeparator[RValueToCFormString /@ {rest}, ","] <>
-                    ");\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    Module[{strippedExpr, i, condition = "", result},
-           {strippedExpr, condition} = StripThetaStep[expr];
-           result = "if (" <> condition <> ") {\n" <>
-                    IndentText[variable <> " += " <>
-                               RValueToCFormString[strippedExpr] <> ";\n"] <>
-                    "}\n";
-           Return[result];
-          ];
-
-ExpandSums[expr_, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
-           initialValue_String:""] :=
-    variable <> " += " <> RValueToCFormString[expr] <> ";\n";
 
 ProtectTensorProducts[expr_, idx1_, idx2_] :=
     Expand[expr] //.

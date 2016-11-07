@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_large_sum)
    stopwatch.stop();
    const double time_loop = stopwatch.get_time_in_seconds();
 
-   BOOST_MESSAGE("SUM  took " << time_SUM  << " seconds");
-   BOOST_MESSAGE("loop took " << time_loop << " seconds");
+   BOOST_TEST_MESSAGE("SUM  took " << time_SUM  << " seconds");
+   BOOST_TEST_MESSAGE("loop took " << time_loop << " seconds");
 
    BOOST_CHECK_EQUAL(result_loop, result_SUM);
    BOOST_CHECK_LT(10*time_loop, time_SUM);
@@ -102,8 +102,8 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
    stopwatch.stop();
    const double time_loop = stopwatch.get_time_in_seconds();
 
-   BOOST_MESSAGE("SUM  took " << time_SUM  << " seconds");
-   BOOST_MESSAGE("loop took " << time_loop << " seconds");
+   BOOST_TEST_MESSAGE("SUM  took " << time_SUM  << " seconds");
+   BOOST_TEST_MESSAGE("loop took " << time_loop << " seconds");
 
    BOOST_CHECK_EQUAL(result_loop, result_SUM);
 

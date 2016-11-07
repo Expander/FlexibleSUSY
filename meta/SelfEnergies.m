@@ -260,7 +260,7 @@ CreateCouplingSymbol[coupling_] :=
 CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
-            type, typeStr, initalValue},
+            type, typeStr},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
@@ -275,15 +275,15 @@ CreateCouplingFunction[coupling_, expr_] :=
               ];
            cFunctionName = cFunctionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType];    initalValue = " = 0.0";,
-              type = CConversion`ScalarType[CConversion`complexScalarCType]; initalValue = "";];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
            body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
-                  typeStr <> " result" <> initalValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[expr, "result"];
-           body = body <> "\nreturn result;\n";
+                  "const " <> typeStr <> " result = " <>
+                  Parameters`ExpressionToString[expr] <> ";\n\n" <>
+                  "return result;\n";
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
            Return[{prototype, definition,
@@ -405,19 +405,25 @@ CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
     CreateFunctionName[tadpole] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
+
+ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
+    StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
+
+ExpressionToStringSequentially[expr_, heads_, result_String] :=
+    result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
 
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
     Module[{decl, expr, field, prototype, body, functionName},
@@ -428,12 +434,12 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = type <> " result;\n\n" <>
-                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
-                             vertexRules /.
-                             a_[List[i__]] :> a[i] /.
-                             ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
-                             C -> 1
-                             ,"result"] <>
+                  ExpressionToStringSequentially[expr /.
+                                     vertexRules /.
+                                     a_[List[i__]] :> a[i] /.
+                                     ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
+                                     C -> 1,
+                                     TreeMasses`GetParticles[], "result"]  <>
                   "\nreturn result * oneOver16PiSqr;";
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
