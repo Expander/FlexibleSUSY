@@ -85,6 +85,8 @@ private:
    @ModelName@_standard_model_matching_down<T> matching_down;
    standard_model::StandardModel<T> eft;
    double high_scale, susy_scale, low_scale;
+
+   void calculate_spectrum();
 };
 
 template <class T>
@@ -227,41 +229,7 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
    this->reached_precision = std::max(model_ct.get_current_accuracy(),
                                       eft_ct.get_current_accuracy());
 
-   model.run_to(get_pole_mass_scale());
-   model.solve_ewsb();
-   model.calculate_spectrum();
-
-   // start logarithmic resummation
-   {
-      eft.run_to(get_eft_pole_mass_scale());
-
-      // computation of pole mass spectrum in the SM
-      const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
-      const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
-
-      if (eft_pole_loops > 1) {
-         WARNING("Pole mass loop order " << eft_pole_loops
-                 << " in the EFT is currently not supported!  I'm using 1-loop.");
-         eft.set_pole_mass_loop_order(1);
-      }
-      if (eft_ewsb_loops > 1) {
-         WARNING("EWSB loop order " << eft_ewsb_loops
-                 << " in the EFT is currently not supported!  I'm using 1-loop.");
-         eft.set_ewsb_loop_order(1);
-      }
-
-      eft.calculate_DRbar_masses();
-      eft.solve_ewsb();
-      eft.calculate_spectrum();
-
-      eft.set_pole_mass_loop_order(eft_pole_loops);
-      eft.set_ewsb_loop_order(eft_ewsb_loops);
-
-      this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
-      this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
-      this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
-@fillSMFermionPoleMasses@
-   }
+   calculate_spectrum();
 
    // copy calculated W pole mass
    model.get_physical().M@VectorW@
@@ -285,6 +253,45 @@ void @ModelName@_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
+}
+
+template <class T>
+void @ModelName@_spectrum_generator<T>::calculate_spectrum()
+{
+   this->model.run_to(get_pole_mass_scale());
+   this->model.solve_ewsb();
+   this->model.calculate_spectrum();
+
+   eft.run_to(get_eft_pole_mass_scale());
+
+   // computation of pole mass spectrum in the SM
+   const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
+   const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
+
+   if (eft_pole_loops > 1) {
+      WARNING("Pole mass loop order " << eft_pole_loops
+              << " in the EFT is currently not supported!  I'm using 1-loop.");
+      eft.set_pole_mass_loop_order(1);
+   }
+   if (eft_ewsb_loops > 1) {
+      WARNING("EWSB loop order " << eft_ewsb_loops
+              << " in the EFT is currently not supported!  I'm using 1-loop.");
+      eft.set_ewsb_loop_order(1);
+   }
+
+   eft.calculate_DRbar_masses();
+   eft.solve_ewsb();
+   eft.calculate_spectrum();
+
+   eft.set_pole_mass_loop_order(eft_pole_loops);
+   eft.set_ewsb_loop_order(eft_ewsb_loops);
+
+   const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
+
+   this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
+   this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
+   this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
+@fillSMFermionPoleMasses@
 }
 
 } // namespace flexiblesusy

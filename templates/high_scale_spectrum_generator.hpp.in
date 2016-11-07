@@ -70,6 +70,8 @@ private:
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    @ModelName@_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
+
+   void calculate_spectrum();
 };
 
 template <class T>
@@ -157,9 +159,7 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
    low_scale  = low_scale_constraint.get_scale();
    this->reached_precision = convergence_tester.get_current_accuracy();
 
-   model.run_to(get_pole_mass_scale());
-   model.solve_ewsb();
-   model.calculate_spectrum();
+   calculate_spectrum();
 
    // copy calculated W pole mass
    model.get_physical().M@VectorW@
@@ -181,6 +181,14 @@ void @ModelName@_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
    @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
+}
+
+template <class T>
+void @ModelName@_spectrum_generator<T>::calculate_spectrum()
+{
+   this->model.run_to(get_pole_mass_scale());
+   this->model.solve_ewsb();
+   this->model.calculate_spectrum();
 }
 
 } // namespace flexiblesusy
