@@ -47,14 +47,12 @@ public:
       : @ModelName@_spectrum_generator_interface<T>()
       , susy_scale_constraint()
       , low_scale_constraint()
-      , susy_scale(0.)
-      , low_scale(0.)
    {}
    virtual ~@ModelName@_spectrum_generator() {}
 
    double get_high_scale() const { return 0.; }
-   double get_susy_scale() const { return susy_scale; }
-   double get_low_scale()  const { return low_scale;  }
+   double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
+   double get_low_scale()  const { return low_scale_constraint.get_scale(); }
    double get_pole_mass_scale() const;
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
@@ -65,7 +63,6 @@ protected:
 private:
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    @ModelName@_low_scale_constraint<T>  low_scale_constraint;
-   double susy_scale, low_scale;
 
    void calculate_spectrum();
 };
@@ -75,7 +72,7 @@ double @ModelName@_spectrum_generator<T>::get_pole_mass_scale() const
 {
    return
       this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
-      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : get_susy_scale();
 }
 
 /**
@@ -136,7 +133,6 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
    solver.add(&low_scale_constraint, &model);
    solver.add(&susy_scale_constraint, &model);
 
-   susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
    solver.solve();
@@ -145,8 +141,6 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
    model.run_to(low_scale_constraint.get_scale());
    low_scale_constraint.apply();
 
-   susy_scale = susy_scale_constraint.get_scale();
-   low_scale  = low_scale_constraint.get_scale();
    this->reached_precision = convergence_tester.get_current_accuracy();
 
    calculate_spectrum();
@@ -170,7 +164,8 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
-   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, susy_scale);
+   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
+      filename, get_low_scale(), get_susy_scale());
 }
 
 template <class T>
