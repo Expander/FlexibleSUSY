@@ -74,13 +74,6 @@ int main(int argc, char* argv[])
 
    softsusy::QedQcd qedqcd;
 
-   try {
-      qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
-   } catch (const Error& e) {
-      ERROR(e.what());
-      return EXIT_FAILURE;
-   }
-
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic

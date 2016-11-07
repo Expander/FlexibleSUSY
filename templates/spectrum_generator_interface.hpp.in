@@ -29,10 +29,7 @@
 #include "two_loop_corrections.hpp"
 #include "error.hpp"
 #include "logger.hpp"
-
-namespace softsusy {
-   class QedQcd;
-}
+#include "lowe.h"
 
 namespace flexiblesusy {
 
@@ -136,9 +133,12 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
  */
 template <class T>
 void @ModelName@_spectrum_generator_interface<T>::run(
-   const softsusy::QedQcd& qedqcd, const @ModelName@_input_parameters& input)
+   const softsusy::QedQcd& qedqcd_, const @ModelName@_input_parameters& input)
 {
+   softsusy::QedQcd qedqcd = qedqcd_;
+
    try {
+      qedqcd.to(qedqcd.displayPoleMZ());
       this->run_except(qedqcd, input);
    } catch (...) {
       this->translate_exception_to_problem(model);

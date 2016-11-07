@@ -34,7 +34,6 @@
 #include "standard_model_two_scale_convergence_tester.hpp"
 #include "two_scale_composite_convergence_tester.hpp"
 
-#include "lowe.h"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
