@@ -50,7 +50,7 @@ GetMTopMSbarOverMTopPole1L[Q_, quark_] :=
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
            as = SARAH`strongCoupling^2 / (4 Pi);
-           CF as / Pi (-1 + 3/4 Log[FlexibleSUSY`M[quark]^2/Q^2])
+           CF as / Pi (-1 + 3/4 Log[FlexibleSUSY`Pole[FlexibleSUSY`M[quark]]^2/Q^2])
           ];
 
 (* 2-loop coefficients *)
@@ -109,7 +109,7 @@ GetMTopMSbarOverMTopPole2L[Q_, quark_, NH_, NL_] :=
            as = SARAH`strongCoupling^2 / (4 Pi);
            CF (as/Pi)^2 (
                CF d12 + CA d22 + TR NL d32 + TR NH d42 +
-               Get2LLogs[FlexibleSUSY`M[quark], Q, CF, CA]
+               Get2LLogs[FlexibleSUSY`Pole[FlexibleSUSY`M[quark]], Q, CF, CA]
            )
           ];
 
@@ -230,13 +230,26 @@ GetMTopMSbarOverMTopPole3L[Q_, quark_, NH_, NL_] :=
           ];
 
 GetMTopMSbarOverMTopPole[loopOrder_List:{1,1,1,1}, quark_:SARAH`TopQuark, Q_:Q, NH_:1, NL_:5] :=
-    Module[{},
+    Module[{result, Mpole, h},
            Assert[Length[loopOrder] == 4];
+           result = (
+               h^0 GetMTopMSbarOverMTopPole0L[] +
+               h^1 GetMTopMSbarOverMTopPole1L[Q, quark] +
+               h^2 GetMTopMSbarOverMTopPole2L[Q, quark, NH, NL] +
+               h^3 GetMTopMSbarOverMTopPole3L[Q, quark, NH, NL]
+           );
+           (* rewrite in terms of the running mass *)
+           Mpole = FlexibleSUSY`M[quark] / result;
+           result = Normal @ Series[
+               result /. FlexibleSUSY`Pole[FlexibleSUSY`M[quark]] -> Mpole /.
+                         FlexibleSUSY`Pole[FlexibleSUSY`M[quark]] -> Mpole /.
+                         FlexibleSUSY`Pole[FlexibleSUSY`M[quark]] -> FlexibleSUSY`M[quark],
+               {h,0,3}];
            (
-               loopOrder[[1]] GetMTopMSbarOverMTopPole0L[] +
-               loopOrder[[2]] GetMTopMSbarOverMTopPole1L[Q, quark] +
-               loopOrder[[3]] GetMTopMSbarOverMTopPole2L[Q, quark, NH, NL] +
-               loopOrder[[4]] GetMTopMSbarOverMTopPole3L[Q, quark, NH, NL]
+               loopOrder[[1]] Coefficient[result, h, 0] +
+               loopOrder[[2]] Coefficient[result, h, 1] +
+               loopOrder[[3]] Coefficient[result, h, 2] +
+               loopOrder[[4]] Coefficient[result, h, 3]
            )
           ];
 
