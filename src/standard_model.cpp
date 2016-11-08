@@ -6116,8 +6116,8 @@ void Standard_model::calculate_MFu_pole()
 
    if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
       const double currentScale = get_scale();
-      qcd_2l = -0.006995771808874528*Power(g3,4) -
-         0.004518101565212638*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
+      qcd_2l = -0.005284774766427138*Power(g3,4) -
+         0.0032348537833770956*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
          0.0008822328500119351*Power(g3,4)*Sqr(Log(Power(currentScale,2)/Sqr(
          MFu(2))));
    }
@@ -6306,8 +6306,8 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
    double qcd_2l = 0., qcd_3l = 0.;
 
    if (get_thresholds() > 1) {
-      qcd_2l = -0.005855107113909601*Power(g3,4) -
-         0.0028071045227652486*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
+      qcd_2l = -0.0041441100714622115*Power(g3,4) -
+         0.0015238567409297061*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
          - 0.00024060895909416413*Power(g3,4)*Sqr(Log(Power(currentScale,2)
          /Sqr(MFu(idx))));
    }
