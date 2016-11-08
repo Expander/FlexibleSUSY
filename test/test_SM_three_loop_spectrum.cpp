@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
 
    unsigned iterations = 100;
 
-   // calculate top DR-bar mass from top pole mass using two-loop
+   // calculate top DR-bar mass from top pole mass using three-loop
    // corrections
    do {
       Eigen::Matrix<double,3,3> mt_drbar_3loop(Eigen::Matrix<double,3,3>::Zero());
@@ -71,5 +71,5 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
 
    BOOST_MESSAGE("mt_pole(3-loop) = " << mt_pole_3loop);
 
-   BOOST_CHECK_CLOSE_FRACTION(mt_pole_input, mt_pole_3loop, 3.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(mt_pole_input, mt_pole_3loop, 2.0e-4);
 }
