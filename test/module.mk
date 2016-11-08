@@ -458,22 +458,33 @@ execute-compiled-tests: $(TEST_EXE_LOG)
 
 execute-shell-tests: $(TEST_SH_LOG)
 
+PTR = print_test_result() { \
+	if [ $$1 = 0 ]; then \
+		printf "%-66s %4s\n" "$$2" "OK"; \
+	else \
+		printf "%-66s %4s\n" "$$2" "FAILED"; \
+	fi \
+}
+
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
-		@BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
+		@$(PTR); \
+		BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
 		$< --log_level=test_suite >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		print_test_result $$? $<
 
 $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		@rm -f $@
-		@"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
+		@$(PTR); \
+		"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
 		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		print_test_result $$? $<
 
 $(DIR)/%.sh.log: $(DIR)/%.sh
 		@rm -f $@
-		@MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		@$(PTR); \
+		MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
+		print_test_result $$? $<
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 
