@@ -23,17 +23,14 @@
 
 #include "@ModelName@_utilities.hpp"
 
-#include "spectrum_generator_settings.hpp"
-#include "coupling_monitor.hpp"
-#include "two_loop_corrections.hpp"
 #include "error.hpp"
+#include "coupling_monitor.hpp"
 #include "logger.hpp"
+#include "lowe.h"
+#include "spectrum_generator_settings.hpp"
+#include "two_loop_corrections.hpp"
 
 #include <string>
-
-namespace softsusy {
-   class QedQcd;
-}
 
 namespace flexiblesusy {
 
@@ -97,7 +94,7 @@ public:
    }
    void set_settings(const Spectrum_generator_settings&);
 
-   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
+   void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename, double, double) const;
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
@@ -108,6 +105,7 @@ protected:
    double reached_precision; ///< the precision that was reached
 
    void translate_exception_to_problem(Model& model);
+   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
 };
 
 /**
@@ -123,6 +121,29 @@ void @ModelName@_spectrum_generator_interface<Model>::set_settings(
    model.set_pole_mass_loop_order(settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    model.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
    model.set_two_loop_corrections(settings.get_two_loop_corrections());
+}
+
+/**
+ * @brief Run's the RG solver with the given input parameters
+ *
+ * This function calls run_except() from the derived class and
+ * translates an emitted exception into an problem code.
+ *
+ * @param qedqcd Standard Model input parameters
+ * @param input model input parameters
+ */
+template <class Model>
+void @ModelName@_spectrum_generator_interface<Model>::run(
+   const softsusy::QedQcd& qedqcd_, const @ModelName@_input_parameters& input)
+{
+   softsusy::QedQcd qedqcd = qedqcd_;
+
+   try {
+      qedqcd.to(qedqcd.displayPoleMZ());
+      this->run_except(qedqcd, input);
+   } catch (...) {
+      this->translate_exception_to_problem(model);
+   }
 }
 
 /**

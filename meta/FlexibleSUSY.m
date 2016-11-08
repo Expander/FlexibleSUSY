@@ -1376,7 +1376,7 @@ WriteUserExample[inputParameters_List, files_List] :=
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
-                            "@fillSMFermionPoleMasses@" -> IndentText[IndentText[IndentText[fillSMFermionPoleMasses]]],
+                            "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

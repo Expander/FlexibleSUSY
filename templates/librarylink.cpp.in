@@ -51,7 +51,7 @@
 using namespace flexiblesusy;
 
 typedef Two_scale algorithm_type;
-typedef mint Handle_id;
+typedef mint Handle;
 
 class Redirect_output {
 public:
@@ -87,12 +87,12 @@ private:
 namespace flexiblesusy {
 class EUnknownHandle : public Error {
 public:
-   explicit EUnknownHandle(Handle_id hid_) : hid(hid_) {}
+   explicit EUnknownHandle(Handle hid_) : hid(hid_) {}
    virtual ~EUnknownHandle() {}
    virtual std::string what() const {
       return "Unknown handle: " + ToString(hid);
    }
-   Handle_id hid;
+   Handle hid;
 };
 
 class ENotEnoughFreeHandles : public Error {
@@ -147,20 +147,20 @@ struct Model_data {
 };
 
 /// current handles
-typedef std::map<Handle_id, Model_data> Handle_map;
+typedef std::map<Handle, Model_data> Handle_map;
 Handle_map handles;
 
 /******************************************************************/
 
-Handle_id get_new_handle()
+Handle get_new_handle()
 {
    static const std::size_t max_handles =
-      static_cast<std::size_t>(std::exp2(8*sizeof(Handle_id)) - 1);
+      static_cast<std::size_t>(std::exp2(8*sizeof(Handle)) - 1);
 
    if (handles.size() >= max_handles)
       throw ENotEnoughFreeHandles(handles.size());
 
-   Handle_id hid = 0;
+   Handle hid = 0;
 
    while (handles.find(hid) != handles.end())
       hid++;
@@ -170,7 +170,7 @@ Handle_id get_new_handle()
 
 /******************************************************************/
 
-auto find_handle(Handle_id hid) -> decltype(handles.find(hid))
+auto find_handle(Handle hid) -> decltype(handles.find(hid))
 {
    const auto handle = handles.find(hid);
 
@@ -182,19 +182,26 @@ auto find_handle(Handle_id hid) -> decltype(handles.find(hid))
 
 /******************************************************************/
 
-Model_data& find_data(Handle_id hid)
+Model_data& find_data(Handle hid)
 {
    return find_handle(hid)->second;
 }
 
 /******************************************************************/
 
-Handle_id get_handle_from(MLINK link)
+Handle get_handle_from(MLINK link)
 {
-   Handle_id hid;
+   Handle hid;
    MLGet(link, &hid);
 
    return hid;
+}
+
+/******************************************************************/
+
+Handle get_handle_from(MArgument arg)
+{
+   return MArgument_getInteger(arg);
 }
 
 /******************************************************************/
@@ -488,21 +495,10 @@ void check_spectrum(const Model_data& data, MLINK link)
 
 void calculate_spectrum(Model_data& data, MLINK link)
 {
-   auto qedqcd = data.qedqcd;
-
-   try {
-      qedqcd.to(qedqcd.displayPoleMZ());
-   } catch (const flexiblesusy::Error& e) {
-      put_message(link, "FS@ModelName@CalculateSpectrum", "error", e.what());
-      data.model.clear();
-      data.model.get_problems().flag_no_perturbative();
-      return;
-   }
-
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(data.settings);
    spectrum_generator.set_parameter_output_scale(data.parameter_output_scale);
-   spectrum_generator.run(qedqcd, data.input);
+   spectrum_generator.run(data.qedqcd, data.input);
 
    data.model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
@@ -630,7 +626,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSettings"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       put_settings(find_data(hid), link);
@@ -649,7 +645,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSMInputParameters"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       put_sm_input_parameters(find_data(hid), link);
@@ -668,7 +664,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetInputParameters"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       put_input_parameters(find_data(hid), link);
@@ -698,7 +694,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       auto data = fill(libData->MTensor_getRealData(pars),
                        libData->MTensor_getDimensions(pars)[0]);
 
-      const Handle_id hid = get_new_handle();
+      const auto hid = get_new_handle();
 
       handles.insert(std::make_pair(hid, std::move(data)));
 
@@ -719,8 +715,7 @@ DLLEXPORT int FS@ModelName@CloseHandle(
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = MArgument_getInteger(Args[0]);
-
+   const auto hid = get_handle_from(Args[0]);
    const auto handle = handles.find(hid);
 
    if (handle != handles.end())
@@ -737,7 +732,7 @@ DLLEXPORT int FS@ModelName@Set(
    if (Argc != 2)
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = MArgument_getInteger(Args[0]);
+   const auto hid = get_handle_from(Args[0]);
    MTensor pars = MArgument_getMTensor(Args[1]);
 
    if (libData->MTensor_getType(pars) != MType_Real ||
@@ -763,7 +758,7 @@ DLLEXPORT int FS@ModelName@GetProblems(
    if (!check_number_of_args(link, 1, "FS@ModelName@GetProblems"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       put_problems(find_data(hid), link);
@@ -783,7 +778,7 @@ DLLEXPORT int FS@ModelName@GetWarnings(
    if (!check_number_of_args(link, 1, "FS@ModelName@GetWarnings"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       put_warnings(find_data(hid), link);
@@ -803,7 +798,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateSpectrum"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       auto data = find_data(hid);
@@ -832,7 +827,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateObservables"))
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_id hid = get_handle_from(link);
+   const auto hid = get_handle_from(link);
 
    try {
       auto data = find_data(hid);

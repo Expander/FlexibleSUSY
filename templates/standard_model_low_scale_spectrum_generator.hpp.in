@@ -50,18 +50,20 @@ public:
       , matching_up()
       , matching_down()
       , eft()
-      , susy_scale(0.)
-      , low_scale(0.)
    {}
    virtual ~@ModelName@_spectrum_generator() {}
 
    const standard_model::StandardModel<Two_scale>& get_eft() const { return eft; }
    double get_high_scale() const { return 0.; }
-   double get_susy_scale() const { return susy_scale; }
-   double get_low_scale()  const { return low_scale;  }
+   double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
+   double get_low_scale()  const { return low_scale_constraint.get_scale(); }
+   double get_pole_mass_scale() const;
+   double get_eft_pole_mass_scale() const;
 
-   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
+
+protected:
+   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
    RGFlow<Two_scale> solver;
@@ -70,7 +72,8 @@ private:
    @ModelName@_standard_model_matching_up<Two_scale> matching_up;
    @ModelName@_standard_model_matching_down<Two_scale> matching_down;
    standard_model::StandardModel<Two_scale> eft;
-   double susy_scale, low_scale;
+
+   void calculate_spectrum();
 };
 
 } // namespace flexiblesusy
