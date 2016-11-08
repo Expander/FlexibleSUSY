@@ -1093,18 +1093,19 @@ double Standard_model::recalculate_mw_pole(double mw_pole)
 
 double Standard_model::max_rel_diff(const Standard_model& old) const
 {
-   double diff[12] = { 0 };
+   std::array<double, 12> diff{};
 
    diff[0] = MaxRelDiff(old.Mhh, Mhh);
    diff[1] = MaxRelDiff(old.MVZ, MVZ);
-   for (unsigned i = 0; i < 3; ++i) {
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 2] = MaxRelDiff(old.MFd(i), MFd(i));
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 5] = MaxRelDiff(old.MFu(i), MFu(i));
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 8] = MaxRelDiff(old.MFe(i), MFe(i));
-   }
    diff[11] = MaxRelDiff(old.MVWp, MVWp);
 
-   return *std::max_element(diff, diff + 12);
+   return *std::max_element(diff.cbegin(), diff.cend());
 }
 
 bool Standard_model::check_convergence(const Standard_model& old) const
