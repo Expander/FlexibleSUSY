@@ -6126,10 +6126,10 @@ void Standard_model::calculate_MFu_pole()
 
    if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
       const double currentScale = get_scale();
-      qcd_3l = Power(g3,6)*(-0.0017408026847411467 -
-         0.000984413176263005*Log(Sqr(currentScale)/Sqr(MFu(2))) -
-         0.00003352082872926087*Power(Log(Sqr(currentScale)/Sqr(MFu(2))),3) -
-         0.00029813221915266867*Sqr(Log(Power(currentScale,2)/Sqr(MFu(2)))));
+      qcd_3l = -0.00003352082872926087*Power(g3,6)*(35.702577217116016
+         + 15.387410814884797*Log(Sqr(currentScale)/Sqr(MFu(2))) + 1.*Power(
+         Log(Sqr(currentScale)/Sqr(MFu(2))),3) + 5.378787878787879*Sqr(Log(
+         Power(currentScale,2)/Sqr(MFu(2)))));
    }
 
    Eigen::Matrix<double,3,3> self_energy_1;
@@ -6313,11 +6313,13 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
    }
 
    if (get_thresholds() > 2) {
-      qcd_3l = -0.0013067805969741943*Power(g3,6) -
+      qcd_3l = -0.0008783313853540776*Power(g3,6) -
          0.0004114970933517977*Power(g3,6)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
          - 5.078913443827405e-6*Power(g3,6)*Power(Log(Sqr(currentScale)/Sqr(
-         MFu(idx))),3) - 0.00007466002762426286*Power(g3,6)*Sqr(Log(Power(
-         currentScale,2)/Sqr(MFu(idx))));
+         MFu(idx))),3) - 0.0002952541682011665*Power(g3,6)*Log(Sqr(MFu(idx))
+         /Sqr(currentScale)) + 0.00005282069981580501*Power(g3,6)*Sqr(Log(Power
+         (MFu(idx),2)/Sqr(currentScale))) - 0.00007466002762426286*Power(g3,6)*
+         Sqr(Log(Power(currentScale,2)/Sqr(MFu(idx))));
    }
 
    const double m_susy_drbar = m_pole + self_energy_1 + m_pole * (
