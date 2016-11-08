@@ -1881,7 +1881,7 @@ double Standard_model::get_mass_matrix_VG() const
 void Standard_model::calculate_MVG()
 {
    const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = calculate_singlet_mass(mass_matrix_VG);
+   MVG = mass_matrix_VG;
 }
 
 double Standard_model::get_mass_matrix_Hp() const
@@ -1895,7 +1895,7 @@ double Standard_model::get_mass_matrix_Hp() const
 void Standard_model::calculate_MHp()
 {
    const auto mass_matrix_Hp = get_mass_matrix_Hp();
-   MHp = calculate_singlet_mass(mass_matrix_Hp);
+   MHp = mass_matrix_Hp;
 
    if (MHp < 0.) {
       problems.flag_tachyon(standard_model_info::Hp);
@@ -1936,7 +1936,7 @@ double Standard_model::get_mass_matrix_Ah() const
 void Standard_model::calculate_MAh()
 {
    const auto mass_matrix_Ah = get_mass_matrix_Ah();
-   MAh = calculate_singlet_mass(mass_matrix_Ah);
+   MAh = mass_matrix_Ah;
 
    if (MAh < 0.) {
       problems.flag_tachyon(standard_model_info::Ah);
@@ -1955,7 +1955,7 @@ double Standard_model::get_mass_matrix_hh() const
 void Standard_model::calculate_Mhh()
 {
    const auto mass_matrix_hh = get_mass_matrix_hh();
-   Mhh = calculate_singlet_mass(mass_matrix_hh);
+   Mhh = mass_matrix_hh;
 
    if (Mhh < 0.) {
       problems.flag_tachyon(standard_model_info::hh);
@@ -1974,7 +1974,7 @@ double Standard_model::get_mass_matrix_VP() const
 void Standard_model::calculate_MVP()
 {
    const auto mass_matrix_VP = get_mass_matrix_VP();
-   MVP = calculate_singlet_mass(mass_matrix_VP);
+   MVP = mass_matrix_VP;
 }
 
 double Standard_model::get_mass_matrix_VZ() const
@@ -1988,7 +1988,7 @@ double Standard_model::get_mass_matrix_VZ() const
 void Standard_model::calculate_MVZ()
 {
    const auto mass_matrix_VZ = get_mass_matrix_VZ();
-   MVZ = calculate_singlet_mass(mass_matrix_VZ);
+   MVZ = mass_matrix_VZ;
 
    if (MVZ < 0.) {
       problems.flag_tachyon(standard_model_info::VZ);
@@ -2103,7 +2103,7 @@ double Standard_model::get_mass_matrix_VWp() const
 void Standard_model::calculate_MVWp()
 {
    const auto mass_matrix_VWp = get_mass_matrix_VWp();
-   MVWp = calculate_singlet_mass(mass_matrix_VWp);
+   MVWp = mass_matrix_VWp;
 
    if (MVWp < 0.) {
       problems.flag_tachyon(standard_model_info::VWp);

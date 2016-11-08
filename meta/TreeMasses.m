@@ -1545,15 +1545,22 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
                      "get_" <> massMatrixStr <> "();\n";
               (* adapt phases of massive fermions *)
               phase = Parameters`GetPhase[massESSymbol];
-              If[IsFermion[massESSymbol] && phase =!= Null &&
-                 !IsMassless[massESSymbol],
-                 body = body <> ev <> " = calculate_" <>
-                        If[IsMajoranaFermion[massESSymbol], "majorana", "dirac"] <>
-                        "_singlet_mass(" <> massMatrixStr <> ", " <>
-                        CConversion`ToValidCSymbolString[phase] <> ");\n";
-                 ,
-                 body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ");\n";
-                ];
+              Which[IsFermion[massESSymbol] && phase =!= Null && !IsMassless[massESSymbol],
+                    body = body <> ev <> " = calculate_" <>
+                           If[IsMajoranaFermion[massESSymbol], "majorana", "dirac"] <>
+                           "_singlet_mass(" <> massMatrixStr <> ", " <>
+                           CConversion`ToValidCSymbolString[phase] <> ");\n";
+                    ,
+                    IsFermion[massESSymbol],
+                    body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ");\n";
+                    ,
+                    IsVector[massESSymbol] || IsScalar[massESSymbol],
+                    body = body <> ev <> " = " <> massMatrixStr <> ";\n";
+                    ,
+                    True,
+                    Print["Error: unknown particle type of ", massESSymbol];
+                    Quit[1];
+                   ];
               ,
               If[FreeQ[expr, SARAH`gt1] && FreeQ[expr, SARAH`gt2],
                  body = inputParsDecl <> "\n" <> ev <>
