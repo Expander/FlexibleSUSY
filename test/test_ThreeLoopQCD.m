@@ -52,7 +52,8 @@ gRules = {
     Yu[__] -> 0,
     Yd[__] -> 0,
     g1 -> 0,
-    g2 -> 0
+    g2 -> 0,
+    FlexibleSUSY`M[Fu] -> m[Q]
 };
 
 ass = {Q > 0, FlexibleSUSY`M[Fu] > 0, m[Q] > 0};
