@@ -99,7 +99,7 @@ double @ModelName@_spectrum_generator<T>::get_eft_pole_mass_scale() const
 
    if (Q_higgs == 0.) {
       const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-      Q_higgs = std::min(susy_scale, Mt);
+      Q_higgs = std::min(get_susy_scale(), Mt);
    }
 
    return Q_higgs;
