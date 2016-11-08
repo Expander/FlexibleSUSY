@@ -240,7 +240,7 @@ CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.003" || error=$(expr $erro
 MS=173.34
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.002" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
 
 MS=250.0
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
@@ -257,12 +257,12 @@ CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.02" || error=$(expr $error
 MS=10000
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.01" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
 
 MS=100000
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
 
 # Check limit of small electroweak gauge couplings
 
