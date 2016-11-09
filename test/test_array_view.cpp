@@ -81,6 +81,17 @@ BOOST_AUTO_TEST_CASE( test_make_range_init )
    BOOST_CHECK_EQUAL(av[3], a[3]);
 }
 
+BOOST_AUTO_TEST_CASE( test_readable )
+{
+   double a[4] = { 1., 2., 3., 4. };
+   const Dynamic_array_view<double> av(a, a + 4);
+
+   BOOST_CHECK_EQUAL(av[0], a[0]);
+   BOOST_CHECK_EQUAL(av[1], a[1]);
+   BOOST_CHECK_EQUAL(av[2], a[2]);
+   BOOST_CHECK_EQUAL(av[3], a[3]);
+}
+
 BOOST_AUTO_TEST_CASE( test_writeable )
 {
    double a[4] = { 1., 2., 3., 4. };

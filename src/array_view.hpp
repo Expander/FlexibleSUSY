@@ -52,7 +52,12 @@ public:
    Const_iterator_t cbegin() const noexcept { return ptr; }
    Const_iterator_t cend() const noexcept { return ptr + len; }
 
-   Reference_t operator[](Index_t idx) const {
+   Reference_t operator[](Index_t idx) {
+      check_range(idx);
+      return ptr[idx];
+   }
+
+   Element_t operator[](Index_t idx) const {
       check_range(idx);
       return ptr[idx];
    }
