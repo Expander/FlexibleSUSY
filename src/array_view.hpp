@@ -25,10 +25,11 @@
 
 namespace flexiblesusy {
 
-template <typename Element_t>
+template <typename ElementType>
 class Dynamic_array_view
 {
 public:
+   using Element_t = ElementType;
    using Index_t = std::ptrdiff_t;
    using Pointer_t = Element_t*;
    using Iterator_t = Pointer_t;
@@ -63,20 +64,32 @@ private:
    constexpr void check_range(Index_t idx) const {
       if (idx < 0 || idx >= len)
          throw OutOfBoundsError(
-            "Index out of range: " + std::to_string(idx)
-            + " (allowed range: [0, " + std::to_string(len) + "))");
+            "Dynamic_array_view index " + std::to_string(idx)
+            + " out of range [0, " + std::to_string(len) + ").");
    }
 };
 
-template <typename Element_t>
-std::ostream& operator<<(std::ostream& ostr, const Dynamic_array_view<Element_t> av)
+template <typename ElementType>
+constexpr Dynamic_array_view<ElementType> make_dynamic_array_view(ElementType* ptr, std::ptrdiff_t len)
+{
+   return Dynamic_array_view<ElementType>(ptr, len);
+}
+
+template <typename ElementType>
+constexpr Dynamic_array_view<ElementType> make_dynamic_array_view(ElementType* first, ElementType* last)
+{
+   return Dynamic_array_view<ElementType>(first, last);
+}
+
+template <typename ElementType>
+std::ostream& operator<<(std::ostream& ostr, const Dynamic_array_view<ElementType> av)
 {
    if (av.empty())
       return ostr;
 
    ostr << "[";
 
-   for (typename Dynamic_array_view<Element_t>::Index_t i = 0; i < av.size(); i++) {
+   for (typename Dynamic_array_view<ElementType>::Index_t i = 0; i < av.size(); i++) {
       ostr << av[i];
       if (i < av.size() - 1)
          ostr << ", ";

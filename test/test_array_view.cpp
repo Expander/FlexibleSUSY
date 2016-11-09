@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "array_view.hpp"
+#include <type_traits>
 
 using namespace flexiblesusy;
 
@@ -36,6 +37,40 @@ BOOST_AUTO_TEST_CASE( test_range_init )
 {
    double a[4] = { 1., 2., 3., 4. };
    Dynamic_array_view<double> av(a, a + 4);
+
+   BOOST_CHECK(!av.empty());
+   BOOST_CHECK_EQUAL(av.size(), 4);
+
+   BOOST_CHECK_EQUAL(av[0], a[0]);
+   BOOST_CHECK_EQUAL(av[1], a[1]);
+   BOOST_CHECK_EQUAL(av[2], a[2]);
+   BOOST_CHECK_EQUAL(av[3], a[3]);
+}
+
+BOOST_AUTO_TEST_CASE( test_make_lenght_init )
+{
+   double a[4] = { 1., 2., 3., 4. };
+   auto av = make_dynamic_array_view(a, 4);
+
+   static_assert(std::is_same<decltype(av)::Element_t, double>(),
+                 "Element type is not double");
+
+   BOOST_CHECK(!av.empty());
+   BOOST_CHECK_EQUAL(av.size(), 4);
+
+   BOOST_CHECK_EQUAL(av[0], a[0]);
+   BOOST_CHECK_EQUAL(av[1], a[1]);
+   BOOST_CHECK_EQUAL(av[2], a[2]);
+   BOOST_CHECK_EQUAL(av[3], a[3]);
+}
+
+BOOST_AUTO_TEST_CASE( test_make_range_init )
+{
+   double a[4] = { 1., 2., 3., 4. };
+   auto av = make_dynamic_array_view(a, a + 4);
+
+   static_assert(std::is_same<decltype(av)::Element_t, double>(),
+                 "Element type is not double");
 
    BOOST_CHECK(!av.empty());
    BOOST_CHECK_EQUAL(av.size(), 4);
