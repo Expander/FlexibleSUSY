@@ -117,7 +117,7 @@ constexpr Dynamic_array_view<ElementType> make_dynamic_array_view(ElementType* f
 }
 
 template <typename ElementType>
-std::ostream& operator<<(std::ostream& ostr, const Dynamic_array_view<ElementType> av)
+std::ostream& operator<<(std::ostream& ostr, const Dynamic_array_view<ElementType>& av)
 {
    if (av.empty())
       return ostr;
