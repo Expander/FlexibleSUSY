@@ -26,6 +26,7 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
 
+#include "array_view.hpp"
 #include "error.hpp"
 #include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
@@ -498,17 +499,19 @@ void calculate_spectrum(Model_data& data, MLINK link)
 
 /******************************************************************/
 
-Model_data fill(double* pars, mint npars)
+template <typename Element_t>
+Model_data fill(Dynamic_array_view<Element_t> pars)
 {
+   using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
+
+   const Index_t n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const Index_t n_total = n_settings + n_sm_parameters + n_input_pars;
+
+   if (pars.size() != n_total)
+      throw EWrongNumberOfParameters(pars.size(), n_total);
+
    Model_data data;
-
-   const mint n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
-   const mint n_total = n_settings + n_sm_parameters + n_input_pars;
-
-   if (npars != n_total)
-      throw EWrongNumberOfParameters(npars, n_total);
-
-   mint c = 0; // counter
+   Index_t c = 0; // counter
 
    data.settings.set(Spectrum_generator_settings::precision, pars[c++]);
    data.settings.set(Spectrum_generator_settings::max_iterations, pars[c++]);
@@ -587,9 +590,6 @@ Model_data fill(double* pars, mint npars)
    data.physical_input.set(Physical_input::mh_pole, pars[c++]);
 
 @setInputParameters@
-
-   if (npars != c)
-      throw EWrongNumberOfParameters(npars, c);
 
    return data;
 }
@@ -682,8 +682,9 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      auto data = fill(libData->MTensor_getRealData(pars),
-                       libData->MTensor_getDimensions(pars)[0]);
+      auto data = fill(make_dynamic_array_view(
+                          libData->MTensor_getRealData(pars),
+                          libData->MTensor_getDimensions(pars)[0]));
 
       const auto hid = get_new_handle();
 
@@ -731,8 +732,9 @@ DLLEXPORT int FS@ModelName@Set(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      find_data(hid) = fill(libData->MTensor_getRealData(pars),
-                            libData->MTensor_getDimensions(pars)[0]);
+      find_data(hid) = fill(make_dynamic_array_view(
+                               libData->MTensor_getRealData(pars),
+                               libData->MTensor_getDimensions(pars)[0]));
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;
