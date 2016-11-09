@@ -124,7 +124,7 @@ MhNUHMSSMalttower=$(run_sg "$MODELDIR/NUHMSSMalttower/run_NUHMSSMalttower.x" "$i
 echo "Mh in the NUHMSSMalt     : $MhNUHMSSMalt"
 echo "Mh in the NUHMSSMalttower: $MhNUHMSSMalttower"
 
-CHECK_EQUAL_FRACTION "$MhNUHMSSMalt" "$MhNUHMSSMalttower" "0.007" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhNUHMSSMalt" "$MhNUHMSSMalttower" "0.008" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."
