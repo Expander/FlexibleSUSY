@@ -25,6 +25,36 @@
 
 namespace flexiblesusy {
 
+/**
+ * @class Dynamic_array_view
+ * @brief secure array wrapper
+ *
+ * This class represtents a secure wrapper for a C-style array, for
+ * which the size is not known at compile time.  The class allows to
+ * read/write the wrapped C-style array through the subscript
+ * operator[].
+ *
+ * Examples:
+ *
+ * \code{.cpp}
+double a[4] = { 1., 2., 3., 4. };
+const Dynamic_array_view<double> av(a, 4);
+double elem = av[1]; // read 2nd element
+ * \endcode
+ *
+ * \code{.cpp}
+double a[4] = { 1., 2., 3., 4. };
+Dynamic_array_view<double> av(a, 4);
+av[1] = 0; // write 2nd element
+ * \endcode
+ *
+ * \code{.cpp}
+double a[4] = { 1., 2., 3., 4. };
+const auto av = make_dynamic_array_view(a, 4);
+double elem = av[1]; // read 2nd element
+ * \endcode
+ *
+ */
 template <typename ElementType>
 class Dynamic_array_view
 {
