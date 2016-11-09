@@ -500,7 +500,7 @@ void calculate_spectrum(Model_data& data, MLINK link)
 /******************************************************************/
 
 template <typename Element_t>
-Model_data fill(Dynamic_array_view<Element_t> pars)
+Model_data fill(const Dynamic_array_view<Element_t>& pars)
 {
    using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
 
