@@ -25,17 +25,22 @@ Print["Using ", Length[kernels], " kernels."];
 
 DistributeDefinitions[CalcMh];
 
-range = Range[1, 50, 1];
+r = Sequence[1, 50]
+range = Range[r, 1];
 resultMap = AbsoluteTiming[Map[CalcMh, range]];
-resultParallelMap = AbsoluteTiming[ParallelMap[CalcMh, range]];
+resultParallelMap = AbsoluteTiming[ParallelMap[CalcMh, range, Method -> "CoarsestGrained"]];
+resultParallelTab = AbsoluteTiming[ParallelTable[CalcMh[tb], {tb,r}]];
 
 Print["time for sequential runs: ", resultMap[[1]]];
-Print["time for parallel runs  : ", resultParallelMap[[1]]];
+Print["time for parallel map   : ", resultParallelMap[[1]]];
+Print["time for parallel table : ", resultParallelTab[[1]]];
 
 If[Length[kernels] > 1,
    TestLowerThan[resultParallelMap[[1]], resultMap[[1]]];
+   TestLowerThan[resultParallelTab[[1]], resultMap[[1]]];
   ];
 
 TestEquality[resultMap[[2]], resultParallelMap[[2]]];
+TestEquality[resultMap[[2]], resultParallelTab[[2]]];
 
 PrintTestSummary[];
