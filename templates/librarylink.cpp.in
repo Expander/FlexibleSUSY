@@ -343,7 +343,7 @@ unsigned number_of_problems(const P& problems)
    return problems.have_tachyon()
       + problems.no_ewsb()
       + problems.no_convergence()
-      + problems.no_perturbative()
+      + (problems.no_perturbative() || problems.have_non_perturbative_parameter())
       + problems.no_rho_convergence()
       + problems.have_thrown()
       + problems.have_failed_pole_mass_convergence();
@@ -417,7 +417,7 @@ void put_problems(const Model_data& data, MLINK link)
       MLPutRuleTo(link, "True", "NoEWSB");
    if (problems.no_convergence())
       MLPutRuleTo(link, "True", "NoConvergence");
-   if (problems.no_perturbative())
+   if (problems.no_perturbative() || problems.have_non_perturbative_parameter())
       MLPutRuleTo(link, "True", "NonPerturbative");
    if (problems.no_rho_convergence())
       MLPutRuleTo(link, "True", "NoRhoConvergence");
