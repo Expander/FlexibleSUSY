@@ -76,15 +76,18 @@ public:
    void set_extpar(const @ModelName@_input_parameters&);
    template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&, const @ModelName@_observables&);
    void set_minpar(const @ModelName@_input_parameters&);
+   void set_modsel(const SLHA_io::Modsel&);
+   void set_physical_input(const Physical_input&);
+   void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>&);
    void set_spinfo(const std::vector<std::string>&, const std::vector<std::string>&);
    void set_print_imaginary_parts_of_majorana_mixings(bool);
-   void write_to(const std::string&);
-   void write_to_file(const std::string& file_name) { slha_io.write_to_file(file_name); }
-   void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
+   void write_to(const std::string&) const;
+   void write_to_file(const std::string& file_name) const { slha_io.write_to_file(file_name); }
+   void write_to_stream(std::ostream& ostr = std::cout) const { slha_io.write_to_stream(ostr); }
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);

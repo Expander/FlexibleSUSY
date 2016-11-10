@@ -419,10 +419,50 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    set_block(ss);
 }
 
-void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
+void SLHA_io::set_modsel(const Modsel& modsel)
+{
+   const int qfv = modsel.quark_flavour_violated;
+   const int lfv = 2 * modsel.lepton_flavour_violated;
+
+   std::ostringstream ss;
+   ss << "Block MODSEL\n";
+   ss << FORMAT_ELEMENT(6 , qfv | lfv, "quark/lepton flavour violation");
+   ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "DRbar parameter output scale (GeV)");
+
+   set_block(ss);
+}
+
+void SLHA_io::set_physical_input(const Physical_input& input)
+{
+   const auto& names = input.get_names();
+
+   std::ostringstream ss;
+   ss << "Block FlexibleSUSYInput\n";
+
+   for (unsigned i = 0; i < names.size(); i++) {
+      ss << FORMAT_ELEMENT(i, input.get(static_cast<Physical_input::Input>(i)),
+                           names[i]);
+   }
+
+   set_block(ss);
+}
+
+void SLHA_io::set_settings(const Spectrum_generator_settings& settings)
+{
+   std::ostringstream ss;
+   ss << "Block FlexibleSUSY\n";
+
+   for (unsigned i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
+      ss << FORMAT_ELEMENT(i, settings.get(static_cast<Spectrum_generator_settings::Settings>(i)),
+                           settings.get_description(static_cast<Spectrum_generator_settings::Settings>(i)));
+   }
+
+   set_block(ss);
+}
+
+void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
 {
    using namespace softsusy;
-   softsusy::QedQcd qedqcd(qedqcd_);
    std::ostringstream ss;
 
    const double alphaEmInv = 1./qedqcd.displayAlpha(ALPHA);
@@ -441,29 +481,21 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
    ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
    ss << FORMAT_ELEMENT(13, qedqcd.displayPoleMmuon()    , "mmuon(pole)");
    ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "mnu2(pole)");
-
-   // recalculate mc(mc)^MS-bar
-   double mc = qedqcd.displayMass(mCharm);
-   qedqcd.runto(mc);
-   mc = qedqcd.displayMass(mCharm);
-
-   // recalculate mu(2 GeV)^MS-bar, md(2 GeV)^MS-bar, ms^MS-bar(2 GeV)
-   qedqcd.runto(2.0);
    ss << FORMAT_ELEMENT(21, qedqcd.displayMass(mDown)    , "md");
    ss << FORMAT_ELEMENT(22, qedqcd.displayMass(mUp)      , "mu");
    ss << FORMAT_ELEMENT(23, qedqcd.displayMass(mStrange) , "ms");
-   ss << FORMAT_ELEMENT(24, mc                           , "mc");
+   ss << FORMAT_ELEMENT(24, qedqcd.displayMass(mCharm)   , "mc");
 
    set_block(ss);
 }
 
-void SLHA_io::write_to_file(const std::string& file_name)
+void SLHA_io::write_to_file(const std::string& file_name) const
 {
    std::ofstream ofs(file_name);
    write_to_stream(ofs);
 }
 
-void SLHA_io::write_to_stream(std::ostream& ostr)
+void SLHA_io::write_to_stream(std::ostream& ostr) const
 {
    if (ostr.good())
       ostr << data;

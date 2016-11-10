@@ -22,6 +22,35 @@
 
 namespace flexiblesusy {
 
+namespace {
+const std::array<std::string, Spectrum_generator_settings::NUMBER_OF_OPTIONS> descriptions = {
+   "precision goal",
+   "max. iterations (0 = automatic)",
+   "algorithm (0 = two_scale)",
+   "calculate SM pole masses",
+   "pole mass loop order",
+   "EWSB loop order",
+   "beta-functions loop order",
+   "threshold corrections loop order",
+   "Higgs 2-loop corrections O(alpha_t alpha_s)",
+   "Higgs 2-loop corrections O(alpha_b alpha_s)",
+   "Higgs 2-loop corrections O((alpha_t + alpha_b)^2)",
+   "Higgs 2-loop corrections O(alpha_tau^2)",
+   "force output",
+   "Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)",
+   "beta-function zero threshold",
+   "calculate observables (a_muon, ...)",
+   "force positive majorana masses",
+   "pole mass renormalization scale (0 = SUSY scale)",
+   "pole mass renormalization scale in the EFT (0 = min(SUSY scale, Mt))",
+   "EFT matching scale (0 = SUSY scale)",
+   "EFT loop order for upwards matching",
+   "EFT loop order for downwards matching",
+   "EFT index of SM-like Higgs in the BSM model",
+   "calculate BSM pole masses"
+};
+} // anonymous namespace
+
 /**
  * Default constructor
  *
@@ -36,6 +65,11 @@ Spectrum_generator_settings::Spectrum_generator_settings()
 double Spectrum_generator_settings::get(Settings o) const
 {
    return values.at(o);
+}
+
+std::string Spectrum_generator_settings::get_description(Settings o) const
+{
+   return descriptions.at(o);
 }
 
 void Spectrum_generator_settings::set(Settings o, double value)

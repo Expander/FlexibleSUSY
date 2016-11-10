@@ -381,6 +381,8 @@ TEST_META += \
 		$(DIR)/test_CMSSM_3loop_beta.m \
 		$(DIR)/test_CMSSM_librarylink.m \
 		$(DIR)/test_CMSSM_librarylink_parallel.m
+TEST_SH += \
+		$(DIR)/test_CMSSM_librarylink_slha.sh
 endif
 
 TEST_OBJ := \

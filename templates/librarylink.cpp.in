@@ -22,6 +22,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
+#include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
@@ -29,6 +30,7 @@
 #include "array_view.hpp"
 #include "error.hpp"
 #include "physical_input.hpp"
+#include "slha_io.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 
@@ -136,6 +138,8 @@ struct Model_data {
    Spectrum_generator_settings settings{};   ///< spectrum generator settings
    double parameter_output_scale{0.};        ///< output scale for running parameters
    @ModelName@_slha<algorithm_type> model{}; ///< running parameters and pole masses
+   @ModelName@_observables observables{};    ///< observables
+   @ModelName@_scales scales;                ///< scale information
 };
 
 /// current handles
@@ -446,6 +450,55 @@ void put_warnings(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
+SLHA_io::Modsel get_modsel(const Model_data& data)
+{
+   SLHA_io::Modsel modsel;
+   modsel.parameter_output_scale = data.parameter_output_scale;
+
+   return modsel;
+}
+
+/******************************************************************/
+
+@ModelName@_slha_io get_slha_io(const Model_data& data)
+{
+   const auto& model = data.model;
+   const auto& problems = data.model.get_problems();
+   const auto force_output = model.do_force_output();
+   @ModelName@_slha_io slha_io;
+
+   slha_io.set_spinfo(problems);
+   slha_io.set_settings(data.settings);
+   slha_io.set_sminputs(data.qedqcd);
+   slha_io.set_physical_input(data.physical_input);
+   slha_io.set_modsel(get_modsel(data));
+   slha_io.set_minpar(data.input);
+   slha_io.set_extpar(data.input);
+   if (!problems.have_problem() || force_output) {
+      slha_io.set_print_imaginary_parts_of_majorana_mixings(
+         data.settings.get(Spectrum_generator_settings::force_positive_masses));
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model, data.scales, data.observables);
+   }
+
+   return slha_io;
+}
+
+/******************************************************************/
+
+void put_slha(const Model_data& data, MLINK link)
+{
+   const auto slha_io = get_slha_io(data);
+   std::ostringstream ostr;
+
+   slha_io.write_to_stream(ostr);
+
+   MLPutString(link, ostr.str().c_str());
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
 void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
 {
    MLPutFunction(link, "List", @numberOfSpectrumEntries@);
@@ -495,6 +548,10 @@ void calculate_spectrum(Model_data& data, MLINK link)
    data.model = @ModelName@_slha<algorithm_type>(
       spectrum_generator.get_model(),
       data.settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
+
+   data.scales.HighScale = spectrum_generator.get_high_scale();
+   data.scales.SUSYScale = spectrum_generator.get_susy_scale();
+   data.scales.LowScale  = spectrum_generator.get_low_scale();
 }
 
 /******************************************************************/
@@ -765,6 +822,25 @@ DLLEXPORT int FS@ModelName@GetProblems(
 
 /******************************************************************/
 
+DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
+{
+   if (!check_number_of_args(link, 1, "FS@ModelName@ToSLHA"))
+      return LIBRARY_TYPE_ERROR;
+
+   const auto hid = get_handle_from(link);
+
+   try {
+      put_slha(find_data(hid), link);
+   } catch (const flexiblesusy::Error& e) {
+      std::cerr << e.what() << std::endl;
+      put_error_output(link);
+   }
+
+   return LIBRARY_NO_ERROR;
+}
+
+/******************************************************************/
+
 DLLEXPORT int FS@ModelName@GetWarnings(
    WolframLibraryData /* libData */, MLINK link)
 {
@@ -832,15 +908,15 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
             "FS@ModelName@CalculateSpectrum[]?");
       }
 
-      @ModelName@_observables observables;
-
       {
          Redirect_output crd(link);
-         observables =
+         data.observables =
             calculate_observables(data.model, data.qedqcd, data.physical_input);
       }
 
-      put_observables(observables, link);
+      handles[hid] = data;
+
+      put_observables(data.observables, link);
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
       put_error_output(link);

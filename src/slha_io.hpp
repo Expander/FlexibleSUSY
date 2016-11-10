@@ -127,14 +127,9 @@ public:
    typedef boost::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
-      bool quark_flavour_violated;   ///< MODSEL[6]
-      bool lepton_flavour_violated;  ///< MODSEL[6]
-      double parameter_output_scale; ///< MODSEL[12]
-      Modsel()
-         : quark_flavour_violated(false)
-         , lepton_flavour_violated(false)
-         , parameter_output_scale(0.)
-         {}
+      bool quark_flavour_violated{false};   ///< MODSEL[6]
+      bool lepton_flavour_violated{false};  ///< MODSEL[6]
+      double parameter_output_scale{0.};    ///< MODSEL[12]
       void clear() {
          quark_flavour_violated = false;
          lepton_flavour_violated = false;
@@ -195,9 +190,12 @@ public:
    void set_block_imag(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::ComplexMatrix&, const std::string&, double scale = 0.);
+   void set_modsel(const Modsel&);
+   void set_physical_input(const Physical_input&);
+   void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
-   void write_to_file(const std::string&);
-   void write_to_stream(std::ostream& = std::cout);
+   void write_to_file(const std::string&) const;
+   void write_to_stream(std::ostream& = std::cout) const;
 
    template<int N>
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
