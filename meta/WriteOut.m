@@ -12,6 +12,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAPhasesBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
+WriteSLHAInputParameterBlocks::usage="";
 WriteExtraSLHAOutputBlock::usage="";
 CreateSLHAMassBlockStream::usage="creates ostringstream with masses";
 ReadLesHouchesInputParameters::usage="";
@@ -230,6 +231,38 @@ WriteSLHAMinparBlock[minpar_List] :=
                     body <>
                     "slha_io.set_block(minpar);\n";
            Return[result];
+          ];
+
+FindBlockElements[pars_List, blockName_String] :=
+    Cases[pars, {par_, {blockName, idx___}, ___} :> {blockName, {par, idx}}];
+
+MergeBlockElements[{}] := {};
+
+MergeBlockElements[blocks_List] :=
+    {First @ First @ blocks, Last /@ blocks};
+
+CollectSplittedBlocks[pars_List] :=
+    Module[{blocks},
+           blocks = DeleteDuplicates @ Cases[pars, {par_, {blockName_, idx__}, __} :> blockName];
+           Join[MergeBlockElements /@ (FindBlockElements[pars,#]& /@ blocks)]
+          ];
+
+CollectBlocks[pars_List] :=
+    Module[{splittedBlocks, matrixBlocks},
+           splittedBlocks = Cases[pars, {par_, {__}, ___}];
+           matrixBlocks = Complement[pars, splittedBlocks];
+           splittedBlocks = CollectSplittedBlocks[splittedBlocks];
+           matrixBlocks = Cases[matrixBlocks, {par_, blockName_, __} :> {blockName, par}];
+           Join[splittedBlocks, matrixBlocks]
+          ];
+
+WriteSLHAInputParameterBlocks[{}] := "";
+
+WriteSLHAInputParameterBlocks[pars_List] :=
+    Module[{blocks},
+           blocks = CollectBlocks[pars];
+           Parameters`CreateLocalConstRefsForInputParameters[First /@ pars] <>
+           StringJoin[WriteSLHABlock[#, "0", "INPUT"]& /@ blocks]
           ];
 
 GetSLHAMixinMatrices[] :=

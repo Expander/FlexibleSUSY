@@ -36,6 +36,7 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
+#define INPUT(p) input.p
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -90,6 +91,19 @@ void @ModelName@_slha_io::set_modsel(const SLHA_io::Modsel& modsel)
 void @ModelName@_slha_io::set_minpar(const @ModelName@_input_parameters& input)
 {
 @writeSLHAMinparBlock@
+}
+
+/**
+ * Stores all input parameters in the SLHA object.
+ *
+ * @param input struct of input parameters
+ */
+void @ModelName@_slha_io::set_input(const @ModelName@_input_parameters& input)
+{
+   set_minpar(input);
+   set_extpar(input);
+
+@writeSLHAInputParameterBlocks@
 }
 
 /**

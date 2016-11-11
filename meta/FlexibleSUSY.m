@@ -1434,7 +1434,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
-            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
+            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "", writeSLHAInputParameterBlocks = "",
             readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
@@ -1478,6 +1478,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
+           writeSLHAInputParameterBlocks = WriteSLHAInputParameterBlocks[extraSLHAInputParameters];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
@@ -1510,6 +1511,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
+                            "@writeSLHAInputParameterBlocks@"  -> IndentText[writeSLHAInputParameterBlocks],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
                             "@gaugeCouplingNormalizationDecls@"-> IndentText[gaugeCouplingNormalizationDecls],
                             "@gaugeCouplingNormalizationDefs@" -> IndentText[gaugeCouplingNormalizationDefs],

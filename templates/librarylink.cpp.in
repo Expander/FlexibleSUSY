@@ -472,8 +472,7 @@ SLHA_io::Modsel get_modsel(const Model_data& data)
    slha_io.set_sminputs(data.qedqcd);
    slha_io.set_physical_input(data.physical_input);
    slha_io.set_modsel(get_modsel(data));
-   slha_io.set_minpar(data.input);
-   slha_io.set_extpar(data.input);
+   slha_io.set_input(data.input);
    if (!problems.have_problem() || force_output) {
       slha_io.set_print_imaginary_parts_of_majorana_mixings(
          data.settings.get(Spectrum_generator_settings::force_positive_masses));
