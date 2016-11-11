@@ -160,7 +160,7 @@ void CLASSNAME::set_loop_order_down(unsigned loop_order_down_)
       WARNING("Matching loop order " << loop_order_down_
               << " for downwards matching currently not"
               " supported!  I'm using 1-loop matching.");
-      loop_order_down = 1;
+      loop_order_down_ = 1;
    }
 
    loop_order_down = loop_order_down_;
