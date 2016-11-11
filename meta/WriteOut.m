@@ -537,7 +537,7 @@ WriteSLHABlockEntry[tuple___] :=
           ""
          ];
 
-WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
+WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()", head_String:"MODELPARAMETER"] :=
     Module[{result = "", blockNameStr},
            blockNameStr = ToString[blockName];
            result = "std::ostringstream block;\n" <>
@@ -553,17 +553,17 @@ WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
            Return[result];
           ];
 
-WriteSLHABlock[{blockName_, Re[parameter_]}, scale_String:"model.get_scale()"] :=
-    WriteSLHABlock[{blockName, parameter}, scale];
+WriteSLHABlock[{blockName_, Re[parameter_]}, scale_String:"model.get_scale()", head_String:"MODELPARAMETER"] :=
+    WriteSLHABlock[{blockName, parameter}, scale, head];
 
-WriteSLHABlock[{blockName_, Im[parameter_]}, scale_String:"model.get_scale()"] :=
-    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale, "set_block_imag"];
+WriteSLHABlock[{blockName_, Im[parameter_]}, scale_String:"model.get_scale()", head_String:"MODELPARAMETER"] :=
+    WriteSLHAMatrix[{parameter, blockName}, head, scale, "set_block_imag"];
 
-WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
-    WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", scale];
+WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()", head_String:"MODELPARAMETER"] :=
+    WriteSLHAMatrix[{parameter, blockName}, head, scale];
 
-WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_String:"model.get_scale()"] :=
-    WriteSLHABlock[{blockName, parameter}, scale];
+WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_String:"model.get_scale()", head_String:"MODELPARAMETER"] :=
+    WriteSLHABlock[{blockName, parameter}, scale, head];
 
 WriteSLHAModelParametersBlocks[] :=
     Module[{modelParameters, blocks},
