@@ -122,7 +122,7 @@ void MLPutRule(MLINK link, const std::string& name, const std::vector<std::strin
 {
    MLPutFunction(link, "Rule", 2);
    MLPutHeads(link, heads);
-   MLPutUTF8Symbol(link, static_cast<const unsigned char*>(name.c_str()), name.size());
+   MLPutUTF8Symbol(link, reinterpret_cast<const unsigned char*>(name.c_str()), name.size());
 }
 
 template <class T>
