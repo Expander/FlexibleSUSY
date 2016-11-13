@@ -40,7 +40,7 @@ public:
    Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
-   typedef int (*TCallback)(void*, int, char**, char**);
+   using TCallback = int (*)(void*, int, char**, char**);
 
    class DisabledSQLiteError : Error {
    public:
