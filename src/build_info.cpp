@@ -21,6 +21,7 @@
 
 #include <boost/version.hpp>
 #include <Eigen/Core>
+#include <gsl/gsl_version.h>
 
 #include <iostream>
 
@@ -58,56 +59,87 @@ void print_version_info(std::ostream& ostr)
    const int boost_patch = BOOST_VERSION % 100;
 
    ostr <<
-      "FlexibleSUSY version:            " FLEXIBLESUSY_VERSION "\n"
-      "FlexibleSUSY git commit:         " GIT_COMMIT "\n"
-      "SARAH version:                   " SARAH_VERSION "\n"
-      "Mathematica version:             " << MATHEMATICA_VERSION << "\n"
-      "Boost version:                   " << boost_major << '.' << boost_minor
-        << '.' << boost_patch << "\n"
-      "Eigen version:                   " << EIGEN_WORLD_VERSION
+      "FlexibleSUSY version:                   " FLEXIBLESUSY_VERSION "\n"
+      "FlexibleSUSY git commit:                " GIT_COMMIT "\n"
+      "SARAH version:                          " SARAH_VERSION "\n"
+      "Mathematica version:                    " << MATHEMATICA_VERSION << "\n"
+      "Boost version:                          "
+        << boost_major << '.' << boost_minor << '.' << boost_patch << "\n"
+      "Eigen version:                          " << EIGEN_WORLD_VERSION
         << '.' << EIGEN_MAJOR_VERSION << '.' << EIGEN_MINOR_VERSION << "\n"
+      "GSL version:                            " << GSL_VERSION "\n"
       ;
 }
 
 void print_build_info(std::ostream& ostr)
 {
    ostr <<
-      "C++ compiler (CXX):              " CXX "\n"
-      "C++ compiler flags (CXXFLAGS):   " CXXFLAGS "\n"
-      "Fortran compiler (FC):           " FC "\n"
-      "Fortran compiler flags (FFLAGS): " FFLAGS "\n"
-      "Fortran libraries (FLIBS):       " FLIBS "\n"
-      "Blas library (BLASLIBS):         " BLASLIBS "\n"
-      "Boost flags (BOOSTFLAGS):        " BOOSTFLAGS "\n"
-      "Boost libraries:                 " BOOSTTESTLIBS " " BOOSTTHREADLIBS "\n"
-      "Eigen flags (EIGENFLAGS):        " EIGENFLAGS "\n"
-      "GSL flags (GSLFLAGS):            " GSLFLAGS "\n"
-      "GSL libraries (GSLLIBS):         " GSLLIBS "\n"
-      "Lapack library (LAPACKLIBS):     " LAPACKLIBS "\n"
-      "Thread libraries (THREADLIBS):   " THREADLIBS "\n"
+      "C++ compiler (CXX):                     " CXX "\n"
+      "C++ compiler flags (CXXFLAGS):          " CXXFLAGS "\n"
+      "C preprocessor flags (CPPFLAGS):        " CPPFLAGS "\n"
+      "Fortran compiler (FC):                  " FC "\n"
+      "Fortran compiler flags (FFLAGS):        " FFLAGS "\n"
+      "Fortran libraries (FLIBS):              " FLIBS "\n"
+      "BLAS library (BLASLIBS):                " BLASLIBS "\n"
+      "Boost flags (BOOSTFLAGS):               " BOOSTFLAGS "\n"
+      "Boost libraries:                        " BOOSTTESTLIBS " " BOOSTTHREADLIBS "\n"
+      "Eigen flags (EIGENFLAGS):               " EIGENFLAGS "\n"
+      "GSL flags (GSLFLAGS):                   " GSLFLAGS "\n"
+      "GSL libraries (GSLLIBS):                " GSLLIBS "\n"
+      "LAPACK library (LAPACKLIBS):            " LAPACKLIBS "\n"
+      "Loop function flags (LOOPFUNCFLAGS):    " LOOPFUNCFLAGS "\n"
+      "Loop function libraries (LOOPFUNCLIBS): " LOOPFUNCLIBS "\n"
+      "Additional flags (LDFLAGS):             " LDFLAGS "\n"
+      "Additional libraries (LDLIBS):          " LDLIBS "\n"
+      "SQLite3 flags (SQLITEFLAGS):            " SQLITEFLAGS "\n"
+      "SQLite3 libraries (SQLITELIBS):         " SQLITELIBS "\n"
+      "TSIL flags (TSILFLAGS):                 " TSILFLAGS "\n"
+      "TSIL libraries (TSILLIBS):              " TSILLIBS "\n"
+      "Thread libraries (THREADLIBS):          " THREADLIBS "\n"
       "\n"
-      "Multi-threading:                 "
+      "Debug mode:                             "
+#ifdef ENABLE_DEBUG
+      "enabled"
+#else
+      "disabled"
+#endif
+      "\n"
+      "Multi-threading:                        "
 #ifdef ENABLE_THREADS
       "enabled"
 #else
       "disabled"
 #endif
       "\n"
-      "Use LoopTools:                   "
+      "Use LoopTools:                          "
 #ifdef ENABLE_LOOPTOOLS
       "yes"
 #else
       "no"
 #endif
       "\n"
-      "Use fflite:                      "
+      "Use FFlite:                             "
 #ifdef ENABLE_FFLITE
       "yes"
 #else
       "no"
 #endif
       "\n"
-      "Eigenvalue error check:          "
+      "Use SQLite3:                            "
+#ifdef ENABLE_SQLITE
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use TSIL:                               "
+#ifdef ENABLE_TSIL
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Eigenvalue error check:                 "
 #ifdef CHECK_EIGENVALUE_ERROR
       "yes"
 #else
@@ -120,8 +152,8 @@ void print_build_info(std::ostream& ostr)
 void print_system_info(std::ostream& ostr)
 {
    ostr <<
-      "Operating system (uname -s):     " OPERATING_SYSTEM "\n"
-      "Kernel version (uname -r):       " KERNEL_VERSION "\n"
+      "Operating system (uname -s):            " OPERATING_SYSTEM "\n"
+      "Kernel version (uname -r):              " KERNEL_VERSION "\n"
       ;
 }
 
