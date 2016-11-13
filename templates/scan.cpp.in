@@ -44,11 +44,11 @@ void print_usage()
              << std::endl;
 }
 
-void set_command_line_parameters(int argc, char* argv[],
+void set_command_line_parameters(const Dynamic_array_view<char*>& args,
                                  @ModelName@_input_parameters& input)
 {
-   for (int i = 1; i < argc; ++i) {
-      const char* option = argv[i];
+   for (int i = 1; i < args.size(); ++i) {
+      const auto option = args[i];
 
 @parseCmdLineOptions@
       if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
    typedef Two_scale algorithm_type;
 
    @ModelName@_input_parameters input;
-   set_command_line_parameters(argc, argv, input);
+   set_command_line_parameters(make_dynamic_array_view(&argv[0], argc), input);
 
    softsusy::QedQcd qedqcd;
 
