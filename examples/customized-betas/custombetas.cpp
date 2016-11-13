@@ -94,8 +94,7 @@ int main(int argc, char* argv[])
    // output
    slha_io.set_spinfo(problems);
    slha_io.set_sminputs(qedqcd);
-   slha_io.set_minpar(input);
-   slha_io.set_extpar(input);
+   slha_io.set_input(input);
    if (!problems.have_problem())
       slha_io.set_spectrum(model);
 
