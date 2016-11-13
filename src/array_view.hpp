@@ -38,6 +38,12 @@ namespace flexiblesusy {
  *
  * \code{.cpp}
 double a[4] = { 1., 2., 3., 4. };
+const Dynamic_array_view<double> av(a);
+double elem = av[1]; // read 2nd element
+ * \endcode
+ *
+ * \code{.cpp}
+double a[4] = { 1., 2., 3., 4. };
 const Dynamic_array_view<double> av(a, 4);
 double elem = av[1]; // read 2nd element
  * \endcode
@@ -46,6 +52,12 @@ double elem = av[1]; // read 2nd element
 double a[4] = { 1., 2., 3., 4. };
 Dynamic_array_view<double> av(a, 4);
 av[1] = 0; // write 2nd element
+ * \endcode
+ *
+ * \code{.cpp}
+double a[4] = { 1., 2., 3., 4. };
+const auto av = make_dynamic_array_view(a);
+double elem = av[1]; // read 2nd element
  * \endcode
  *
  * \code{.cpp}
@@ -71,6 +83,9 @@ public:
       : ptr(p), len(l) {}
    constexpr Dynamic_array_view(Pointer_t first, Pointer_t last) noexcept
       : ptr(first), len(std::distance(first, last)) {}
+   template <std::size_t N>
+   constexpr Dynamic_array_view(ElementType (&arr)[N]) noexcept
+      : ptr(&arr[0]), len(N) {}
 
    constexpr Pointer_t data() const noexcept { return ptr; }
    constexpr bool empty() const noexcept { return size() == 0; }
@@ -114,6 +129,12 @@ template <typename ElementType>
 constexpr Dynamic_array_view<ElementType> make_dynamic_array_view(ElementType* first, ElementType* last)
 {
    return Dynamic_array_view<ElementType>(first, last);
+}
+
+template <typename ElementType, std::size_t N>
+constexpr Dynamic_array_view<ElementType> make_dynamic_array_view(ElementType (&arr)[N])
+{
+   return Dynamic_array_view<ElementType>(arr, N);
 }
 
 template <typename ElementType>
