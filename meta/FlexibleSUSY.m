@@ -1451,6 +1451,7 @@ Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
        
        SetEDMParticles[edmParticles];
        
+<<<<<<< f022a76758c5793154e4da8f864942d0900151ac
        Print[EDM`CreateVertices[vertexRules]];
        (*
         particles = EDM`CreateParticles[];
@@ -1470,6 +1471,25 @@ Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
                                     "@EDM_Calculation@"             -> IndentText[calculationCode],
                                     Sequence @@ GeneralReplacementRules[]
                                 } ];*)
+=======
+       particles = EDM`CreateParticles[];
+       chargeGetters = EDM`CreateChargeGetters[];
+       diagrams = EDM`CreateDiagrams[];
+       
+       vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
+       definitions = EDM`CreateDefinitions[vertexRules];
+       calculationCode = EDM`CreateCalculation[];
+       
+       (*WriteOut`ReplaceInFiles[files,
+                               { "@EDM_Particles@"                 -> particles,
+                                   "@EDM_ChargeGetters@"           -> chargeGetters,
+                                   "@EDM_Diagrams@"                -> diagrams,
+                                   "@EDM_VertexFunctionData@"      -> vertexFunctionData,
+                                   "@EDM_Definitions@"             -> definitions,
+                                   "@EDM_Calculation@"             -> IndentText[calculationCode],
+                                   Sequence @@ GeneralReplacementRules[]
+                               } ];*)
+>>>>>>> Too much to describe...
        ];
 
 EnableForBVPSolver[solver_, statements_String] :=
@@ -2734,17 +2754,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
-<<<<<<< 2f6a3062c3ce3b875f83065972915e93fa9ee0fd
               Put[vertexRules =
-                      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
+                      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, edmVertices, extraVertices], Lat$massMatrices],
                   vertexRuleFileName],
               vertexRules = Get[vertexRuleFileName];
-=======
-	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, edmVertices, extraVertices], Lat$massMatrices],
-		  vertexRuleFileName],
-	      vertexRules = Get[vertexRuleFileName];
->>>>>>> First steps towards integrating the EDM module.
               effectiveCouplings = Get[effectiveCouplingsFileName];
              ];
 
