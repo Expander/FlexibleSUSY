@@ -127,4 +127,4 @@ GSL_vector to_GSL_vector(const gsl_vector* v)
    return GSL_vector(v);
 }
 
-}
+} // namespace flexiblesusy

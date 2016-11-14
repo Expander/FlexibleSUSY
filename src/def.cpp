@@ -99,5 +99,5 @@ namespace softsusy {
   bool MB_DECOUPLING = false;
 
 #endif //COMPILE_FULL_SUSY_THRESHOLD
-}
+} // namespace softsusy
 /// end of global variable declaration

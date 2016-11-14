@@ -195,7 +195,7 @@ double QB0(double p, double m1, double m2, double Q) {
    return ReB0(p*p, m1*m1, m2*m2, Q*Q);
 }
 
-}
+} // anonymous namespace
 
 /**
  * Standard Model Higgs 1-loop self-energy as used in SUSYHD 1.0.2.

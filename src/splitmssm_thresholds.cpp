@@ -330,7 +330,7 @@ namespace {
 
       return beta;
    }
-}
+} // anonymous namespace
 
 /**
  * Finite 1-loop threshold correction for quartic Higgs coupling from
@@ -910,7 +910,7 @@ namespace {
 
       return (m12*G(m12,q2) - m22*G(m22,q2)) / (m12 - m22);
    }
-}
+} // anonymous namespace
 
 /**
  * Calculates the finite 1-loop threshold correction \f$\Delta m^2\f$

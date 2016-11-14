@@ -60,4 +60,4 @@ double Two_scale_increasing_precision::get_precision(unsigned iteration)
                    minimum_precision);
 }
 
-}
+} // namespace flexiblesusy

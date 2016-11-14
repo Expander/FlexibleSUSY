@@ -56,7 +56,7 @@ namespace {
 
       return std::fabs((a - b)/a) < prec;
    }
-}
+} // anonymous namespace
 
 double F1(double x)
 {

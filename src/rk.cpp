@@ -145,4 +145,4 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
 
 } // namespace runge_kutta
 
-}
+} // namespace flexiblesusy
