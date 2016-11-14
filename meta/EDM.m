@@ -5,7 +5,6 @@ BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "
 Initialize::usage="Initialize the EDM module.";
 
 SetEDMFields::usage="Set the fields for which the EDMs shall be calculated.";
-
 CreateFields::usage="Returns the c++ code that contains all field fields";
 CreateChargeGetters::usage="Returns the c++ code that contains the charge functions for the different EDM fields.";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
@@ -93,9 +92,7 @@ StringJoin @ Riffle[(Module[{photonVertexFields, fieldDim = TreeMasses`GetDimens
                     "\n\n"]
 
 CreateDiagrams[] :=
-<<<<<<< 76e431123ca4f745441461ea5d26d0c9858066bc
-Module[{diagramSubIndices, diagramTypeHeads, code},
-       
+Module[{code},
        code = StringJoin @ Riffle[(Module[{diagramType = #},
                                   "template<unsigned> class " <> SymbolName[diagramType] <> ";\n" <>
                                    StringJoin @ Riffle[("template<> class " <> SymbolName[diagramType] <>
@@ -116,21 +113,6 @@ Module[{diagramSubIndices, diagramTypeHeads, code},
        
        Return[code];
        ];
-=======
-    Module[{diagramTypes, diagramTypeHeads, code},
-           diagramHeads = DeleteDuplicates @ (Head /@ contributingDiagramTypes);
-
-           code = "// The different diagram types that contribute to the muon magnetic moment\n";
-           code = (code <>
-                   StringJoin @ Riffle[("template<unsigned> class " <> SymbolName[#] <> ";" &)
-                                       /@ diagramHeads, "\n"] <>
-                   "\n\n");
-
-           code = (code <> "// Indexed diagram types\n" <>
-                   StringJoin @ Riffle[("template<> class " <> SymbolName[Head[#]] <>
-                                        "<" <> ToString @ #[[1]] <> "> {};" &)
-                                       /@ contributingDiagramTypes, "\n"]);
->>>>>>> Some small fixes
 
 CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
@@ -211,75 +193,7 @@ Module[{fields, code},
        Return[code];
        ];
 
-<<<<<<< 76e431123ca4f745441461ea5d26d0c9858066bc
 (* Find all diagrams of the type type_, testing all corresponding combinations of fields *)
-=======
-(************************ Begin helper routines *******************************)
-
-GetPhoton[] := SARAH`Photon;
-
-IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __];
-
-StripLorentzIndices[p_Symbol] := p;
-StripLorentzIndices[SARAH`bar[p_]] := SARAH`bar[StripLorentzIndices[p]];
-StripLorentzIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripLorentzIndices[p]];
-StripLorentzIndices[p_] := Module[{remainingIndices},
-                                  remainingIndices = Select[p[[1]], (!IsLorentzIndex[#] &)];
-                                  If[Length[remainingIndices] === 0, Head[p],
-                                     Head[p][remainingIndices]]
-                                  ];
-SetAttributes[StripLorentzIndices, {Listable}];
-
-(* Return a string corresponding to the c++ class name of the particle.
- Note that "bar" and "conj" get turned into anti<...>::type! *)
-ParticleToCXXName[p_] := SymbolName[p];
-ParticleToCXXName[SARAH`bar[p_]] := "anti<" <> SymbolName[p] <> ">::type";
-ParticleToCXXName[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::type";
-
-(* Return a string corresponding to the name of the particle.
- Note that "bar" and "conj" are left as they are! *)
-ParticleToSARAHString[p_] := SymbolName[p];
-ParticleToSARAHString[SARAH`bar[p_]] := "bar" <> SymbolName[p];
-ParticleToSARAHString[Susyno`LieGroups`conj[p_]] := "conj" <> SymbolName[p];
-
-subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);
-AddIndexPattern[SARAH`bar[p_]] := SARAH`bar[AddIndexPattern[p]];
-AddIndexPattern[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[AddIndexPattern[p]];
-AddIndexPattern[particle_] := SARAH`getFull[SARAH`getBlank[particle]] /. subIndexPattern;
-
-CachedVertex[particles_List] :=
-    Module[{
-        vertexPattern = Alternatives @@ ({#, ___} &) /@
-                                        Permutations[AddIndexPattern /@ particles],
-            vertexList = Symbol["SARAH`VertexList" <> ToString @ Length[particles]]},
-           FirstCase[vertexList, vertexPattern]
-           ];
-
-(* Returns the name of the coupling function that FlexibleSUSY generates for
- a specific vertex in a canonical order! *)
-NameOfCouplingFunction[particles_List] :=
-((* FIXME: Not upwards compatible if naming conventions change *)
- "Cp" <> StringJoin @ (ParticleToSARAHString /@ Sort[particles]));
-
-(********************** End helper routines **************************)
-
-(* The different vertex types that are supported.
- They have the same names as their c++ counterparts. *)
-vertexTypes = {
-    SingleComponentedVertex,
-    LeftAndRightComponentedVertex
-};
-
-(* The different diagram types that should be taken into consideration *)
-(* They need to be called DIAGRAMTYPENAME[_Integer]! See CreateDiagramClasses[] below. *)
-(* There is no bounds check done on the integers, so they have to fit
- into a standard c++ unsigned (!) int *)
-contributingDiagramTypes = {
-    OneLoopDiagram[0]
-};
-
-(* Find all diagrams of the type type_, testing all corresponding combinations of particles *)
->>>>>>> Some small fixes
 (* IMPORTANT: Return value should have the format
  {{edmField1, {Diagram[DIAGRAMTYPENAME[_Integer], Fields___], Diagram[...], ...}},
   {edmField2, {...}},
@@ -374,8 +288,6 @@ CouplingsForFields[fields_List] :=
            ];
 
 (* Creates the actual c++ code for a vertex with given fields.
- If the c++ for the field list has already been created, two
- empty strings are returned.
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
 CreateVertexFunction[fields_List, vertexRules_List] :=
