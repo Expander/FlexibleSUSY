@@ -219,7 +219,7 @@ class SingleComponentedVertex {
 private:
    std::complex<double> val; ///< The value
 public:
-   SingleComponentedVertex(std::complex<double> v)
+   explicit SingleComponentedVertex(std::complex<double> v)
       : val(v) {}
 
    /**
