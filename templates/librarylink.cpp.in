@@ -136,7 +136,7 @@ struct Model_data {
    Physical_input physical_input{};          ///< extra non-SLHA physical input
    softsusy::QedQcd qedqcd{};                ///< SLHA physical input
    Spectrum_generator_settings settings{};   ///< spectrum generator settings
-   double parameter_output_scale{0.};        ///< output scale for running parameters
+   SLHA_io::Modsel modsel{};                 ///< MODSEL input
    @ModelName@_slha<algorithm_type> model{}; ///< running parameters and pole masses
    @ModelName@_observables observables{};    ///< observables
    @ModelName@_scales scales;                ///< scale information
@@ -279,7 +279,7 @@ void put_settings(const Model_data& data, MLINK link)
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::eft_matching_loop_order_down), "eftMatchingLoopOrderDown");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::eft_higgs_index), "eftHiggsIndex");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::calculate_bsm_masses), "calculateBSMMasses");
-   MLPutRuleTo(link, data.parameter_output_scale, "parameterOutputScale");
+   MLPutRuleTo(link, data.modsel.parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(link);
 }
@@ -450,16 +450,6 @@ void put_warnings(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-SLHA_io::Modsel get_modsel(const Model_data& data)
-{
-   SLHA_io::Modsel modsel;
-   modsel.parameter_output_scale = data.parameter_output_scale;
-
-   return modsel;
-}
-
-/******************************************************************/
-
 @ModelName@_slha_io get_slha_io(const Model_data& data)
 {
    const auto& model = data.model;
@@ -471,7 +461,7 @@ SLHA_io::Modsel get_modsel(const Model_data& data)
    slha_io.set_settings(data.settings);
    slha_io.set_sminputs(data.qedqcd);
    slha_io.set_physical_input(data.physical_input);
-   slha_io.set_modsel(get_modsel(data));
+   slha_io.set_modsel(data.modsel);
    slha_io.set_input(data.input);
    if (!problems.have_problem() || force_output) {
       slha_io.set_print_imaginary_parts_of_majorana_mixings(
@@ -541,7 +531,7 @@ void calculate_spectrum(Model_data& data, MLINK link)
 {
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(data.settings);
-   spectrum_generator.set_parameter_output_scale(data.parameter_output_scale);
+   spectrum_generator.set_parameter_output_scale(data.modsel.parameter_output_scale);
    spectrum_generator.run(data.qedqcd, data.input);
 
    data.model = @ModelName@_slha<algorithm_type>(
@@ -591,7 +581,7 @@ Model_data fill(const Dynamic_array_view<Element_t>& pars)
    data.settings.set(Spectrum_generator_settings::eft_matching_loop_order_down, pars[c++]);
    data.settings.set(Spectrum_generator_settings::eft_higgs_index, pars[c++]);
    data.settings.set(Spectrum_generator_settings::calculate_bsm_masses, pars[c++]);
-   data.parameter_output_scale = pars[c++];
+   data.modsel.parameter_output_scale = pars[c++];
 
    data.qedqcd.setAlpha(softsusy::ALPHA, pars[c]);
    data.qedqcd.setAlphaEmInput(pars[c++]);
