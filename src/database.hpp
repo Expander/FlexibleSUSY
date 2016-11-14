@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "error.hpp"
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -37,7 +38,7 @@ public:
    void insert(const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&);
 
    /// extract a row of doubles from a table
-   Eigen::ArrayXd extract(const std::string&, long long);
+   Eigen::ArrayXd extract(const std::string&, std::size_t);
 
 private:
    using TCallback = int (*)(void*, int, char**, char**);
