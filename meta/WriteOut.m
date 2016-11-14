@@ -233,35 +233,11 @@ WriteSLHAMinparBlock[minpar_List] :=
            Return[result];
           ];
 
-FindBlockElements[pars_List, blockName_String] :=
-    Cases[pars, {par_, {blockName, idx___}, ___} :> {blockName, {par, idx}}];
-
-MergeBlockElements[{}] := {};
-
-MergeBlockElements[blocks_List] :=
-    {First @ First @ blocks, Last /@ blocks};
-
-CollectSplittedBlocks[pars_List] :=
-    Module[{blocks},
-           blocks = DeleteDuplicates @ Cases[pars, {par_, {blockName_, idx__}, __} :> blockName];
-           Join[MergeBlockElements /@ (FindBlockElements[pars,#]& /@ blocks)]
-          ];
-
-CollectBlocks[pars_List] :=
-    Module[{splittedBlocks, matrixBlocks},
-           splittedBlocks = Cases[pars, {par_, {__}, ___}];
-           matrixBlocks = Complement[pars, splittedBlocks];
-           splittedBlocks = CollectSplittedBlocks[splittedBlocks];
-           matrixBlocks = Cases[matrixBlocks, {par_, blockName_, __} :> {blockName, par}];
-           Join[splittedBlocks, matrixBlocks]
-          ];
-
 WriteSLHAInputParameterBlocks[{}] := "";
 
 WriteSLHAInputParameterBlocks[pars_List] :=
     Module[{blocks},
-           blocks = CollectBlocks[pars];
-           Parameters`CreateLocalConstRefsForInputParameters[First /@ pars] <>
+           blocks = SortBlocks[pars];
            StringJoin[WriteSLHABlock[#, "0", "INPUT"]& /@ blocks]
           ];
 
@@ -344,10 +320,10 @@ WriteSLHAMixingMatricesBlocks[] :=
            Return[result];
           ];
 
-LesHouchesNameToFront[{parameter_, {lh_,idx_}}] :=
+LesHouchesNameToFront[{parameter_, {lh_,idx_}, ___}] :=
     {lh, {parameter, idx}};
 
-LesHouchesNameToFront[{parameter_, lh_}] :=
+LesHouchesNameToFront[{parameter_, lh_, ___}] :=
     {lh, parameter};
 
 SplitRealAndImagPartBlocks[{block_, parameter_?Parameters`IsRealParameter}] := {{block, parameter}};
