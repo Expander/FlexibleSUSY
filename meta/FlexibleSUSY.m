@@ -1957,7 +1957,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
            ];
 
-           Parameters`SetInputParameters[First /@ inputParameters];
+           Parameters`SetInputParameters[inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",
@@ -2144,7 +2144,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                         {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[First /@ inputParameters];
+              Parameters`AddInputParameters[inputParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -2183,7 +2183,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                      FlexibleSUSY`FSExtraInputParameters,
                                                      {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ lesHouchesInputParameters];
-           Parameters`AddInputParameters[First /@ inputParameters];
+           Parameters`AddInputParameters[inputParameters];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
@@ -2338,7 +2338,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                         ];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                         {#, FindPhaseInInputParameters[inputParameters,#], GuessInputParameterType[#]}& /@ freePhases];
-              Parameters`AddInputParameters[First /@ inputParameters];
+              Parameters`AddInputParameters[inputParameters];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)

@@ -72,6 +72,7 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
 GetInputParameters::usage="";
+GetInputParametersAndTypes::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
@@ -160,7 +161,8 @@ SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
 
-GetInputParameters[] := allInputParameters;
+GetInputParameters[] := First /@ allInputParameters;
+GetInputParametersAndTypes[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 GetPhases[] := allPhases;
@@ -206,7 +208,7 @@ FindAllParameters[expr_] :=
                    ]]];
            allParameters = DeleteDuplicates[
                Join[allModelParameters, allOutPars,
-                    allInputParameters, Phases`GetArg /@ allPhases,
+                    GetInputParameters[], Phases`GetArg /@ allPhases,
                     GetDependenceSPhenoSymbols[]]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
@@ -279,7 +281,7 @@ IsModelParameter[FlexibleSUSY`Temporary[parameter_]] := IsModelParameter[paramet
 IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
 
-IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
+IsInputParameter[parameter_] := MemberQ[GetInputParameters[], parameter];
 
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
@@ -441,6 +443,9 @@ GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+
+GetType[sym_?IsInputParameter] :=
+    Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
@@ -886,7 +891,7 @@ FindAllParametersClassified[expr_] :=
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                         };
            poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
-           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetInputParameters[],#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
@@ -994,7 +999,7 @@ IncreaseIndexLiterals[expr_] :=
     IncreaseIndexLiterals[expr, 1];
 
 IncreaseIndexLiterals[expr_, num_Integer] :=
-    IncreaseIndexLiterals[expr, num, Join[allInputParameters, allModelParameters,
+    IncreaseIndexLiterals[expr, num, Join[GetInputParameters[], allModelParameters,
                                           allOutputParameters]];
 
 IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
