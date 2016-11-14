@@ -50,8 +50,8 @@ void Command_line_options::parse(const Dynamic_array_view<char*>& args)
 
    program = args[0];
 
-   for (const auto& arg: args) {
-      const std::string option(arg);
+   for (int i = 1; i < args.size(); ++i) {
+      const std::string option(args[i]);
       if (starts_with(option,"--slha-input-file=")) {
          slha_input_file = option.substr(18);
          if (slha_input_file.empty())
