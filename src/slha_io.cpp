@@ -419,8 +419,9 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    set_block(ss);
 }
 
-void SLHA_io::set_modsel(const Modsel& modsel)
+void SLHA_io::set_modsel(const Modsel& modsel_)
 {
+   modsel = modsel_;
    const int qfv = modsel.quark_flavour_violated;
    const int lfv = 2 * modsel.lepton_flavour_violated;
 
