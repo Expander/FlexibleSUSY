@@ -238,7 +238,7 @@ WriteSLHAInputParameterBlocks[{}] := "";
 WriteSLHAInputParameterBlocks[pars_List] :=
     Module[{blocks},
            blocks = SortBlocks[pars];
-           StringJoin[WriteSLHABlock[#, "0", "INPUT"]& /@ blocks]
+           StringJoin[WriteSLHABlock[#, "", "INPUT"]& /@ blocks]
           ];
 
 GetSLHAMixinMatrices[] :=
