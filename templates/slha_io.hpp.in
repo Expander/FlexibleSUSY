@@ -100,8 +100,6 @@ public:
 private:
    SLHA_io slha_io; ///< SLHA io class
    bool print_imaginary_parts_of_majorana_mixings;
-   static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
-   static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
    void set_extpar(const @ModelName@_input_parameters&);
    void set_minpar(const @ModelName@_input_parameters&);

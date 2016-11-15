@@ -26,9 +26,11 @@
 #include "numerics2.hpp"
 #include "config.h"
 
+#include <array>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
 #include <boost/bind.hpp>
 
 #define Pole(p) physical.p
@@ -43,9 +45,6 @@
 using namespace softsusy;
 
 namespace flexiblesusy {
-
-char const * const @ModelName@_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
-   @drBarBlockNames@;
 
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
@@ -375,10 +374,13 @@ void @ModelName@_slha_io::fill_physical(@ModelName@_physical& physical) const
  */
 double @ModelName@_slha_io::read_scale() const
 {
+   static const std::array<std::string, @numberOfDRbarBlocks@> drbar_blocks =
+      @drBarBlockNames@;
+
    double scale = 0.;
 
-   for (unsigned i = 0; i < NUMBER_OF_DRBAR_BLOCKS; i++) {
-      const double block_scale = slha_io.read_scale(drbar_blocks[i]);
+   for (const auto& block: drbar_blocks) {
+      const double block_scale = slha_io.read_scale(block);
       if (!is_zero(block_scale)) {
          if (!is_zero(scale) && !is_equal(scale, block_scale))
             WARNING("DR-bar parameters defined at different scales");
