@@ -38,7 +38,7 @@ public:
    void insert(const std::string&, const std::vector<std::string>&, const Eigen::ArrayXd&);
 
    /// extract a row of doubles from a table
-   Eigen::ArrayXd extract(const std::string&, std::size_t);
+   Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
    using TCallback = int (*)(void*, int, char**, char**);

@@ -93,7 +93,7 @@ void Database::insert(
  * @param row row index (0 = 1st row, 1 = 2nd row, ..., -1 = last row,
  * -2 is 2nd to last row, ...)
  */
-Eigen::ArrayXd Database::extract(const std::string& table_name, std::size_t row)
+Eigen::ArrayXd Database::extract(const std::string& table_name, long long row)
 {
    Eigen::ArrayXd values;
    const std::string sql =
@@ -239,7 +239,7 @@ void Database::insert(
    throw DisabledSQLiteError("Cannot call insert(), because SQLite support is disabled.");
 }
 
-Eigen::ArrayXd Database::extract(const std::string&, std::size_t)
+Eigen::ArrayXd Database::extract(const std::string&, long long)
 {
    throw DisabledSQLiteError("Cannot call extract(), because SQLite support is disabled.");
 }
