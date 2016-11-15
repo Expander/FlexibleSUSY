@@ -449,7 +449,7 @@ WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
            result
           ];
 
-WriteSLHABlockEntry[{par_ /; MemberQ[FlexibleSUSYObservable`FSObservables,par], idx___}, comment_String:""] :=
+WriteSLHABlockEntry[{par_?IsObservable, idx___}, comment_String:""] :=
     Module[{i, dim, scalarPDG, vectorPDG, result = ""},
            Switch[par,
                   FlexibleSUSYObservable`aMuon,
