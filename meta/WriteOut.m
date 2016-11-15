@@ -1,7 +1,7 @@
 
 BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
                            "Parameters`", "TreeMasses`", "LatticeUtils`",
-                           "Utils`"}];
+                           "Utils`", "Observables`"}];
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
