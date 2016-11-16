@@ -29,12 +29,6 @@ namespace flexiblesusy {
 
 #define CLASSNAME @ModelName@_standard_model_matching_up<Two_scale>
 
-CLASSNAME::@ModelName@_standard_model_matching_up()
-   : model(0), eft(0), constraint(0), scale(0.)
-   , loop_order(0)
-   , higgs_idx(0)
-{}
-
 CLASSNAME::@ModelName@_standard_model_matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
@@ -74,8 +68,6 @@ void CLASSNAME::match()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -90,8 +82,6 @@ void CLASSNAME::match_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -135,12 +125,6 @@ void CLASSNAME::set_scale(double scale_)
 
 #define CLASSNAME @ModelName@_standard_model_matching_down<Two_scale>
 
-CLASSNAME::@ModelName@_standard_model_matching_down()
-   : model(0), eft(0), constraint(0), scale(0.)
-   , loop_order(0)
-   , higgs_idx(0)
-{}
-
 CLASSNAME::@ModelName@_standard_model_matching_down(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
@@ -180,8 +164,6 @@ void CLASSNAME::match()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -196,8 +178,6 @@ void CLASSNAME::match_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());

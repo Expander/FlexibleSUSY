@@ -39,7 +39,7 @@ template<>
 class @ModelName@_standard_model_matching_up<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_matching_up();
+   @ModelName@_standard_model_matching_up() = default;
 
    @ModelName@_standard_model_matching_up(standard_model::StandardModel<Two_scale>*,
                                           @ModelName@<Two_scale>*,
@@ -61,19 +61,19 @@ public:
    void match_tree_level();
 
 private:
-   @ModelName@<Two_scale>* model;
-   standard_model::StandardModel<Two_scale>* eft;
-   Constraint<Two_scale>* constraint;
-   double scale;
-   unsigned loop_order;
-   unsigned higgs_idx; ///< Higgs index
+   @ModelName@<Two_scale>* model{nullptr};
+   standard_model::StandardModel<Two_scale>* eft{nullptr};
+   Constraint<Two_scale>* constraint{nullptr};
+   double scale{0.};
+   unsigned loop_order{0};
+   unsigned higgs_idx{0}; ///< Higgs index
 };
 
 template<>
 class @ModelName@_standard_model_matching_down<Two_scale> : public Matching<Two_scale>
 {
 public:
-   @ModelName@_standard_model_matching_down();
+   @ModelName@_standard_model_matching_down() = default;
 
    @ModelName@_standard_model_matching_down(standard_model::StandardModel<Two_scale>*,
                                             @ModelName@<Two_scale>*,
@@ -95,12 +95,12 @@ public:
    void match_tree_level();
 
 private:
-   @ModelName@<Two_scale>* model;
-   standard_model::StandardModel<Two_scale>* eft;
-   Constraint<Two_scale>* constraint;
-   double scale;
-   unsigned loop_order;
-   unsigned higgs_idx; ///< Higgs index
+   @ModelName@<Two_scale>* model{nullptr};
+   standard_model::StandardModel<Two_scale>* eft{nullptr};
+   Constraint<Two_scale>* constraint{nullptr};
+   double scale{0.};
+   unsigned loop_order{0};
+   unsigned higgs_idx{0}; ///< Higgs index
 };
 
 } // namespace flexiblesusy
