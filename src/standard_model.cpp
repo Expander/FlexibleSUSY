@@ -35,6 +35,7 @@
 #include "config.h"
 #include "parallel.hpp"
 #include "pv.hpp"
+#include "raii.hpp"
 #include "functors.hpp"
 #include "ew_input.hpp"
 #include "weinberg_angle.hpp"
@@ -611,7 +612,7 @@ double Standard_model::G0(double p, double m1, double m2) const
  */
 void Standard_model::calculate_DRbar_masses()
 {
-   const auto old_mu2 = mu2;
+   const auto save_mu2_raii = make_raii_save(mu2);
 
    solve_ewsb_tree_level();
 
@@ -627,9 +628,6 @@ void Standard_model::calculate_DRbar_masses()
    calculate_MFv();
    calculate_MHp();
    calculate_MVG();
-
-   mu2 = old_mu2;
-
 }
 
 /**
