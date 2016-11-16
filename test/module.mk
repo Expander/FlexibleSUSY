@@ -43,6 +43,7 @@ TEST_SRC := \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_threshold_loop_functions.cpp \
+		$(DIR)/test_which.cpp \
 		$(DIR)/test_wrappers.cpp
 
 TEST_SH := \
