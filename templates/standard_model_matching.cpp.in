@@ -40,9 +40,9 @@ namespace flexiblesusy {
 namespace {
 
 template <class T>
-class Loop_order_setter {
+class RAII_set_loop_order {
 public:
-   Loop_order_setter(T& model_, unsigned loop_order_)
+   RAII_set_loop_order(T& model_, unsigned loop_order_) noexcept
       : model(model_), loop_order(loop_order_)
    {
       model_pole_mass_order = model.get_pole_mass_loop_order();
@@ -58,7 +58,7 @@ public:
       model.set_two_loop_corrections(tlc_new);
    }
 
-   ~Loop_order_setter() {
+   ~RAII_set_loop_order() {
       model.set_pole_mass_loop_order(model_pole_mass_order);
       model.set_ewsb_loop_order(model_ewsb_order);
       model.set_two_loop_corrections(tlc);
@@ -72,6 +72,12 @@ private:
    unsigned model_pole_mass_order; ///< old model pole mass loop order
    unsigned model_ewsb_order;      ///< old model EWSB loop order
 };
+
+template <typename T>
+constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loop_order)
+{
+   return RAII_set_loop_order<T>(model, loop_order);
+}
 
 } // anonymous namespace
 
@@ -111,8 +117,8 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    }
 
    // temporarily set loop order to `loop_order'
-   Loop_order_setter<Standard_model> los_sm(sm, loop_order);
-   Loop_order_setter<@ModelName@_mass_eigenstates> los_model(model, loop_order);
+   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
+   const auto los_model = make_raii_set_loop_order(model, loop_order);
 
    match_high_to_low_scale_model(sm, model, idx);
 
@@ -220,8 +226,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    }
 
    // temporarily set loop order to `loop_order'
-   Loop_order_setter<Standard_model> los_sm(sm, loop_order);
-   Loop_order_setter<@ModelName@_mass_eigenstates> los_model(model, loop_order);
+   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
+   const auto los_model = make_raii_set_loop_order(model, loop_order);
 
    match_low_to_high_scale_model(model, sm);
 
