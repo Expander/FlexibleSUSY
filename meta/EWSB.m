@@ -129,7 +129,7 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
 
 FindFreePhase[parameter_, freePhases_] :=
     Module[{phases},
-           phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | FlexibleSUSY`Sign[parameter]];
+           phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | Sign[parameter]];
            If[phases === {}, Null, phases[[1]]]
           ];
 
@@ -492,7 +492,7 @@ ReduceSolution[{{}}] := {{},{}};
 
 SignOrPhase[par_] :=
     If[Parameters`IsRealParameter[par],
-       FlexibleSUSY`Sign[par],
+       Sign[par],
        FlexibleSUSY`Phase[par]];
 
 ReduceTwoSolutions[sol1_, sol2_] :=
@@ -573,7 +573,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               (* create local const refs to input parameters appearing
                  in the solution *)
               reducedSolution = reducedSolution /. {
-                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
+                  Sign[p_]               :> Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]],
                   FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
                                                    };
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";
@@ -715,7 +715,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               (* create local const refs to input parameters appearing
                  in the solution *)
               reducedSolution = reducedSolution /. {
-                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
+                  Sign[p_]               :> Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]],
                   FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
                                                    };
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"];

@@ -1783,7 +1783,7 @@ LoadModelFile[file_String] :=
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
-GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
+GuessInputParameterType[Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
 GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
     CConversion`ScalarType[CConversion`complexScalarCType];

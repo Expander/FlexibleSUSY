@@ -82,7 +82,7 @@ TransposeIfVector[parameter_, CConversion`ArrayType[__]] :=
 TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
     SARAH`Tp[parameter];
 
-TransposeIfVector[p:FlexibleSUSY`Sign[parameter_], _] :=
+TransposeIfVector[p:Sign[parameter_], _] :=
     CConversion`ToValidCSymbolString[p];
 
 TransposeIfVector[p:FlexibleSUSY`Phase[parameter_], _] :=

@@ -482,8 +482,8 @@ DefineInputParameters[inputParameters_List] :=
 InitializeInputParameter[{FlexibleSUSY`Phase[phase_], _}] :=
     ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> "(1.,.0)";
 
-InitializeInputParameter[{FlexibleSUSY`Sign[phase_], _}] :=
-    ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "(1)";
+InitializeInputParameter[{Sign[phase_], _}] :=
+    ToValidCSymbolString[Sign[phase]] <> "(1)";
 
 InitializeInputParameter[{parameter_, type_}] :=
     CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[parameter],type];
