@@ -226,7 +226,7 @@ InvertMassRelation[fermion_, yukawa_] :=
              ];
            dim = Length[massMatrix];
            If[massMatrix === Table[0, {dim}, {dim}],
-              Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
+              Return[{yukawa,CConversion`ZEROMATRIX[dim,dim]}];
              ];
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawa];
