@@ -30,7 +30,7 @@
 namespace flexiblesusy {
 
 CLASSNAME::@ModelName@_standard_model_Matching()
-   : model(0), eft(0), constraint(0), scale(0.)
+   : model(0), eft(0), constraint(nullptr), scale(0.)
    , loop_order_up(0), loop_order_down(0)
    , higgs_idx(0)
 {}
@@ -75,8 +75,6 @@ void CLASSNAME::match_high_to_low_scale_model()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -91,8 +89,6 @@ void CLASSNAME::match_low_to_high_scale_model()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -107,8 +103,6 @@ void CLASSNAME::match_high_to_low_scale_model_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
@@ -120,8 +114,6 @@ void CLASSNAME::match_low_to_high_scale_model_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
