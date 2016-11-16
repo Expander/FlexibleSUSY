@@ -34,7 +34,7 @@ CalculateElectromagneticCoupling[scheme_] :=
                               FlexibleSUSY`MSbar, 0,
                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                              ];
-         CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme] + conversion
+         CalculateCoupling[{SARAH`electricCharge, SARAH`electricCharge, SARAH`U[1]}, scheme] + conversion
         ];
 
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
