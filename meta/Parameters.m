@@ -41,7 +41,6 @@ AddRealParameter::usage="";
 SetRealParameters::usage="";
 
 SaveParameterLocally::usage="Save parameters in local variables";
-RestoreParameter::usage="Restore parameters from local variables";
 
 GetType::usage="";
 GetPhase::usage="";
@@ -830,37 +829,14 @@ SetParameter[parameter_, value_, castToType_:None] :=
     CConversion`ToValidCSymbolString[StripIndices[parameter]] <> CreateIndices[parameter] <> " = " <>
     CConversion`CastTo[CConversion`RValueToCFormString[value],castToType] <> ";\n";
 
-SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> SaveParameterLocally[parameters[[i]], prefix, caller];
-              ];
-           Return[result];
-          ];
+SaveParameterLocally[parameters_List] :=
+    StringJoin[SaveParameterLocally /@ parameters];
 
-SaveParameterLocally[parameter_, prefix_String, caller_String] :=
+SaveParameterLocally[parameter_] :=
     Module[{ parStr, parStrSym },
            parStr = CConversion`RValueToCFormString[parameter];
            parStrSym = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStrSym <> " = " <>
-           If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
-          ];
-
-RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> RestoreParameter[parameters[[i]], prefix, modelPtr];
-              ];
-           Return[result];
-          ];
-
-RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
-    Module[{ parStr, parStrSym },
-           parStr = CConversion`RValueToCFormString[parameter];
-           parStrSym = CConversion`ToValidCSymbolString[parameter];
-           If[modelPtr != "",
-              SetParameter[parameter, prefix <> parStrSym, modelPtr],
-              parStr <> " = " <> prefix <> parStrSym <> ";\n"]
+           "const auto save_" <> parStrSym <> "_raii = make_raii_save(" <> parStr <> ");\n"
           ];
 
 RemoveProtectedHeads[expr_] :=
