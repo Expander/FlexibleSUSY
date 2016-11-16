@@ -622,7 +622,7 @@ Protect[If];
 
 Unprotect[Which];
 Format[Which[cond_,args__],CForm] :=
-    Format["Which(" <>
+    Format["WHICH(" <>
            Utils`StringJoinWithSeparator[CForm[Evaluate[#]]& /@ {cond,args}, ", "] <>
            ")", OutputForm];
 Protect[Which];
