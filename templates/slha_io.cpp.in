@@ -31,7 +31,6 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <boost/bind.hpp>
 
 #define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
@@ -284,10 +283,13 @@ void @ModelName@_slha_io::read_from_stream(std::istream& istr)
  */
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
-   SLHA_io::Tuple_processor minpar_processor
-      = boost::bind(&@ModelName@_slha_io::fill_minpar_tuple, boost::ref(input), _1, _2);
-   SLHA_io::Tuple_processor extpar_processor
-      = boost::bind(&@ModelName@_slha_io::fill_extpar_tuple, boost::ref(input), _1, _2);
+   SLHA_io::Tuple_processor minpar_processor = [&input, this] (int key, double value) {
+      return fill_minpar_tuple(input, key, value);
+   };
+
+   SLHA_io::Tuple_processor extpar_processor = [&input, this] (int key, double value) {
+      return fill_extpar_tuple(input, key, value);
+   };
 
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);

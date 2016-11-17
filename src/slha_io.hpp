@@ -101,8 +101,9 @@ void read_file() {
    SLHA_io reader;
    reader.read_from_file("file.slha");
 
-   SLHA_io::Tuple_processor processor
-      = boost::bind(&process_tuple, array, _1, _2);
+   SLHA_io::Tuple_processor processor = [&array] (int key, double value) {
+      return process_tuple(array, key, value);
+   };
 
    reader.read_block("MyBlock", processor);
 }
@@ -124,7 +125,7 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef boost::function<void(int, double)> Tuple_processor;
+   typedef std::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
       bool quark_flavour_violated{false};   ///< MODSEL[6]

@@ -15,7 +15,6 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
-#include <boost/bind.hpp>
 
 using namespace softsusy;
 using namespace Eigen;
@@ -206,7 +205,10 @@ double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
   ArrayXd v(1);
   v(0) = 1.0;
 
-  runge_kutta::Derivs derivs = boost::bind(&dd_threadsave, _1, _2, n1, p, m1, m2, mt);
+  runge_kutta::Derivs derivs =
+     [n1, p, m1, m2, mt] (double x, const Eigen::ArrayXd& y) {
+        return dd_threadsave(x, y, n1, p, m1, m2, mt);
+     };
 
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
                              runge_kutta::odeStepper);

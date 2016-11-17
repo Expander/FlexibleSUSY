@@ -27,7 +27,6 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
-#include <boost/bind.hpp>
 
 namespace flexiblesusy {
 
@@ -143,8 +142,9 @@ void SLHA_io::read_from_stream(std::istream& istr)
 
 void SLHA_io::read_modsel()
 {
-   SLHA_io::Tuple_processor modsel_processor
-      = boost::bind(&SLHA_io::process_modsel_tuple, boost::ref(modsel), _1, _2);
+   Tuple_processor modsel_processor = [this] (int key, double value) {
+      return process_modsel_tuple(modsel, key, value);
+   };
 
    read_block("MODSEL", modsel_processor);
 }
@@ -154,21 +154,24 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
    CKM_wolfenstein ckm_wolfenstein;
    PMNS_parameters pmns_parameters;
 
-   SLHA_io::Tuple_processor sminputs_processor
-      = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(qedqcd), _1, _2);
+   Tuple_processor sminputs_processor = [&qedqcd, this] (int key, double value) {
+      return process_sminputs_tuple(qedqcd, key, value);
+   };
 
    read_block("SMINPUTS", sminputs_processor);
 
    if (modsel.quark_flavour_violated) {
-      SLHA_io::Tuple_processor vckmin_processor
-         = boost::bind(&SLHA_io::process_vckmin_tuple, boost::ref(ckm_wolfenstein), _1, _2);
+      Tuple_processor vckmin_processor = [&ckm_wolfenstein, this] (int key, double value) {
+         return process_vckmin_tuple(ckm_wolfenstein, key, value);
+      };
 
       read_block("VCKMIN", vckmin_processor);
    }
 
    if (modsel.lepton_flavour_violated) {
-      SLHA_io::Tuple_processor upmnsin_processor
-         = boost::bind(&SLHA_io::process_upmnsin_tuple, boost::ref(pmns_parameters), _1, _2);
+      Tuple_processor upmnsin_processor = [&pmns_parameters, this] (int key, double value) {
+         return process_upmnsin_tuple(pmns_parameters, key, value);
+      };
 
       read_block("UPMNSIN", upmnsin_processor);
    }
@@ -194,8 +197,9 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
  */
 void SLHA_io::fill(Physical_input& input) const
 {
-   SLHA_io::Tuple_processor processor
-      = boost::bind(&SLHA_io::process_flexiblesusyinput_tuple, boost::ref(input), _1, _2);
+   Tuple_processor processor = [&input, this] (int key, double value) {
+      return process_flexiblesusyinput_tuple(input, key, value);
+   };
 
    read_block("FlexibleSUSYInput", processor);
 }
@@ -208,8 +212,9 @@ void SLHA_io::fill(Physical_input& input) const
  */
 void SLHA_io::fill(Spectrum_generator_settings& settings) const
 {
-   SLHA_io::Tuple_processor flexiblesusy_processor
-      = boost::bind(&SLHA_io::process_flexiblesusy_tuple, boost::ref(settings), _1, _2);
+   Tuple_processor flexiblesusy_processor = [&settings, this] (int key, double value) {
+      return process_flexiblesusy_tuple(settings, key, value);
+   };
 
    read_block("FlexibleSUSY", flexiblesusy_processor);
 }
