@@ -225,6 +225,12 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_paramete
    const double high_scale_guess = high_constraint.get_initial_scale_guess();
 
    model->set_scale(susy_scale_guess);
+
+   // apply susy-scale first guess
+   {
+@initialGuessAtSUSYScale@
+   }
+
    eft->run_to(susy_scale_guess, running_precision);
    eft->calculate_DRbar_masses();
 
@@ -234,12 +240,7 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_model_paramete
    matching.set_constraint(&susy_constraint);
    matching.match_low_to_high_scale_model_tree_level();
 
-   // apply susy-scale first guess
    model->run_to(susy_scale_guess, running_precision);
-
-   {
-@initialGuessAtSUSYScale@
-   }
 
    // apply susy-scale constraint
    susy_constraint.set_model(model);
