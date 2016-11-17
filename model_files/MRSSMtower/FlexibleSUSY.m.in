@@ -21,6 +21,8 @@ SUSYScale = MS;
 SUSYScaleFirstGuess = MS;
 
 SUSYScaleInput = {
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
     {mq2   , LHInput[mq2]},
     {mu2   , LHInput[mu2]},
     {md2   , LHInput[md2]},
@@ -46,12 +48,38 @@ SUSYScaleInput = {
     {B[MuU], 0}  (* non-zero B[MuU] would break R-symmetry *)
 };
 
-InitialGuessAtSUSYScale = SUSYScaleInput;
+InitialGuessAtSUSYScale = {
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {mq2   , LHInput[mq2]},
+    {mu2   , LHInput[mu2]},
+    {md2   , LHInput[md2]},
+    {ml2   , LHInput[ml2]},
+    {me2   , LHInput[me2]},
+    {mS2   , LHInput[mS2]},
+    {mT2   , LHInput[mT2]},
+    {moc2  , LHInput[moc2]},
+    {mRd2  , LHInput[mRd2]},
+    {mRu2  , LHInput[mRu2]},
+    {B[\[Mu]], LHInput[B[\[Mu]]]},
+    {LamSD , SARAH`LHInput[LamSD]},
+    {LamSU , SARAH`LHInput[LamSU]},
+    {LamTD , SARAH`LHInput[LamTD]},
+    {LamTU , SARAH`LHInput[LamTU]},
+    {MDBS  , LHInput[MDBS] },
+    {MDGoc , LHInput[MDGoc]},
+    {MDWBT , LHInput[MDWBT]},
+    {MuD   , LHInput[MuD]},
+    {MuU   , LHInput[MuU]},
+    {\[Mu] , 0}, (* non-zero Mu would break R-symmetry *)
+    {B[MuD], 0}, (* non-zero B[MuD] would break R-symmetry *)
+    {B[MuU], 0}  (* non-zero B[MuU] would break R-symmetry *)
+};
 
 (* VEV is the SM-like VEV in the MRSSM *)
 SUSYScaleMatching = {
-    {vu, VEV Sin[ArcTan[TanBeta]]},
-    {vd, VEV Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[vu/vd]]},
+    {vd, VEV Cos[ArcTan[vu/vd]]}
 };
 
 LowScale = LowEnergyConstant[MZ];

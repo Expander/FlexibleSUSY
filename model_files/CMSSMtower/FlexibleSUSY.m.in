@@ -17,7 +17,10 @@ SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
-SUSYScaleInput = {};
+SUSYScaleInput = {
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]}
+};
 
 HighScale = g1 == g2;
 
@@ -39,12 +42,17 @@ HighScaleInput = {
     {MassG, m12}
 };
 
-InitialGuessAtSUSYScale = InitialGuessAtHighScale = HighScaleInput;
+InitialGuessAtSUSYScale = {
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtHighScale = HighScaleInput;
 
 (* VEV is the SM-like VEV in the MSSM *)
 SUSYScaleMatching = {
-    {vu, VEV Sin[ArcTan[TanBeta]]},
-    {vd, VEV Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[vu/vd]]},
+    {vd, VEV Cos[ArcTan[vu/vd]]}
 };
 
 LowScale = LowEnergyConstant[MZ];

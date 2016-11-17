@@ -48,6 +48,8 @@ SUSYScale = MSUSY;
 SUSYScaleFirstGuess = MSUSY;
 
 SUSYScaleInput = {
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
     {gN, gNInput},
     {MassB, M1Input},
     {MassWB, M2Input},
@@ -79,11 +81,43 @@ SUSYScaleInput = {
     {T[Ye], AeInput Ye}
 };
 
-InitialGuessAtSUSYScale = SUSYScaleInput;
+InitialGuessAtSUSYScale = {
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {gN, gNInput},
+    {MassB, M1Input},
+    {MassWB, M2Input},
+    {MassG, M3Input},
+    {MassBp, M4Input},
+    {mq2, mq2Input},
+    {mu2, mu2Input},
+    {md2, md2Input},
+    {ml2, ml2Input},
+    {me2, me2Input},
+    {mDx2, mDx2Input},
+    {mDxbar2, mDxbar2Input},
+    {mH1I2, mH1I2Input},
+    {mH2I2, mH2I2Input},
+    {msI2, msI2Input},
+    {mHp2, mHp2Input},
+    {mHpbar2, mHpbar2Input},
+    {B[\[Mu]Pr], BMuPrInput},
+    {\[Mu]Pr, MuPrInput},
+    {\[Kappa], KappaInput},
+    {\[Lambda]12, Lambda12Input},
+    {\[Lambda], LambdaInput},
+    {T[\[Kappa]], AKappaInput KappaInput},
+    {T[\[Lambda]12], ALambda12Input Lambda12Input},
+    {vs, Sqrt[2] MuInput/LambdaInput},
+    {T[\[Lambda]], Sqrt[2] mAInput^2 / (vs (TanBeta + 1/TanBeta))},
+    {T[Yu], AuInput Yu},
+    {T[Yd], AdInput Yd},
+    {T[Ye], AeInput Ye}
+};
 
 SUSYScaleMatching = {
-    {vu, VEV Sin[ArcTan[TanBeta]]},
-    {vd, VEV Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[vu/vd]]},
+    {vd, VEV Cos[ArcTan[vu/vd]]}
 };
 
 LowScale = LowEnergyConstant[MZ];
