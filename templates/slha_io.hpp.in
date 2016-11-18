@@ -195,8 +195,7 @@ void @ModelName@_slha_io::set_extra(
 template <class T>
 void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
 {
-   const @ModelName@_slha<T> model_slha(model);
-   set_spectrum(model_slha);
+   set_spectrum(@ModelName@_slha<T>(model));
 }
 
 /**
