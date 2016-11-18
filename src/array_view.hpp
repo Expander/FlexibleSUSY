@@ -111,7 +111,7 @@ private:
    Pointer_t ptr{nullptr};
    Index_t len{0};
 
-   constexpr void check_range(Index_t idx) const {
+   void check_range(Index_t idx) const {
       if (idx < 0 || idx >= len)
          throw OutOfBoundsError(
             "Dynamic_array_view index " + std::to_string(idx)
