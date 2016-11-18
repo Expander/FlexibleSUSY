@@ -44,19 +44,19 @@ namespace flexiblesusy {
  * double y = Uniform<std::mt19937>::dice(0., 1.); // uses std::mt19937
  * @endcode
  */
-template <class Generator = std::minstd_rand>
+template <typename Generator = std::minstd_rand, typename RealType = double>
 class Uniform {
 public:
    /// returns random number between start and stop
-   static double dice(double start, double stop) {
+   static RealType dice(RealType start, RealType stop) {
       static Generator generator;
-      static std::uniform_real_distribution<double> distribution(start, stop);
+      static std::uniform_real_distribution<RealType> distribution(start, stop);
       return distribution(generator);
    }
    /// returns random number between 0. and 1.
-   static double dice() {
+   static RealType dice() {
       static Generator generator;
-      static std::uniform_real_distribution<double> distribution;
+      static std::uniform_real_distribution<RealType> distribution;
       return distribution(generator);
    }
 };
