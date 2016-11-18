@@ -49,23 +49,17 @@ class Uniform {
 public:
    /// returns random number between start and stop
    static double dice(double start, double stop) {
-      return start + (stop - start) * distribution(generator);
+      static Generator generator;
+      static std::uniform_real_distribution<double> distribution(start, stop);
+      return distribution(generator);
    }
    /// returns random number between 0. and 1.
    static double dice() {
+      static Generator generator;
+      static std::uniform_real_distribution<double> distribution;
       return distribution(generator);
    }
-private:
-   static Generator generator; ///< random number generator
-   static std::uniform_real_distribution<double> distribution;
 };
-
-template <class Generator>
-Generator Uniform<Generator>::generator = Generator();
-
-template <class Generator>
-std::uniform_real_distribution<double> Uniform<Generator>::distribution
-   = std::uniform_real_distribution<double>(0., 1.);
 
 } // namespace flexiblesusy
 
