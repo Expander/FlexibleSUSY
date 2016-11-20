@@ -1418,6 +1418,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             inputParameterEnum = "", inputParameterNames = "",
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
+            isFlexibleEFTHiggs = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
@@ -1454,6 +1455,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            isLowEnergyModel = If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True, "true", "false"];
            isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
+           isFlexibleEFTHiggs = If[FlexibleSUSY`FlexibleEFTHiggs === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
@@ -1487,6 +1489,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@inputParameterNames@"-> IndentText[WrapLines[inputParameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
                             "@isSupersymmetricModel@" -> isSupersymmetricModel,
+                            "@isFlexibleEFTHiggs@" -> isFlexibleEFTHiggs,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],

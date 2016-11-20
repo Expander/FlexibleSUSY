@@ -82,8 +82,8 @@ namespace standard_model_info {
    extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;
    extern const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names;
    extern const std::string model_name;
-   extern const bool is_low_energy_model;
-   extern const bool is_supersymmetric_model;
+   constexpr bool is_low_energy_model = false;
+   constexpr bool is_supersymmetric_model = false;
 
 } // namespace standard_model_info
 
