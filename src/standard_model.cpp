@@ -98,8 +98,6 @@ namespace standard_model_info {
       "Re(Ue(2,2))", "Im(Ue(2,2))"};
 
    const char* model_name = "Standard_model";
-   const bool is_low_energy_model = false;
-   const bool is_supersymmetric_model = false;
 
 void print(std::ostream& ostr)
 {
