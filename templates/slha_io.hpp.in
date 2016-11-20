@@ -32,7 +32,11 @@
 
 #include <Eigen/Core>
 #include <string>
+#include <tuple>
 #include <utility>
+
+#include <boost/fusion/include/for_each.hpp>
+#include <boost/fusion/adapted/std_tuple.hpp>
 
 #define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
@@ -79,6 +83,7 @@ public:
    void set_physical_input(const Physical_input&);
    void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
+   template <class... Ts> void set_spectrum(const std::tuple<Ts...>&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>&);
@@ -184,6 +189,23 @@ void @ModelName@_slha_io::set_extra(
    const @ModelName@_physical physical(model.get_physical_slha());
 
 @writeExtraSLHAOutputBlock@
+}
+
+namespace {
+template<class S>
+struct Set_spectrum {
+   S* slha_io;
+   Set_spectrum(S* slha_io_) : slha_io(slha_io_) {}
+   template<typename T>
+   void operator()(const T& model) const { slha_io->set_spectrum(model); }
+};
+} // anonymous namespace
+
+template <class... Ts>
+void @ModelName@_slha_io::set_spectrum(const std::tuple<Ts...>& models)
+{
+   Set_spectrum<@ModelName@_slha_io> ss(this);
+   boost::fusion::for_each(models, ss);
 }
 
 /**
