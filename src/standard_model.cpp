@@ -97,7 +97,7 @@ namespace standard_model_info {
       "Im(Ue(1,2))", "Re(Ue(2,0))", "Im(Ue(2,0))", "Re(Ue(2,1))", "Im(Ue(2,1))",
       "Re(Ue(2,2))", "Im(Ue(2,2))"};
 
-   const char* model_name = "Standard_model";
+   const char* model_name = "StandardModel";
 
 void print(std::ostream& ostr)
 {
