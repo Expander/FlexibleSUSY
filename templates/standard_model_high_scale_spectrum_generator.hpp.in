@@ -60,6 +60,11 @@ public:
    {}
    virtual ~@ModelName@_spectrum_generator() {}
 
+   std::tuple<@ModelName@<T>, standard_model::StandardModel<T>> get_models() const
+   { return std::make_tuple(this->get_model(), eft); }
+   std::tuple<@ModelName@_slha<T>, standard_model::StandardModel<T>> get_models_slha() const
+   { return std::make_tuple(this->get_model_slha(), eft); }
+
    const standard_model::StandardModel<T>& get_eft() const { return eft; }
    double get_high_scale() const { return high_scale_constraint.get_scale(); }
    double get_susy_scale() const { return susy_scale_constraint.get_scale(); }

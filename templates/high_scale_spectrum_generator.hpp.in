@@ -36,6 +36,7 @@
 #include "two_scale_solver.hpp"
 
 #include <limits>
+#include <tuple>
 
 namespace flexiblesusy {
 
@@ -50,6 +51,9 @@ public:
       , low_scale_constraint()
    {}
    virtual ~@ModelName@_spectrum_generator() {}
+
+   std::tuple<@ModelName@<T>> get_models() const { return std::make_tuple(this->get_model()); }
+   std::tuple<@ModelName@_slha<T>> get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
 
    double get_high_scale() const { return high_scale_constraint.get_scale(); }
    double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
