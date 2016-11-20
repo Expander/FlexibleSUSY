@@ -1,4 +1,13 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "GMuonMinus2`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`"}];
+BeginPackage["FlexibleSUSY`",
+             {"SARAH`", "AnomalousDimension`", "BetaFunction`",
+             "TextFormatting`", "CConversion`", "TreeMasses`",
+             "EWSB`", "Traces`", "SelfEnergies`", "Vertices`",
+             "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
+             "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
+             "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
+             "GMuonMinus2`", "EffectiveCouplings`",
+             "FlexibleEFTHiggsMatching`", "FSMathLink`",
+             "FlexibleTower`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -562,6 +571,7 @@ GeneralReplacementRules[] :=
                  ]
              ]]
             ],
+      "@ModelTypes@"          -> FlexibleTower`GetModelTypes[],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
