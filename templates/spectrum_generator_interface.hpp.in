@@ -22,6 +22,7 @@
 #define @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_utilities.hpp"
 
 #include "spectrum_generator_settings.hpp"
@@ -48,6 +49,7 @@ public:
 
    const @ModelName@<T>& get_model() const { return model; }
    @ModelName@<T>& get_model() { return model; }
+   @ModelName@_slha<T> get_model_slha() const { return @ModelName@_slha<T>(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.); }
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const {
       return model.get_problems();
    }

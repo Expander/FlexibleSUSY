@@ -88,14 +88,14 @@ int main(int argc, char* argv[])
    spectrum_generator.run(qedqcd, input);
 
    const int exit_code = spectrum_generator.get_exit_code();
-   const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
+   const auto model = spectrum_generator.get_model_slha();
 
    @ModelName@_scales scales;
    scales.HighScale = spectrum_generator.get_high_scale();
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   const @ModelName@_observables observables(calculate_observables(model, qedqcd, physical_input));
+   const auto observables = calculate_observables(model, qedqcd, physical_input);
 
    // SLHA output
    SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales, observables));

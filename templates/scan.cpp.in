@@ -93,8 +93,8 @@ int main(int argc, char* argv[])
 
       spectrum_generator.run(qedqcd, input);
 
-      const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
-      const @ModelName@_physical& pole_masses = model.get_physical_slha();
+      const auto model = spectrum_generator.get_model_slha();
+      const auto& pole_masses = model.get_physical_slha();
       const auto& problems = spectrum_generator.get_problems();
       const double higgs = pole_masses.M@HiggsBoson_0@;
       const bool error = problems.have_problem();

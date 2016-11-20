@@ -78,9 +78,7 @@ int main(int argc, char* argv[])
 
    spectrum_generator.run(qedqcd, input);
 
-   const @ModelName@_slha<algorithm_type> model(
-      spectrum_generator.get_model(),
-      spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses) == 0.);
+   const auto model = spectrum_generator.get_model_slha();
    const auto& problems = spectrum_generator.get_problems();
 
    @ModelName@_scales scales;
