@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 
    spectrum_generator.run(qedqcd, input);
 
-   const auto model = spectrum_generator.get_model_slha();
+   const auto models = spectrum_generator.get_models_slha();
    const auto& problems = spectrum_generator.get_problems();
 
    @ModelName@_scales scales;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
    @ModelName@_observables observables;
    if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
-      observables = calculate_observables(model, qedqcd, physical_input);
+      observables = calculate_observables(std::get<0>(models), qedqcd, physical_input);
 
    // SLHA output
    if (!slha_output_file.empty()) {
@@ -98,8 +98,8 @@ int main(int argc, char* argv[])
           spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
          slha_io.set_print_imaginary_parts_of_majorana_mixings(
             spectrum_generator_settings.get(Spectrum_generator_settings::force_positive_masses));
-         slha_io.set_spectrum(model);
-         slha_io.set_extra(model, scales, observables);
+         slha_io.set_spectrum(models);
+         slha_io.set_extra(std::get<0>(models), scales, observables);
       }
 
       slha_io.write_to(slha_output_file);
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
    if (!database_output_file.empty() &&
        (!problems.have_problem() ||
         spectrum_generator_settings.get(Spectrum_generator_settings::force_output))) {
-      @ModelName@_database::to_database(database_output_file, model, &qedqcd,
+      @ModelName@_database::to_database(database_output_file, std::get<0>(models), &qedqcd,
                                         &physical_input, &observables);
    }
 

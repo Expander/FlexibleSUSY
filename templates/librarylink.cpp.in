@@ -142,7 +142,7 @@ struct Model_data {
    softsusy::QedQcd qedqcd{};                ///< SLHA physical input
    Spectrum_generator_settings settings{};   ///< spectrum generator settings
    SLHA_io::Modsel modsel{};                 ///< MODSEL input
-   @ModelName@_slha<algorithm_type> model{}; ///< running parameters and pole masses
+   std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
    @ModelName@_observables observables{};    ///< observables
    @ModelName@_scales scales;                ///< scale information
 };
@@ -413,7 +413,7 @@ void put_masses(MLINK link, const std::string& rule,
 
 void put_problems(const Model_data& data, MLINK link)
 {
-   const auto& problems = data.model.get_problems();
+   const auto& problems = std::get<0>(data.models).get_problems();
    const auto n_problems = number_of_problems(problems);
 
    MLPutFunction(link, "List", n_problems);
@@ -442,7 +442,7 @@ void put_problems(const Model_data& data, MLINK link)
 
 void put_warnings(const Model_data& data, MLINK link)
 {
-   const auto& problems = data.model.get_problems();
+   const auto& problems = std::get<0>(data.models).get_problems();
    const auto n_warnings = number_of_warnings(problems);
 
    MLPutFunction(link, "List", n_warnings);
@@ -457,9 +457,9 @@ void put_warnings(const Model_data& data, MLINK link)
 
 @ModelName@_slha_io get_slha_io(const Model_data& data)
 {
-   const auto& model = data.model;
-   const auto& problems = data.model.get_problems();
-   const auto force_output = model.do_force_output();
+   const auto& models = data.models;
+   const auto& problems = std::get<0>(models).get_problems();
+   const auto force_output = std::get<0>(models).do_force_output();
    @ModelName@_slha_io slha_io;
 
    slha_io.set_spinfo(problems);
@@ -471,8 +471,8 @@ void put_warnings(const Model_data& data, MLINK link)
    if (!problems.have_problem() || force_output) {
       slha_io.set_print_imaginary_parts_of_majorana_mixings(
          data.settings.get(Spectrum_generator_settings::force_positive_masses));
-      slha_io.set_spectrum(model);
-      slha_io.set_extra(model, data.scales, data.observables);
+      slha_io.set_spectrum(models);
+      slha_io.set_extra(std::get<0>(models), data.scales, data.observables);
    }
 
    return slha_io;
@@ -591,7 +591,7 @@ void put_observables(const @ModelName@_observables& observables, MLINK link)
 
 void check_spectrum(const Model_data& data, MLINK link)
 {
-   const auto& problems = data.model.get_problems();
+   const auto& problems = std::get<0>(data.models).get_problems();
 
    for (const auto& s: problems.get_problem_strings())
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
@@ -613,7 +613,7 @@ void calculate_spectrum(Model_data& data, MLINK link)
    spectrum_generator.set_parameter_output_scale(data.modsel.parameter_output_scale);
    spectrum_generator.run(data.qedqcd, data.input);
 
-   data.model = spectrum_generator.get_model_slha();
+   data.models = spectrum_generator.get_models_slha();
    data.scales.HighScale = spectrum_generator.get_high_scale();
    data.scales.SUSYScale = spectrum_generator.get_susy_scale();
    data.scales.LowScale  = spectrum_generator.get_low_scale();
@@ -945,7 +945,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       handles[hid] = data;
 
       check_spectrum(data, link);
-      put_spectra(std::make_tuple(data.model), link);
+      put_spectra(data.models, link);
    } catch (const flexiblesusy::Error&) {
       put_error_output(link);
    }
@@ -966,7 +966,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    try {
       auto data = find_data(hid);
 
-      if (data.model.get_scale() == 0.) {
+      if (std::get<0>(data.models).get_scale() == 0.) {
          put_message(link,
             "FS@ModelName@CalculateObservables", "warning",
             "Renormalization scale is 0.  Did you run "
@@ -976,7 +976,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
       {
          Redirect_output crd(link);
          data.observables =
-            calculate_observables(data.model, data.qedqcd, data.physical_input);
+            calculate_observables(std::get<0>(data.models), data.qedqcd, data.physical_input);
       }
 
       handles[hid] = data;
