@@ -18,6 +18,7 @@
 
 // File generated at @DateAndTime@
 
+#include "@ModelName@_info.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"

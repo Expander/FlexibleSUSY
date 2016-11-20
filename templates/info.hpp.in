@@ -41,6 +41,7 @@ namespace @ModelName@_info {
    extern const char* model_name;
    extern const bool is_low_energy_model;
    extern const bool is_supersymmetric_model;
+   extern const bool is_FlexibleEFTHiggs;
 
    void print(std::ostream&);
 }
