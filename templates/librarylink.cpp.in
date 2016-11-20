@@ -26,6 +26,7 @@
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
+#include "standard_model_two_scale_model.hpp"
 
 #include "array_view.hpp"
 #include "error.hpp"
@@ -44,7 +45,11 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <utility>
+
+#include <boost/fusion/include/for_each.hpp>
+#include <boost/fusion/adapted/std_tuple.hpp>
 
 #define INPUTPARAMETER(p) data.input.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -488,11 +493,85 @@ void put_slha(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
+void put_spectrum(const standard_model::StandardModel<algorithm_type>& model, MLINK link)
+{
+   MLPutRule(link, standard_model_info::model_name);
+   MLPutFunction(link, "List", 46);
+
+   MLPutRuleTo(link, MODELPARAMETER(MVG), "VG", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MHp), "Hp", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MFv), "Fv", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MAh), "Ah", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(Mhh), "hh", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MFd), "Fd", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MFu), "Fu", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MFe), "Fe", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MVWp), "VWp", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MVP), "VP", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(MVZ), "VZ", {"M"});
+   MLPutRuleTo(link, MODELPARAMETER(Vd), "Vd");
+   MLPutRuleTo(link, MODELPARAMETER(Ud), "Ud");
+   MLPutRuleTo(link, MODELPARAMETER(Vu), "Vu");
+   MLPutRuleTo(link, MODELPARAMETER(Uu), "Uu");
+   MLPutRuleTo(link, MODELPARAMETER(Ve), "Ve");
+   MLPutRuleTo(link, MODELPARAMETER(Ue), "Ue");
+   MLPutRuleTo(link, MODELPARAMETER(ZZ), "ZZ");
+   MLPutRuleTo(link, PHYSICALPARAMETER(MVG), "VG", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MHp), "Hp", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MFv), "Fv", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MAh), "Ah", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Mhh), "hh", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MFd), "Fd", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MFu), "Fu", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MFe), "Fe", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MVWp), "VWp", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MVP), "VP", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(MVZ), "VZ", {"Pole", "M"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Vd), "Vd", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Ud), "Ud", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Vu), "Vu", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Uu), "Uu", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Ve), "Ve", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(Ue), "Ue", {"Pole"});
+   MLPutRuleTo(link, PHYSICALPARAMETER(ZZ), "ZZ", {"Pole"});
+   MLPutRuleTo(link, MODELPARAMETER(g1), "g1");
+   MLPutRuleTo(link, MODELPARAMETER(g2), "g2");
+   MLPutRuleTo(link, MODELPARAMETER(g3), "g3");
+   MLPutRuleTo(link, MODELPARAMETER(Lambdax), "\u03bb");
+   MLPutRuleTo(link, MODELPARAMETER(Yu), "Yu");
+   MLPutRuleTo(link, MODELPARAMETER(Yd), "Yd");
+   MLPutRuleTo(link, MODELPARAMETER(Ye), "Ye");
+   MLPutRuleTo(link, MODELPARAMETER(mu2), "mu2");
+   MLPutRuleTo(link, MODELPARAMETER(v), "v");
+   MLPutRuleTo(link, MODELPARAMETER(scale), "SCALE");
+}
+
+/******************************************************************/
+
 void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
 {
+   MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", @numberOfSpectrumEntries@);
 
 @putSpectrum@
+}
+
+/******************************************************************/
+
+struct Put_spectrum {
+   MLINK link;
+   explicit Put_spectrum(MLINK link_) : link(link_) {}
+   template<typename T>
+   void operator()(const T& model) const { put_spectrum(model, link); }
+};
+
+template<typename... Ts>
+void put_spectra(const std::tuple<Ts...>& models, MLINK link)
+{
+   MLPutFunction(link, "List", std::tuple_size<std::tuple<Ts...>>::value);
+
+   Put_spectrum ps(link);
+   boost::fusion::for_each(models, ps);
 
    MLEndPacket(link);
 }
