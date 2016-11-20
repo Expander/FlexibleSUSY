@@ -41,6 +41,20 @@ FlexibleSUSY 2.0.0 [not released yet]
  * Change: The readability of the vertices and the self-energies has
    been improved by using the SUM() and IF() macros.
 
+ * Change: In FlexibleEFTHiggs models, the Standard Model parameters
+   are written to the SLHA output in addition to the BSM parameters.
+
+ * Change: The return value of FS<model>CalculateSpectrum[] has been
+   changed.  It has now the structure
+
+      { <model> -> { model parameters ... } }
+
+   In FlexibleEFTHiggs models, the Standard Model parameters are
+   returned in addition and the output has the form
+
+      { <model> -> { model parameters ... },
+        StandardModel -> { ... } }
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
