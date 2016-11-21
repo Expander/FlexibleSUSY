@@ -149,21 +149,21 @@ struct @ModelName@_data {
 
 /// current handles
 typedef std::map<Handle, @ModelName@_data> Handle_map;
-Handle_map handles;
+Handle_map handles_@ModelName@;
 
 /******************************************************************/
 
-Handle get_new_handle()
+Handle get_new_@ModelName@_handle()
 {
    static const std::size_t max_handles =
       static_cast<std::size_t>(std::exp2(8*sizeof(Handle)) - 1);
 
-   if (handles.size() >= max_handles)
-      throw ENotEnoughFreeHandles(handles.size());
+   if (handles_@ModelName@.size() >= max_handles)
+      throw ENotEnoughFreeHandles(handles_@ModelName@.size());
 
    Handle hid = 0;
 
-   while (handles.find(hid) != handles.end())
+   while (handles_@ModelName@.find(hid) != handles_@ModelName@.end())
       hid++;
 
    return hid;
@@ -171,11 +171,11 @@ Handle get_new_handle()
 
 /******************************************************************/
 
-auto find_handle(Handle hid) -> decltype(handles.find(hid))
+auto find_@ModelName@_handle(Handle hid) -> decltype(handles_@ModelName@.find(hid))
 {
-   const auto handle = handles.find(hid);
+   const auto handle = handles_@ModelName@.find(hid);
 
-   if (handle == handles.end())
+   if (handle == handles_@ModelName@.end())
       throw EUnknownHandle(hid);
 
    return handle;
@@ -183,9 +183,9 @@ auto find_handle(Handle hid) -> decltype(handles.find(hid))
 
 /******************************************************************/
 
-@ModelName@_data& find_data(Handle hid)
+@ModelName@_data& find_@ModelName@_data(Handle hid)
 {
-   return find_handle(hid)->second;
+   return find_@ModelName@_handle(hid)->second;
 }
 
 /******************************************************************/
@@ -743,7 +743,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const auto hid = get_handle_from(link);
 
    try {
-      put_settings(find_data(hid), link);
+      put_settings(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -762,7 +762,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const auto hid = get_handle_from(link);
 
    try {
-      put_sm_input_parameters(find_data(hid), link);
+      put_sm_input_parameters(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -781,7 +781,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const auto hid = get_handle_from(link);
 
    try {
-      put_input_parameters(find_data(hid), link);
+      put_input_parameters(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -809,9 +809,9 @@ DLLEXPORT int FS@ModelName@OpenHandle(
                           libData->MTensor_getRealData(pars),
                           libData->MTensor_getDimensions(pars)[0]));
 
-      const auto hid = get_new_handle();
+      const auto hid = get_new_@ModelName@_handle();
 
-      handles.insert(std::make_pair(hid, std::move(data)));
+      handles_@ModelName@.insert(std::make_pair(hid, std::move(data)));
 
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
@@ -831,10 +831,10 @@ DLLEXPORT int FS@ModelName@CloseHandle(
       return LIBRARY_TYPE_ERROR;
 
    const auto hid = get_handle_from(Args[0]);
-   const auto handle = handles.find(hid);
+   const auto handle = handles_@ModelName@.find(hid);
 
-   if (handle != handles.end())
-      handles.erase(handle);
+   if (handle != handles_@ModelName@.end())
+      handles_@ModelName@.erase(handle);
 
    return LIBRARY_NO_ERROR;
 }
@@ -855,9 +855,10 @@ DLLEXPORT int FS@ModelName@Set(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      find_data(hid) = make_@ModelName@_data(make_dynamic_array_view(
-                               libData->MTensor_getRealData(pars),
-                               libData->MTensor_getDimensions(pars)[0]));
+      find_@ModelName@_data(hid) =
+         make_@ModelName@_data(make_dynamic_array_view(
+                                  libData->MTensor_getRealData(pars),
+                                  libData->MTensor_getDimensions(pars)[0]));
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;
@@ -877,7 +878,7 @@ DLLEXPORT int FS@ModelName@GetProblems(
    const auto hid = get_handle_from(link);
 
    try {
-      put_problems(find_data(hid), link);
+      put_problems(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -896,7 +897,7 @@ DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
    const auto hid = get_handle_from(link);
 
    try {
-      put_slha(find_data(hid), link);
+      put_slha(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -916,7 +917,7 @@ DLLEXPORT int FS@ModelName@GetWarnings(
    const auto hid = get_handle_from(link);
 
    try {
-      put_warnings(find_data(hid), link);
+      put_warnings(find_@ModelName@_data(hid), link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -936,14 +937,14 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    const auto hid = get_handle_from(link);
 
    try {
-      auto data = find_data(hid);
+      auto data = find_@ModelName@_data(hid);
 
       {
          Redirect_output crd(link);
          calculate_spectrum(data, link);
       }
 
-      handles[hid] = data;
+      handles_@ModelName@[hid] = data;
 
       check_spectrum(data, link);
       put_spectra(data.models, link);
@@ -965,7 +966,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    const auto hid = get_handle_from(link);
 
    try {
-      auto data = find_data(hid);
+      auto data = find_@ModelName@_data(hid);
 
       if (std::get<0>(data.models).get_scale() == 0.) {
          put_message(link,
@@ -980,7 +981,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
             calculate_observables(std::get<0>(data.models), data.qedqcd, data.physical_input);
       }
 
-      handles[hid] = data;
+      handles_@ModelName@[hid] = data;
 
       put_observables(data.observables, link);
    } catch (const flexiblesusy::Error& e) {

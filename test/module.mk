@@ -327,6 +327,11 @@ TEST_SH += \
 		$(DIR)/test_SMtower.sh
 endif
 
+ifeq ($(WITH_SM) $(WITH_SMtower),yes yes)
+TEST_META += \
+		$(DIR)/test_multiple_librarylinks.m
+endif
+
 ifeq ($(WITH_SM),yes)
 TEST_SH += \
 		$(DIR)/test_flexiblesusy-config.sh
