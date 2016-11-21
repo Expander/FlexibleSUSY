@@ -1,4 +1,4 @@
-BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`"}];
+BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`"}];
 
 (* This module generates c++ code that calculates electric dipole moments of fields *)
 
