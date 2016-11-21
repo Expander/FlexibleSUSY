@@ -474,6 +474,6 @@ ConcreteDiagramEvaluators[] :=
            ">" &)
           /@ #[[2]]) } &) /@ ContributingDiagrams[];
 
-(* TODO: End[]; *)
+End[];
 
 EndPackage[];
