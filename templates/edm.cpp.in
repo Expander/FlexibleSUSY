@@ -123,7 +123,6 @@ struct make_array
    }
 };
 
-
 /**
  * @class IndexBounds<N>
  * @brief A class representing multiple (N) index ranges.
