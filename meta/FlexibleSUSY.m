@@ -2024,7 +2024,7 @@ PrepareTadpoles[eigenstates_] :=
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 (* Get all nPointFunctions that EDM needs *)
-PrepareEDM[] := (EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[];)
+PrepareEDM[] := (EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[]);
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
