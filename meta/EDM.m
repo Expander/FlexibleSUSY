@@ -473,7 +473,7 @@ ContributingDiagrams[] :=
 LoadVerticesIfNecessary[] :=
     Module[{},
            If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
-              SARAH`InitVertexCalculation[FSEigenstates`FSEigenstates, False];
+              SARAH`InitVertexCalculation[FlexibleSUSY`FSEigenstates, False];
               SARAH`ReadVertexList[FSEigenstates`FSEigenstates, False, False, True];
               SARAH`MakeCouplingLists;
               ];
