@@ -312,7 +312,7 @@ public:
     * @brief Returns the IndexBounds<> object of the VertexFunction.
     */
    static const index_bounds &indexBounds() {
-      return indexB;
+      return index_bounds();
    }
 
    /**
