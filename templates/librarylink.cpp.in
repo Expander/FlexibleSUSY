@@ -148,21 +148,21 @@ struct @ModelName@_data {
 
 /// current handles
 typedef std::map<Handle_id, @ModelName@_data> Handle_map;
-Handle_map handles;
+Handle_map handles_@ModelName@;
 
 /******************************************************************/
 
-Handle_id get_new_handle()
+Handle_id get_new_@ModelName@_handle()
 {
    static const std::size_t max_handles =
       static_cast<std::size_t>(std::exp2(8*sizeof(Handle_id)) - 1);
 
-   if (handles.size() >= max_handles)
-      throw ENotEnoughFreeHandles(handles.size());
+   if (handles_@ModelName@.size() >= max_handles)
+      throw ENotEnoughFreeHandles(handles_@ModelName@.size());
 
    Handle_id hid = 0;
 
-   while (handles.find(hid) != handles.end())
+   while (handles_@ModelName@.find(hid) != handles_@ModelName@.end())
       hid++;
 
    return hid;
@@ -170,11 +170,11 @@ Handle_id get_new_handle()
 
 /******************************************************************/
 
-@ModelName@_data find_data(Handle_id hid)
+@ModelName@_data find_@ModelName@_data(Handle_id hid)
 {
-   const Handle_map::iterator handle = handles.find(hid);
+   const Handle_map::iterator handle = handles_@ModelName@.find(hid);
 
-   if (handle == handles.end())
+   if (handle == handles_@ModelName@.end())
       throw EUnknownHandle(hid);
 
    return handle->second;
@@ -522,7 +522,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const @ModelName@_data data = find_data(hid);
+      const @ModelName@_data data = find_@ModelName@_data(hid);
       put_settings(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -542,7 +542,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const @ModelName@_data data = find_data(hid);
+      const @ModelName@_data data = find_@ModelName@_data(hid);
       put_sm_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -562,7 +562,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const @ModelName@_data data = find_data(hid);
+      const @ModelName@_data data = find_@ModelName@_data(hid);
       put_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -591,9 +591,9 @@ DLLEXPORT int FS@ModelName@OpenHandle(
          libData->MTensor_getRealData(pars),
          libData->MTensor_getDimensions(pars)[0]);
 
-      const Handle_id hid = get_new_handle();
+      const Handle_id hid = get_new_@ModelName@_handle();
 
-      handles.insert(std::make_pair(hid, std::move(data)));
+      handles_@ModelName@.insert(std::make_pair(hid, std::move(data)));
 
       MArgument_setInteger(Res, hid);
    } catch (const flexiblesusy::Error& e) {
@@ -614,10 +614,10 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 
    const Handle_id hid = MArgument_getInteger(Args[0]);
 
-   const Handle_map::iterator handle = handles.find(hid);
+   const Handle_map::iterator handle = handles_@ModelName@.find(hid);
 
-   if (handle != handles.end())
-      handles.erase(handle);
+   if (handle != handles_@ModelName@.end())
+      handles_@ModelName@.erase(handle);
 
    return LIBRARY_NO_ERROR;
 }
@@ -637,9 +637,9 @@ DLLEXPORT int FS@ModelName@Set(
        libData->MTensor_getRank(pars) != 1)
       return LIBRARY_TYPE_ERROR;
 
-   const Handle_map::iterator handle = handles.find(hid);
+   const Handle_map::iterator handle = handles_@ModelName@.find(hid);
 
-   if (handle == handles.end()) {
+   if (handle == handles_@ModelName@.end()) {
       std::cerr << "Error: FS@ModelName@Set: Unknown handle: "
                 << hid << std::endl;
       return LIBRARY_FUNCTION_ERROR;
@@ -668,7 +668,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      @ModelName@_data data = find_data(hid);
+      @ModelName@_data data = find_@ModelName@_data(hid);
 
       {
          Redirect_output crd(link);
@@ -678,7 +678,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       check_spectrum(data, link);
       put_spectrum(data.model, link);
 
-      handles[hid] = std::move(data);
+      handles_@ModelName@[hid] = std::move(data);
    } catch (const flexiblesusy::Error&) {
       put_error_output(link);
    }
@@ -697,7 +697,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      @ModelName@_data data = find_data(hid);
+      @ModelName@_data data = find_@ModelName@_data(hid);
 
       if (data.model.get_scale() == 0.) {
          put_message(link,
