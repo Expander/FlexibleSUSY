@@ -12,6 +12,8 @@ TestEquality[betaFunctionLoopOrder /. FSSMtowerGetSettings[hSMtower]         , 3
 TestEquality[FSSMGetInputParameters[hSMtower]  , $Failed];
 TestEquality[FSSMGetSMInputParameters[hSMtower], $Failed];
 TestEquality[FSSMGetSettings[hSMtower]         , $Failed];
+TestEquality[FSSMCalculateSpectrum[hSMtower]   , $Failed];
+TestEquality[FSSMCalculateObservables[hSMtower], $Failed];
 
 hSM = FSSMOpenHandle[betaFunctionLoopOrder -> 2, Mt -> 173, LambdaIN -> 0.1, Qin -> 1000];
 
