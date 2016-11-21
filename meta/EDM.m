@@ -309,13 +309,10 @@ CouplingsForFields[fields_List] :=
  empty strings are returned.
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
-createdVertexFunctions = {};
 CreateVertexFunction[fields_List, vertexRules_List] :=
     Module[{prototype, definition,
         parsedVertex, dataClassName, functionClassName, fieldIndexStartF,
         fieldIndexStart, indexBounds},
-           If[MemberQ[createdVertexFunctions, fields], Return[{"",""}]];
-           
            parsedVertex = ParseVertex[fields, vertexRules];
            
            dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
@@ -353,7 +350,6 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                          IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
                          "}");
            
-           AppendTo[createdVertexFunctions, fields];
            Return[{prototype, definition}];
           ];
 
