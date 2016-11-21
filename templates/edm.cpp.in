@@ -381,6 +381,8 @@ template<class ...F> struct VertexFunctionData;
 template<class ...F> class VertexFunction {
    using Data = VertexFunctionData<F...>;
 public:
+   using index_bounds = typename Data::index_bounds;
+   using indices_type = typename index_bounds::indices_type;
    using vertex_type = typename Data::vertex_type;
 
    /**
