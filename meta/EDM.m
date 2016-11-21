@@ -407,7 +407,7 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "std::complex<double> result;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       TreeMasses`ExpressionToString[expr, "result"] <> "\n" <>
+                                       Parameters`ExpressionToString[expr, "result"] <> "\n" <>
                                        "return vertex_type(result);",
 
                                        "LeftAndRightComponentedVertex",
@@ -418,8 +418,8 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprL, "left"] <> "\n" <>
-                                       TreeMasses`ExpressionToString[exprR, "right"] <> "\n" <>
+                                       Parameters`ExpressionToString[exprL, "left"] <> "\n" <>
+                                       Parameters`ExpressionToString[exprR, "right"] <> "\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahFields = SARAH`getParticleName /@ fields;
