@@ -1445,34 +1445,13 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
 
 (* Write the EDM c++ files *)
 WriteEDMClass[vertexRules_List, files_List] :=
-Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
+Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
     definitions, calculationCode},
-       edmParticles = {SARAH`Electron};
+       edmFields = {SARAH`Electron};
+       EDM`SetEDMFields[edmParticles];
        
-       SetEDMParticles[edmParticles];
+       fields = EDM`CreateFields[];
        
-<<<<<<< f022a76758c5793154e4da8f864942d0900151ac
-       Print[EDM`CreateVertices[vertexRules]];
-       (*
-        particles = EDM`CreateParticles[];
-        chargeGetters = EDM`CreateChargeGetters[];
-        diagrams = EDM`CreateDiagrams[];
-        
-        vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
-        definitions = EDM`CreateDefinitions[vertexRules];
-        calculationCode = EDM`CreateCalculation[];
-        
-        WriteOut`ReplaceInFiles[files,
-                                { "@EDM_Particles@"                 -> particles,
-                                    "@EDM_ChargeGetters@"           -> chargeGetters,
-                                    "@EDM_Diagrams@"                -> diagrams,
-                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
-                                    "@EDM_Definitions@"             -> definitions,
-                                    "@EDM_Calculation@"             -> IndentText[calculationCode],
-                                    Sequence @@ GeneralReplacementRules[]
-                                } ];*)
-=======
-       particles = EDM`CreateParticles[];
        chargeGetters = EDM`CreateChargeGetters[];
        diagrams = EDM`CreateDiagrams[];
        
@@ -1481,19 +1460,14 @@ Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
        calculationCode = EDM`CreateCalculation[];
        
        WriteOut`ReplaceInFiles[files,
-                               { "@EDM_Particles@"                 -> particles,
+                               { "@EDM_Fields@"                    -> fields,
                                    "@EDM_ChargeGetters@"           -> chargeGetters,
                                    "@EDM_Diagrams@"                -> diagrams,
                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
                                    "@EDM_Definitions@"             -> definitions,
                                    "@EDM_Calculation@"             -> IndentText[calculationCode],
                                    Sequence @@ GeneralReplacementRules[]
-<<<<<<< 39b7519c812c04e0347cb5e65bcfdcc4fc687214
-                               } ];*)
->>>>>>> Too much to describe...
-=======
                                } ];
->>>>>>> Added check if edmParticle is a fermion. Otherwise we don't know how to calculate the diagrams.
        ];
 
 EnableForBVPSolver[solver_, statements_String] :=
@@ -2051,7 +2025,7 @@ PrepareTadpoles[eigenstates_] :=
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 (* Get all nPointFunctions that EDM needs *)
-PrepareEDM[] := EDM`NPointFunctions[];
+PrepareEDM[] := (EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[];)
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
