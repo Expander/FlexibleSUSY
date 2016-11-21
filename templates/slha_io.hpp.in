@@ -193,16 +193,6 @@ void @ModelName@_slha_io::set_extra(
 @writeExtraSLHAOutputBlock@
 }
 
-namespace {
-template<class S>
-struct Set_spectrum {
-   S* slha_io;
-   Set_spectrum(S* slha_io_) : slha_io(slha_io_) {}
-   template<typename T>
-   void operator()(const T& model) const { slha_io->set_spectrum(model); }
-};
-} // anonymous namespace
-
 template <class... Ts>
 void @ModelName@_slha_io::set_spectrum(const std::tuple<Ts...>& models)
 {
