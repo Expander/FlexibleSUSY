@@ -128,8 +128,8 @@ public:
 
 } // namespace flexiblesusy
 
-struct Model_data {
-   Model_data()
+struct @ModelName@_data {
+   @ModelName@_data()
       : input()
       , physical_input()
       , qedqcd()
@@ -147,7 +147,7 @@ struct Model_data {
 };
 
 /// current handles
-typedef std::map<Handle_id, Model_data> Handle_map;
+typedef std::map<Handle_id, @ModelName@_data> Handle_map;
 Handle_map handles;
 
 /******************************************************************/
@@ -170,7 +170,7 @@ Handle_id get_new_handle()
 
 /******************************************************************/
 
-Model_data find_data(Handle_id hid)
+@ModelName@_data find_data(Handle_id hid)
 {
    const Handle_map::iterator handle = handles.find(hid);
 
@@ -243,7 +243,7 @@ void put_message(MLINK link,
 
 /******************************************************************/
 
-void put_settings(const Model_data& data, MLINK link)
+void put_settings(const @ModelName@_data& data, MLINK link)
 {
    MLPutFunction(link, "List", 23);
 
@@ -276,7 +276,7 @@ void put_settings(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_sm_input_parameters(const Model_data& data, MLINK link)
+void put_sm_input_parameters(const @ModelName@_data& data, MLINK link)
 {
    MLPutFunction(link, "List", 29);
 
@@ -320,7 +320,7 @@ void put_sm_input_parameters(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_input_parameters(const Model_data& data, MLINK link)
+void put_input_parameters(const @ModelName@_data& data, MLINK link)
 {
    MLPutFunction(link, "List", @numberOfInputParameterRules@);
 
@@ -353,7 +353,7 @@ void put_observables(const @ModelName@_observables& observables, MLINK link)
 
 /******************************************************************/
 
-void check_spectrum(const Model_data& data, MLINK link)
+void check_spectrum(const @ModelName@_data& data, MLINK link)
 {
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = data.model.get_problems();
@@ -377,7 +377,7 @@ void check_spectrum(const Model_data& data, MLINK link)
 
 /******************************************************************/
 
-void calculate_spectrum(Model_data& data, MLINK link)
+void calculate_spectrum(@ModelName@_data& data, MLINK link)
 {
    softsusy::QedQcd qedqcd(data.qedqcd);
 
@@ -400,9 +400,9 @@ void calculate_spectrum(Model_data& data, MLINK link)
 
 /******************************************************************/
 
-Model_data fill(double* pars, mint npars)
+@ModelName@_data make_@ModelName@_data(double* pars, mint npars)
 {
-   Model_data data;
+   @ModelName@_data data;
 
    const mint n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
@@ -522,7 +522,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const @ModelName@_data data = find_data(hid);
       put_settings(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -542,7 +542,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const @ModelName@_data data = find_data(hid);
       put_sm_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -562,7 +562,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const Handle_id hid = get_handle_from(link);
 
    try {
-      const Model_data data = find_data(hid);
+      const @ModelName@_data data = find_data(hid);
       put_input_parameters(data, link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
@@ -587,8 +587,9 @@ DLLEXPORT int FS@ModelName@OpenHandle(
       return LIBRARY_TYPE_ERROR;
 
    try {
-      Model_data data = fill(libData->MTensor_getRealData(pars),
-                             libData->MTensor_getDimensions(pars)[0]);
+      @ModelName@_data data = make_@ModelName@_data(
+         libData->MTensor_getRealData(pars),
+         libData->MTensor_getDimensions(pars)[0]);
 
       const Handle_id hid = get_new_handle();
 
@@ -645,8 +646,9 @@ DLLEXPORT int FS@ModelName@Set(
    }
 
    try {
-      handle->second = fill(libData->MTensor_getRealData(pars),
-                            libData->MTensor_getDimensions(pars)[0]);
+      handle->second = make_@ModelName@_data(
+         libData->MTensor_getRealData(pars),
+         libData->MTensor_getDimensions(pars)[0]);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       return LIBRARY_FUNCTION_ERROR;
@@ -666,7 +668,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      Model_data data = find_data(hid);
+      @ModelName@_data data = find_data(hid);
 
       {
          Redirect_output crd(link);
@@ -695,7 +697,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    const Handle_id hid = get_handle_from(link);
 
    try {
-      Model_data data = find_data(hid);
+      @ModelName@_data data = find_data(hid);
 
       if (data.model.get_scale() == 0.) {
          put_message(link,
