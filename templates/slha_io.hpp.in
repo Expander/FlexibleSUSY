@@ -193,6 +193,14 @@ void @ModelName@_slha_io::set_extra(
 @writeExtraSLHAOutputBlock@
 }
 
+/**
+ * Stores the model (DR-bar) parameters, masses and mixing matrices of
+ * all given models in the SLHA object.
+ *
+ * @todo Use generic lambda instead of Set_spectrum in C++14
+ *
+ * @param models model classes
+ */
 template <class... Ts>
 void @ModelName@_slha_io::set_spectrum(const std::tuple<Ts...>& models)
 {

@@ -570,6 +570,7 @@ void put_spectra(const std::tuple<Ts...>& models, MLINK link)
 {
    MLPutFunction(link, "List", std::tuple_size<std::tuple<Ts...>>::value);
 
+   // @todo Use generic lambda instead of Put_spectrum in C++14
    Put_spectrum ps(link);
    boost::fusion::for_each(models, ps);
 
