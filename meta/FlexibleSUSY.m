@@ -5,7 +5,7 @@ BeginPackage["FlexibleSUSY`",
              "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
              "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
              "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
-             "GMuonMinus2`", "EffectiveCouplings`",
+             "GMuonMinus2`", "EDM`", "EffectiveCouplings`",
              "FlexibleEFTHiggsMatching`", "FSMathLink`",
              "FlexibleTower`"}];
 
@@ -1480,7 +1480,7 @@ Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
        definitions = EDM`CreateDefinitions[vertexRules];
        calculationCode = EDM`CreateCalculation[];
        
-       (*WriteOut`ReplaceInFiles[files,
+       WriteOut`ReplaceInFiles[files,
                                { "@EDM_Particles@"                 -> particles,
                                    "@EDM_ChargeGetters@"           -> chargeGetters,
                                    "@EDM_Diagrams@"                -> diagrams,
@@ -1488,8 +1488,12 @@ Module[{edmParticles, particles, chargeGetters, diagrams, vertexFunctionData,
                                    "@EDM_Definitions@"             -> definitions,
                                    "@EDM_Calculation@"             -> IndentText[calculationCode],
                                    Sequence @@ GeneralReplacementRules[]
+<<<<<<< 39b7519c812c04e0347cb5e65bcfdcc4fc687214
                                } ];*)
 >>>>>>> Too much to describe...
+=======
+                               } ];
+>>>>>>> Added check if edmParticle is a fermion. Otherwise we don't know how to calculate the diagrams.
        ];
 
 EnableForBVPSolver[solver_, statements_String] :=
@@ -2961,8 +2965,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
            Print["Creating class EDM"];
-           WriteGMuonMinus2Class[vertexRules,
-                                 {}];
+           WriteEDMClass[vertexRules,
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
+               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
