@@ -461,7 +461,7 @@ LoadVerticesIfNecessary[] :=
            If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
               SA`CurrentStates = FlexibleSUSY`FSEigenstates;
               SARAH`InitVertexCalculation[FlexibleSUSY`FSEigenstates, False];
-              SARAH`ReadVertexList[FSEigenstates`FSEigenstates, False, False, True];
+              SARAH`ReadVertexList[FlexibleSUSY`FSEigenstates, False, False, True];
               SARAH`MakeCouplingLists;
               ];
            ];
