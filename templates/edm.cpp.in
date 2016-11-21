@@ -161,8 +161,8 @@ IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex{};
 
 @EDM_Fields@
 
-template<class P> struct remove_anti { typedef P type; };
-template<class P> struct remove_anti<anti<P>> { typedef P type; };
+template<class F> struct remove_anti { typedef F type; };
+template<class F> struct remove_anti<anti<F>> { typedef F type; };
 
 /**
  * @class EvaluationContext
@@ -176,15 +176,15 @@ struct EvaluationContext {
    @ModelName@_mass_eigenstates& model; ///< The model object.
 
    /**
-    * @fn mass<P>
-    * @brief Returns the mass of a particle.
+    * @fn mass<F>
+    * @brief Returns the mass of a field.
     */
-   template<class P> double mass() const {
-      return mass<typename anti<P>::type>();
+   template<class F> double mass() const {
+      return mass<typename anti<F>::type>();
    }
 
-   template<class P> double mass(unsigned index) const {
-      return mass<typename anti<P>::type>(index);
+   template<class F> double mass(unsigned index) const {
+      return mass<typename anti<F>::type>(index);
    }
 };
 
@@ -194,11 +194,11 @@ struct EvaluationContext {
  *
  * This template is completely general. The intended use is
  * to have specialisations of the kind:
- *   DiagramEvaluator<DiagramType, Particle1, Particle2, ...>
+ *   DiagramEvaluator<DiagramType, Field1, Field2, ...>
  * along with a static member function:
  *   static double value( EvaluationContext &context );
  * that calculates the contribution to the edm
- * for a specific diagram class with specified particles.
+ * for a specific diagram class with specified fields.
  */
 template<class ...Args> struct DiagramEvaluator;
 
@@ -207,7 +207,7 @@ double OneLoopFunctionF2C(double);
 double OneLoopFunctionF1N(double);
 double OneLoopFunctionF2N(double);
 
-@EDM_MuonFunctionPrototypes@
+@EDM_ChargeGetters@
 
 @EDM_Diagrams@
 
@@ -278,46 +278,35 @@ public:
 };
 
 /**
- * @class VertexFunctionData<P...>
- * @brief Vertex data for a vertex with the particles specified by P...
+ * @class VertexFunctionData<F...>
+ * @brief Vertex data for a vertex with the fields specified by F...
  *
- * All elements in P... have to be publicly derived from Particle.
- * The data includes the type of the vertex, whether P... is in
+ * All elements in F... have to be publicly derived from Field.
+ * The data includes the type of the vertex, whether F... is in
  * canonical order or permuted as well as index bounds referring to
- * the specific particles (generation and colour indices, etc).
+ * the specific fields (generation and colour indices, etc).
  * The intention is to have a program generate VertexFunctionData<>
  * specialisations that are then used by the VertexFunction<> template.
  */
-template<class ...P> struct VertexFunctionData;
+template<class ...F> struct VertexFunctionData;
 
 /**
- * @class VertexFunction<P...>
- * @brief A template that represents a vertex with open particle indices.
+ * @class VertexFunction<F...>
+ * @brief A template that represents a vertex with open field indices.
  *
- * All elements in P... have to be publicly derived from Particle.
+ * All elements in F... have to be publicly derived from Field.
  * To obtain a conrete value, use the static member function vertex()
- * along with the desired particle indices.
+ * along with the desired field indices.
  */
-template<class ...P> class VertexFunction {
+template<class ...F> class VertexFunction {
 {
-private:
-typedef VertexFunctionData<P...> Base;
-typedef typename Base::particleIndexStart particleIndexStart;
-using Base::indexB;
+   using Data = VertexFunctionData<F...>;
 public:
-typedef typename Base::index_bounds index_bounds;
-typedef typename index_bounds::indices_type indices_type;
-typedef typename Base::vertex_type vertex_type;
-public:
+   using index_bounds = typename Data::index_bounds index_bounds;
+   using indices_type = typename index_bounds::indices_type;
+   using vertex_type = typename Data::vertex_type;
 
-
-
-
-   using Data = VertexFunctionData<P...>;
-public:
-   using index_bounds = Data::index_bounds index_bounds;
-   using indices_type = index_bounds::indices_type;
-   using vertex_type = Data::vertex_type;
+   using fieldIndexStart = typename Data::fieldIndexStart;
 
    /**
     * @fn indexBounds
@@ -328,26 +317,26 @@ public:
    }
 
    /**
-    * @fn particleIndices
+    * @fn fieldIndices
     * @brief Returns the subset of indices belonging to
-    *        a particle at a given index.
-    * @param indices The complete set of indices for all particles
+    *        a field at a given index.
+    * @param indices The complete set of indices for all fields
     *
-    * The particle indexing is in the same order as the template arguments
+    * The field indexing is in the same order as the template arguments
     * and starts at 0.
     */
-   template<unsigned particleIndex>
-   static std::vector<unsigned> particleIndices(const indices_type &indices)
+   template<unsigned fieldIndex>
+   static std::vector<unsigned> fieldIndices(const indices_type &indices)
    {
-      auto begin = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex>::type::value;
-      auto end = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex+1>::type::value;
+      auto begin = indices.begin() + boost::mpl::at_c<fieldIndexStart, fieldIndex>::type::value;
+      auto end = indices.begin() + boost::mpl::at_c<fieldIndexStart, fieldIndex+1>::type::value;
       return std::vector<unsigned>(begin, end);
    }
 
    /**
     * @fn vertex
-    * @brief Calculates the vertex for a given set of particle indices.
-    * @param indices The particle indices
+    * @brief Calculates the vertex for a given set of field indices.
+    * @param indices The field indices
     * @param context The evaluation context
     */
    static vertex_type vertex(const indices_type &indices, EvaluationContext &context);
@@ -363,7 +352,7 @@ double @ModelName@_edm::calculate_edm_electron(const @ModelName@_mass_eigenstate
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
 
-   return edm<Electron>();
+   return edm<Electron>( model );
 }
 
 namespace {
@@ -490,8 +479,10 @@ double OneLoopFunctionF2N(double x)
 
 @EDM_Definitions@
 
-template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
+template<class EDMField, class PhotonEmitter, class ExchangeField>
+double DiagramEvaluator<OneLoopDiagram<0>,
+   EDMField, PhotonEmitter, ExchangeField
+>::value(EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -499,8 +490,10 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
    return res;
 }
 
-template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
+template<class EDMField, class PhotonEmitter, class ExchangeField>
+double DiagramEvaluator<OneLoopDiagram<1>,
+   EDMField, PhotonEmitter, ExchangeField
+>::value(EvaluationContext &context)
 {
    double res = 0.0;
 

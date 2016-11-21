@@ -43,6 +43,7 @@ Module[{fields, code},
                                     "};\n" &) /@ fields, "\n"] <> "\n\n" <>
                "// Special field families\n" <>
                "using Photon = " <> CXXNameOfField @ SARAH`Photon <> ";\n" <>
+               "using Electron = " <> CXXNameOfField @ SARAH`Electron <> ";\n\n" <>
                
                "// Anti fields\n" <>
                "template<class P> struct anti : public Field\n" <>
@@ -121,11 +122,11 @@ CreateCalculation[] :=
 Module[{code, evaluators},
        evaluators = ConcreteDiagramEvaluators[];
        
-       code = "template<class Field> double edm( void );\n\n";
+       code = "template<class Field> double edm( CMSSM_mass_eigenstates& model );\n\n";
        code = (code <>
                StringJoin @ Riffle[Module[{field = #[[1]],
                                            fieldEvaluators = #[[2]]},
-                                          "template<> double edm<" <> CXXNameOfField[field] <> ">( void )\n" <>
+                                          "template<> double edm<" <> CXXNameOfField[field] <> ">( CMSSM_mass_eigenstates& model )\n" <>
                                           "{\n" <>
                                           IndentText["EvaluationContext context{ model };\n" <>
                                                      "double val = 0.0;\n\n" <>

@@ -1465,7 +1465,7 @@ Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
                                    "@EDM_Diagrams@"                -> diagrams,
                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
                                    "@EDM_Definitions@"             -> definitions,
-                                   "@EDM_Calculation@"             -> IndentText[calculationCode],
+                                   "@EDM_Calculation@"             -> calculationCode,
                                    Sequence @@ GeneralReplacementRules[]
                                } ];
        ];
@@ -2025,7 +2025,7 @@ PrepareTadpoles[eigenstates_] :=
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 (* Get all nPointFunctions that EDM needs *)
-PrepareEDM[] := (EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[];)
+PrepareEDM[] := (EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[]);
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
