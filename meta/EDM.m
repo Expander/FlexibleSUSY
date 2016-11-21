@@ -2,6 +2,8 @@ BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`"}];
 
 (* This module generates c++ code that calculates electric dipole moments of fields *)
 
+Initialize::usage="Initialize the EDM module.";
+
 SetEDMFields::usage="Set the fields for which the EDMs shall be calculated.";
 
 CreateFields::usage="Returns the c++ code that contains all field fields";
@@ -26,6 +28,8 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
  **********)
 
 (************* Begin public interface *******************)
+
+Initialize[] := (subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);)
 
 edmFields = Null;
 SetEDMFields[fields_List] := (edmFields = fields;)
@@ -179,7 +183,6 @@ CXXNameOfField[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::typ
 
 (**************** Other Functions ***************)
 
-subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);
 AddIndexPattern[SARAH`bar[p_]] := SARAH`bar[AddIndexPattern[p]];
 AddIndexPattern[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[AddIndexPattern[p]];
 AddIndexPattern[field_] := SARAH`getFull[SARAH`getBlank[field]] /. subIndexPattern;
