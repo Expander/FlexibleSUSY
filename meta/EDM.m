@@ -153,7 +153,7 @@ Module[{contributingDiagrams, vertices},
        ];
 
 (**************** End public interface *****************)
-(* TODO: privatize interface again Begin["`Private`"]; *)
+Begin["`Private`"];
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)
@@ -361,7 +361,7 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
    from the elements of `arrayName'.
  *)
 DeclareIndices[indexedFields_List, arrayName_String] :=
-    Module[{p, total = 0, fieldIndexList, decl = ""},
+    Module[{p, total = 0, fieldIndexList, decl = "", idx},
            DeclareIndex[idx_, num_Integer, an_String] := (
                "const unsigned " <> CConversion`ToValidCSymbolString[idx] <>
                " = " <> an <> "[" <> ToString[num] <> "];\n");
@@ -393,7 +393,7 @@ ParseVertex[fields_List, vertexRules_List] :=
         expr, exprL, exprR},
            indexedFields = MapIndexed[(Module[{field = #1,
                                                index = #2[[1]]},
-                                              SARAH`getFull[#1] /.subGC[index] /. subIndFinal[index,index]
+                                              SARAH`getFull[#1] /. SARAH`subGC[index] /. SARAH`subIndFinal[index,index]
                                               ] &), fields];
            
            numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
@@ -467,6 +467,7 @@ ContributingDiagrams[] :=
            diagrams = Flatten[(ContributingDiagramsOfType[#] &)
                                  /@ diagramTypes
                                  , 1];
+              
            cachedContributingDiagrams = ({#, Union @
                    (Sequence @@ Cases[diagrams,
                          {#, diags_List} -> diags])} &) /@ edmFields;
@@ -477,6 +478,7 @@ ContributingDiagrams[] :=
 LoadVerticesIfNecessary[] :=
     Module[{},
            If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
+              SA`CurrentStates = FlexibleSUSY`FSEigenstates;
               SARAH`InitVertexCalculation[FlexibleSUSY`FSEigenstates, False];
               SARAH`ReadVertexList[FSEigenstates`FSEigenstates, False, False, True];
               SARAH`MakeCouplingLists;
@@ -491,6 +493,6 @@ ConcreteDiagramEvaluators[] :=
            ">" &)
           /@ #[[2]]) } &) /@ ContributingDiagrams[];
 
-(* TODO: End[]; *)
+End[];
 
 EndPackage[];
