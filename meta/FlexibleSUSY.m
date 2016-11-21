@@ -2023,9 +2023,6 @@ PrepareTadpoles[eigenstates_] :=
 (* Get all nPointFunctions that GMM2 needs *)
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
-(* Get all nPointFunctions that EDM needs *)
-PrepareEDM[] := (EDM`Initialize[]; EDM`SetEDMFields[{SARAH`Electron}]; EDM`NPointFunctions[]);
-
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
            nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
@@ -2173,7 +2170,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            gmm2Vertices = {}, edmVertices = {},
+            gmm2Vertices = {},
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -2220,8 +2217,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
            gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
-           (* EDM vertices *)
-           edmVertices = StripInvalidFieldIndices @ PrepareEDM[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", GetParticles[]];
@@ -2731,10 +2726,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
+<<<<<<< 367d2fb1e47420799045d314a2f65870790d20ee
               Put[vertexRules =
                       Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
                   vertexRuleFileName],
               vertexRules = Get[vertexRuleFileName];
+=======
+	      Put[vertexRules =
+		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
+		  vertexRuleFileName],
+	      vertexRules = Get[vertexRuleFileName];
+>>>>>>> Moved Vertex logic to a place where the vertex files definitely exist.
               effectiveCouplings = Get[effectiveCouplingsFileName];
              ];
 
