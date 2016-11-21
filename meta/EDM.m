@@ -343,7 +343,7 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
                            );];
-           definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
+           definition = ("template<> " <> functionClassName <> "::vertex_type\n" <>
                          functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
                          "{\n" <>
                          IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
@@ -458,6 +458,7 @@ cachedContributingDiagrams = Null;
 ContributingDiagrams[] :=
        Module[{diagrams},
            If[cachedContributingDiagrams =!= Null, Return[cachedContributingDiagrams]];
+           LoadVerticesIfNecessary[];
 
            diagrams = Flatten[(ContributingDiagramsOfType[#] &)
                                  /@ diagramTypes
@@ -468,6 +469,15 @@ ContributingDiagrams[] :=
               
            Return[cachedContributingDiagrams];
           ];
+
+LoadVerticesIfNecessary[] :=
+    Module[{},
+           If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
+              SARAH`InitVertexCalculation[FSEigenstates`FSEigenstates, False];
+              SARAH`ReadVertexList[FSEigenstates`FSEigenstates, False, False, True];
+              SARAH`MakeCouplingLists;
+              ];
+           ];
 
 ConcreteDiagramEvaluators[] :=
      ({#[[1]],
