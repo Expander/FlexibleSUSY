@@ -221,6 +221,9 @@ ContributingDiagramsOfType[OneLoopDiagram] :=
                             {SARAH`FieldToInsert[1], SARAH`FieldToInsert[2]}}],
             subtypedDiagrams, uniqueDiagrams},
            
+           If[TreeMasses`IsFermion[edmField] =!= True,
+              Return[{edmField,{}}]];
+           
            subtypedDiagrams = (Module[{photonEmitter = #[[2,1]],
                                        exchangeField = #[[2,2]],
                                        subType},
@@ -466,11 +469,6 @@ ContributingDiagrams[] :=
            Return[cachedContributingDiagrams];
           ];
 
-(* Returns a list of all concrete diagram evaluators
- format: {{edmField1, {"DiagramEvaluator<OneLoopDiagram<1>, Fe, VP>", "...", ... }},
-          {edmField2, {"...", ... }},
-          ...}
- that need to be invoked in our calculation *)
 ConcreteDiagramEvaluators[] :=
      ({#[[1]],
          (("DiagramEvaluator<" <> SymbolName @ Head @ #[[1]] <> "<" <>
