@@ -202,12 +202,12 @@ void CLASSNAME::set_higgs_index(unsigned idx)
 
 void CLASSNAME::set_loop_order(unsigned loop_order_)
 {
-   // if (loop_order_ > 1) {
-   //    WARNING("Matching loop order " << loop_order_
-   //            << " for downwards matching currently not"
-   //            " supported!  I'm using 1-loop matching.");
-   //    loop_order_ = 1;
-   // }
+   if (loop_order_ > 1) {
+      WARNING("Matching loop order " << loop_order_
+              << " for downwards matching currently not"
+              " supported!  I'm using 1-loop matching.");
+      loop_order_ = 1;
+   }
 
    loop_order = loop_order_;
 }

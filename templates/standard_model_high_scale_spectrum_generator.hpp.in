@@ -265,16 +265,16 @@ void @ModelName@_spectrum_generator<T>::calculate_spectrum()
    const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
    const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
 
-   // if (eft_pole_loops > 1) {
-   //    WARNING("Pole mass loop order " << eft_pole_loops
-   //            << " in the EFT is currently not supported!  I'm using 1-loop.");
-   //    eft.set_pole_mass_loop_order(1);
-   // }
-   // if (eft_ewsb_loops > 1) {
-   //    WARNING("EWSB loop order " << eft_ewsb_loops
-   //            << " in the EFT is currently not supported!  I'm using 1-loop.");
-   //    eft.set_ewsb_loop_order(1);
-   // }
+   if (eft_pole_loops > 1) {
+      WARNING("Pole mass loop order " << eft_pole_loops
+              << " in the EFT is currently not supported!  I'm using 1-loop.");
+      eft.set_pole_mass_loop_order(1);
+   }
+   if (eft_ewsb_loops > 1) {
+      WARNING("EWSB loop order " << eft_ewsb_loops
+              << " in the EFT is currently not supported!  I'm using 1-loop.");
+      eft.set_ewsb_loop_order(1);
+   }
 
    eft.calculate_DRbar_masses();
    eft.solve_ewsb();
