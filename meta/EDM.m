@@ -369,6 +369,9 @@ DeclareIndices[indexedFields_List, arrayName_String] :=
            decl
           ];
 
+GetComplexScalarCType[] :=
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+
 (* ParsedVertex structure:
  ParsedVertex[
               {numP1Indices, numP2Indices, ...},
@@ -400,22 +403,23 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ fields) /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
-                                       "std::complex<double> result;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       Parameters`ExpressionToString[expr, "result"] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " result = " <>
+                                       Parameters`ExpressionToString[expr] <> ";\n\n" <>
                                        "return vertex_type(result);",
-
+                                       
                                        "LeftAndRightComponentedVertex",
                                        exprL = SARAH`Cp[Sequence @@ fields][SARAH`PL] /. vertexRules;
                                        exprR = SARAH`Cp[Sequence @@ fields][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
-                                       "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       Parameters`ExpressionToString[exprL, "left"] <> "\n" <>
-                                       Parameters`ExpressionToString[exprR, "right"] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " left = " <>
+                                       Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " right = " <>
+                                       Parameters`ExpressionToString[exprR] <> ";\n\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahFields = SARAH`getParticleName /@ fields;
