@@ -324,26 +324,27 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
            
            fieldIndexStart = Table[fieldIndexStartF[i], {i, 1, Length[fields] + 1}];
            
+           indexBounds = IndexBounds[parsedVertex];
+           
            prototype = ("template<> struct " <> dataClassName <> "\n" <>
                         "{\n" <>
                         IndentText @
-                        ("typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
-                         "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
-                         "typedef boost::mpl::vector_c<unsigned, " <>
-                         StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <>
-                         "> fieldIndexStart;\n" <>
-                         "static const index_bounds indexB;\n"
+                        ("constexpr IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <>
+                         "> index_bounds" <>
+                         If[NumberOfIndices[parsedVertex] =!= 0,
+                            "= { " <>
+                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
+                            "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };\n"
+                            ,
+                            ";/n"
+                            ] <>
+                         "constexpr std::array<unsigned, " <> ToString @ Length[fieldIndexStart] <>
+                         "> fieldIndexStart = { " <> StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <>
+                         " };\n" <>
+                         "using vertex_type = " <> VertexClassName[parsedVertex] <> ";\n"
                          ) <>
                         "};");
            
-           indexBounds = IndexBounds[parsedVertex];
-           
-           If[NumberOfIndices[parsedVertex] =!= 0,
-              prototype = (prototype <> "\n" <>
-                           "const " <> dataClassName <> "::index_bounds " <> dataClassName <> "::indexB = { " <>
-                           "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
-                           "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
-                           );];
            definition = ("template<> " <> functionClassName <> "::vertex_type\n" <>
                          functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
                          "{\n" <>

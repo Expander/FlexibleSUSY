@@ -43,6 +43,87 @@
 using namespace flexiblesusy;
 
 namespace {
+/** \brief Helper template for utils::make_array
+ */
+template<class ForwardIterator, std::size_t N, class T>
+struct make_array_it
+{
+   using decayed_type = typename std::decay<
+      typename std::iterator_traits<ForwardIterator>::value_type
+   >::type;
+   static constexpr bool use_cast = !std::is_same<decayed_type, T>::value;
+
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   -> typename std::enable_if<
+      !use_cast,
+      std::array<T, N + sizeof...(Args)>
+   >::type
+   {
+      ForwardIterator copy( begin );
+      return make_array_it<ForwardIterator, N-1, T>::iterate( ++begin,
+         std::forward<Args>( args )..., *copy );
+   }
+
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   -> typename std::enable_if<
+      use_cast,
+      std::array<T, N + sizeof...(Args)>
+   >::type
+   {
+      ForwardIterator copy( begin );
+      return make_array_it<ForwardIterator, N-1, T>::iterate( ++begin,
+         std::forward<Args>( args )..., T( *copy ) );
+   }
+};
+
+/** \brief Specialized helper template for utils::make_array */
+template<class ForwardIterator, class T>
+struct make_array_it<ForwardIterator, 0, T>
+{
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   {
+      return std::array<T, sizeof...(Args)>{ std::forward<Args>( args )... };
+   }
+};
+
+/** \class make_array
+* \brief Facility for easy construction of \a std::array
+*        objects.
+* \tparam N The size of the to be constructed array
+* \tparam T The type of the objects the array should hold
+*           or void (by default) if the type should be
+*           inferred.
+*/
+template<std::size_t N, class T = void>
+struct make_array
+{
+   /** \brief Construct a \a std::array by copying values
+   *         from a range.
+   * \tparam ForwardIterator The iterator type (usually inferred)
+   * \param[in] begin The iterator marking the beginning of
+   *                  the range to be copied.
+   * \returns A \a std::array holding the desired objects.
+   * \warning \a begin must be incrementable sufficiently
+   *          often (\a N times) otherwise the behaviour
+   *          is undefined.
+   */
+   template<class ForwardIterator>
+   static auto iterate( ForwardIterator begin )
+   {
+      using value_type = typename std::conditional<
+         std::is_void<T>::value,
+         typename std::iterator_traits<ForwardIterator>::value_type,
+         T
+      >::type;
+
+      return detail::make_array_it<ForwardIterator, N, value_type>::iterate( begin );
+   }
+};
+
+
 /**
  * @class IndexBounds<N>
  * @brief A class representing multiple (N) index ranges.
@@ -301,18 +382,14 @@ template<class ...F> struct VertexFunctionData;
 template<class ...F> class VertexFunction {
    using Data = VertexFunctionData<F...>;
 public:
-   using index_bounds = typename Data::index_bounds;
-   using indices_type = typename index_bounds::indices_type;
    using vertex_type = typename Data::vertex_type;
-
-   using fieldIndexStart = typename Data::fieldIndexStart;
 
    /**
     * @fn indexBounds
     * @brief Returns the IndexBounds<> object of the VertexFunction.
     */
-   static const index_bounds &indexBounds() {
-      return index_bounds();
+   static constexpr decltype(Data::index_bounds) indexBounds() {
+      return Data::index_bounds;
    }
 
    /**
@@ -325,11 +402,13 @@ public:
     * and starts at 0.
     */
    template<unsigned fieldIndex>
-   static std::vector<unsigned> fieldIndices(const indices_type &indices)
+   static
+   std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
+   fieldIndices(const Data::index_bounds::indices_type &indices)
    {
-      auto begin = indices.begin() + boost::mpl::at_c<fieldIndexStart, fieldIndex>::type::value;
-      auto end = indices.begin() + boost::mpl::at_c<fieldIndexStart, fieldIndex+1>::type::value;
-      return std::vector<unsigned>(begin, end);
+      constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
+      auto begin = indices.begin() + Data::fieldIndexStart[fieldIndex];
+      return utils::make_array<length>::iterate(begin);
    }
 
    /**
