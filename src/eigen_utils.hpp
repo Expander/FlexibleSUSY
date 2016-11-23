@@ -19,7 +19,6 @@
 #ifndef EIGEN_UTILS_H
 #define EIGEN_UTILS_H
 
-#include "compare.hpp"
 #include <Eigen/Core>
 #include <iomanip>
 #include <sstream>
@@ -104,6 +103,13 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
    }
 }
 
+namespace {
+template <class T>
+struct Is_not_finite {
+   bool operator()(T x) const noexcept { return !std::isfinite(x); }
+};
+} // anonymous namespace
+
 /**
  * Copies all elements from src to dst which are not close to the
  * elements in cmp.
@@ -144,7 +150,7 @@ void reorder_vector(
    Eigen::PermutationMatrix<N> p;
    p.setIdentity();
    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-             CompareAbs<Real, N>(v2));
+             [&v] (int i, int j) { return v[i] < v[j]; });
 
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
    v.matrix().transpose() *= p.inverse();
