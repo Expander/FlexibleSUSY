@@ -39,6 +39,7 @@ public:
    virtual void print(std::ostream& s) const { s << static_cast<softsusy::NmssmSoftsusy>(*this); }
    virtual void set_precision(double p) { precision = p; }
 
+   void calculate_DRbar_masses() { calcDrBarPars(); }
    void set_scale(double scale) { setMu(scale); }
    double get_scale() const { return displayMu(); }
    SoftsusyNMSSM calc_beta() const { return beta2(); }

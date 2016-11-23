@@ -60,6 +60,8 @@ public:
    /// sets object to be equal to another
    const StandardModel & operator=(const StandardModel<Two_scale>& s);
 
+   void calculate_DRbar_masses() {}
+
    /// Sets Yukawa matrix element
    void setYukawaElement(yukawa, int, int, double);
    /// Sets whole Yukawa matrix
