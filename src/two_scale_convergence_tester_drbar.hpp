@@ -26,6 +26,7 @@
 #include "numerics2.hpp"
 
 #include <cmath>
+#include <functional>
 #include <limits>
 
 namespace flexiblesusy {
