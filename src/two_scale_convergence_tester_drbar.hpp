@@ -23,6 +23,7 @@
 #include "convergence_tester_drbar.hpp"
 #include "error.hpp"
 #include "logger.hpp"
+#include "numerics2.hpp"
 
 #include <cmath>
 #include <limits>
