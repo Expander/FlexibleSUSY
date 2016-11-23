@@ -48,7 +48,11 @@ class @ModelName@_slha<Two_scale> : public @ModelName@<Two_scale> {
 public:
    explicit @ModelName@_slha(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    explicit @ModelName@_slha(const @ModelName@<Two_scale>&, bool do_convert_masses_to_slha = true);
+   @ModelName@_slha(const @ModelName@_slha&) = default;
+   @ModelName@_slha(@ModelName@_slha&&) = default;
    virtual ~@ModelName@_slha();
+   @ModelName@_slha& operator=(const @ModelName@_slha&) = default;
+   @ModelName@_slha& operator=(@ModelName@_slha&&) = default;
 
    virtual void clear();
    void convert_to_slha(); ///< converts pole masses and couplings to SLHA convention

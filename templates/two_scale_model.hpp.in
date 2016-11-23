@@ -46,7 +46,11 @@ template<>
 class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_mass_eigenstates {
 public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   @ModelName@(const @ModelName@&) = default;
+   @ModelName@(@ModelName@&&) = default;
    virtual ~@ModelName@();
+   @ModelName@& operator=(const @ModelName@&) = default;
+   @ModelName@& operator=(@ModelName@&&) = default;
 
    // interface functions
    virtual void calculate_spectrum();
