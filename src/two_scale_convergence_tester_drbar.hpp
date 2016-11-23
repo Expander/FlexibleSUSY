@@ -69,7 +69,7 @@ private:
 
    double scale_difference() const;         ///< absolute scale difference
    double rel_scale_difference() const;     ///< relative scale difference
-   double run_to_scale();                   ///< runs models to comparison scale
+   void run_to_scale();                     ///< runs models to comparison scale
 };
 
 template <template<class Method> class Model>
@@ -77,9 +77,9 @@ Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
 (const Model<Two_scale>* model_, double accuracy_goal_, const Scale_getter& sg)
    : Convergence_tester<Two_scale>()
    , model(model_)
+   , scale_getter(sg)
    , max_it(static_cast<int>(-log10(accuracy_goal_) * 10))
    , accuracy_goal(accuracy_goal_)
-   , scale_getter(sg)
 {
    if (!model)
       throw SetupError("Convergence_tester_DRbar<Model<Two_scale>>: "
@@ -133,7 +133,7 @@ double Convergence_tester_DRbar<Model<Two_scale> >::rel_scale_difference()
 }
 
 template <template<class Method> class Model>
-double Convergence_tester_DRbar<Model<Two_scale> >::run_to_scale()
+void Convergence_tester_DRbar<Model<Two_scale> >::run_to_scale()
 {
    if (scale_getter) {
       const double scale = scale_getter();
