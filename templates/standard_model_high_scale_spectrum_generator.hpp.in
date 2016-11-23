@@ -170,11 +170,13 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
 
    // convergence tester for @ModelName@
    @ModelName@_convergence_tester<T> model_ct(
-      &model, this->settings.get(Spectrum_generator_settings::precision));
+      &model, this->settings.get(Spectrum_generator_settings::precision),
+      [this](){ return susy_scale_constraint.get_scale(); });
 
    // convergence tester for Standard Model
    standard_model::Standard_model_convergence_tester<T> eft_ct(
-      &eft, this->settings.get(Spectrum_generator_settings::precision));
+      &eft, this->settings.get(Spectrum_generator_settings::precision),
+      [&qedqcd](){ return qedqcd.displayPoleMt(); });
 
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0) {
       model_ct.set_max_iterations(
