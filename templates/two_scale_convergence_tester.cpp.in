@@ -53,7 +53,7 @@ namespace flexiblesusy {
 double @ModelName@_convergence_tester<Two_scale>::max_rel_diff() const
 {
    const @ModelName@<Two_scale>& ol = get_last_iteration_model();
-   const @ModelName@<Two_scale>& ne = get_model();
+   const @ModelName@<Two_scale>& ne = get_current_iteration_model();
 
 @compareFunction@
 }
