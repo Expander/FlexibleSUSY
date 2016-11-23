@@ -26,6 +26,7 @@
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_standard_model_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_standard_model_two_scale_matching.hpp"
@@ -41,10 +42,10 @@ class Two_scale;
 
 template <>
 class @ModelName@_spectrum_generator<Two_scale>
-   : public @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> > {
+   : public @ModelName@_spectrum_generator_interface<Two_scale> {
 public:
    @ModelName@_spectrum_generator()
-      : @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> >()
+      : @ModelName@_spectrum_generator_interface<Two_scale>()
       , solver()
       , high_scale_constraint()
       , susy_scale_constraint()
@@ -55,7 +56,13 @@ public:
    {}
    virtual ~@ModelName@_spectrum_generator() {}
 
+   std::tuple<@ModelName@<Two_scale>, standard_model::StandardModel<Two_scale> > get_models() const
+   { return std::make_tuple(this->get_model(), eft); }
+   std::tuple<@ModelName@_slha<Two_scale>, standard_model::StandardModel<Two_scale> > get_models_slha() const
+   { return std::make_tuple(this->get_model_slha(), eft); }
+
    const standard_model::StandardModel<Two_scale>& get_eft() const { return eft; }
+
    double get_high_scale() const { return high_scale_constraint.get_scale(); }
    double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
    double get_low_scale()  const { return low_scale_constraint.get_scale(); }

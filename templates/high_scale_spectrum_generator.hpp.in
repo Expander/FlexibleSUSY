@@ -28,8 +28,11 @@
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
 
 #include "lowe.h"
+
+#include <tuple>
 
 namespace flexiblesusy {
 
@@ -37,15 +40,18 @@ class Two_scale;
 
 template <>
 class @ModelName@_spectrum_generator<Two_scale>
-   : public @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> > {
+   : public @ModelName@_spectrum_generator_interface<Two_scale> {
 public:
    @ModelName@_spectrum_generator()
-      : @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> >()
+      : @ModelName@_spectrum_generator_interface<Two_scale>()
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
    {}
    virtual ~@ModelName@_spectrum_generator() {}
+
+   std::tuple<@ModelName@<Two_scale> > get_models() const { return std::make_tuple(this->get_model()); }
+   std::tuple<@ModelName@_slha<Two_scale> > get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
 
    double get_high_scale() const { return high_scale_constraint.get_scale(); }
    double get_susy_scale() const { return susy_scale_constraint.get_scale(); }

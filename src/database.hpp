@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "error.hpp"
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -40,7 +41,7 @@ public:
    Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
-   typedef int (*TCallback)(void*, int, char**, char**);
+   using TCallback = int (*)(void*, int, char**, char**);
 
    class DisabledSQLiteError : Error {
    public:

@@ -36,6 +36,7 @@
 #include "eigen_tensor.hpp"
 #include "if.hpp"
 #include "sum.hpp"
+#include "which.hpp"
 
 namespace flexiblesusy {
 

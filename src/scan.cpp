@@ -18,6 +18,7 @@
 
 #include "scan.hpp"
 #include <cmath>
+#include <cstddef>
 
 /**
  * @file scan.cpp
@@ -37,7 +38,7 @@ namespace flexiblesusy {
  * @return vector of floating point values
  */
 std::vector<double> float_range(double start, double stop,
-                                unsigned long number_of_steps)
+                                std::size_t number_of_steps)
 {
    const double step_size = (stop - start) / number_of_steps;
    std::vector<double> result(number_of_steps);
@@ -63,7 +64,7 @@ std::vector<double> float_range(double start, double stop,
  * @return vector of floating point values
  */
 std::vector<double> float_range_log(double start, double stop,
-                                    unsigned long number_of_steps)
+                                    std::size_t number_of_steps)
 {
    if (number_of_steps == 0)
       return std::vector<double>();

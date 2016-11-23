@@ -2665,6 +2665,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"       \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"                 \
     -e "s|@THREADLIBS@|$THREADLIBS|"                 \
+    -e "s|@CPPFLAGS@|$CPPFLAGS|"                     \
     -e "s|@CXX@|$CXX|"                               \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
     -e "s|@CC@|$CC|"                                 \
@@ -2676,6 +2677,10 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"                       \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"                     \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"                 \
+    -e "s|@LDFLAGS@|$LDFLAGS|"                       \
+    -e "s|@LDLIBS@|$LDLIBS|"                         \
+    -e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"             \
+    -e "s|@LOOPFUNCFLAGS@|$LOOPFUNCFLAGS|"           \
     -e "s|@MATH_VERSION@|$MATH_VERSION|"             \
     -e "s|@MATH_INSTDIR@|$MATH_INSTDIR|"             \
     -e "s|@MATH_SYSTEMID@|$MATH_SYSTEMID|"           \
@@ -2683,6 +2688,10 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@SARAH_MAJOR@|$SARAH_MAJOR|"               \
     -e "s|@SARAH_MINOR@|$SARAH_MINOR|"               \
     -e "s|@SARAH_PATCH@|$SARAH_PATCH|"               \
+    -e "s|@SQLITELIBS@|$SQLITELIBS|"                 \
+    -e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"               \
+    -e "s|@TSILLIBS@|$TSILLIBS|"                     \
+    -e "s|@TSILFLAGS@|$TSILFLAGS|"                   \
     -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \

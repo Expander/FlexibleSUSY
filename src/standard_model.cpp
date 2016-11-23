@@ -35,6 +35,7 @@
 #include "config.h"
 #include "parallel.hpp"
 #include "pv.hpp"
+#include "raii.hpp"
 #include "functors.hpp"
 #include "ew_input.hpp"
 #include "weinberg_angle.hpp"
@@ -97,9 +98,7 @@ namespace standard_model_info {
       "Im(Ue(1,2))", "Re(Ue(2,0))", "Im(Ue(2,0))", "Re(Ue(2,1))", "Im(Ue(2,1))",
       "Re(Ue(2,2))", "Im(Ue(2,2))"};
 
-   const std::string model_name = "Standard_model";
-   const bool is_low_energy_model = false;
-   const bool is_supersymmetric_model = false;
+   const std::string model_name = "StandardModel";
 
 void print(std::ostream& ostr)
 {
@@ -611,7 +610,7 @@ double Standard_model::G0(double p, double m1, double m2) const
  */
 void Standard_model::calculate_DRbar_masses()
 {
-   const auto old_mu2 = mu2;
+   const auto save_mu2_raii = make_raii_save(mu2);
 
    solve_ewsb_tree_level();
 
@@ -627,9 +626,6 @@ void Standard_model::calculate_DRbar_masses()
    calculate_MFv();
    calculate_MHp();
    calculate_MVG();
-
-   mu2 = old_mu2;
-
 }
 
 /**
@@ -1093,18 +1089,19 @@ double Standard_model::recalculate_mw_pole(double mw_pole)
 
 double Standard_model::max_rel_diff(const Standard_model& old) const
 {
-   double diff[12] = { 0 };
+   std::array<double, 12> diff{};
 
    diff[0] = MaxRelDiff(old.Mhh, Mhh);
    diff[1] = MaxRelDiff(old.MVZ, MVZ);
-   for (unsigned i = 0; i < 3; ++i) {
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 2] = MaxRelDiff(old.MFd(i), MFd(i));
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 5] = MaxRelDiff(old.MFu(i), MFu(i));
+   for (unsigned i = 0; i < 3; ++i)
       diff[i + 8] = MaxRelDiff(old.MFe(i), MFe(i));
-   }
    diff[11] = MaxRelDiff(old.MVWp, MVWp);
 
-   return *std::max_element(diff, diff + 12);
+   return *std::max_element(diff.cbegin(), diff.cend());
 }
 
 bool Standard_model::check_convergence(const Standard_model& old) const
@@ -1810,7 +1807,7 @@ double Standard_model::get_mass_matrix_VG() const
 void Standard_model::calculate_MVG()
 {
    const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = calculate_singlet_mass(mass_matrix_VG);
+   MVG = mass_matrix_VG;
 }
 
 double Standard_model::get_mass_matrix_Hp() const
@@ -1824,7 +1821,7 @@ double Standard_model::get_mass_matrix_Hp() const
 void Standard_model::calculate_MHp()
 {
    const auto mass_matrix_Hp = get_mass_matrix_Hp();
-   MHp = calculate_singlet_mass(mass_matrix_Hp);
+   MHp = mass_matrix_Hp;
 
    if (MHp < 0.) {
       problems.flag_running_tachyon(standard_model_info::Hp);
@@ -1865,7 +1862,7 @@ double Standard_model::get_mass_matrix_Ah() const
 void Standard_model::calculate_MAh()
 {
    const auto mass_matrix_Ah = get_mass_matrix_Ah();
-   MAh = calculate_singlet_mass(mass_matrix_Ah);
+   MAh = mass_matrix_Ah;
 
    if (MAh < 0.) {
       problems.flag_running_tachyon(standard_model_info::Ah);
@@ -1884,7 +1881,7 @@ double Standard_model::get_mass_matrix_hh() const
 void Standard_model::calculate_Mhh()
 {
    const auto mass_matrix_hh = get_mass_matrix_hh();
-   Mhh = calculate_singlet_mass(mass_matrix_hh);
+   Mhh = mass_matrix_hh;
 
    if (Mhh < 0.) {
       problems.flag_running_tachyon(standard_model_info::hh);
@@ -1903,7 +1900,7 @@ double Standard_model::get_mass_matrix_VP() const
 void Standard_model::calculate_MVP()
 {
    const auto mass_matrix_VP = get_mass_matrix_VP();
-   MVP = calculate_singlet_mass(mass_matrix_VP);
+   MVP = mass_matrix_VP;
 }
 
 double Standard_model::get_mass_matrix_VZ() const
@@ -1917,7 +1914,7 @@ double Standard_model::get_mass_matrix_VZ() const
 void Standard_model::calculate_MVZ()
 {
    const auto mass_matrix_VZ = get_mass_matrix_VZ();
-   MVZ = calculate_singlet_mass(mass_matrix_VZ);
+   MVZ = mass_matrix_VZ;
 
    if (MVZ < 0.) {
       problems.flag_running_tachyon(standard_model_info::VZ);
@@ -2032,7 +2029,7 @@ double Standard_model::get_mass_matrix_VWp() const
 void Standard_model::calculate_MVWp()
 {
    const auto mass_matrix_VWp = get_mass_matrix_VWp();
-   MVWp = calculate_singlet_mass(mass_matrix_VWp);
+   MVWp = mass_matrix_VWp;
 
    if (MVWp < 0.) {
       problems.flag_running_tachyon(standard_model_info::VWp);
@@ -4268,8 +4265,8 @@ void Standard_model::calculate_MFu_pole()
 
    if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
       const double currentScale = get_scale();
-      qcd_2l = -0.006995771808874528*Power(g3,4) -
-         0.004518101565212638*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
+      qcd_2l = -0.005284774766427138*Power(g3,4) -
+         0.0032348537833770956*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(2))) -
          0.0008822328500119351*Power(g3,4)*Sqr(Log(Power(currentScale,2)/Sqr(
          MFu(2))));
    }
@@ -4278,10 +4275,10 @@ void Standard_model::calculate_MFu_pole()
 
    if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
       const double currentScale = get_scale();
-      qcd_3l = Power(g3,6)*(-0.0017408026847411467 -
-         0.000984413176263005*Log(Sqr(currentScale)/Sqr(MFu(2))) -
-         0.00003352082872926087*Power(Log(Sqr(currentScale)/Sqr(MFu(2))),3) -
-         0.00029813221915266867*Sqr(Log(Power(currentScale,2)/Sqr(MFu(2)))));
+      qcd_3l = -0.00003352082872926087*Power(g3,6)*(35.702577217116016
+         + 15.387410814884797*Log(Sqr(currentScale)/Sqr(MFu(2))) + 1.*Power(
+         Log(Sqr(currentScale)/Sqr(MFu(2))),3) + 5.378787878787879*Sqr(Log(
+         Power(currentScale,2)/Sqr(MFu(2)))));
    }
 
    Eigen::Matrix<double,3,3> self_energy_1;
@@ -4458,18 +4455,20 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
    double qcd_2l = 0., qcd_3l = 0.;
 
    if (get_thresholds() > 1) {
-      qcd_2l = -0.005855107113909601*Power(g3,4) -
-         0.0028071045227652486*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
+      qcd_2l = -0.0041441100714622115*Power(g3,4) -
+         0.0015238567409297061*Power(g3,4)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
          - 0.00024060895909416413*Power(g3,4)*Sqr(Log(Power(currentScale,2)
          /Sqr(MFu(idx))));
    }
 
    if (get_thresholds() > 2) {
-      qcd_3l = -0.0013067805969741943*Power(g3,6) -
+      qcd_3l = -0.0008783313853540776*Power(g3,6) -
          0.0004114970933517977*Power(g3,6)*Log(Sqr(currentScale)/Sqr(MFu(idx)))
          - 5.078913443827405e-6*Power(g3,6)*Power(Log(Sqr(currentScale)/Sqr(
-         MFu(idx))),3) - 0.00007466002762426286*Power(g3,6)*Sqr(Log(Power(
-         currentScale,2)/Sqr(MFu(idx))));
+         MFu(idx))),3) - 0.0002952541682011665*Power(g3,6)*Log(Sqr(MFu(idx))
+         /Sqr(currentScale)) + 0.00005282069981580501*Power(g3,6)*Sqr(Log(Power
+         (MFu(idx),2)/Sqr(currentScale))) - 0.00007466002762426286*Power(g3,6)*
+         Sqr(Log(Power(currentScale,2)/Sqr(MFu(idx))));
    }
 
    const double m_susy_drbar = m_pole + self_energy_1 + m_pole * (

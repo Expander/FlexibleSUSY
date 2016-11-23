@@ -33,6 +33,7 @@
 #include "wrappers.hpp"
 #include "numerics2.hpp"
 #include "pmns.hpp"
+#include "standard_model_two_scale_model.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -101,8 +102,9 @@ void read_file() {
    SLHA_io reader;
    reader.read_from_file("file.slha");
 
-   SLHA_io::Tuple_processor processor
-      = boost::bind(&process_tuple, array, _1, _2);
+   SLHA_io::Tuple_processor processor = [&array] (int key, double value) {
+      return process_tuple(array, key, value);
+   };
 
    reader.read_block("MyBlock", processor);
 }
@@ -124,17 +126,12 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef boost::function<void(int, double)> Tuple_processor;
+   typedef std::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
-      bool quark_flavour_violated;   ///< MODSEL[6]
-      bool lepton_flavour_violated;  ///< MODSEL[6]
-      double parameter_output_scale; ///< MODSEL[12]
-      Modsel()
-         : quark_flavour_violated(false)
-         , lepton_flavour_violated(false)
-         , parameter_output_scale(0.)
-         {}
+      bool quark_flavour_violated{false};   ///< MODSEL[6]
+      bool lepton_flavour_violated{false};  ///< MODSEL[6]
+      double parameter_output_scale{0.};    ///< MODSEL[12]
       void clear() {
          quark_flavour_violated = false;
          lepton_flavour_violated = false;
@@ -195,9 +192,18 @@ public:
    void set_block_imag(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const softsusy::ComplexMatrix&, const std::string&, double scale = 0.);
+   void set_modsel(const Modsel&);
+   void set_physical_input(const Physical_input&);
+   void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
-   void write_to_file(const std::string&);
-   void write_to_stream(std::ostream& = std::cout);
+   void write_to_file(const std::string&) const;
+   void write_to_stream(std::ostream& = std::cout) const;
+
+   // Standard_model class interface
+   void set_mass(const standard_model::Standard_model_physical&);
+   void set_mixing_matrices(const standard_model::Standard_model_physical&);
+   void set_model_parameters(const standard_model::Standard_model&);
+   void set_spectrum(const standard_model::Standard_model&);
 
    template<int N>
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
@@ -243,6 +249,14 @@ private:
    double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
    template <class Derived>
    double read_vector(const std::string&, Eigen::MatrixBase<Derived>&) const;
+};
+
+template<class S>
+struct Set_spectrum {
+   S* slha_io;
+   Set_spectrum(S* slha_io_) : slha_io(slha_io_) {}
+   template<typename T>
+   void operator()(const T& model) const { slha_io->set_spectrum(model); }
 };
 
 template <class Scalar>

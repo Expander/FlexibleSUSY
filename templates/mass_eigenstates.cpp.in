@@ -42,6 +42,7 @@
 #include "config.h"
 #include "parallel.hpp"
 #include "pv.hpp"
+#include "raii.hpp"
 #include "functors.hpp"
 
 @twoLoopHiggsHeaders@
@@ -525,11 +526,10 @@ double CLASSNAME::G0(double p, double m1, double m2) const
  */
 void CLASSNAME::calculate_DRbar_masses()
 {
-@saveSoftHiggsMasses@
+@saveEWSBOutputParameters@
 @solveEWSBTemporarily@
 
 @calculateAllMasses@
-@restoreSoftHiggsMasses@
 }
 
 /**

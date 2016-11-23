@@ -219,7 +219,7 @@ class SingleComponentedVertex {
 private:
    std::complex<double> val; ///< The value
 public:
-   SingleComponentedVertex(std::complex<double> v)
+   explicit SingleComponentedVertex(std::complex<double> v)
       : val(v) {}
 
    /**
@@ -397,7 +397,7 @@ public:
 };
 
 @GMuonMinus2_VertexFunctionData@
-}
+} // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
@@ -702,4 +702,4 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
 
    return res;
 }
-}
+} // anonymous namespace

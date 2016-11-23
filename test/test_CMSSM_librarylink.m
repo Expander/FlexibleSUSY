@@ -52,7 +52,7 @@ handle = FSCMSSMOpenHandle[
         m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 
-specML = FSCMSSMCalculateSpectrum[handle];
+specML = CMSSM /. FSCMSSMCalculateSpectrum[handle];
 obsML = FSCMSSMCalculateObservables[handle];
 probML = FSCMSSMGetProblems[handle];
 warnML = FSCMSSMGetWarnings[handle];
@@ -142,7 +142,7 @@ CalcMh[TB_] :=
                fsModelParameters -> {
                    m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0 }
            ];
-           spec = FSCMSSMCalculateSpectrum[handle];
+           spec = CMSSM /. FSCMSSMCalculateSpectrum[handle];
            FSCMSSMCloseHandle[handle];
            If[spec === $Failed, 0,
               (Pole[M[hh]] /. spec)[[1]]
@@ -158,7 +158,7 @@ Print["Testing Set[] function"];
 
 CalcMh[handle_] :=
     Module[{spec},
-           spec = FSCMSSMCalculateSpectrum[handle];
+           spec = CMSSM /. FSCMSSMCalculateSpectrum[handle];
            If[spec === $Failed, 0,
               (Pole[M[hh]] /. spec)[[1]]
              ]

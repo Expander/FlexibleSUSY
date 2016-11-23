@@ -181,7 +181,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
 void @ModelName@_spectrum_generator<Two_scale>::write_running_couplings(
    const std::string& filename) const
 {
-   @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> >::write_running_couplings(
+   @ModelName@_spectrum_generator_interface<Two_scale>::write_running_couplings(
       filename, get_low_scale(), get_susy_scale());
 }
 
@@ -221,6 +221,18 @@ void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum()
    this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;
    this->model.get_physical().M@VectorW_0@ = eft.get_physical().MVWp;
 @fillSMFermionPoleMasses@
+   if (eft.get_problems().is_running_tachyon(standard_model_info::hh))
+      this->model.get_problems().flag_running_tachyon(@ModelName@_info::@HiggsBoson@);
+   if (eft.get_problems().is_pole_tachyon(standard_model_info::hh))
+      this->model.get_problems().flag_pole_tachyon(@ModelName@_info::@HiggsBoson@);
+   if (eft.get_problems().is_running_tachyon(standard_model_info::VZ))
+      this->model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
+   if (eft.get_problems().is_pole_tachyon(standard_model_info::VZ))
+      this->model.get_problems().flag_pole_tachyon(@ModelName@_info::@VectorZ@);
+   if (eft.get_problems().is_running_tachyon(standard_model_info::VWp))
+      this->model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
+   if (eft.get_problems().is_pole_tachyon(standard_model_info::VWp))
+      this->model.get_problems().flag_pole_tachyon(@ModelName@_info::@VectorW@);
 }
 
 } // namespace flexiblesusy

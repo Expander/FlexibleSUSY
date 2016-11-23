@@ -16,6 +16,7 @@ LIBTEST_DEP := \
 LIBTEST     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 TEST_SRC := \
+		$(DIR)/test_array_view.cpp \
 		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
@@ -35,12 +36,15 @@ TEST_SRC := \
 		$(DIR)/test_numerics.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_pv.cpp \
+		$(DIR)/test_raii.cpp \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_root_finder.cpp \
+		$(DIR)/test_scan.cpp \
 		$(DIR)/test_sminput.cpp \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_threshold_loop_functions.cpp \
+		$(DIR)/test_which.cpp \
 		$(DIR)/test_wrappers.cpp
 
 TEST_SH := \
@@ -323,6 +327,11 @@ TEST_SH += \
 		$(DIR)/test_SMtower.sh
 endif
 
+ifeq ($(WITH_SM) $(WITH_SMtower),yes yes)
+TEST_META += \
+		$(DIR)/test_multiple_librarylinks.m
+endif
+
 ifeq ($(WITH_SM),yes)
 TEST_SH += \
 		$(DIR)/test_flexiblesusy-config.sh
@@ -380,6 +389,8 @@ TEST_META += \
 		$(DIR)/test_CMSSM_3loop_beta.m \
 		$(DIR)/test_CMSSM_librarylink.m \
 		$(DIR)/test_CMSSM_librarylink_parallel.m
+TEST_SH += \
+		$(DIR)/test_CMSSM_librarylink_slha.sh
 endif
 
 TEST_OBJ := \
@@ -458,22 +469,33 @@ execute-compiled-tests: $(TEST_EXE_LOG)
 
 execute-shell-tests: $(TEST_SH_LOG)
 
+PTR = print_test_result() { \
+	if [ $$1 = 0 ]; then \
+		printf "%-66s %4s\n" "$$2" "OK"; \
+	else \
+		printf "%-66s %4s\n" "$$2" "FAILED"; \
+	fi \
+}
+
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
-		@BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
+		@$(PTR); \
+		BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
 		$< --log_level=test_suite >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		print_test_result $$? $<
 
 $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		@rm -f $@
-		@"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
+		@$(PTR); \
+		"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
 		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		print_test_result $$? $<
 
 $(DIR)/%.sh.log: $(DIR)/%.sh
 		@rm -f $@
-		@MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
-		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+		@$(PTR); \
+		MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
+		print_test_result $$? $<
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 

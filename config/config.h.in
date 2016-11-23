@@ -28,6 +28,7 @@
 #define BOOSTFLAGS            "@BOOSTFLAGS@"
 #define BOOSTTESTLIBS         "@BOOSTTESTLIBS@"
 #define BOOSTTHREADLIBS       "@BOOSTTHREADLIBS@"
+#define CPPFLAGS              "@CPPFLAGS@"
 #define CXX                   "@CXX@"
 #define CXXFLAGS              "@CXXFLAGS@"
 #define EIGENFLAGS            "@EIGENFLAGS@"
@@ -37,7 +38,15 @@
 #define GSLFLAGS              "@GSLFLAGS@"
 #define GSLLIBS               "@GSLLIBS@"
 #define LAPACKLIBS            "@LAPACKLIBS@"
+#define LDFLAGS               "@LDFLAGS@"
+#define LDLIBS                "@LDLIBS@"
+#define LOOPFUNCFLAGS         "@LOOPFUNCFLAGS@"
+#define LOOPFUNCLIBS          "@LOOPFUNCLIBS@"
+#define SQLITELIBS            "@SQLITELIBS@"
+#define SQLITEFLAGS           "@SQLITEFLAGS@"
 #define THREADLIBS            "@THREADLIBS@"
+#define TSILLIBS              "@TSILLIBS@"
+#define TSILFLAGS             "@TSILFLAGS@"
 
 /* Switches */
 

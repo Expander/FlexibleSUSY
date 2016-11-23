@@ -41,7 +41,6 @@ AddRealParameter::usage="";
 SetRealParameters::usage="";
 
 SaveParameterLocally::usage="Save parameters in local variables";
-RestoreParameter::usage="Restore parameters from local variables";
 
 GetType::usage="";
 GetPhase::usage="";
@@ -72,6 +71,7 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
 GetInputParameters::usage="";
+GetInputParametersAndTypes::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
@@ -160,7 +160,8 @@ SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
 
-GetInputParameters[] := allInputParameters;
+GetInputParameters[] := First /@ allInputParameters;
+GetInputParametersAndTypes[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 GetPhases[] := allPhases;
@@ -206,7 +207,7 @@ FindAllParameters[expr_] :=
                    ]]];
            allParameters = DeleteDuplicates[
                Join[allModelParameters, allOutPars,
-                    allInputParameters, Phases`GetArg /@ allPhases,
+                    GetInputParameters[], Phases`GetArg /@ allPhases,
                     GetDependenceSPhenoSymbols[]]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
@@ -279,7 +280,7 @@ IsModelParameter[FlexibleSUSY`Temporary[parameter_]] := IsModelParameter[paramet
 IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
 
-IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
+IsInputParameter[parameter_] := MemberQ[GetInputParameters[], parameter];
 
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
@@ -290,6 +291,7 @@ IsRealParameter[FlexibleSUSY`M[_]] := True;
 
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
+    (IsInputParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
     MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
 IsComplexParameter[sym_] :=
@@ -441,6 +443,9 @@ GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+
+GetType[sym_?IsInputParameter] :=
+    Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
@@ -824,37 +829,14 @@ SetParameter[parameter_, value_, castToType_:None] :=
     CConversion`ToValidCSymbolString[StripIndices[parameter]] <> CreateIndices[parameter] <> " = " <>
     CConversion`CastTo[CConversion`RValueToCFormString[value],castToType] <> ";\n";
 
-SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> SaveParameterLocally[parameters[[i]], prefix, caller];
-              ];
-           Return[result];
-          ];
+SaveParameterLocally[parameters_List] :=
+    StringJoin[SaveParameterLocally /@ parameters];
 
-SaveParameterLocally[parameter_, prefix_String, caller_String] :=
+SaveParameterLocally[parameter_] :=
     Module[{ parStr, parStrSym },
            parStr = CConversion`RValueToCFormString[parameter];
            parStrSym = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStrSym <> " = " <>
-           If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
-          ];
-
-RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> RestoreParameter[parameters[[i]], prefix, modelPtr];
-              ];
-           Return[result];
-          ];
-
-RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
-    Module[{ parStr, parStrSym },
-           parStr = CConversion`RValueToCFormString[parameter];
-           parStrSym = CConversion`ToValidCSymbolString[parameter];
-           If[modelPtr != "",
-              SetParameter[parameter, prefix <> parStrSym, modelPtr],
-              parStr <> " = " <> prefix <> parStrSym <> ";\n"]
+           "const auto save_" <> parStrSym <> "_raii = make_raii_save(" <> parStr <> ");\n"
           ];
 
 RemoveProtectedHeads[expr_] :=
@@ -886,7 +868,7 @@ FindAllParametersClassified[expr_] :=
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                         };
            poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
-           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetInputParameters[],#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
@@ -994,7 +976,7 @@ IncreaseIndexLiterals[expr_] :=
     IncreaseIndexLiterals[expr, 1];
 
 IncreaseIndexLiterals[expr_, num_Integer] :=
-    IncreaseIndexLiterals[expr, num, Join[allInputParameters, allModelParameters,
+    IncreaseIndexLiterals[expr, num, Join[GetInputParameters[], allModelParameters,
                                           allOutputParameters]];
 
 IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=

@@ -216,8 +216,8 @@ int Database::extract_callback(void* data, int argc, char** argv, char** col_nam
    return 0;
 }
 
-} // namespace flexiblesusy
 } // namespace database
+} // namespace flexiblesusy
 
 #else
 

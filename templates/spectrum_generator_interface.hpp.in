@@ -21,6 +21,9 @@
 #ifndef @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 #define @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 
+#include "@ModelName@_mass_eigenstates.hpp"
+#include "@ModelName@_model.hpp"
+#include "@ModelName@_model_slha.hpp"
 #include "@ModelName@_utilities.hpp"
 
 #include "error.hpp"
@@ -36,7 +39,7 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 
-template <class Model>
+template <class T>
 class @ModelName@_spectrum_generator_interface {
 public:
    @ModelName@_spectrum_generator_interface()
@@ -47,8 +50,10 @@ public:
    {}
    virtual ~@ModelName@_spectrum_generator_interface() {}
 
-   const Model& get_model() const { return model; }
-   Model& get_model() { return model; }
+   const @ModelName@<T>& get_model() const { return model; }
+   @ModelName@<T>& get_model() { return model; }
+   @ModelName@_slha<T> get_model_slha() const { return @ModelName@_slha<T>(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.); }
+
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const {
       return model.get_problems();
    }
@@ -99,12 +104,12 @@ public:
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 protected:
-   Model model;
+   @ModelName@<T> model;
    Spectrum_generator_settings settings;
    double parameter_output_scale; ///< output scale for running parameters
    double reached_precision; ///< the precision that was reached
 
-   void translate_exception_to_problem(Model& model);
+   void translate_exception_to_problem(@ModelName@<T>& model);
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
 };
 
@@ -113,8 +118,8 @@ protected:
  *
  * @param settings_ spectrum generator settings
  */
-template <class Model>
-void @ModelName@_spectrum_generator_interface<Model>::set_settings(
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::set_settings(
    const Spectrum_generator_settings& settings_)
 {
    settings = settings_;
@@ -132,8 +137,8 @@ void @ModelName@_spectrum_generator_interface<Model>::set_settings(
  * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
-template <class Model>
-void @ModelName@_spectrum_generator_interface<Model>::run(
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::run(
    const softsusy::QedQcd& qedqcd_, const @ModelName@_input_parameters& input)
 {
    softsusy::QedQcd qedqcd = qedqcd_;
@@ -154,8 +159,8 @@ void @ModelName@_spectrum_generator_interface<Model>::run(
  * @param start lowest scale
  * @param stop highest scale
  */
-template <class Model>
-void @ModelName@_spectrum_generator_interface<Model>::write_running_couplings(
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
    const std::string& filename,
    double start, double stop) const
 {
@@ -181,8 +186,8 @@ void @ModelName@_spectrum_generator_interface<Model>::write_running_couplings(
  *
  * @param filename output file name
  */
-template <class Model>
-void @ModelName@_spectrum_generator_interface<Model>::write_spectrum(
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::write_spectrum(
    const std::string& filename) const
 {
    @ModelName@_spectrum_plotter plotter;
@@ -198,8 +203,8 @@ void @ModelName@_spectrum_generator_interface<Model>::write_spectrum(
  *
  * @param model model class
  */
-template <class Model>
-void @ModelName@_spectrum_generator_interface<Model>::translate_exception_to_problem(Model& model)
+template <class T>
+void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem(@ModelName@<T>& model)
 {
    try {
       throw;

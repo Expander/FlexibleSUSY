@@ -51,6 +51,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
+		$(DIR)/array_view.hpp \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \

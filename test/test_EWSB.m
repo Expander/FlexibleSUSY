@@ -17,7 +17,7 @@ Parameters`SetRealParameters[mssmEwsbOutputParameters];
 
 {mssmSolution, mssmFreePhases} = EWSB`FindSolutionAndFreePhases[mssmEwsbEqs, mssmEwsbOutputParameters];
 
-TestEquality[mssmFreePhases, {FlexibleSUSY`Sign[mu]}];
+TestEquality[mssmFreePhases, {Sign[mu]}];
 
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
@@ -28,7 +28,7 @@ TestEquality[Sort /@ mssmFullSolution,
 
 TestEquality[Sort[mssmSolution],
              Sort[{ B[mu] -> -5 + x^2 - x*y - z,
-                    mu -> FlexibleSUSY`Sign[mu] Sqrt[-5 - x^2 - x*y - z]
+                    mu -> Sign[mu] Sqrt[-5 - x^2 - x*y - z]
                   }]];
 
 Print["testing NMSSM-like EWSB for Kappa, vS and mS2 ..."];
@@ -49,7 +49,7 @@ Parameters`SetRealParameters[nmssmEwsbOutputParameters];
 
 {nmssmSolution, nmssmFreePhases} = EWSB`FindSolutionAndFreePhases[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
-TestEquality[nmssmFreePhases, {FlexibleSUSY`Sign[s]}];
+TestEquality[nmssmFreePhases, {Sign[s]}];
 
 nmssmFullSolution = EWSB`Private`FindSolution[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
@@ -70,7 +70,7 @@ TestEquality[Sort[nmssmSolution],
                               g^2*vd^2*vu + lambda^2*vd^2*vu + g^2*vu^3)/(lambda*s^2*vd),
                     mS2 -> (-(Akappa*kappa*s^2) - kappa^2*s^3 - s*X - Y)/s,
                     s -> (Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]*
-                          FlexibleSUSY`Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
+                          Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
                   }]];
 
 Print["testing UMSSM-like EWSB for mHu2, mHd2 and mS2 ..."];

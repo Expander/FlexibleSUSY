@@ -34,7 +34,7 @@ CalculateElectromagneticCoupling[scheme_] :=
                               FlexibleSUSY`MSbar, 0,
                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                              ];
-         CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme] + conversion
+         CalculateCoupling[{SARAH`electricCharge, SARAH`electricCharge, SARAH`U[1]}, scheme] + conversion
         ];
 
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
@@ -226,7 +226,7 @@ InvertMassRelation[fermion_, yukawa_] :=
              ];
            dim = Length[massMatrix];
            If[massMatrix === Table[0, {dim}, {dim}],
-              Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
+              Return[{yukawa,CConversion`ZEROMATRIX[dim,dim]}];
              ];
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawa];

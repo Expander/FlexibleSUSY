@@ -49,7 +49,7 @@ struct Initialize_looptools {
     }
 } initialize_looptools;
 
-}
+} // anonymous namespace
 
 complex<double> A0(double m2, double scl2) noexcept
 {
@@ -511,6 +511,6 @@ double ReG0(double p2, double m2a, double m2b, double scl2) noexcept
 #endif
 }
 
-} // passarino_veltman
+} // namespace passarino_veltman
 
-} // flexiblesusy
+} // namespace flexiblesusy

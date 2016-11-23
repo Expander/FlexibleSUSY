@@ -22,6 +22,7 @@
 #include "two_loop_corrections.hpp"
 #include <array>
 #include <iosfwd>
+#include <string>
 
 namespace flexiblesusy {
 
@@ -66,6 +67,7 @@ public:
    Spectrum_generator_settings();
 
    double get(Settings) const; ///< get value of spectrum generator setting
+   std::string get_description(Settings) const; ///< get description of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
    void reset();               ///< resets all settings to their defaults
 

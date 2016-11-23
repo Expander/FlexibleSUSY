@@ -130,7 +130,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
 void @ModelName@_spectrum_generator<Two_scale>::write_running_couplings(
    const std::string& filename) const
 {
-   @ModelName@_spectrum_generator_interface<@ModelName@<Two_scale> >::write_running_couplings(
+   @ModelName@_spectrum_generator_interface<Two_scale>::write_running_couplings(
       filename, get_low_scale(), get_high_scale());
 }
 

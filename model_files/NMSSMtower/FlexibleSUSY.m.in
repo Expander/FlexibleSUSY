@@ -35,6 +35,8 @@ SUSYScale = MSUSY;
 SUSYScaleFirstGuess = MSUSY;
 
 SUSYScaleInput = {
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]},
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
     {MassB, M1Input},
     {MassWB, M2Input},
     {MassG, M3Input},
@@ -53,12 +55,31 @@ SUSYScaleInput = {
     {T[\[Lambda]], ALambdaInput LambdaInput}
 };
 
-InitialGuessAtSUSYScale = SUSYScaleInput;
+InitialGuessAtSUSYScale = {
+    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+    {MassB, M1Input},
+    {MassWB, M2Input},
+    {MassG, M3Input},
+    {mq2, mq2Input},
+    {mu2, mu2Input},
+    {md2, md2Input},
+    {ml2, ml2Input},
+    {me2, me2Input},
+    {T[Yu], AuInput Yu},
+    {T[Yd], AdInput Yd},
+    {T[Ye], AeInput Ye},
+    {vS, Sqrt[2] MuInput/LambdaInput},
+    {\[Kappa], KappaInput},
+    {\[Lambda], LambdaInput},
+    {T[\[Kappa]], AKappaInput KappaInput},
+    {T[\[Lambda]], ALambdaInput LambdaInput}
+};
 
 (* VEV is the SM-like VEV in the MSSM *)
 SUSYScaleMatching = {
-    {vu, VEV Sin[ArcTan[TanBeta]]},
-    {vd, VEV Cos[ArcTan[TanBeta]]}
+    {vu, VEV Sin[ArcTan[vu/vd]]},
+    {vd, VEV Cos[ArcTan[vu/vd]]}
 };
 
 LowScale = LowEnergyConstant[MZ];

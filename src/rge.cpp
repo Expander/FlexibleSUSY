@@ -82,4 +82,4 @@ int RGE::callRK(double x1, double x2, DoubleVector & v,
   return err;
 }
 
-}
+} // namespace softsusy

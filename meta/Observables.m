@@ -16,8 +16,11 @@ CreateClearObservablesFunction::usage="";
 CalculateObservables::usage="";
 GetObservableName::usage="returns name of observable in Observables struct";
 GetObservableType::usage="returns type of observable";
+IsObservable::usage = "Returns true if given symbol is an observable.";
 
 Begin["`Private`"];
+
+IsObservable[sym_] := MemberQ[FlexibleSUSYObservable`FSObservables, sym];
 
 GetRequestedObservables[blocks_] :=
     Module[{observables, dim},

@@ -25,7 +25,6 @@
 #include "logger.hpp"
 #include "error.hpp"
 #include <cmath>
-#include <boost/bind.hpp>
 
 namespace flexiblesusy {
 
@@ -83,8 +82,10 @@ void Beta_function::run(double x1, double x2, double eps)
          throw NonPerturbativeRunningError(x2);
 
       Eigen::ArrayXd y(get());
-      runge_kutta::Derivs derivs = boost::bind(&Beta_function::derivatives,
-                                               this, _1, _2);
+
+      runge_kutta::Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
+         return derivatives(x, y);
+      };
 
       call_rk(x1, x2, y, derivs, tol);
       set(y);

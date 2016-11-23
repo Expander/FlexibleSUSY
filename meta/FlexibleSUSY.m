@@ -1,4 +1,13 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "GMuonMinus2`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`"}];
+BeginPackage["FlexibleSUSY`",
+             {"SARAH`", "AnomalousDimension`", "BetaFunction`",
+             "TextFormatting`", "CConversion`", "TreeMasses`",
+             "EWSB`", "Traces`", "SelfEnergies`", "Vertices`",
+             "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
+             "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
+             "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
+             "GMuonMinus2`", "EffectiveCouplings`",
+             "FlexibleEFTHiggsMatching`", "FSMathLink`",
+             "FlexibleTower`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -596,6 +605,7 @@ GeneralReplacementRules[] :=
                  ]
              ]]
             ],
+      "@ModelTypes@"          -> FlexibleTower`GetModelTypes[],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
@@ -698,8 +708,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateGaugeCouplings,
            calculateThetaW,
            recalculateMWPole,
-           checkPerturbativityForDimensionlessParameters = "",
-           saveEwsbOutputParameters, restoreEwsbOutputParameters},
+           checkPerturbativityForDimensionlessParameters = ""},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
@@ -731,8 +740,6 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
               LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(2)"      ],
               LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(3)"      ]
           };
-          saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
-          restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model->"];
           If[FSCheckPerturbativityOfDimensionlessParameters,
              checkPerturbativityForDimensionlessParameters =
                  Constraint`CheckPerturbativityForParameters[
@@ -767,8 +774,6 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
-                   "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
-                   "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
                    "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
@@ -1018,9 +1023,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "",
-            saveEwsbOutputParameters, restoreEwsbOutputParameters,
             softScalarMasses, treeLevelEWSBOutputParameters,
-            saveSoftHiggsMasses, restoreSoftHiggsMasses,
+            saveEWSBOutputParameters,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
@@ -1135,8 +1139,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
            dependenceFunctions       = TreeMasses`CreateDependenceFunctions[massMatrices];
-           saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
-           restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
               softScalarMasses          = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];,
               softScalarMasses          = {};
@@ -1150,8 +1152,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            treeLevelEWSBOutputParameters = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[treeLevelEWSBOutputParameters]]];
            If[Head[treeLevelEWSBOutputParameters] === List && Length[treeLevelEWSBOutputParameters] > 0,
-              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[treeLevelEWSBOutputParameters, "old_", ""];
-              restoreSoftHiggsMasses    = Parameters`RestoreParameter[treeLevelEWSBOutputParameters, "old_", ""];
+              saveEWSBOutputParameters = Parameters`SaveParameterLocally[treeLevelEWSBOutputParameters];
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`FindSolutionAndFreePhases[independentEwsbEquationsTreeLevel,
                                                                                     treeLevelEWSBOutputParameters][[1]];
               If[solveTreeLevelEWSBviaSoftHiggsMasses === {},
@@ -1162,8 +1163,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`CreateTreeLevelEwsbSolver[solveTreeLevelEWSBviaSoftHiggsMasses];
               solveEWSBTemporarily = "solve_ewsb_tree_level_custom();";
               ,
-              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
-              restoreSoftHiggsMasses    = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
+              saveEWSBOutputParameters = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters];
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
               solveEWSBTemporarily = "solve_ewsb_tree_level();";
              ];
@@ -1244,10 +1244,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@dependencePrototypes@"         -> IndentText[dependencePrototypes],
                             "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
-                            "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
-                            "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
-                            "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
-                            "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
+                            "@saveEWSBOutputParameters@"     -> IndentText[saveEWSBOutputParameters],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
                             "@solveEWSBTemporarily@"         -> IndentText[solveEWSBTemporarily],
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
@@ -1470,10 +1467,11 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             inputParameterEnum = "", inputParameterNames = "",
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
+            isFlexibleEFTHiggs = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
-            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
+            writeSLHAMinparBlock = "", writeSLHAExtparBlock = "", writeSLHAInputParameterBlocks = "",
             readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
@@ -1506,6 +1504,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            isLowEnergyModel = If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True, "true", "false"];
            isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
+           isFlexibleEFTHiggs = If[FlexibleSUSY`FlexibleEFTHiggs === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
@@ -1517,6 +1516,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
+           writeSLHAInputParameterBlocks = WriteSLHAInputParameterBlocks[extraSLHAInputParameters];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
@@ -1538,6 +1538,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@inputParameterNames@"-> IndentText[WrapLines[inputParameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
                             "@isSupersymmetricModel@" -> isSupersymmetricModel,
+                            "@isFlexibleEFTHiggs@" -> isFlexibleEFTHiggs,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
@@ -1549,6 +1550,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
+                            "@writeSLHAInputParameterBlocks@"  -> IndentText[writeSLHAInputParameterBlocks],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
                             "@gaugeCouplingNormalizationDecls@"-> IndentText[gaugeCouplingNormalizationDecls],
                             "@gaugeCouplingNormalizationDefs@" -> IndentText[gaugeCouplingNormalizationDefs],
@@ -1833,7 +1835,7 @@ LoadModelFile[file_String] :=
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
-GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
+GuessInputParameterType[Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
 GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
     CConversion`ScalarType[CConversion`complexScalarCType];
@@ -1994,7 +1996,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
            ];
 
-           Parameters`SetInputParameters[First /@ inputParameters];
+           Parameters`SetInputParameters[inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",
@@ -2181,7 +2183,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                         {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[First /@ inputParameters];
+              Parameters`AddInputParameters[inputParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -2220,7 +2222,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                      FlexibleSUSY`FSExtraInputParameters,
                                                      {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ lesHouchesInputParameters];
-           Parameters`AddInputParameters[First /@ inputParameters];
+           Parameters`AddInputParameters[inputParameters];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
@@ -2375,7 +2377,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                         ];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
                                                         {#, FindPhaseInInputParameters[inputParameters,#], GuessInputParameterType[#]}& /@ freePhases];
-              Parameters`AddInputParameters[First /@ inputParameters];
+              Parameters`AddInputParameters[inputParameters];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)

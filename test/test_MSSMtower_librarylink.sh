@@ -181,7 +181,7 @@ handle = FSMSSMtowerOpenHandle[
     }
 ];
 
-spectrum    = FSMSSMtowerCalculateSpectrum[handle];
+spectrum    = MSSMtower /. FSMSSMtowerCalculateSpectrum[handle];
 observables = FSMSSMtowerCalculateObservables[handle];
 FSMSSMtowerCloseHandle[handle];
 

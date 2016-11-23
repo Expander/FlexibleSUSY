@@ -37,16 +37,6 @@ run_async(F&& f, Ts&&... params)
                      std::forward<Ts>(params)...);
 }
 
-// overload for g++ <= 4.7.4
-template<typename F, typename Ts>
-inline std::future<typename std::result_of<F(Ts)>::type>
-run_async(F&& f, Ts&& params)
-{
-   return std::async(std::launch::async,
-                     std::forward<F>(f),
-                     std::forward<Ts>(params));
-}
-
 } // namespace flexiblesusy
 
 #endif
