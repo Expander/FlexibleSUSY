@@ -37,19 +37,16 @@ public:
    virtual ~Convergence_tester_DRbar() {}
 
    virtual bool accuracy_goal_reached() override;
-   virtual double get_accuracy_goal() const;
-   virtual unsigned int max_iterations() const override;
-   double get_current_accuracy() const;
-   void set_max_iterations(unsigned);           ///< set maximum number of iterations
+   virtual double get_accuracy_goal() const { return accuracy_goal; }
+   virtual unsigned int max_iterations() const override { return max_it; }
+   double get_current_accuracy() const { return current_accuracy; }
+   void set_max_iterations(unsigned it) { max_it = it; } ///< set maximum number of iterations
 
 protected:
-   unsigned get_iteration() const;              ///< get current iteration number
-   const Model<Two_scale>& get_model() const;                ///< get model
-   const Model<Two_scale>& get_last_iteration_model() const; ///< get model state during last iteration
+   unsigned get_iteration() const { return it_count; } ///< get current iteration number
+   const Model<Two_scale>& get_model() const { return *model; } ///< get model
+   const Model<Two_scale>& get_last_iteration_model() const { return last_iteration_model; } ///< get model state during last iteration
    virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
-   virtual double rel_scale_difference() const; ///< relative scale difference
-   virtual double scale_difference() const;     ///< absolute scale difference
-   virtual bool scale_has_changed() const;      ///< returns true if scale has changed
 
 private:
    Model<Two_scale>* model{nullptr};        ///< pointer to model
@@ -58,6 +55,9 @@ private:
    unsigned int max_it{40};                 ///< maximum number of iterations
    double accuracy_goal{1e-4};              ///< accuracy goal
    double current_accuracy{std::numeric_limits<double>::infinity()}; ///< current accuracy
+
+   double scale_difference() const;         ///< absolute scale difference
+   double rel_scale_difference() const;     ///< relative scale difference
 };
 
 template <template<class Method> class Model>
@@ -98,58 +98,6 @@ bool Convergence_tester_DRbar<Model<Two_scale> >::accuracy_goal_reached()
    ++it_count;
 
    return precision_reached;
-}
-
-template <template<class Method> class Model>
-double Convergence_tester_DRbar<Model<Two_scale> >::get_accuracy_goal() const
-{
-   return accuracy_goal;
-}
-
-template <template<class Method> class Model>
-double Convergence_tester_DRbar<Model<Two_scale> >::get_current_accuracy() const
-{
-   return current_accuracy;
-}
-
-template <template<class Method> class Model>
-unsigned Convergence_tester_DRbar<Model<Two_scale> >::get_iteration() const
-{
-   return it_count;
-}
-
-template <template<class Method> class Model>
-const Model<Two_scale>&
-Convergence_tester_DRbar<Model<Two_scale> >::get_model() const
-{
-   return *model;
-}
-
-template <template<class Method> class Model>
-const Model<Two_scale>&
-Convergence_tester_DRbar<Model<Two_scale> >::get_last_iteration_model() const
-{
-   return last_iteration_model;
-}
-
-template <template<class Method> class Model>
-void Convergence_tester_DRbar<Model<Two_scale> >::set_max_iterations
-(unsigned max_it_)
-{
-   max_it = max_it_;
-}
-
-template <template<class Method> class Model>
-unsigned int Convergence_tester_DRbar<Model<Two_scale> >::max_iterations()
-   const
-{
-   return max_it;
-}
-
-template <template<class Method> class Model>
-bool Convergence_tester_DRbar<Model<Two_scale> >::scale_has_changed() const
-{
-   return !is_zero(scale_difference());
 }
 
 template <template<class Method> class Model>
