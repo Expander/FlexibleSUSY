@@ -87,7 +87,6 @@ bool Convergence_tester_DRbar<Model<Two_scale> >::accuracy_goal_reached()
 		     << current_accuracy
 		     << ", accuracy goal = " << accuracy_goal);
       } else {
-	 precision_reached = false;
          VERBOSE_MSG("scale has changed by " << scale_difference()
 		     << " GeV (" << rel_scale_difference()
 		     << "), skipping parameter comparison");
