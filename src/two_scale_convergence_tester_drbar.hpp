@@ -136,7 +136,9 @@ double Convergence_tester_DRbar<Model<Two_scale> >::run_to_scale()
    if (scale_getter) {
       const double scale = scale_getter();
       current_model.run_to(scale);
+      current_model.calculate_DRbar_masses();
       last_iteration_model.run_to(scale);
+      last_iteration_model.calculate_DRbar_masses();
    }
 }
 
