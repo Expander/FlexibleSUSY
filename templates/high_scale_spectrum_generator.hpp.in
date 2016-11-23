@@ -44,12 +44,7 @@ template <class T>
 class @ModelName@_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
 public:
-   @ModelName@_spectrum_generator()
-      : @ModelName@_spectrum_generator_interface<T>()
-      , high_scale_constraint()
-      , susy_scale_constraint()
-      , low_scale_constraint()
-   {}
+   @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() {}
 
    std::tuple<@ModelName@<T>> get_models() const { return std::make_tuple(this->get_model()); }
@@ -66,9 +61,9 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   @ModelName@_high_scale_constraint<T> high_scale_constraint;
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint;
+   @ModelName@_high_scale_constraint<T> high_scale_constraint{};
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint{};
+   @ModelName@_low_scale_constraint<T>  low_scale_constraint{};
 
    void calculate_spectrum();
 };

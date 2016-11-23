@@ -47,15 +47,7 @@ template <class T>
 class @ModelName@_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
 public:
-   @ModelName@_spectrum_generator()
-      : @ModelName@_spectrum_generator_interface<T>()
-      , solver()
-      , susy_scale_constraint()
-      , low_scale_constraint()
-      , matching_up()
-      , matching_down()
-      , eft()
-   {}
+   @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() {}
 
    std::tuple<@ModelName@<T>, standard_model::StandardModel<T>> get_models() const
@@ -76,12 +68,12 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   RGFlow<T> solver;
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
-   @ModelName@_standard_model_matching_up<T> matching_up;
-   @ModelName@_standard_model_matching_down<T> matching_down;
-   standard_model::StandardModel<T> eft;
+   RGFlow<T> solver{};
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint{};
+   standard_model::Standard_model_low_scale_constraint<T> low_scale_constraint{};
+   @ModelName@_standard_model_matching_up<T> matching_up{};
+   @ModelName@_standard_model_matching_down<T> matching_down{};
+   standard_model::StandardModel<T> eft{};
 
    void calculate_spectrum();
 };
