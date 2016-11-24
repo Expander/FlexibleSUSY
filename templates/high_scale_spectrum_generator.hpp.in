@@ -119,7 +119,7 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
 
    @ModelName@_convergence_tester<T> convergence_tester(
       &model, this->settings.get(Spectrum_generator_settings::precision),
-      [this](){ return susy_scale_constraint.get_scale(); });
+      [this](){ return get_pole_mass_scale(); });
 
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
       convergence_tester.set_max_iterations(
