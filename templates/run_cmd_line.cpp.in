@@ -18,11 +18,13 @@
 
 // File generated at @DateAndTime@
 
+#include "config.h"
+
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_slha_io.hpp"
 
+@solverIncludes@
 #include "command_line_options.hpp"
 #include "lowe.h"
 #include "logger.hpp"

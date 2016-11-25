@@ -1363,17 +1363,44 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                    } ];
            ];
 
+GuardedIncludeForBVPSolver[solver_, header_] :=
+    Module[{result = "#ifdef "},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver,
+                  result = result <> "ENABLE_TWO_SCALE_SOLVER\n#include \"" <> header,
+                  FlexibleSUSY`LatticeSolver,
+                  result = result <> "ENABLE_LATTICE_SOLVER\n#include \"" <> header,
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           result <> "\"\n#endif"
+          ];
+
+EnableSpectrumGenerator[solver_] :=
+    Module[{header = FlexibleSUSY`FSModelName},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, header = header <> "_two_scale",
+                  FlexibleSUSY`LatticeSolver, header = header <> "_lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           header = header <> "_spectrum_generator.hpp";
+           GuardedIncludeForBVPSolver[solver, header] <> "\n"
+          ];
+
 WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, inputPars,
-            fillSMFermionPoleMasses = ""},
+            fillSMFermionPoleMasses = "", solverIncludes = ""},
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
+           (solverIncludes = solverIncludes <> EnableSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
+                            "@solverIncludes@" -> solverIncludes,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
