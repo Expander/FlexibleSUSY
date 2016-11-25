@@ -150,7 +150,7 @@ void reorder_vector(
    Eigen::PermutationMatrix<N> p;
    p.setIdentity();
    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-             [&v2] (int i, int j) { return std::abs(v2[i]) < std::abs(v2[j]); });
+             [&v2] (int i, int j) { return v2[i] < v2[j]; });
 
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
    v.matrix().transpose() *= p.inverse();
