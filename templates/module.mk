@@ -12,6 +12,8 @@ BASE_TEMPLATES := \
 		$(DIR)/input_parameters.cpp.in \
 		$(DIR)/mass_eigenstates.hpp.in \
 		$(DIR)/mass_eigenstates.cpp.in \
+		$(DIR)/model.hpp.in \
+		$(DIR)/model_slha.hpp.in \
 		$(DIR)/observables.hpp.in \
 		$(DIR)/observables.cpp.in \
 		$(DIR)/physical.hpp.in \
@@ -40,8 +42,6 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.cpp.in \
-		$(DIR)/model.hpp.in \
-		$(DIR)/model_slha.hpp.in \
 		$(DIR)/run.cpp.in \
 		$(DIR)/run.m.in \
 		$(DIR)/run_cmd_line.cpp.in \
@@ -73,8 +73,6 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/two_scale_low_scale_initial_guesser.cpp.in \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
-		$(DIR)/two_scale_model_slha.hpp.in \
-		$(DIR)/two_scale_model_slha.cpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.cpp.in
 

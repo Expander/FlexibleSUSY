@@ -53,6 +53,8 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_info.hpp \
 		$(DIR)/@CLASSNAME@_input_parameters.hpp \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.hpp \
+		$(DIR)/@CLASSNAME@_model.hpp \
+		$(DIR)/@CLASSNAME@_model_slha.hpp \
 		$(DIR)/@CLASSNAME@_observables.hpp \
 		$(DIR)/@CLASSNAME@_physical.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \

@@ -24,7 +24,7 @@
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "@ModelName@_two_scale_model_slha.hpp"
+#include "@ModelName@_model_slha.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_standard_model_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
@@ -56,7 +56,7 @@ public:
 
    std::tuple<@ModelName@<Two_scale>, standard_model::StandardModel<Two_scale> > get_models() const
    { return std::make_tuple(this->get_model(), eft); }
-   std::tuple<@ModelName@_slha<Two_scale>, standard_model::StandardModel<Two_scale> > get_models_slha() const
+   std::tuple<@ModelName@_slha<@ModelName@<Two_scale> >, standard_model::StandardModel<Two_scale> > get_models_slha() const
    { return std::make_tuple(this->get_model_slha(), eft); }
 
    const standard_model::StandardModel<Two_scale>& get_eft() const { return eft; }

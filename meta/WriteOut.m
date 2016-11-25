@@ -921,7 +921,7 @@ ConvertYukawaCouplingsToSLHA[] :=
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
                      ParametersHaveSameDimension[{vL, vR, #}],
                      result = result <>
-                              "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
+                              "fs_svd(MODELPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> "), " <>
                                       CreateSLHAYukawaName[#] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
@@ -986,7 +986,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
                      result = result <>
                               CreateSLHATrilinearCouplingName[#] <> " = (" <>
                               CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              "MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ") * " <>
                               CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
                               ").real();\n";
                      ,
@@ -1053,14 +1054,16 @@ ConvertSoftSquaredMassesToSLHA[] :=
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
                                  CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
-                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 "MODELPARAMETER(" <>
+                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
                                  CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
                                  ").real();\n";
                         ,
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
                                  CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 "MODELPARAMETER(" <>
+                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
                                  CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
                                  ").real();\n";
                        ];

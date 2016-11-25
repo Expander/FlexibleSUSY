@@ -27,7 +27,6 @@ LIB@ModelName@_SRC += \
 		$(DIR)/@ModelName@_two_scale_initial_guesser.cpp \
 		$(DIR)/@ModelName@_two_scale_low_scale_constraint.cpp \
 		$(DIR)/@ModelName@_two_scale_model.cpp \
-		$(DIR)/@ModelName@_two_scale_model_slha.cpp \
 		$(DIR)/@ModelName@_two_scale_spectrum_generator.cpp \
 		$(DIR)/@ModelName@_two_scale_susy_scale_constraint.cpp
 EXE@ModelName@_SRC += \
@@ -39,8 +38,6 @@ LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_high_scale_constraint.hpp \
 		$(DIR)/@ModelName@_initial_guesser.hpp \
 		$(DIR)/@ModelName@_low_scale_constraint.hpp \
-		$(DIR)/@ModelName@_model.hpp \
-		$(DIR)/@ModelName@_model_slha.hpp \
 		$(DIR)/@ModelName@_slha_io.hpp \
 		$(DIR)/@ModelName@_standard_model_matching.hpp \
 		$(DIR)/@ModelName@_standard_model_two_scale_matching.hpp \
@@ -50,7 +47,6 @@ LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_two_scale_initial_guesser.hpp \
 		$(DIR)/@ModelName@_two_scale_low_scale_constraint.hpp \
 		$(DIR)/@ModelName@_two_scale_model.hpp \
-		$(DIR)/@ModelName@_two_scale_model_slha.hpp \
 		$(DIR)/@ModelName@_two_scale_spectrum_generator.hpp \
 		$(DIR)/@ModelName@_two_scale_susy_scale_constraint.hpp
 LL@ModelName@_SRC  += \

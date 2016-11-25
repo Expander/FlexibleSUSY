@@ -20,7 +20,7 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_two_scale_spectrum_generator.hpp"
-#include "@ModelName@_two_scale_model_slha.hpp"
+#include "@ModelName@_model_slha.hpp"
 
 #include "command_line_options.hpp"
 #include "scan.hpp"

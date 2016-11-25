@@ -25,7 +25,7 @@
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "@ModelName@_two_scale_model_slha.hpp"
+#include "@ModelName@_model_slha.hpp"
 #include "standard_model_two_scale_model.hpp"
 
 #include "array_view.hpp"
@@ -548,7 +548,7 @@ void put_spectrum(const standard_model::StandardModel<algorithm_type>& model, ML
 
 /******************************************************************/
 
-void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
+void put_spectrum(const @ModelName@_slha<@ModelName@<algorithm_type> >& model, MLINK link)
 {
    MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", @numberOfSpectrumEntries@);
