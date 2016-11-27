@@ -1363,44 +1363,88 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                    } ];
            ];
 
-GuardedIncludeForBVPSolver[solver_, header_] :=
+EnableForBVPSolver[solver_, statements_String] :=
     Module[{result = "#ifdef "},
            Switch[solver,
                   FlexibleSUSY`TwoScaleSolver,
-                  result = result <> "ENABLE_TWO_SCALE_SOLVER\n#include \"" <> header,
+                  result = result <> "ENABLE_TWO_SCALE_SOLVER\n" <> statements,
                   FlexibleSUSY`LatticeSolver,
-                  result = result <> "ENABLE_LATTICE_SOLVER\n#include \"" <> header,
+                  result = result <> "ENABLE_LATTICE_SOLVER\n" <> statements,
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
-           result <> "\"\n#endif"
+           result <> "#endif"
           ];
 
 EnableSpectrumGenerator[solver_] :=
-    Module[{header = FlexibleSUSY`FSModelName},
+    Module[{header = "#include \"" <> FlexibleSUSY`FSModelName},
            Switch[solver,
                   FlexibleSUSY`TwoScaleSolver, header = header <> "_two_scale",
                   FlexibleSUSY`LatticeSolver, header = header <> "_lattice",
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
-           header = header <> "_spectrum_generator.hpp";
-           GuardedIncludeForBVPSolver[solver, header] <> "\n"
+           header = header <> "_spectrum_generator.hpp\"\n";
+           EnableForBVPSolver[solver, header] <> "\n"
+          ];
+
+RunEnabledSpectrumGenerator[solver_] :=
+    Module[{key = "", class = "", macro = "", body = "", result = ""},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
+                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           body = "exit_code = run_solver<" <> class <> ">(\n"
+                  <> IndentText["slha_io, spectrum_generator_settings, slha_output_file,\n"]
+                  <> IndentText["database_output_file, spectrum_file, rgflow_file);\n"]
+                  <> "break;\n";
+           result = "case " <> key <> ":\n" <> IndentText[body];
+           EnableForBVPSolver[solver, IndentText[result]] <> "\n"
+          ];
+
+ScanEnabledSpectrumGenerator[solver_] :=
+    Module[{key = "", class = "", macro = "", body = "", result = ""},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
+                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           body = "run_scan<" <> class <> ">(input, range);\nbreak;\n";
+           result = "case " <> key <> ":\n" <> IndentText[body];
+           EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
 
 WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, inputPars,
-            fillSMFermionPoleMasses = "", solverIncludes = ""},
+            fillSMFermionPoleMasses = "", solverIncludes = "",
+	    runEnabledSolvers = "", scanEnabledSolvers = "", defaultSolverType},
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            (solverIncludes = solverIncludes <> EnableSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+	   (runEnabledSolvers = runEnabledSolvers <> RunEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+	   (scanEnabledSolvers = scanEnabledSolvers <> ScanEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
+              defaultSolverType = "-1",
+              Which[FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`TwoScaleSolver,
+                    defaultSolverType = "0",
+                    FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`LatticeSolver,
+                    defaultSolverType = "1",
+                    True, Print["Error: invalid BVP solver requested: ", solver]; Quit[1]
+                   ];
+             ];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             "@solverIncludes@" -> solverIncludes,
+			    "@runEnabledSolvers@" -> runEnabledSolvers,
+			    "@scanEnabledSolvers@" -> scanEnabledSolvers,
+                            "@defaultSolverType@" -> defaultSolverType,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
