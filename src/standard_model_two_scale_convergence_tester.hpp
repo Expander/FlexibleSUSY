@@ -35,7 +35,9 @@ template<>
 class Standard_model_convergence_tester<Two_scale>
    : public Convergence_tester_DRbar<StandardModel<Two_scale> > {
 public:
-   Standard_model_convergence_tester(StandardModel<Two_scale>*, double);
+   using Scale_getter = Convergence_tester_DRbar<StandardModel<Two_scale>>::Scale_getter;
+
+   Standard_model_convergence_tester(StandardModel<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
    virtual ~Standard_model_convergence_tester();
 
 protected:

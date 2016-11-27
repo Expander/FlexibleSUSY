@@ -55,7 +55,11 @@ class EWSB_solver;
 class @ModelName@_mass_eigenstates : public @ModelName@_soft_parameters {
 public:
    explicit @ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   @ModelName@_mass_eigenstates(const @ModelName@_mass_eigenstates&) = default;
+   @ModelName@_mass_eigenstates(@ModelName@_mass_eigenstates&&) = default;
    virtual ~@ModelName@_mass_eigenstates();
+   @ModelName@_mass_eigenstates& operator=(const @ModelName@_mass_eigenstates&) = default;
+   @ModelName@_mass_eigenstates& operator=(@ModelName@_mass_eigenstates&&) = default;
 
    /// number of EWSB equations
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;

@@ -54,6 +54,8 @@ public:
    /// sets object to be equal to another
    const StandardModelCW<Two_scale> & operator=(const StandardModelCW<Two_scale>& s);
 
+   void calculate_DRbar_masses() {}
+
    /// Set a single gauge coupling
    virtual void setGaugeCoupling(int, double);
    /// Set all gauge couplings

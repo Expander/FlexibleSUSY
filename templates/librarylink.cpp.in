@@ -607,7 +607,7 @@ void check_spectrum(const @ModelName@_data& data, MLINK link)
 
 /******************************************************************/
 
-void calculate_spectrum(@ModelName@_data& data, MLINK link)
+void calculate_spectrum(@ModelName@_data& data)
 {
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(data.settings);
@@ -941,7 +941,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 
       {
          Redirect_output crd(link);
-         calculate_spectrum(data, link);
+         calculate_spectrum(data);
       }
 
       handles_@ModelName@[hid] = data;

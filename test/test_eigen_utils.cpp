@@ -63,6 +63,19 @@ BOOST_AUTO_TEST_CASE(test_reorder_vector)
    BOOST_CHECK_EQUAL(vec1(2), 2);
 }
 
+BOOST_AUTO_TEST_CASE(test_reorder_vector_abs)
+{
+   Eigen::Array<double,3,1> vec1, vec2;
+   vec1 << 1, 2, 3;
+   vec2 << 1, 2, -3;
+
+   reorder_vector(vec1, vec2);
+
+   BOOST_CHECK_EQUAL(vec1(0), 2);
+   BOOST_CHECK_EQUAL(vec1(1), 3);
+   BOOST_CHECK_EQUAL(vec1(2), 1);
+}
+
 BOOST_AUTO_TEST_CASE(test_reorder_vector_with_matrix)
 {
    Eigen::Array<double,3,1> vec1;

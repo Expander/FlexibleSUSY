@@ -104,8 +104,13 @@ public:
    , double g1_, double g2_, double g3_, double Lambdax_, const Eigen::Matrix<
    double,3,3>& Yu_, const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<
    double,3,3>& Ye_, double mu2_, double v_);
+   Standard_model(const Standard_model&) = default;
+   Standard_model(Standard_model&&) = default;
 
    virtual ~Standard_model();
+
+   Standard_model& operator=(const Standard_model&) = default;
+   Standard_model& operator=(Standard_model&&) = default;
 
    /// number of EWSB equations
    static const std::size_t number_of_ewsb_equations = 1;

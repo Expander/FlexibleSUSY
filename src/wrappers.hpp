@@ -443,12 +443,6 @@ Im(const Eigen::MatrixBase<Derived>& x)
    return x.imag();
 }
 
-namespace {
-   struct CompareAbs_d {
-      bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
-   };
-}
-
 template <typename T>
 T RelDiff(T a, T b, T eps = std::numeric_limits<T>::epsilon())
 {
@@ -468,7 +462,8 @@ inline int Round(double a)
 template<int N>
 void Sort(Eigen::Array<double, N, 1>& v)
 {
-   std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
+   std::sort(v.data(), v.data() + v.size(),
+             [] (double a, double b) { return std::abs(a) < std::abs(b); });
 }
 
 inline double SignedAbsSqrt(double a)

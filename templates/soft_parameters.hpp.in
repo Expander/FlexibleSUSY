@@ -36,7 +36,12 @@ class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
 public:
    explicit @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
+   @ModelName@_soft_parameters(const @ModelName@_soft_parameters&) = default;
+   @ModelName@_soft_parameters(@ModelName@_soft_parameters&&) = default;
    virtual ~@ModelName@_soft_parameters() {}
+   @ModelName@_soft_parameters& operator=(const @ModelName@_soft_parameters&) = default;
+   @ModelName@_soft_parameters& operator=(@ModelName@_soft_parameters&&) = default;
+
    virtual Eigen::ArrayXd beta() const;
    virtual Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;

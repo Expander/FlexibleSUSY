@@ -41,7 +41,11 @@ namespace flexiblesusy {
 class Beta_function {
 public:
    Beta_function();
+   Beta_function(const Beta_function&) = default;
+   Beta_function(Beta_function&&) = default;
    virtual ~Beta_function() {}
+   Beta_function& operator=(const Beta_function&) = default;
+   Beta_function& operator=(Beta_function&&) = default;
 
    void set_scale(double s) { scale = s; }
    void set_number_of_parameters(unsigned pars) { num_pars = pars; }

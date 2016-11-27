@@ -31,7 +31,7 @@ StandardModelCW_convergence_tester::~StandardModelCW_convergence_tester()
 
 double StandardModelCW_convergence_tester::max_rel_diff() const
 {
-   const StandardModelCW<Two_scale>& model = get_model();
+   const StandardModelCW<Two_scale>& model = get_current_iteration_model();
    const StandardModelCW<Two_scale>& last_iteration_model = get_last_iteration_model();
 
    const double dg4 = std::fabs(model.displayGaugeCoupling(4)
