@@ -1417,17 +1417,32 @@ ScanEnabledSpectrumGenerator[solver_] :=
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
 
+RunCmdLineEnabledSpectrumGenerator[solver_] :=
+    Module[{key = "", class = "", macro = "", body = "", result = ""},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
+                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           body = "exit_code = run_solver<" <> class <> ">(input);\nbreak;\n";
+           result = "case " <> key <> ":\n" <> IndentText[body];
+           EnableForBVPSolver[solver, IndentText[result]] <> "\n"
+          ];
+
 WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, inputPars,
             fillSMFermionPoleMasses = "", solverIncludes = "",
-	    runEnabledSolvers = "", scanEnabledSolvers = "", defaultSolverType},
+            runEnabledSolvers = "", scanEnabledSolvers = "",
+            runEnabledCmdLineSolvers = "", defaultSolverType},
            inputPars = {First[#], #[[3]]}& /@ inputParameters;
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputPars];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputPars];
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            (solverIncludes = solverIncludes <> EnableSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
-	   (runEnabledSolvers = runEnabledSolvers <> RunEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
-	   (scanEnabledSolvers = scanEnabledSolvers <> ScanEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           (runEnabledSolvers = runEnabledSolvers <> RunEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           (scanEnabledSolvers = scanEnabledSolvers <> ScanEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           (runEnabledCmdLineSolvers = runEnabledCmdLineSolvers <> RunCmdLineEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
            If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
               defaultSolverType = "-1",
               Which[FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`TwoScaleSolver,
@@ -1442,8 +1457,9 @@ WriteUserExample[inputParameters_List, files_List] :=
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             "@solverIncludes@" -> solverIncludes,
-			    "@runEnabledSolvers@" -> runEnabledSolvers,
-			    "@scanEnabledSolvers@" -> scanEnabledSolvers,
+                            "@runEnabledSolvers@" -> runEnabledSolvers,
+                            "@scanEnabledSolvers@" -> scanEnabledSolvers,
+                            "@runEnabledCmdLineSolvers@" -> runEnabledCmdLineSolvers,
                             "@defaultSolverType@" -> defaultSolverType,
                             Sequence @@ GeneralReplacementRules[]
                           } ];

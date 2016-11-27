@@ -41,17 +41,23 @@ void print_usage()
       "Usage: run_cmd_line_@ModelName@.x [options]\n"
       "Options:\n"
 @printCommandLineOptions@
+      "  --solver-type=<value>             select solver type\n"
       "  --help,-h                         print this help message"
              << std::endl;
 }
 
 void set_command_line_parameters(const Dynamic_array_view<char*>& args,
-                                 @ModelName@_input_parameters& input)
+                                 @ModelName@_input_parameters& input,
+                                 int& solver_type)
 {
    for (int i = 1; i < args.size(); ++i) {
       const auto option = args[i];
 
 @parseCmdLineOptions@
+      if (Command_line_options::get_parameter_value(
+             option, "--solver-type=", solver_type))
+         continue;
+
       if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
@@ -62,21 +68,13 @@ void set_command_line_parameters(const Dynamic_array_view<char*>& args,
    }
 }
 
-} // namespace flexiblesusy
-
-
-int main(int argc, char* argv[])
+template<class solver_type>
+int run_solver(const @ModelName@_input_parameters& input)
 {
-   using namespace flexiblesusy;
-   typedef Two_scale algorithm_type;
-
-   @ModelName@_input_parameters input;
-   set_command_line_parameters(make_dynamic_array_view(&argv[0], argc), input);
-
    Physical_input physical_input;
    softsusy::QedQcd qedqcd;
 
-   @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
+   @ModelName@_spectrum_generator<solver_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
    spectrum_generator.set_beta_zero_threshold(1e-11);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
@@ -89,7 +87,6 @@ int main(int argc, char* argv[])
 
    spectrum_generator.run(qedqcd, input);
 
-   const int exit_code = spectrum_generator.get_exit_code();
    const auto model = spectrum_generator.get_model_slha();
 
    @ModelName@_scales scales;
@@ -97,12 +94,46 @@ int main(int argc, char* argv[])
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
 
-   const auto observables = calculate_observables(model, qedqcd, physical_input);
+   const auto observables = calculate_observables(
+      model, qedqcd, physical_input);
 
    // SLHA output
-   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, qedqcd, scales, observables));
+   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(
+                          model, qedqcd, scales, observables));
 
    std::cout << slhaea;
+
+   return spectrum_generator.get_exit_code();
+}
+
+int run(int solver_type, const @ModelName@_input_parameters& input)
+{
+   int exit_code;
+
+   switch (solver_type) {
+@runEnabledCmdLineSolvers@
+   default:
+      ERROR("unknown solver type: " << solver_type);
+      exit_code = -1;
+      break;
+   }
+
+   return exit_code;
+}
+
+} // namespace flexiblesusy
+
+
+int main(int argc, char* argv[])
+{
+   using namespace flexiblesusy;
+
+   @ModelName@_input_parameters input;
+   int solver_type = @defaultSolverType@;
+   set_command_line_parameters(make_dynamic_array_view(&argv[0], argc), input,
+                               solver_type);
+
+   const int exit_code = run(solver_type, input);
 
    return exit_code;
 }
