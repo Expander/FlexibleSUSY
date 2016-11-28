@@ -2639,7 +2639,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-           (* determin diagonalization precision for each particle *)
+           (* determine diagonalization precision for each particle *)
            diagonalizationPrecision = ReadPoleMassPrecisions[
                DefaultPoleMassPrecision,
                Flatten[{HighPoleMassPrecision}],

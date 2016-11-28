@@ -146,7 +146,7 @@ int run(
    int exit_code;
    const int solver_type
       = static_cast<int>(spectrum_generator_settings.get(
-                            Spectrum_generator_settings::algorithm));
+                            Spectrum_generator_settings::solver));
 
    switch (solver_type) {
 @runEnabledSolvers@

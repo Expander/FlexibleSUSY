@@ -39,7 +39,7 @@ public:
    enum Settings : unsigned {
       precision,             ///< [0] overall precision goal
       max_iterations,        ///< [1] maximum number of iterations (0 = automatic)
-      algorithm,             ///< [2] RG solver algorithm (0 = two-scale)
+      solver,                ///< [2] RG solver algorithm (0 = two-scale)
       calculate_sm_masses,   ///< [3] calculate Standard Model pole masses
       pole_mass_loop_order,  ///< [4] loop-order for calculation of pole masses
       ewsb_loop_order,       ///< [5] loop-order for solving the EWSB eqs.

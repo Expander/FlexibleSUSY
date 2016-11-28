@@ -2413,9 +2413,6 @@ Package directories, compilation settings and model selection
 
   --with-addons=            Comma separated list of addons to be build
                             (default: $ADDONS)
-  --with-solvers=           Comma separated list of RG solver algorithms
-                            (default: $SOLVERS)
-                            possible values: all $available_solvers
   --with-blas-libdir=       Path to search for BLAS library
   --with-blas-libs=         BLAS libraries to be linked
   --with-boost-libdir=      Path to search for BOOST libraries
@@ -2450,6 +2447,9 @@ cat <<EOF
   --with-shared-ldlibs=     Additional libraries to be linked during shared library linking (default: $SHARED_LDLIBS)
   --with-shared-lib-cmd=    Command to make shared library (default: $SHARED_LIB_CMD)
   --with-shared-lib-ext=    File extension for shared library (default: $SHARED_LIB_EXT)
+  --with-solvers=           Comma separated list of RG solver algorithms
+                            (default: $SOLVERS)
+                            possible values: all $available_solvers
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
   --with-static-ldflags=    Linker flags for static linking (default: $STATIC_LDFLAGS)
