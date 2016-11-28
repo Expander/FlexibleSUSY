@@ -4,14 +4,15 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "CMSSM_two_scale_model_slha.hpp"
+#include "CMSSM_model_slha.hpp"
 #include "CMSSM_slha_io.hpp"
+#include "CMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_slha_reading )
 {
-   CMSSM_slha<Two_scale> model;
+   CMSSM_slha<CMSSM<Two_scale> > model;
    model.do_calculate_sm_pole_masses(true);
 
    const double scale = 91.0;
