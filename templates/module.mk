@@ -20,6 +20,9 @@ BASE_TEMPLATES := \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
+		$(DIR)/run.cpp.in \
+		$(DIR)/run_cmd_line.cpp.in \
+		$(DIR)/scan.cpp.in \
 		$(DIR)/soft_beta_.cpp.in \
 		$(DIR)/soft_parameters.hpp.in \
 		$(DIR)/soft_parameters.cpp.in \
@@ -42,10 +45,7 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.cpp.in \
-		$(DIR)/run.cpp.in \
 		$(DIR)/run.m.in \
-		$(DIR)/run_cmd_line.cpp.in \
-		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
 		$(DIR)/slha_io.cpp.in \
 		$(DIR)/standard_model_high_scale_spectrum_generator.hpp.in \

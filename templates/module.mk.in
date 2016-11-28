@@ -41,7 +41,10 @@ LIB@CLASSNAME@_SRC := \
 		$(DIR)/@CLASSNAME@_soft_parameters.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp
 
-EXE@CLASSNAME@_SRC :=
+EXE@CLASSNAME@_SRC := \
+		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \
+		$(DIR)/scan_@CLASSNAME@.cpp
 LL@CLASSNAME@_LIB  :=
 LL@CLASSNAME@_OBJ  :=
 LL@CLASSNAME@_SRC  :=

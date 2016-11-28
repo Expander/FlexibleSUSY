@@ -29,10 +29,6 @@ LIB@ModelName@_SRC += \
 		$(DIR)/@ModelName@_two_scale_model.cpp \
 		$(DIR)/@ModelName@_two_scale_spectrum_generator.cpp \
 		$(DIR)/@ModelName@_two_scale_susy_scale_constraint.cpp
-EXE@ModelName@_SRC += \
-		$(DIR)/run_@ModelName@.cpp \
-		$(DIR)/run_cmd_line_@ModelName@.cpp \
-		$(DIR)/scan_@ModelName@.cpp
 LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_convergence_tester.hpp \
 		$(DIR)/@ModelName@_high_scale_constraint.hpp \
