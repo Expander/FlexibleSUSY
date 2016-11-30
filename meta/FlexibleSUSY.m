@@ -1716,8 +1716,8 @@ SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
     NeedToUpdateTarget[
-	"self-energy",
-	GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates]];
+        "self-energy",
+        GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -1731,8 +1731,8 @@ TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
 
 NeedToCalculateTadpoles[eigenstates_] :=
     NeedToUpdateTarget[
-	"tadpole",
-	GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+        "tadpole",
+        GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -1746,8 +1746,8 @@ UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_]
 
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
     NeedToUpdateTarget[
-	"unrotated particle",
-	GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
+        "unrotated particle",
+        GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
     Module[{fileName},
@@ -1772,7 +1772,7 @@ NeedToCalculateRGEs[] :=
 
 GetVertexRuleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
-		  "FSVertexRules.m"}];
+                  "FSVertexRules.m"}];
 
 GetEffectiveCouplingsFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
@@ -1780,24 +1780,24 @@ GetEffectiveCouplingsFileName[outputDir_String, eigenstates_] :=
 
 NeedToCalculateVertices[eigenstates_] :=
     NeedToUpdateTarget[
-	"vertex",
-	{ GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates],
+        "vertex",
+        { GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates],
           GetEffectiveCouplingsFileName[$sarahCurrentOutputMainDir, eigenstates] }];
 
 NeedToUpdateTarget[name_String, targets_List] := Module[{
-	targetsExist = FilesExist[targets],
-	targetTimeStamp = LatestModificationTimeInSeconds[targets],
-	sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[],
-	files = If[Length[targets] === 1, "file", "files"],
-	them = If[Length[targets] === 1, "it", "them"]
+        targetsExist = FilesExist[targets],
+        targetTimeStamp = LatestModificationTimeInSeconds[targets],
+        sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[],
+        files = If[Length[targets] === 1, "file", "files"],
+        them = If[Length[targets] === 1, "it", "them"]
     },
     If[targetsExist,
        If[sarahModelFileTimeStamp > targetTimeStamp,
-	  Print["SARAH model files are newer than ", name,
-		" ", files, ", updating ", them, " ..."];
-	  True,
-	  Print["Found up-to-date ", name, " ", files, "."];
-	  False
+          Print["SARAH model files are newer than ", name,
+                " ", files, ", updating ", them, " ..."];
+          True,
+          Print["Found up-to-date ", name, " ", files, "."];
+          False
        ],
        Print[name, " ", files, " not found, producing ", them, " ..."];
        True
@@ -2033,8 +2033,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
-	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
-	    Lat$massMatrices, spectrumGeneratorFiles, spectrumGeneratorInputFile},
+            vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
+            Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2492,13 +2492,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-	   On[Assert];
+           On[Assert];
 
            Lat$massMatrices = ConvertSarahMassMatrices[] /.
                           Parameters`ApplyGUTNormalization[] //.
                           { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
            massMatrices = Lat$massMatrices /. allIndexReplacementRules;
-	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
+           Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
 
            allIntermediateOutputParametes =
                Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
