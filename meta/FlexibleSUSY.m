@@ -1265,6 +1265,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 WriteBVPSolverTemplates[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
+WriteTwoScaleMatchingClass[files_List] :=
+    WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
+
 WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
@@ -2612,6 +2615,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                }
                               ];
 
+           Print["Creating matching class ..."];
+           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+                              {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
+                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
+                               {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
+                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]}
+                              }];
+
            Print["Creating plot scripts ..."];
            WritePlotScripts[{{FileNameJoin[{$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
@@ -2710,17 +2721,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]}}];
 
-              Print["Creating matching class ..."];
-              WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
-                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
-                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]},
-                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
-                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
-                                 }];
+              Print["Creating two-scale matching class ..."];
+              WriteTwoScaleMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
+                                          {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
+                                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
+                                         }];
 
               spectrumGeneratorInputFile = "two_scale_high_scale_spectrum_generator";
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,

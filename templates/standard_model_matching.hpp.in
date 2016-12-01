@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_STANDRD_MODEL_TWO_SCALE_MATCHING_H
-#define @ModelName@_STANDRD_MODEL_TWO_SCALE_MATCHING_H
+#ifndef @ModelName@_STANDARD_MODEL_MATCHING_H
+#define @ModelName@_STANDARD_MODEL_MATCHING_H
 
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "standard_model.hpp"

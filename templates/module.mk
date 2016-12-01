@@ -34,6 +34,8 @@ BASE_TEMPLATES := \
 		$(DIR)/soft_parameters.cpp.in \
 		$(DIR)/spectrum_generator.hpp.in \
 		$(DIR)/spectrum_generator_interface.hpp.in \
+		$(DIR)/standard_model_matching.hpp.in \
+		$(DIR)/standard_model_matching.cpp.in \
 		$(DIR)/susy_beta_.cpp.in \
 		$(DIR)/susy_parameters.hpp.in \
 		$(DIR)/susy_parameters.cpp.in \
@@ -45,8 +47,6 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/librarylink.cpp.in \
 		$(DIR)/librarylink.m.in \
 		$(DIR)/run.m.in \
-		$(DIR)/standard_model_matching.hpp.in \
-		$(DIR)/standard_model_matching.cpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.cpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.hpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_spectrum_generator.hpp.in \
