@@ -930,8 +930,8 @@ ConvertYukawaCouplingsToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHAYukawaName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".diagonal().real();\n";
+                              CreateSLHAYukawaName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").diagonal().real();\n";
                     ];
            ]& /@ yuks;
            result
@@ -995,8 +995,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHATrilinearCouplingName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
+                              CreateSLHATrilinearCouplingName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
                     ];
            ]& /@ tril;
            result
@@ -1072,8 +1072,8 @@ ConvertSoftSquaredMassesToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
                     ];
            ]& /@ massSq;
            result
