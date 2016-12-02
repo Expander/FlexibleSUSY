@@ -249,7 +249,6 @@ double @ModelName@_slha_io::get_parameter_output_scale() const
 void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
-   slha_io.read_modsel();
 }
 
 /**
@@ -262,7 +261,6 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 void @ModelName@_slha_io::read_from_source(const std::string& source)
 {
    slha_io.read_from_source(source);
-   slha_io.read_modsel();
 }
 
 /**

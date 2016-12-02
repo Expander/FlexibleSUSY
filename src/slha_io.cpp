@@ -122,22 +122,21 @@ void SLHA_io::read_from_file(const std::string& file_name)
 {
    std::ifstream ifs(file_name);
    if (ifs.good()) {
-      data.clear();
-      data.read(ifs);
+      read_from_stream(ifs);
    } else {
-      std::ostringstream msg;
-      msg << "cannot read SLHA file: \"" << file_name << "\"";
-      throw ReadError(msg.str());
+      throw ReadError("cannot read SLHA file: \"" + file_name + "\"");
    }
 }
 
 /**
- * @brief reads SLHA data from a stream
+ * @brief clears stored data and reads SLHA data from a stream
  * @param istr input stream
  */
 void SLHA_io::read_from_stream(std::istream& istr)
 {
+   data.clear();
    data.read(istr);
+   read_modsel();
 }
 
 void SLHA_io::read_modsel()

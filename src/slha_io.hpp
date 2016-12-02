@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <string>
+#include <sstream>
 #include <iosfwd>
 #include <vector>
 #include <Eigen/Core>
@@ -169,7 +170,6 @@ public:
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_block(const std::string&, double&) const;
    double read_entry(const std::string&, int) const;
-   void read_modsel();
    double read_scale(const std::string&) const;
 
    // writing functions
@@ -245,6 +245,7 @@ private:
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
    static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
+   void read_modsel();
    template <class Derived>
    double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
    template <class Derived>
