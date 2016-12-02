@@ -133,22 +133,12 @@ public:
       bool quark_flavour_violated{false};   ///< MODSEL[6]
       bool lepton_flavour_violated{false};  ///< MODSEL[6]
       double parameter_output_scale{0.};    ///< MODSEL[12]
-      void clear() {
-         quark_flavour_violated = false;
-         lepton_flavour_violated = false;
-         parameter_output_scale = 0.;
-      }
+      void clear() { *this = Modsel(); }
    };
 
    struct CKM_wolfenstein {
-      double lambdaW, aCkm, rhobar, etabar;
-      CKM_wolfenstein() : lambdaW(0.), aCkm(0.), rhobar(0.), etabar(0.) {}
-      void clear() {
-         lambdaW = 0.;
-         aCkm    = 0.;
-         rhobar  = 0.;
-         etabar  = 0.;
-      }
+      double lambdaW{0.}, aCkm{0.}, rhobar{0.}, etabar{0.};
+      void clear() { *this = CKM_wolfenstein(); }
    };
 
    void clear();
