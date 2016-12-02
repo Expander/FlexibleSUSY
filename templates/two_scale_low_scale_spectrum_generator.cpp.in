@@ -77,8 +77,12 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    low_scale_constraint .initialize();
 
    @ModelName@_convergence_tester<Two_scale> convergence_tester(
-      &model, this->settings.get(Spectrum_generator_settings::precision),
-      [this](){ return get_pole_mass_scale(); });
+      &model, this->settings.get(Spectrum_generator_settings::precision));
+
+   if (this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0.)
+      convergence_tester.set_scale_getter(
+         [this](){ return settings.get(Spectrum_generator_settings::pole_mass_scale); });
+
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
       convergence_tester.set_max_iterations(
          this->settings.get(Spectrum_generator_settings::max_iterations));
