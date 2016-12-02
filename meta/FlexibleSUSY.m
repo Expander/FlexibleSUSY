@@ -1480,6 +1480,32 @@ WriteUserExample[inputParameters_List, files_List] :=
                           } ];
           ];
 
+EnableMathlinkSpectrumGenerator[solver_] :=
+    Module[{type, headers = ""},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, type = "two_scale",
+                  FlexibleSUSY`LatticeSolver, type = "lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           headers = "#include \"" <> FlexibleSUSY`FSModelName <> "_" <> type <> "_model.hpp\"\n";
+           headers = headers <> "#include \"" <> FlexibleSUSY`FSModelName <> "_" <> type <> "_spectrum_generator.hpp\"\n";
+           EnableForBVPSolver[solver, headers] <> "\n"
+          ];
+
+InitialiseEnabledModelType[solver_] :=
+    Module[{key, class, body, result},
+           Switch[solver,
+                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
+                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
+                  _, Print["Error: invalid BVP solver requested: ", solver];
+                     Quit[1];
+                 ];
+           body = "data.reset(new " <> FlexibleSUSY`FSModelName <> "_model_data<" <> class <> ">());\nbreak;\n";
+           result = "case " <> key <> ":\n" <> IndentText[body];
+           EnableForBVPSolver[solver, IndentText[result]] <> "\n"
+          ];
+
 WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{numberOfInputParameters, numberOfInputParameterRules,
             putInputParameters,
@@ -1488,7 +1514,8 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
             numberOfSpectrumEntries, putSpectrum, setInputParameters,
             numberOfObservables, putObservables,
             listOfInputParameters, listOfModelParameters, listOfOutputParameters,
-            inputPars, outPars, requestedObservables},
+            inputPars, outPars, requestedObservables, defaultSolverType,
+            solverIncludes = "", initialiseDataPointer = ""},
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
            numberOfInputParameters = Total[CConversion`CountNumberOfEntries[#[[2]]]& /@ inputPars];
            numberOfInputParameterRules = FSMathLink`GetNumberOfInputParameterRules[inputPars];
@@ -1507,6 +1534,17 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            requestedObservables = Observables`GetRequestedObservables[extraSLHAOutputBlocks];
            numberOfObservables = Length[requestedObservables];
            putObservables = FSMathLink`PutObservables[requestedObservables, "link"];
+           (solverIncludes = solverIncludes <> EnableMathlinkSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           (initialiseDataPointer = initialiseDataPointer <> InitialiseEnabledModelType[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
+              defaultSolverType = "-1",
+              Which[FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`TwoScaleSolver,
+                    defaultSolverType = "0",
+                    FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`LatticeSolver,
+                    defaultSolverType = "1",
+                    True, Print["Error: invalid BVP solver requested: ", solver]; Quit[1]
+                   ];
+             ];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
                             "@numberOfInputParameterRules@" -> ToString[numberOfInputParameterRules],
@@ -1522,6 +1560,9 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
                             "@listOfInputParameters@" -> listOfInputParameters,
                             "@listOfModelParameters@" -> listOfModelParameters,
                             "@listOfOutputParameters@" -> listOfOutputParameters,
+                            "@solverIncludes@" -> solverIncludes,
+                            "@initialiseDataPointer@" -> initialiseDataPointer,
+                            "@defaultSolverType@" -> defaultSolverType,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

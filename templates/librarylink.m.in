@@ -27,6 +27,7 @@ FS@ModelName@Message[s_] := Message[FS@ModelName@::info, s];
 fsDefaultSettings = {
       precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
       maxIterations -> 0,                (* FlexibleSUSY[1] *)
+      solver -> @defaultSolverType@,     (* FlexibleSUSY[2] *)
       calculateStandardModelMasses -> 0, (* FlexibleSUSY[3] *)
       poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
       ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
@@ -101,6 +102,7 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             (* spectrum generator settings *)
             OptionValue[precisionGoal],
             OptionValue[maxIterations],
+            OptionValue[solver],
             OptionValue[calculateStandardModelMasses],
             OptionValue[poleMassLoopOrder],
             OptionValue[ewsbLoopOrder],

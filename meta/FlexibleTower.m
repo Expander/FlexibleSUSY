@@ -13,10 +13,10 @@ GetSLHAModelType[name_String, templatePar_String] :=
 GetModelTypes[] :=
     Utils`StringJoinWithSeparator[
         Which[FlexibleSUSY`FlexibleEFTHiggs === True,
-              { GetSLHAModelType[FlexibleSUSY`FSModelName, "algorithm_type"],
-                GetModelType["standard_model::StandardModel", "algorithm_type"] },
+              { GetSLHAModelType[FlexibleSUSY`FSModelName, "Solver_type"],
+                GetModelType["standard_model::StandardModel", "Solver_type"] },
               True,
-              { GetSLHAModelType[FlexibleSUSY`FSModelName, "algorithm_type"] }
+              { GetSLHAModelType[FlexibleSUSY`FSModelName, "Solver_type"] }
              ],
         ", "
     ];
