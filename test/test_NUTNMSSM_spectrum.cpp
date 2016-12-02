@@ -789,7 +789,7 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.76e-2);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 5.0e-05);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5e-06);
 
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();

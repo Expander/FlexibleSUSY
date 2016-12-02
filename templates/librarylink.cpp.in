@@ -18,21 +18,22 @@
 
 // File generated at @DateAndTime@
 
+#include "config.h"
+
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_slha_io.hpp"
-#include "@ModelName@_spectrum_generator.hpp"
-#include "@ModelName@_two_scale_model.hpp"
-#include "@ModelName@_two_scale_model_slha.hpp"
-#include "standard_model_two_scale_model.hpp"
+#include "@ModelName@_model_slha.hpp"
 
+@solverIncludes@
 #include "array_view.hpp"
 #include "error.hpp"
 #include "physical_input.hpp"
 #include "slha_io.hpp"
 #include "spectrum_generator_settings.hpp"
+#include "standard_model_two_scale_model.hpp"
 #include "lowe.h"
 
 #include "mathlink.h"
@@ -43,6 +44,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -51,14 +53,13 @@
 #include <boost/fusion/include/for_each.hpp>
 #include <boost/fusion/adapted/std_tuple.hpp>
 
-#define INPUTPARAMETER(p) data.input.p
+#define INPUTPARAMETER(p) input.p
 #define MODELPARAMETER(p) model.get_##p()
 #define PHYSICALPARAMETER(p) model.get_physical().p
 #define OBSERVABLE(o) observables.o
 
 using namespace flexiblesusy;
 
-typedef Two_scale algorithm_type;
 typedef mint Handle;
 
 class Redirect_output {
@@ -136,19 +137,73 @@ public:
 
 } // namespace flexiblesusy
 
-struct @ModelName@_data {
+class @ModelName@_data {
+public:
+   @ModelName@_data() = default;
+   @ModelName@_data(const @ModelName@_data&) = default;
+   @ModelName@_data(@ModelName@_data&&) = default;
+   virtual ~@ModelName@_data() {};
+   @ModelName@_data& operator=(const @ModelName@_data&) = default;
+   @ModelName@_data& operator=(@ModelName@_data&&) = default;
+
+   void set_input_parameters(const @ModelName@_input_parameters& input_) { input = input_; }
+   void set_physical_input(const Physical_input& p) { physical_input = p; }
+   void set_sm_input_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
+   void set_settings(const Spectrum_generator_settings& s) { settings = s; }
+   void set_modsel(const SLHA_io::Modsel& m) { modsel = m; }
+
+   void put_settings(MLINK link) const;
+   void put_sm_input_parameters(MLINK link) const;
+   void put_input_parameters(MLINK link) const;
+   void put_observables(MLINK link) const;
+   void put_slha(MLINK link) const;
+
+   virtual void put_problems(MLINK link) const = 0;
+   virtual void put_warnings(MLINK link) const = 0;
+   virtual void put_model_spectra(MLINK link) const = 0;
+   virtual void calculate_spectrum() = 0;
+   virtual void check_spectrum(MLINK link) const = 0;
+   virtual void calculate_model_observables() = 0;
+
+   virtual double get_model_scale() const = 0;
+protected:
    @ModelName@_input_parameters input{};     ///< model input parameters
    Physical_input physical_input{};          ///< extra non-SLHA physical input
    softsusy::QedQcd qedqcd{};                ///< SLHA physical input
    Spectrum_generator_settings settings{};   ///< spectrum generator settings
    SLHA_io::Modsel modsel{};                 ///< MODSEL input
-   std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
    @ModelName@_observables observables{};    ///< observables
-   @ModelName@_scales scales;                ///< scale information
+   @ModelName@_scales scales{};              ///< scale information
+
+   virtual @ModelName@_slha_io get_slha_io() const = 0;
+};
+
+template <typename Solver_type>
+class @ModelName@_model_data : public @ModelName@_data {
+public:
+   @ModelName@_model_data() = default;
+   @ModelName@_model_data(const @ModelName@_model_data&) = default;
+   @ModelName@_model_data(@ModelName@_model_data&&) = default;
+   virtual ~@ModelName@_model_data() {};
+   @ModelName@_model_data& operator=(const @ModelName@_model_data&) = default;
+   @ModelName@_model_data& operator=(@ModelName@_model_data&&) = default;
+
+   virtual void put_problems(MLINK link) const override;
+   virtual void put_warnings(MLINK link) const override;
+   virtual void put_model_spectra(MLINK link) const override;
+   virtual void calculate_spectrum() override;
+   virtual void check_spectrum(MLINK link) const override;
+   virtual void calculate_model_observables() override;
+
+   virtual double get_model_scale() const override { return std::get<0>(models).get_scale(); }
+protected:
+   virtual @ModelName@_slha_io get_slha_io() const override;
+private:
+   std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
 };
 
 /// current handles
-typedef std::map<Handle, @ModelName@_data> Handle_map;
+typedef std::map<Handle, std::unique_ptr<@ModelName@_data> > Handle_map;
 Handle_map handles_@ModelName@;
 
 /******************************************************************/
@@ -183,7 +238,7 @@ auto find_@ModelName@_handle(Handle hid) -> decltype(handles_@ModelName@.find(hi
 
 /******************************************************************/
 
-@ModelName@_data& find_@ModelName@_data(Handle hid)
+std::unique_ptr<@ModelName@_data>& find_@ModelName@_data(Handle hid)
 {
    return find_@ModelName@_handle(hid)->second;
 }
@@ -258,68 +313,69 @@ void put_message(MLINK link,
 
 /******************************************************************/
 
-void put_settings(const @ModelName@_data& data, MLINK link)
+void @ModelName@_data::put_settings(MLINK link) const
 {
-   MLPutFunction(link, "List", 23);
+   MLPutFunction(link, "List", 24);
 
-   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::precision), "precisionGoal");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::max_iterations)), "maxIterations");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::calculate_sm_masses)), "calculateStandardModelMasses");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::pole_mass_loop_order)), "poleMassLoopOrder");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::ewsb_loop_order)), "ewsbLoopOrder");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::beta_loop_order)), "betaFunctionLoopOrder");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::threshold_corrections_loop_order)), "thresholdCorrectionsLoopOrder");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as)), "higgs2loopCorrectionAtAs");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as)), "higgs2loopCorrectionAbAs");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at)), "higgs2loopCorrectionAtAt");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau)), "higgs2loopCorrectionAtauAtau");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::force_output)), "forceOutput");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::top_pole_qcd_corrections)), "topPoleQCDCorrections");
-   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::force_positive_masses)), "forcePositiveMasses");
-   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
-   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::eft_pole_mass_scale), "eftPoleMassScale");
-   MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::eft_matching_scale), "eftMatchingScale");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::eft_matching_loop_order_up)), "eftMatchingLoopOrderUp");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::eft_matching_loop_order_down)), "eftMatchingLoopOrderDown");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::eft_higgs_index)), "eftHiggsIndex");
-   MLPutRuleTo(link, static_cast<int>(data.settings.get(Spectrum_generator_settings::calculate_bsm_masses)), "calculateBSMMasses");
-   MLPutRuleTo(link, data.modsel.parameter_output_scale, "parameterOutputScale");
+   MLPutRuleTo(link, settings.get(Spectrum_generator_settings::precision), "precisionGoal");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::max_iterations)), "maxIterations");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::solver)), "solver");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::calculate_sm_masses)), "calculateStandardModelMasses");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::pole_mass_loop_order)), "poleMassLoopOrder");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::ewsb_loop_order)), "ewsbLoopOrder");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::beta_loop_order)), "betaFunctionLoopOrder");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::threshold_corrections_loop_order)), "thresholdCorrectionsLoopOrder");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_as)), "higgs2loopCorrectionAtAs");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::higgs_2loop_correction_ab_as)), "higgs2loopCorrectionAbAs");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::higgs_2loop_correction_at_at)), "higgs2loopCorrectionAtAt");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::higgs_2loop_correction_atau_atau)), "higgs2loopCorrectionAtauAtau");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::force_output)), "forceOutput");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::top_pole_qcd_corrections)), "topPoleQCDCorrections");
+   MLPutRuleTo(link, settings.get(Spectrum_generator_settings::beta_zero_threshold), "betaZeroThreshold");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::force_positive_masses)), "forcePositiveMasses");
+   MLPutRuleTo(link, settings.get(Spectrum_generator_settings::pole_mass_scale), "poleMassScale");
+   MLPutRuleTo(link, settings.get(Spectrum_generator_settings::eft_pole_mass_scale), "eftPoleMassScale");
+   MLPutRuleTo(link, settings.get(Spectrum_generator_settings::eft_matching_scale), "eftMatchingScale");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::eft_matching_loop_order_up)), "eftMatchingLoopOrderUp");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::eft_matching_loop_order_down)), "eftMatchingLoopOrderDown");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::eft_higgs_index)), "eftHiggsIndex");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::calculate_bsm_masses)), "calculateBSMMasses");
+   MLPutRuleTo(link, modsel.parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(link);
 }
 
 /******************************************************************/
 
-void put_sm_input_parameters(const @ModelName@_data& data, MLINK link)
+void @ModelName@_data::put_sm_input_parameters(MLINK link) const
 {
    MLPutFunction(link, "List", 29);
 
-   MLPutRuleTo(link, data.qedqcd.displayAlphaEmInput(), "alphaEmMZ");
-   MLPutRuleTo(link, data.qedqcd.displayFermiConstant(), "GF");
-   MLPutRuleTo(link, data.qedqcd.displayAlphaSInput(), "alphaSMZ");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMZ(), "MZ");
-   MLPutRuleTo(link, data.qedqcd.displayMbMb(), "mbmb");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMt(), "Mt");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMtau(), "Mtau");
-   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(3), "Mv3");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMW(), "MW");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMel(), "Me");
-   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(1), "Mv1");
-   MLPutRuleTo(link, data.qedqcd.displayPoleMmuon(), "Mm");
-   MLPutRuleTo(link, data.qedqcd.displayNeutrinoPoleMass(2), "Mv2");
-   MLPutRuleTo(link, data.qedqcd.displayMd2GeV(), "md2GeV");
-   MLPutRuleTo(link, data.qedqcd.displayMu2GeV(), "mu2GeV");
-   MLPutRuleTo(link, data.qedqcd.displayMs2GeV(), "ms2GeV");
-   MLPutRuleTo(link, data.qedqcd.displayMcMc(), "mcmc");
+   MLPutRuleTo(link, qedqcd.displayAlphaEmInput(), "alphaEmMZ");
+   MLPutRuleTo(link, qedqcd.displayFermiConstant(), "GF");
+   MLPutRuleTo(link, qedqcd.displayAlphaSInput(), "alphaSMZ");
+   MLPutRuleTo(link, qedqcd.displayPoleMZ(), "MZ");
+   MLPutRuleTo(link, qedqcd.displayMbMb(), "mbmb");
+   MLPutRuleTo(link, qedqcd.displayPoleMt(), "Mt");
+   MLPutRuleTo(link, qedqcd.displayPoleMtau(), "Mtau");
+   MLPutRuleTo(link, qedqcd.displayNeutrinoPoleMass(3), "Mv3");
+   MLPutRuleTo(link, qedqcd.displayPoleMW(), "MW");
+   MLPutRuleTo(link, qedqcd.displayPoleMel(), "Me");
+   MLPutRuleTo(link, qedqcd.displayNeutrinoPoleMass(1), "Mv1");
+   MLPutRuleTo(link, qedqcd.displayPoleMmuon(), "Mm");
+   MLPutRuleTo(link, qedqcd.displayNeutrinoPoleMass(2), "Mv2");
+   MLPutRuleTo(link, qedqcd.displayMd2GeV(), "md2GeV");
+   MLPutRuleTo(link, qedqcd.displayMu2GeV(), "mu2GeV");
+   MLPutRuleTo(link, qedqcd.displayMs2GeV(), "ms2GeV");
+   MLPutRuleTo(link, qedqcd.displayMcMc(), "mcmc");
 
-   const flexiblesusy::CKM_parameters ckm(data.qedqcd.displayCKM());
+   const flexiblesusy::CKM_parameters ckm(qedqcd.displayCKM());
    MLPutRuleTo(link, ckm.theta_12, "CKMTheta12");
    MLPutRuleTo(link, ckm.theta_13, "CKMTheta13");
    MLPutRuleTo(link, ckm.theta_23, "CKMTheta23");
    MLPutRuleTo(link, ckm.delta   , "CKMDelta");
 
-   const flexiblesusy::PMNS_parameters pmns(data.qedqcd.displayPMNS());
+   const flexiblesusy::PMNS_parameters pmns(qedqcd.displayPMNS());
    MLPutRuleTo(link, pmns.theta_12, "PMNSTheta12");
    MLPutRuleTo(link, pmns.theta_13, "PMNSTheta13");
    MLPutRuleTo(link, pmns.theta_23, "PMNSTheta23");
@@ -327,15 +383,15 @@ void put_sm_input_parameters(const @ModelName@_data& data, MLINK link)
    MLPutRuleTo(link, pmns.alpha_1 , "PMNSAlpha1");
    MLPutRuleTo(link, pmns.alpha_2 , "PMNSAlpha2");
 
-   MLPutRuleTo(link, data.physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
-   MLPutRuleTo(link, data.physical_input.get(Physical_input::mh_pole), "Mh");
+   MLPutRuleTo(link, physical_input.get(Physical_input::alpha_em_0), "alphaEm0");
+   MLPutRuleTo(link, physical_input.get(Physical_input::mh_pole), "Mh");
 
    MLEndPacket(link);
 }
 
 /******************************************************************/
 
-void put_input_parameters(const @ModelName@_data& data, MLINK link)
+void @ModelName@_data::put_input_parameters(MLINK link) const
 {
    MLPutFunction(link, "List", @numberOfInputParameterRules@);
 
@@ -411,9 +467,10 @@ void put_masses(MLINK link, const std::string& rule,
 
 /******************************************************************/
 
-void put_problems(const @ModelName@_data& data, MLINK link)
+template <typename Solver_type>
+void @ModelName@_model_data<Solver_type>::put_problems(MLINK link) const
 {
-   const auto& problems = std::get<0>(data.models).get_problems();
+   const auto& problems = std::get<0>(models).get_problems();
    const auto n_problems = number_of_problems(problems);
 
    MLPutFunction(link, "List", n_problems);
@@ -440,9 +497,10 @@ void put_problems(const @ModelName@_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_warnings(const @ModelName@_data& data, MLINK link)
+template <typename Solver_type>
+void @ModelName@_model_data<Solver_type>::put_warnings(MLINK link) const
 {
-   const auto& problems = std::get<0>(data.models).get_problems();
+   const auto& problems = std::get<0>(models).get_problems();
    const auto n_warnings = number_of_warnings(problems);
 
    MLPutFunction(link, "List", n_warnings);
@@ -455,24 +513,24 @@ void put_warnings(const @ModelName@_data& data, MLINK link)
 
 /******************************************************************/
 
-@ModelName@_slha_io get_slha_io(const @ModelName@_data& data)
+template <typename Solver_type>
+@ModelName@_slha_io @ModelName@_model_data<Solver_type>::get_slha_io() const
 {
-   const auto& models = data.models;
    const auto& problems = std::get<0>(models).get_problems();
    const auto force_output = std::get<0>(models).do_force_output();
    @ModelName@_slha_io slha_io;
 
    slha_io.set_spinfo(problems);
-   slha_io.set_settings(data.settings);
-   slha_io.set_sminputs(data.qedqcd);
-   slha_io.set_physical_input(data.physical_input);
-   slha_io.set_modsel(data.modsel);
-   slha_io.set_input(data.input);
+   slha_io.set_settings(settings);
+   slha_io.set_sminputs(qedqcd);
+   slha_io.set_physical_input(physical_input);
+   slha_io.set_modsel(modsel);
+   slha_io.set_input(input);
    if (!problems.have_problem() || force_output) {
       slha_io.set_print_imaginary_parts_of_majorana_mixings(
-         data.settings.get(Spectrum_generator_settings::force_positive_masses));
+         settings.get(Spectrum_generator_settings::force_positive_masses));
       slha_io.set_spectrum(models);
-      slha_io.set_extra(std::get<0>(models), data.scales, data.observables);
+      slha_io.set_extra(std::get<0>(models), scales, observables);
    }
 
    return slha_io;
@@ -480,9 +538,9 @@ void put_warnings(const @ModelName@_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_slha(const @ModelName@_data& data, MLINK link)
+void @ModelName@_data::put_slha(MLINK link) const
 {
-   const auto slha_io = get_slha_io(data);
+   const auto slha_io = get_slha_io();
    std::ostringstream ostr;
 
    slha_io.write_to_stream(ostr);
@@ -493,7 +551,8 @@ void put_slha(const @ModelName@_data& data, MLINK link)
 
 /******************************************************************/
 
-void put_spectrum(const standard_model::StandardModel<algorithm_type>& model, MLINK link)
+template <typename Solver_type>
+void put_spectrum(const standard_model::StandardModel<Solver_type>& model, MLINK link)
 {
    MLPutRule(link, standard_model_info::model_name);
    MLPutFunction(link, "List", 46);
@@ -548,7 +607,8 @@ void put_spectrum(const standard_model::StandardModel<algorithm_type>& model, ML
 
 /******************************************************************/
 
-void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
+template <typename Model>
+void put_spectrum(const @ModelName@_slha<Model>& model, MLINK link)
 {
    MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", @numberOfSpectrumEntries@);
@@ -581,7 +641,15 @@ void put_spectra(const std::tuple<Ts...>& models, MLINK link)
 
 /******************************************************************/
 
-void put_observables(const @ModelName@_observables& observables, MLINK link)
+template <typename Solver_type>
+void @ModelName@_model_data<Solver_type>::put_model_spectra(MLINK link) const
+{
+   put_spectra(models, link);
+}
+
+/******************************************************************/
+
+void @ModelName@_data::put_observables(MLINK link) const
 {
    MLPutFunction(link, "List", @numberOfObservables@);
 
@@ -592,9 +660,10 @@ void put_observables(const @ModelName@_observables& observables, MLINK link)
 
 /******************************************************************/
 
-void check_spectrum(const @ModelName@_data& data, MLINK link)
+template <class Solver_type>
+void @ModelName@_model_data<Solver_type>::check_spectrum(MLINK link) const
 {
-   const auto& problems = std::get<0>(data.models).get_problems();
+   const auto& problems = std::get<0>(models).get_problems();
 
    for (const auto& s: problems.get_problem_strings())
       put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
@@ -603,93 +672,106 @@ void check_spectrum(const @ModelName@_data& data, MLINK link)
       put_message(link, "FS@ModelName@CalculateSpectrum", "warning", s);
 
    if (problems.have_problem() &&
-       !data.settings.get(Spectrum_generator_settings::force_output))
+       !settings.get(Spectrum_generator_settings::force_output))
       throw EInvalidSpectrum();
 }
 
 /******************************************************************/
 
-void calculate_spectrum(@ModelName@_data& data)
+template <typename Solver_type>
+void @ModelName@_model_data<Solver_type>::calculate_spectrum()
 {
-   @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
-   spectrum_generator.set_settings(data.settings);
-   spectrum_generator.set_parameter_output_scale(data.modsel.parameter_output_scale);
-   spectrum_generator.run(data.qedqcd, data.input);
+   @ModelName@_spectrum_generator<Solver_type> spectrum_generator;
+   spectrum_generator.set_settings(settings);
+   spectrum_generator.set_parameter_output_scale(modsel.parameter_output_scale);
+   spectrum_generator.run(qedqcd, input);
 
-   data.models = spectrum_generator.get_models_slha();
-   data.scales.HighScale = spectrum_generator.get_high_scale();
-   data.scales.SUSYScale = spectrum_generator.get_susy_scale();
-   data.scales.LowScale  = spectrum_generator.get_low_scale();
+   models = spectrum_generator.get_models_slha();
+   scales.HighScale = spectrum_generator.get_high_scale();
+   scales.SUSYScale = spectrum_generator.get_susy_scale();
+   scales.LowScale  = spectrum_generator.get_low_scale();
+}
+
+/******************************************************************/
+
+template <typename Solver_type>
+void @ModelName@_model_data<Solver_type>::calculate_model_observables()
+{
+   observables = calculate_observables(std::get<0>(models), qedqcd, physical_input);
 }
 
 /******************************************************************/
 
 template <typename Element_t>
-@ModelName@_data make_@ModelName@_data(const Dynamic_array_view<Element_t>& pars)
+std::unique_ptr<@ModelName@_data> make_@ModelName@_data(const Dynamic_array_view<Element_t>& pars)
 {
    using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
 
-   const Index_t n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const Index_t n_settings = 24, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const Index_t n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (pars.size() != n_total)
       throw EWrongNumberOfParameters(pars.size(), n_total);
 
-   @ModelName@_data data;
    Index_t c = 0; // counter
 
-   data.settings.set(Spectrum_generator_settings::precision, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::max_iterations, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::calculate_sm_masses, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::pole_mass_loop_order, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::ewsb_loop_order, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::beta_loop_order, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::force_output, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::top_pole_qcd_corrections, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::beta_zero_threshold, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::force_positive_masses, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::eft_pole_mass_scale, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::eft_matching_scale, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::eft_matching_loop_order_up, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::eft_matching_loop_order_down, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::eft_higgs_index, pars[c++]);
-   data.settings.set(Spectrum_generator_settings::calculate_bsm_masses, pars[c++]);
-   data.modsel.parameter_output_scale = pars[c++];
+   Spectrum_generator_settings settings;
+   settings.set(Spectrum_generator_settings::precision, pars[c++]);
+   settings.set(Spectrum_generator_settings::max_iterations, pars[c++]);
+   settings.set(Spectrum_generator_settings::solver, pars[c++]);
+   settings.set(Spectrum_generator_settings::calculate_sm_masses, pars[c++]);
+   settings.set(Spectrum_generator_settings::pole_mass_loop_order, pars[c++]);
+   settings.set(Spectrum_generator_settings::ewsb_loop_order, pars[c++]);
+   settings.set(Spectrum_generator_settings::beta_loop_order, pars[c++]);
+   settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, pars[c++]);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_as, pars[c++]);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_ab_as, pars[c++]);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_at_at, pars[c++]);
+   settings.set(Spectrum_generator_settings::higgs_2loop_correction_atau_atau, pars[c++]);
+   settings.set(Spectrum_generator_settings::force_output, pars[c++]);
+   settings.set(Spectrum_generator_settings::top_pole_qcd_corrections, pars[c++]);
+   settings.set(Spectrum_generator_settings::beta_zero_threshold, pars[c++]);
+   settings.set(Spectrum_generator_settings::force_positive_masses, pars[c++]);
+   settings.set(Spectrum_generator_settings::pole_mass_scale, pars[c++]);
+   settings.set(Spectrum_generator_settings::eft_pole_mass_scale, pars[c++]);
+   settings.set(Spectrum_generator_settings::eft_matching_scale, pars[c++]);
+   settings.set(Spectrum_generator_settings::eft_matching_loop_order_up, pars[c++]);
+   settings.set(Spectrum_generator_settings::eft_matching_loop_order_down, pars[c++]);
+   settings.set(Spectrum_generator_settings::eft_higgs_index, pars[c++]);
+   settings.set(Spectrum_generator_settings::calculate_bsm_masses, pars[c++]);
 
-   data.qedqcd.setAlpha(softsusy::ALPHA, pars[c]);
-   data.qedqcd.setAlphaEmInput(pars[c++]);
-   data.qedqcd.setFermiConstant(pars[c++]);
-   data.qedqcd.setAlpha(softsusy::ALPHAS, pars[c]);
-   data.qedqcd.setAlphaSInput(pars[c++]);
-   data.qedqcd.setPoleMZ(pars[c]);
-   data.qedqcd.setMu(pars[c++]);
-   data.qedqcd.setMass(softsusy::mBottom, pars[c]);
-   data.qedqcd.setMbMb(pars[c++]);
-   data.qedqcd.setPoleMt(pars[c++]);
-   data.qedqcd.setMass(softsusy::mTau, pars[c]);
-   data.qedqcd.setPoleMtau(pars[c++]);
-   data.qedqcd.setNeutrinoPoleMass(3, pars[c++]);
-   data.qedqcd.setPoleMW(pars[c++]);
-   data.qedqcd.setMass(softsusy::mElectron, pars[c]);
-   data.qedqcd.setPoleMel(pars[c++]);
-   data.qedqcd.setNeutrinoPoleMass(1, pars[c++]);
-   data.qedqcd.setMass(softsusy::mMuon, pars[c]);
-   data.qedqcd.setPoleMmuon(pars[c++]);
-   data.qedqcd.setNeutrinoPoleMass(2, pars[c++]);
-   data.qedqcd.setMass(softsusy::mDown, pars[c]);
-   data.qedqcd.setMd2GeV(pars[c++]);
-   data.qedqcd.setMass(softsusy::mUp, pars[c]);
-   data.qedqcd.setMu2GeV(pars[c++]);
-   data.qedqcd.setMass(softsusy::mStrange, pars[c]);
-   data.qedqcd.setMs2GeV(pars[c++]);
-   data.qedqcd.setMass(softsusy::mCharm, pars[c]);
-   data.qedqcd.setMcMc(pars[c++]);
+   SLHA_io::Modsel modsel;
+   modsel.parameter_output_scale = pars[c++];
+
+   softsusy::QedQcd qedqcd;
+   qedqcd.setAlpha(softsusy::ALPHA, pars[c]);
+   qedqcd.setAlphaEmInput(pars[c++]);
+   qedqcd.setFermiConstant(pars[c++]);
+   qedqcd.setAlpha(softsusy::ALPHAS, pars[c]);
+   qedqcd.setAlphaSInput(pars[c++]);
+   qedqcd.setPoleMZ(pars[c]);
+   qedqcd.setMu(pars[c++]);
+   qedqcd.setMass(softsusy::mBottom, pars[c]);
+   qedqcd.setMbMb(pars[c++]);
+   qedqcd.setPoleMt(pars[c++]);
+   qedqcd.setMass(softsusy::mTau, pars[c]);
+   qedqcd.setPoleMtau(pars[c++]);
+   qedqcd.setNeutrinoPoleMass(3, pars[c++]);
+   qedqcd.setPoleMW(pars[c++]);
+   qedqcd.setMass(softsusy::mElectron, pars[c]);
+   qedqcd.setPoleMel(pars[c++]);
+   qedqcd.setNeutrinoPoleMass(1, pars[c++]);
+   qedqcd.setMass(softsusy::mMuon, pars[c]);
+   qedqcd.setPoleMmuon(pars[c++]);
+   qedqcd.setNeutrinoPoleMass(2, pars[c++]);
+   qedqcd.setMass(softsusy::mDown, pars[c]);
+   qedqcd.setMd2GeV(pars[c++]);
+   qedqcd.setMass(softsusy::mUp, pars[c]);
+   qedqcd.setMu2GeV(pars[c++]);
+   qedqcd.setMass(softsusy::mStrange, pars[c]);
+   qedqcd.setMs2GeV(pars[c++]);
+   qedqcd.setMass(softsusy::mCharm, pars[c]);
+   qedqcd.setMcMc(pars[c++]);
 
    {
       flexiblesusy::CKM_parameters ckm;
@@ -697,7 +779,7 @@ template <typename Element_t>
       ckm.theta_13 = pars[c++];
       ckm.theta_23 = pars[c++];
       ckm.delta    = pars[c++];
-      data.qedqcd.setCKM(ckm);
+      qedqcd.setCKM(ckm);
    }
 
    {
@@ -708,13 +790,28 @@ template <typename Element_t>
       pmns.delta    = pars[c++];
       pmns.alpha_1  = pars[c++];
       pmns.alpha_2  = pars[c++];
-      data.qedqcd.setPMNS(pmns);
+      qedqcd.setPMNS(pmns);
    }
 
-   data.physical_input.set(Physical_input::alpha_em_0, pars[c++]);
-   data.physical_input.set(Physical_input::mh_pole, pars[c++]);
+   Physical_input physical_input;
+   physical_input.set(Physical_input::alpha_em_0, pars[c++]);
+   physical_input.set(Physical_input::mh_pole, pars[c++]);
 
+   @ModelName@_input_parameters input;
 @setInputParameters@
+
+   std::unique_ptr<@ModelName@_data> data;
+   switch (static_cast<int>(settings.get(Spectrum_generator_settings::solver))) {
+@initialiseDataPointer@
+   default:
+      throw SetupError("invalid solver type");
+   }
+
+   data->set_settings(settings);
+   data->set_modsel(modsel);
+   data->set_sm_input_parameters(qedqcd);
+   data->set_physical_input(physical_input);
+   data->set_input_parameters(input);
 
    return data;
 }
@@ -745,7 +842,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const auto hid = get_handle_from(link);
 
    try {
-      put_settings(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_settings(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -764,7 +861,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const auto hid = get_handle_from(link);
 
    try {
-      put_sm_input_parameters(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_sm_input_parameters(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -783,7 +880,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const auto hid = get_handle_from(link);
 
    try {
-      put_input_parameters(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_input_parameters(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -880,7 +977,7 @@ DLLEXPORT int FS@ModelName@GetProblems(
    const auto hid = get_handle_from(link);
 
    try {
-      put_problems(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_problems(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -899,7 +996,7 @@ DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
    const auto hid = get_handle_from(link);
 
    try {
-      put_slha(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_slha(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -919,7 +1016,7 @@ DLLEXPORT int FS@ModelName@GetWarnings(
    const auto hid = get_handle_from(link);
 
    try {
-      put_warnings(find_@ModelName@_data(hid), link);
+      find_@ModelName@_data(hid)->put_warnings(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -939,17 +1036,15 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
    const auto hid = get_handle_from(link);
 
    try {
-      auto data = find_@ModelName@_data(hid);
+      auto& data = find_@ModelName@_data(hid);
 
       {
          Redirect_output crd(link);
-         calculate_spectrum(data);
+         data->calculate_spectrum();
       }
 
-      handles_@ModelName@[hid] = data;
-
-      check_spectrum(data, link);
-      put_spectra(data.models, link);
+      data->check_spectrum(link);
+      data->put_model_spectra(link);
    } catch (const flexiblesusy::Error&) {
       put_error_output(link);
    }
@@ -968,9 +1063,9 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    const auto hid = get_handle_from(link);
 
    try {
-      auto data = find_@ModelName@_data(hid);
+      auto& data = find_@ModelName@_data(hid);
 
-      if (std::get<0>(data.models).get_scale() == 0.) {
+      if (data->get_model_scale() == 0.) {
          put_message(link,
             "FS@ModelName@CalculateObservables", "warning",
             "Renormalization scale is 0.  Did you run "
@@ -979,13 +1074,10 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
 
       {
          Redirect_output crd(link);
-         data.observables =
-            calculate_observables(std::get<0>(data.models), data.qedqcd, data.physical_input);
+         data->calculate_model_observables();
       }
 
-      handles_@ModelName@[hid] = data;
-
-      put_observables(data.observables, link);
+      data->put_observables(link);
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
       put_error_output(link);

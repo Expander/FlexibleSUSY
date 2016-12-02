@@ -921,7 +921,7 @@ ConvertYukawaCouplingsToSLHA[] :=
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
                      ParametersHaveSameDimension[{vL, vR, #}],
                      result = result <>
-                              "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
+                              "fs_svd(MODELPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> "), " <>
                                       CreateSLHAYukawaName[#] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
@@ -930,8 +930,8 @@ ConvertYukawaCouplingsToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHAYukawaName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".diagonal().real();\n";
+                              CreateSLHAYukawaName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").diagonal().real();\n";
                     ];
            ]& /@ yuks;
            result
@@ -986,7 +986,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
                      result = result <>
                               CreateSLHATrilinearCouplingName[#] <> " = (" <>
                               CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              "MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ") * " <>
                               CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
                               ").real();\n";
                      ,
@@ -994,8 +995,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHATrilinearCouplingName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
+                              CreateSLHATrilinearCouplingName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
                     ];
            ]& /@ tril;
            result
@@ -1053,14 +1054,16 @@ ConvertSoftSquaredMassesToSLHA[] :=
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
                                  CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
-                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 "MODELPARAMETER(" <>
+                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
                                  CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
                                  ").real();\n";
                         ,
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
                                  CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 "MODELPARAMETER(" <>
+                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
                                  CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
                                  ").real();\n";
                        ];
@@ -1069,8 +1072,8 @@ ConvertSoftSquaredMassesToSLHA[] :=
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = " <>
-                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = MODELPARAMETER(" <>
+                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
                     ];
            ]& /@ massSq;
            result

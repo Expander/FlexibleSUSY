@@ -20,7 +20,6 @@
 
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_info.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"

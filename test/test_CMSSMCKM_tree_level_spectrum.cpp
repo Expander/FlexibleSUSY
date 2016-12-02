@@ -9,7 +9,7 @@
 #include "conversion.hpp"
 #include "flavoursoft.h"
 #include "CMSSMCKM_two_scale_model.hpp"
-#include "CMSSMCKM_two_scale_model_slha.hpp"
+#include "CMSSMCKM_model_slha.hpp"
 #include "CMSSMCKM_two_scale_high_scale_constraint.hpp"
 #include "CMSSMCKM_input_parameters.hpp"
 
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    m0.calculate_DRbar_masses();
    s.calcDrBarPars();
 
-   CMSSMCKM_slha<Two_scale> m(m0); // converts to SLHA-2
+   CMSSMCKM_slha<CMSSMCKM<Two_scale> > m(m0); // converts to SLHA-2
 
    // re-set model parameters to super-CKM basis
    m.set_Yu(m.get_Yu_slha().matrix().cast<std::complex<double> >().asDiagonal());

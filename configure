@@ -151,6 +151,8 @@ DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
+DEFINE_ENABLE_TWO_SCALE_SOLVER="#undef ENABLE_TWO_SCALE_SOLVER"
+DEFINE_ENABLE_LATTICE_SOLVER="#undef ENABLE_LATTICE_SOLVER"
 DEFINE_ENABLE_ADDONS=""
 
 boost_lib_dir=""
@@ -202,9 +204,9 @@ sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
 tsil_inc_dir=""
-# available RG algorithms
-ALGORITHMS="two_scale"
-available_algorithms="two_scale lattice"
+# available RG solvers
+SOLVERS="two_scale"
+available_solvers="two_scale lattice"
 # models that will be compiled
 MODELS="all"
 # BEGIN: NOT EXPORTED ##########################################
@@ -778,17 +780,17 @@ try_compile_run_cpp_program() {
 }
 
 #_____________________________________________________________________
-use_algorithm() {
-    # This function tests if a certain algorithm [$1] is used.
+use_solver() {
+    # This function tests if a certain solver [$1] is used.
 
     # Assert that we got enough arguments
     if test $# -ne 1 ; then
-        echo "use_algorithm: Exactly one argument required"
+        echo "use_solver: Exactly one argument required"
         return 1
     fi
 
-    # check if the argument is in the list of used algorithms
-    contains "$ALGORITHMS" "$1"
+    # check if the argument is in the list of used solvers
+    contains "$SOLVERS" "$1"
 }
 
 #_____________________________________________________________________
@@ -872,34 +874,34 @@ check_install_dir() {
 }
 
 #_____________________________________________________________________
-check_algorithms() {
-    if test -z "${ALGORITHMS}"; then
-        logmsg "No RGE solver algorithms specified"
+check_solvers() {
+    if test -z "${SOLVERS}"; then
+        logmsg "No RGE solvers specified"
         return 0
     fi
 
-    checking_msg "RGE solver algorithms"
-    local algs="$(echo $ALGORITHMS | tr ',' ' ')"
-    ALGORITHMS=""
+    checking_msg "RGE solvers"
+    local algs="$(echo $SOLVERS | tr ',' ' ')"
+    SOLVERS=""
     for a in ${algs}; do
         case "$a" in
             all)
-                ALGORITHMS="$available_algorithms"; break ;;
+                SOLVERS="$available_solvers"; break ;;
             two_scale|lattice)
-                ALGORITHMS="$ALGORITHMS $a"
+                SOLVERS="$SOLVERS $a"
                 continue ;;
             *)
-                message "Error: unknown algorithm: $a";
-                message "Available algorithms: $available_algorithms";
+                message "Error: unknown solver: $a";
+                message "Available solvers: $available_solvers";
                 exit 1 ;;
         esac
     done
 
     # strip whitespace
-    ALGORITHMS="$(echo ${ALGORITHMS} | sed -e 's/^ *//' -e 's/ *$//')"
+    SOLVERS="$(echo ${SOLVERS} | sed -e 's/^ *//' -e 's/ *$//')"
 
-    result "ok (${ALGORITHMS})"
-    logmsg "   Algorithms: ${ALGORITHMS}"
+    result "ok (${SOLVERS})"
+    logmsg "   Solvers: ${SOLVERS}"
 }
 
 #_____________________________________________________________________
@@ -1171,7 +1173,7 @@ check_boost_thread_libs() {
     if [ -z "$found_lib" ]; then
         message "Error: libboost_thread or libboost_thread-mt must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
-        message "  You can disable the lattice method with the --with-algorithms= flag."
+        message "  You can disable the lattice method with the --with-solvers= flag."
         exit 1
     fi
     local BOOSTTHREADLIBS_=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
@@ -1181,7 +1183,7 @@ check_boost_thread_libs() {
     if [ -z "$found_lib" ]; then
         message "Error: libboost_system or libboost_system-mt must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
-        message "  You can disable the lattice method with the --with-algorithms= flag."
+        message "  You can disable the lattice method with the --with-solvers= flag."
         exit 1
     fi
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
@@ -1202,7 +1204,7 @@ check_boost_thread_incl() {
     if test "x$found_hdr" = "x" ; then
         message "Error: boost/thread/thread.hpp must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
-        message "  You can disable the lattice method with the --with-algorithms= flag."
+        message "  You can disable the lattice method with the --with-solvers= flag."
         exit 1
     else
         if contains_not "${BOOSTFLAGS}" "-I$found_dir"; then
@@ -2272,6 +2274,29 @@ enable_defines() {
         logmsg "   ${DEFINE_ENABLE_TSIL}"
     fi
 
+    for s in ${SOLVERS}; do
+	case "$s" in
+	    all)
+		DEFINE_ENABLE_TWO_SCALE_SOLVER="#define ENABLE_TWO_SCALE_SOLVER 1"
+		DEFINE_ENABLE_LATTICE_SOLVER="#define ENABLE_LATTICE_SOLVER 1"
+		logmsg "   ${DEFINE_ENABLE_TWO_SCALE_SOLVER}"
+		logmsg "   ${DEFINE_ENABLE_LATTICE_SOLVER}"
+		break ;;
+	    two_scale)
+		DEFINE_ENABLE_TWO_SCALE_SOLVER="#define ENABLE_TWO_SCALE_SOLVER 1";
+		logmsg "   ${DEFINE_ENABLE_TWO_SCALE_SOLVER}"
+		continue ;;
+	    lattice)
+		DEFINE_ENABLE_LATTICE_SOLVER="#define ENABLE_LATTICE_SOLVER 1";
+		logmsg "   ${DEFINE_ENABLE_LATTICE_SOLVER}"
+		continue ;;
+	    *)
+		message "Error: unknown solver: $a";
+                message "Available solvers: $available_solvers";
+                exit 1 ;;
+	esac
+    done
+
     for a in ${ADDONS}; do
         local addon_name="$(basename ${a})"
         DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
@@ -2290,7 +2315,7 @@ replace_markers() {
 	-e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
 	-e "s|@ADDONS@|$ADDONS|"           \
 	-e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
-	-e "s|@ALGORITHMS@|$ALGORITHMS|"   \
+	-e "s|@ALGORITHMS@|$SOLVERS|"   \
 	-e "s|@BLASLIBS@|$BLASLIBS|"       \
 	-e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
 	-e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
@@ -2388,9 +2413,6 @@ Package directories, compilation settings and model selection
 
   --with-addons=            Comma separated list of addons to be build
                             (default: $ADDONS)
-  --with-algorithms=        Comma separated list of RG solver algorithms
-                            (default: $ALGORITHMS)
-                            possible values: all $available_algorithms
   --with-blas-libdir=       Path to search for BLAS library
   --with-blas-libs=         BLAS libraries to be linked
   --with-boost-libdir=      Path to search for BOOST libraries
@@ -2425,6 +2447,9 @@ cat <<EOF
   --with-shared-ldlibs=     Additional libraries to be linked during shared library linking (default: $SHARED_LDLIBS)
   --with-shared-lib-cmd=    Command to make shared library (default: $SHARED_LIB_CMD)
   --with-shared-lib-ext=    File extension for shared library (default: $SHARED_LIB_EXT)
+  --with-solvers=           Comma separated list of RG solver algorithms
+                            (default: $SOLVERS)
+                            possible values: all $available_solvers
   --with-sqlite-libdir=     Path to search for SQLite library
   --with-sqlite-incdir=     Path to search for SQLite header
   --with-static-ldflags=    Linker flags for static linking (default: $STATIC_LDFLAGS)
@@ -2502,7 +2527,7 @@ if test $# -gt 0 ; then
                 fi
                 ;;
             --with-addons=*)         ADDONS=$optarg ;;
-            --with-algorithms=*)     ALGORITHMS=$optarg ;;
+            --with-solvers=*)        SOLVERS=$optarg ;;
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
             --with-blas-libs=*)      BLASLIBS=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
@@ -2548,7 +2573,7 @@ fi
 log_package_information
 guess_machine_word_size
 check_platform
-check_algorithms
+check_solvers
 check_install
 check_install_dir
 
@@ -2585,7 +2610,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_ilp64mkl_in_math
     check_blas_libs
     check_lapack_libs
-    if use_algorithm "lattice"; then
+    if use_solver "lattice"; then
         check_boost_thread_incl
         check_boost_thread_libs
     fi
@@ -2684,6 +2709,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
+    -e "s|@DEFINE_ENABLE_TWO_SCALE_SOLVER@|$DEFINE_ENABLE_TWO_SCALE_SOLVER|" \
+    -e "s|@DEFINE_ENABLE_LATTICE_SOLVER@|$DEFINE_ENABLE_LATTICE_SOLVER|" \
     -e "s|@DEFINE_ENABLE_ADDONS@|$DEFINE_ENABLE_ADDONS|"       \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 

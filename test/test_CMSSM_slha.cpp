@@ -5,7 +5,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model_slha.hpp"
+#include "CMSSM_model_slha.hpp"
 #include "wrappers.hpp"
 #include "ckm.hpp"
 #include "utils.h"
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
 
    // fill SLHA wrapper class
    // automatic conversion to SLHA happens here
-   CMSSM_slha<Two_scale> slha_model(model);
+   CMSSM_slha<CMSSM<Two_scale> > slha_model(model);
 
    // check that model wrapper is in SLHA convention
    BOOST_CHECK_GT(slha_model.get_physical_slha().MChi.maxCoeff(), 0.);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
    BOOST_CHECK_EQUAL(slha_model.get_physical_slha().ZN.imag().maxCoeff(), 0.);
 
    // no automatic conversion
-   CMSSM_slha<Two_scale> slha_model_not_converted(model, false);
+   CMSSM_slha<CMSSM<Two_scale> > slha_model_not_converted(model, false);
 
    // check that model is in non-SLHA convention
    BOOST_CHECK_GT(slha_model_not_converted.get_physical().MChi.maxCoeff(), 0.);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   CMSSM_slha<Two_scale> model(input);
+   CMSSM_slha<CMSSM<Two_scale> > model(input);
    model.set_scale(91);
    model.set_loops(1);
    model.set_g1(g1);
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
           0.3, 0.6, 1.77699 * root2 / (vev * sinBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   CMSSM_slha<Two_scale> model(input);
+   CMSSM_slha<CMSSM<Two_scale> > model(input);
    model.set_scale(91);
    model.set_loops(1);
    model.set_g1(g1);

@@ -92,5 +92,11 @@
 /* Enable <random> header */
 @DEFINE_ENABLE_RANDOM@
 
+/* Enable two-scale BVP solver */
+@DEFINE_ENABLE_TWO_SCALE_SOLVER@
+
+/* Enable lattice BVP solver */
+@DEFINE_ENABLE_LATTICE_SOLVER@
+
 /* Enable statements for addons */
 @DEFINE_ENABLE_ADDONS@

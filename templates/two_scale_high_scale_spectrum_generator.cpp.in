@@ -18,17 +18,9 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_SPECTRUM_GENERATOR_H
-#define @ModelName@_SPECTRUM_GENERATOR_H
-
-#include "@ModelName@_spectrum_generator_interface.hpp"
-#include "@ModelName@_two_scale_high_scale_constraint.hpp"
-#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "@ModelName@_two_scale_low_scale_constraint.hpp"
+#include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
-#include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_info.hpp"
 
 #include "error.hpp"
 #include "numerics2.hpp"
@@ -36,40 +28,10 @@
 #include "two_scale_solver.hpp"
 
 #include <limits>
-#include <tuple>
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_spectrum_generator
-   : public @ModelName@_spectrum_generator_interface<T> {
-public:
-   @ModelName@_spectrum_generator() = default;
-   virtual ~@ModelName@_spectrum_generator() {}
-
-   std::tuple<@ModelName@<T>> get_models() const { return std::make_tuple(this->get_model()); }
-   std::tuple<@ModelName@_slha<T>> get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
-
-   double get_high_scale() const { return high_scale_constraint.get_scale(); }
-   double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
-   double get_low_scale()  const { return low_scale_constraint.get_scale(); }
-   double get_pole_mass_scale() const;
-
-   void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
-
-protected:
-   virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
-
-private:
-   @ModelName@_high_scale_constraint<T> high_scale_constraint{};
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint{};
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint{};
-
-   void calculate_spectrum();
-};
-
-template <class T>
-double @ModelName@_spectrum_generator<T>::get_pole_mass_scale() const
+double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale() const
 {
    return
       this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
@@ -87,11 +49,10 @@ double @ModelName@_spectrum_generator<T>::get_pole_mass_scale() const
  * @param qedqcd Standard Model input parameters
  * @param input model input parameters
  */
-template <class T>
-void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqcd,
+void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
-   @ModelName@<T>& model = this->model;
+   @ModelName@<Two_scale>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(this->settings.get(Spectrum_generator_settings::calculate_sm_masses));
@@ -117,23 +78,22 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   @ModelName@_convergence_tester<T> convergence_tester(
+   @ModelName@_convergence_tester<Two_scale> convergence_tester(
       &model, this->settings.get(Spectrum_generator_settings::precision),
       [this](){ return get_pole_mass_scale(); });
-
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0)
       convergence_tester.set_max_iterations(
          this->settings.get(Spectrum_generator_settings::max_iterations));
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, qedqcd,
-                                                  low_scale_constraint,
-                                                  susy_scale_constraint,
-                                                  high_scale_constraint);
+   @ModelName@_initial_guesser<Two_scale> initial_guesser(&model, qedqcd,
+                                                          low_scale_constraint,
+                                                          susy_scale_constraint,
+                                                          high_scale_constraint);
 
    Two_scale_increasing_precision precision(
       10.0, this->settings.get(Spectrum_generator_settings::precision));
 
-   RGFlow<T> solver;
+   RGFlow<Two_scale> solver;
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
@@ -168,16 +128,14 @@ void @ModelName@_spectrum_generator<T>::run_except(const softsusy::QedQcd& qedqc
  *
  * @param filename name of output file
  */
-template <class T>
-void @ModelName@_spectrum_generator<T>::write_running_couplings(
+void @ModelName@_spectrum_generator<Two_scale>::write_running_couplings(
    const std::string& filename) const
 {
-   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
+   @ModelName@_spectrum_generator_interface<Two_scale>::write_running_couplings(
       filename, get_low_scale(), get_high_scale());
 }
 
-template <class T>
-void @ModelName@_spectrum_generator<T>::calculate_spectrum()
+void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum()
 {
    this->model.run_to(get_pole_mass_scale());
    this->model.solve_ewsb();
@@ -185,5 +143,3 @@ void @ModelName@_spectrum_generator<T>::calculate_spectrum()
 }
 
 } // namespace flexiblesusy
-
-#endif

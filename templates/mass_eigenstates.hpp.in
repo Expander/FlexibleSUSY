@@ -32,7 +32,7 @@
 #ifndef @ModelName@_MASS_EIGENSTATES_H
 #define @ModelName@_MASS_EIGENSTATES_H
 
-#include "@ModelName@_two_scale_soft_parameters.hpp"
+#include "@ModelName@_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
 #include "two_loop_corrections.hpp"
