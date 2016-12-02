@@ -139,7 +139,12 @@ public:
 
 class @ModelName@_data {
 public:
+   @ModelName@_data() = default;
+   @ModelName@_data(const @ModelName@_data&) = default;
+   @ModelName@_data(@ModelName@_data&&) = default;
    virtual ~@ModelName@_data() {};
+   @ModelName@_data& operator=(const @ModelName@_data&) = default;
+   @ModelName@_data& operator=(@ModelName@_data&&) = default;
 
    void set_input_parameters(const @ModelName@_input_parameters& input_) { input = input_; }
    void set_physical_input(const Physical_input& p) { physical_input = p; }
@@ -176,6 +181,13 @@ protected:
 template <typename Solver_type>
 class @ModelName@_model_data : public @ModelName@_data {
 public:
+   @ModelName@_model_data() = default;
+   @ModelName@_model_data(const @ModelName@_model_data&) = default;
+   @ModelName@_model_data(@ModelName@_model_data&&) = default;
+   virtual ~@ModelName@_model_data() {};
+   @ModelName@_model_data& operator=(const @ModelName@_model_data&) = default;
+   @ModelName@_model_data& operator=(@ModelName@_model_data&&) = default;
+
    virtual void put_problems(MLINK link) const override;
    virtual void put_warnings(MLINK link) const override;
    virtual void put_model_spectra(MLINK link) const override;
@@ -658,7 +670,7 @@ void @ModelName@_model_data<Solver_type>::check_spectrum(MLINK link) const
       put_message(link, "FS@ModelName@CalculateSpectrum", "warning", s);
 
    if (problems.have_problem() &&
-       settings.get(Spectrum_generator_settings::force_output))
+       !settings.get(Spectrum_generator_settings::force_output))
       throw EInvalidSpectrum();
 }
 
