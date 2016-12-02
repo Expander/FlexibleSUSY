@@ -33,8 +33,9 @@
 #include "standard_model_two_scale_model.hpp"
 #include "standard_model_two_scale_low_scale_constraint.hpp"
 
-#include "lowe.h"
 #include "two_scale_solver.hpp"
+
+namespace softsusy { class QedQcd; }
 
 namespace flexiblesusy {
 

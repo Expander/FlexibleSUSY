@@ -25,6 +25,7 @@
 #include "two_scale_composite_convergence_tester.hpp"
 
 #include "error.hpp"
+#include "lowe.h"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 

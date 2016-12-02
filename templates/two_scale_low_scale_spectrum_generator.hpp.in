@@ -29,9 +29,9 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_model_slha.hpp"
 
-#include "lowe.h"
-
 #include <tuple>
+
+namespace softsusy { class QedQcd; }
 
 namespace flexiblesusy {
 
