@@ -417,6 +417,7 @@ string recogLsp(int temp, int posj) {
 }
 
 ostream & operator <<(ostream &left, const MssmSoftsusy &s) {
+  const std::string HR = "----------------------------------------------------------";
   left << HR << endl;
   left << "Gravitino mass M3/2: " << s.displayGravitino() << endl;
   left << "Msusy: " << s.displayMsusy() << " MW: " << s.displayMw()

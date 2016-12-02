@@ -62,8 +62,6 @@ void sPhysical::display(double *a) const {
   a[k++] = thetaA0;
 }
 
-#define HR "---------------------------------------------------------------\n"
-
 std::ostream & operator <<(std::ostream & left, const drBarPars &s) {
   left << s.displaysPhysical();
   left << "BPMZ conventions, N" << s.nBpmz << "U" << s.uBpmz << "V" 
@@ -112,8 +110,6 @@ std::istream & operator >>(std::istream & left, sPhysical &s) {
   left >> c >> c >> c >> c >> s.mixh0;
   return left;
 }
-
-#undef HR
 
 ostream & operator <<(ostream &st, const sProblem & p) {
   if (!p.test()) return st;
