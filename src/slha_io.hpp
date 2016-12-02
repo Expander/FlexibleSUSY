@@ -151,8 +151,6 @@ public:
       }
    };
 
-   SLHA_io();
-
    void clear();
 
    // reading functions
@@ -234,8 +232,8 @@ public:
                                                        Eigen::Matrix<std::complex<double>, 1, 1>&);
 
 private:
-   SLHAea::Coll data;          ///< SHLA data
-   Modsel modsel;              ///< data from block MODSEL
+   SLHAea::Coll data{};        ///< SHLA data
+   Modsel modsel{};            ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
    static std::string to_lower(const std::string&); ///< string to lower case

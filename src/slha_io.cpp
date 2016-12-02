@@ -30,12 +30,6 @@
 
 namespace flexiblesusy {
 
-SLHA_io::SLHA_io()
-   : data()
-   , modsel()
-{
-}
-
 void SLHA_io::clear()
 {
    data.clear();
