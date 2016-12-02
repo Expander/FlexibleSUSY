@@ -13,6 +13,8 @@ BASE_TEMPLATES := \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/input_parameters.cpp.in \
+		$(DIR)/librarylink.cpp.in \
+		$(DIR)/librarylink.m.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/mass_eigenstates.hpp.in \
 		$(DIR)/mass_eigenstates.cpp.in \
@@ -25,6 +27,7 @@ BASE_TEMPLATES := \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
 		$(DIR)/run.cpp.in \
+		$(DIR)/run.m.in \
 		$(DIR)/run_cmd_line.cpp.in \
 		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
@@ -44,9 +47,6 @@ BASE_TEMPLATES := \
 		$(DIR)/utilities.cpp.in
 
 TWO_SCALE_TEMPLATES := \
-		$(DIR)/librarylink.cpp.in \
-		$(DIR)/librarylink.m.in \
-		$(DIR)/run.m.in \
 		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.cpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_initial_guesser.hpp.in \
 		$(DIR)/standard_model_two_scale_high_scale_spectrum_generator.hpp.in \

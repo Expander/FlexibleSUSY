@@ -41,10 +41,4 @@ LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_two_scale_model.hpp \
 		$(DIR)/@ModelName@_two_scale_spectrum_generator.hpp \
 		$(DIR)/@ModelName@_two_scale_susy_scale_constraint.hpp
-LL@ModelName@_SRC  += \
-		$(DIR)/@ModelName@_librarylink.cpp
-
-LL@ModelName@_MMA  += \
-		$(DIR)/@ModelName@_librarylink.m \
-		$(DIR)/run_@ModelName@.m
 

@@ -49,8 +49,12 @@ EXE@CLASSNAME@_SRC := \
 		$(DIR)/scan_@CLASSNAME@.cpp
 LL@CLASSNAME@_LIB  :=
 LL@CLASSNAME@_OBJ  :=
-LL@CLASSNAME@_SRC  :=
-LL@CLASSNAME@_MMA  :=
+LL@CLASSNAME@_SRC  := \
+		$(DIR)/@CLASSNAME@_librarylink.cpp
+
+LL@CLASSNAME@_MMA  := \
+		$(DIR)/@CLASSNAME@_librarylink.m \
+		$(DIR)/run_@CLASSNAME@.m
 
 LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
