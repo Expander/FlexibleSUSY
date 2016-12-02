@@ -558,12 +558,14 @@ void put_spectrum(const @ModelName@_slha<algorithm_type>& model, MLINK link)
 
 /******************************************************************/
 
+namespace {
 struct Put_spectrum {
    MLINK link;
    explicit Put_spectrum(MLINK link_) : link(link_) {}
    template<typename T>
    void operator()(const T& model) const { put_spectrum(model, link); }
 };
+} // anonymous namespace
 
 template<typename... Ts>
 void put_spectra(const std::tuple<Ts...>& models, MLINK link)
