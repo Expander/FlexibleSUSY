@@ -1105,8 +1105,6 @@ void Softsusy<SoftPars>::rewsb(int sgnMu, double mt, const DoubleVector & /* par
   }
 }
 
-#define HR "----------------------------------------------------------"
-
 
 /// Gives a summary of important properties of a SUSY object: mu, m3sq, mH0,
 /// mChi0, lightest stau, lightest mGluino, lightest stop, lightest chargino,
