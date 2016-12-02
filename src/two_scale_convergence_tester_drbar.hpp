@@ -46,6 +46,8 @@ public:
    double get_current_accuracy() const { return current_accuracy; }
    /// set maximum number of iterations
    void set_max_iterations(unsigned it) { max_it = it; }
+   /// set scale getter
+   void set_scale_getter(const Scale_getter& sg) { scale_getter = sg; }
 
 protected:
    /// get current iteration number
