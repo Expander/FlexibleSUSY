@@ -62,34 +62,72 @@ Module[{fields, code},
                                     "anti<" <> CXXNameOfField[#] <> ">" <>
                                     " { using type = " <> CXXNameOfField[#] <> "; };"
                                     &) /@ Select[fields, (# == SARAH`AntiField[#] &)],
-                                   "\n"]
+                                   "\n"] <> "\n\n" <>
+               
+               "template<class Field> struct field_indices;\n\n" <>
+               
+               StringJoin @ Riffle[("template<> struct field_indices<" <>
+                                    CXXNameOfField[#] <> ">\n" <>
+                                    "{\n" <>
+                                    IndentText @
+                                    ("using type = std::array<unsigned, " <>
+                                     ToString @ Length @ CleanFieldInfo[#][[5]] <>
+                                     ">;\n"
+                                    ) <>
+                                    "};\n" &) /@ fields, "\n"]
                );
        
        Return[code];
        ];
 
-CreateChargeGetters[] :=
-"template<class Field>\n" <>
-"double charge( EvaluationContext & );\n\n" <>
-"template<class Field>\n" <>
-"double charge( unsigned, EvaluationContext & );\n\n" <>
-StringJoin @ Riffle[(Module[{photonVertexFields, fieldDim = TreeMasses`GetDimension[#]},
-                            photonVertexFields = {SARAH`Photon, #, SARAH`AntiField[#]};
-                            "template<>\n" <>
-                            "double charge<" <> CXXNameOfField[#] <> ">" <>
-                            If[fieldDim === 1, "( ",
-                               "( unsigned index, "] <> "EvaluationContext& context )\n{\n" <>
-                            IndentText["using VF = VertexFunction<" <>
-                                       StringJoin @ Riffle[CXXNameOfField /@ photonVertexFields, ", "] <>
-                                       ">;\n" <>
-                                       If[fieldDim === 1,
-                                          "constexpr std::array<unsigned, 0> indices{};\n",
-                                          "const std::array<unsigned, 2> indices{ index, index };\n"
-                                          ] <>
-                                       "return VF::vertex(indices, context).left().real();"
-                                       ] <> "\n}"
-                            ] &) /@ edmFields,
-                    "\n\n"]
+CreateChargeCountGetters[] :=
+Module[{contributingDiagrams, photonEmitters,
+        electronDimension = TreeMasses`GetDimension[SARAH`Electron]},
+       contributingDiagrams = ContributingDiagrams[];
+       photonEmitters = Flatten[contributingDiagrams[[All, 2]], 1][[All, 3]];
+       
+       "double electronCharge( EvaluationContext &context )\n" <>
+       "{\n" <>
+       IndentText @
+       ("using PhotonVertex = VertexFunction<Photon, " <>
+        CXXNameOfField[SARAH`Electron] <> ", " <> CXXNameOfField[SARAH`AntiField @ SARAH`Electron] <>
+        ">;\n" <>
+        If[electronDimension === 1,
+           "constexpr std::array<unsigned, 0> indices{};\n",
+           "constexpr std::array<unsigned, 2> indices{" <>
+           ToString[GetElectronIndex[]-1] <> ", " <> ToString[GetElectronIndex[]-1] <> "};\n"
+           ] <>
+        "return PhotonVertex::vertex( indices, context ).left().real();\n"
+        ) <>
+       "}\n\n" <>
+       "template<class Field>\n" <>
+       "double chargeCount( const typename field_indices<Field>::type &, EvaluationContext & );\n\n" <>
+       StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
+                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
+                                    numberOfIndices},
+                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {3}];
+                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`lorentz, _}, {3}];
+                                   
+                                   numberOfIndices = Length @ fieldInfo[[5]];
+                                   
+                                   "template<>\n" <>
+                                   "double chargeCount<" <> CXXNameOfField[#] <>
+                                   ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
+                                   "> &indices, EvaluationContext &context )\n" <>
+                                   "{\n" <>
+                                   IndentText @
+                                   ("using PhotonVertex = VertexFunction<Photon, " <>
+                                    CXXNameOfField[#] <> ", " <> CXXNameOfField[SARAH`AntiField @ #] <>
+                                    ">;\n\n" <>
+                                    "double fieldCharge = PhotonVertex::vertex( concat( indices, indices ), context )" <>
+                                    If[photonVertexType === SingleComponentedVertex,
+                                       ".value().real();\n",
+                                       ".left().real();\n"] <>
+                                    "double electronCharge = electronCharge( context );\n\n" <>
+                                    "return fieldCharge / electronCharge;\n"
+                                    ) <>
+                                   "}"] &) /@ photonEmitters, "\n\n"]
+       ];
 
 CreateDiagrams[] :=
 Module[{code},
@@ -179,6 +217,16 @@ CXXNameOfField[p_] := SymbolName[p];
 CXXNameOfField[SARAH`bar[p_]] := "anti<" <> SymbolName[p] <> ">::type";
 CXXNameOfField[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::type";
 
+(**************** Other Functions ***************)
+
+GetElectronIndex[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1, 1, Null];
+
+CleanFieldInfo[field_] := Module[{fieldInfo = FirstCase[SARAH`Particles[FlexibleSUSY`FSEigenstates],
+                                                        {SARAH`getParticleName @ field, ___}]},
+                                 fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
+                                 DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}]
+                                 ];
+
 CreateEvaluationContextSpecializations[] :=
 Module[{fields, code},
        fields = Select[TreeMasses`GetParticles[], (! TreeMasses`IsGhost[#] &)];
@@ -251,9 +299,10 @@ CreateVertices[vertexRules_List] :=
 (* Returns the vertices that are present in the specified diagram.
  This function should be overloaded for future diagram types. *)
 VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_, exchangeField_]] :=
-    Module[{edmVertex},
+    Module[{edmVertex, photonVertex},
            edmVertex = {edmField, SARAH`AntiField[photonEmitter], SARAH`AntiField[exchangeField]};
-           Return[{edmVertex}];
+           photonVertex = {SARAH`Photon, photonEmitter, SARAH`AntiField[photonEmitter]};
+           Return[{edmVertex, photonVertex}];
            ];
 
 (* Returns the vertex type for a vertex with a given list of fields *)
@@ -370,7 +419,7 @@ GetComplexScalarCType[] :=
 ParseVertex[fields_List, vertexRules_List] :=
     Module[{indexedFields, numberOfIndices, declareIndices,
         parsedVertex, vertexClassName, vertexFunctionBody,
-        sarahFields, fieldInfo, trIndexBounds, indexBounds,
+        fieldInfo, trIndexBounds, indexBounds,
         expr, exprL, exprR},
            indexedFields = MapIndexed[(Module[{field = #1,
                                                index = #2[[1]]},
@@ -404,9 +453,7 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        Parameters`ExpressionToString[exprR] <> ";\n\n" <>
                                        "return vertex_type(left, right);"];
 
-           sarahFields = SARAH`getParticleName /@ fields;
-           fieldInfo = Flatten[(Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates], {#, ___}] &) /@
-                               sarahFields, 1];
+           fieldInfo = CleanFieldInfo /@ fields;
 
            trIndexBounds = Cases[Flatten[(With[{fieldIndex = #},
                                              (If[#[[1]] === SARAH`generation,
