@@ -1451,7 +1451,7 @@ Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
        EDM`SetEDMFields[edmParticles];
        
        fields = EDM`CreateFields[];
-       chargeGetters = EDM`CreateChargeGetters[];
+       chargeGetters = EDM`CreateChargeCountGetters[];
        diagrams = EDM`CreateDiagrams[];
        
        vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
