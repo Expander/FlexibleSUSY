@@ -43,6 +43,8 @@
 using namespace flexiblesusy;
 
 namespace {
+static constexpr oneOver16PiSquared = 0.0063325739776461107152;
+
 /** \brief Helper template for utils::make_array
  */
 template<class ForwardIterator, std::size_t N, class T>
@@ -556,6 +558,7 @@ double OneLoopFunctionF2N(double x)
 
 @EDM_Definitions@
 
+// PhotonEmitter is the fermion
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double DiagramEvaluator<OneLoopDiagram<0>,
    EDMField, PhotonEmitter, ExchangeField
@@ -563,10 +566,45 @@ double DiagramEvaluator<OneLoopDiagram<0>,
 {
    double res = 0.0;
 
+   using FermionVertex = VertexFunction<
+      EDMField,
+      typename anti<PhotonEmitter>::type,
+      typename anti<ExchangeField>::type
+   >;
+
+   for( auto indexIt = FermionVertex::indexBounds().begin(),
+         indexIt != FermionVertex::indexBounds().end();
+         ++indexIt )
+   {
+      constexpr auto photonEmitterIndices = FermionVertex::template particleIndices<1>(*indexIt);
+      constexpr auto exchangeFieldIndices = FermionVertex::template particleIndices<2>(*indexIt);
+      auto &vertex = FermionVertex::vertex(*indexIt, context);
+
+      auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
+      auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
+
+      constexpr double photonEmitterChargeCount = chargeCount<PhotonEmitter>( photonEmitterIndices );
+      constexpr double exchangeFieldChargeCount = chargeCount<ExchangeField>( exchangeFieldIndices );
+
+      constexpr double numericFactor = oneOver16PiSquared;
+      double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
+      double couplingFactor = (std::conj( vertex.right() ) * vertex.left()).imag();
+
+      double massRatioSquared = photonEmitterMass/exchangeFieldMass;
+      massRatioSquared *= massRatioSquared;
+
+      double loopFactor = (photonEmitterChargeCount * OneLoopFunctionA( massRatioSquared ) +
+      exchangeFieldChargeCount * OneLoopFunctionB( massRatioSquared ));
+
+      double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+
+      res += contribution;
+   }
 
    return res;
 }
 
+// ExchangeField is fermion
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double DiagramEvaluator<OneLoopDiagram<1>,
    EDMField, PhotonEmitter, ExchangeField
@@ -574,7 +612,40 @@ double DiagramEvaluator<OneLoopDiagram<1>,
 {
    double res = 0.0;
 
+   using FermionVertex = VertexFunction<
+      EDMField,
+      typename anti<PhotonEmitter>::type,
+      typename anti<ExchangeField>::type
+   >;
 
+   for( auto indexIt = FermionVertex::indexBounds().begin(),
+         indexIt != FermionVertex::indexBounds().end();
+         ++indexIt )
+   {
+      constexpr auto photonEmitterIndices = FermionVertex::template particleIndices<1>(*indexIt);
+      constexpr auto exchangeFieldIndices = FermionVertex::template particleIndices<2>(*indexIt);
+      auto &vertex = FermionVertex::vertex(*indexIt, context);
+
+      auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
+      auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
+
+      constexpr double photonEmitterChargeCount = chargeCount<PhotonEmitter>( photonEmitterIndices );
+      constexpr double exchangeFieldChargeCount = chargeCount<ExchangeField>( exchangeFieldIndices );
+
+      constexpr double numericFactor = oneOver16PiSquared;
+      double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
+      double couplingFactor = (std::conj( vertex.right() ) * vertex.left()).imag();
+
+      double massRatioSquared = exchangeFieldMass / photonEmitterMass;
+      massRatioSquared *= massRatioSquared;
+
+      double loopFactor = (exchangeFieldChargeCount * OneLoopFunctionA( massRatioSquared ) +
+      photonEmitterChargeCount * OneLoopFunctionB( massRatioSquared ));
+
+      double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+
+      res += contribution;
+   }
 
    return res;
 }
