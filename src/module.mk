@@ -100,9 +100,11 @@ LIBFLEXI_HDR := \
 		$(DIR)/physical_input.hpp \
 		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
+		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \
+		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
 		$(DIR)/root_finder.hpp \
@@ -125,6 +127,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
+		$(DIR)/which.hpp \
 		$(DIR)/wrappers.hpp \
 		$(DIR)/xpr-base.h \
 		$(DIR)/xpr-matrix.h \
