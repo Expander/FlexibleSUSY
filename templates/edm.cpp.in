@@ -544,8 +544,8 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterChargeCount = chargeCount<PhotonEmitter>( photonEmitterIndices );
-      double exchangeFieldChargeCount = chargeCount<ExchangeField>( exchangeFieldIndices );
+      double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
+      double exchangeFieldChargeCount = context.chargeCount<ExchangeField>( exchangeFieldIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -590,8 +590,8 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterChargeCount = chargeCount<PhotonEmitter>( photonEmitterIndices );
-      double exchangeFieldChargeCount = chargeCount<ExchangeField>( exchangeFieldIndices );
+      double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
+      double exchangeFieldChargeCount = context.chargeCount<ExchangeField>( exchangeFieldIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
