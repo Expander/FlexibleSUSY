@@ -1445,13 +1445,12 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
 
 (* Write the EDM c++ files *)
 WriteEDMClass[vertexRules_List, files_List] :=
-Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
+Module[{fields, edmFields, diagrams, vertexFunctionData,
     definitions, calculationCode},
        edmFields = {SARAH`Electron};
        EDM`SetEDMFields[edmParticles];
        
        fields = EDM`CreateFields[];
-       chargeGetters = EDM`CreateChargeCountGetters[];
        diagrams = EDM`CreateDiagrams[];
        
        vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
@@ -1460,7 +1459,6 @@ Module[{fields, edmFields, chargeGetters, diagrams, vertexFunctionData,
        
        WriteOut`ReplaceInFiles[files,
                                { "@EDM_Fields@"                    -> fields,
-                                   "@EDM_ChargeGetters@"           -> chargeGetters,
                                    "@EDM_Diagrams@"                -> diagrams,
                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
                                    "@EDM_Definitions@"             -> definitions,
@@ -2726,17 +2724,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
-<<<<<<< 367d2fb1e47420799045d314a2f65870790d20ee
               Put[vertexRules =
                       Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
                   vertexRuleFileName],
               vertexRules = Get[vertexRuleFileName];
-=======
-	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
-		  vertexRuleFileName],
-	      vertexRules = Get[vertexRuleFileName];
->>>>>>> Moved Vertex logic to a place where the vertex files definitely exist.
               effectiveCouplings = Get[effectiveCouplingsFileName];
              ];
 
