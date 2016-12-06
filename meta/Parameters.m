@@ -24,6 +24,7 @@ SetParameter::usage="set model parameter";
 SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
 SetInputParameter::usage="set input parameter to value";
 AddInputParameters::usage="add an input parameter";
+AddExtraParameters::usage="add an extra parameter";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
 SetPhase::usage="sets a phase to a value";
@@ -69,11 +70,14 @@ are real, False otherwise";
 SetInputParameters::usage="";
 SetModelParameters::usage="";
 SetOutputParameters::usage="";
+SetExtraParameters::usage="";
 
 GetInputParameters::usage="";
 GetInputParametersAndTypes::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
+GetExtraParameters::usage="";
+GetExtraParametersAndTypes::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
@@ -150,12 +154,15 @@ FindSLHABlock::usage = "returns SLHA input block name for given
 Begin["`Private`"];
 
 allInputParameters = {};
+allExtraParameters = {};
 allModelParameters = {};
 allOutputParameters = {};
 allPhases = {};
 
 SetInputParameters[pars_List] := allInputParameters = DeleteDuplicates[pars];
 AddInputParameters[pars_List] := allInputParameters = DeleteDuplicates[Utils`ForceJoin[allInputParameters, pars]];
+SetExtraParameters[pars_List] := allExtraParameters = DeleteDuplicates[pars];
+AddExtraParameters[pars_List] := allExtraParameters = DeleteDuplicates[Utils`ForceJoin[allExtraParameters, pars]];
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
@@ -165,6 +172,8 @@ GetInputParametersAndTypes[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 GetPhases[] := allPhases;
+GetExtraParameters[] := First /@ allExtraParameters;
+GetExtraParametersAndType[] := allExtraParameters;
 
 additionalRealParameters = {};
 
