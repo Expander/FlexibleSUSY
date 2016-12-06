@@ -251,8 +251,7 @@ CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
            allBeta = allDecl <> "\n" <>
                      "if (get_loops() > 0) {\n" <>
                      TextFormatting`IndentText[
-                         "TRACE_STRUCT_TYPE TRACE_STRUCT;\n" <>
-                         "CALCULATE_TRACES();\n\n" <>
+                         "const auto TRACE_STRUCT = CALCULATE_TRACES();\n\n" <>
                          allBeta1L <> "\n" <>
                          "if (get_loops() > 1) {\n" <>
                          allBeta2L <> "\n" <>

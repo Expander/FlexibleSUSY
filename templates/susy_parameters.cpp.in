@@ -30,7 +30,7 @@ namespace flexiblesusy {
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT susy_traces
 #define TRACE_STRUCT_TYPE Susy_traces
-#define CALCULATE_TRACES() calc_susy_traces(TRACE_STRUCT);
+#define CALCULATE_TRACES() calc_susy_traces();
 
 const int @ModelName@_susy_parameters::numberOfParameters;
 
@@ -121,8 +121,10 @@ void @ModelName@_susy_parameters::set_input_parameters(const @ModelName@_input_p
    input = input_;
 }
 
-void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) const
+@ModelName@_susy_parameters::Susy_traces @ModelName@_susy_parameters::calc_susy_traces() const
 {
+   Susy_traces susy_traces;
+
    if (get_loops() > 0) {
 @calc1LTraces@
    }
@@ -134,6 +136,8 @@ void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) con
    if (get_loops() > 2) {
 @calc3LTraces@
    }
+
+   return susy_traces;
 }
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_susy_parameters& susy_pars)

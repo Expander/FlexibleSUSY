@@ -29,7 +29,7 @@ namespace flexiblesusy {
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
 #define TRACE_STRUCT_TYPE Soft_traces
-#define CALCULATE_TRACES() calc_soft_traces(TRACE_STRUCT);
+#define CALCULATE_TRACES() calc_soft_traces();
 
 const int @ModelName@_soft_parameters::numberOfParameters;
 
@@ -103,8 +103,10 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& pars)
 @set@
 }
 
-void @ModelName@_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) const
+@ModelName@_soft_parameters::Soft_traces @ModelName@_soft_parameters::calc_soft_traces() const
 {
+   Soft_traces soft_traces;
+
    if (get_loops() > 0) {
 @calc1LTraces@
    }
@@ -116,6 +118,8 @@ void @ModelName@_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) con
    if (get_loops() > 2) {
 @calc3LTraces@
    }
+
+   return soft_traces;
 }
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_soft_parameters& soft_pars)

@@ -63,7 +63,7 @@ private:
    struct Soft_traces {
 @traceDefs@
    };
-   void calc_soft_traces(Soft_traces&) const;
+   Soft_traces calc_soft_traces() const;
 
 @singleBetaFunctionsDecls@
 };
