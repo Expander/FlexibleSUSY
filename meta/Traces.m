@@ -105,19 +105,11 @@ CreateLocalCopiesOfTraces[list_List, structName_String] :=
           ];
 
 CreateTraceDefs[list_List] :=
-    Module[{defs = "", traces},
-           traces = FindAllTraces[list];
-           (defs = defs <> "" <> GetTraceCType[#] <> " " <>
-            ToValidCSymbolString[#] <> ";\n")& /@ traces;
-           Return[defs];
-          ];
+    StringJoin[(GetTraceCType[#] <> " " <> ToValidCSymbolString[#] <> "{};\n")& /@ FindAllTraces[list]];
 
 CreateSARAHTraceDefs[list_List] :=
-    Module[{defs = ""},
-           (defs = defs <> GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
-            ToValidCSymbolString[GetSARAHTraceName[#]] <> ";\n")& /@ list;
-           Return[defs];
-          ];
+    StringJoin[(GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
+                ToValidCSymbolString[GetSARAHTraceName[#]] <> "{};\n")& /@ list];
 
 CreateCastedTraceExprStr[expr_] :=
     CConversion`CastTo[RValueToCFormString[expr], GetTraceType[expr]];
