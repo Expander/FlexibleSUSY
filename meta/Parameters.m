@@ -50,6 +50,8 @@ GetRealTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
 GetThirdGeneration::usage="returns parameter with third generation index";
 
+GuessInputParameterType::usage="returns a guess for the type of the parameter";
+
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
 IsRealExpression::usage="";
@@ -176,6 +178,13 @@ GetExtraParameters[] := First /@ allExtraParameters;
 GetExtraParametersAndType[] := allExtraParameters;
 
 additionalRealParameters = {};
+
+GuessInputParameterType[Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessInputParameterType[par_] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
 
 AddRealParameter[parameter_List] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, parameter]];

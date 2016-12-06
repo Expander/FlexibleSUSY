@@ -1980,13 +1980,6 @@ LoadModelFile[file_String] :=
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
-GuessInputParameterType[Sign[par_]] :=
-    CConversion`ScalarType[CConversion`integerScalarCType];
-GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
-    CConversion`ScalarType[CConversion`complexScalarCType];
-GuessInputParameterType[par_] :=
-    CConversion`ScalarType[CConversion`realScalarCType];
-
 (* returns beta functions of VEV phases *)
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
@@ -2137,8 +2130,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
            inputParameters = Join[
-               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
-               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
+               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
+               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
            ];
 
            Parameters`SetInputParameters[inputParameters];
@@ -2521,7 +2514,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          foundBlock[[1]]
                         ];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#, FindPhaseInInputParameters[inputParameters,#], GuessInputParameterType[#]}& /@ freePhases];
+                                                        {#, FindPhaseInInputParameters[inputParameters,#], Parameters`GuessInputParameterType[#]}& /@ freePhases];
               Parameters`AddInputParameters[inputParameters];
              ];
 
