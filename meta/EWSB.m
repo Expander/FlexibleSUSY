@@ -280,6 +280,16 @@ FindMinimumByteCount[lst_List] :=
 IsNoSolution[expr_] :=
     Head[expr] === Solve || Flatten[expr] === {};
 
+TimeConstrainedEliminate[eqs_List, par_] :=
+    Module[{result},
+           result = TimeConstrained[Eliminate[eqs, par],
+                                    FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           If[result === {},
+              DebugPrint["unable to eliminate ", par, ": ", eqs];
+             ];
+           result
+          ];
+
 TimeConstrainedSolve[eq_, par_] :=
     Module[{result, independentEq = eq, Selector},
            If[Head[eq] === List,
@@ -388,10 +398,10 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
              ];
            DebugPrint["eliminate ", p1, " and solve for ", p2, ": ", {eq1, eq2}];
            reduction[[1]] =
-           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p1], p2];
+           TimeConstrainedSolve[TimeConstrainedEliminate[{eq1, eq2}, p1], p2];
            DebugPrint["eliminate ", p2, " and solve for ", p1, ": ", {eq1, eq2}];
            reduction[[2]] =
-           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p2], p1];
+           TimeConstrainedSolve[TimeConstrainedEliminate[{eq1, eq2}, p2], p1];
            If[IsNoSolution[reduction[[1]]] || IsNoSolution[reduction[[2]]],
               DebugPrint["Failed"];
               Return[{}];
