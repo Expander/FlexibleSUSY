@@ -67,6 +67,8 @@ FSOutputDir = ""; (* directory for generated code *)
 FSLesHouchesList;
 FSUnfixedParameters;
 EWSBOutputParameters = {};
+EWSBInitialGuess = {};
+EWSBSubstitutions = {};
 SUSYScale;
 SUSYScaleFirstGuess;
 SUSYScaleInput = {};
