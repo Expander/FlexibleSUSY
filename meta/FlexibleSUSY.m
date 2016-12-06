@@ -1457,12 +1457,18 @@ Module[{fields, edmFields, diagrams, vertexFunctionData,
        definitions = EDM`CreateDefinitions[vertexRules];
        calculationCode = EDM`CreateCalculation[];
        
+       declareElectronIndices = If[electronDimension === 1,
+                                   "constexpr std::array<unsigned, 0> electronIndices{};",
+                                   "constexpr std::array<unsigned, 1> electronIndices{1};"
+                                   ];
+       
        WriteOut`ReplaceInFiles[files,
                                { "@EDM_Fields@"                    -> fields,
                                    "@EDM_Diagrams@"                -> diagrams,
                                    "@EDM_VertexFunctionData@"      -> vertexFunctionData,
                                    "@EDM_Definitions@"             -> definitions,
                                    "@EDM_Calculation@"             -> calculationCode,
+                                   "@EDM_DeclareElectronIndices@"  -> declareElectronIndices,
                                    Sequence @@ GeneralReplacementRules[]
                                } ];
        ];

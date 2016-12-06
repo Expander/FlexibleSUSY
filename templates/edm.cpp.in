@@ -408,17 +408,14 @@ template<class ...F> struct VertexFunctionData;
  */
 template<class ...F> class VertexFunction {
    using Data = VertexFunctionData<F...>;
+   using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
+   using fieldIndexStart_type = decltype(Data::fieldIndexStart);
 public:
    using vertex_type = typename Data::vertex_type;
    using indices_type = typename decltype(Data::index_bounds)::indices_type;
 
-   /**
-    * @fn indexBounds
-    * @brief Returns the IndexBounds<> object of the VertexFunction.
-    */
-   static constexpr decltype(Data::index_bounds) indexBounds() {
-      return Data::index_bounds;
-   }
+   static constexpr bounds_type index_bounds = Data::index_bounds;
+   static constexpr fieldIndexStart_type fieldIndexStart = Data::fieldIndexStart;
 
    /**
     * @fn fieldIndices
@@ -431,11 +428,11 @@ public:
     */
    template<unsigned fieldIndex>
    static
-   std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
+   std::array<unsigned, fieldIndexStart[fieldIndex+1] - fieldIndexStart[fieldIndex]>
    fieldIndices(const indices_type &indices)
    {
-      constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
-      auto begin = indices.begin() + Data::fieldIndexStart[fieldIndex];
+      constexpr auto length = fieldIndexStart[fieldIndex+1] - fieldIndexStart[fieldIndex];
+      auto begin = indices.begin() + fieldIndexStart[fieldIndex];
       return make_array<length>::iterate(begin);
    }
 
@@ -458,7 +455,9 @@ double @ModelName@_edm::calculate_edm_electron(const @ModelName@_mass_eigenstate
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
 
-   return edm<Electron>( model );
+   @EDM_DeclareElectronIndices@
+
+   return edm<Electron>( electronIndices, model );
 }
 
 namespace {
@@ -523,7 +522,7 @@ double OneLoopFunctionB(double r)
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double DiagramEvaluator<OneLoopDiagram<0>,
    EDMField, PhotonEmitter, ExchangeField
->::value(EvaluationContext &context)
+>::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -533,10 +532,14 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       typename anti<ExchangeField>::type
    >;
 
-   for( auto indexIt = FermionVertex::indexBounds().begin();
-         indexIt != FermionVertex::indexBounds().end();
-         ++indexIt )
+   constexpr auto indexBounds = FermionVertex::index_bounds;
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
    {
+      auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
+
+      if( edmFieldIndices != indices )
+         continue;
+
       auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
       auto vertex = FermionVertex::vertex(*indexIt, context);
@@ -545,7 +548,6 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
       double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
-      double exchangeFieldChargeCount = context.chargeCount<ExchangeField>( exchangeFieldIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -554,8 +556,7 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       double massRatioSquared = photonEmitterMass/exchangeFieldMass;
       massRatioSquared *= massRatioSquared;
 
-      double loopFactor = (photonEmitterChargeCount * OneLoopFunctionA( massRatioSquared ) +
-      exchangeFieldChargeCount * OneLoopFunctionB( massRatioSquared ));
+      double loopFactor = photonEmitterChargeCount * OneLoopFunctionA( massRatioSquared );
 
       double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
@@ -569,7 +570,7 @@ double DiagramEvaluator<OneLoopDiagram<0>,
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double DiagramEvaluator<OneLoopDiagram<1>,
    EDMField, PhotonEmitter, ExchangeField
->::value(EvaluationContext &context)
+>::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -579,10 +580,14 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       typename anti<ExchangeField>::type
    >;
 
-   for( auto indexIt = FermionVertex::indexBounds().begin();
-         indexIt != FermionVertex::indexBounds().end();
-         ++indexIt )
+   constexpr auto indexBounds = FermionVertex::index_bounds;
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
    {
+      auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
+
+      if( edmFieldIndices != indices )
+         continue;
+
       auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
       auto vertex = FermionVertex::vertex(*indexIt, context);
@@ -591,7 +596,6 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
       double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
-      double exchangeFieldChargeCount = context.chargeCount<ExchangeField>( exchangeFieldIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
@@ -600,8 +604,7 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       double massRatioSquared = exchangeFieldMass / photonEmitterMass;
       massRatioSquared *= massRatioSquared;
 
-      double loopFactor = (exchangeFieldChargeCount * OneLoopFunctionA( massRatioSquared ) +
-      photonEmitterChargeCount * OneLoopFunctionB( massRatioSquared ));
+      double loopFactor = photonEmitterChargeCount * OneLoopFunctionB( massRatioSquared );
 
       double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 

@@ -95,7 +95,7 @@ Module[{code},
                                     "struct DiagramEvaluator<" <> SymbolName[diagramType] <>
                                     "<" <> ToString @ # <>
                                     ">, EDMField, PhotonEmitter, ExchangeField>\n" <>
-                                    "{ static double value(EvaluationContext& context); };"
+                                    "{ static double value(const typename field_indices<EDMField>::type &indices, EvaluationContext& context); };"
                                     &) /@ diagramSubTypes[diagramType], "\n\n"]] &) /@ diagramTypes, "\n\n"]
                );
        
@@ -112,15 +112,18 @@ CreateCalculation[] :=
 Module[{code, evaluators},
        evaluators = ConcreteDiagramEvaluators[];
        
-       code = "template<class Field> double edm( CMSSM_mass_eigenstates& model );\n\n";
+       code = "template<class Field> double edm( const typename field_indices<Field>::type &indices, CMSSM_mass_eigenstates& model );\n\n";
        code = (code <>
                StringJoin @ Riffle[Module[{field = #[[1]],
                                            fieldEvaluators = #[[2]]},
-                                          "template<> double edm<" <> CXXNameOfField[field] <> ">( CMSSM_mass_eigenstates& model )\n" <>
+                                          "template<> double edm<" <> CXXNameOfField[field] <>
+                                          ">( const std::array<unsigned, " <> ToString @ Length @ CleanFieldInfo[field][[5]] <>
+                                          "> &indices, CMSSM_mass_eigenstates& model )\n" <>
                                           "{\n" <>
                                           IndentText["EvaluationContext context{ model };\n" <>
                                                      "double val = 0.0;\n\n" <>
-                                                     StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(context);" &) /@ fieldEvaluators, "\n"] <> "\n\n" <>
+                                                     StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);" &) /@ fieldEvaluators, "\n"] <>
+                                                     "\n\n" <>
                                                      "return val;"
                                                      ] <>
                                           "\n}"] & /@ evaluators, "\n\n"]);
@@ -371,7 +374,7 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                         ("static constexpr IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <>
                          "> index_bounds" <>
                          If[NumberOfIndices[parsedVertex] =!= 0,
-                            "= { " <>
+                            " = { " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };\n"
                             ,
