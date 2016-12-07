@@ -55,6 +55,12 @@ GetValidEWSBInitialGuesses::usage="Remove invalid initial guess settings";
 
 GetValidEWSBSubstitutions::usage="Remove invalid EWSB substitutions";
 
+SetModelParametersFromEWSB::usage="Set model parameters from EWSB solution
+using the given substitutions";
+
+ApplyEWSBSubstitutions::usage="Set model parameters according to the
+given list of substitutions";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -849,6 +855,20 @@ SetEWSBParameter[par_, idx_, array_String] :=
 
 CreateEWSBParametersInitialization[parameters_List, array_String] :=
     StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
+
+SetModelParametersFromEWSB[substitutions_List] :=
+    Module[{result = ""},
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], Parameters`GetType[#[[1]]]])& /@ substitutions;
+           Parameters`CreateLocalConstRefsForInputParameters[#[[2]]& /@ substitutions, "LOCALINPUT"] <> result
+          ];
+
+ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model"] :=
+    Module[{pars, result = ""},
+           pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ substitutions]];
+           pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ substitutions;
+           Parameters`CreateLocalConstRefs[pars] <> result
+          ];
 
 End[];
 
