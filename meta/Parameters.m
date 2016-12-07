@@ -226,7 +226,7 @@ FindAllParameters[expr_] :=
            allParameters = DeleteDuplicates[
                Join[allModelParameters, allOutPars,
                     GetInputParameters[], Phases`GetArg /@ allPhases,
-                    GetDependenceSPhenoSymbols[]]];
+                    GetDependenceSPhenoSymbols[], GetExtraParameters[]]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -874,7 +874,7 @@ CalculateLocalPoleMasses[parameter_] :=
 
 FindAllParametersClassified[expr_] :=
     Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
-            inputPars, modelPars, outputPars,
+            inputPars, modelPars, outputPars, extraPars,
             poleMasses, phases, depNum, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
@@ -891,13 +891,15 @@ FindAllParametersClassified[expr_] :=
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
            depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
+           extraPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetExtraParameters[],#])&]];
            {
                FSModelParameters -> modelPars,
                FSInputParameters -> inputPars,
                FSOutputParameters -> outputPars,
                FSPhysicalOutputParameters -> poleMasses,
                FSPhases -> phases,
-               FSDerivedParameters -> depNum
+               FSDerivedParameters -> depNum,
+               FSExtraParameters -> extraPars
            }
           ];
 
