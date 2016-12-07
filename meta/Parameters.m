@@ -964,7 +964,7 @@ SetParameter[Im[parameter_], value_String, class_String, castToType_:None] :=
 
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr, targetType = castToType},
-           If[IsModelParameter[parameter],
+           If[IsModelParameter[parameter] || IsExtraParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[StripIndices[parameter]];
               (* if the parameter indices, we need to cast to the element type *)
               If[GetIndices[parameter] =!= {} && targetType =!= None,
