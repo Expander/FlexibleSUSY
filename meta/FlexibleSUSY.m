@@ -2374,6 +2374,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
             ];
 
+           (* collect any extra user-defined parameters *)
+           FlexibleSUSY`FSAuxiliaryParameters = {#[[1]], Parameters`GetRealTypeFromDimension[#[[2]]]}& /@ FlexibleSUSY`FSAuxiliaryParameters;
+           Parameters`SetExtraParameters[FlexibleSUSY`FSAuxiliaryParameters];
+
            (* replace all indices in the user-defined model file variables *)
            EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
