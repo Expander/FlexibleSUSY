@@ -16,7 +16,8 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameters = {
-   {vMSSM, {1}}
+   {vMSSM, {1}},
+   {TanBeta, {1}}
 };
 
 
