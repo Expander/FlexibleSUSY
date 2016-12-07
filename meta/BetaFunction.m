@@ -235,7 +235,7 @@ CreateBetaFunctionCall[betaFunction_BetaFunction, loopOrder_Integer] :=
            result
           ];
 
-CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
+CreateBetaFunction[betaFunctions_List] :=
     Module[{allBeta1L, allBeta2L, allBeta3L},
            allBeta1L = StringJoin[CreateBetaFunctionCall[#,1]& /@ betaFunctions];
            allBeta2L = TextFormatting`IndentText @ StringJoin[CreateBetaFunctionCall[#,2]& /@ betaFunctions];
