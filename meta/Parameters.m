@@ -495,6 +495,19 @@ GetType[sym_] :=
 GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
+GetParameterDimensions[sym_ /; (IsInputParameter[sym] || IsExtraParameter[sym])] :=
+    Module[{type},
+           type = GetType[sym];
+           Switch[type,
+                  CConversion`ScalarType[_], {1},
+                  CConversion`VectorType[_, n_], {type[[2]]},
+                  CConversion`ArrayType[_, n_], {type[[2]]},
+                  CConversion`MatrixType[_, m_, n_], {type[[2]], type[[3]]},
+                  CConversion`TensorType[_, indices__], List @@ Rest[type],
+                  _, Print["Error: unknown parameter type: ", ToString[type]]; Quit[1];
+                 ]
+          ];
+
 GetParameterDimensions[sym_] :=
     Module[{dim},
            dim = SARAH`getDimParameters[sym];
