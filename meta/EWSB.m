@@ -614,9 +614,13 @@ ReduceSolution[solution_List] :=
            {{},{}}
           ];
 
-FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:""] :=
-    Module[{solution, reducedSolution, freePhases},
-           solution = FindSolution[equations, parametersFixedByEWSB];
+FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:"", substitutions_List:{}] :=
+    Module[{eqsToSolve, solution, reducedSolution, freePhases},
+           If[substitutions =!= {},
+              eqsToSolve = equations /. (Rule[#[[1]], #[[2]]]& /@ substitutions);,
+              eqsToSolve = equations;
+             ];
+           solution = FindSolution[eqsToSolve, parametersFixedByEWSB];
            {reducedSolution, freePhases} = ReduceSolution[solution];
            DebugPrint["The full, reduced solution to the EWSB eqs. is:",
                       reducedSolution];
@@ -631,7 +635,7 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
            Return[{Flatten[reducedSolution], freePhases}];
           ];
 
-CreateTreeLevelEwsbSolver[solution_List] :=
+CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
     Module[{result = "", body = "",
             i, par, expr, parStr, oldParStr, reducedSolution,
             type},
@@ -681,10 +685,18 @@ CreateTreeLevelEwsbSolver[solution_List] :=
                   body = body <> Parameters`SetParameter[par, oldParStr, None];
                  ];
               body = body <> "error = 1;\n";
-              result = result <>
-                       "if (!is_finite) {\n" <>
-                       IndentText[body] <>
-                       "}";
+              If[substitutions === {},
+                 result = result <>
+                          "if (!is_finite) {\n" <>
+                          IndentText[body] <>
+                          "}";,
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[substitutions]]] <>
+                          "} else {\n" <>
+                          IndentText[body] <>
+                          "}";
+                ];
               ,
               result = "error = solve_ewsb_iteratively(0);\n";
              ];
