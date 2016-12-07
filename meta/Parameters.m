@@ -2,7 +2,8 @@
 BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
 { FSModelParameters, FSInputParameters, FSOutputParameters,
-  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters };
+  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters,
+  FSExtraParameters };
 
 FindSymbolDef::usage="";
 
