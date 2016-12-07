@@ -496,6 +496,15 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
+           If[Head[FlexibleSUSY`FSAuxiliaryParameters] =!= List,
+              Print["Error: FSAuxiliaryParameters has to be set to a list!"];
+              Quit[1];
+              ,
+              If[!(And @@ (MatchQ[#,{_,_}]& /@ FlexibleSUSY`FSAuxiliaryParameters)),
+                 Print["Error: FSAuxiliaryParameters must be of the form",
+                       " {{par, {dimensions}}, ... }"];
+                ];
+             ];
            CheckEWSBSolvers[FlexibleSUSY`FSEWSBSolvers];
            CheckBVPSolvers[FlexibleSUSY`FSBVPSolvers];
           ];
