@@ -12,6 +12,8 @@
 #ifndef DEF_H
 #define DEF_H
 
+#define COMPILE_THREE_LOOP_RGE
+
 #ifdef HAVE_CONFIG_H
  #include <config.h>
 #endif

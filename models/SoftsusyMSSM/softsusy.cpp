@@ -7011,7 +7011,13 @@ void Softsusy<SoftPars>::fixedPointIteration
     double tol = TOLERANCE;
     
     MssmSusy t(guessAtSusyMt(tanb, oneset));
-    t.setLoops(2); /// 2 loops should protect against ht Landau pole 
+
+    // default SoftSusy loop number
+    int lpnum = 2;
+
+    if (USE_THREE_LOOP_RGE) lpnum = 3;
+
+    t.setLoops(lpnum); /// >= 2 loops should protect against ht Landau pole 
     t.runto(mxBC); 
    
     setSusy(t);
@@ -7039,7 +7045,7 @@ void Softsusy<SoftPars>::fixedPointIteration
   
     physical(0);
   
-    setThresholds(3); setLoops(2);
+    setThresholds(3); setLoops(lpnum);
     
     itLowsoft(maxtries, sgnMu, tol, tanb, boundaryCondition, pars, 
 		gaugeUnification, ewsbBCscale);
