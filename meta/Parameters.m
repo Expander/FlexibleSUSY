@@ -421,10 +421,16 @@ IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
 
 IsInputParameter[parameter_] := MemberQ[GetInputParameters[], parameter];
 
+IsInputParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsInputParameter[parameter];
+
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
 IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
+
+IsExtraParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsExtraParameter[parameter];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
@@ -641,6 +647,9 @@ CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_,_]}] :=
     Module[{i,j,k,l},
            RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]]
           ];
+
+CreateIndexReplacementRule[parameter_ /; (IsInputParameter[parameter] || IsExtraParameter[parameter])] :=
+    CreateIndexReplacementRule[{parameter, GetType[parameter]}];
 
 CreateIndexReplacementRule[parameter_] :=
     Module[{i,j,k,l, dim, rule},
@@ -1106,8 +1115,8 @@ IncreaseIndexLiterals[expr_] :=
     IncreaseIndexLiterals[expr, 1];
 
 IncreaseIndexLiterals[expr_, num_Integer] :=
-    IncreaseIndexLiterals[expr, num, Join[GetInputParameters[], allModelParameters,
-                                          allOutputParameters]];
+    IncreaseIndexLiterals[expr, num, Join[GetInputParameters[], GetExtraParameters[],
+                                          allModelParameters, allOutputParameters]];
 
 IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
     Module[{indexedSymbols, rules, decrExpr, allHeads},
