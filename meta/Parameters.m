@@ -942,7 +942,7 @@ FindAllParametersClassified[expr_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", pars, inputSymbols, modelPars, outputPars,
-            poleMasses, phases, depNum},
+            poleMasses, phases, depNum, extraPars},
            pars = FindAllParametersClassified[expr];
            inputSymbols = FSInputParameters /. pars;
            modelPars    = FSModelParameters /. pars;
@@ -950,11 +950,13 @@ CreateLocalConstRefs[expr_] :=
            phases       = FSPhases /. pars;
            depNum       = FSDerivedParameters /. pars;
            poleMasses   = FSPhysicalOutputParameters /. pars;
+           extraPars    = FSExtraParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
            (result = result <> DefineLocalConstCopy[#,"DERIVEDPARAMETER"])& /@ depNum;
+           (result = result <> DefineLocalConstCopy[#,"EXTRAPARAMETER"])& /@ extraPars;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
