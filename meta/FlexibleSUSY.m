@@ -582,7 +582,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun] + numberOfBaseClassParameters;
           (* create C++ functions and parameter declarations *)
           sarahTraces          = Traces`ConvertSARAHTraces[additionalTraces];
-          beta                 = BetaFunction`CreateBetaFunction[betaFun, sarahTraces];
+          beta                 = BetaFunction`CreateBetaFunction[betaFun];
           setter               = BetaFunction`CreateSetters[betaFun];
           getter               = BetaFunction`CreateGetters[betaFun];
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];

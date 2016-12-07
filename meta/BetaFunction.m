@@ -239,7 +239,7 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
             Return[{localDecl, beta1L, beta2L, beta3L}];
           ];
 
-CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
+CreateBetaFunction[betaFunctions_List] :=
     Module[{def = "",
             localDecl = "", beta1L = "", beta2L = "", beta3L = "",
             allDecl = "", allBeta = "",
