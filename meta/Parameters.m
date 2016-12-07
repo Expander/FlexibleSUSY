@@ -303,6 +303,8 @@ IsInputParameter[parameter_] := MemberQ[GetInputParameters[], parameter];
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
+IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
+
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
 IsRealParameter[FlexibleSUSY`M[_]] := True;
