@@ -61,10 +61,11 @@ IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
 IsTensor::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
-IsInputParameter::usage="returns False if parameter is an input parameter";
+IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
 IsIndex::usage="returns true if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
+IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -552,7 +553,7 @@ GetType[sym_?IsInputParameter] :=
     Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_?IsExtraParameter] :=
-    Cases[GetExtraParametersAndTypes[], {sym, _, type_} :> type][[1]];
+    Cases[GetExtraParametersAndTypes[], {sym, type_} :> type][[1]];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
