@@ -176,7 +176,7 @@ GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 GetPhases[] := allPhases;
 GetExtraParameters[] := First /@ allExtraParameters;
-GetExtraParametersAndType[] := allExtraParameters;
+GetExtraParametersAndTypes[] := allExtraParameters;
 
 additionalRealParameters = {};
 
@@ -255,11 +255,23 @@ FindAllParameters[expr_] :=
 IsScalar[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 1 || Length[SARAH`getDimParameters[sym]] == 0;
 
+IsScalar[sym_?IsInputParameter] :=
+   MatchQ[GetType[sym], CConversion`ScalarType[_]];
+
+IsScalar[sym_?IsExtraParameter] :=
+   MatchQ[GetType[sym], CConversion`ScalarType[_]];
+
 IsMatrix[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsMatrix[sym];
 
 IsMatrix[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 2;
+
+IsMatrix[sym_?IsInputParameter] :=
+   MatchQ[GetType[sym], CConversion`MatrixType[__]];
+
+IsMatrix[sym_?IsExtraParameter] :=
+   MatchQ[GetType[sym], CConversion`MatrixType[__]];
 
 IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsSymmetricMatrixParameter[sym];
@@ -269,6 +281,12 @@ IsSymmetricMatrixParameter[sym_] :=
 
 IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
     IsTensor[sym];
+
+IsTensor[sym_?IsInputParameter] :=
+   MatchQ[GetType[sym], CConversion`TensorType[_]];
+
+IsTensor[sym_?IsExtraParameter] :=
+   MatchQ[GetType[sym], CConversion`TensorType[_]];
 
 IsTensor[sym_] :=
     Length[SARAH`getDimParameters[sym]] > 2;
@@ -467,6 +485,9 @@ GetType[FlexibleSUSY`M[sym_]] :=
 
 GetType[sym_?IsInputParameter] :=
     Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
+
+GetType[sym_?IsExtraParameter] :=
+    Cases[GetExtraParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
