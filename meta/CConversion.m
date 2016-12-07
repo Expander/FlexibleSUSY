@@ -77,10 +77,14 @@ CreateGetterPrototype::usage="creates C/C++ getter prototype";
 CreateInlineSetter::usage="creates C/C++ inline setter"
 CreateInlineElementSetter::usage="creates C/C++ inline setter for a
 vector or matrix element";
+CreateInlineSetters::usage="creates a C/C++ inline setter, and, if
+given a vector or matrix, a C/C++ inline setter for a singlet element";
 
 CreateInlineGetter::usage="creates C/C++ inline getter"
 CreateInlineElementGetter::usage="creates C/C++ inline getter for a
 vector or matrix element";
+CreateInlineGetters::usage="creates a C/C++ inline getter, and, if
+given a vector or matrix, a C/C++ inline getter for a single element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
 
@@ -279,6 +283,12 @@ CreateInlineSetter[parameter_String, type_String] :=
 CreateInlineSetter[parameter_String, type_] :=
     CreateInlineSetter[parameter, CreateSetterInputType[type]];
 
+CreateInlineSetters[parameter_String, type_] :=
+    If[MatchQ[type, ScalarType[_]],
+       CreateInlineSetter[parameter, type],
+       CreateInlineSetter[parameter, type] <> CreateInlineElementSetter[parameter, type]
+      ];
+
 (* Creates a C++ inline element getter *)
 CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer, postFix_String:"", wrapper_String:""] :=
     elementType <> " get_" <> parameter <> postFix <> "(int i) const" <>
@@ -318,6 +328,12 @@ CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_Str
 
 CreateInlineGetter[parameter_String, type_, postFix_String:"", wrapper_String:""] :=
     CreateInlineGetter[ToValidCSymbolString[parameter], CreateGetterReturnType[type], postFix, wrapper];
+
+CreateInlineGetters[parameter_String, type_, postFix_String:"", wrapper_String:""] :=
+    If[MatchQ[type, ScalarType[_]],
+       CreateInlineGetter[parameter, type, postFix, wrapper],
+       CreateInlineGetter[parameter, type, postFix, wrapper] <> CreateInlineElementGetter[parameter, type, postFix, wrapper]
+      ];
 
 (* Creates C++ getter prototype *)
 CreateGetterPrototype[parameter_String, type_String] :=
