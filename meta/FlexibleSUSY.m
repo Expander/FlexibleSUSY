@@ -1004,7 +1004,8 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
         ];
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
-                parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
+                parametersFixedByEWSB_List, ewsbInitialGuessValues_List,
+                ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{ewsbEquationsTreeLevel, independentEwsbEquationsTreeLevel,
@@ -1029,7 +1030,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
-            phasesInit = "",
+            phasesInit = "", extraParameterDefs = "",
+            extraParameterSetters = "", extraParameterGetters = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
             callAllLoopMassFunctions = "",
@@ -1040,7 +1042,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             masses, mixingMatrices, oneLoopTadpoles,
             dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
-            clearPhases = "",
+            clearPhases = "", clearExtraParameters = "",
             softScalarMasses, treeLevelEWSBOutputParameters,
             saveEWSBOutputParameters,
             solveTreeLevelEWSBviaSoftHiggsMasses,
@@ -1060,13 +1062,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             ewsbParametersInitializationList = "",
             ewsbParametersInitializationComma = "",
             ewsbParametersInitialization = "",
+            applyEWSBSubstitutions = "",
+            setModelParametersFromEWSB = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
             enablePoleMassThreads = True
            },
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
-           independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, parametersFixedByEWSB];
+           independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB,
+                                                                     FlexibleSUSY`EWSBSubstitutions];
            numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            independentEwsbEquationsTreeLevel = independentEwsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
@@ -1082,7 +1087,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
-               ];
+              ];
            higgsMassGetters =
                Utils`StringZipWithSeparator[
                    TreeMasses`CreateHiggsMassGetters[SARAH`HiggsBoson,""],
@@ -1129,12 +1134,30 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
-           ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
-           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
+           ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
+           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0,
+                                                                         FlexibleSUSY`EWSBSubstitutions];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
            phasesInit                   = Phases`CreatePhasesInitialization[phases];
+           If[Parameters`GetExtraParameters[] =!= {},
+              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinition[#]&
+                                                        /@ Parameters`GetExtraParameters[]];
+              extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
+                                                                                        Parameters`GetType[#]]& /@
+                                                        Parameters`GetExtraParameters[]];
+              extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],
+                                                                                        Parameters`GetType[#]]& /@
+                                                        Parameters`GetExtraParameters[]];
+              extraParametersInit
+                  = ", " <> Utils`StringJoinWithSeparator[CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#],
+                                                                                               Parameters`GetType[#]]& /@
+                                                          Parameters`GetExtraParameters[], ", "];
+              clearExtraParameters         = StringJoin[CConversion`SetToDefault[CConversion`ToValidCSymbolString[#],
+                                                                                 Parameters`GetType[#]]& /@
+                                                        Parameters`GetExtraParameters[]];
+             ];
            loopMassesPrototypes         = LoopMasses`CreateOneLoopPoleMassPrototypes[];
            (* If you want to add tadpoles, call the following routine like this:
               CreateOneLoopPoleMassFunctions[diagonalizationPrecision, oneLoopTadpoles, vevs];
@@ -1197,6 +1220,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               ewsbParametersInitialization = IndentText[
                  EWSB`CreateEWSBParametersInitialization[parametersFixedByEWSB, "ewsb_parameters"]];
              ];
+           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[FlexibleSUSY`EWSBSubstitutions];
+           applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, FlexibleSUSY`EWSBSubstitutions];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
@@ -1247,6 +1272,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
                             "@phasesGetterSetters@"          -> IndentText[phasesGetterSetters],
                             "@phasesInit@"                   -> IndentText[WrapLines[phasesInit]],
+                            "@extraParameterDefs@"           -> IndentText[extraParameterDefs],
+                            "@extraParameterGetters@"        -> IndentText[extraParameterGetters],
+                            "@extraParameterSetters@"        -> IndentText[extraParameterSetters],
+                            "@extraParametersInit@"          -> IndentText[WrapLines[extraParametersInit]],
+                            "@clearExtraParameters@"         -> IndentText[clearExtraParameters],
                             "@loopMassesPrototypes@"         -> IndentText[WrapLines[loopMassesPrototypes]],
                             "@loopMassesFunctions@"          -> WrapLines[loopMassesFunctions],
                             "@runningDRbarMassesPrototypes@" -> IndentText[runningDRbarMassesPrototypes],
@@ -1274,6 +1304,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@ewsbParametersInitializationComma@" -> ewsbParametersInitializationComma,
                             "@ewsbParametersInitialization@" -> ewsbParametersInitialization,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
+                            "@applyEWSBSubstitutions@"       -> IndentText[WrapLines[applyEWSBSubstitutions]],
+                            "@setModelParametersFromEWSB@"   -> IndentText[WrapLines[setModelParametersFromEWSB]],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             Sequence @@ GeneralReplacementRules[]
@@ -1294,7 +1326,7 @@ WriteTwoScaleSpectrumGeneratorClass[files_List] :=
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            WriteOut`ReplaceInFiles[files,
                           { "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
-	                    Sequence @@ GeneralReplacementRules[]
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
@@ -1387,7 +1419,7 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
            vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`CreateCalculation[];
-           
+
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
                                      "@GMuonMinus2_MuonFunctionPrototypes@"  -> muonFunctionPrototypes,
@@ -1940,7 +1972,7 @@ PrepareTadpoles[eigenstates_] :=
            tadpoles = Get[tadpolesFile];
            Print["Converting tadpoles ..."];
            ConvertSarahTadpoles[tadpoles]
-           ];
+          ];
 
 (* Get all nPointFunctions that GMM2 needs *)
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
@@ -2456,6 +2488,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
+           If[FlexibleSUSY`EWSBInitialGuess =!= {},
+              FlexibleSUSY`EWSBInitialGuess = EWSB`GetValidEWSBInitialGuesses[FlexibleSUSY`EWSBInitialGuess];
+             ];
+
+           If[FlexibleSUSY`EWSBSubstitutions =!= {},
+              FlexibleSUSY`EWSBSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
+             ];
+
            (* filter out trivial EWSB eqs. *)
            ewsbEquations = Select[ewsbEquations, (#=!=0)&];
 
@@ -2474,7 +2514,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
               Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
               Print["Searching for independent EWSB equations ..."];
-              independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
+              If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
+                 FlexibleSUSY`EWSBSubstitutions = FlexibleSUSY`EWSBSubstitutions /. allIndexReplacementRules;
+                ];
+              independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
+                                                                        FlexibleSUSY`EWSBSubstitutions];
 
               If[FlexibleSUSY`TreeLevelEWSBSolution === {},
                  (* trying to find an analytic solution for the EWSB eqs. *)
@@ -2483,7 +2527,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                        FlexibleSUSY`EWSBOutputParameters," ..."];
                  {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[independentEwsbEquations,
                                                                              FlexibleSUSY`EWSBOutputParameters,
-                                                                             treeLevelEwsbSolutionOutputFile];
+                                                                             treeLevelEwsbSolutionOutputFile,
+                                                                             FlexibleSUSY`EWSBSubstitutions];
                  If[ewsbSolution === {},
                     Print["Warning: could not find an analytic solution to the EWSB eqs."];
                     Print["   An iterative algorithm will be used.  You can try to set"];
@@ -2630,8 +2675,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
-                           FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
-                           nPointFunctions, vertexRules, Parameters`GetPhases[],
+                           FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
+                           ewsbSolution, freePhases, nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
