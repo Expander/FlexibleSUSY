@@ -51,6 +51,10 @@ list with EWSB output parameters";
 CreateEWSBParametersInitialization::usage="Creates initialization
 of EWSB output parameters";
 
+GetValidEWSBInitialGuesses::usage="Remove invalid initial guess settings";
+
+GetValidEWSBSubstitutions::usage="Remove invalid EWSB substitutions";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -172,14 +176,47 @@ FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
            Return[result];
           ];
 
-InitialGuessFor[par_] :=
-    If[Parameters`IsRealParameter[par], par, Abs[par]];
+GetValidEWSBInitialGuesses[initialGuess_List] :=
+    Module[{i},
+           For[i = 1, i <= Length[initialGuess], i++,
+               If[!MatchQ[initialGuess[[i]], {_,_}],
+                  Print["Warning: ignoring invalid initial guess: ", initialGuess[[i]]];
+                 ];
+              ];
+           Cases[initialGuess, {_,_}]
+          ];
 
-FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
+GetValidEWSBSubstitutions[substitutions_List] :=
+    Module[{i},
+           For[i = 1, i <= Length[substitutions], i++,
+               If[!MatchQ[substitutions[[i]], {_,_}],
+                  Print["Warning: ignoring invalid EWSB substitution: ", substitutions[[i]]];
+                 ];
+              ];
+           Cases[substitutions, {_,_}]
+          ];
+
+InitialGuessFor[par_, initialGuesses_List:{}] :=
+    Module[{guess},
+           If[initialGuesses === {} || !MemberQ[#[[1]]& /@ initialGuesses, par],
+              If[Parameters`IsRealParameter[par], guess = par, guess = Abs[par]];,
+              guess = Cases[initialGuesses, {p_ /; p === par, val_} :> val];
+              If[Length[guess] > 1,
+                 Print["Warning: multiple initial guesses given for ", par];
+                ];
+              guess = First[guess];
+             ];
+           guess
+          ];
+
+FillInitialGuessArray[parametersFixedByEWSB_List, initialGuessValues_List:{}, arrayName_String:"x_init"] :=
     Module[{i, result = ""},
+           If[initialGuessValues =!= {},
+              result = result <> Parameters`CreateLocalConstRefsForInputParameters[initialGuessValues, "LOCALINPUT"];
+             ];
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                result = result <> arrayName <> "[" <> ToString[i-1] <> "] = " <>
-                        CConversion`RValueToCFormString[InitialGuessFor[parametersFixedByEWSB[[i]]]] <>
+                        CConversion`RValueToCFormString[InitialGuessFor[parametersFixedByEWSB[[i]], initialGuessValues]] <>
                         ";\n";
               ];
            Return[result];
