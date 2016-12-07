@@ -1977,6 +1977,15 @@ LoadModelFile[file_String] :=
              ];
           ];
 
+StripSARAHIndices[expr_, numToStrip_Integer:4] :=
+    Module[{i, rules, result = expr},
+           rules = Table[Parameters`StripSARAHIndicesRules[i], {i, 1, numToStrip}];
+           For[i = 1, i <= numToStrip, i++,
+               result = result /. rules[[i]];
+              ];
+           result
+          ];
+
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
@@ -2200,11 +2209,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
 
            (* store all model parameters *)
-           allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
-                               Parameters`StripSARAHIndicesRules[1] /.
-                               Parameters`StripSARAHIndicesRules[2] /.
-                               Parameters`StripSARAHIndicesRules[3] /.
-                               Parameters`StripSARAHIndicesRules[4];
+           allParameters = StripSARAHIndices[((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions])];
            allIndexReplacementRules = Join[
                Parameters`CreateIndexReplacementRules[allParameters],
                {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
@@ -2307,12 +2312,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["  ", FlexibleSUSY`FSUnfixedParameters];
              ];
            (* adding the types and their input names to the parameters *)
-           FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
-                                                          {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
-                                                     Parameters`StripSARAHIndicesRules[1] /.
-                                                     Parameters`StripSARAHIndicesRules[2] /.
-                                                     Parameters`StripSARAHIndicesRules[3] /.
-                                                     Parameters`StripSARAHIndicesRules[4],
+           FlexibleSUSY`FSUnfixedParameters = Select[StripSARAHIndices[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
+                                                                            {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions]],
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
@@ -2342,14 +2343,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       ]
            ];
 
-           lesHouchesInputParameters = Select[{BetaFunction`GetName[#],
-                                               Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
-                                               Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
-                                                  Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
-                                              Parameters`StripSARAHIndicesRules[1] /.
-                                              Parameters`StripSARAHIndicesRules[2] /.
-                                              Parameters`StripSARAHIndicesRules[3] /.
-                                              Parameters`StripSARAHIndicesRules[4],
+           lesHouchesInputParameters = Select[StripSARAHIndices[{BetaFunction`GetName[#],
+                                                                 Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
+                                                                 Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
+                                                                Join[susyBetaFunctions, susyBreakingBetaFunctions]],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
