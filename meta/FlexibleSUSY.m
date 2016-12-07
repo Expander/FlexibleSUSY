@@ -2147,14 +2147,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           (* collect input parameters from MINPAR and EXTPAR lists *)
-           inputParameters = Join[
-               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
-               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
-           ];
-
-           Parameters`SetInputParameters[inputParameters];
-
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",
                     "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
@@ -2206,17 +2198,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
            susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
 
-           (* backwards compatibility replacements in constraints *)
-           backwardsCompatRules = {
-               Global`topDRbar      -> Global`upQuarksDRbar,
-               Global`bottomDRbar   -> Global`downQuarksDRbar,
-               Global`electronDRbar -> Global`downLeptonsDRbar
-           };
-           FlexibleSUSY`LowScaleInput  = FlexibleSUSY`LowScaleInput  /. backwardsCompatRules;
-           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /. backwardsCompatRules;
-           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /. backwardsCompatRules;
-           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. backwardsCompatRules;
-           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
+           (* identify real parameters *)
+           If[Head[SARAH`RealParameters] === List,
+              Parameters`AddRealParameter[SARAH`RealParameters];
+             ];
 
            (* store all model parameters *)
            allParameters = StripSARAHIndices[((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions])];
@@ -2229,28 +2214,47 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Parameters`SetModelParameters[allParameters];
            DebugPrint["model parameters: ", allParameters];
 
+           anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
+
+           susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
+           susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
+
+           susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
+           susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
+
+           allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
+
+           numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
+           numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
+           numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
+
            (* collect all phases from SARAH *)
            phases = DeleteDuplicates @ Join[
                ConvertSarahPhases[SARAH`ParticlePhases],
                Exp[I #]& /@ GetVEVPhases[FlexibleSUSY`FSEigenstates]];
            Parameters`SetPhases[phases];
 
-           susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
-           susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-
-           numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
-           anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
-
-           susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
-           susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-
-           If[Head[SARAH`RealParameters] === List,
-              Parameters`AddRealParameter[SARAH`RealParameters];
-             ];
-
-           allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
-
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
+
+           (* collect input parameters from MINPAR and EXTPAR lists *)
+           inputParameters = Join[
+               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
+               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]]
+           ];
+
+           Parameters`SetInputParameters[inputParameters];
+
+           (* backwards compatibility replacements in constraints *)
+           backwardsCompatRules = {
+               Global`topDRbar      -> Global`upQuarksDRbar,
+               Global`bottomDRbar   -> Global`downQuarksDRbar,
+               Global`electronDRbar -> Global`downLeptonsDRbar
+           };
+           FlexibleSUSY`LowScaleInput  = FlexibleSUSY`LowScaleInput  /. backwardsCompatRules;
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
 
            (* search for unfixed parameters *)
            Constraint`CheckConstraint[FlexibleSUSY`LowScaleInput, "LowScaleInput"];
@@ -2410,9 +2414,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
                lesHouchesInputParameterReplacementRules;
-
-           numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
-           numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
 
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
