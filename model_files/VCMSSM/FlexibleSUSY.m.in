@@ -15,7 +15,7 @@ EXTPAR = {
    {1, TBGuess}
 };
 
-FSExtraParameters = {
+FSAuxiliaryParameters = {
    {vMSSM, {1}}
 };
 
