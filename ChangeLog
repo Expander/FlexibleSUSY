@@ -76,6 +76,9 @@ FlexibleSUSY-1.7.2 [not released yet]
    very large SUSY scales.  In such a case FlexibleSUSY[23] could be
    set to 0 to suppress the calculation of the non-SM pole masses.
 
+ * Feature (commit 998f11e): Slightly improved speed of the RG
+   running.
+
  * Change (commit 189f508): Speed-up the calculation of the 2L Higgs
    mass corrections in the MSSM and NMSSM, if multi-threading is used,
    by locking the mutex only for the O(at*at) corrections.
@@ -83,9 +86,6 @@ FlexibleSUSY-1.7.2 [not released yet]
  * Change: The limits sin(2*theta) = 0 and m_stop1 = m_stop2 have been
    implemented for the 2L O(at*as) Higgs pole mass corrections in the
    MSSM.
-
- * Feature (commit 998f11e): Slightly improved speed of the RG
-   running.
 
  * Bugfix (commit c35dcb2): Fix linking problem of LibraryLink on Mac.
 
