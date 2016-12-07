@@ -63,11 +63,11 @@ typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen
 } // anonymous namespace
 
 /**
- * Calculates the one-loop beta function of @parameterName@.
+ * Calculates the 1-loop beta function of @parameterName@.
  *
- * @return one-loop beta function
+ * @return 1-loop beta function
  */
-@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_one_loop(const Soft_traces& soft_traces) const
+@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_1_loop(const Soft_traces& soft_traces) const
 {
 @localDeclOneLoop@
 
@@ -79,11 +79,11 @@ typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen
 }
 
 /**
- * Calculates the two-loop beta function of @parameterName@.
+ * Calculates the 2-loop beta function of @parameterName@.
  *
- * @return two-loop beta function
+ * @return 2-loop beta function
  */
-@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_two_loop(const Soft_traces& soft_traces) const
+@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_2_loop(const Soft_traces& soft_traces) const
 {
 @localDeclTwoLoop@
 
@@ -95,11 +95,11 @@ typename Eigen::MatrixBase<Derived>::PlainObject operator-(double n, const Eigen
 }
 
 /**
- * Calculates the three-loop beta function of @parameterName@.
+ * Calculates the 3-loop beta function of @parameterName@.
  *
- * @return three-loop beta function
+ * @return 3-loop beta function
  */
-@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_three_loop(const Soft_traces& soft_traces) const
+@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_3_loop(const Soft_traces& soft_traces) const
 {
    DEFINE_PROJECTOR(3,3,3,3)
 

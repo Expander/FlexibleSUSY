@@ -57,13 +57,13 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
     Module[{result = ""},
            (result = result <> CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_one_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
+                     "_1_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_two_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
+                     "_2_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_three_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
+                     "_3_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
            Return[result];
           ];
 
@@ -212,58 +212,46 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             Return[{localDecl, betaStr}];
            ];
 
-CreateBetaFunctionCall[betaFunction_BetaFunction] :=
-     Module[{beta1L, beta2L = "", beta3L = "", betaName = "", name = "",
-             oneLoopBetaStr, cType, localDecl = "",
-             twoLoopBetaStr, threeLoopBetaStr, type = ErrorType},
-            name          = ToValidCSymbolString[GetName[betaFunction]];
-            type          = GetType[betaFunction];
-            ctype         = CConversion`CreateCType[type];
-            betaName      = "beta_" <> name;
-            localDecl     = ctype <> " " <> CConversion`SetToDefault[betaName, type];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 0,
-              oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop(TRACE_STRUCT)";
-              beta1L = betaName <> " += " <> oneLoopBetaStr <> ";\n";
+DeclareBetaFunction[betaFunction_BetaFunction] :=
+    Module[{name, betaName, type, ctype},
+           name = ToValidCSymbolString[GetName[betaFunction]];
+           betaName = "beta_" <> name;
+           type = GetType[betaFunction];
+           ctype = CConversion`CreateCType[type];
+           ctype <> " " <> CConversion`SetToDefault[betaName, type]
+          ];
+
+CreateBetaFunctionCall[betaFunction_BetaFunction, loopOrder_Integer] :=
+    Module[{name, betaName, result = ""},
+           If[Length[GetAllBetaFunctions[betaFunction]] >= loopOrder,
+              name = ToValidCSymbolString[GetName[betaFunction]];
+              betaName = "beta_" <> name;
+              result = betaName <> " += " <>
+                       "calc_" <> betaName <> "_" <> ToString[loopOrder] <> "_loop(TRACE_STRUCT);\n";
              ];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 1,
-              twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
-              beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
-             ];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 2,
-              threeLoopBetaStr = "calc_beta_" <> name <> "_three_loop(TRACE_STRUCT)";
-              beta3L = betaName <> " += " <> threeLoopBetaStr <> ";\n";
-             ];
-            Return[{localDecl, beta1L, beta2L, beta3L}];
+           result
           ];
 
 CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
-    Module[{def = "",
-            localDecl = "", beta1L = "", beta2L = "", beta3L = "",
-            allDecl = "", allBeta = "",
-            allBeta1L = "", allBeta2L = "", allBeta3L = "", i, inputParsDecl},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               {localDecl, beta1L, beta2L, beta3L} = CreateBetaFunctionCall[betaFunctions[[i]]];
-               allDecl = allDecl <> localDecl;
-               allBeta1L = allBeta1L <> beta1L;
-               allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
-               allBeta3L = allBeta3L <> TextFormatting`IndentText[beta3L];
-              ];
-           allBeta = allDecl <> "\n" <>
-                     "if (get_loops() > 0) {\n" <>
-                     TextFormatting`IndentText[
-                         "const auto TRACE_STRUCT = CALCULATE_TRACES();\n\n" <>
-                         allBeta1L <> "\n" <>
-                         "if (get_loops() > 1) {\n" <>
-                         allBeta2L <> "\n" <>
-                         TextFormatting`IndentText[
-                             "if (get_loops() > 2) {\n" <>
-                             allBeta3L <>
-                             "\n}"
-                         ] <>
-                         "\n}"
-                     ] <>
-                     "\n}\n";
-           Return[allBeta];
+    Module[{allBeta1L, allBeta2L, allBeta3L},
+           allBeta1L = StringJoin[CreateBetaFunctionCall[#,1]& /@ betaFunctions];
+           allBeta2L = TextFormatting`IndentText @ StringJoin[CreateBetaFunctionCall[#,2]& /@ betaFunctions];
+           allBeta3L = TextFormatting`IndentText @ StringJoin[CreateBetaFunctionCall[#,3]& /@ betaFunctions];
+           StringJoin[DeclareBetaFunction /@ betaFunctions] <> "\n" <>
+           "if (get_loops() > 0) {\n" <>
+           TextFormatting`IndentText[
+               "const auto TRACE_STRUCT = CALCULATE_TRACES();\n\n" <>
+               allBeta1L <> "\n" <>
+               "if (get_loops() > 1) {\n" <>
+               allBeta2L <> "\n" <>
+               TextFormatting`IndentText[
+                   "if (get_loops() > 2) {\n" <>
+                   allBeta3L <>
+                   "\n}"
+               ] <>
+               "\n}"
+           ] <>
+           "\n}\n"
           ];
 
 (* Converts SARAH beta functions to our own format.
