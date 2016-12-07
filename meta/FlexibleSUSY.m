@@ -487,6 +487,12 @@ CheckModelFileSettings[] :=
                     " of model parameters chosen to be output of the EWSB eqs."];
               Quit[1];
              ];
+           If[Head[FlexibleSUSY`EWSBInitialGuess] =!= List,
+              FlexibleSUSY`EWSBInitialGuess = {};
+             ];
+           If[Head[FlexibleSUSY`EWSBSubstitutions] =!= List,
+              FlexibleSUSY`EWSBSubstitutions = {};
+             ];
            If[Head[FlexibleSUSY`FSExtraInputParameters] =!= List,
               Print["Error: FSExtraInputParameters has to be set to a list!"];
               Quit[1];
