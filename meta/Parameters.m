@@ -57,13 +57,13 @@ GuessExtraParameterType::usage="returns a guess for the type of the parameter";
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
 IsRealExpression::usage="";
-IsMatrix::usage="returns true if parameter is a matrix";
-IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
-IsTensor::usage="returns true if parameter is a matrix";
+IsMatrix::usage="returns True if parameter is a matrix";
+IsSymmetricMatrixParameter::usage="returns True if parameter is a matrix";
+IsTensor::usage="returns True if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
-IsIndex::usage="returns true if given symbol is an index";
+IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
 IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
 
@@ -358,10 +358,10 @@ IsScalar[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 1 || Length[SARAH`getDimParameters[sym]] == 0;
 
 IsScalar[sym_?IsInputParameter] :=
-   MatchQ[GetType[sym], CConversion`ScalarType[_]];
+    MatchQ[GetType[sym], CConversion`ScalarType[_]];
 
 IsScalar[sym_?IsExtraParameter] :=
-   MatchQ[GetType[sym], CConversion`ScalarType[_]];
+    MatchQ[GetType[sym], CConversion`ScalarType[_]];
 
 IsMatrix[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsMatrix[sym];
@@ -370,10 +370,10 @@ IsMatrix[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 2;
 
 IsMatrix[sym_?IsInputParameter] :=
-   MatchQ[GetType[sym], CConversion`MatrixType[__]];
+    MatchQ[GetType[sym], CConversion`MatrixType[__]];
 
 IsMatrix[sym_?IsExtraParameter] :=
-   MatchQ[GetType[sym], CConversion`MatrixType[__]];
+    MatchQ[GetType[sym], CConversion`MatrixType[__]];
 
 IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsSymmetricMatrixParameter[sym];
@@ -385,10 +385,10 @@ IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
     IsTensor[sym];
 
 IsTensor[sym_?IsInputParameter] :=
-   MatchQ[GetType[sym], CConversion`TensorType[_]];
+    MatchQ[GetType[sym], CConversion`TensorType[_]];
 
 IsTensor[sym_?IsExtraParameter] :=
-   MatchQ[GetType[sym], CConversion`TensorType[_]];
+    MatchQ[GetType[sym], CConversion`TensorType[_]];
 
 IsTensor[sym_] :=
     Length[SARAH`getDimParameters[sym]] > 2;
@@ -553,16 +553,10 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
-GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+GetTypeFromDimension[sym_, {dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
     If[IsRealParameter[sym],
-       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3],
-       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3]
-      ];
-
-GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
-    If[IsRealParameter[sym],
-       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4],
-       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3, num4]
+       CConversion`TensorType[CConversion`realScalarCType, dims],
+       CConversion`TensorType[CConversion`complexScalarCType, dims]
       ];
 
 GetRealTypeFromDimension[{}] :=
@@ -580,11 +574,8 @@ GetRealTypeFromDimension[{num_?NumberQ}] :=
 GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
     CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
 
-GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
-    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3];
-
-GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
-    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
+GetRealTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`realScalarCType, dims];
 
 GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
@@ -601,7 +592,7 @@ GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
 GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
+    GetType[sym]
 
 GetParameterDimensions[sym_ /; (IsInputParameter[sym] || IsExtraParameter[sym])] :=
     Module[{type},
