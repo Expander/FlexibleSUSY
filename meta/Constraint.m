@@ -40,6 +40,8 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
           Parameters`IsPhase[parameter],
           Parameters`SetPhase[parameter, value, modelName],
+          Parameters`IsExtraParameter[parameter],
+          Parameters`SetParameter[parameter, value, modelName <> "->"],
           True,
           Print["Error: ", parameter, " is neither a model nor an input parameter!"];
           ""
