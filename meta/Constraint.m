@@ -472,12 +472,9 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
 CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
-DefineParameter[{parameter_, type_}] :=
-    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
-
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
-           (result = result <> DefineParameter[#])& /@ inputParameters;
+           (result = result <> Parameters`CreateParameterDefinition[#])& /@ inputParameters;
            Return[result];
           ];
 

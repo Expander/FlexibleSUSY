@@ -7,6 +7,7 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
 FindSymbolDef::usage="";
 
+CreateParameterDefinition::usage="";
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterSARAHNames::usage="";
@@ -680,6 +681,15 @@ ApplyGUTNormalization[] :=
               ];
            Return[rules];
           ];
+
+CreateParameterDefinition[par_] :=
+    CConversion`CreateCType[GetType[par]] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+CreateParameterDefinition[{par_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+CreateParameterDefinition[{par_, block_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
 
 CreateSetAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
