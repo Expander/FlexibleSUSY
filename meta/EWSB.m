@@ -1,6 +1,9 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
 
+GetLinearlyIndependentEqs::"Removes linearly dependent EWSB equations
+from a list of equations";
+
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
 phases / signs."
 
@@ -69,6 +72,17 @@ AppearsNotInEquation[parameter_, equation_] :=
 
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
+
+GetLinearlyIndependentEqs[eqs_List, parameters_List, substitutions_List:{}] :=
+    Module[{eqsToSolve, indepEqsToSolve, eqsToKeep},
+           If[substitutions =!= {},
+              eqsToSolve = eqs /. (Rule[#[[1]], #[[2]]]& /@ substitutions);,
+              eqsToSolve = eqs;
+             ];
+           indepEqsToSolve = Parameters`FilterOutLinearDependentEqs[eqsToSolve, parameters];
+           eqsToKeep = Position[eqsToSolve, p_ /; MemberQ[indepEqsToSolve, p]];
+           Extract[eqs, eqsToKeep]
+          ];
 
 CreateEWSBEqPrototype[higgs_] :=
     Module[{result = "", i, ctype},
