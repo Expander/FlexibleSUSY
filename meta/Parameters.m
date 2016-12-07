@@ -282,9 +282,35 @@ FindSymbolDef[sym_, opt_:DependenceNum] :=
            Return[symDef];
           ];
 
+FindAllParametersFromList[expr_, parameters_List] :=
+    Module[{symbols, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           (* find all parameters with SARAH head *)
+           symbols = DeleteDuplicates[Flatten[
+               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[parameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[parameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[parameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[parameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[parameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[parameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[parameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[parameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
+               }]];
+           (* remove parameters found from compactExpr *)
+           compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
+           (* find all parameters without SARAH head in compactExpr *)
+           symbols = Join[symbols,
+               { Cases[compactExpr, a_Symbol /; MemberQ[parameters,a], {0,Infinity}],
+                 Cases[compactExpr, a_[__] /; MemberQ[parameters,a] :> a, {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[parameters,FlexibleSUSY`M[a]], {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[parameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+               }];
+           DeleteDuplicates[Flatten[symbols]]
+          ];
+
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
-    Module[{symbols, compactExpr, allParameters, allOutPars},
+    Module[{allParameters, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
@@ -294,28 +320,38 @@ FindAllParameters[expr_] :=
                Join[allModelParameters, allOutPars,
                     GetInputParameters[], Phases`GetArg /@ allPhases,
                     GetDependenceSPhenoSymbols[], GetExtraParameters[]]];
-           compactExpr = RemoveProtectedHeads[expr];
-           (* find all model parameters with SARAH head *)
-           symbols = DeleteDuplicates[Flatten[
-               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
-               }]];
-           (* remove parameters found from compactExpr *)
-           compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
-           (* find all model parameters without SARAH head in compactExpr *)
-           symbols = Join[symbols,
-               { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
-                 Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutPars,FlexibleSUSY`M[a]], {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutPars,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-               }];
-           DeleteDuplicates[Flatten[symbols]]
+           FindAllParametersFromList[expr, allParameters]
+          ];
+
+FindAllParametersClassified[expr_] :=
+    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
+            inputPars, modelPars, outputPars, extraPars,
+            poleMasses, phases, depNum, allOutPars},
+           allOutPars = DeleteDuplicates[Flatten[
+               Join[allOutputParameters,
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
+                   ]]];
+           poleMasses = {
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+                        };
+           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetInputParameters[],#])&]];
+           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
+           phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
+           extraPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetExtraParameters[],#])&]];
+           {
+               FSModelParameters -> modelPars,
+               FSInputParameters -> inputPars,
+               FSOutputParameters -> outputPars,
+               FSPhysicalOutputParameters -> poleMasses,
+               FSPhases -> phases,
+               FSDerivedParameters -> depNum,
+               FSExtraParameters -> extraPars
+           }
           ];
 
 IsScalar[sym_] :=
@@ -974,37 +1010,6 @@ PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
 
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
-
-FindAllParametersClassified[expr_] :=
-    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
-            inputPars, modelPars, outputPars, extraPars,
-            poleMasses, phases, depNum, allOutPars},
-           allOutPars = DeleteDuplicates[Flatten[
-               Join[allOutputParameters,
-                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
-                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
-                   ]]];
-           poleMasses = {
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-                        };
-           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
-           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetInputParameters[],#])&]];
-           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
-           phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
-           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
-           extraPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetExtraParameters[],#])&]];
-           {
-               FSModelParameters -> modelPars,
-               FSInputParameters -> inputPars,
-               FSOutputParameters -> outputPars,
-               FSPhysicalOutputParameters -> poleMasses,
-               FSPhases -> phases,
-               FSDerivedParameters -> depNum,
-               FSExtraParameters -> extraPars
-           }
-          ];
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", pars, inputSymbols, modelPars, outputPars,
