@@ -52,6 +52,7 @@ GetParameterDimensions::usage="";
 GetThirdGeneration::usage="returns parameter with third generation index";
 
 GuessInputParameterType::usage="returns a guess for the type of the parameter";
+GuessExtraParameterType::usage="returns a guess for the type of the parameter";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -162,10 +163,81 @@ allModelParameters = {};
 allOutputParameters = {};
 allPhases = {};
 
-SetInputParameters[pars_List] := allInputParameters = DeleteDuplicates[pars];
-AddInputParameters[pars_List] := allInputParameters = DeleteDuplicates[Utils`ForceJoin[allInputParameters, pars]];
-SetExtraParameters[pars_List] := allExtraParameters = DeleteDuplicates[pars];
-AddExtraParameters[pars_List] := allExtraParameters = DeleteDuplicates[Utils`ForceJoin[allExtraParameters, pars]];
+GuessInputParameterType[Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessInputParameterType[par_] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
+GuessExtraParameterType[Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessExtraParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessExtraParameterType[par_] :=
+    If[IsRealParameter[par],
+       CConversion`ScalarType[CConversion`realScalarCType],
+       CConversion`ScalarType[CConversion`complexScalarCType]
+      ];
+
+UpdateParameterInfo[currentPars_List, {par_, block_, type_}] :=
+    Module[{parNames, pos, updatedPars},
+           parNames = #[[1]]& /@ currentPars;
+           If[!MemberQ[parNames, par],
+              updatedPars = Utils`ForceJoin[currentPars, {{par, block, type}}];,
+              pos = Position[parNames, par, 1];
+              updatedPars = ReplacePart[currentPars, pos -> {par, block, type}];
+             ];
+           If[CConversion`GetElementType[type] === CConversion`realScalarCType ||
+              CConversion`GetElementType[type] === CConversion`integerScalarCType,
+              AddRealParameter[par];
+             ];
+           Return[updatedPars];
+          ];
+
+UpdateParameterInfo[currentPars_List, {par_, type_}] :=
+    Module[{parNames, pos, updatedPars},
+           parNames = #[[1]]& /@ currentPars;
+           If[!MemberQ[parNames, par],
+              updatedPars = Utils`ForceJoin[currentPars, {{par, type}}];,
+              pos = Position[parNames, par, 1];
+              updatedPars = ReplacePart[currentPars, pos -> {par, type}];
+             ];
+           If[CConversion`GetElementType[type] === CConversion`realScalarCType ||
+              CConversion`GetElementType[type] === CConversion`integerScalarCType,
+              AddRealParameter[par];
+             ];
+           Return[updatedPars];
+          ];
+
+AddInputParameterInfo[{par_, block_, type_}] :=
+    allInputParameters = UpdateParameterInfo[allInputParameters, {par, block, type}];
+
+AddInputParameterInfo[par_] :=
+    AddInputParameterInfo[{par, {}, GuessInputParameterType[par]}];
+
+SetInputParameters[pars_List] :=
+    (
+     allInputParameters = {};
+     AddInputParameterInfo /@ pars;
+    )
+
+AddInputParameters[pars_List] := AddInputParameterInfo /@ pars;
+
+AddExtraParameterInfo[{par_, type_}] :=
+    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, type}];
+
+AddExtraParameterInfo[par_] :=
+    AddExtraParameterInfo[{par, GuessExtraParameterType[par]}];
+
+SetExtraParameters[pars_List] :=
+    (
+     allExtraParameters = {};
+     AddExtraParameterInfo /@ pars;
+    )
+
+AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
@@ -179,13 +251,6 @@ GetExtraParameters[] := First /@ allExtraParameters;
 GetExtraParametersAndTypes[] := allExtraParameters;
 
 additionalRealParameters = {};
-
-GuessInputParameterType[Sign[par_]] :=
-    CConversion`ScalarType[CConversion`integerScalarCType];
-GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
-    CConversion`ScalarType[CConversion`complexScalarCType];
-GuessInputParameterType[par_] :=
-    CConversion`ScalarType[CConversion`realScalarCType];
 
 AddRealParameter[parameter_List] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, parameter]];
