@@ -25,6 +25,10 @@ FlexibleSUSY 2.0.0 [not released yet]
    given parameter point.  The third one formats the output according
    to the SLHA standard.
 
+ * Feature: 3-loop beta functions (if available) are calculated in
+   parallel if multi-threading is enabled.  This leads to a ~25% speed
+   improvement in the MSSM when 3-loop RG running is used.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
@@ -54,6 +58,10 @@ FlexibleSUSY 2.0.0 [not released yet]
 
       { <model> -> { model parameters ... },
         StandardModel -> { ... } }
+
+ * Change: In multi-threading mode pole masses are calculated using a
+   thread pool instead of spawning threads manually.  This avoids over
+   subscription on machines with very few CPU cores.
 
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable

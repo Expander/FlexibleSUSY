@@ -33,9 +33,9 @@
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
 #include "config.h"
-#include "parallel.hpp"
 #include "pv.hpp"
 #include "raii.hpp"
+#include "thread_pool.hpp"
 #include "functors.hpp"
 #include "ew_input.hpp"
 #include "weinberg_angle.hpp"
@@ -643,24 +643,18 @@ void Standard_model::calculate_DRbar_parameters()
 void Standard_model::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   auto fut_MVG = run_async([this] () { calculate_MVG_pole(); });
-   auto fut_MFv = run_async([this] () { calculate_MFv_pole(); });
-   auto fut_Mhh = run_async([this] () { calculate_Mhh_pole(); });
-   auto fut_MVP = run_async([this] () { calculate_MVP_pole(); });
-   auto fut_MVZ = run_async([this] () { calculate_MVZ_pole(); });
-   auto fut_MFd = run_async([this] () { calculate_MFd_pole(); });
-   auto fut_MFu = run_async([this] () { calculate_MFu_pole(); });
-   auto fut_MFe = run_async([this] () { calculate_MFe_pole(); });
-   auto fut_MVWp = run_async([this] () { calculate_MVWp_pole(); });
-   fut_MVG.get();
-   fut_MFv.get();
-   fut_Mhh.get();
-   fut_MVP.get();
-   fut_MVZ.get();
-   fut_MFd.get();
-   fut_MFu.get();
-   fut_MFe.get();
-   fut_MVWp.get();
+   Thread_pool tp(std::min(std::thread::hardware_concurrency(), 9u));
+
+   tp.run_task([this] () { calculate_MVG_pole(); });
+   tp.run_task([this] () { calculate_MFv_pole(); });
+   tp.run_task([this] () { calculate_Mhh_pole(); });
+   tp.run_task([this] () { calculate_MVP_pole(); });
+   tp.run_task([this] () { calculate_MVZ_pole(); });
+   tp.run_task([this] () { calculate_MFd_pole(); });
+   tp.run_task([this] () { calculate_MFu_pole(); });
+   tp.run_task([this] () { calculate_MFe_pole(); });
+   tp.run_task([this] () { calculate_MVWp_pole(); });
+
 #else
 
    calculate_MVG_pole();

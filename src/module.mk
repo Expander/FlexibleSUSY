@@ -16,6 +16,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
 		$(DIR)/error.cpp \
+		$(DIR)/global_thread_pool.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/gsl_vector.cpp \
@@ -75,6 +76,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
+		$(DIR)/global_thread_pool.hpp \
 		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
@@ -124,6 +126,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
 		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/sum.hpp \
+		$(DIR)/thread_pool.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \

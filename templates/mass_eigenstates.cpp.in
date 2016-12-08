@@ -40,9 +40,9 @@
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
 #include "config.h"
-#include "parallel.hpp"
 #include "pv.hpp"
 #include "raii.hpp"
+#include "thread_pool.hpp"
 #include "functors.hpp"
 
 @twoLoopHiggsHeaders@
@@ -547,8 +547,6 @@ void CLASSNAME::calculate_DRbar_parameters()
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
-   auto obj_ptr = this;
-
 @callAllLoopMassFunctionsInThreads@
 #else
 @callAllLoopMassFunctions@

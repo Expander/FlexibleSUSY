@@ -12,7 +12,6 @@ CreateRunningDRbarMassFunctions::usage="";
 CallCalculateDRbarMass::usage="";
 CallPoleMassFunction::usage="";
 CallThreadedPoleMassFunction::usage="";
-JoinLoopMassFunctionThread::usage="";
 CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
@@ -792,24 +791,14 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
-    Module[{massStr},
-           massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "fut_" <> massStr <> " = run_async([obj_ptr] () { obj_ptr->" <>
-           CreateLoopMassFunctionName[particle] <> "(); });\n"
-          ];
-
-DefineFuture[particle_Symbol] :=
-    "std::future<void> fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ";\n";
-
-JoinLoopMassFunctionThread[particle_Symbol] :=
-    Module[{name = "fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]]},
-           "if (" <> name <> ".valid()) " <> name <> ".get();\n"
-          ];
+CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this", pool_:"tp"] :=
+    pool <> ".run_task([" <> ptr <> "] () { " <>
+    If[ptr === "this", "", ptr <> "->"] <>
+    CreateLoopMassFunctionName[particle] <> "(); });\n";
 
 CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy,
-            callSM, result, joinSmThreads, joinSusyThreads},
+            callSM, result},
            particles = GetLoopCorrectedParticles[states];
            smParticles = Select[particles, SARAH`SMQ[#]&];
            susyParticles = Complement[particles, smParticles];
@@ -825,17 +814,13 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
               ,
               callSusy = StringJoin[CallThreadedPoleMassFunction /@ susyParticles];
               callSM   = StringJoin[CallThreadedPoleMassFunction /@ smParticles];
-              joinSmThreads   = StringJoin[JoinLoopMassFunctionThread /@ smParticles];
-              joinSusyThreads = StringJoin[JoinLoopMassFunctionThread /@ susyParticles];
-              result = StringJoin[DefineFuture /@ particles] <> "\n" <>
+              result = "Thread_pool tp(std::min(std::thread::hardware_concurrency(), " <> ToString[Length[susyParticles] + Length[smParticles]] <> "u));\n\n" <>
                        "if (calculate_bsm_pole_masses) {\n" <>
                        IndentText[callSusy] <>
                        "}\n\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
-                       "}\n\n" <>
-                       joinSusyThreads <>
-                       joinSmThreads;
+                       "}\n";
              ];
            result
           ];
