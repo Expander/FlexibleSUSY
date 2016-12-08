@@ -16,13 +16,13 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level )
 
    // initial guess
    const double vev = Sqrt(Sqr(vcmssm.get_vd()) + Sqr(vcmssm.get_vu()));
-   vcmssm.set_Mu(100.);
+   vcmssm.set_Mu(500.);
    vcmssm.set_vu(vev * Sin(ArcTan(input.TBGuess)));
    vcmssm.set_vd(vev * Cos(ArcTan(input.TBGuess)));
 
    vcmssm.set_ewsb_iteration_precision(precision);
    const int vcmssm_error = vcmssm.solve_ewsb_tree_level();
-
+   
    BOOST_CHECK_EQUAL(vcmssm_error, 0);
 
    BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_1(), precision);
@@ -113,8 +113,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_2), 1.0e-12);
 
-   BOOST_CHECK_SMALL(cmssm.get_ewsb_eq_hh_1() - Re(cmssm_tadpole_hh_1), 1.0);
-   BOOST_CHECK_SMALL(cmssm.get_ewsb_eq_hh_2() - Re(cmssm_tadpole_hh_2), 1.0);
+   BOOST_CHECK_SMALL(cmssm.get_ewsb_eq_hh_1() - Re(cmssm_tadpole_hh_1), 2.0);
+   BOOST_CHECK_SMALL(cmssm.get_ewsb_eq_hh_2() - Re(cmssm_tadpole_hh_2), 2.0);
 
    const double cmssm_Mu_soln = cmssm.get_Mu();
    const double cmssm_BMu_soln = cmssm.get_BMu();

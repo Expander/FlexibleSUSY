@@ -65,7 +65,7 @@ void setup_VCMSSM_const(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
    m.set_mu2(mm0);
    m.set_me2(mm0b);
    m.set_mHd2(Sqr(m0));
-   m.set_mHu2(Sqr(m0));
+   m.set_mHu2(-0.5 * Sqr(m0));
    m.set_TYu(a0 * Yu);
    m.set_TYd(a0 * Yd);
    m.set_TYe(a0 * Ye);
@@ -82,7 +82,7 @@ void setup_VCMSSM(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
    input.m12 = 500.;
    input.Azero = 0.;
    input.SignMu = 1.;
-   input.TBGuess = 10.0;
+   input.TBGuess = 5.0;
 
    setup_VCMSSM_const(m, input);
 }
