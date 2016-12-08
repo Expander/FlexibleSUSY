@@ -72,7 +72,7 @@ void setup_VCMSSM_const(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
    m.set_BMu((a0 + m0) * m.get_Mu());
    m.set_vu(vu);
    m.set_vd(vd);
-   m.set_vev(vev);
+   m.set_vMSSM(vev);
 }
 
 void setup_VCMSSM(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
