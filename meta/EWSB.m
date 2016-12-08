@@ -874,7 +874,7 @@ SetModelParametersFromEWSB[substitutions_List] :=
            Parameters`CreateLocalConstRefsForInputParameters[#[[2]]& /@ substitutions, "LOCALINPUT"] <> result
           ];
 
-ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model"] :=
+ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
     Module[{pars, result = ""},
            pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ substitutions]];
            pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
