@@ -389,10 +389,10 @@ IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
     IsTensor[sym];
 
 IsTensor[sym_?IsInputParameter] :=
-    MatchQ[GetType[sym], CConversion`TensorType[_]];
+    MatchQ[GetType[sym], CConversion`TensorType[__]];
 
 IsTensor[sym_?IsExtraParameter] :=
-    MatchQ[GetType[sym], CConversion`TensorType[_]];
+    MatchQ[GetType[sym], CConversion`TensorType[__]];
 
 IsTensor[sym_] :=
     Length[SARAH`getDimParameters[sym]] > 2;
