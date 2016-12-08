@@ -65,6 +65,7 @@ using namespace @ModelName@_info;
 #define INPUT(parameter) model.get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
+#define EXTRAPARAMETER(parameter) model.get_##parameter()
 
 #define HIGGS_2LOOP_CORRECTION_AT_AS     two_loop_corrections.higgs_at_as
 #define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
@@ -265,6 +266,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    auto ewsb_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
+@applyEWSBSubstitutions@
       if (model.get_ewsb_loop_order() > 0)
          model.calculate_DRbar_masses();
 
@@ -274,6 +276,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    auto tadpole_stepper = [model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
+@applyEWSBSubstitutions@
       if (model.get_ewsb_loop_order() > 0)
          model.calculate_DRbar_masses();
 
@@ -348,6 +351,7 @@ void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
+@setModelParametersFromEWSB@
    calculate_DRbar_masses();
 }
 
