@@ -215,6 +215,9 @@ UpdateParameterInfo[currentPars_List, {par_, type_}] :=
 AddInputParameterInfo[{par_, block_, type_}] :=
     allInputParameters = UpdateParameterInfo[allInputParameters, {par, block, type}];
 
+AddInputParameterInfo[{par_, type_}] :=
+    allInputParameters = UpdateParameterInfo[allInputParameters, {par, {}, type}];
+
 AddInputParameterInfo[par_] :=
     AddInputParameterInfo[{par, {}, GuessInputParameterType[par]}];
 
