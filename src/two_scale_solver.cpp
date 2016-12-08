@@ -161,7 +161,7 @@ void RGFlow<Two_scale>::run_sliders()
       s->slide();
    }
 
-   VERBOSE_MSG("> running slides finished");
+   VERBOSE_MSG("> running sliders finished");
 }
 
 /**
