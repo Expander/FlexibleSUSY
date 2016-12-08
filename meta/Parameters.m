@@ -443,6 +443,7 @@ IsRealParameter[FlexibleSUSY`M[_]] := True;
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
     (IsInputParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
+    (IsExtraParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
     MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
 IsComplexParameter[sym_] :=
