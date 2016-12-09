@@ -91,6 +91,7 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
+@extraParametersInit@
 {
 }
 
@@ -623,6 +624,7 @@ void CLASSNAME::clear_DRbar_parameters()
 {
 @clearOutputParameters@
 @clearPhases@
+@clearExtraParameters@
 }
 
 void CLASSNAME::clear_problems()
