@@ -885,16 +885,24 @@ CreateEWSBParametersInitialization[parameters_List, array_String] :=
     StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
 
 SetModelParametersFromEWSB[substitutions_List] :=
-    Module[{result = ""},
-           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], Parameters`GetType[#[[1]]]])& /@ substitutions;
-           Parameters`CreateLocalConstRefsForInputParameters[#[[2]]& /@ substitutions, "LOCALINPUT"] <> result
+    Module[{subs = substitutions, result = ""},
+           subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
+                                        Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]]],
+                            RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
+                                        Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], Parameters`GetType[#[[1]]]])& /@ subs;
+           Parameters`CreateLocalConstRefsForInputParameters[#[[2]]& /@ subs, "LOCALINPUT"] <> result
           ];
 
 ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
-    Module[{pars, result = ""},
+    Module[{pars, subs = substitutions, result = ""},
            pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ substitutions]];
            pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
-           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ substitutions;
+           subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
+                                        Global`INPUT[CConversion`ToValidCSymbol[Sign[p]]]],
+                            RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
+                                        Global`INPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ subs;
            Parameters`CreateLocalConstRefs[pars] <> result
           ];
 
