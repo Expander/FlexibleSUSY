@@ -75,8 +75,6 @@ using namespace @ModelName@_info;
 
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
-   , number_of_ewsb_iterations(100)
-   , number_of_mass_iterations(20)
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , calculate_sm_pole_masses(false)
@@ -142,24 +140,14 @@ const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
-void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
-{
-   number_of_ewsb_iterations = iterations;
-}
-
 std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
 {
-   return number_of_ewsb_iterations;
-}
-
-void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
-{
-   number_of_mass_iterations = iterations;
+   return static_cast<std::size_t>(std::abs(-log10(ewsb_iteration_precision) * 10));
 }
 
 std::size_t CLASSNAME::get_number_of_mass_iterations() const
 {
-   return number_of_mass_iterations;
+   return static_cast<std::size_t>(std::abs(-log10(precision) * 10));
 }
 
 void CLASSNAME::set_precision(double precision_)

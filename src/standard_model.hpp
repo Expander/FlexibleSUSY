@@ -125,10 +125,6 @@ public:
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
-   void set_number_of_ewsb_iterations(std::size_t);
-   void set_number_of_mass_iterations(std::size_t);
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
    void set_pole_mass_loop_order(unsigned);
    unsigned get_pole_mass_loop_order() const;
    void set_physical(const Standard_model_physical&);
@@ -567,8 +563,6 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   std::size_t number_of_ewsb_iterations;
-   std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
    unsigned pole_mass_loop_order;
    bool force_output;             ///< switch to force output of pole masses
@@ -579,6 +573,8 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    Physical_input input;
 
+   std::size_t get_number_of_ewsb_iterations() const;
+   std::size_t get_number_of_mass_iterations() const;
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);

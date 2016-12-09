@@ -85,8 +85,6 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.set_pole_mass_loop_order(this->model.get_pole_mass_loop_order());
    eft.set_ewsb_loop_order(this->model.get_ewsb_loop_order());
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
-   eft.set_number_of_ewsb_iterations(this->model.get_number_of_ewsb_iterations());
-   eft.set_number_of_mass_iterations(this->model.get_number_of_mass_iterations());
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
 
    susy_scale_constraint.clear();

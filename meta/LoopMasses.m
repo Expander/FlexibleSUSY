@@ -654,7 +654,8 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                   "diff = MaxRelDiff(" <> outputMomenta <> ", " <> inputMomenta <> ");\n" <>
                   inputMomenta <> " = " <> outputMomenta <> ";\n" <>
                   "iteration++;\n";
-           result = "unsigned iteration = 0;\n" <>
+           result = "const auto number_of_mass_iterations = get_number_of_mass_iterations();\n" <>
+                    "unsigned iteration = 0;\n" <>
                     "double diff = 0.0;\n" <>
                     "decltype(" <> massName <> ") " <>
                     inputMomenta  <> "(" <> massName <> "), " <>

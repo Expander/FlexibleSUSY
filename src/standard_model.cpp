@@ -153,8 +153,6 @@ const int Standard_model::numberOfParameters;
 
 Standard_model::Standard_model()
    : Beta_function()
-   , number_of_ewsb_iterations(100)
-   , number_of_mass_iterations(20)
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , force_output(false)
@@ -187,8 +185,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    double,3,3>& Yu_, const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<
    double,3,3>& Ye_, double mu2_, double v_)
    : Beta_function()
-   , number_of_ewsb_iterations(100)
-   , number_of_mass_iterations(20)
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , force_output(false)
@@ -247,24 +243,14 @@ const Two_loop_corrections& Standard_model::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
-void Standard_model::set_number_of_ewsb_iterations(std::size_t iterations)
-{
-   number_of_ewsb_iterations = iterations;
-}
-
 std::size_t Standard_model::get_number_of_ewsb_iterations() const
 {
-   return number_of_ewsb_iterations;
-}
-
-void Standard_model::set_number_of_mass_iterations(std::size_t iterations)
-{
-   number_of_mass_iterations = iterations;
+   return static_cast<std::size_t>(std::abs(-log10(ewsb_iteration_precision) * 10));
 }
 
 std::size_t Standard_model::get_number_of_mass_iterations() const
 {
-   return number_of_mass_iterations;
+   return static_cast<std::size_t>(std::abs(-log10(precision) * 10));
 }
 
 void Standard_model::set_precision(double precision_)
@@ -367,9 +353,9 @@ int Standard_model::solve_ewsb_iteratively()
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
-      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
-      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_ewsb_iterations, ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
+      std::unique_ptr<EWSB_solver>(new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, get_number_of_ewsb_iterations(), fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, get_number_of_ewsb_iterations(), ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLHybridS)),
+      std::unique_ptr<EWSB_solver>(new Root_finder<number_of_ewsb_equations>(tadpole_stepper, get_number_of_ewsb_iterations(), ewsb_iteration_precision, Root_finder<number_of_ewsb_equations>::GSLBroyden))
    };
 
    const auto x_init(ewsb_initial_guess());
@@ -4143,6 +4129,7 @@ void Standard_model::calculate_Mhh_pole()
       return;
 
    // diagonalization with high precision
+   const auto number_of_mass_iterations = get_number_of_mass_iterations();
    unsigned iteration = 0;
    double diff = 0.0;
    decltype(Mhh) old_Mhh(Mhh), new_Mhh(Mhh);
