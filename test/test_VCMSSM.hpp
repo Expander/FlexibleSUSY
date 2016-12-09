@@ -1,13 +1,13 @@
 #ifndef TEST_VCMSSM_H
 #define TEST_VCMSSM_H
 
-#include "VCMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_mass_eigenstates.hpp"
+#include "VCMSSM_mass_eigenstates.hpp"
 
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
-void setup_VCMSSM_const(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
+void setup_VCMSSM_const(flexiblesusy::VCMSSM_mass_eigenstates& m,
                          const flexiblesusy::VCMSSM_input_parameters& input)
 {
    using namespace flexiblesusy;
@@ -75,7 +75,7 @@ void setup_VCMSSM_const(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
    m.set_vMSSM(vev);
 }
 
-void setup_VCMSSM(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
+void setup_VCMSSM(flexiblesusy::VCMSSM_mass_eigenstates& m,
                   flexiblesusy::VCMSSM_input_parameters& input)
 {
    input.m0 = 125.;
@@ -87,9 +87,19 @@ void setup_VCMSSM(flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& m,
    setup_VCMSSM_const(m, input);
 }
 
-void match_CMSSM_to_VCMSSM(flexiblesusy::CMSSM<flexiblesusy::Two_scale>& cmssm,
-                           const flexiblesusy::VCMSSM<flexiblesusy::Two_scale>& vcmssm)
+void match_CMSSM_to_VCMSSM(flexiblesusy::CMSSM_mass_eigenstates& cmssm,
+                           const flexiblesusy::VCMSSM_mass_eigenstates& vcmssm)
 {
+   using namespace flexiblesusy;
+
+   const VCMSSM_input_parameters vcmssm_input(vcmssm.get_input());
+   CMSSM_input_parameters cmssm_input;
+   cmssm_input.m0 = vcmssm_input.m0;
+   cmssm_input.m12 = vcmssm_input.m12;
+   cmssm_input.Azero = vcmssm_input.Azero;
+   cmssm_input.SignMu = vcmssm_input.SignMu;
+   cmssm.set_input_parameters(cmssm_input);
+
    cmssm.set_scale(vcmssm.get_scale());
    cmssm.set_loops(vcmssm.get_loops());
    cmssm.set_g1(vcmssm.get_g1());
