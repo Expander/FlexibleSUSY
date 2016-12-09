@@ -83,10 +83,26 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
+ApplySubstitutionsToEqs[eqs_List, substitutions_List] :=
+    Module[{pars, parsWithoutHeads, uniqueRules, uniqueEqs, uniqueSubs, result},
+           pars = (#[[1]])& /@ substitutions;
+           parsWithoutHeads = Cases[pars, (Re | Im | SARAH`L | SARAH`B | SARAH`T | SARAH`Q)[p_] | p_ :> p];
+           uniqueRules = DeleteDuplicates @ Flatten[{
+               Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
+               Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
+               Rule[SARAH`T[#], CConversion`ToValidCSymbol[SARAH`T[#]]],
+               Rule[SARAH`Q[#], CConversion`ToValidCSymbol[SARAH`Q[#]]]
+           }& /@ parsWithoutHeads];
+           uniqueEqs = eqs /. uniqueRules;
+           uniqueSubs = substitutions /. uniqueRules;
+           result = uniqueEqs /. (Rule[#[[1]], #[[2]]]& /@ uniqueSubs);
+           result /. (Reverse /@ uniqueRules)
+          ];
+
 GetLinearlyIndependentEqs[eqs_List, parameters_List, substitutions_List:{}] :=
     Module[{eqsToSolve, indepEqsToSolve, eqsToKeep},
            If[substitutions =!= {},
-              eqsToSolve = eqs /. (Rule[#[[1]], #[[2]]]& /@ substitutions);,
+              eqsToSolve = ApplySubstitutionsToEqs[eqs, substitutions];,
               eqsToSolve = eqs;
              ];
            indepEqsToSolve = Parameters`FilterOutLinearDependentEqs[eqsToSolve, parameters];
@@ -617,7 +633,7 @@ ReduceSolution[solution_List] :=
 FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:"", substitutions_List:{}] :=
     Module[{eqsToSolve, solution, reducedSolution, freePhases},
            If[substitutions =!= {},
-              eqsToSolve = equations /. (Rule[#[[1]], #[[2]]]& /@ substitutions);,
+              eqsToSolve = ApplySubstitutionsToEqs[equations, substitutions];,
               eqsToSolve = equations;
              ];
            solution = FindSolution[eqsToSolve, parametersFixedByEWSB];
