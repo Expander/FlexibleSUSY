@@ -63,6 +63,11 @@ FlexibleSUSY 2.0.0 [not released yet]
    thread pool instead of spawning threads manually.  This avoids over
    subscription on machines with very few CPU cores.
 
+ * Change (commit b5cad9e): Automatically chose the maximum number of
+   EWSB and pole mass iterations based on the user-defined precision
+   goal.  This change leads to a performance improvement for some
+   parameter points where the EWSB equations cannot be fulfilled.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
