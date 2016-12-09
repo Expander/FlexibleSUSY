@@ -31,7 +31,7 @@ namespace flexiblesusy {
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT soft_traces
 #define TRACE_STRUCT_TYPE Soft_traces
-#define CALCULATE_TRACES() calc_soft_traces();
+#define CALCULATE_TRACES(l) calc_soft_traces(l);
 
 const int @ModelName@_soft_parameters::numberOfParameters;
 
@@ -57,21 +57,18 @@ Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
    return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta(unsigned loops) const
 {
 @beta@
 
-   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta());
+   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta(loops));
 
    return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta(unsigned loops) const
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
 {
-   @ModelName@_soft_parameters p(*this);
-   p.set_loops(loops);
-
-   return p.calc_beta();
+   return calc_beta(get_loops());
 }
 
 void @ModelName@_soft_parameters::clear()
@@ -105,19 +102,19 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& pars)
 @set@
 }
 
-@ModelName@_soft_parameters::Soft_traces @ModelName@_soft_parameters::calc_soft_traces() const
+@ModelName@_soft_parameters::Soft_traces @ModelName@_soft_parameters::calc_soft_traces(unsigned loops) const
 {
    Soft_traces soft_traces;
 
-   if (get_loops() > 0) {
+   if (loops > 0) {
 @calc1LTraces@
    }
 
-   if (get_loops() > 1) {
+   if (loops > 1) {
 @calc2LTraces@
    }
 
-   if (get_loops() > 2) {
+   if (loops > 2) {
 @calc3LTraces@
    }
 

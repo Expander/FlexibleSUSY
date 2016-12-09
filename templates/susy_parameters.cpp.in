@@ -32,7 +32,7 @@ namespace flexiblesusy {
 #define INPUT(parameter) input.parameter
 #define TRACE_STRUCT susy_traces
 #define TRACE_STRUCT_TYPE Susy_traces
-#define CALCULATE_TRACES() calc_susy_traces();
+#define CALCULATE_TRACES(l) calc_susy_traces(l);
 
 const int @ModelName@_susy_parameters::numberOfParameters;
 
@@ -64,20 +64,17 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
    return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
-@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(unsigned loops) const
 {
 @beta@
 
-   return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
+   return @ModelName@_susy_parameters(get_scale(), loops, get_thresholds(), input,
                     @betaParameterList@);
 }
 
-@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(unsigned loops) const
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
-   @ModelName@_susy_parameters p(*this);
-   p.set_loops(loops);
-
-   return p.calc_beta();
+   return calc_beta(get_loops());
 }
 
 void @ModelName@_susy_parameters::clear()
@@ -123,19 +120,19 @@ void @ModelName@_susy_parameters::set_input_parameters(const @ModelName@_input_p
    input = input_;
 }
 
-@ModelName@_susy_parameters::Susy_traces @ModelName@_susy_parameters::calc_susy_traces() const
+@ModelName@_susy_parameters::Susy_traces @ModelName@_susy_parameters::calc_susy_traces(unsigned loops) const
 {
    Susy_traces susy_traces;
 
-   if (get_loops() > 0) {
+   if (loops > 0) {
 @calc1LTraces@
    }
 
-   if (get_loops() > 1) {
+   if (loops > 1) {
 @calc2LTraces@
    }
 
-   if (get_loops() > 2) {
+   if (loops > 2) {
 @calc3LTraces@
    }
 

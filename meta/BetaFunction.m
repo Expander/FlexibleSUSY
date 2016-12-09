@@ -282,14 +282,14 @@ CreateBetaFunction[betaFunctions_List] :=
            (* only parallelization of 3L betas leads to a speed-up *)
            allBeta3LParallel = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,3,True];
            StringJoin[DeclareBetaFunction /@ betaFunctions] <> "\n" <>
-           "if (get_loops() > 0) {\n" <>
+           "if (loops > 0) {\n" <>
            TextFormatting`IndentText[
-               "const auto TRACE_STRUCT = CALCULATE_TRACES();\n\n" <>
+               "const auto TRACE_STRUCT = CALCULATE_TRACES(loops);\n\n" <>
                allBeta1L <> "\n" <>
-               "if (get_loops() > 1) {\n" <>
+               "if (loops > 1) {\n" <>
                allBeta2L <> "\n" <>
                TextFormatting`IndentText[
-                   "if (get_loops() > 2) {\n" <>
+                   "if (loops > 2) {\n" <>
                    "#ifdef ENABLE_THREADS\n" <>
                    allBeta3LParallel <>
                    "#else\n" <>
