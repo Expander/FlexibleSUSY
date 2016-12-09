@@ -17,19 +17,22 @@ EXTPAR = {
 
 FSAuxiliaryParameters = {
    {vMSSM, {1}},
-   {TanBeta, {1}}
+   {TanBeta, {1}},
+   {MuSq, {1}}
 };
 
 
 EWSBSubstitutions = {
    {vd, vMSSM Cos[ArcTan[TanBeta]]},
-   {vu, vMSSM Sin[ArcTan[TanBeta]]}
+   {vu, vMSSM Sin[ArcTan[TanBeta]]},
+   {\[Mu], Sign[\[Mu]] Sqrt[MuSq]}
 };
 
-EWSBOutputParameters = { TanBeta, \[Mu] };
+EWSBOutputParameters = { TanBeta, MuSq };
 
 EWSBInitialGuess = {
-   {TanBeta, vu / vd}
+   {TanBeta, vu / vd},
+   {MuSq, \[Mu]^2}
 };
 
 SUSYScale =  Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
