@@ -21,7 +21,6 @@ FSAuxiliaryParameters = {
    {MuSq, {1}}
 };
 
-
 EWSBSubstitutions = {
    {vd, vMSSM Cos[ArcTan[TanBeta]]},
    {vu, vMSSM Sin[ArcTan[TanBeta]]},
