@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level )
 
    vcmssm.set_ewsb_iteration_precision(precision);
    const int vcmssm_error = vcmssm.solve_ewsb_tree_level();
-   
+
    BOOST_CHECK_EQUAL(vcmssm_error, 0);
 
    BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_1(), precision);
@@ -30,6 +30,9 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level )
 
    const double vcmssm_Mu_soln = vcmssm.get_Mu();
    const double vcmssm_BMu = vcmssm.get_BMu();
+
+   // check that the EWSB solution respects the chosen sign of Mu
+   BOOST_CHECK_EQUAL(input.SignMu, Sign(vcmssm_Mu_soln));
 
    CMSSM<Two_scale> cmssm;
    match_CMSSM_to_VCMSSM(cmssm, vcmssm);
@@ -85,6 +88,9 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
 
    const double vcmssm_Mu_soln = vcmssm.get_Mu();
    const double vcmssm_BMu = vcmssm.get_BMu();
+
+   // check that the EWSB solution respects the chosen sign of Mu
+   BOOST_CHECK_EQUAL(vcmssm_input.SignMu, Sign(vcmssm_Mu_soln));
 
    CMSSM_input_parameters cmssm_input;
    cmssm_input.m12 = vcmssm_input.m12;
