@@ -362,6 +362,22 @@ TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
              Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
                                                    B[\[Mu]] -> x^2 - x y - z - 5}]];
 
+ewsbSubs = {
+   {\[Mu], Sign[\[Mu]] Sqrt[MuSqr]},
+   {B[\[Mu]], BMu0}
+};
+
+subEwsbOutputParameters = { MuSqr, BMu0 };
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+
+TestEquality[subFreePhases, {}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
+                                                   BMu0 -> x^2 - x y - z - 5}]];
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
 subEwsbEqs = {
    mHd2 + x,
    mHu2 + y
