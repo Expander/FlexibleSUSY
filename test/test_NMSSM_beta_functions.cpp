@@ -124,7 +124,7 @@ void test_beta_function_equality(const SoftParsNmssm& a, const NMSSM_soft_parame
    TEST_CLOSE(beta_a.displayMh2Squared(), beta_b.get_mHu2(), 2.0e-12);
    TEST_EQUALITY(beta_a.displayMsSquared(), beta_b.get_ms2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
+   TEST_CLOSE(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2(), 2.0e-12);
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
