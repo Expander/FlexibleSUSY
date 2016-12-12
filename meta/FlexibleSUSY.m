@@ -2847,16 +2847,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.cpp"}]}
                                                   }];
 
-              Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
-              WriteMathLink[inputParameters, extraSLHAOutputBlocks,
-                            {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.cpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.m.in"}],
-                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "run.m.in"}],
-                              FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".m"}]}
-                            }];
-
               Print["Creating makefile module for two-scale solver ..."];
               WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
                                        FileNameJoin[{FSOutputDir, "two_scale.mk"}]}}];
@@ -2887,6 +2877,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                                   {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
+
+           PrintHeadline["Creating Mathematica interface"];
+           Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
+           WriteMathLink[inputParameters, extraSLHAOutputBlocks,
+                         {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.cpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.m.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_librarylink.m"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "run.m.in"}],
+                           FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".m"}]}
+                         }];
 
            PrintHeadline["Creating user examples"];
            Print["Creating user example spectrum generator program ..."];
