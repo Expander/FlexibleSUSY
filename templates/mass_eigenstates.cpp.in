@@ -349,7 +349,7 @@ void CLASSNAME::set_ewsb_solution(const EWSB_solver* solver)
 template <typename It>
 void CLASSNAME::set_best_ewsb_solution(It first, It last)
 {
-   CLASSNAME ma(*this), mb(*this);
+   auto ma(*this), mb(*this);
 
    const auto best_solver =
       std::min_element(first, last,
