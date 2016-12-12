@@ -16,14 +16,13 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameters = {
-   {vMSSM, {1}},
    {TanBeta, {1}},
    {MuSq, {1}}
 };
 
 EWSBSubstitutions = {
-   {vd, vMSSM Cos[ArcTan[TanBeta]]},
-   {vu, vMSSM Sin[ArcTan[TanBeta]]},
+   {vd, Sqrt[vd^2 + vu^2] Cos[ArcTan[TanBeta]]},
+   {vu, Sqrt[vd^2 + vu^2] Sin[ArcTan[TanBeta]]},
    {\[Mu], Sign[\[Mu]] Sqrt[MuSq]}
 };
 
@@ -38,9 +37,7 @@ SUSYScale =  Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
-SUSYScaleInput = {
-   {vMSSM, Sqrt[vu^2 + vd^2]}
-};
+SUSYScaleInput = {};
 
 HighScale = g1 == g2;
 
