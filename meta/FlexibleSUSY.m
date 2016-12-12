@@ -2135,6 +2135,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             allIntermediateOutputParametes = {},
             allIntermediateOutputParameterIndexReplacementRules = {},
             allInputParameterIndexReplacementRules = {},
+            allExtraParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
             fixedParameters,
@@ -2420,10 +2421,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSAuxiliaryParameters = {#[[1]], Parameters`GetRealTypeFromDimension[#[[2]]]}& /@ FlexibleSUSY`FSAuxiliaryParameters;
            Parameters`SetExtraParameters[FlexibleSUSY`FSAuxiliaryParameters];
 
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSAuxiliaryParameters
+            ];
+
            (* replace all indices in the user-defined model file variables *)
            EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
            ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
+           ReplaceIndicesInUserInput[allExtraParameterIndexReplacementRules];
 
            (* replace LHInput[p] by pInput in the constraints *)
 
