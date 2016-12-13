@@ -185,8 +185,9 @@ FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + ta
 FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 
 (* BVP solvers *)
-TwoScaleSolver; (* two-scale algorithm *)
-LatticeSolver;  (* lattice algorithm *)
+TwoScaleSolver;      (* two-scale algorithm *)
+LatticeSolver;       (* lattice algorithm *)
+SemiAnalyticSolver;  (* semi-analytic algorithm *)
 FSBVPSolvers = { TwoScaleSolver };
 
 (* macros *)
@@ -257,7 +258,7 @@ numberOfModelParameters = 0;
 allEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton,
                    FPIRelative, FPIAbsolute, FPITadpole };
 
-allBVPSolvers = { TwoScaleSolver, LatticeSolver };
+allBVPSolvers = { TwoScaleSolver, LatticeSolver, SemiAnalyticSolver };
 
 HaveEWSBSolver[solver_] := MemberQ[FlexibleSUSY`FSEWSBSolvers, solver];
 
@@ -1385,6 +1386,33 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                    } ];
            ];
 
+GetBVPSolverHeaderName[solver_] :=
+    Switch[solver,
+           FlexibleSUSY`TwoScaleSolver, "two_scale",
+           FlexibleSUSY`LatticeSolver, "lattice",
+           FlexibleSUSY`SemiAnalyticSolver, "semi_analytic",
+           _, Print["Error: invalid BVP solver requested: ", solver];
+              Quit[1];
+          ];
+
+GetBVPSolverSLHAOptionKey[solver_] :=
+    Switch[solver,
+           FlexibleSUSY`TwoScaleSolver, "0",
+           FlexibleSUSY`LatticeSolver, "1",
+           FlexibleSUSY`SemiAnalyticSolver, "2",
+           _, Print["Error: invalid BVP solver requested: ", solver];
+              Quit[1];
+          ];
+
+GetBVPSolverTemplateParameter[solver_] :=
+    Switch[solver,
+           FlexibleSUSY`TwoScaleSolver, "Two_scale",
+           FlexibleSUSY`LatticeSolver, "Lattice",
+           FlexibleSUSY`SemiAnalyticSolver, "Semi_analytic",
+           _, Print["Error: invalid BVP solver requested: ", solver];
+              Quit[1];
+          ];
+
 EnableForBVPSolver[solver_, statements_String] :=
     Module[{result = "#ifdef "},
            Switch[solver,
@@ -1392,6 +1420,8 @@ EnableForBVPSolver[solver_, statements_String] :=
                   result = result <> "ENABLE_TWO_SCALE_SOLVER\n" <> statements,
                   FlexibleSUSY`LatticeSolver,
                   result = result <> "ENABLE_LATTICE_SOLVER\n" <> statements,
+                  FlexibleSUSY`SemiAnalyticSolver,
+                  result = result <> "ENABLE_SEMI_ANALYTIC_SOLVER\n" <> statements,
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
@@ -1400,24 +1430,15 @@ EnableForBVPSolver[solver_, statements_String] :=
 
 EnableSpectrumGenerator[solver_] :=
     Module[{header = "#include \"" <> FlexibleSUSY`FSModelName},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, header = header <> "_two_scale",
-                  FlexibleSUSY`LatticeSolver, header = header <> "_lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           header = header <> "_" <> GetBVPSolverHeaderName[solver];
            header = header <> "_spectrum_generator.hpp\"\n";
            EnableForBVPSolver[solver, header] <> "\n"
           ];
 
 RunEnabledSpectrumGenerator[solver_] :=
     Module[{key = "", class = "", macro = "", body = "", result = ""},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
-                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           key = GetBVPSolverSLHAOptionKey[solver];
+           class = GetBVPSolverTemplateParameter[solver];
            body = "exit_code = run_solver<" <> class <> ">(\n"
                   <> IndentText["slha_io, spectrum_generator_settings, slha_output_file,\n"]
                   <> IndentText["database_output_file, spectrum_file, rgflow_file);\n"]
@@ -1428,12 +1449,8 @@ RunEnabledSpectrumGenerator[solver_] :=
 
 ScanEnabledSpectrumGenerator[solver_] :=
     Module[{key = "", class = "", macro = "", body = "", result = ""},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
-                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           key = GetBVPSolverSLHAOptionKey[solver];
+           class = GetBVPSolverTemplateParameter[solver];
            body = "run_scan<" <> class <> ">(input, range);\nbreak;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
@@ -1441,12 +1458,8 @@ ScanEnabledSpectrumGenerator[solver_] :=
 
 RunCmdLineEnabledSpectrumGenerator[solver_] :=
     Module[{key = "", class = "", macro = "", body = "", result = ""},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
-                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           key = GetBVPSolverSLHAOptionKey[solver];
+           class = GetBVPSolverTemplateParameter[solver];
            body = "exit_code = run_solver<" <> class <> ">(input);\nbreak;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
@@ -1465,12 +1478,7 @@ WriteUserExample[inputParameters_List, files_List] :=
            (runEnabledCmdLineSolvers = runEnabledCmdLineSolvers <> RunCmdLineEnabledSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
            If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
               defaultSolverType = "-1",
-              Which[FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`TwoScaleSolver,
-                    defaultSolverType = "0",
-                    FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`LatticeSolver,
-                    defaultSolverType = "1",
-                    True, Print["Error: invalid BVP solver requested: ", solver]; Quit[1]
-                   ];
+              defaultSolverType = GetBVPSolverSLHAOptionKey[FlexibleSUSY`FSBVPSolvers[[1]]]
              ];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
@@ -1486,12 +1494,7 @@ WriteUserExample[inputParameters_List, files_List] :=
 
 EnableMathlinkSpectrumGenerator[solver_] :=
     Module[{type, headers = ""},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, type = "two_scale",
-                  FlexibleSUSY`LatticeSolver, type = "lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           type = GetBVPSolverHeaderName[solver];
            headers = "#include \"" <> FlexibleSUSY`FSModelName <> "_" <> type <> "_model.hpp\"\n";
            headers = headers <> "#include \"" <> FlexibleSUSY`FSModelName <> "_" <> type <> "_spectrum_generator.hpp\"\n";
            EnableForBVPSolver[solver, headers] <> "\n"
@@ -1499,12 +1502,8 @@ EnableMathlinkSpectrumGenerator[solver_] :=
 
 InitialiseEnabledModelType[solver_] :=
     Module[{key, class, body, result},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver, key = "0"; class = "Two_scale",
-                  FlexibleSUSY`LatticeSolver, key = "1"; class = "Lattice",
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
+           key = GetBVPSolverSLHAOptionKey[solver];
+           class = GetBVPSolverTemplateParameter[solver];
            body = "data.reset(new " <> FlexibleSUSY`FSModelName <> "_model_data<" <> class <> ">());\nbreak;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
@@ -1542,12 +1541,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            (initialiseDataPointer = initialiseDataPointer <> InitialiseEnabledModelType[#])& /@ FlexibleSUSY`FSBVPSolvers;
            If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
               defaultSolverType = "-1",
-              Which[FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`TwoScaleSolver,
-                    defaultSolverType = "0",
-                    FlexibleSUSY`FSBVPSolvers[[1]] === FlexibleSUSY`LatticeSolver,
-                    defaultSolverType = "1",
-                    True, Print["Error: invalid BVP solver requested: ", solver]; Quit[1]
-                   ];
+              defaultSolverType = GetBVPSolverSLHAOptionKey[FlexibleSUSY`FSBVPSolvers[[1]]];
              ];
            WriteOut`ReplaceInFiles[files,
                           { "@numberOfInputParameters@" -> ToString[numberOfInputParameters],
