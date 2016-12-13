@@ -515,6 +515,17 @@ CheckModelFileSettings[] :=
            CheckBVPSolvers[FlexibleSUSY`FSBVPSolvers];
           ];
 
+CheckExtraParametersUsage[parameters_List, boundaryConditions_List] :=
+    Module[{usedCases, multiplyUsedPars},
+           usedCases = Function[par, !FreeQ[#, par]& /@ boundaryConditions] /@ parameters;
+           multiplyUsedPars = Position[Count[#, True]& /@ usedCases, n_ /; n > 1];
+           If[multiplyUsedPars =!= {},
+              Print["Warning: the following auxiliary parameters appear at"];
+              Print["   multiple scales, but do not run:"];
+              Print["  ", Extract[parameters, multiplyUsedPars]];
+             ];
+          ];
+
 ReplaceIndicesInUserInput[rules_] :=
     Block[{},
           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. rules;
@@ -2273,6 +2284,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Exp[I #]& /@ GetVEVPhases[FlexibleSUSY`FSEigenstates]];
            Parameters`SetPhases[phases];
 
+           (* collect any extra user-defined parameters *)
+           FlexibleSUSY`FSAuxiliaryParameters = {#[[1]], Parameters`GetRealTypeFromDimension[#[[2]]]}& /@ FlexibleSUSY`FSAuxiliaryParameters;
+           Parameters`SetExtraParameters[FlexibleSUSY`FSAuxiliaryParameters];
+           DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
+
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSAuxiliaryParameters
+            ];
+
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
@@ -2308,6 +2329,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
+
+           (* warn if extra parameters, which do not run, are used at multiple scales *)
+           CheckExtraParametersUsage[Parameters`GetExtraParameters[],
+                                     {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
 
            (* add SM gauge couplings to low-scale constraint if not set anywhere *)
            If[ValueQ[SARAH`hyperchargeCoupling] &&
@@ -2415,15 +2440,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
                {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
-            ];
-
-           (* collect any extra user-defined parameters *)
-           FlexibleSUSY`FSAuxiliaryParameters = {#[[1]], Parameters`GetRealTypeFromDimension[#[[2]]]}& /@ FlexibleSUSY`FSAuxiliaryParameters;
-           Parameters`SetExtraParameters[FlexibleSUSY`FSAuxiliaryParameters];
-
-           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSAuxiliaryParameters
             ];
 
            (* replace all indices in the user-defined model file variables *)
