@@ -112,7 +112,7 @@ __Description__:
 The `EXTPAR` variable is a list of input parameters for the spectrum
 generator, which is read of the `EXTPAR` block of the SLHA input file.
 The list assigned to the `EXTPAR` variable must have the same form as
-`MINPAR` variable.
+the `MINPAR` variable.
 
 __Example__: In the NUTNMSSM the `EXTPAR` block has the form
 
@@ -136,6 +136,44 @@ Block EXTPAR                 # Input parameters
    63   763.8                # ALambdaInput
    64   1268.2               # AKappaInput
    65   265.2                # MuEff
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
+__Symbol__: `IMEXTPAR`
+
+__Default value__: `{}`
+
+__Description__:
+
+The `IMEXTPAR` variable is a list of input parameters for the spectrum
+generator, which is read of the `IMEXTPAR` block of the SLHA input
+file.  The list assigned to the `IMEXTPAR` variable must have the same
+form as the `MINPAR` variable.
+
+__Example__: In the CP-violating MSSM (`MSSMCPV`) the `IMEXTPAR` block
+has the form
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+IMEXTPAR = {
+    {1, ImM1Input},
+    {2, ImM2Input},
+    {3, ImM3Input},
+    {23, ImMuInput}
+};
+~~~~~~~~~~~~~~~~~~~~
+
+In this case the input parameters can be given in the SLHA input file
+as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block IMEXTPAR
+    1    100                 # Im(M1(MSUSY))
+    2    100                 # Im(M2(MSUSY))
+    3    100                 # Im(M3(MSUSY))
+   23    100                 # Im(Mu(MSUSY))
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _Note_: Unspecified parameters are assumed to be zero.
