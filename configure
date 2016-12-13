@@ -2322,7 +2322,7 @@ replace_markers() {
 	-e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
 	-e "s|@ADDONS@|$ADDONS|"           \
 	-e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
-	-e "s|@ALGORITHMS@|$SOLVERS|"   \
+	-e "s|@SOLVERS@|$SOLVERS|"   \
 	-e "s|@BLASLIBS@|$BLASLIBS|"       \
 	-e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
 	-e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \

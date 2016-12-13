@@ -9,7 +9,6 @@ CONFIGDIR="${BASEDIR}/config"
 packagename="@PKGNAME@"
 version="@FLEXIBLESUSY_VERSION@"
 
-algorithms="@ALGORITHMS@"
 addons="@ADDONS@"
 blaslibs="@BLASLIBS@"
 boostflags="@BOOSTFLAGS@"
@@ -34,6 +33,7 @@ models="@MODELS@"
 module_make_lib_cmd="@MODULE_MAKE_LIB_CMD@"
 module_lib_ext="@MODULE_LIBEXT@"
 shared_lib_cmd="@SHARED_LIB_CMD@"
+solvers="@SOLVERS@"
 sqliteflags="@SQLITEFLAGS@"
 sqlitelibs="@SQLITELIBS@"
 static_lib_cmd="@STATIC_LIB_CMD@"
@@ -92,7 +92,6 @@ help() {
 cat <<EOF
 Usage: `basename $0` [options]
 Options:
-  --algorithms          Print all algorithms that are used
   --addons              Print all addons that are build
   --blaslibs            Print BLAS libraries, BLASLIBS
   --boostflags          Print compiler flags for BOOST, BOOSTFLAGS
@@ -143,6 +142,7 @@ Options:
   --module-make-lib-cmd Print command to build module libraries, MODULE_MAKE_LIB_CMD
   --module-lib-ext      Print file name extension for module libraries, MODULE_LIBEXT
   --shared-lib-cmd      Print command to build shared library, SHARED_LIB_CMD
+  --solvers             Print all solvers that are used
   --sqliteflags         Print SQLite flags, SQLITEFLAGS, SQLITEFLAGS
   --sqlitelibs          Print SQLite libararies, SQLITELIBS, SQLITELIBS
   --static-lib-cmd      Print command to build static library, STATIC_LIB_CMD
@@ -150,7 +150,7 @@ Options:
   --tsilflags           Print TSIL flags, TSILFLAGS
   --tsillibs            Print TSIL libraries, TSILLIBS
   --with-<addon>        Test if <addon> is compiled in
-  --with-<algorithm>    Test if <algorithm> is compiled in
+  --with-<solver>       Test if <solver> is compiled in
   --with-<model>        Test if <model> is compiled in
   --version             Print the $packagename version
   --help                Print this message
@@ -167,7 +167,6 @@ while test $# -gt 0; do
 
     case $1 in
         --addons)                out="$out $addons" ;;
-        --algorithms)            out="$out $algorithms" ;;
         --blaslibs)              out="$out $blaslibs" ;;
         --boostflags)            out="$out $boostflags" ;;
         --boosttestlibs)         out="$out $boosttestlibs" ;;
@@ -195,6 +194,7 @@ while test $# -gt 0; do
         --module-make-lib-cmd)   out="$out $module_make_lib_cmd" ;;
         --module-lib-ext)        out="$out $module_lib_ext" ;;
         --shared-lib-cmd)        out="$out $shared_lib_cmd" ;;
+        --solvers)               out="$out $solvers" ;;
         --sqliteflags)           out="$out $sqliteflags" ;;
         --sqlitelibs)            out="$out $sqlitelibs" ;;
         --static-lib-cmd)        out="$out $static_lib_cmd" ;;
@@ -204,7 +204,7 @@ while test $# -gt 0; do
         --with-*)
       ### Check for models and addons
             f=`echo $1 | sed 's/--with-//'`
-            for c in $models $addons $algorithms ; do
+            for c in $models $addons $solvers ; do
                 if test "x`basename $c`" = "x$f" ; then
                     out="$out yes"
                     break

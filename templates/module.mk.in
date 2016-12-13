@@ -74,11 +74,14 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_susy_parameters.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 -include $(DIR)/two_scale.mk
 endif
-ifneq ($(findstring lattice,$(ALGORITHMS)),)
+ifneq ($(findstring lattice,$(SOLVERS)),)
 -include $(DIR)/lattice.mk
+endif
+ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+-include $(DIR)/semi_analytic.mk
 endif
 
 ifneq ($(MAKECMDGOALS),showbuild)
@@ -108,7 +111,7 @@ endif
 endif
 endif
 
-# remove duplicates in case all algorithms are used
+# remove duplicates in case all solvers are used
 LIB@CLASSNAME@_SRC := $(sort $(LIB@CLASSNAME@_SRC))
 EXE@CLASSNAME@_SRC := $(sort $(EXE@CLASSNAME@_SRC))
 
