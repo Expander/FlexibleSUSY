@@ -284,8 +284,8 @@ void @ModelName@_slha_io::read_from_stream(std::istream& istr)
 }
 
 /**
- * Fill struct of model input parameters from SLHA object (MINPAR and
- * EXTPAR blocks)
+ * Fill struct of model input parameters from SLHA object (MINPAR,
+ * EXTPAR and IMEXTPAR blocks)
  *
  * @param input struct of model input parameters
  */
