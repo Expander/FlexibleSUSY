@@ -71,6 +71,16 @@ void @ModelName@_slha_io::set_extpar(const @ModelName@_input_parameters& input)
 }
 
 /**
+ * Stores the IMEXTPAR input parameters in the SLHA object.
+ *
+ * @param input struct of input parameters
+ */
+void @ModelName@_slha_io::set_imextpar(const @ModelName@_input_parameters& input)
+{
+@writeSLHAImExtparBlock@
+}
+
+/**
  * Stores the MODSEL input parameters in the SLHA object.
  *
  * @param model struct of MODSEL parameters
@@ -99,6 +109,7 @@ void @ModelName@_slha_io::set_input(const @ModelName@_input_parameters& input)
 {
    set_minpar(input);
    set_extpar(input);
+   set_imextpar(input);
 
 @writeSLHAInputParameterBlocks@
 }
@@ -288,8 +299,13 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
       return fill_extpar_tuple(input, key, value);
    };
 
+   SLHA_io::Tuple_processor imextpar_processor = [&input, this] (int key, double value) {
+      return fill_imextpar_tuple(input, key, value);
+   };
+
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
+   slha_io.read_block("IMEXTPAR", imextpar_processor);
 
 @readLesHouchesInputParameters@
 }
@@ -354,6 +370,12 @@ void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
 @fillInputParametersFromEXTPAR@
+}
+
+void @ModelName@_slha_io::fill_imextpar_tuple(@ModelName@_input_parameters& input,
+                                                int key, double value)
+{
+@fillInputParametersFromIMEXTPAR@
 }
 
 /**
