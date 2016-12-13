@@ -5,7 +5,7 @@ BeginPackage["FlexibleSUSY`",
              "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
              "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
              "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
-             "GMuonMinus2`", "EffectiveCouplings`",
+             "GMuonMinus2`", "EffectiveCouplings`", "SemiAnalytic`",
              "FlexibleEFTHiggsMatching`", "FSMathLink`",
              "FlexibleTower`"}];
 
