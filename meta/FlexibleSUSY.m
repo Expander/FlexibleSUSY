@@ -1448,7 +1448,7 @@ WriteEDMClass[vertexRules_List, files_List] :=
 Module[{fields, edmFields, diagrams, vertexFunctionData,
     definitions, calculationCode},
        edmFields = {SARAH`Electron};
-       EDM`SetEDMFields[edmParticles];
+       EDM`SetEDMFields[edmFields];
        
        fields = EDM`CreateFields[];
        diagrams = EDM`CreateDiagrams[];
