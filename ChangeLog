@@ -29,6 +29,8 @@ FlexibleSUSY 2.0.0 [not released yet]
    parallel if multi-threading is enabled.  This leads to a ~25% speed
    improvement in the MSSM when 3-loop RG running is used.
 
+ * Feature: Support for SLHA-2 input block IMEXTPAR.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
