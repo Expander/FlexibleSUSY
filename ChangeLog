@@ -62,6 +62,9 @@ FlexibleSUSY-1.7.2 [not released yet]
    when multiple LibraryLink libraries are loaded into Mathematica at
    the same time.
 
+ * Bugfix (commit 1f8e135): Correcting FS<model>Set[] function for
+   models with matrix-valued parameters.
+
  * Bugfix (commit 4097708): The generated LibraryLink files are now
    added to the model tarball created by `make pack-<model>-src'.
 
