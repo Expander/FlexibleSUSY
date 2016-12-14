@@ -179,6 +179,12 @@ inline double Arg(const std::complex<double>& z)
    return std::arg(z);
 }
 
+template <typename T>
+constexpr T Cbrt(T a)
+{
+   return std::cbrt(a);
+}
+
 constexpr double Conj(double a)
 {
    return a;
@@ -193,6 +199,12 @@ template <class T>
 T Conjugate(T a)
 {
    return Conj(a);
+}
+
+template <typename T>
+constexpr T Cube(T a)
+{
+   return a * a * a;
 }
 
 template <typename T>
@@ -378,6 +390,12 @@ constexpr int Sign(int x)
 }
 
 template <typename T>
+constexpr T Quad(T a)
+{
+   return a * a * a * a;
+}
+
+template <typename T>
 T PolyLog(int n, T z) {
    if (n == 2)
       return gm2calc::dilog(z);
@@ -390,6 +408,35 @@ Base Power(Base base, Exponent exp)
    return std::pow(base, exp);
 }
 
+template <typename Base>
+constexpr Base Power2(Base b)
+{
+   return Sqr(b);
+}
+
+template <typename Base>
+constexpr Base Power3(Base b)
+{
+   return Cube(b);
+}
+
+template <typename Base>
+constexpr Base Power4(Base b)
+{
+   return Quad(b);
+}
+
+template <typename Base>
+constexpr Base Power5(Base b)
+{
+   return b * b * b * b * b;
+}
+
+template <typename Base>
+constexpr Base Power6(Base b)
+{
+   return b * b * b * b * b * b;
+}
 
 constexpr double Re(double x)
 {

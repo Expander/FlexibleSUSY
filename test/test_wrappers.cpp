@@ -517,3 +517,90 @@ BOOST_AUTO_TEST_CASE(test_Im_Eigen_Matrix)
    BOOST_CHECK_EQUAL(im2(1,0), 0.);
    BOOST_CHECK_EQUAL(im2(1,1), 10.0);
 }
+
+BOOST_AUTO_TEST_CASE(test_Cube)
+{
+   BOOST_CHECK_EQUAL(Power(2.,3), Cube(2.));
+   BOOST_CHECK_EQUAL(Power(3.,3), Cube(3.));
+   BOOST_CHECK_EQUAL(Power(4.,3), Cube(4.));
+   BOOST_CHECK_EQUAL(Power(2.,3), Power3(2.));
+   BOOST_CHECK_EQUAL(Power(3.,3), Power3(3.));
+   BOOST_CHECK_EQUAL(Power(4.,3), Power3(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Quad)
+{
+   BOOST_CHECK_EQUAL(Power(2.,4), Quad(2.));
+   BOOST_CHECK_EQUAL(Power(3.,4), Quad(3.));
+   BOOST_CHECK_EQUAL(Power(4.,4), Quad(4.));
+   BOOST_CHECK_EQUAL(Power(2.,4), Power4(2.));
+   BOOST_CHECK_EQUAL(Power(3.,4), Power4(3.));
+   BOOST_CHECK_EQUAL(Power(4.,4), Power4(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power5)
+{
+   BOOST_CHECK_EQUAL(Power(2.,5), Power5(2.));
+   BOOST_CHECK_EQUAL(Power(3.,5), Power5(3.));
+   BOOST_CHECK_EQUAL(Power(4.,5), Power5(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power6)
+{
+   BOOST_CHECK_EQUAL(Power(2.,6), Power6(2.));
+   BOOST_CHECK_EQUAL(Power(3.,6), Power6(3.));
+   BOOST_CHECK_EQUAL(Power(4.,6), Power6(4.));
+}
+
+template <typename Base, typename Exponent>
+double time_Power(std::size_t N, Base b, Exponent e)
+{
+   Stopwatch sw;
+   sw.start();
+   for (std::size_t i = 0; i < N; i++)
+      volatile auto r = Power(b,e);
+   sw.stop();
+   return sw.get_time_in_seconds();
+}
+
+#define DEF_FUN(f)                              \
+   double time_##f(std::size_t N, double b)     \
+   {                                            \
+      Stopwatch sw;                             \
+      sw.start();                               \
+      for (std::size_t i = 0; i < N; i++)       \
+         volatile auto r = f(b);                \
+      sw.stop();                                \
+      return sw.get_time_in_seconds();          \
+   }
+
+DEF_FUN(Cube)
+DEF_FUN(Quad)
+DEF_FUN(Power5)
+DEF_FUN(Power6)
+
+BOOST_AUTO_TEST_CASE(test_Power_benchmark)
+{
+   const std::size_t N = 100000000;
+
+   const double timed_Power_3 = time_Power(N, 3., 3);
+   const double timed_Power_4 = time_Power(N, 3., 4);
+   const double timed_Power_5 = time_Power(N, 3., 5);
+   const double timed_Power_6 = time_Power(N, 3., 6);
+   const double timed_Cube    = time_Cube(N, 3.);
+   const double timed_Quad    = time_Quad(N, 3.);
+   const double timed_Power5  = time_Power5(N, 3.);
+   const double timed_Power6  = time_Power6(N, 3.);
+
+   BOOST_TEST_MESSAGE("Power(double,3): " << timed_Power_3 << " s");
+   BOOST_TEST_MESSAGE("Cube(double)   : " << timed_Cube << " s");
+   BOOST_TEST_MESSAGE("Power(double,4): " << timed_Power_4 << " s");
+   BOOST_TEST_MESSAGE("Quad(double)   : " << timed_Quad << " s");
+   BOOST_TEST_MESSAGE("Power(double,5): " << timed_Power_5 << " s");
+   BOOST_TEST_MESSAGE("Power5(double) : " << timed_Power5 << " s");
+   BOOST_TEST_MESSAGE("Power(double,6): " << timed_Power_6 << " s");
+   BOOST_TEST_MESSAGE("Power6(double) : " << timed_Power6 << " s");
+
+   BOOST_CHECK_LT(timed_Cube, timed_Power_3);
+   BOOST_CHECK_LT(timed_Quad, timed_Power_4);
+}
