@@ -113,7 +113,7 @@ Taken from:
   https://stackoverflow.com/questions/3136604/evaluate-beyond-one-level-within-hold-in-mathematica
 ";
 
-{ Sqr, Cube, Quad, Power2, Power3, Power4, Power5, Power6 };
+{ Sqr, Cube, Quad, Power2, Power3, Power4, Power5, Power6, Power7, Power8 };
 
 Begin["`Private`"];
 
@@ -799,6 +799,10 @@ RValueToCFormString[expr_] :=
                     Power[a_,-5]             :> 1/Power5[a] /.
                     Power[a_,6]              :> Power6[a] /.
                     Power[a_,-6]             :> 1/Power6[a] /.
+                    Power[a_,7]              :> Power7[a] /.
+                    Power[a_,-7]             :> 1/Power7[a] /.
+                    Power[a_,8]              :> Power8[a] /.
+                    Power[a_,-8]             :> 1/Power8[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],

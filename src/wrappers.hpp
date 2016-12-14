@@ -438,6 +438,18 @@ constexpr Base Power6(Base b)
    return b * b * b * b * b * b;
 }
 
+template <typename Base>
+constexpr Base Power7(Base b)
+{
+   return b * b * b * b * b * b * b;
+}
+
+template <typename Base>
+constexpr Base Power8(Base b)
+{
+   return b * b * b * b * b * b * b * b;
+}
+
 constexpr double Re(double x)
 {
    return x;

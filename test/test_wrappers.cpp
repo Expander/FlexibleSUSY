@@ -552,6 +552,20 @@ BOOST_AUTO_TEST_CASE(test_Power6)
    BOOST_CHECK_EQUAL(Power(4.,6), Power6(4.));
 }
 
+BOOST_AUTO_TEST_CASE(test_Power7)
+{
+   BOOST_CHECK_EQUAL(Power(2.,7), Power7(2.));
+   BOOST_CHECK_EQUAL(Power(3.,7), Power7(3.));
+   BOOST_CHECK_EQUAL(Power(4.,7), Power7(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power8)
+{
+   BOOST_CHECK_EQUAL(Power(2.,8), Power8(2.));
+   BOOST_CHECK_EQUAL(Power(3.,8), Power8(3.));
+   BOOST_CHECK_EQUAL(Power(4.,8), Power8(4.));
+}
+
 template <typename Base, typename Exponent>
 double time_Power(std::size_t N, Base b, Exponent e)
 {
@@ -578,6 +592,8 @@ DEF_FUN(Cube)
 DEF_FUN(Quad)
 DEF_FUN(Power5)
 DEF_FUN(Power6)
+DEF_FUN(Power7)
+DEF_FUN(Power8)
 
 BOOST_AUTO_TEST_CASE(test_Power_benchmark)
 {
@@ -587,10 +603,14 @@ BOOST_AUTO_TEST_CASE(test_Power_benchmark)
    const double timed_Power_4 = time_Power(N, 3., 4);
    const double timed_Power_5 = time_Power(N, 3., 5);
    const double timed_Power_6 = time_Power(N, 3., 6);
+   const double timed_Power_7 = time_Power(N, 3., 7);
+   const double timed_Power_8 = time_Power(N, 3., 8);
    const double timed_Cube    = time_Cube(N, 3.);
    const double timed_Quad    = time_Quad(N, 3.);
    const double timed_Power5  = time_Power5(N, 3.);
    const double timed_Power6  = time_Power6(N, 3.);
+   const double timed_Power7  = time_Power7(N, 3.);
+   const double timed_Power8  = time_Power8(N, 3.);
 
    BOOST_TEST_MESSAGE("Power(double,3): " << timed_Power_3 << " s");
    BOOST_TEST_MESSAGE("Cube(double)   : " << timed_Cube << " s");
@@ -600,7 +620,15 @@ BOOST_AUTO_TEST_CASE(test_Power_benchmark)
    BOOST_TEST_MESSAGE("Power5(double) : " << timed_Power5 << " s");
    BOOST_TEST_MESSAGE("Power(double,6): " << timed_Power_6 << " s");
    BOOST_TEST_MESSAGE("Power6(double) : " << timed_Power6 << " s");
+   BOOST_TEST_MESSAGE("Power(double,7): " << timed_Power_7 << " s");
+   BOOST_TEST_MESSAGE("Power7(double) : " << timed_Power7 << " s");
+   BOOST_TEST_MESSAGE("Power(double,8): " << timed_Power_8 << " s");
+   BOOST_TEST_MESSAGE("Power8(double) : " << timed_Power8 << " s");
 
    BOOST_CHECK_LT(timed_Cube, timed_Power_3);
    BOOST_CHECK_LT(timed_Quad, timed_Power_4);
+   BOOST_CHECK_LT(timed_Power5, timed_Power_5);
+   BOOST_CHECK_LT(timed_Power6, timed_Power_6);
+   BOOST_CHECK_LT(timed_Power7, timed_Power_7);
+   BOOST_CHECK_LT(timed_Power8, timed_Power_8);
 }
