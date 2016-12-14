@@ -834,12 +834,7 @@ SaveParameterLocally[parameters_List] :=
 
 SaveParameterLocally[parameter_] :=
     Module[{ par, parStr, parStrSym },
-           par = FSModelParameters /. FindAllParametersClassified[parameter];
-           If[par === {} || Length[par] > 1,
-              Print["Error: SaveParameterLocally: ", parameter,
-                    " does not contain a single parameter that can be used as EWSB output."];
-             ];
-           par = par[[1]];
+           par = parameter /. { Re -> Identity, Im -> Identity, Abs -> Identity };
            parStr = CConversion`RValueToCFormString[par];
            parStrSym = CConversion`ToValidCSymbolString[par];
            "const auto save_" <> parStrSym <> "_raii = make_raii_save(" <> parStr <> ");\n"
