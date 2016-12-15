@@ -1,4 +1,4 @@
-FlexibleSUSY-1.7.2 [not released yet]
+FlexibleSUSY-1.7.2 [December, 15 2016]
 
  * Feature (commit b052e35): New flag FlexibleSUSY[23] to disable the
    pole mass calculation of the non-SM particles.  This flag is useful
