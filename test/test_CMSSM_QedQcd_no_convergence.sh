@@ -16,16 +16,18 @@ spinfo_4=$(echo "$slha_out" | \
                   awk -f "$print_block" -v block=SPINFO | \
                   awk '{ if ($1 == 4) { $1 = ""; print $0 } }')
 
-error=1
+echo "SPINFO[4]: $spinfo_4"
+
+error=0
 
 case "$spinfo_4" in
-    *no\ convergence*) error=0 ;;
+    *SM\(5\)*) error=1 ;;
 esac
 
 if [ $error -eq 0 ] ; then
     echo "Test result: OK"
 else
-    echo "Error: point has converged"
+    echo "Error: point failed in determination of SM(5) parameters."
     echo ""
     echo "Test result: FAIL"
 fi
