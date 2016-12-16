@@ -403,21 +403,13 @@ CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
 CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
     CreateTadpoleFunctionName[GetField[tadpole]];
 
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
 CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
     CreateFunctionName[tadpole] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
+
+CreateFunctionPrototype[selfEnergy_] :=
+    CreateFunctionName[selfEnergy] <>
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
     StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
