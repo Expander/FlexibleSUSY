@@ -426,9 +426,8 @@ ExpressionToStringSequentially[expr_, heads_, result_String] :=
     result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
 
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
-    Module[{decl, expr, field, prototype, body, functionName},
+    Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
-           field = GetField[nPointFunction];
            functionName = CreateFunctionPrototype[nPointFunction];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
