@@ -6,6 +6,9 @@ SemiAnalyticSolution::usage="Head of a semi-analytic solution.
 A semi-analytic solution to the RGEs has the structure
 SemiAnalyticSolution[parameter, {basis}]";
 
+CheckSemiAnalyticBoundaryConditions::usage="";
+SelectSemiAnalyticConstraint::usage="";
+
 SetSemiAnalyticParameters::usage="";
 GetSemiAnalyticParameters::usage="";
 
@@ -83,6 +86,33 @@ SetSemiAnalyticParameters[parameters_List] :=
           ];
 
 GetSemiAnalyticParameters[] := allSemiAnalyticParameters;
+
+CheckSemiAnalyticBoundaryConditions[constraints_List] :=
+    Module[{i, sortedPars, fixedPars},
+           sortedPars = Sort[allSemiAnalyticParameters];
+           For[i = 1, i <= Length[constraints], i++,
+               fixedPars = Sort[Intersection[sortedPars,
+                                             Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
+               If[fixedPars =!= {} && fixedPars =!= sortedPars,
+                  Print["Error: all semi-analytic parameters must be set at the same scale."];
+                  Return[False];
+                 ];
+              ];
+           True
+          ];
+
+SelectSemiAnalyticConstraint[constraints_List] :=
+    Module[{i, sortedPars, fixedPars, result = {}},
+           sortedPars = Sort[allSemiAnalyticParameters];
+           For[i = 1, i <= Length[constraints], i++,
+               fixedPars = Sort[Intersection[sortedPars,
+                                             Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
+               If[fixedPars =!= {} && fixedPars === sortedPars,
+                  result = constraints[[i]];
+                 ];
+              ];
+           result
+          ];
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
     Module[{allParameters},
