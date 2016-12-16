@@ -28,6 +28,7 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <utility>
 
 namespace flexiblesusy {
 
@@ -37,7 +38,8 @@ class Convergence_tester_DRbar<Model<Two_scale> > :
 public:
    using Scale_getter = std::function<double()>;
 
-   Convergence_tester_DRbar(const Model<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
+   template <typename F>
+   Convergence_tester_DRbar(const Model<Two_scale>*, double, F&& sg = Scale_getter());
    virtual ~Convergence_tester_DRbar() {}
 
    virtual bool accuracy_goal_reached() override;
@@ -47,7 +49,8 @@ public:
    /// set maximum number of iterations
    void set_max_iterations(unsigned it) { max_it = it; }
    /// set scale getter
-   void set_scale_getter(const Scale_getter& sg) { scale_getter = sg; }
+   template <typename F>
+   void set_scale_getter(F&& sg) { scale_getter = std::forward<F>(sg); }
 
 protected:
    /// get current iteration number
@@ -75,11 +78,12 @@ private:
 };
 
 template <template<class Method> class Model>
+template <typename F>
 Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
-(const Model<Two_scale>* model_, double accuracy_goal_, const Scale_getter& sg)
+(const Model<Two_scale>* model_, double accuracy_goal_, F&& sg)
    : Convergence_tester<Two_scale>()
    , model(model_)
-   , scale_getter(sg)
+   , scale_getter(std::forward<F>(sg))
    , max_it(static_cast<int>(-log10(accuracy_goal_) * 10))
    , accuracy_goal(accuracy_goal_)
 {

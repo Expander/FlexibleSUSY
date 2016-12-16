@@ -23,6 +23,7 @@
 #include <cassert>
 #include <limits>
 #include <string>
+#include <utility>
 #include <Eigen/Core>
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
@@ -203,15 +204,17 @@ public:
    typedef std::function<Vector_t(const Vector_t&)> Function_t;
 
    Fixed_point_iterator() = default;
-   Fixed_point_iterator(const Function_t&, std::size_t, const Convergence_tester&);
+   template <typename F>
+   Fixed_point_iterator(F&&, std::size_t, const Convergence_tester&);
    virtual ~Fixed_point_iterator() {}
 
-   void set_function(const Function_t& f) { function = f; }
+   template <typename F>
+   void set_function(F&& f) { function = std::forward<F>(f); }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    int find_fixed_point(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual std::string name() const override { return "Fixed_point_iterator<" + convergence_tester.name() + ">"; };
+   virtual std::string name() const override { return "Fixed_point_iterator<" + convergence_tester.name() + ">"; }
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() const override;
 
@@ -235,13 +238,14 @@ private:
  * @param convergence_tester_ convergence tester
  */
 template <std::size_t dimension, class Convergence_tester>
+template <typename F>
 Fixed_point_iterator<dimension,Convergence_tester>::Fixed_point_iterator(
-   const Function_t& function_,
+   F&& function_,
    std::size_t max_iterations_,
    const Convergence_tester& convergence_tester_
 )
    : max_iterations(max_iterations_)
-   , function(function_)
+   , function(std::forward<F>(function_))
    , convergence_tester(convergence_tester_)
 {
 }
