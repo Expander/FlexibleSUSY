@@ -367,6 +367,7 @@ TEST_META := \
 		$(DIR)/test_ReadSLHA.m \
 		$(DIR)/test_RGIntegrator.m \
 		$(DIR)/test_SelfEnergies.m \
+		$(DIR)/test_SemiAnalytic.m \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_THDM_threshold_corrections.m \
 		$(DIR)/test_THDM_threshold_corrections_gauge.m \
