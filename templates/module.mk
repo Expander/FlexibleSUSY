@@ -76,9 +76,14 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.cpp.in
 
+SEMI_ANALYTIC_TEMPLATES := \
+		$(DIR)/semi_analytic_model.hpp.in \
+		$(DIR)/semi_analytic_model.cpp.in
+
 TEMPLATES    := \
 		$(BASE_TEMPLATES) \
-		$(TWO_SCALE_TEMPLATES)
+		$(TWO_SCALE_TEMPLATES) \
+		$(SEMI_ANALYTIC_TEMPLATES)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

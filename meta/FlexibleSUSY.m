@@ -1276,6 +1276,9 @@ WriteTwoScaleMatchingClass[files_List] :=
 WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
+WriteSemiAnalyticModelClass[files_List] :=
+    WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
+
 WriteTwoScaleSpectrumGeneratorClass[files_List] :=
     Module[{fillSMFermionPoleMasses = ""},
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
@@ -2795,6 +2798,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FileNameJoin[{FSOutputDir, "two_scale.mk"}]}}];
 
              ]; (* If[HaveBVPSolver[FlexibleSUSY`TwoScaleSolver] *)
+
+           If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
+              PrintHeadline["Creating semi-analytic solver"];
+
+              Print["Creating class for semi-analytic model ..."];
+              WriteSemiAnalyticModelClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.hpp.in"}],
+                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.hpp"}]},
+                                           {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.cpp.in"}],
+                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.cpp"}]}}];
+
+              Print["Creating makefile module for semi-analytic solver ..."];
+              WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic.mk.in"}],
+                                       FileNameJoin[{FSOutputDir, "semi_analytic.mk"}]}}];
+             ]; (* If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver] *)
 
            PrintHeadline["Creating observables"];
            Print["Creating class for effective couplings ..."];
