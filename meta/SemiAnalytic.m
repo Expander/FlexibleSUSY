@@ -2,7 +2,26 @@
 BeginPackage["SemiAnalytic`", {"SARAH`", "CConversion`", "Constraint`", "Parameters`",
                                "TextFormatting`", "Utils`", "WriteOut`"}];
 
+SemiAnalyticSolution::usage="Head of a semi-analytic solution.
+A semi-analytic solution to the RGEs has the structure
+SemiAnalyticSolution[parameter, {basis}]";
+
+SetSemiAnalyticParameters::usage="";
+GetSemiAnalyticParameters::usage="";
+
+IsAllowedSemiAnalyticParameter::usage="";
+IsSemiAnalyticParameter::usage="";
+
+GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
+solutions implied by the given list of boundary conditions.";
+
 Begin["`Private`"];
+
+allSemiAnalyticParameters = {};
+
+GetName[SemiAnalyticSolution[name_, basis_List]] := name;
+
+GetBasis[SemiAnalyticSolution[name_, basis_List]] := basis;
 
 IsDimensionOne[par_] :=
     Module[{dimOnePars},
@@ -54,6 +73,16 @@ IsAllowedSemiAnalyticParameter[par_] :=
        IsScalarMass[par],
        IsSoftBilinear[par],
        IsSoftLinear[par]];
+
+IsSemiAnalyticParameter[par_] := MemberQ[allSemiAnalyticParameters, Parameters`StripIndices[par]];
+
+SetSemiAnalyticParameters[parameters_List] :=
+    Module[{},
+           allSemiAnalyticParameters = DeleteDuplicates[Select[parameters, (IsAllowedSemiAnalyticParameter[#])&]];
+           allSemiAnalyticParameters = (Parameters`StripIndices[#])& /@ allSemiAnalyticParameters;
+          ];
+
+GetSemiAnalyticParameters[] := allSemiAnalyticParameters;
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
     Module[{allParameters},
