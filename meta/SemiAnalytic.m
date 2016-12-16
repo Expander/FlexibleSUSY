@@ -90,11 +90,6 @@ SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
            Select[parameters, MemberQ[allParameters, #]&]
           ];
 
-IsImplicitConstraint[FlexibleSUSY`FSMinimize[__]] := True;
-IsImplicitConstraint[FlexibleSUSY`FSFindRoot[__]] := True;
-IsImplicitConstraint[FlexibleSUSY`FSSolveEWSBFor[__]] := True;
-IsImplicitConstraint[setting_] := False;
-
 GetParameterExpansionRules[par_] :=
     Module[{dims, numDims, i, indices, rules = {}},
            dims = Parameters`GetParameterDimensions[par];
@@ -167,7 +162,7 @@ GetBoundaryValueFromSetting[par_, value_] :=
    of the settings in the list, in order.
 *)
 GetBoundaryValueSubstitutions[settings_List] :=
-    Module[{i, noTemp, test, fixedPars, rules, finalRules = {}},
+    Module[{i, noTemp, test, fixedPars, boundaryValues, rules, finalRules = {}},
            noTemp = DeleteCases[settings, {FlexibleSUSY`Temporary[_], _}];
            test = Function[{first, second}, first[[1]] === second[[1]]];
            For[i = 1, i <= Length[noTemp], i++,
@@ -175,10 +170,21 @@ GetBoundaryValueSubstitutions[settings_List] :=
                       {_, _},
                       rules = GetBoundaryValueFromSetting[noTemp[[i,1]], noTemp[[i,2]]];
                       finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, #, test])& /@ rules];,
-                      _?IsImplicitConstraint,
-                      (* @todo how to flag unique values, e.g. resulting from solving EWSB? *)
+                      FlexibleSUSY`FSMinimize[__],
                       fixedPars = Constraint`FindFixedParametersFromConstraint[{noTemp[[i]]}];
-                      finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, Rule[#, #], test])& /@ fixedPars];
+                      boundaryValues = Symbol[CConversion`ToValidCSymbolString[#] <> "MinSol"]& /@ fixedPars;
+                      finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, Rule[#[[1]], #[[2]]], test])&
+                                        /@ Utils`Zip[fixedPars, boundaryValues]];,
+                      FlexibleSUSY`FSFindRoot[__],
+                      fixedPars = Constraint`FindFixedParametersFromConstraint[{noTemp[[i]]}];
+                      boundaryValues = Symbol[CConversion`ToValidCSymbolString[#] <> "RootSol"]& /@ fixedPars;
+                      finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, Rule[#[[1]], #[[2]]], test])&
+                                        /@ Utils`Zip[fixedPars, boundaryValues]];,
+                      FlexibleSUSY`FSSolveEWSBFor[__],
+                      fixedPars = Constraint`FindFixedParametersFromConstraint[{noTemp[[i]]}];
+                      boundaryValues = Symbol[CConversion`ToValidCSymbolString[#] <> "EWSBSol"]& /@ fixedPars;
+                      finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, Rule[#[[1]], #[[2]]], test])&
+                                        /@ Utils`Zip[fixedPars, boundaryValues]];
                      ];
               ];
            finalRules

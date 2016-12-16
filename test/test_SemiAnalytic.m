@@ -75,17 +75,17 @@ TestEquality[SemiAnalytic`IsSemiAnalyticParameter[Yu], False];
 Print["testing GetBoundaryValueSubstitutions ..."];
 
 boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, FlexibleSUSY`FSSolveEWSBFor[{\[Mu], B[\[Mu]]}] };
-expected = { Rule[mHd2, m0^2], Rule[mHu2, m0^2], Rule[\[Mu], \[Mu]], Rule[B[\[Mu]], B[\[Mu]]] };
+expected = { Rule[mHd2, m0^2], Rule[mHu2, m0^2], Rule[\[Mu], MuEWSBSol], Rule[B[\[Mu]], BMuEWSBSol] };
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
 
 boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, FlexibleSUSY`FSSolveEWSBFor[{\[Mu], B[\[Mu]]}], {mHu2, \[Mu]^2} };
-expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[\[Mu], \[Mu]], Rule[B[\[Mu]], B[\[Mu]]] };
+expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[\[Mu], MuEWSBSol], Rule[B[\[Mu]], BMuEWSBSol] };
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
 
 boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, FlexibleSUSY`FSSolveEWSBFor[{\[Mu], B[\[Mu]]}],
                       {mHu2, \[Mu]^2}, FlexibleSUSY`FSMinimize[{TYu[1,1], mq2[1,1]}, {TYu[1,1]^2 + mq2[1,1]^2}] };
-expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[\[Mu], \[Mu]], Rule[B[\[Mu]], B[\[Mu]]],
-             Rule[TYu[1,1], TYu[1,1]], Rule[mq2[1,1], mq2[1,1]] };
+expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[\[Mu], MuEWSBSol], Rule[B[\[Mu]], BMuEWSBSol],
+             Rule[TYu[1,1], TYu11MinSol], Rule[mq2[1,1], mq211MinSol] };
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
 
 boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, {mq2, CConversion`UNITMATRIX[3] m0^2} };
@@ -184,6 +184,21 @@ expected = {Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[Mas
                                            SemiAnalytic`SemiAnalyticSolution[T[Ye], {Azero, m12}],
                                            SemiAnalytic`SemiAnalyticSolution[mHd2, {m0^2, m12^2, m12 Azero, Azero^2}],
                                            SemiAnalytic`SemiAnalyticSolution[mHu2, {m0^2, m12^2, m12 Azero, Azero^2}],
+                                           SemiAnalytic`SemiAnalyticSolution[B[\[Mu]], {\[Mu] B0, \[Mu] Azero, \[Mu] m12}]}],
+            {} };
+TestEquality[{Sort[(SortSolutionBasis[#])& /@ #[[1]]], #[[2]]}& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
+
+boundaryCondition = {{T[Yu], Azero*Yu}, {T[Yd], Azero*Yd}, {T[Ye], Azero*Ye},
+                     {MassB, m12}, {MassWB, m12}, {MassG, m12}, FlexibleSUSY`FSSolveEWSBFor[{mHd2, mHu2}],
+                     {B[\[Mu]], \[Mu]*B0}};
+expected = {Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[MassB, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[MassWB, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[MassG, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Yu], {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Yd], {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Ye], {Azero, m12}],
+                                           SemiAnalytic`SemiAnalyticSolution[mHd2, {mHu2EWSBSol, mHd2EWSBSol, m12^2, m12 Azero, Azero^2}],
+                                           SemiAnalytic`SemiAnalyticSolution[mHu2, {mHu2EWSBSol, mHd2EWSBSol, m12^2, m12 Azero, Azero^2}],
                                            SemiAnalytic`SemiAnalyticSolution[B[\[Mu]], {\[Mu] B0, \[Mu] Azero, \[Mu] m12}]}],
             {} };
 TestEquality[{Sort[(SortSolutionBasis[#])& /@ #[[1]]], #[[2]]}& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
