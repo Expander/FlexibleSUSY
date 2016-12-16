@@ -136,9 +136,9 @@ GetBoundaryValueFromSetting[par_, value_] :=
             parameters, parameterExpansions, lhs,
             rhs, result},
            dims = Parameters`GetParameterDimensions[par];
-           parameters = Parameters`FindAllParameters[rhs];
+           parameters = Parameters`FindAllParameters[value];
            parameterExpansions = Flatten[GetParameterExpansionRules /@ parameters, 1];
-           rhs = rhs /. Join[GetMacroExpansions[], parameterExpansions];
+           rhs = value /. Join[GetMacroExpansionRules[], parameterExpansions];
            lhs = par /. GetParameterExpansionRules[par];
            (* construct rules *)
            If[dims =!= {1},
