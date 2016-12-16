@@ -896,13 +896,13 @@ SetModelParametersFromEWSB[substitutions_List] :=
 
 ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
     Module[{pars, subs = substitutions, result = ""},
-           pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ substitutions]];
-           pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
                                         Global`INPUT[CConversion`ToValidCSymbol[Sign[p]]]],
                             RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
                                         Global`INPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
            (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ subs;
+           pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ subs]];
+           pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
            Parameters`CreateLocalConstRefs[pars] <> result
           ];
 
