@@ -203,6 +203,21 @@ expected = {Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[Mas
             {} };
 TestEquality[{Sort[(SortSolutionBasis[#])& /@ #[[1]]], #[[2]]}& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
 
+boundaryCondition = {{T[Yu], Azero*Yu}, {T[Yd], Azero*Yd}, {T[Ye], Azero*Ye},
+                     {MassB, m12}, {MassWB, m12}, {MassG, m12}, FlexibleSUSY`FSFindRoot[{mHd2, mHu2}, {mHd2, mHu2}],
+                     {B[\[Mu]], \[Mu]*B0}};
+expected = {Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[MassB, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[MassWB, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[MassG, {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Yu], {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Yd], {m12, Azero}],
+                                           SemiAnalytic`SemiAnalyticSolution[T[Ye], {Azero, m12}],
+                                           SemiAnalytic`SemiAnalyticSolution[mHd2, {mHu2RootSol, mHd2RootSol, m12^2, m12 Azero, Azero^2}],
+                                           SemiAnalytic`SemiAnalyticSolution[mHu2, {mHu2RootSol, mHd2RootSol, m12^2, m12 Azero, Azero^2}],
+                                           SemiAnalytic`SemiAnalyticSolution[B[\[Mu]], {\[Mu] B0, \[Mu] Azero, \[Mu] m12}]}],
+            {} };
+TestEquality[{Sort[(SortSolutionBasis[#])& /@ #[[1]]], #[[2]]}& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
+
 DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
 
 PrintTestSummary[];
