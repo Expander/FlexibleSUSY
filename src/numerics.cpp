@@ -7,6 +7,9 @@
 
 */
 
+/// Comment if you want default softsusy behaviour
+// #define USE_LOOPTOOLS
+
 #include <Eigen/Dense>
 #include "numerics.h"
 #include "dilog.hpp"
@@ -34,7 +37,58 @@ private:
    std::string msg;
 };
 
+} // namespace flexiblesusy
+
+namespace {
+
+// Integration routine needs these variables
+static double mtInt, pInt, m1Int, m2Int;
+static int nInt;
+
+Complex fnfn(double x) {
+  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
+  
+  double xn = 1.0;
+  int i; for (i=1; i<=nInt; i++) xn = xn * x;
+  return xn * 
+    log( ((1 - x) * sqr(m1Int) + x * sqr(m2Int) - x * (1 - x) *
+	  sqr(pInt) - iEpsilon)
+	 / sqr(mtInt));
 }
+
+Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
+{
+  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
+
+  double xn = 1.0;
+
+  for (int i = 1; i <= n1; i++)
+     xn *= x;
+
+  return xn *
+    log(((1 - x) * sqr(m1) + x * sqr(m2)
+         - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
+}
+
+/// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
+template <typename T>
+T divide_finite(T a, T b) {
+   T result = a / b;
+   if (!std::isfinite(result))
+      result = std::numeric_limits<T>::max();
+   return result;
+}
+
+double integrandThreshbnr(double x) {
+  return fnfn(x).real();
+}
+
+double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt)
+{
+  return fnfn(x, n1, p, m1, m2, mt).real();
+}
+
+} // anonymous namespace
 
 double calcDerivative(double (*func)(double), double x, double h, double
 		      *err){
@@ -127,57 +181,6 @@ ArrayXd dd_threadsave(double x, const ArrayXd&, int n1, double p, double m1, dou
   return dydx;
 }
 
-double integrandThreshbnr(double x) {
-  return fnfn(x).real();
-}
-
-double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt)
-{
-  return fnfn(x, n1, p, m1, m2, mt).real();
-}
-
-// Integration routine needs these variables
-static double mtInt, pInt, m1Int, m2Int;
-static int nInt;
-
-Complex fnfn(double x) {
-  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
-  
-  double xn = 1.0;
-  int i; for (i=1; i<=nInt; i++) xn = xn * x;
-  return xn * 
-    log( ((1 - x) * sqr(m1Int) + x * sqr(m2Int) - x * (1 - x) *
-	  sqr(pInt) - iEpsilon)
-	 / sqr(mtInt));
-}
-
-Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
-{
-  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
-
-  double xn = 1.0;
-
-  for (int i = 1; i <= n1; i++)
-     xn *= x;
-
-  return xn *
-    log(((1 - x) * sqr(m1) + x * sqr(m2)
-         - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
-}
-
-namespace {
-
-/// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
-template <typename T>
-T divide_finite(T a, T b) {
-   T result = a / b;
-   if (!std::isfinite(result))
-      result = std::numeric_limits<T>::max();
-   return result;
-}
-
-} // anonymous namespace
-
 // Returns real part of integral
 double bIntegral(int n1, double p, double m1, double m2, double mt) {
   using namespace flexiblesusy::runge_kutta;
@@ -216,6 +219,7 @@ double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
   return v(0) - 1.0;
 }
 
+namespace {
 double fB(const Complex & a) {
   /// First, special cases at problematic points
   const double x = a.real();
@@ -229,7 +233,8 @@ double fB(const Complex & a) {
 
   return ans.real();
 }
-  
+} // anonymous namespace
+
 /*
   Analytic expressions follow for above integrals: sometimes useful!
   From hep-ph/9606211
@@ -298,6 +303,7 @@ double b0(double p, double m1, double m2, double q) {
   return ans;
 }
 
+namespace {
 double fB_fast(const Complex& a) {
 
   const double x = a.real();
@@ -311,6 +317,7 @@ double fB_fast(const Complex& a) {
 
   return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
 }
+} // anonymous namespace
 
 double b0_fast(double p, double m1, double m2, double q) {
   // protect against infrared divergence
@@ -614,158 +621,12 @@ double c0(double m1, double m2, double m3) {
   return ans;
 }
 
-double truncGaussWidthHalf(long & idum) {
-  for (;;) {
-    double a = ran1(idum);
-    if (a < 0.5) return a * 2.0;
-	else return fabs(gasdev(idum)) + 1.;
-  }
-}
-
-double gasdev(long & idum) {
-  static int iset=0;
-  static double gset;
-  double fac,rsq,v1,v2;
-  
-  if  (iset == 0) {
-    do {
-      v1=2.0*ran1(idum)-1.0;
-      v2=2.0*ran1(idum)-1.0;
-      rsq=v1*v1+v2*v2;
-    } while (rsq >= 1.0 || rsq == 0.0);
-    fac=sqrt(-2.0*log(rsq)/rsq);
-    gset=v1*fac;
-    iset=1;
-    return v2*fac;
-  } else {
-    iset=0;
-    return gset;
-  }
-}
-
-double ran1(long & idum) {
-  const int IA = 16807, IM = 2147483647, IQ = 127773, IR = 2836, NTAB = 32, 
-    NDIV = 1+(IM-1)/NTAB;
-  const double AM = 1.0 / double(IM), EPS = 1.2e-15, RNMX = 1.0 - EPS;
-  int j;
-  long k;
-  static long iy=0;
-  static long iv[NTAB];
-  double temp;
-
-  if (idum <= 0 || !iy) {
-    if (-(idum) < 1) idum=1;
-    else idum = -(idum);
-    for (j=NTAB+7;j>=0;j--) {
-      k=(idum)/IQ;
-      idum=IA*(idum-k*IQ)-IR*k;
-      if (idum < 0) idum += IM;
-      if (j < NTAB) iv[j] = idum;
-    }
-    iy=iv[0];
-  }
-  k=(idum)/IQ;
-  idum=IA*(idum-k*IQ)-IR*k;
-  if (idum < 0) idum += IM;
-  j=iy/NDIV;
-  iy=iv[j];
-  iv[j] = idum;
-  if ((temp=AM*iy) > RNMX) return RNMX;
-  else return temp;
-}
-
-double cauchyRan(long & idum) {
-  double x = ran1(idum) - 0.5;
-  double unNormalised = tan(x * PI);
-  return unNormalised;
-}
-
-int bin(double data, double start, double end, int numBins) {
-  double range = end - start;
-  double binSize = range / double(numBins);
-  return int((data - start) / binSize + 1.);
-}
-
-double logOfSum(double a, double b) {
-  double max = maximum(a, b);
-  double min = minimum(a, b);
-
-  if (max + min < 0. || max == 0.) return asin(1.0);
-  double ans = log(max);
-  ans = ans + log (1.0 + min / max);
-
-  return ans;
-}
-
-double sumOfExp(double a, double b) {
-  double max = maximum(a, b);
-  double min = minimum(a, b);
-  
-  /// this underflow determines whether it's actually worth adding the two
-  /// figures... any more than 15 digits and it's just going to be the maximum
-  /// one. 
-  const double underflowTol = 15.0 * log(10.);
-  if ((max - min) > underflowTol) return exp(max);
-  else return exp(max) * (1.0 + exp(min - max));
-}
-
 double dilog(double x) {
   return gm2calc::dilog(x);
 }
 
 Complex dilog(const Complex & x) {
   return gm2calc::dilog(x);
-}
-
-
-DoubleVector getRandomDirection(int n, int & numChanged,
-				long & idum) {
-  DoubleVector del(n);
-
-  int i; 
-
-  double length = 0.;
-  do {
-    numChanged = 0;
-    for (i=1; i<=n; i++) {
-	del(i) = gasdev(idum);
-	numChanged++;
-    }
-    length = sqrt(del.dot(del));
-  }
-  while (length < EPSTOL);
-
-  del = 1.0 / sqrt(del.dot(del)) * del;
-  return del;
-}
-
-
-double calcCL(double cl, const DoubleVector & l) {
-  DoubleVector s(l.sort());
-
-  double fr = 0., likelihood = 0., tot = 0.;
-  int i; 
-  for (i=s.displayStart(); i<=s.displayEnd(); i++) tot = tot + s.display(i);
-  for (i=s.displayStart(); i<=s.displayEnd(); i++) {
-    fr = fr + s.display(i) / tot;
-    if (fr > (1.0 - cl)) {
-      likelihood = s.display(i);
-      // bail out of loop
-      i = s.displayEnd() + 1;
-    }
-  }
-  return likelihood;
-}
-
-double calc1dFraction(double y, const DoubleVector & l) {
-  double n = 0., lMax = l.max();
-  double tot = 0.;
-  int i; for (i=1; i<=l.displayEnd(); i++) {
-    if (l.display(i) <= y * lMax) n = n + l.display(i);
-    tot = tot + l.display(i);
-  }
-
-  return n / tot;
 }
 
 double fps(double z) {
@@ -794,139 +655,6 @@ double fs(double z) {
 double ffbar(double z) {
   return z * 0.5 * (2.0 + log(z) - fps(z));
 }
-
-#define JMAX 20
-
-#define FUNC(x) ((*func)(x))
-
-double trapzd(double (*func)(double), double a, double b, int n, double /* EPS */) {
-	double x,tnm,sum,del;
-	static double s;
-	int it,j;
-
-	if (n == 1) {
-		return (s=0.5*(b-a)*(FUNC(a)+FUNC(b)));
-	} else {
-		for (it=1,j=1;j<n-1;j++) it <<= 1;
-		tnm=it;
-		del=(b-a)/tnm;
-		x=a+0.5*del;
-		for (sum=0.0,j=1;j<=it;j++,x+=del) sum += FUNC(x);
-		s=0.5*(s+(b-a)*sum/tnm);
-		return s;
-	}
-}
-#undef JMAX
-
-double midpnt(double (*func)(double), double a, double b, int n) {
-	double x,tnm,sum,del,ddel;
-	static double s;
-	int it,j;
-
-	if (n == 1) {
-		return (s=(b-a)*FUNC(0.5*(a+b)));
-	} else {
-		for(it=1,j=1;j<n-1;j++) it *= 3;
-		tnm=it;
-		del=(b-a)/(3.0*tnm);
-		ddel=del+del;
-		x=a+0.5*del;
-		sum=0.0;
-		for (j=1;j<=it;j++) {
-			sum += FUNC(x);
-			x += ddel;
-			sum += FUNC(x);
-			x += del;
-		}
-		s=(s+(b-a)*sum/tnm)/3.0;
-		return s;
-	}
-}
-
-double edgefn(double x, double y, double z) {
-  return (x - y) * (y - z) / y;
-}
-double mllMax(double mChi1, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double chi   = sqr(mChi1);
-  double expression = edgefn(xi, l, chi);
-  if (mChi2 < mSlep) expression = sqr(mChi2-mChi1);
-  if (expression < 0.) return -numberOfTheBeast; 
-  return sqrt(expression);
-}
-
-double mllq(double mSq, double mChi1, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double chi   = sqr(mChi1);
-  double q     = sqr(mSq);
-  if (sqr(l) < q * chi && q * chi < sqr(xi) && sqr(xi) * chi < q * sqr(l))
-    return (mSq - mChi1);
-  double exp1  = edgefn(q, xi, chi);
-  if (exp1 < 0.) exp1 = -numberOfTheBeast; 
-  double exp2  = edgefn(q, l, chi);
-  if (exp2 < 0.) exp2 = -numberOfTheBeast; 
-  double exp3  = (q * l - xi * chi) * (xi - l) / (xi * l);
-  if (exp3 < 0.) exp3 = -numberOfTheBeast; 
-  double expression = maximum(maximum(exp1, exp2), exp3);
-  if (mChi2 < mSlep  && xi > sqr(q) * sqr(chi) ) return (mSq - mChi1);
-  if (mChi2 < mSlep  && xi < sqr(q) * sqr(chi) )  expression = edgefn(q,xi,chi);  
-  return sqrt(expression);
-}
-
-double llqThresh(double mSq, double mChi1, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double chi   = sqr(mChi1);
-  double q     = sqr(mSq);
-  double ans   = 2.0 * l * (q - xi) * (xi - chi) + 
-    (q + xi) * (xi - l) * (l - chi) - (q - xi) * 
-    sqrt(sqr(xi + l) * sqr(l + chi) - 16. * xi * sqr(l) * chi); 
-  if (ans < 0.) return -numberOfTheBeast;
-  return sqrt(ans / (4.0 * l * xi));
-}
-
-double lqnear(double mSq, double /* mChi1 */, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double q     = sqr(mSq);
-  double expression = (q - xi) * (xi - l) / xi;
-  if (expression < 0.) return -numberOfTheBeast;
-  return sqrt(expression);
-}
-
-double lqfar(double mSq, double mChi1, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double chi   = sqr(mChi1);
-  double q     = sqr(mSq);
-  double expression = (q - xi) * (l - chi) / l;
-  if (expression < 0.) return -numberOfTheBeast;
-  return sqrt(expression);
-}
-
-double lqhigh(double mSq, double mChi1, double mSlep, double mChi2) {
-  double mlqnear = lqnear(mSq, mChi1, mSlep, mChi2);
-  double mlqfar  = lqfar(mSq, mChi1, mSlep, mChi2);
-if (mChi2 < mSlep) {return sqrt(edgefn(sqr(mSq),sqr(mChi2),sqr(mChi1)));}
-  return maximum(mlqnear, mlqfar);
-}
-
-double lqlow(double mSq, double mChi1, double mSlep, double mChi2) {
-  double xi    = sqr(mChi2);
-  double l     = sqr(mSlep);
-  double chi   = sqr(mChi1);
-  double q     = sqr(mSq);
-  double mlqnear = lqnear(mSq, mChi1, mSlep, mChi2);
-  double mlqother  = (q - xi) * (l - chi) / (2.0 * l - chi);
-  if (mlqother < 0.) mlqother = -numberOfTheBeast;
-  else mlqother = sqrt(mlqother);
-
-  return minimum(mlqnear, mlqother);
-}
-
-
 
 DoubleMatrix display3x3RealMixing(double theta12, double theta13, 
 				  double theta23, double d) {
@@ -958,66 +686,6 @@ DoubleMatrix display3x3RealMixing(double theta12, double theta13,
 
   return ckmMatrix;
   
-}
-
-void getAngles(const DoubleMatrix & v, double & t12, double & t13, 
-	       double & t23, double & d) {
-  int pf = 1;
-  t23 = atan(v.display(2, 3) / v.display(3, 3));
-  t13 = asin(v.display(1, 3));
-  if (t13 < 0.) {
-    pf = -1; 
-    t13 = -t13;
-  }
-  d = acos(double(pf));
-  t12 = asin(v.display(1, 2) / cos(t13));
-}
-
-bool midPtStep(DoubleVector & xi, 
-	      DoubleVector (*derivs)(double t, const DoubleVector & v), 
-	      double tInitial, double tStep) {
-  /// initial guess
-  DoubleVector xiPlus1Old(xi + tStep * derivs(tInitial + tStep, xi));
-  DoubleVector xiPlus1New(xi.displayEnd());
-
-  double diff = numberOfTheBeast, delta = 0.;
-  int count = 0;
-  while (diff > 1.0e-15 && count < 100) {
-    count++;
-    xiPlus1New = xi + tStep * derivs(tInitial + tStep, 0.5*(xi + xiPlus1Old));
-    double max = -1.; /// difference between iterations
-      int i; for (i=1; i<=xi.displayEnd(); i++) {
-	if (fabs(xiPlus1New(i)) < 1.0e-12) 
-	delta = fabs(xiPlus1New(i) - xiPlus1Old(i));
-      else delta = fabs(1.- xiPlus1Old(i) / xiPlus1New(i));
-      if (delta > max) max = delta;
-      }
-
-    diff = max;
-
-    xiPlus1Old = xiPlus1New;
-  }
-  xi = xiPlus1New;
-  if (count < 100) return false;
-  return true;
-}
-
-/// Do a fixed number of steps of approximately reversible integration: hoping
-/// it will help convergence in difficult cases. It is really *slow* though.
-bool integrateReversibly(DoubleVector & xi, 
-			 DoubleVector (*derivs)(double t, 
-						const DoubleVector & v), 
-			 double tInitial, double tFinal, int numSteps) {
-  bool err = false;
-  double tStep = (tFinal - tInitial) / double(numSteps);
-
-  double t = tInitial;
-  int i; for (i=0; i<=numSteps; i++) {
-
-    if (midPtStep(xi, derivs, t, tStep)) err = true;
-    t = tStep * double(i) + tInitial;
-  }
-  return err;
 }
 
 double den(double a, int b) {
@@ -1052,166 +720,6 @@ double fin(double mm1, double mm2) {
   else return 7.-sqr(PI)/6.;  
 }
 
-/// You will need to clear this lot up....
-DoubleMatrix fdjac(int n, DoubleVector x, const DoubleVector & fvec,
-	   void (*vecfunc)(const DoubleVector &, DoubleVector &)) {
-  double EPS = maximum(TOLERANCE, 1.0e-4);
-  int i,j;
-  double h,temp;
-  
-  DoubleVector f(1, n);
-  DoubleMatrix df(n, n);
-  for (j=1; j<=n; j++) {
-    temp = x(j);
-    h = EPS * fabs(temp);
-    if (h == 0.0) h = EPS;
-    x(j) = temp + h;
-    h = x(j) - temp;
-    (*vecfunc)(x, f);
-    x(j) = temp;
-    for (i=1; i<=n; i++) df(i, j) = (f(i) - fvec.display(i)) / h;
-  }
-  return df;
-}
-
-/// Get rid of int n
-void lubksb(const DoubleMatrix & a, int n, int *indx, DoubleVector & b) {
-  int i,ii=0,ip,j;
-  float sum;
-  
-  for (i=1;i<=n;i++) {
-    ip=indx[i];
-    sum=b(ip);
-    b(ip)=b(i);
-    if (ii)
-      for (j=ii;j<=i-1;j++) sum -= a(i, j) * b(j);
-    else if (sum) ii=i;
-    b(i)=sum;
-  }
-  for (i=n;i>=1;i--) {
-    sum=b(i);
-    for (j=i+1;j<=n;j++) sum -= a(i, j)*b(j);
-    b(i)=sum/a(i, i);
-  }
-}
-
-
-/// Get rid of int n
-void ludcmp(DoubleMatrix & a, int n, int *indx, double & d) {
-  const double TINY = 1.0e-20;
-  int i,imax=0,j,k;
-  float big,dum,sum=0.0,temp;
-  DoubleVector vv(n);
-
-  d=1.0;
-  for (i=1;i<=n;i++) {
-    big=0.0;
-    for (j=1;j<=n;j++)
-      if ((temp=fabs(a(i, j))) > big) big=temp;
-    if (big == 0.0) {
-      ostringstream ii; ii.setf(ios::scientific, ios::floatfield);
-      ii.precision(6);
-      ii << "Singular matrix in routine ludcmp: ";
-      ii << a;
-      throw flexiblesusy::SoftsusyNumericsError(ii.str());
-    }
-    vv(i)=1.0 / big;
-  }
-  for (j=1;j<=n;j++) {
-    for (i=1;i<j;i++) {
-      sum=a(i, j);
-      for (k=1;k<i;k++) sum -= a(i, k)*a(k, j);
-      a(i, j)=sum;
-    }
-    big=0.0;
-    for (i=j;i<=n;i++) {
-      sum=a(i, j);
-      for (k=1;k<j;k++)
-	sum -= a(i, k)*a(k, j);
-      a(i, j)=sum;
-      if ( (dum=vv(i)*fabs(sum)) >= big) {
-	big=dum;
-	imax=i;
-      }
-    }
-    if (j != imax) {
-      for (k=1;k<=n;k++) {
-	dum=a(imax, k);
-	a(imax, k)=a(j, k);
-	a(j, k)=dum;
-      }
-      d = -(d);
-      vv(imax)=vv(j);
-    }
-    indx[j]=imax;
-    if (a(j, j) == 0.0) a(j, j) = TINY;
-    if (j != n) {
-      dum=1.0/(a(j, j));
-      for (i=j+1;i<=n;i++) a(i, j) *= dum;
-    }
-  }
-}
-
-
-DoubleVector testDerivs(double /* x */, const DoubleVector & y) {
-  DoubleVector dydx(3);
-  dydx(1) = y(1) * y(2) * y(2);
-  dydx(2) = y(2) * y(1) * y(3);
-  dydx(3) = y(1);
-  return dydx;
-}
-
-void qrdcmp(DoubleMatrix & a, int n, DoubleVector & c, DoubleVector & d, 
-	    int & sing) {
-  int i,j,k;
-  double scale,sigma,sum,tau;
-  
-  sing = 0;
-  for (k=1; k<n; k++) {
-    scale = 0.0;
-    for (i=k; i<=n; i++) scale = maximum(scale, fabs(a(i, k)));
-    if (scale == 0.0) {
-      sing = 1;
-      c(k) = d(k) = 0.0;
-    } else {
-      for (i=k;i<=n;i++) a(i, k) /= scale;
-      for (sum=0.0,i=k;i<=n;i++) sum += sqr(a(i, k));
-      sigma = sign(sqrt(sum), a(k, k));
-      a(k, k) += sigma;
-      c(k) = sigma * a(k, k);
-      d(k) = -scale*sigma;
-      for (j=k+1; j<=n; j++) {
-	for (sum=0.0,i=k;i<=n;i++) sum += a(i, k) * a(i, j);
-	tau = sum / c(k);
-	for (i=k; i<=n; i++) a(i, j) -= tau * a(i, k);
-      }
-    }
-  }
-  d(n) = a(n, n);
-  if (d(n) == 0.0) sing = 1;
-}
-
-
-void qrupdt(DoubleMatrix & r, DoubleMatrix & qt, int n, 
-	    DoubleVector & u, DoubleVector & v) {
-  //	void rotate(float **r, float **qt, int n, int i, float a, float b);
-	int i,j,k;
-
-	for (k=n; k>=1; k--) {
-	  if (u(k)) break;
-	}
-	if (k < 1) k = 1;
-	for (i=k-1; i>=1; i--) {
-	  rotate(r, qt, n, i, u(i), -u(i+1));
-	  if (u(i) == 0.0) u(i) = fabs(u(i+1));
-		else if (fabs(u(i)) > fabs(u(i+1)))
-			u(i) = fabs(u(i)) * sqrt(1.0 + sqr(u(i+1) / u(i)));
-		else u(i) = fabs(u(i+1)) * sqrt(1.0 + sqr(u(i) / u(i+1)));
-	}
-	for (j=1; j<=n; j++) r(1, j) += u(1) * v(j);
-	for (i=1; i<k; i++)
-	  rotate(r, qt, n, i, r(i, i), -r(i+1, i));
-}
 
 void rotate(DoubleMatrix & r, DoubleMatrix & qt, int n, int i, float a, 
 	    float b) {
@@ -1242,16 +750,4 @@ void rotate(DoubleMatrix & r, DoubleMatrix & qt, int n, int i, float a,
     qt(i, j) = c * y - s * w;
     qt(i+1, j) = s * y + c * w;
   }
-}
-
-void rsolv(const DoubleMatrix & a, int n, const DoubleVector & d, 
-	   DoubleVector & b) {
-	int i,j;
-	double sum;
-
-	b(n) /= d(n);
-	for (i=n-1; i>=1; i--) {
-	  for (sum=0.0, j=i+1; j<=n; j++) sum += a(i, j) * b(j);
-	  b(i)=(b(i) - sum) / d(i);
-	}
 }
