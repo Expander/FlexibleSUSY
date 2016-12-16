@@ -3623,6 +3623,17 @@ std::complex<double> Standard_model::self_energy_Fd_1(double p , unsigned gO1, u
 
 }
 
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_1(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fd_1(p, i, k);
+
+   return self_energy;
+}
+
 std::complex<double> Standard_model::self_energy_Fd_PR(double p , unsigned gO1, unsigned gO2) const
 {
    std::complex<double> result;
@@ -3644,6 +3655,17 @@ std::complex<double> Standard_model::self_energy_Fd_PR(double p , unsigned gO1, 
 
    return result * oneOver16PiSqr;
 
+}
+
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_PR(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fd_PR(p, i, k);
+
+   return self_energy;
 }
 
 std::complex<double> Standard_model::self_energy_Fd_PL(double p , unsigned gO1, unsigned gO2) const
@@ -3669,6 +3691,17 @@ std::complex<double> Standard_model::self_energy_Fd_PL(double p , unsigned gO1, 
 
 }
 
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_PL(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fd_PL(p, i, k);
+
+   return self_energy;
+}
+
 std::complex<double> Standard_model::self_energy_Fu_1(double p , unsigned gO1, unsigned gO2) const
 {
    std::complex<double> result;
@@ -3690,6 +3723,17 @@ std::complex<double> Standard_model::self_energy_Fu_1(double p , unsigned gO1, u
 
    return result * oneOver16PiSqr;
 
+}
+
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_1(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fu_1(p, i, k);
+
+   return self_energy;
 }
 
 std::complex<double> Standard_model::self_energy_Fu_PR(double p , unsigned gO1, unsigned gO2) const
@@ -3715,6 +3759,17 @@ std::complex<double> Standard_model::self_energy_Fu_PR(double p , unsigned gO1, 
 
 }
 
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_PR(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fu_PR(p, i, k);
+
+   return self_energy;
+}
+
 std::complex<double> Standard_model::self_energy_Fu_PL(double p , unsigned gO1, unsigned gO2) const
 {
    std::complex<double> result;
@@ -3738,6 +3793,17 @@ std::complex<double> Standard_model::self_energy_Fu_PL(double p , unsigned gO1, 
 
 }
 
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_PL(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fu_PL(p, i, k);
+
+   return self_energy;
+}
+
 std::complex<double> Standard_model::self_energy_Fe_1(double p , unsigned gO1, unsigned gO2) const
 {
    std::complex<double> result;
@@ -3757,6 +3823,17 @@ std::complex<double> Standard_model::self_energy_Fe_1(double p , unsigned gO1, u
 
    return result * oneOver16PiSqr;
 
+}
+
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fe_1(p, i, k);
+
+   return self_energy;
 }
 
 std::complex<double> Standard_model::self_energy_Fe_PR(double p , unsigned gO1, unsigned gO2) const
@@ -3780,6 +3857,17 @@ std::complex<double> Standard_model::self_energy_Fe_PR(double p , unsigned gO1, 
 
 }
 
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_PR(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fe_PR(p, i, k);
+
+   return self_energy;
+}
+
 std::complex<double> Standard_model::self_energy_Fe_PL(double p , unsigned gO1, unsigned gO2) const
 {
    std::complex<double> result;
@@ -3799,6 +3887,17 @@ std::complex<double> Standard_model::self_energy_Fe_PL(double p , unsigned gO1, 
 
    return result * oneOver16PiSqr;
 
+}
+
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_PL(double p) const
+{
+   Eigen::Matrix<std::complex<double>,3,3> self_energy;
+
+   for (unsigned i = 0; i < 3; i++)
+      for (unsigned k = 0; k < 3; k++)
+         self_energy(i, k) = self_energy_Fe_PL(p, i, k);
+
+   return self_energy;
 }
 
 std::complex<double> Standard_model::self_energy_VZ_heavy(double) const
@@ -4174,22 +4273,12 @@ void Standard_model::calculate_MVZ_pole()
 void Standard_model::calculate_MFd_pole()
 {
    // diagonalization with medium precision
-   Eigen::Matrix<double,3,3> self_energy_1;
-   Eigen::Matrix<double,3,3> self_energy_PL;
-   Eigen::Matrix<double,3,3> self_energy_PR;
    const Eigen::Matrix<double,3,3> M_tree(get_mass_matrix_Fd());
    for (unsigned es = 0; es < 3; ++es) {
       const double p = Abs(MFd(es));
-      for (unsigned i1 = 0; i1 < 3; ++i1) {
-         for (unsigned i2 = 0; i2 < 3; ++i2) {
-            self_energy_1(i1,i2)  = Re(self_energy_Fd_1(p,i1,i2)
-               );
-            self_energy_PL(i1,i2) = Re(self_energy_Fd_PL(p,i1,i2
-               ));
-            self_energy_PR(i1,i2) = Re(self_energy_Fd_PR(p,i1,i2
-               ));
-         }
-      }
+      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fd_1(p));
+      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fd_PL(p));
+      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fd_PR(p));
       const Eigen::Matrix<double,3,3> delta_M(- self_energy_PR *
          M_tree - M_tree * self_energy_PL - self_energy_1);
       const Eigen::Matrix<double,3,3> M_1loop(M_tree + delta_M);
@@ -4293,22 +4382,12 @@ void Standard_model::calculate_MFu_pole()
 void Standard_model::calculate_MFe_pole()
 {
    // diagonalization with medium precision
-   Eigen::Matrix<double,3,3> self_energy_1;
-   Eigen::Matrix<double,3,3> self_energy_PL;
-   Eigen::Matrix<double,3,3> self_energy_PR;
    const Eigen::Matrix<double,3,3> M_tree(get_mass_matrix_Fe());
    for (unsigned es = 0; es < 3; ++es) {
       const double p = Abs(MFe(es));
-      for (unsigned i1 = 0; i1 < 3; ++i1) {
-         for (unsigned i2 = 0; i2 < 3; ++i2) {
-            self_energy_1(i1,i2)  = Re(self_energy_Fe_1(p,i1,i2)
-               );
-            self_energy_PL(i1,i2) = Re(self_energy_Fe_PL(p,i1,i2
-               ));
-            self_energy_PR(i1,i2) = Re(self_energy_Fe_PR(p,i1,i2
-               ));
-         }
-      }
+      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fe_1(p));
+      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fe_PL(p));
+      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fe_PR(p));
       const Eigen::Matrix<double,3,3> delta_M(- self_energy_PR *
          M_tree - M_tree * self_energy_PL - self_energy_1);
       const Eigen::Matrix<double,3,3> M_1loop(M_tree + delta_M);
