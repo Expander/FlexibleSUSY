@@ -1,6 +1,9 @@
 
 BeginPackage["Utils`"];
 
+AppendOrReplaceInList::usage="Replaces existing element in list,
+or appends it if not already present.";
+
 ApplyAndConcatenate::usage = "Applies a function to a list and
 concatenates the resulting list.";
 
@@ -87,6 +90,17 @@ FSImportString::usage = "Returns the content of a file in form of a string.  If 
 FSStringPadLeft::usage = "StringPadLeft[] for Mathematica 9 and below.";
 
 Begin["`Private`"];
+
+AppendOrReplaceInList[values_List, elem_, test_:SameQ] :=
+    Module[{matches, result},
+           matches = test[elem, #]& /@ values;
+           matches = (If[# =!= True && # =!= False, False, #])& /@ matches;
+           If[!Or @@ matches,
+              result = Append[values, elem];,
+              result = ReplacePart[values, Position[matches, True] -> elem];
+             ];
+           result
+          ];
 
 ApplyAndConcatenate[Func_, l_List] :=
     Module[{result = ""},
