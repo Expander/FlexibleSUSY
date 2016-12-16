@@ -46,6 +46,8 @@ definitions for two-loop Higgs self-energies in the NMSSM";
 CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
 
+SelfEnergyIsSymmetric::usage = "";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -78,6 +80,12 @@ GetField[sym_] :=
                  "or SelfEnergies`Tadpole head: ", sym];
            Quit[1];
           ];
+
+SelfEnergyIsSymmetric[s_SelfEnergies`FSSelfEnergy] :=
+    SelfEnergyIsSymmetric[GetField[s]];
+
+SelfEnergyIsSymmetric[particle_] :=
+    Length[Flatten[{FindMixingMatrixSymbolFor[particle]}]] === 1;
 
 ExprContainsParticle[expr_, particle_] :=
     !FreeQ[expr,particle];
