@@ -18,6 +18,7 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
+#include <cmath>
 
 using namespace softsusy;
 using namespace Eigen;
@@ -45,6 +46,12 @@ namespace {
 static double mtInt, pInt, m1Int, m2Int;
 static int nInt;
 
+inline void shft2(double & a, double & b, double c) { a = b; b = c; }
+
+inline void shft3(double & a, double & b, double & c, double d) { 
+  a = b; b = c; c = d;
+}
+
 Complex fnfn(double x) {
   const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
   
@@ -56,18 +63,13 @@ Complex fnfn(double x) {
 	 / sqr(mtInt));
 }
 
-Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
+double refnfn(double x, double p, double m1, double m2, double mt) noexcept
 {
-  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
+  const static std::complex<double> iEpsilon(0.0, TOLERANCE * 1.0e-20);
 
-  double xn = 1.0;
-
-  for (int i = 1; i <= n1; i++)
-     xn *= x;
-
-  return xn *
-    log(((1 - x) * sqr(m1) + x * sqr(m2)
-         - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
+  return std::real(x *
+    std::log(((1 - x) * sqr(m1) + x * sqr(m2)
+              - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt)));
 }
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
@@ -83,9 +85,88 @@ double integrandThreshbnr(double x) {
   return fnfn(x).real();
 }
 
-double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt)
+double integrandThreshbnr(double x, double p, double m1, double m2, double mt) noexcept
 {
-  return fnfn(x, n1, p, m1, m2, mt).real();
+  return refnfn(x, p, m1, m2, mt);
+}
+
+ArrayXd dd(double x, const ArrayXd& /* y */) {
+  ArrayXd dydx(1);
+  dydx(0) = -integrandThreshbnr(x);
+  return dydx;
+}
+
+ArrayXd dd_threadsave(double x, const ArrayXd&, double p, double m1, double m2, double mt)
+{
+  ArrayXd dydx(1);
+  dydx(0) = -integrandThreshbnr(x, p, m1, m2, mt);
+  return dydx;
+}
+
+// Returns real part of integral
+double bIntegral(int n1, double p, double m1, double m2, double mt) {
+  using namespace flexiblesusy::runge_kutta;
+
+  // Set global variables so that integration function can access them
+  nInt = n1; pInt = p; m1Int = m1; m2Int = m2; mtInt = mt;
+  double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
+  
+  ArrayXd v(1); double eps = TOLERANCE * 1.0e-3;
+  v(0) = 1.0;
+
+  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
+  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
+  integrateOdes(v, from, to, eps, guess, hmin, dd, odeStepper);
+  
+  return v(0) - 1.0;
+}
+
+// Returns real part of integral
+double bIntegral_threadsave(double p, double m1, double m2, double mt) {
+  using namespace flexiblesusy;
+
+  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
+  const double eps = TOLERANCE * 1.0e-3;
+  ArrayXd v(1);
+  v(0) = 1.0;
+
+  runge_kutta::Derivs derivs =
+     [p, m1, m2, mt] (double x, const Eigen::ArrayXd& y) {
+        return dd_threadsave(x, y, p, m1, m2, mt);
+     };
+
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
+                             runge_kutta::odeStepper);
+
+  return v(0) - 1.0;
+}
+
+double fB(const Complex & a) noexcept {
+  /// First, special cases at problematic points
+  const double x = a.real();
+  if (fabs(x) < EPSTOL) {
+    const double ans = -1. - x + sqr(x) * 0.5;
+    return ans;
+  }
+  if (close(x, 1., EPSTOL)) return -1.;
+
+  const Complex ans(log(1. - a) - 1. - a * log(1.0 - 1.0 / a));
+
+  return ans.real();
+}
+
+double fB_fast(const Complex& a) noexcept {
+
+  const double x = a.real();
+
+  if (fabs(x) < EPSTOL) {
+    return -1. - x + sqr(x) * 0.5;
+  }
+
+  if (close(x, 1., EPSTOL))
+     return -1.;
+
+  return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
 }
 
 } // anonymous namespace
@@ -125,12 +206,6 @@ double calcDerivative(double (*func)(double), double x, double h, double
   return ans;
 }
 
-inline void shft2(double & a, double & b, double c) { a = b; b = c; }
-
-inline void shft3(double & a, double & b, double & c, double d) { 
-  a = b; b = c; c = d;
-}
-
 double findMinimum(double ax, double bx, double cx, double (*f)(double),
 		   double tol, double *xmin)
 {
@@ -165,75 +240,6 @@ double findMinimum(double ax, double bx, double cx, double (*f)(double),
     return f2; 
   }
 }
-
-
-
-ArrayXd dd(double x, const ArrayXd& /* y */) {
-  ArrayXd dydx(1);
-  dydx(0) = -integrandThreshbnr(x);
-  return dydx;
-}
-
-ArrayXd dd_threadsave(double x, const ArrayXd&, int n1, double p, double m1, double m2, double mt)
-{
-  ArrayXd dydx(1);
-  dydx(0) = -integrandThreshbnr(x, n1, p, m1, m2, mt);
-  return dydx;
-}
-
-// Returns real part of integral
-double bIntegral(int n1, double p, double m1, double m2, double mt) {
-  using namespace flexiblesusy::runge_kutta;
-
-  // Set global variables so that integration function can access them
-  nInt = n1; pInt = p; m1Int = m1; m2Int = m2; mtInt = mt;
-  double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-  
-  ArrayXd v(1); double eps = TOLERANCE * 1.0e-3;
-  v(0) = 1.0;
-
-  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
-  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
-  integrateOdes(v, from, to, eps, guess, hmin, dd, odeStepper);
-  
-  return v(0) - 1.0;
-}
-
-// Returns real part of integral
-double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
-  using namespace flexiblesusy;
-
-  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-  const double eps = TOLERANCE * 1.0e-3;
-  ArrayXd v(1);
-  v(0) = 1.0;
-
-  runge_kutta::Derivs derivs =
-     [n1, p, m1, m2, mt] (double x, const Eigen::ArrayXd& y) {
-        return dd_threadsave(x, y, n1, p, m1, m2, mt);
-     };
-
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
-                             runge_kutta::odeStepper);
-
-  return v(0) - 1.0;
-}
-
-namespace {
-double fB(const Complex & a) {
-  /// First, special cases at problematic points
-  const double x = a.real();
-  if (fabs(x) < EPSTOL) {
-    const double ans = -1. - x + sqr(x) * 0.5;
-    return ans;
-  }
-  if (close(x, 1., EPSTOL)) return -1.;
-
-  const Complex ans(log(1. - a) - 1. - a * log(1.0 - 1.0 / a));
-
-  return ans.real();
-}
-} // anonymous namespace
 
 /*
   Analytic expressions follow for above integrals: sometimes useful!
@@ -302,22 +308,6 @@ double b0(double p, double m1, double m2, double q) {
 
   return ans;
 }
-
-namespace {
-double fB_fast(const Complex& a) {
-
-  const double x = a.real();
-
-  if (fabs(x) < EPSTOL) {
-    return -1. - x + sqr(x) * 0.5;
-  }
-
-  if (close(x, 1., EPSTOL))
-     return -1.;
-
-  return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
-}
-} // anonymous namespace
 
 double b0_fast(double p, double m1, double m2, double q) {
   // protect against infrared divergence
@@ -422,7 +412,7 @@ double b1(double p, double m1, double m2, double q) {
           (24.*pow(m12 - m22,6)) - 0.5*log(m22/q2);
     }
   } else {
-    ans = bIntegral_threadsave(1, p, m1, m2, q);
+    ans = bIntegral_threadsave(p, m1, m2, q);
   }
 
 #ifdef USE_LOOPTOOLS
