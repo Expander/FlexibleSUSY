@@ -85,9 +85,9 @@ double integrandThreshbnr(double x) {
   return fnfn(x).real();
 }
 
-double integrandThreshbnr(double x, double p, double m1, double m2, double mt) noexcept
+double integrandThreshbnr(double x, double p, double m1, double m2, double q) noexcept
 {
-  return refnfn(x, p, m1, m2, mt);
+  return refnfn(x, p, m1, m2, q);
 }
 
 ArrayXd dd(double x, const ArrayXd& /* y */) {
