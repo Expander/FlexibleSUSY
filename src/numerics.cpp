@@ -169,6 +169,9 @@ double fB_fast(const Complex& a) noexcept {
   return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
 }
 
+constexpr double pow3(double a) noexcept { return a*a*a; }
+constexpr double pow6(double a) noexcept { return a*a*a*a*a*a; }
+
 } // anonymous namespace
 
 double calcDerivative(double (*func)(double), double x, double h, double
@@ -405,11 +408,11 @@ double b1(double p, double m1, double m2, double q) {
           - 0.5*log(m22/q2);
     } else {
        ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*log(m12/m22))/(4.*sqr(m12 - m22))
-          + (p2*(4*pow(m12 - m22,3)*
+          + (p2*(4*pow3(m12 - m22)*
                  (2*m14 + 5*m12*m22 - m24) +
                  (3*m18 + 44*m16*m22 - 36*m14*m24 - 12*m12*m26 + m28)*p2
                  - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*log(m12/m22)))/
-          (24.*pow(m12 - m22,6)) - 0.5*log(m22/q2);
+          (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
     ans = bIntegral_threadsave(p, m1, m2, q);
