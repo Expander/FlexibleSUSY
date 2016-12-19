@@ -8,7 +8,7 @@ LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/susy.cpp \
 		$(DIR)/tensor.cpp
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBSoftsusyMSSM_SRC  += \
 		$(DIR)/SoftsusyMSSM_two_scale.cpp \
 		$(DIR)/SoftsusyMSSM_two_scale_convergence_tester.cpp \

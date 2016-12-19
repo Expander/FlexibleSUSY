@@ -136,7 +136,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/xpr-matrix.h \
 		$(DIR)/xpr-vector.h
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \

@@ -54,11 +54,11 @@ TEST_SH := \
 		$(DIR)/test_run_all_spectrum_generators.sh \
 		$(DIR)/test_space_dir.sh
 
-ifneq ($(findstring lattice,$(ALGORITHMS)),)
+ifneq ($(findstring lattice,$(SOLVERS)),)
 TEST_SRC +=
 endif
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp

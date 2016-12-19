@@ -4,7 +4,7 @@ WITH_$(MODNAME) := sm
 
 LIBsm_SRC    :=
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBsm_SRC    += \
 		$(DIR)/sm_two_scale.cpp \
 		$(DIR)/sm_two_scale_convergence_tester.cpp \
