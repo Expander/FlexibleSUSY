@@ -1276,7 +1276,7 @@ WriteTwoScaleMatchingClass[files_List] :=
 WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
-WriteSemiAnalyticModelClass[semiAnalyticSolns_List, extraSymbols_List, files_List] :=
+WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
     Module[{semiAnalyticSolutionsDefs = "", semiAnalyticSolutionsInit = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            semiAnalyticSolutionsInit = SemiAnalytic`CreateSemiAnalyticSolutionsInitialization[semiAnalyticSolns];
@@ -2098,7 +2098,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
-            semiAnalyticSolns, semiAnalyticAux},
+            semiAnalyticBCs, semiAnalyticSolns},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2822,13 +2822,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  Quit[1];
                 ];
 
-              {semiAnalyticSolns, semiAnalyticAux}
-                     = SemiAnalytic`GetSemiAnalyticSolutions[SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
-                                                                                                        FlexibleSUSY`SUSYScaleInput,
-                                                                                                        FlexibleSUSY`HighScaleInput}]];
+              semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
+                                                                           FlexibleSUSY`SUSYScaleInput,
+                                                                           FlexibleSUSY`HighScaleInput}];
+              semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
 
               Print["Creating class for semi-analytic model ..."];
-              WriteSemiAnalyticModelClass[semiAnalyticSolns, semiAnalyticAux,
+              WriteSemiAnalyticModelClass[semiAnalyticBCs, semiAnalyticSolns,
                                           {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.hpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.hpp"}]},
                                            {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.cpp.in"}],

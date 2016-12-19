@@ -275,7 +275,7 @@ GetCoefficientAndTerm[monomial_, dimZeroPars_List] :=
 
 GetSolutionBasis[pars_List, subs_List] :=
     Module[{i, dimZeroPars, dimensions, expr,
-            monomials = {}, coeff, term, basis = {}, auxiliary = {}},
+            monomials = {}, coeff, term, basis = {}},
            If[pars =!= {},
               dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
               dimensions = Parameters`GetParameterDimensions[#]& /@ pars;
@@ -290,15 +290,14 @@ GetSolutionBasis[pars_List, subs_List] :=
                   {coeff, term} = GetCoefficientAndTerm[monomials[[i]], dimZeroPars];
                   If[term =!= Null,
                      basis = Append[basis, term];,
-                     (* assume pure dimensionless quantities are implicitly
-                        multiplied by identity with appropriate dimension *)
-                     basis = Append[basis, CConversion`ToValidCSymbol[coeff]];
-                     auxiliary = Append[auxiliary, Rule[CConversion`ToValidCSymbol[coeff], coeff]];
+                     Print["Error: cannot interpret settings for parameters ", InputForm[pars]];
+                     Print["   because a boundary value cannot be detemined."];
+                     Quit[1];
                     ];
                  ];
               basis = DeleteDuplicates[basis];
              ];
-           {basis, auxiliary}
+           basis
           ];
 
 ListAllTermsOfForm[par_, termTypes_List] :=
@@ -315,13 +314,13 @@ ListAllTermsOfForm[par_, termTypes_List] :=
           ];
 
 GetLinearSystemSolutions[pars_List, subs_List, nonHomogeneousTerms_List:{}] :=
-    Module[{basis, solns = {}, auxiliary = {}},
-           {basis, auxiliary} = GetSolutionBasis[pars, subs];
+    Module[{basis, solns = {}},
+           basis = GetSolutionBasis[pars, subs];
            solns = SemiAnalyticSolution[#, basis]& /@ pars;
            If[nonHomogeneousTerms =!= {},
               solns = SemiAnalyticSolution[#[[1]], Join[#[[2]], ListAllTermsOfForm[#[[1]], nonHomogeneousTerms]]]& /@ solns;
              ];
-           {solns, auxiliary}
+           solns
           ];
 
 GetBoundaryConditionsFor[pars_List, subs_List] := Select[subs, MemberQ[pars, Parameters`StripIndices[#[[1]]]]&];
@@ -374,7 +373,7 @@ GetSemiAnalyticSolutions[settings_List] :=
             diracPars, diracBCs, diracSolns = {}, scalarMasses, scalarMassesBCs,
             scalarMassesSolns = {}, softBilinears, softBilinearsBCs,
             softBilinearsSolns = {}, softLinears, softLinearBCs,
-            softLinearSolns = {}, auxiliary, result = {}, extraDefs = {}},
+            softLinearSolns = {}, result = {}},
 
            boundaryValSubs = GetBoundaryValueSubstitutions[settings];
 
@@ -387,14 +386,12 @@ GetSemiAnalyticSolutions[settings_List] :=
               dimOnePars = Complement[dimOnePars, diracPars];
              ];
            dimOneBCs = GetBoundaryConditionsFor[dimOnePars, boundaryValSubs];
-           {dimOneSolns, auxiliary} = GetLinearSystemSolutions[dimOnePars, dimOneBCs];
+           dimOneSolns = GetLinearSystemSolutions[dimOnePars, dimOneBCs];
            result = Join[result, dimOneSolns];
-           extraDefs = Join[extraDefs, auxiliary];
 
            If[diracPars =!= {},
-              {diracSolns, auxiliary} = GetLinearSystemSolutions[diracPars, diracBCs];
+              diracSolns = GetLinearSystemSolutions[diracPars, diracBCs];
               result = Join[result, diracSolns];
-              extraDefs = Join[extraDefs, auxiliary];
              ];
 
            scalarMasses = SelectParametersWithMassDimension[allSemiAnalyticParameters, 2];
@@ -405,29 +402,26 @@ GetSemiAnalyticSolutions[settings_List] :=
               scalarMasses = Complement[scalarMasses, softBilinears];
              ];
            scalarMassesBCs = GetBoundaryConditionsFor[scalarMasses, boundaryValSubs];
-           {scalarMassesSolns, auxiliary}
+           scalarMassesSolns
                = GetScalarMassesSolutions[scalarMasses, scalarMassesBCs, dimOneSolns];
            result = Join[result, scalarMassesSolns];
-           extraDefs = Join[extraDefs, auxiliary];
 
            If[SARAH`SupersymmetricModel,
-              {softBilinearsSolns, auxiliary}
+              softBilinearsSolns
                   = GetSoftBilinearsSolutions[softBilinears, softBilinearsBCs, dimOneSolns];
               result = Join[result, softBilinearsSolns];
-              extraDefs = Join[extraDefs, auxiliary];
              ];
 
            If[SARAH`SupersymmetricModel,
               softLinears = SelectParametersWithMassDimension[allSemiAnalyticParameters, 3];
               softLinearsBCs = GetBoundaryConditionsFor[softLinears, boundaryValSubs];
-              {softLinearsSolns, auxiliary}
+              softLinearsSolns
                   = GetSoftLinearsSolutions[softLinears, softLinearsBCs, dimOneSolns,
                                             diracSolns, scalarMassesSolns, softBilinearsSolns];
               result = Join[result, softLinearsSolns];
-              extraDefs = Join[extraDefs, auxiliary];
              ];
 
-           {result, extraDefs}
+           result
           ];
 
 CreateCoefficientNames[solution_SemiAnalyticSolution] :=
