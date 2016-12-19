@@ -438,6 +438,20 @@ GetSemiAnalyticSolutions[settings_List] :=
            result
           ];
 
+ReplaceImplicitConstraints[settings_List] :=
+    Module[{macroPosns, macros, fixedPars, values, replacements},
+           macroPosns = Position[settings, FlexibleSUSY`FSMinimize[__] | \
+                                           FlexibleSUSY`FSFindRoot[__] | \
+                                           FlexibleSUSY`FSSolveEWSBFor[__]];
+           macros = Extract[settings, macroPosns];
+           fixedPars = Select[Constraint`FindFixedParametersFromConstraint[{#}],
+                              IsSemiAnalyticParameter]& /@ macros;
+           values = GetPlaceholders[#]& /@ macros;
+           replacements = MapIndexed[(Utils`Zip[#1, values[[#2[[1]]]]])&, fixedPars];
+           replacements = MapThread[Rule, {macroPosns, replacements}];
+           ReplacePart[settings, Rule[#[[1]], Sequence @@ #[[2]]] & /@ replacements]
+          ];
+
 CreateCoefficientNames[solution_SemiAnalyticSolution] :=
     Module[{par, basis, basisSize, i},
            par = CConversion`ToValidCSymbolString[GetName[solution]];
