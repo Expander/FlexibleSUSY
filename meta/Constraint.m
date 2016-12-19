@@ -179,7 +179,7 @@ ApplyConstraint[p_, _] :=
           Quit[1];
          ];
 
-ApplyConstraints[settings_List] :=
+ApplyConstraints[settings_List, modelName_String:"MODEL"] :=
     Module[{result, noMacros, noTemp},
            noMacros = DeleteCases[
                settings,
@@ -195,7 +195,7 @@ ApplyConstraints[settings_List] :=
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> AddBetas[noMacros];
            result = result <> "\n";
-           (result = result <> ApplyConstraint[#, "MODEL"])& /@ noTemp;
+           (result = result <> ApplyConstraint[#, modelName])& /@ noTemp;
            Return[result];
           ];
 
