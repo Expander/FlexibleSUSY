@@ -83,7 +83,7 @@ expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[B[\[Mu]], BMuEWSBSol] }
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
 
 boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, FlexibleSUSY`FSSolveEWSBFor[{\[Mu], B[\[Mu]]}],
-                      {mHu2, \[Mu]^2}, FlexibleSUSY`FSMinimize[{T[Yu][1,1], mq2[1,1]}, {TYu[1,1]^2 + mq2[1,1]^2}] };
+                      {mHu2, \[Mu]^2}, FlexibleSUSY`FSMinimize[{T[Yu][1,1], mq2[1,1]}, {T[Yu][1,1]^2 + mq2[1,1]^2}] };
 expected = { Rule[mHd2, m0^2], Rule[mHu2, \[Mu]^2], Rule[B[\[Mu]], BMuEWSBSol],
              Rule[T[Yu][1,1], TYu11MinSol], Rule[mq2[1,1], mq211MinSol] };
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
@@ -93,6 +93,14 @@ expected = { Rule[mHd2, m0^2], Rule[mHu2, m0^2], Rule[mq2[1,1], m0^2], Rule[mq2[
              Rule[mq2[2,1], 0], Rule[mq2[2,2], m0^2], Rule[mq2[2,3], 0], Rule[mq2[3,1], 0], Rule[mq2[3,2], 0],
              Rule[mq2[3,3], m0^2] };
 TestEquality[SemiAnalytic`Private`GetBoundaryValueSubstitutions[boundaryCondition], expected];
+
+Print["testing ReplaceImplicitConstraints ..."];
+boundaryCondition = { {mHd2, m0^2}, {mHu2, m0^2}, FlexibleSUSY`FSSolveEWSBFor[{\[Mu], B[\[Mu]]}],
+                      {MassB, m12}, FlexibleSUSY`FSMinimize[{T[Yu][1,1], mq2[1,1]},{T[Yu][1,1]^2 + mq2[1,1]^2}],
+                      {T[Yu][2,2], Azero} };
+expected = { {mHd2, m0^2}, {mHu2, m0^2}, {B[\[Mu]], BMuEWSBSol}, {MassB, m12}, {T[Yu][1,1], TYu11MinSol},
+             {mq2[1,1], mq211MinSol}, {T[Yu][2,2], Azero} };
+TestEquality[SemiAnalytic`Private`ReplaceImplicitConstraints[boundaryCondition], expected];
 
 Print["testing GetSolutionBasis ..."];
 
