@@ -96,7 +96,7 @@ ArrayXd dd(double x, const ArrayXd& /* y */) {
   return dydx;
 }
 
-ArrayXd dd_threadsave(double x, const ArrayXd&, double p, double m1, double m2, double q)
+ArrayXd dd_threadsave(double x, double p, double m1, double m2, double q) noexcept
 {
   ArrayXd dydx(1);
   dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
@@ -131,8 +131,8 @@ double bIntegral_threadsave(double p, double m1, double m2, double q) {
   v(0) = 1.0;
 
   runge_kutta::Derivs derivs =
-     [p, m1, m2, q] (double x, const Eigen::ArrayXd& y) {
-        return dd_threadsave(x, y, p, m1, m2, q);
+     [p, m1, m2, q] (double x, const Eigen::ArrayXd&) {
+        return dd_threadsave(x, p, m1, m2, q);
      };
 
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
