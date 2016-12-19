@@ -1276,8 +1276,14 @@ WriteTwoScaleMatchingClass[files_List] :=
 WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
-WriteSemiAnalyticModelClass[files_List] :=
-    WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
+WriteSemiAnalyticModelClass[semiAnalyticSolns_List, extraSymbols_List, files_List] :=
+    Module[{semiAnalyticSolutionsDefs = "", semiAnalyticSolutionsInit = ""},
+           semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
+           semiAnalyticSolutionsInit = SemiAnalytic`CreateSemiAnalyticSolutionsInitialization[semiAnalyticSolns];
+           WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
+                                            "@semiAnalyticSolutionsInit@" -> IndentText[WrapLines[semiAnalyticSolutionsInit]],
+                                            Sequence @@ GeneralReplacementRules[] }];
+          ];
 
 WriteTwoScaleSpectrumGeneratorClass[files_List] :=
     Module[{fillSMFermionPoleMasses = ""},
@@ -2091,7 +2097,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
-            Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile},
+            Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
+            semiAnalyticSolns, semiAnalyticAux},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2802,8 +2809,27 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
               PrintHeadline["Creating semi-analytic solver"];
 
+              SemiAnalytic`SetSemiAnalyticParameters[BetaFunction`GetName[#]& /@ susyBreakingBetaFunctions];
+
+              (* @note currently require all semi-analytic parameters to be set at same scale *)
+              If[!SemiAnalytic`CheckSemiAnalyticBoundaryConditions[{FlexibleSUSY`LowScaleInput,
+                                                                    FlexibleSUSY`SUSYScaleInput,
+                                                                    FlexibleSUSY`HighScaleInput}],
+                 Print["Error: the requested boundary conditions are not"];
+                 Print["   supported by the semi-analytic solver."];
+                 Print["   Please modify the boundary conditions or disable"];
+                 Print["   the semi-analytic solver."];
+                 Quit[1];
+                ];
+
+              {semiAnalyticSolns, semiAnalyticAux}
+                     = SemiAnalytic`GetSemiAnalyticSolutions[SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
+                                                                                                        FlexibleSUSY`SUSYScaleInput,
+                                                                                                        FlexibleSUSY`HighScaleInput}]];
+
               Print["Creating class for semi-analytic model ..."];
-              WriteSemiAnalyticModelClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.hpp.in"}],
+              WriteSemiAnalyticModelClass[semiAnalyticSolns, semiAnalyticAux,
+                                          {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.hpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.hpp"}]},
                                            {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.cpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.cpp"}]}}];

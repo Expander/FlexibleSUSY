@@ -18,6 +18,9 @@ IsSemiAnalyticParameter::usage="";
 GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
 
+CreateSemiAnalyticSolutionsDefinitions::usage="";
+CreateSemiAnalyticSolutionsInitialization::usage="";
+
 Begin["`Private`"];
 
 allSemiAnalyticParameters = {};
@@ -425,6 +428,43 @@ GetSemiAnalyticSolutions[settings_List] :=
              ];
 
            {result, extraDefs}
+          ];
+
+CreateCoefficientNames[solution_SemiAnalyticSolution] :=
+    Module[{par, basis, basisSize, i},
+           par = CConversion`ToValidCSymbolString[GetName[solution]];
+           basis = GetBasis[solution];
+           basisSize = Length[basis];
+	   Table[par <> "_coeff_" <> ToString[i], {i, 1, basisSize}]
+          ];
+
+CreateSemiAnalyticSolutionsDefinitions[solution_SemiAnalyticSolution] :=
+    Module[{par, type, coeffs, defs = ""},
+           par = GetName[solution];
+           type = CConversion`CreateCType[Parameters`GetType[par]];
+           coeffs = CreateCoefficientNames[solution];
+           Utils`StringJoinWithSeparator[(type <> " " <> #)& /@ coeffs, ";\n"] <> ";\n"
+          ];
+
+CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
+    Module[{def = ""},
+           (def = def <> CreateSemiAnalyticSolutionsDefinitions[#])& /@ solutions;
+           Return[def];
+          ];
+
+CreateSemiAnalyticSolutionDefaultInitialization[solution_SemiAnalyticSolution] :=
+    Module[{par, type = "", coeffs, defaults},
+           par = GetName[solution];
+           type = Parameters`GetType[par];
+	   coeffs = CreateCoefficientNames[solution];
+           defaults = CConversion`CreateDefaultConstructor[#, type]& /@ coeffs;
+	   "," <> Utils`StringJoinWithSeparator[defaults, ","]
+          ];
+
+CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
+    Module[{def = ""},
+           (def = def <> CreateSemiAnalyticSolutionDefaultInitialization[#])& /@ solutions;
+           Return[def];
           ];
 
 DependsAtMostOn[num_?NumericQ, pars_List] := True;

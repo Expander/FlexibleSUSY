@@ -40,6 +40,7 @@ using namespace @ModelName@_info;
 
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    : @ModelName@_mass_eigenstates(input_)
+@semiAnalyticSolutionsInit@
 {
 }
 

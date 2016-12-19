@@ -58,6 +58,10 @@ public:
    virtual void run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
+
+private:
+   // semi-analytic solution coefficients
+@semiAnalyticSolutionsDefs@
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Semi_analytic>&);
