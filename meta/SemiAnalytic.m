@@ -31,6 +31,9 @@ GetName[SemiAnalyticSolution[name_, basis_List]] := name;
 
 GetBasis[SemiAnalyticSolution[name_, basis_List]] := basis;
 
+GetBoundaryValueParameters[solutions_List] :=
+    DeleteDuplicates[Flatten[(Parameters`FindAllParameters[GetBasis[#]])& /@ solutions]];
+
 IsDimensionOne[par_] :=
     Module[{dimOnePars},
            dimOnePars = { SARAH`BetaTijk };
@@ -106,6 +109,13 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
            True
           ];
 
+RemoveUnusedSettings[constraints_List] :=
+    Module[{isUsed},
+           isUsed[setting_] := Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
+                                            allSemiAnalyticParameters] =!= {};
+           Select[constraints, isUsed[#]&]
+          ];
+
 SelectSemiAnalyticConstraint[constraints_List] :=
     Module[{i, sortedPars, fixedPars, result = {}},
            sortedPars = Sort[allSemiAnalyticParameters];
@@ -116,7 +126,7 @@ SelectSemiAnalyticConstraint[constraints_List] :=
                   result = constraints[[i]];
                  ];
               ];
-           result
+           RemoveUnusedSettings[result]
           ];
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
@@ -463,9 +473,6 @@ CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
            (def = def <> CreateSemiAnalyticSolutionDefaultInitialization[#])& /@ solutions;
            Return[def];
           ];
-
-GetBoundaryValueParameters[solutions_List] :=
-    DeleteDuplicates[Flatten[(Parameters`FindAllParameters[GetBasis[#]])& /@ solutions]];
 
 CreateBoundaryValuesDefinitions[solutions_List] :=
     Module[{boundaryValues, defns},
