@@ -63,13 +63,13 @@ Complex fnfn(double x) {
 	 / sqr(mtInt));
 }
 
-double refnfn(double x, double p, double m1, double m2, double mt) noexcept
+double refnfn(double x, double p, double m1, double m2, double q) noexcept
 {
   const static std::complex<double> iEpsilon(0.0, TOLERANCE * 1.0e-20);
 
   return std::real(x *
     std::log(((1 - x) * sqr(m1) + x * sqr(m2)
-              - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt)));
+              - x * (1 - x) * sqr(p) - iEpsilon) / sqr(q)));
 }
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
