@@ -29,11 +29,6 @@ double calcDerivative(double (*func)(double),
 double findMinimum(double ax, double bx, double cx, double (*f)(double),
 		   double tol, double *xmin);
 
-/// Returns real part of b function, less accurate than analytic expressions
-double bIntegral(int n, double p, double m1, double m2, double mt);
-/// Returns real part of b function, less accurate than analytic expressions (thread-save version)
-double bIntegral_threadsave(int n, double p, double m1, double m2, double mt);
-
 /// Passarino-Veltman function definition
 double b0(double p, double m1, double m2, double q);
 /// Passarino-Veltman function definition

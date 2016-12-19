@@ -52,17 +52,6 @@ inline void shft3(double & a, double & b, double & c, double d) {
   a = b; b = c; c = d;
 }
 
-Complex fnfn(double x) {
-  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
-  
-  double xn = 1.0;
-  int i; for (i=1; i<=nInt; i++) xn = xn * x;
-  return xn * 
-    log( ((1 - x) * sqr(m1Int) + x * sqr(m2Int) - x * (1 - x) *
-	  sqr(pInt) - iEpsilon)
-	 / sqr(mtInt));
-}
-
 double refnfn(double x, double p, double m1, double m2, double q) noexcept
 {
   const static std::complex<double> iEpsilon(0.0, TOLERANCE * 1.0e-20);
@@ -81,22 +70,12 @@ T divide_finite(T a, T b) {
    return result;
 }
 
-double integrandThreshbnr(double x) {
-  return fnfn(x).real();
-}
-
 double integrandThreshbnr(double x, double p, double m1, double m2, double q) noexcept
 {
   return refnfn(x, p, m1, m2, q);
 }
 
-ArrayXd dd(double x, const ArrayXd& /* y */) {
-  ArrayXd dydx(1);
-  dydx(0) = -integrandThreshbnr(x);
-  return dydx;
-}
-
-ArrayXd dd_threadsave(double x, double p, double m1, double m2, double q) noexcept
+ArrayXd dd(double x, double p, double m1, double m2, double q) noexcept
 {
   ArrayXd dydx(1);
   dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
@@ -104,25 +83,8 @@ ArrayXd dd_threadsave(double x, double p, double m1, double m2, double q) noexce
 }
 
 // Returns real part of integral
-double bIntegral(int n1, double p, double m1, double m2, double mt) {
-  using namespace flexiblesusy::runge_kutta;
-
-  // Set global variables so that integration function can access them
-  nInt = n1; pInt = p; m1Int = m1; m2Int = m2; mtInt = mt;
-  double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-  
-  ArrayXd v(1); double eps = TOLERANCE * 1.0e-3;
-  v(0) = 1.0;
-
-  // Runge-Kutta, f(b) = int^b0 I(x) dx, I is integrand => d f / db = I(b)
-  // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
-  integrateOdes(v, from, to, eps, guess, hmin, dd, odeStepper);
-  
-  return v(0) - 1.0;
-}
-
-// Returns real part of integral
-double bIntegral_threadsave(double p, double m1, double m2, double q) {
+double bIntegral(double p, double m1, double m2, double q)
+{
   using namespace flexiblesusy;
 
   const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
@@ -132,7 +94,7 @@ double bIntegral_threadsave(double p, double m1, double m2, double q) {
 
   runge_kutta::Derivs derivs =
      [p, m1, m2, q] (double x, const Eigen::ArrayXd&) {
-        return dd_threadsave(x, p, m1, m2, q);
+        return dd(x, p, m1, m2, q);
      };
 
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
@@ -141,32 +103,17 @@ double bIntegral_threadsave(double p, double m1, double m2, double q) {
   return v(0) - 1.0;
 }
 
-double fB(const Complex & a) noexcept {
-  /// First, special cases at problematic points
-  const double x = a.real();
-  if (fabs(x) < EPSTOL) {
-    const double ans = -1. - x + sqr(x) * 0.5;
-    return ans;
-  }
-  if (close(x, 1., EPSTOL)) return -1.;
-
-  const Complex ans(log(1. - a) - 1. - a * log(1.0 - 1.0 / a));
-
-  return ans.real();
-}
-
-double fB_fast(const Complex& a) noexcept {
-
+double fB(const std::complex<double>& a) noexcept
+{
   const double x = a.real();
 
-  if (fabs(x) < EPSTOL) {
-    return -1. - x + sqr(x) * 0.5;
-  }
+  if (fabs(x) < EPSTOL)
+     return -1. - x + sqr(x) * 0.5;
 
   if (close(x, 1., EPSTOL))
      return -1.;
 
-  return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
+  return std::real(std::log(1. - a) - 1. - a * std::log(1.0 - 1.0 / a));
 }
 
 constexpr double pow3(double a) noexcept { return a*a*a; }
@@ -276,14 +223,11 @@ double b0(double p, double m1, double m2, double q) {
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
-    
-    Complex xPlus, xMinus;
-
-    xPlus = (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) /
-      (2. * pSq);
-    xMinus = 2. * (mMaxSq - iEpsilon) /
-      (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
+     const std::complex<double> iEpsilon(0.0, EPSTOL * mMaxSq);
+     const std::complex<double> xPlus =
+        (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) / (2. * pSq);
+     const std::complex<double> xMinus = 2. * (mMaxSq - iEpsilon) /
+        (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
@@ -360,7 +304,7 @@ double b1(double p, double m1, double m2, double q) {
           (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
-    ans = bIntegral_threadsave(p, m1, m2, q);
+    ans = bIntegral(p, m1, m2, q);
   }
 
 #ifdef USE_LOOPTOOLS
