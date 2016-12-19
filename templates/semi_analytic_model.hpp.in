@@ -59,9 +59,15 @@ public:
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 
+   void calculate_coefficients(double);
+
 private:
    // semi-analytic solution coefficients
 @semiAnalyticSolutionsDefs@
+   // boundary values
+@boundaryValuesDefs@
+
+   void set_parameters_to_boundary_values(@ModelName@_soft_parameters&) const;
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Semi_analytic>&);

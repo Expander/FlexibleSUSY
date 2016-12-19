@@ -41,6 +41,7 @@ using namespace @ModelName@_info;
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    : @ModelName@_mass_eigenstates(input_)
 @semiAnalyticSolutionsInit@
+@boundaryValuesInit@
 {
 }
 
@@ -77,6 +78,13 @@ void CLASSNAME::set_precision(double p)
 {
    @ModelName@_mass_eigenstates::set_precision(p);
 }
+
+void CLASSNAME::set_model_parameters_to_boundary_values(@ModelName@_soft_parameters& model) const
+{
+@applySemiAnalyticBCs@
+}
+
+@calculateCoeffFunctions@
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@<Semi_analytic>& model)
 {

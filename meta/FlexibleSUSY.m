@@ -1277,11 +1277,16 @@ WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
 WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
-    Module[{semiAnalyticSolutionsDefs = "", semiAnalyticSolutionsInit = ""},
+    Module[{semiAnalyticSolutionsDefs = "", semiAnalyticSolutionsInit = "",
+            boundaryValuesDefs = "", boundaryValuesInit = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            semiAnalyticSolutionsInit = SemiAnalytic`CreateSemiAnalyticSolutionsInitialization[semiAnalyticSolns];
+           boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
+           boundaryValuesInit = SemiAnalytic`CreateBoundaryValuesInitialization[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@semiAnalyticSolutionsInit@" -> IndentText[WrapLines[semiAnalyticSolutionsInit]],
+                                            "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
+                                            "@boundaryValuesInit@" -> IndentText[WrapLines[boundaryValuesInit]],
                                             Sequence @@ GeneralReplacementRules[] }];
           ];
 

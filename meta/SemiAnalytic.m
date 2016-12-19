@@ -20,6 +20,8 @@ solutions implied by the given list of boundary conditions.";
 
 CreateSemiAnalyticSolutionsDefinitions::usage="";
 CreateSemiAnalyticSolutionsInitialization::usage="";
+CreateBoundaryValuesDefinitions::usage="";
+CreateBoundaryValuesInitialization::usage="";
 
 Begin["`Private`"];
 
@@ -203,6 +205,7 @@ GetBoundaryValueSubstitutions[settings_List] :=
                       {_, _},
                       rules = GetBoundaryValueFromSetting[noTemp[[i,1]], noTemp[[i,2]]];
                       finalRules = Last[(finalRules = Utils`AppendOrReplaceInList[finalRules, #, test])& /@ rules];,
+                      (* @todo intermediate boundary values can be added to a list of extra parameters *)
                       FlexibleSUSY`FSMinimize[__],
                       fixedPars = Constraint`FindFixedParametersFromConstraint[{noTemp[[i]]}];
                       boundaryValues = Symbol[CConversion`ToValidCSymbolString[#] <> "MinSol"]& /@ fixedPars;
@@ -458,6 +461,25 @@ CreateSemiAnalyticSolutionDefaultInitialization[solution_SemiAnalyticSolution] :
 CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
     Module[{def = ""},
            (def = def <> CreateSemiAnalyticSolutionDefaultInitialization[#])& /@ solutions;
+           Return[def];
+          ];
+
+GetBoundaryValueParameters[solutions_List] :=
+    DeleteDuplicates[Flatten[(Parameters`FindAllParameters[GetBasis[#]])& /@ solutions]];
+
+CreateBoundaryValuesDefinitions[solutions_List] :=
+    Module[{boundaryValues, defns},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           defns = (CConversion`CreateCType[Parameters`GetType[#]]
+                    <> " basis_" <> CConversion`ToValidCSymbolString[#])& /@ boundaryValues;
+           Utils`StringJoinWithSeparator[defns, ";\n"] <> ";\n"
+          ];
+
+CreateBoundaryValuesInitialization[solutions_List] :=
+    Module[{boundaryValues, def = ""},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           (def = def <> "," <> CConversion`CreateDefaultConstructor["basis_" <> CConversion`ToValidCSymbolString[#],
+                                                                     Parameters`GetType[#]])& /@ boundaryValues;
            Return[def];
           ];
 
