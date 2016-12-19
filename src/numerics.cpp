@@ -96,10 +96,10 @@ ArrayXd dd(double x, const ArrayXd& /* y */) {
   return dydx;
 }
 
-ArrayXd dd_threadsave(double x, const ArrayXd&, double p, double m1, double m2, double mt)
+ArrayXd dd_threadsave(double x, const ArrayXd&, double p, double m1, double m2, double q)
 {
   ArrayXd dydx(1);
-  dydx(0) = -integrandThreshbnr(x, p, m1, m2, mt);
+  dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
   return dydx;
 }
 
@@ -122,7 +122,7 @@ double bIntegral(int n1, double p, double m1, double m2, double mt) {
 }
 
 // Returns real part of integral
-double bIntegral_threadsave(double p, double m1, double m2, double mt) {
+double bIntegral_threadsave(double p, double m1, double m2, double q) {
   using namespace flexiblesusy;
 
   const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
@@ -131,8 +131,8 @@ double bIntegral_threadsave(double p, double m1, double m2, double mt) {
   v(0) = 1.0;
 
   runge_kutta::Derivs derivs =
-     [p, m1, m2, mt] (double x, const Eigen::ArrayXd& y) {
-        return dd_threadsave(x, y, p, m1, m2, mt);
+     [p, m1, m2, q] (double x, const Eigen::ArrayXd& y) {
+        return dd_threadsave(x, y, p, m1, m2, q);
      };
 
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
