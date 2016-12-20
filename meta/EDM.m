@@ -7,9 +7,9 @@ Initialize::usage="Initialize the EDM module.";
 SetEDMFields::usage="Set the fields for which the EDMs shall be calculated.";
 CreateFields::usage="Returns the c++ code that contains all field fields";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
+CreateInterfaceFunctions::usage="Returns the c++ code containing the interface functions {prototypeCode, definitionCode}."
 CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
 CreateDefinitions::usage="Returns the c++ that contains all function definitions"
-CreateCalculation::usage="Returns the c++ code that performs the actual calculation the magnetic moment";
 
 NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
 
@@ -102,34 +102,68 @@ Module[{code},
        Return[code];
        ];
 
+CreateInterfaceFunctions[] :=
+Module[{prototypes, definitions, evaluators},
+       evaluators = ConcreteDiagramEvaluators[];
+       
+       prototypes = ("namespace " <> FlexibleSUSY`FSModelName <> "_edm {\n" <>
+                     StringJoin @ Riffle[("double calculate_edm_" <> CXXNameOfField[#] <>
+                                          "(" <>
+                                          If[TreeMasses`GetDimension[#] =!= 1,
+                                             " unsigned generationIndex, ",
+                                             " "] <>
+                                          "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );"
+                                          &) /@ edmFields, "\n"] <>
+                     "\n}");
+       
+       definitions = StringJoin @ Riffle[
+                         Module[{field = #[[1]], fieldEvaluators = #[[2]],
+                                 numberOfIndices},
+                                numberOfIndices = Length @ CleanFieldInfo[field][[5]];
+                                
+                                "double " <> FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> CXXNameOfField[field] <>
+                                "(" <>
+                                If[TreeMasses`GetDimension[field] =!= 1,
+                                   " unsigned generationIndex, ",
+                                   " "] <>
+                                "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
+                                "{\n" <>
+                                IndentText @
+                                ("CMSSM_mass_eigenstates model_ = model;\n" <>
+                                 "EvaluationContext context{ model_ };\n" <>
+                                 "std::array<unsigned, " <>
+                                 ToString @ numberOfIndices <>
+                                 "> indices = {" <>
+                                 If[TreeMasses`GetDimension[field] =!= 1,
+                                    " generationIndex" <>
+                                    If[numberOfIndices =!= 1,
+                                       StringJoin @ Table[", 1", {numberOfIndices-1}],
+                                       ""
+                                       ] <> " ",
+                                    If[numberOfIndices =!= 0,
+                                       StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+                                       ""
+                                       ]
+                                    ] <>
+                                 "};\n\n" <>
+                                 
+                                 "double val = 0.0;\n\n" <>
+                                 StringJoin @ Riffle[("val += " <> ToString @ # <>
+                                                      "::value(indices, context);"
+                                                      &) /@ fieldEvaluators, "\n"] <>
+                                 "\n\n" <>
+                                 "return val;"
+                                 ) <>
+                                "\n}"] & /@ evaluators, "\n\n"];
+       
+       Return[{prototypes, definitions}];
+       ];
+
 CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
 CreateDefinitions[vertexRules_List] :=
 (CreateVertices[vertexRules][[2]] <> "\n\n" <>
  CreateEvaluationContextSpecializations[]);
-
-CreateCalculation[] :=
-Module[{code, evaluators},
-       evaluators = ConcreteDiagramEvaluators[];
-       
-       code = "template<class Field> double edm( const typename field_indices<Field>::type &indices, CMSSM_mass_eigenstates& model );\n\n";
-       code = (code <>
-               StringJoin @ Riffle[Module[{field = #[[1]],
-                                           fieldEvaluators = #[[2]]},
-                                          "template<> double edm<" <> CXXNameOfField[field] <>
-                                          ">( const std::array<unsigned, " <> ToString @ Length @ CleanFieldInfo[field][[5]] <>
-                                          "> &indices, CMSSM_mass_eigenstates& model )\n" <>
-                                          "{\n" <>
-                                          IndentText["EvaluationContext context{ model };\n" <>
-                                                     "double val = 0.0;\n\n" <>
-                                                     StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);" &) /@ fieldEvaluators, "\n"] <>
-                                                     "\n\n" <>
-                                                     "return val;"
-                                                     ] <>
-                                          "\n}"] & /@ evaluators, "\n\n"]);
-       
-       Return[code];
-       ];
 
 NPointFunctions[] :=
 Module[{contributingDiagrams, vertices},
@@ -200,9 +234,6 @@ Module[{fields, contributingDiagrams, photonEmitters,
        photonEmitters = DeleteDuplicates @ Flatten[contributingDiagrams[[All, 2]], 1][[All, 3]];
 
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#], numberOfIndices},
-                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {3}];
-                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`lorentz, _}, {3}];
-                                   
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
                                    "template<> double EvaluationContext::mass<" <> ToString[#] <>
@@ -230,9 +261,6 @@ Module[{fields, contributingDiagrams, photonEmitters,
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
                                     photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
                                     numberOfIndices},
-                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {3}];
-                                   fieldInfo = DeleteCases[fieldInfo, {SARAH`lorentz, _}, {3}];
-                                   
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
                                    "template<>\n" <>
@@ -300,8 +328,6 @@ CreateVertices[vertexRules_List] :=
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
            
-           (* TODO: Add every permutation of the above vertices *)
-
            {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
 

@@ -31,13 +31,7 @@
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
-namespace @ModelName@_edm {
-/**
-* @fn calculate_edm_electron
-* @brief Calculates the electromagnetic dipole moment of the electron.
-*/
-double calculate_edm_electron(const @ModelName@_mass_eigenstates& model);
-} // namespace @ModelName@_edm
+@EDM_InterfaceFunctionPrototypes@
 } // namespace flexiblesusy
 
 #endif
