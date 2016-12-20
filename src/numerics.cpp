@@ -92,12 +92,10 @@ double bIntegral(double p, double m1, double m2, double q)
   ArrayXd v(1);
   v(0) = 1.0;
 
-  runge_kutta::Derivs derivs =
-     [p, m1, m2, q] (double x, const Eigen::ArrayXd&) {
-        return dd(x, p, m1, m2, q);
-     };
-
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
+                             [p, m1, m2, q] (double x, const Eigen::ArrayXd&) {
+                                return dd(x, p, m1, m2, q);
+                             },
                              runge_kutta::odeStepper);
 
   return v(0) - 1.0;
