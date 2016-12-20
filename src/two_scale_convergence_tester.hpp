@@ -31,6 +31,7 @@ public:
    virtual ~Convergence_tester();
    virtual bool accuracy_goal_reached() = 0;
    virtual unsigned int max_iterations() const = 0;
+   virtual void restart() = 0;
 };
 
 }

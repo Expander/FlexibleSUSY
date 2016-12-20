@@ -109,7 +109,7 @@ void RGFlow<Two_scale>::solve()
 }
 
 /**
- * Sanity checks the models and boundary condtitions.
+ * Sanity checks the models and boundary conditions.
  */
 void RGFlow<Two_scale>::check_setup() const
 {

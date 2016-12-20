@@ -43,6 +43,7 @@ public:
    virtual bool accuracy_goal_reached() override;
    virtual double get_accuracy_goal() const { return accuracy_goal; }
    virtual unsigned int max_iterations() const override { return max_it; }
+   virtual void restart() override;
    double get_current_accuracy() const { return current_accuracy; }
    /// set maximum number of iterations
    void set_max_iterations(unsigned it) { max_it = it; }
@@ -144,6 +145,14 @@ void Convergence_tester_DRbar<Model<Two_scale> >::run_to_scale()
       last_iteration_model.run_to(scale);
       last_iteration_model.calculate_DRbar_masses();
    }
+}
+
+template <template<class Method> class Model>
+void Convergence_tester_DRbar<Model<Two_scale> >::restart()
+{
+   it_count = 0;
+   current_model = Model<Two_scale>();
+   last_iteration_model = Model<Two_scale>();
 }
 
 } // namespace flexiblesusy
