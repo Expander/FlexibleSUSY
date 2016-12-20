@@ -1,10 +1,29 @@
-// \file rk.hpp
-//    - Project:     SOFTSUSY
-//    - Author:      Ben Allanach, Alexander Voigt
-//    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
-//    - Webpage:     http://allanach.home.cern.ch/allanach/softsusy.html
-//    - Description: Integration of ODEs by Runge Kutta, minimum finding and
-//                 derivative calculation
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+/**
+ * @file rk.hpp
+ * @brief Integration of ODEs by Runge-Kutta
+ * @author Ben Allanach, Alexander Voigt
+ *
+ * The implementation of the Runge-Kutta routines have been derived
+ * from SOFTSUSY [hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305].
+ */
 
 #ifndef RK_H
 #define RK_H
