@@ -93,7 +93,7 @@ void odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
 {
   const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
   const int n = y.size();
-  double errmax, h = htry, htemp, xnew;
+  double errmax, h = htry;
   ArrayType yerr(n), ytemp(n);
 
   for (;;) {
@@ -110,10 +110,9 @@ void odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
        throw NonPerturbativeRunningError(std::exp(*x), max_step_dir, y(max_step_dir));
     }
     if (errmax <= 1.0) break;
-    htemp = SAFETY * h * std::pow(errmax, PSHRNK);
-    h = (h >= 0.0 ? std::max(htemp ,0.1 * h) : std::min(htemp, 0.1 * h));
-    xnew = (*x) + h;
-    if (xnew == *x) {
+    const double htemp = SAFETY * h * std::pow(errmax, PSHRNK);
+    h = (h >= 0.0 ? std::max(htemp, 0.1 * h) : std::min(htemp, 0.1 * h));
+    if (*x + h == *x) {
 #ifdef ENABLE_VERBOSE
        ERROR("At Q = " << std::exp(*x) << " GeV "
              "stepsize underflow in odeStepper in parameter y("
