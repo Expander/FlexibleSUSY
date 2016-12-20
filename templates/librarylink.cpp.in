@@ -142,7 +142,7 @@ public:
    @ModelName@_data() = default;
    @ModelName@_data(const @ModelName@_data&) = default;
    @ModelName@_data(@ModelName@_data&&) = default;
-   virtual ~@ModelName@_data() {};
+   virtual ~@ModelName@_data() {}
    @ModelName@_data& operator=(const @ModelName@_data&) = default;
    @ModelName@_data& operator=(@ModelName@_data&&) = default;
 
@@ -184,7 +184,7 @@ public:
    @ModelName@_model_data() = default;
    @ModelName@_model_data(const @ModelName@_model_data&) = default;
    @ModelName@_model_data(@ModelName@_model_data&&) = default;
-   virtual ~@ModelName@_model_data() {};
+   virtual ~@ModelName@_model_data() {}
    @ModelName@_model_data& operator=(const @ModelName@_model_data&) = default;
    @ModelName@_model_data& operator=(@ModelName@_model_data&&) = default;
 
