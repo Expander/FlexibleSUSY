@@ -111,9 +111,11 @@ void odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
 }
 
 /// Organises integration of 1st order system of ODEs
-template <typename ArrayType, typename Derivs, typename Stepper>
+template <typename ArrayType, typename Derivs,
+          typename Stepper = decltype(runge_kutta::odeStepper<ArrayType,Derivs>)>
 void integrateOdes(ArrayType& ystart, double from, double to, double eps,
-                   double h1, double hmin, Derivs derivs, Stepper rkqs)
+                   double h1, double hmin, Derivs derivs,
+                   Stepper rkqs = runge_kutta::odeStepper<ArrayType,Derivs>)
 {
   const int nvar = ystart.size();
   const int MAXSTP = 400;

@@ -50,7 +50,7 @@ void check_integrateOdes(DoubleVector& parameters,
    int err_eigen = 0;
    try {
       runge_kutta::integrateOdes(parameter_eigen, from, to, tol, guess,
-                                 hmin, beta_eigen, runge_kutta::odeStepper<Eigen::ArrayXd, Derivs>);
+                                 hmin, beta_eigen);
    } catch (Error&) {
       err_eigen = 1;
    }

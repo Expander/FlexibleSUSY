@@ -96,9 +96,7 @@ double bIntegral(double p, double m1, double m2, double q)
      return dd(x, p, m1, m2, q);
   };
 
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
-                             deriv,
-                             runge_kutta::odeStepper<Eigen::Array<double,1,1>, decltype(deriv)>);
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, deriv);
 
   return v(0) - 1.0;
 }

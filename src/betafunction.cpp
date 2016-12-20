@@ -138,8 +138,7 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    const double guess = (from - to) * 0.1; //first step size
    const double hmin = (from - to) * tol * 1.0e-5;
 
-   runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs,
-                              runge_kutta::odeStepper<Eigen::ArrayXd,Derivs>);
+   runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs);
 
    set_scale(x2);
 }
