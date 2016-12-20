@@ -30,7 +30,7 @@ fi
 
 valgrind \
     --tool=callgrind \
-    --separate-threads=no \
+    --separate-threads=yes \
     --dump-instr=yes \
     --simulate-cache=yes \
     --collect-jumps=yes \
