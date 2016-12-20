@@ -1278,15 +1278,19 @@ WriteTwoScaleModelClass[files_List] :=
 
 WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
     Module[{semiAnalyticSolutionsDefs = "", semiAnalyticSolutionsInit = "",
-            boundaryValuesDefs = "", boundaryValuesInit = ""},
+            boundaryValuesDefs = "", boundaryValuesInit = "",
+            applySemiAnalyticBCs = "", calculateCoeffFunctions = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            semiAnalyticSolutionsInit = SemiAnalytic`CreateSemiAnalyticSolutionsInitialization[semiAnalyticSolns];
            boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
            boundaryValuesInit = SemiAnalytic`CreateBoundaryValuesInitialization[semiAnalyticSolns];
+           applySemiAnalyticBCs = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@semiAnalyticSolutionsInit@" -> IndentText[WrapLines[semiAnalyticSolutionsInit]],
                                             "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
                                             "@boundaryValuesInit@" -> IndentText[WrapLines[boundaryValuesInit]],
+                                            "@applySemiAnalyticBCs@" -> IndentText[WrapLines[applySemiAnalyticBCs]],
+                                            "@calculateCoeffFunctions@" -> calculateCoeffFunctions,
                                             Sequence @@ GeneralReplacementRules[] }];
           ];
 
