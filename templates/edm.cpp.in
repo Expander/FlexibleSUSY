@@ -448,17 +448,7 @@ public:
 @EDM_VertexFunctionData@
 }
 
-@EDM_Calculation@
-
-double @ModelName@_edm::calculate_edm_electron(const @ModelName@_mass_eigenstates& model_)
-{
-   // make copy since model is modified via call to calculate_MFe_pole()
-   @ModelName@_mass_eigenstates model(model_);
-
-   @EDM_DeclareElectronIndices@
-
-   return edm<Electron>( electronIndices, model );
-}
+@EDM_InterfaceFunctionDefinitions@
 
 namespace {
 /**
