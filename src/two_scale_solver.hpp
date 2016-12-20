@@ -46,7 +46,7 @@ class Two_scale_running_precision;
  *
  * This boundary condition solver uses the two-scale algorithm to
  * solve the boundary value problem: It uses RG running to iteratively
- * run the models to the boundary condtion (constraint) scales and
+ * run the models to the boundary condition (constraint) scales and
  * imposes the constraints.
  *
  * To add constraints use the add() function.  Matching conditions are
@@ -60,9 +60,14 @@ class Two_scale_running_precision;
 template<>
 class RGFlow<Two_scale> {
 public:
-   RGFlow();
+   /// Create empty two scale solver.
+   /// The RG running precision is set to the default value 0.001.
+   RGFlow() = default;
    RGFlow(const RGFlow&) = delete;
    RGFlow(RGFlow&&) = delete;
+   ~RGFlow() = default;
+   RGFlow& operator=(const RGFlow&) = delete;
+   RGFlow& operator=(RGFlow&&) = delete;
 
    /// add constraint
    void add(Constraint<Two_scale>*, Two_scale_model*);
@@ -126,13 +131,13 @@ private:
       Matching<Two_scale>* matching;
    };
 
-   std::vector<std::shared_ptr<Slider> > sliders; ///< sliders to be run up and down
-   unsigned int iteration;             ///< iteration number (starting at 0)
-   Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
-   Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
-   Two_scale_running_precision* running_precision_calculator; ///< RG running precision calculator
-   double running_precision;           ///< RG running precision
-   double scale;                       ///< current scale
+   std::vector<std::shared_ptr<Slider> > sliders{}; ///< sliders to be run up and down
+   unsigned int iteration{0};             ///< iteration number (starting at 0)
+   Convergence_tester<Two_scale>* convergence_tester{nullptr}; ///< the convergence tester
+   Initial_guesser<Two_scale>* initial_guesser{nullptr};       ///< does initial guess
+   Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
+   double running_precision{1.0e-3};           ///< RG running precision
+   double scale{0.};                           ///< current scale
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
