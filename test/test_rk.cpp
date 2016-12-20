@@ -30,10 +30,11 @@ DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
    return v;
 }
 
+template <typename Derivs>
 void check_integrateOdes(DoubleVector& parameters,
                          double start, double end,
                          Derivative_t beta_legacy,
-                         runge_kutta::Derivs beta_eigen)
+                         Derivs beta_eigen)
 {
    Eigen::ArrayXd parameter_eigen(ToEigenArray(parameters));
 
@@ -49,7 +50,7 @@ void check_integrateOdes(DoubleVector& parameters,
    int err_eigen = 0;
    try {
       runge_kutta::integrateOdes(parameter_eigen, from, to, tol, guess,
-                                 hmin, beta_eigen, runge_kutta::odeStepper);
+                                 hmin, beta_eigen, runge_kutta::odeStepper<Eigen::ArrayXd, Derivs>);
    } catch (Error&) {
       err_eigen = 1;
    }

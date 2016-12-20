@@ -75,9 +75,9 @@ double integrandThreshbnr(double x, double p, double m1, double m2, double q) no
   return refnfn(x, p, m1, m2, q);
 }
 
-ArrayXd dd(double x, double p, double m1, double m2, double q) noexcept
+Array<double,1,1> dd(double x, double p, double m1, double m2, double q) noexcept
 {
-  ArrayXd dydx(1);
+  Array<double,1,1> dydx;
   dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
   return dydx;
 }
@@ -89,14 +89,16 @@ double bIntegral(double p, double m1, double m2, double q)
 
   const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
   const double eps = TOLERANCE * 1.0e-3;
-  ArrayXd v(1);
+  Array<double,1,1> v;
   v(0) = 1.0;
 
+  auto deriv = [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
+     return dd(x, p, m1, m2, q);
+  };
+
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
-                             [p, m1, m2, q] (double x, const Eigen::ArrayXd&) {
-                                return dd(x, p, m1, m2, q);
-                             },
-                             runge_kutta::odeStepper);
+                             deriv,
+                             runge_kutta::odeStepper<Eigen::Array<double,1,1>, decltype(deriv)>);
 
   return v(0) - 1.0;
 }

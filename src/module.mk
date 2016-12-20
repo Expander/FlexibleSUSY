@@ -34,7 +34,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
-		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \

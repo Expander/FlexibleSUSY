@@ -77,8 +77,9 @@ private:
    double min_tolerance; ///< minimum tolerance allowed
    double zero_threshold;///< threshold for treating values as zero
 
-   void call_rk(double, double, Eigen::ArrayXd&,
-                runge_kutta::Derivs, double eps = -1.0);
+   typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
+
+   void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);
 };

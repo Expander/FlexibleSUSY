@@ -83,7 +83,7 @@ void Beta_function::run(double x1, double x2, double eps)
 
       Eigen::ArrayXd y(get());
 
-      runge_kutta::Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
+      Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
          return derivatives(x, y);
       };
 
@@ -127,7 +127,7 @@ Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
  * @param eps RG running precision
  */
 void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
-                            runge_kutta::Derivs derivs, double eps)
+                            Derivs derivs, double eps)
 {
    if (fabs(x1 - x2) < min_tolerance)
       return;
@@ -139,7 +139,7 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    const double hmin = (from - to) * tol * 1.0e-5;
 
    runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs,
-                              runge_kutta::odeStepper);
+                              runge_kutta::odeStepper<Eigen::ArrayXd,Derivs>);
 
    set_scale(x2);
 }
