@@ -311,7 +311,7 @@ endif
 ifeq ($(WITH_MSSMtower),yes)
 TEST_SH += \
 		$(DIR)/test_MSSMtower_librarylink.sh \
-		$(DIR)/test_CMSSM_profile.sh
+		$(DIR)/test_MSSMtower_profile.sh
 endif
 
 ifeq ($(WITH_MSSMtower) $(WITH_MSSMNoFVtower),yes yes)
