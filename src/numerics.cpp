@@ -92,11 +92,10 @@ double bIntegral(double p, double m1, double m2, double q)
   Array<double,1,1> v;
   v(0) = 1.0;
 
-  auto deriv = [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
-     return dd(x, p, m1, m2, q);
-  };
-
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, deriv);
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
+                             [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
+                                return dd(x, p, m1, m2, q);
+                             });
 
   return v(0) - 1.0;
 }
