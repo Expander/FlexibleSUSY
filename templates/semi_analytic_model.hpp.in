@@ -68,6 +68,7 @@ private:
 @boundaryValuesDefs@
 
    void set_parameters_to_boundary_values(@ModelName@_soft_parameters&) const;
+   void calculate_parameter_values();
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Semi_analytic>&);

@@ -24,6 +24,7 @@ CreateBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
 
 ApplySemiAnalyticBoundaryConditions::usage="";
+EvaluateSemiAnalyticSolutions::usage="";
 
 Begin["`Private`"];
 
@@ -462,7 +463,7 @@ CreateCoefficientNames[solution_SemiAnalyticSolution] :=
            par = CConversion`ToValidCSymbolString[GetName[solution]];
            basis = GetBasis[solution];
            basisSize = Length[basis];
-	   Table[par <> "_coeff_" <> ToString[i], {i, 1, basisSize}]
+           Table[par <> "_coeff_" <> ToString[i], {i, 1, basisSize}]
           ];
 
 CreateSemiAnalyticSolutionsDefinitions[solution_SemiAnalyticSolution] :=
@@ -483,9 +484,9 @@ CreateSemiAnalyticSolutionDefaultInitialization[solution_SemiAnalyticSolution] :
     Module[{par, type = "", coeffs, defaults},
            par = GetName[solution];
            type = Parameters`GetType[par];
-	   coeffs = CreateCoefficientNames[solution];
+           coeffs = CreateCoefficientNames[solution];
            defaults = CConversion`CreateDefaultConstructor[#, type]& /@ coeffs;
-	   "," <> Utils`StringJoinWithSeparator[defaults, ","]
+           "," <> Utils`StringJoinWithSeparator[defaults, ","]
           ];
 
 CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
@@ -510,9 +511,9 @@ CreateBoundaryValuesInitialization[solutions_List] :=
            Return[def];
           ];
 
-ApplySettingLocally[{parameter_, value_}] :=
+ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
     Which[Parameters`IsModelParameter[parameter],
-          Parameters`SetParameter[parameter, value],
+          Parameters`SetParameter[parameter, value, modelPrefix],
           Parameters`IsInputParameter[parameter],
           Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
           Parameters`IsPhase[parameter],
@@ -522,7 +523,7 @@ ApplySettingLocally[{parameter_, value_}] :=
           ""
          ];
 
-ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List] :=
+ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_String:"model."] :=
     Module[{noMacros, boundaryValues, parameters, i,
             setBoundaryValues = "", result = ""},
            (* replace implicit constraints with placeholder values *)
@@ -533,9 +534,25 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List] :=
            parameters = Select[Parameters`FindAllParameters[#[[2]]& /@ noMacros], !MemberQ[boundaryValues, #]&];
            setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
                                 <> " = " <> GetBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
-           (result = result <> ApplySettingLocally[#])& /@ settings;
-           Print["result = ", result];
+           (result = result <> ApplySettingLocally[#, modelPrefix])& /@ settings;
            Parameters`CreateLocalConstRefs[parameters] <> StringJoin[setBoundaryValues] <> result
+          ];
+
+EvaluateSemiAnalyticSolution[solution_] :=
+    Module[{parameter, basis, value},
+           parameter = GetName[solution];
+           basis = GetBasis[solution];
+           value = Sum[Global`COEFFICIENT[parameter, i] basis[[i]], {i, 1, Length[basis]}];
+           Parameters`SetParameter[parameter, value]
+          ];
+
+EvaluateSemiAnalyticSolutions[solutions_List] :=
+    Module[{boundaryValues, setBoundaryValues, result = ""},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
+                                <> " = " <> GetBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
+           (result = result <> EvaluateSemiAnalyticSolution[#])& /@ solutions;
+           setBoundaryValues <> result
           ];
 
 DependsAtMostOn[num_?NumericQ, pars_List] := True;

@@ -38,6 +38,10 @@ using namespace @ModelName@_info;
 
 #define CLASSNAME @ModelName@<Semi_analytic>
 
+#define COEFFICIENT(parameter,i) parameter##_coeff_##i
+#define INPUTPARAMETER(parameter) model.get_input().parameter
+#define MODELPARAMETER(parameter) model.get_##parameter()
+
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    : @ModelName@_mass_eigenstates(input_)
 @semiAnalyticSolutionsInit@
@@ -82,6 +86,11 @@ void CLASSNAME::set_precision(double p)
 void CLASSNAME::set_model_parameters_to_boundary_values(@ModelName@_soft_parameters& model) const
 {
 @applySemiAnalyticBCs@
+}
+
+void CLASSNAME::calculate_parameter_values()
+{
+@calculateParameterValues@
 }
 
 @calculateCoeffFunctions@
