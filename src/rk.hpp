@@ -87,9 +87,9 @@ void rungeKuttaStep(const ArrayType& y, const ArrayType& dydx, double x,
 
 /// organises the variable step-size for Runge-Kutta evolution
 template <typename ArrayType, typename Derivs>
-void odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
-                double eps, const ArrayType& yscal, double *hnext,
-                Derivs derivs, int& max_step_dir)
+double odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
+                  double eps, const ArrayType& yscal, Derivs derivs,
+                  int& max_step_dir)
 {
   const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
   const int n = y.size();
@@ -122,10 +122,10 @@ void odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
        throw NonPerturbativeRunningError(std::exp(*x), max_step_dir, y(max_step_dir));
     }
   }
-  if (errmax > ERRCON) *hnext = SAFETY * h * std::pow(errmax,PGROW);
-  else *hnext = 5.0 * h;
   *x += h;
   y = ytemp;
+
+  return errmax > ERRCON ? SAFETY * h * std::pow(errmax,PGROW) : 5.0 * h;
 }
 
 /// Organises integration of 1st order system of ODEs
@@ -147,8 +147,7 @@ void integrateOdes(ArrayType& ystart, double from, double to, double eps,
     yscal = y.abs() + (dydx * h).abs() + TINY;
     if ((x + h - to) * (x + h - from) > 0.0) h = to - x;
 
-    double hnext;
-    rkqs(y, dydx, &x, h, eps, yscal, &hnext, derivs, max_step_dir);
+    const double hnext = rkqs(y, dydx, &x, h, eps, yscal, derivs, max_step_dir);
 
     if ((x - to) * (to - from) >= 0.0) {
       ystart = y;
