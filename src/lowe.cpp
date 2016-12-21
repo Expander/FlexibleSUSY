@@ -607,41 +607,6 @@ Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
   return y;
 }
 
-int accessedReadIn; // Should be initialised to zero at start of prog
-/*
---------------- read in a qcd-type object ------------------
-Call with fname "" if you want it to come from standard input
-
-"massIn" is an example of a data initialisation file:
-*/
-void readIn(QedQcd &mset, const char fname[80]) {
-   static QedQcd prevReadIn; // Data will be stored in here for rest of the
-                                // run
-
-  // Read in data if it's not been set
-  if (accessedReadIn == 0) {
-    string c;
-    if (!strcmp(fname,"")) cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE
-                               >> c >> PRINTOUT; // from standard input
-    else {
-      // read from filename fname
-          fstream fin(fname, ios::in);
-          if(!fin) {
-            mset = QedQcd();
-            return;
-          }
-          fin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE >> c >> PRINTOUT;
-          fin.close();
-    }
-
-    if (PRINTOUT) cout << prevReadIn;
-    accessedReadIn = 1; // Flag the fact we've read in the data once
-  }
-
-  mset = prevReadIn;
-
-}
-
 // Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
 double getRunMtFromMz(double poleMt, double asMZ) {
   return getRunMt(poleMt, getAsmt(poleMt, asMZ));
