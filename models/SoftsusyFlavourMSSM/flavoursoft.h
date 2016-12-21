@@ -22,7 +22,7 @@
 #include "utils.h"
 #include "numerics.h"
 #include "physpars.h"
-#include "lowe.h"
+#include "lowe_legacy.h"
 #include "softpars.h"
 #include "softsusy.h"
 
@@ -132,8 +132,8 @@ public:
   inline void setMcMc(double d)   { mcMc = d; };
   /// Sets all squark flavour violating physical parameters
   void setFlavourPhys(const flavourPhysical & s) { fv = s; };
-  /// Sets the initial data from a un-run QedQcd object
-  inline void setInitialData(const QedQcd & r) {
+  /// Sets the initial data from a un-run QedQcd_legacy object
+  inline void setInitialData(const QedQcd_legacy & r) {
     md2GeV = r.displayMass(mDown);     mu2GeV = r.displayMass(mUp);
     ms2GeV = r.displayMass(mStrange);  mcMc   = r.displayMass(mCharm);
     mePole = r.displayMass(mElectron); mmuPole = r.displayMass(mMuon);
@@ -202,7 +202,7 @@ public:
   /// Provides the first guess at a SUSY object at mt, inputting tanb and
   /// oneset (should be at MZ) - it's very crude, doesn't take radiative
   /// corrections into account etc. 
-  virtual MssmSusy guessAtSusyMt(double tanb, const QedQcd & oneset);
+  virtual MssmSusy guessAtSusyMt(double tanb, const QedQcd_legacy & oneset);
 
   /// Sets lepton flavour mixed sparticles
   /// virtual void sparticleThresholdCorrections(double tb);

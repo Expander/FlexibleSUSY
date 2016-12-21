@@ -1417,10 +1417,10 @@ void FlavourMssmSoftsusy::calcDrBarPars() {
 }
 
 MssmSusy FlavourMssmSoftsusy::guessAtSusyMt(double tanb, 
-					    const QedQcd & oneset) { 
+					    const QedQcd_legacy & oneset) { 
 
   // This bit gives a guess at a SUSY object
-  QedQcd leAtMt(oneset);
+  QedQcd_legacy leAtMt(oneset);
 
   DoubleVector a(3), g(3);
   double sinth2 = 1.0 - sqr(MW / MZ);

@@ -539,7 +539,7 @@ DoubleVector MssmSusy::beta() const {
 
 
 // r should be valid AT mt
-void MssmSusy::setDiagYukawas(const QedQcd & r, double vev) {
+void MssmSusy::setDiagYukawas(const QedQcd_legacy & r, double vev) {
 
   double v1, v2; // Higgs VEVs
 
@@ -587,15 +587,15 @@ void MssmSusy::quarkMixing(const DoubleMatrix & CKM, int mix) {
   }
 }
 
-void MssmSusy::getQuarkMixedYukawas(const QedQcd & r, const DoubleMatrix &
+void MssmSusy::getQuarkMixedYukawas(const QedQcd_legacy & r, const DoubleMatrix &
 				    CKM, int mix, double vev) { 
   setDiagYukawas(r, vev);
   quarkMixing(CKM, mix);
 }
 
-// outputs object QedQcd & r valid at 1 GeV from SUSY data at mt, at
+// outputs object QedQcd_legacy & r valid at 1 GeV from SUSY data at mt, at
 // present, only diagonal masses are handled. 
-void MssmSusy::getMasses(QedQcd & r, double vev) const {
+void MssmSusy::getMasses(QedQcd_legacy & r, double vev) const {
   double v1, v2;
   v1 = vev * cos(atan(displayTanb()));
   v2 = vev * sin(atan(displayTanb()));

@@ -17,6 +17,7 @@
 #include <linalg.h>
 #include <utils.h>
 #include <numerics.h>
+#include <numerics_legacy.h>
 
 namespace softsusy {
 
