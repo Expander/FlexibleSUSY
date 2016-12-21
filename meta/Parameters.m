@@ -760,12 +760,12 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
              ]
           ];
 
-SetPhase[phase_, value_, class_String] :=
+SetPhase[phase_, value_, classPrefix_String] :=
     Module[{phaseStr, valueStr},
            If[IsPhase[phase],
               phaseStr = Phases`CreatePhaseName[phase];
               valueStr = CConversion`RValueToCFormString[value];
-              class <> "->set_" <> phaseStr <> "(" <> valueStr <> ");\n",
+              classPrefix <> "set_" <> phaseStr <> "(" <> valueStr <> ");\n",
               ""
              ]
           ];
