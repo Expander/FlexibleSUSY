@@ -28,8 +28,6 @@
 
 namespace softsusy {
 
-extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names;
-
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
 class QedQcd_legacy: public RGE
 {
