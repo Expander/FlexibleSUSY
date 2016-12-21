@@ -1207,23 +1207,6 @@ ostream & operator <<(ostream & left, const flavourPhysical &s) {
   return left;
 }
 
-istream & operator >>(istream & left, flavourPhysical &s) {
-  string c;
-  left >> c >> s.msU;
-  left >> c >> c >> s.uSqMix;
-  
-  left >> c >> s.msD; 
-  left >> c >> c >> s.dSqMix;  
-
-  left >> c >> s.msE; 
-  left >> c >> c >> s.eSqMix;  
-
-  left >> c >> s.msNu; 
-  left >> c >> c >> s.nuSqMix;  
-
-  return left;
-}
-
 void extractFlavour(
    int gen, DoubleMatrix& Z, const DoubleVector& m,
    double& m1, double& m2, double& theta)

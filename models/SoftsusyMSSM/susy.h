@@ -196,10 +196,10 @@ public:
   void diagQuarkBasis(DoubleMatrix & vdl, DoubleMatrix & vdr, 
 			  DoubleMatrix & vul, DoubleMatrix & vur) const;
 };
+
 /// Formatted output
 ostream & operator <<(ostream &, const MssmSusy &);
-/// Formatted input
-istream & operator >>(istream &left, MssmSusy &s);
+
 /// Outputs beta function coefficients for MSSM gauge coupling evolution in
 /// arguments. 
 void setBetas(DoubleMatrix &, DoubleVector  &, DoubleVector  &, DoubleVector

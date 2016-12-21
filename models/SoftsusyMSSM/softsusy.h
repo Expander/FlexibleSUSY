@@ -1166,8 +1166,6 @@ public:
 
 typedef Softsusy<SoftParsMssm> MssmSoftsusy;
 
-std::istream& operator>>(std::istream& left, MssmSoftsusy& s);
-
 template<class SoftPars>
 Softsusy<SoftPars>::Softsusy()
   : SoftPars(), AltEwsbMssm(), physpars(), forLoops(), 

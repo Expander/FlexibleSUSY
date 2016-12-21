@@ -215,10 +215,8 @@ public:
   Eigen::ArrayXd getGaugeMu(double m2, double sinth) const;
 };
 
-/// Input numbers into the object: by file stream
-ostream & operator <<(ostream &, const QedQcd &);
 /// Formatted output from QedQcd object
-istream & operator >>(istream &left, QedQcd &m);
+ostream & operator <<(ostream &, const QedQcd &);
 
 /// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
 /// including one-loop standard model correction only

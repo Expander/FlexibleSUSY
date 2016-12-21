@@ -33,9 +33,6 @@
 
 namespace softsusy {
 
-/* class NmssmSoftsusy;  */
-/* std::istream & operator >>(std::istream &left, NmssmSoftsusy &s);\ */
-
 /// Contains all supersymmetric NMSSM parameters, incorporating R_p NMSSM
 class NmssmSoftsusy: public Softsusy<SoftParsNmssm> {
 private:

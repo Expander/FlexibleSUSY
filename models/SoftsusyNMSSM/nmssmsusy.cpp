@@ -134,19 +134,6 @@ void NmssmSusy::setSusy(const NmssmSusy & s) {
   setXiF(s.displayXiF());
 }
 
-istream & operator >>(istream &left, NmssmSusy &s) {
-  MssmSusy ms;
-  left >> ms;
-  s = ms;
-  double mupr = 0.0, xiF = 0.0, sv = 0.0, lambda = 0.0, kappa = 0.0;
-  s.setLambda(lambda);
-  s.setKappa(kappa);
-  s.setSvev(sv);
-  s.setMupr(mupr);
-  s.setXiF(xiF);
-  return left;
-}
-
 // Outputs derivatives (DRbar scheme) in the form of ds. a contains the
 // matrices calculated that are handy for computation.
 // W=  LL Y^E H1 ER + QL Y^D H1 DR + QL Y^U H2 UR + smu H2 H1

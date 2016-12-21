@@ -64,8 +64,6 @@ struct flavourPhysical {
 
 /// Formatted printout
 ostream & operator <<(ostream &, const flavourPhysical &); 
-/// Formatted input of physical parameters
-istream & operator >>(istream & left, flavourPhysical &s);
 
 inline flavourPhysical::flavourPhysical()
   : dSqMix(6, 6), uSqMix(6, 6), msD(6), msU(6), 

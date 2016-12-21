@@ -177,53 +177,6 @@ ostream & operator <<(ostream &left, const QedQcd &m) {
   return left;
 }
 
-istream & operator >>(istream &left, QedQcd &m) {
-
-  string c, cmbmb, cmbpole;
-  double mu, mc, mtpole, md, ms, me, mmu, mtau, invalph,
-    alphas, scale;
-  int t, l;
-  left >> c >> mu >> c >> mc >> c >> c >> c >> mtpole;
-  left >> c >> md >> c >> ms >> c >> cmbmb >> c >> cmbpole;
-  left >> c >> me >> c >> mmu >> c >> mtau;
-  left >> c >> invalph >> c >> alphas >> c >> scale;
-  left  >> c >> l >> c >> t;
-  m.setMass(mUp, mu);
-  m.setMass(mCharm, mc);
-  m.setMass(mDown, md);
-  m.setMass(mStrange, ms);
-  m.setMass(mElectron, me);
-  m.setMass(mMuon, mmu);
-  m.setMass(mTau, mtau);
-  m.setAlpha(ALPHA, 1.0 / invalph);
-  m.setAlpha(ALPHAS, alphas);
-  m.set_scale(scale);
-  // y[3] is pole mass
-  m.setPoleMt(mtpole);
-
-  // default 3-loop qcd calculation
-  m.set_loops(l);
-  m.set_thresholds(t);
-
-  m.setMass(mTop, getRunMtFromMz(mtpole, alphas));
-
-  if (cmbmb == "?" && cmbpole == "?") {
-     throw flexiblesusy::ReadError(
-        "Error reading in low energy QCDQED object: must specify "
-        "running AND/OR pole bottom mass");
-  }
-
-  // If you set one of the bottom mass parameters to be "?", it will calculate
-  // it from the other one
-  if (cmbmb != "?") m.setMass(mBottom, atof(cmbmb.c_str()));
-  if (cmbpole != "?") m.setPoleMb(atof(cmbpole.c_str()));
-
-  if (cmbmb == "?") m.calcRunningMb();
-  if (cmbpole == "?") m.calcPoleMb();
-
-  return left;
-}
-
 //  returns qed beta function at energy mu < mtop
 double QedQcd::qedBeta() const {
   double x;
