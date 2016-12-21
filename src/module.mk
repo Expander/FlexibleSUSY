@@ -155,6 +155,26 @@ LIBFLEXI_HDR += \
 		$(DIR)/two_scale_solver.hpp
 endif
 
+ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+LIBFLEXI_SRC += \
+		$(DIR)/semi_analytic_solver.cpp \
+		$(DIR)/two_scale_composite_convergence_tester.cpp \
+		$(DIR)/two_scale_convergence_tester.cpp \
+		$(DIR)/two_scale_running_precision.cpp \
+		$(DIR)/two_scale_solver.cpp
+
+LIBFLEXI_HDR += \
+		$(DIR)/semi_analytic_solver.hpp \
+		$(DIR)/two_scale_composite_convergence_tester.hpp \
+		$(DIR)/two_scale_constraint.hpp \
+		$(DIR)/two_scale_convergence_tester.hpp \
+		$(DIR)/two_scale_convergence_tester_drbar.hpp \
+		$(DIR)/two_scale_initial_guesser.hpp \
+		$(DIR)/two_scale_matching.hpp \
+		$(DIR)/two_scale_running_precision.hpp \
+		$(DIR)/two_scale_solver.hpp
+endif
+
 # remove duplicates in case multiple solvers are used
 LIBFLEXI_SRC := $(sort $(LIBFLEXI_SRC))
 
