@@ -33,7 +33,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
-		$(DIR)/rge.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
@@ -46,7 +45,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
-		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
@@ -104,7 +102,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
-		$(DIR)/rge.h \
 		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
@@ -127,7 +124,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/sum.hpp \
 		$(DIR)/thread_pool.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
-		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/which.hpp \
 		$(DIR)/wrappers.hpp \

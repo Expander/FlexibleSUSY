@@ -6,7 +6,9 @@ LIBLEGACY_HDR := \
 		$(DIR)/conversion.hpp \
 		$(DIR)/diagonalization.hpp \
 		$(DIR)/lowe_legacy.h \
-		$(DIR)/rk_legacy.hpp
+		$(DIR)/rge.h \
+		$(DIR)/rk_legacy.hpp \
+		$(DIR)/utils.h
 
 LIBLEGACY_MK  := \
 		$(DIR)/module.mk
@@ -15,7 +17,9 @@ LIBLEGACY_SRC := \
 		$(DIR)/conversion.cpp \
 		$(DIR)/diagonalization.cpp \
 		$(DIR)/lowe_legacy.cpp \
-		$(DIR)/rk_legacy.cpp
+		$(DIR)/rge.cpp \
+		$(DIR)/rk_legacy.cpp \
+		$(DIR)/utils.cpp
 
 LIBLEGACY_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBLEGACY_SRC))) \
