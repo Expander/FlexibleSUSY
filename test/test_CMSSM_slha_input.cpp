@@ -7,6 +7,8 @@
 #include "CMSSM_model_slha.hpp"
 #include "CMSSM_slha_io.hpp"
 #include "CMSSM_two_scale_model.hpp"
+#include "def.h"
+#include "utils.h"
 
 using namespace flexiblesusy;
 

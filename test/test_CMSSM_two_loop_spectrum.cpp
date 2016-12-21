@@ -8,6 +8,7 @@
 #include "ew_input.hpp"
 #include "CMSSM_two_scale_model.hpp"
 #include "lowe.h"
+#include "utils.h"
 
 using namespace flexiblesusy;
 using namespace softsusy;
