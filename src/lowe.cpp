@@ -275,9 +275,9 @@ double QedQcd::qcdBeta() const {
 
 //(See comments for above function). returns a vector x(1..9) of fermion mass
 //beta functions -- been checked!
-DoubleVector QedQcd::massBeta() const {
+Eigen::ArrayXd QedQcd::massBeta() const {
   static const double INVPI = 1.0 / PI, ZETA3 = 1.202056903159594;
-  DoubleVector x(9);
+  Eigen::ArrayXd x(9);
 
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
@@ -295,22 +295,22 @@ DoubleVector QedQcd::massBeta() const {
      qg1  + qg2 * a(ALPHAS - 1) + qg3 * sqr(a(ALPHAS - 1)));
   const double qed = -a(ALPHA - 1) * INVPI / 2;
 
-  for (int i=1;i<=3;i++)   // up quarks
-    x(i) = (qcd + 4.0 * qed / 3.0) * mf(i - 1);
-  for (int i=4;i<=6;i++)   // down quarks
-    x(i) = (qcd + qed / 3.0) * mf(i - 1);
-  for (int i=7;i<=9;i++)   // leptons
-    x(i) = 3.0 * qed * mf(i - 1);
+  for (int i = 0; i < 3; i++)   // up quarks
+    x(i) = (qcd + 4.0 * qed / 3.0) * mf(i);
+  for (int i = 3; i < 6; i++)   // down quarks
+    x(i) = (qcd + qed / 3.0) * mf(i);
+  for (int i = 6; i < 9; i++)   // leptons
+    x(i) = 3.0 * qed * mf(i);
 
   // switch off relevant beta functions
   if (displayThresholds() > 0)
-    for(int i=1;i<=9;i++) {
-      if (displayMu() < mf(i - 1))
+    for(int i = 0; i < x.size(); i++) {
+      if (displayMu() < mf(i))
          x(i) = 0.0;
     }
   // nowadays, u,d,s masses defined at 2 GeV: don't run them below that
   if (displayMu() < 2.0)
-     x(mUp) = x(mDown) = x(mStrange) = 0.0;
+     x(mUp - 1) = x(mDown - 1) = x(mStrange - 1) = 0.0;
 
   return x;
 }
@@ -320,8 +320,8 @@ DoubleVector QedQcd::beta() const {
   dydx(1) = qedBeta();
   dydx(2) = qcdBeta();
   const auto y = massBeta();
-  for (int i=3; i<=11; i++)
-    dydx(i) = y(i-2);
+  for (int i = 0; i < y.size(); i++)
+    dydx(i + 3) = y(i);
   return dydx;
 }
 
