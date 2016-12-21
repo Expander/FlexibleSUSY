@@ -58,6 +58,9 @@ public:
    virtual unsigned int max_iterations() const {
       return maximum_iterations;
    }
+   virtual void restart() {
+      iteration = 0;
+   }
 private:
    unsigned int iteration, maximum_iterations;
 };
