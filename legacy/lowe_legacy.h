@@ -47,6 +47,7 @@ private:
 public:
   QedQcd_legacy(); ///< Initialises with default values defined in lowe.h
   QedQcd_legacy(const QedQcd_legacy &); ///< Initialises object with another
+  QedQcd_legacy(const QedQcd&); ///< Initialises object with another
   const QedQcd_legacy& operator=(const QedQcd_legacy & m); ///< Sets two objects equal
   virtual ~QedQcd_legacy() {};
   

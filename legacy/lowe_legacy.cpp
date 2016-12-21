@@ -115,6 +115,20 @@ QedQcd_legacy::QedQcd_legacy()
   setThresholds(1);
 }
 
+QedQcd_legacy::QedQcd_legacy(const QedQcd& other)
+  : a(flexiblesusy::ToDoubleVector(other.displayAlphas()))
+  , mf(flexiblesusy::ToDoubleVector(other.displayMass()))
+  , input(other.displayInput())
+  , mbPole(other.displayPoleMb())
+  , ckm(other.displayCKM())
+  , pmns(other.displayPMNS())
+{
+   setPars(other.get_number_of_parameters());
+   setMu(other.get_scale());
+   setLoops(other.get_loops());
+   setThresholds(other.get_thresholds());
+}
+
 const QedQcd_legacy & QedQcd_legacy::operator=(const QedQcd_legacy & m) {
   if (this == &m) return *this;
   a = m.a;
