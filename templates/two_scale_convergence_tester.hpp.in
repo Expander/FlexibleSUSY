@@ -23,7 +23,8 @@
 
 #include "@ModelName@_convergence_tester.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "two_scale_convergence_tester_drbar.hpp"
+
+#include "convergence_tester_drbar.hpp"
 
 namespace flexiblesusy {
 

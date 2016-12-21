@@ -147,7 +147,6 @@ LIBFLEXI_SRC += \
 LIBFLEXI_HDR += \
 		$(DIR)/two_scale_composite_convergence_tester.hpp \
 		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester_drbar.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_running_precision.hpp \
@@ -165,7 +164,6 @@ LIBFLEXI_HDR += \
 		$(DIR)/semi_analytic_solver.hpp \
 		$(DIR)/two_scale_composite_convergence_tester.hpp \
 		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester_drbar.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_running_precision.hpp \

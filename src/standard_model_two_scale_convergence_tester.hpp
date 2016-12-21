@@ -22,8 +22,8 @@
 #define STANDARD_MODEL_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "standard_model_convergence_tester.hpp"
+#include "convergence_tester_drbar.hpp"
 #include "standard_model_two_scale_model.hpp"
-#include "two_scale_convergence_tester_drbar.hpp"
 
 namespace flexiblesusy {
 
