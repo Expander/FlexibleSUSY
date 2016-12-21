@@ -26,6 +26,7 @@
 #include <numerics.h>
 #include <physpars.h>
 #include <lowe.h>
+#include <lowe_legacy.h>
 #include <softpars.h>
 
 #include "mssm_twoloophiggs.h"

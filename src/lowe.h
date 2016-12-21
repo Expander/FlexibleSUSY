@@ -245,10 +245,6 @@ inline QedQcd::QedQcd(const QedQcd &m)
   setThresholds(m.displayThresholds());
 }
 
-/// Returns diagonal fermion mass matrices given input object r
-void massFermions(const QedQcd & r, DoubleMatrix & mDon,
-		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
-
 bool operator ==(const QedQcd&, const QedQcd&);
 
 } // namespace softsusy

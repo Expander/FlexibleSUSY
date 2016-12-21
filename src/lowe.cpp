@@ -679,22 +679,6 @@ double getAsmt(double mtop, double alphasMz) {
       (1.0 - 23.0 * alphasMz / (6.0 * PI) * log(MZ / mtop));
 }
 
-// We must first define a down-quark mass matrix: 3 x 3. QedQcd should be at MZ
-void massFermions(const QedQcd & r, DoubleMatrix & mDon,
-                           DoubleMatrix & mUpq, DoubleMatrix & mEle) {
-
-  mDon(3, 3) = r.displayMass(mBottom);
-  mUpq(3, 3) = r.displayMass(mTop);
-  mEle(3, 3) = r.displayMass(mTau);
-
-  mDon(1, 1) = r.displayMass(mDown);
-  mDon(2, 2) = r.displayMass(mStrange);
-  mUpq(1, 1) = r.displayMass(mUp);
-  mUpq(2, 2) = r.displayMass(mCharm);
-  mEle(1, 1) = r.displayMass(mElectron);
-  mEle(2, 2) = r.displayMass(mMuon);
-}
-
 void QedQcd::set_input(const Eigen::ArrayXd& pars)
 {
    input = pars;

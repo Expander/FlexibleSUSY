@@ -210,6 +210,10 @@ inline QedQcd_legacy::QedQcd_legacy(const QedQcd_legacy &m)
 }
 
 /// Returns diagonal fermion mass matrices given input object r
+void massFermions(const QedQcd & r, DoubleMatrix & mDon,
+		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
+
+/// Returns diagonal fermion mass matrices given input object r
 void massFermions(const QedQcd_legacy & r, DoubleMatrix & mDon,
 		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
 
