@@ -93,14 +93,14 @@ void run_scan(
       const double higgs = pole_masses.M@HiggsBoson_0@;
       const bool error = problems.have_problem();
 
-      cout << "  "
-           << std::setw(12) << std::left << p << ' '
-           << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << error;
+      std::cout << "  "
+                << std::setw(12) << std::left << p << ' '
+                << std::setw(12) << std::left << higgs << ' '
+                << std::setw(12) << std::left << error;
       if (error) {
-         cout << "\t# " << problems;
+         std::cout << "\t# " << problems;
       }
-      cout << '\n';
+      std::cout << '\n';
    }
 }
 
@@ -127,11 +127,11 @@ int main(int argc, char* argv[])
    set_command_line_parameters(make_dynamic_array_view(&argv[0], argc), input,
                                solver_type);
 
-   cout << "# "
-        << std::setw(12) << std::left << "@InputParameter_1@" << ' '
-        << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
-        << std::setw(12) << std::left << "error"
-        << '\n';
+   std::cout << "# "
+             << std::setw(12) << std::left << "@InputParameter_1@" << ' '
+             << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
+             << std::setw(12) << std::left << "error"
+             << '\n';
 
    const std::vector<double> range(float_range(0., 100., 10));
 

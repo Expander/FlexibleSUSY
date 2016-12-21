@@ -12,17 +12,14 @@
 #ifndef LOWE_H
 #define LOWE_H
 
-#include <iostream>
+#include <array>
+#include <iosfwd>
 #include <fstream>
 #include <sstream>
 #include <cstring>
 #include "betafunction.hpp"
-#include "def.h"
-#include "utils.h"
-#include "linalg.h"
 #include "ckm.hpp"
 #include "pmns.hpp"
-#include <array>
 #include <Eigen/Core>
 
 namespace softsusy {
@@ -216,7 +213,7 @@ public:
 };
 
 /// Formatted output from QedQcd object
-ostream & operator <<(ostream &, const QedQcd &);
+std::ostream & operator<<(std::ostream &, const QedQcd &);
 
 /// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
 /// including one-loop standard model correction only
