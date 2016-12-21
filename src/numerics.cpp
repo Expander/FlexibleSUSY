@@ -42,6 +42,17 @@ namespace softsusy {
 
 namespace {
 
+bool is_close(double m1, double m2, double tol)
+{
+  const double mmax = fabs(std::max(fabs(m1), fabs(m2)));
+  const double mmin = fabs(std::min(fabs(m1), fabs(m2)));
+  const double max_tol = tol * mmax;
+  if (max_tol == 0.0 && mmax != 0.0 && tol != 0.0)
+    return (mmax - mmin <= tol);
+
+  return (mmax - mmin <= max_tol);
+}
+
 double refnfn(double x, double p, double m1, double m2, double q) noexcept
 {
   const static std::complex<double> iEpsilon(0.0, TOLERANCE * 1.0e-20);
@@ -97,7 +108,7 @@ double fB(const std::complex<double>& a) noexcept
   if (fabs(x) < EPSTOL)
      return -1. - x + sqr(x) * 0.5;
 
-  if (close(x, 1., EPSTOL))
+  if (is_close(x, 1., EPSTOL))
      return -1.;
 
   return std::real(std::log(1. - a) - 1. - a * std::log(1.0 - 1.0 / a));
@@ -124,8 +135,8 @@ double b0(double p, double m1, double m2, double q)
 #endif
 
   // protect against infrared divergence
-  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
-      && close(m2, 0.0, EPSTOL))
+  if (is_close(p, 0.0, EPSTOL) && is_close(m1, 0.0, EPSTOL)
+      && is_close(m2, 0.0, EPSTOL))
      return 0.0;
 
   double ans  = 0.;
@@ -151,7 +162,7 @@ double b0(double p, double m1, double m2, double q)
 
     ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
   } else {
-    if (close(m1, m2, EPSTOL)) {
+    if (is_close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
       const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
@@ -165,7 +176,7 @@ double b0(double p, double m1, double m2, double q)
   }
 
 #ifdef USE_LOOPTOOLS
-  if (!close(b0l, ans, 1.0e-3)) {
+  if (!is_close(b0l, ans, 1.0e-3)) {
     cout << "DEBUG Err: DB0(" << p << ", " << m1 << ", " << m2
 	 << ", "  << q << ")=" << 1.-b0l/ans << endl;
     cout << "SOFTSUSY  B0=" << ans << endl;
@@ -188,8 +199,8 @@ double b1(double p, double m1, double m2, double q)
 #endif
 
   // protect against infrared divergence
-  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
-      && close(m2, 0.0, EPSTOL))
+  if (is_close(p, 0.0, EPSTOL) && is_close(m1, 0.0, EPSTOL)
+      && is_close(m2, 0.0, EPSTOL))
      return 0.0;
 
   double ans = 0.;
@@ -231,7 +242,7 @@ double b1(double p, double m1, double m2, double q)
   }
 
 #ifdef USE_LOOPTOOLS
-  if (!close(b1l, ans, 1.0e-3)) {
+  if (!is_close(b1l, ans, 1.0e-3)) {
     cout << " Test=" << pTest << " ";
     cout << "DEBUG Err: Db1(" << p << ", " << m1 << ", " << m2
 	 << ", "  << q << ")=" << 1.-b1l/ans << endl;
@@ -254,8 +265,8 @@ double b22(double p,  double m1, double m2, double q)
 #endif
 
   // protect against infrared divergence
-  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
-      && close(m2, 0.0, EPSTOL))
+  if (is_close(p, 0.0, EPSTOL) && is_close(m1, 0.0, EPSTOL)
+      && is_close(m2, 0.0, EPSTOL))
      return 0.0;
 
   double answer = 0.;
@@ -266,7 +277,7 @@ double b22(double p,  double m1, double m2, double q)
 
   if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy
-    if (close(m1, m2, EPSTOL)) {
+    if (is_close(m1, m2, EPSTOL)) {
       answer = -m12 * log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
     }
     else
@@ -295,7 +306,7 @@ double b22(double p,  double m1, double m2, double q)
   }
 
 #ifdef USE_LOOPTOOLS
-  if (!close(b22l, answer, 1.0e-3)) {
+  if (!is_close(b22l, answer, 1.0e-3)) {
     cout << " DEBUG Err: Db22(" << p << ", " << m1 << ", " << m2
 	 << ", "  << q << ")=" << 1.-b22l/answer << endl;
     cout << "SOFTSUSY  B22=" << answer << " B0=" << b0(p, m1, m2, q) << endl;
@@ -312,27 +323,27 @@ double d0(double m1, double m2, double m3, double m4)
 {
   using std::log;
 
-  if (close(m1, m2, EPSTOL)) {
+  if (is_close(m1, m2, EPSTOL)) {
     double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
 
-    if (close(m2,0.,EPSTOL)) {
+    if (is_close(m2,0.,EPSTOL)) {
        // d0 is undefined for m1 == m2 == 0
        return 0.;
-    } else if (close(m3,0.,EPSTOL)) {
+    } else if (is_close(m3,0.,EPSTOL)) {
        return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
           sqr(m2 * sqr(m2) - m2 * sqr(m4));
-    } else if (close(m4,0.,EPSTOL)) {
+    } else if (is_close(m4,0.,EPSTOL)) {
        return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
           sqr(m2 * sqr(m2) - m2 * sqr(m3));
-    } else if (close(m2, m3, EPSTOL) && close(m2, m4, EPSTOL)) {
+    } else if (is_close(m2, m3, EPSTOL) && is_close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
-    } else if (close(m2, m3, EPSTOL)) {
+    } else if (is_close(m2, m3, EPSTOL)) {
       return (sqr(m2sq) - sqr(m4sq) + 2.0 * m4sq * m2sq * log(m4sq / m2sq)) /
 	(2.0 * m2sq * sqr(m2sq - m4sq) * (m2sq - m4sq));
-    } else if (close(m2, m4, EPSTOL)) {
+    } else if (is_close(m2, m4, EPSTOL)) {
       return (sqr(m2sq) - sqr(m3sq) + 2.0 * m3sq * m2sq * log(m3sq / m2sq)) /
 	(2.0 * m2sq * sqr(m2sq - m3sq) * (m2sq - m3sq));
-    } else if (close(m3, m4, EPSTOL)) {
+    } else if (is_close(m3, m4, EPSTOL)) {
       return -1.0 / sqr(m2sq - m3sq) *
 	((m2sq + m3sq) / (m2sq - m3sq) * log(m3sq / m2sq) + 2.0);
     }
@@ -348,7 +359,7 @@ double d0(double m1, double m2, double m3, double m4)
 
 double d27(double m1, double m2, double m3, double m4) {// checked
 
-  if (close(m1, m2, EPSTOL)) {
+  if (is_close(m1, m2, EPSTOL)) {
     const double m1n = m1 + TOLERANCE * 0.01;
     return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4))
       / (4.0 * (sqr(m1n) - sqr(m2)));
@@ -371,47 +382,47 @@ double c0(double m1, double m2, double m3)
 
   double ans = 0.;
 
-  if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+  if (is_close(m1,0.,EPSTOL) && is_close(m2,0.,EPSTOL) && is_close(m3,0.,EPSTOL)) {
      // c0 is undefined for m1 == m2 == m3 == 0
      ans = 0.;
-  } else if (close(m2,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+  } else if (is_close(m2,0.,EPSTOL) && is_close(m3,0.,EPSTOL)) {
      // c0 is undefined for m2 == m3 == 0
      ans = 0.;
-  } else if (close(m1,0.,EPSTOL) && close(m3,0.,EPSTOL)) {
+  } else if (is_close(m1,0.,EPSTOL) && is_close(m3,0.,EPSTOL)) {
      // c0 is undefined for m1 == m3 == 0
      ans = 0.;
-  } else if (close(m1,0.,EPSTOL) && close(m2,0.,EPSTOL)) {
+  } else if (is_close(m1,0.,EPSTOL) && is_close(m2,0.,EPSTOL)) {
      // c0 is undefined for m1 == m2 == 0
      ans= 0.;
-  } else if (close(m1,0.,EPSTOL)) {
-     if (close(m2,m3,EPSTOL)) {
+  } else if (is_close(m1,0.,EPSTOL)) {
+     if (is_close(m2,m3,EPSTOL)) {
         ans = -1./sqr(m2);
      } else {
         ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
      }
-  } else if (close(m2,0.,EPSTOL)) {
-     if (close(m1,m3,EPSTOL)) {
+  } else if (is_close(m2,0.,EPSTOL)) {
+     if (is_close(m1,m3,EPSTOL)) {
         ans = -1./sqr(m1);
      } else {
         ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
      }
-  } else if (close(m3,0.,EPSTOL)) {
-     if (close(m1,m2,EPSTOL)) {
+  } else if (is_close(m3,0.,EPSTOL)) {
+     if (is_close(m1,m2,EPSTOL)) {
         ans = -1./sqr(m1);
      } else {
         ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
      }
-  } else if (close(m2, m3, EPSTOL)) {
-    if (close(m1, m2, EPSTOL)) {
+  } else if (is_close(m2, m3, EPSTOL)) {
+    if (is_close(m1, m2, EPSTOL)) {
       ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
     } else {
       ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
                + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
     }
-  } else if (close(m1, m2, EPSTOL)) {
+  } else if (is_close(m1, m2, EPSTOL)) {
      ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
              / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
-  } else if (close(m1, m3, EPSTOL)) {
+  } else if (is_close(m1, m3, EPSTOL)) {
      ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
              / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
   } else {
@@ -423,7 +434,7 @@ double c0(double m1, double m2, double m3)
   }
 
 #ifdef USE_LOOPTOOLS
-  if (!close(c0l, ans, 1.0e-3)) {
+  if (!is_close(c0l, ans, 1.0e-3)) {
     cout << " DEBUG Err: C0" << m1 << ", " << m2
 	 << ", "  << m3 << ")=" << 1.-c0l/ans << endl;
     cout << "SOFTSUSY  C0=" << ans << endl;
