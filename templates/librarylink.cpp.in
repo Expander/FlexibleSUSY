@@ -277,7 +277,7 @@ long number_of_args(MLINK link, const std::string& head)
 bool check_number_of_args(MLINK link, long number_of_arguments,
                           const std::string& function_name)
 {
-   const long n_given = number_of_args(link, "List");
+   const auto n_given = number_of_args(link, "List");
    const bool ok = n_given == number_of_arguments;
 
    if (!ok) {
