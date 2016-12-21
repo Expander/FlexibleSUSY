@@ -79,6 +79,10 @@ public:
    void set_inner_convergence_tester(Convergence_tester*);
    /// set convergence tester for overall iteration
    void set_outer_convergence_tester(Convergence_tester*);
+   /// set running precision calculator
+   void set_running_precision(Two_scale_running_precision*);
+   /// set initial guesser
+   void set_initial_guesser(Initial_guesser*);
    /// solves the boundary value problem
    void solve();
 

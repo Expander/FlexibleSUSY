@@ -217,6 +217,21 @@ void RGFlow<Semi_analytic>::set_outer_convergence_tester(Convergence_tester* con
    outer_convergence_tester = convergence_tester_;
 }
 
+void RGFlow<Semi_analytic>::set_initial_guesser(Initial_guesser* ig)
+{
+   initial_guesser = ig;
+}
+
+/**
+ * Set RG running precision calculator.
+ *
+ * @param rp running precision calculator
+ */
+void RGFlow<Semi_analytic>::set_running_precision(Two_scale_running_precision* rp)
+{
+   running_precision_calculator = rp;
+}
+
 /**
  * Returns the number of performed iterations
  * @return number of performed iterations
