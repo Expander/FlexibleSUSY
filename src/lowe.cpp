@@ -1,7 +1,24 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 /** \file lowe.cpp
    - Project:     SOFTSUSY
-   - Author:      Ben Allanach
+   - Author:      Ben Allanach, Alexander Voigt
    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
    - Webpage:     http://hepforge.cedar.ac.uk/softsusy/
 */
@@ -14,8 +31,32 @@
 #include "wrappers.hpp"
 
 #include <iostream>
+#include <cmath>
 
 namespace softsusy {
+
+namespace {
+
+// Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
+// it's a very good approximation at these scales, better than 10^-3 accuracy
+double getAsmt(double mtop, double alphasMz) {
+  using std::log;
+  return alphasMz /
+      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * log(MZ / mtop));
+}
+
+// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
+// including one-loop standard model correction only
+double getRunMt(double poleMt, double asmt) {
+  return poleMt / (1.0 + (4.0 / (3.0 * M_PI)) * asmt);
+}
+
+// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
+double getRunMtFromMz(double poleMt, double asMZ) {
+  return getRunMt(poleMt, getAsmt(poleMt, asMZ));
+}
+
+} // anonymous namespace
 
 const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names = {
    "alpha_em_MSbar_at_MZ",
@@ -559,25 +600,6 @@ Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
   call_rk(start, end, y, derivs, tol);
 
   return y;
-}
-
-// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
-double getRunMtFromMz(double poleMt, double asMZ) {
-  return getRunMt(poleMt, getAsmt(poleMt, asMZ));
-}
-
-// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
-// including one-loop standard model correction only
-double getRunMt(double poleMt, double asmt) {
-  return poleMt / (1.0 + (4.0 / (3.0 * PI)) * asmt);
-}
-
-// Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
-// it's a very good approximation at these scales, better than 10^-3 accuracy
-double getAsmt(double mtop, double alphasMz) {
-  using std::log;
-  return alphasMz /
-      (1.0 - 23.0 * alphasMz / (6.0 * PI) * log(MZ / mtop));
 }
 
 void QedQcd::set_input(const Eigen::ArrayXd& pars)

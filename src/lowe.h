@@ -1,12 +1,28 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 /** \file lowe.h
    - Project:     SOFTSUSY
-   - Author:      Ben Allanach
+   - Author:      Ben Allanach, Alexander Voigt
    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
    - Webpage:     http://hepforge.cedar.ac.uk/softsusy/
    \brief QedQcd object contains Standard Model quark and lepton
    masses. It integrates them using 3 loop qcd x 1 loop qed effective theory.
-
 */
 
 #ifndef LOWE_H
@@ -123,6 +139,8 @@ public:
   /// sets all input parameters
   void set_input(const Eigen::ArrayXd&);
 
+  /// Displays input parameters
+  Eigen::ArrayXd displayInput() const { return input; }
   /// Display pole top mass
   double displayPoleMt() const { return input(MT_pole); };
   /// Display pole tau mass
@@ -145,6 +163,8 @@ public:
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a(ai - 1); };
+  /// Returns gauge structure constants
+  Eigen::ArrayXd displayAlphas() const { return a; }
   /// Returns input value alpha_em(MZ)
   double displayAlphaEmInput() const { return input(alpha_em_MSbar_at_MZ); }
   /// Returns input value alpha_s(MZ)
@@ -214,15 +234,6 @@ public:
 
 /// Formatted output from QedQcd object
 std::ostream & operator<<(std::ostream &, const QedQcd &);
-
-/// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
-/// including one-loop standard model correction only
-double getRunMt(double poleMt, double asmt);
-/// Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
-/// it's a very good approximation at these scales, better than 10^-3 accuracy
-double getAsmt(double mtop, double alphasMz);
-/// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
-double getRunMtFromMz(double poleMt, double asMZ);
 
 bool operator ==(const QedQcd&, const QedQcd&);
 
