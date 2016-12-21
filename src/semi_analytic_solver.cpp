@@ -20,9 +20,9 @@
 
 #include "convergence_tester.hpp"
 #include "error.hpp"
+#include "initial_guesser.hpp"
 #include "logger.hpp"
 #include "model.hpp"
-#include "semi_analytic_initial_guesser.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"

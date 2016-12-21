@@ -19,7 +19,7 @@
 #ifndef SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
 #define SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
-#include "two_scale_initial_guesser.hpp"
+#include "initial_guesser.hpp"
 #include "SoftsusyMSSM_parameter_point.hpp"
 #include "lowe.h"
 #include "linalg.h"
@@ -33,7 +33,7 @@ class SoftsusyMSSM_low_scale_constraint;
 class SoftsusyMSSM_susy_scale_constraint;
 class SoftsusyMSSM_sugra_constraint;
 
-class SoftsusyMSSM_initial_guesser : public Initial_guesser<Two_scale> {
+class SoftsusyMSSM_initial_guesser : public Initial_guesser {
 public:
    SoftsusyMSSM_initial_guesser(SoftsusyMSSM<Two_scale>*, const SoftsusyMSSM_parameter_point&,
                         const SoftsusyMSSM_low_scale_constraint&,

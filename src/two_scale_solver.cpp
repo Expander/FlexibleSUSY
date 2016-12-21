@@ -21,10 +21,10 @@
 #include "convergence_tester.hpp"
 #include "error.hpp"
 #include "functors.hpp"
+#include "initial_guesser.hpp"
 #include "logger.hpp"
 #include "model.hpp"
 #include "two_scale_constraint.hpp"
-#include "two_scale_initial_guesser.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
 
@@ -189,7 +189,7 @@ void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester* convergence_t
    convergence_tester = convergence_tester_;
 }
 
-void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
+void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser* ig)
 {
    initial_guesser = ig;
 }

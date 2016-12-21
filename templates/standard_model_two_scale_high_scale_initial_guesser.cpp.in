@@ -47,7 +47,7 @@ namespace flexiblesusy {
    const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_,
    const @ModelName@_high_scale_constraint<Two_scale>& high_constraint_
 )
-   : Initial_guesser<Two_scale>()
+   : Initial_guesser()
    , model(model_)
    , eft(eft_)
    , qedqcd(qedqcd_)

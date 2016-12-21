@@ -32,8 +32,8 @@
 namespace flexiblesusy {
 
 template <class T> class Constraint;
-template <class T> class Initial_guesser;
 class Convergence_tester;
+class Initial_guesser;
 class Model;
 class Semi_analytic;
 class Two_scale;
@@ -115,7 +115,7 @@ private:
    unsigned int iteration{0};             ///< iteration number (starting at 0)
    Convergence_tester* inner_convergence_tester{nullptr}; ///< the convergence tester for the two-scale iteration
    Convergence_tester* outer_convergence_tester{nullptr}; ///< the convergence tester for the main iteration
-   Initial_guesser<Semi_analytic>* initial_guesser{nullptr};       ///< does initial guess
+   Initial_guesser* initial_guesser{nullptr};       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
    double running_precision{1.0e-3};           ///< RG running precision
    double scale{0.};                           ///< current scale
