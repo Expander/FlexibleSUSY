@@ -442,7 +442,7 @@ double ReA0(double m2, double scl2) noexcept
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return A0(m2, scl2).real();
 #else
-    return a0(sqrt(m2), sqrt(scl2));
+    return softsusy::a0(sqrt(m2), sqrt(scl2));
 #endif
 }
 
@@ -451,7 +451,7 @@ double ReB0(double p2, double m2a, double m2b, double scl2) noexcept
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B0(p2, m2a, m2b, scl2).real();
 #else
-    return b0(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
+    return softsusy::b0(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
 #endif
 }
 
@@ -460,7 +460,7 @@ double ReB1(double p2, double m2a, double m2b, double scl2) noexcept
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B1(p2, m2a, m2b, scl2).real();
 #else
-    return -b1(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
+    return -softsusy::b1(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
 #endif
 }
 
@@ -469,7 +469,7 @@ double ReB00(double p2, double m2a, double m2b, double scl2) noexcept
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B00(p2, m2a, m2b, scl2).real();
 #else
-    return b22(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
+    return softsusy::b22(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
 #endif
 }
 

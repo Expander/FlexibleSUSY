@@ -24,6 +24,7 @@
 #include "numerics.h"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 using namespace flexiblesusy::threshold_loop_functions;
 
 BOOST_AUTO_TEST_CASE( test_C0 )

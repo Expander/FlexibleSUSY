@@ -9,6 +9,7 @@ LIBLEGACY_HDR := \
 		$(DIR)/linalg.h \
 		$(DIR)/lowe_legacy.h \
 		$(DIR)/mycomplex.h \
+		$(DIR)/numerics_legacy.h \
 		$(DIR)/rge.h \
 		$(DIR)/rk_legacy.hpp \
 		$(DIR)/utils.h \
@@ -25,6 +26,7 @@ LIBLEGACY_SRC := \
 		$(DIR)/diagonalization.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe_legacy.cpp \
+		$(DIR)/numerics_legacy.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk_legacy.cpp \
 		$(DIR)/utils.cpp
