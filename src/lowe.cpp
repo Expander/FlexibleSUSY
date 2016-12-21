@@ -592,14 +592,14 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
                                               log(mtrun / mtpole) / 3.0);
         oneset.setAlpha(ALPHAS, alphas_sm);
       }
-      temp = flexiblesusy::ToEigenArray(oneset.runSMGauge(m2, flexiblesusy::ToDoubleVector(temp)));
+      temp = oneset.runSMGauge(m2, temp);
     }
   } else {
     // Above the top threshold use SM RGEs only
     temp(0) = a1;
     temp(1) = a2;
     temp(2) = oneset.displayAlpha(ALPHAS);
-    temp = flexiblesusy::ToEigenArray(oneset.runSMGauge(m2, flexiblesusy::ToDoubleVector(temp)));
+    temp = oneset.runSMGauge(m2, temp);
   }
 
   return temp;
@@ -609,22 +609,21 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
 // the current scale, run to the scale end using SM RGEs.
 // Range of validity is for scales greater than or equal to the
 // top quark pole mass.
-DoubleVector QedQcd::runSMGauge(double end, const DoubleVector& alphas)
+Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
 {
   const double tol = 1.0e-5;
-
   const double start = displayMu();
 
-  DoubleVector y(3);
   QedQcd oneset(*this);
   tempLe = &oneset;
+  DoubleVector y(3);
   y(1) = alphas(1);
   y(2) = alphas(2);
   y(3) = alphas(3);
 
   callRK(start, end, y, smGaugeDerivs, tol);
 
-  return y;
+  return flexiblesusy::ToEigenArray(y);
 }
 
 int accessedReadIn; // Should be initialised to zero at start of prog

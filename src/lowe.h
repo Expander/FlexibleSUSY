@@ -77,7 +77,7 @@ private:
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
-  DoubleVector runSMGauge(double, const DoubleVector&);
+  Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
 
 public:
