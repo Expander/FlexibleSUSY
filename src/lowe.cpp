@@ -39,10 +39,10 @@ namespace {
 
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
 // it's a very good approximation at these scales, better than 10^-3 accuracy
-double getAsmt(double mtop, double alphasMz) {
+double getAsmt(double mtop, double alphasMz, double mz) {
   using std::log;
   return alphasMz /
-      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * log(MZ / mtop));
+      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * log(mz / mtop));
 }
 
 // Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
@@ -52,8 +52,8 @@ double getRunMt(double poleMt, double asmt) {
 }
 
 // Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
-double getRunMtFromMz(double poleMt, double asMZ) {
-  return getRunMt(poleMt, getAsmt(poleMt, asMZ));
+double getRunMtFromMz(double poleMt, double asMZ, double mz) {
+  return getRunMt(poleMt, getAsmt(poleMt, asMZ, mz));
 }
 
 } // anonymous namespace
@@ -121,7 +121,7 @@ QedQcd::QedQcd()
   mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
   mf(6) = MELECTRON; mf(7) = MMUON; mf(8) = MTAU;
   a(0) = ALPHAMZ;  a(1) = ALPHASMZ;
-  mf(2) = getRunMtFromMz(PMTOP, ALPHASMZ);
+  mf(2) = getRunMtFromMz(PMTOP, ALPHASMZ, flexiblesusy::Electroweak_constants::MZ);
   input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
   input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
   input(MT_pole) = PMTOP;
@@ -136,7 +136,7 @@ QedQcd::QedQcd()
   input(MU_2GeV) = MUP;
   input(MD_2GeV) = MDOWN;
   input(MS_2GeV) = MSTRANGE;
-  set_scale(MZ);
+  set_scale(flexiblesusy::Electroweak_constants::MZ);
   set_loops(3);
   set_thresholds(1);
 }
@@ -417,7 +417,7 @@ void QedQcd::toMt()
 {
   const double tol = 1.0e-5;
 
-  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
+  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS), displayPoleMZ()));
   calcPoleMb();
 
   const double alphasMZ = displayAlpha(ALPHAS);
@@ -439,7 +439,7 @@ void QedQcd::toMt()
 void QedQcd::toMz()
 {
   const double mt = input(MT_pole), as = a(ALPHAS - 1);
-  setMass(mTop, getRunMtFromMz(mt, as));
+  setMass(mTop, getRunMtFromMz(mt, as, displayPoleMZ()));
   calcPoleMb();
 
   const double tol = 1.0e-5;

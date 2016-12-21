@@ -606,7 +606,6 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
    case 4:
       qedqcd.setPoleMZ(value);
       qedqcd.set_scale(value);
-      softsusy::MZ = value;
       break;
    case 5:
       qedqcd.setMass(mBottom, value);
