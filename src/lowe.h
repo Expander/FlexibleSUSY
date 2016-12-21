@@ -180,7 +180,7 @@ public:
 
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
-  void massBeta(DoubleVector &) const; ///< beta functions of masses
+  DoubleVector massBeta() const; ///< beta functions of masses
   /// Beta functions of both beta-functions and all MSbar masses
   DoubleVector beta() const;
 

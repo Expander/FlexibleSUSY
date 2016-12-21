@@ -275,8 +275,9 @@ double QedQcd::qcdBeta() const {
 
 //(See comments for above function). returns a vector x(1..9) of fermion mass
 //beta functions -- been checked!
-void QedQcd::massBeta(DoubleVector & x) const {
+DoubleVector QedQcd::massBeta() const {
   static const double INVPI = 1.0 / PI, ZETA3 = 1.202056903159594;
+  DoubleVector x(9);
 
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
@@ -309,15 +310,16 @@ void QedQcd::massBeta(DoubleVector & x) const {
     }
   // nowadays, u,d,s masses defined at 2 GeV: don't run them below that
   if (displayMu() < 2.0)
-     x(1) = x(4) = x(5) = 0.0;
+     x(mUp) = x(mDown) = x(mStrange) = 0.0;
+
+  return x;
 }
 
 DoubleVector QedQcd::beta() const {
   DoubleVector dydx(11);
   dydx(1) = qedBeta();
   dydx(2) = qcdBeta();
-  DoubleVector y(9);
-  massBeta(y);
+  const auto y = massBeta();
   for (int i=3; i<=11; i++)
     dydx(i) = y(i-2);
   return dydx;
