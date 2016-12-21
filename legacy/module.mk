@@ -5,6 +5,7 @@ WITH_$(MODNAME) := yes
 LIBLEGACY_HDR := \
 		$(DIR)/conversion.hpp \
 		$(DIR)/diagonalization.hpp \
+		$(DIR)/lowe_legacy.h \
 		$(DIR)/rk_legacy.hpp
 
 LIBLEGACY_MK  := \
@@ -13,6 +14,7 @@ LIBLEGACY_MK  := \
 LIBLEGACY_SRC := \
 		$(DIR)/conversion.cpp \
 		$(DIR)/diagonalization.cpp \
+		$(DIR)/lowe_legacy.cpp \
 		$(DIR)/rk_legacy.cpp
 
 LIBLEGACY_OBJ := \
