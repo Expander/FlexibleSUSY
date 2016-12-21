@@ -642,7 +642,7 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       break;
    case 4:
       qedqcd.setPoleMZ(value);
-      qedqcd.setMu(value);
+      qedqcd.set_scale(value);
       softsusy::MZ = value;
       break;
    case 5:

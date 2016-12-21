@@ -16,10 +16,10 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include "betafunction.hpp"
 #include "def.h"
 #include "utils.h"
 #include "linalg.h"
-#include "rge.h"
 #include "ckm.hpp"
 #include "pmns.hpp"
 #include <array>
@@ -67,7 +67,7 @@ enum QedQcd_input_parmeters : unsigned {
 extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names;
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
-class QedQcd: public RGE
+class QedQcd: public flexiblesusy::Beta_function
 {
 private:
   Eigen::ArrayXd a; ///< gauge couplings
@@ -77,15 +77,24 @@ private:
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
+  Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
+  Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
 
 public:
-  QedQcd(); ///< Initialises with default values defined in lowe.h
-  QedQcd(const QedQcd &); ///< Initialises object with another
-  const QedQcd& operator=(const QedQcd & m); ///< Sets two objects equal
-  virtual ~QedQcd() {};
-  
+  QedQcd();
+  QedQcd(const QedQcd&) = default;
+  QedQcd(QedQcd&&) = default;
+  QedQcd& operator=(const QedQcd&) = default;
+  QedQcd& operator=(QedQcd&&) = default;
+  virtual ~QedQcd() {}
+
+  // Beta_function interface
+  virtual Eigen::ArrayXd get() const override;
+  virtual void set(const Eigen::ArrayXd&) override;
+  virtual Eigen::ArrayXd beta() const override;
+
   void setPoleMt(double mt) { input(MT_pole) = mt; }; ///< set pole top mass
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
   void setPoleMtau(double mtau) { input(MTau_pole) = mtau; }; ///< set pole tau mass
@@ -114,8 +123,6 @@ public:
   void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
   /// sets Fermi constant
   void setFermiConstant(double gf) { input(GFermi) = gf; }
-  /// For exporting beta functions to Runge-Kutta
-  void set(const DoubleVector &);
   /// sets all input parameters
   void set_input(const Eigen::ArrayXd&);
 
@@ -148,7 +155,6 @@ public:
   /// Returns Fermi constant
   double displayFermiConstant() const { return input(GFermi); }
   /// Obgligatory: returns vector of all running parameters
-  const DoubleVector display() const;
   /// returns vector of all input parameters
   Eigen::ArrayXd display_input() const;
   /// returns vector of all parameter names
@@ -181,8 +187,6 @@ public:
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
   Eigen::ArrayXd massBeta() const; ///< beta functions of masses
-  /// Beta functions of both beta-functions and all MSbar masses
-  DoubleVector beta() const;
 
   /// Does not run the masses, just gauge couplings from start to end
   void runGauge(double start, double end);
@@ -228,21 +232,6 @@ double getRunMt(double poleMt, double asmt);
 double getAsmt(double mtop, double alphasMz);
 /// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
 double getRunMtFromMz(double poleMt, double asMZ);
-
-inline QedQcd::QedQcd(const QedQcd &m)
-   : RGE()
-   , a(m.a)
-   , mf(m.mf)
-   , input(m.input)
-   , mbPole(m.mbPole)
-   , ckm(m.ckm)
-   , pmns(m.pmns)
-{
-  setPars(11);
-  setMu(m.displayMu());
-  setLoops(m.displayLoops());
-  setThresholds(m.displayThresholds());
-}
 
 bool operator ==(const QedQcd&, const QedQcd&);
 

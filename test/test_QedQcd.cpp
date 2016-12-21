@@ -5,6 +5,7 @@
 
 #include "lowe.h"
 #include "lowe_legacy.h"
+#include "conversion.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -17,7 +18,7 @@ BOOST_AUTO_TEST_CASE( test_QedQcd_to )
    q1.to(91.);
    q2.to(91.);
 
-   BOOST_CHECK(q1.display() == q2.display());
+   BOOST_CHECK(ToDoubleVector(q1.get()) == q2.display());
 }
 
 BOOST_AUTO_TEST_CASE( test_QedQcd_toMz )
@@ -28,5 +29,5 @@ BOOST_AUTO_TEST_CASE( test_QedQcd_toMz )
    q1.toMz();
    q2.toMz();
 
-   BOOST_CHECK(q1.display() == q2.display());
+   BOOST_CHECK(ToDoubleVector(q1.get()) == q2.display());
 }

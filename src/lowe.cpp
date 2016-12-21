@@ -25,53 +25,45 @@ const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_inpu
    "MD_2GeV", "mc_mc", "mb_mb"
 };
 
-namespace {
+Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
+{
+  set_scale(std::exp(x));
+  setAlpha(ALPHA, y(0));
+  setAlpha(ALPHAS, y(1));
 
-///  external object temp used to get objects into external routines, however:
-///  don't use it!
-QedQcd *tempLe;
-
-DoubleVector gaugeDerivs(double x, const DoubleVector & y) {
-  using std::exp;
-  tempLe->setMu(exp(x));
-  tempLe->setAlpha(ALPHA, y.display(1));
-  tempLe->setAlpha(ALPHAS, y.display(2));
-  DoubleVector dydx(2);
-  dydx(1) = tempLe->qedBeta();
-  dydx(2) = tempLe->qcdBeta();
+  Eigen::ArrayXd dydx(2);
+  dydx(0) = qedBeta();
+  dydx(1) = qcdBeta();
 
   return dydx;
 }
 
 // SM beta functions for the gauge couplings, neglecting Yukawa
 // contributions, from arXiv:1208.3357 [hep-ph].
-DoubleVector smGaugeDerivs(double x, const DoubleVector & y) {
+Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
+{
   const double oneO4Pi = 1.0 / (4.0 * PI);
-
   const double scale = std::exp(x);
 
-  tempLe->setMu(scale);
+  set_scale(scale);
 
-  const double a1 = y(1);
-  const double a2 = y(2);
-  const double a3 = y(3);
-
+  const double a1 = y(0);
+  const double a2 = y(1);
+  const double a3 = y(2);
   const int nG = 3;
 
-  DoubleVector dydx(3);
+  Eigen::ArrayXd dydx(3);
 
-  dydx(1) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
+  dydx(0) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
     + 1.8 * a2 + nG * (38.0 * a1 / 15.0 + 1.2 * a2 + 88.0 * a3 / 15.0)));
-  dydx(2) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
+  dydx(1) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
     (0.6 * a1 - 259.0 * a2 / 3.0 + nG * (0.4 * a1 + 98.0 * a2 / 3.0 + 8.0
     * a3)));
-  dydx(3) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
+  dydx(2) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
     * a3 + nG * (11.0 * a1 / 15.0 + 3.0 * a2 + 152.0 * a3 / 3.0)));
 
   return dydx;
 }
-
-} // anonymous namespace
 
 QedQcd::QedQcd()
   : a(2)
@@ -81,7 +73,7 @@ QedQcd::QedQcd()
   , ckm()
   , pmns()
 {
-  setPars(11);
+  set_number_of_parameters(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(0) = MUP; mf(1) = MCHARM;
   mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
@@ -102,45 +94,45 @@ QedQcd::QedQcd()
   input(MU_2GeV) = MUP;
   input(MD_2GeV) = MDOWN;
   input(MS_2GeV) = MSTRANGE;
-  setMu(MZ);
-  setLoops(3);
-  setThresholds(1);
+  set_scale(MZ);
+  set_loops(3);
+  set_thresholds(1);
 }
 
-const QedQcd & QedQcd::operator=(const QedQcd & m) {
-  if (this == &m) return *this;
-  a = m.a;
-  mf = m.mf;
-  mbPole = m.mbPole;
-  input = m.input;
-  ckm = m.ckm;
-  pmns = m.pmns;
-  setLoops(m.displayLoops());
-  setThresholds(m.displayThresholds());
-  setMu(m.displayMu());
-  return *this;
+Eigen::ArrayXd QedQcd::get() const
+{
+   Eigen::ArrayXd y(11);
+   y(0) = a(0);
+   y(1) = a(1);
+   for (int i = 0; i < mf.size(); i++)
+      y(i + 2) = mf(i);
+   return y;
 }
 
-//For communication with outside routines: sets all data by one vector y=1..11.
-void QedQcd::set(const DoubleVector & y) {
-  a(ALPHA - 1) = y.display(1);
-  a(ALPHAS - 1) = y.display(2);
-  for (int i=3; i<=11; i++)
-    mf(i-3) = y.display(i);
+void QedQcd::set(const Eigen::ArrayXd& y)
+{
+   a(0) = y(0);
+   a(1) = y(1);
+   for (int i = 0; i < mf.size(); i++)
+      mf(i) = y(i + 2);
 }
 
-const DoubleVector QedQcd::display() const {
-  DoubleVector y(11);
-  y(1) = a(ALPHA - 1);
-  y(2) = a(ALPHAS - 1);
-  for (int i=3; i<=11; i++)
-    y(i) = mf(i-3);
-  return y;
+Eigen::ArrayXd QedQcd::beta() const
+{
+   Eigen::ArrayXd dydx(11);
+   dydx(0) = qedBeta();
+   dydx(1) = qcdBeta();
+   const auto y = massBeta();
+   for (int i = 0; i < y.size(); i++)
+      dydx(i + 2) = y(i);
+   return dydx;
 }
 
 void QedQcd::runto_safe(double scale, double eps)
 {
-   if (runto(scale, eps)) {
+   try {
+      run_to(scale, eps);
+   } catch (...) {
       throw flexiblesusy::NonPerturbativeRunningQedQcdError(
          std::string("Non-perturbative running to Q = ")
          + flexiblesusy::ToString(scale)
@@ -178,11 +170,11 @@ ostream & operator <<(ostream &left, const QedQcd &m) {
        << endl;
   left << "aE: " << 1.0 / m.displayAlpha(ALPHA)
        << "  aS: " << m.displayAlpha(ALPHAS)
-       << "   Q: " << m.displayMu()
+       << "   Q: " << m.get_scale()
        << "  mT^pole: " << m.displayPoleMtau()
        << endl;
-  left << "loops: " << m.displayLoops()
-       << "        thresholds: " << m.displayThresholds() << endl;
+  left << "loops: " << m.get_loops()
+       << "        thresholds: " << m.get_thresholds() << endl;
 
   return left;
 }
@@ -207,13 +199,13 @@ istream & operator >>(istream &left, QedQcd &m) {
   m.setMass(mTau, mtau);
   m.setAlpha(ALPHA, 1.0 / invalph);
   m.setAlpha(ALPHAS, alphas);
-  m.setMu(scale);
+  m.set_scale(scale);
   // y[3] is pole mass
   m.setPoleMt(mtpole);
 
   // default 3-loop qcd calculation
-  m.setLoops(l);
-  m.setThresholds(t);
+  m.set_loops(l);
+  m.set_thresholds(t);
 
   m.setMass(mTop, getRunMtFromMz(mtpole, alphas));
 
@@ -238,11 +230,11 @@ istream & operator >>(istream &left, QedQcd &m) {
 double QedQcd::qedBeta() const {
   double x;
   x = 24.0 / 9.0;
-  if (displayMu() > mf(mCharm - 1)) x += 8.0 / 9.0;
-  // if (displayMu() > mf(mTop - 1)) x += 8.0 / 9.0;
-  if (displayMu() > mf(mBottom - 1)) x += 2.0 / 9.0;
-  if (displayMu() > mf(mTau - 1)) x += 2.0 / 3.0;
-  if (displayMu() > MW) x += -7.0 / 2.0;
+  if (get_scale() > mf(mCharm - 1)) x += 8.0 / 9.0;
+  // if (get_scale() > mf(mTop - 1)) x += 8.0 / 9.0;
+  if (get_scale() > mf(mBottom - 1)) x += 2.0 / 9.0;
+  if (get_scale() > mf(mTau - 1)) x += 2.0 / 3.0;
+  if (get_scale() > MW) x += -7.0 / 2.0;
 
   return (x * sqr(a(ALPHA - 1)) / PI);
 }
@@ -252,7 +244,7 @@ double QedQcd::qedBeta() const {
 //  will take this into account. Returns beta
 double QedQcd::qcdBeta() const {
   static const double INVPI = 1.0 / PI;
-  int quarkFlavours = flavours(this->displayMu());
+  const int quarkFlavours = flavours(get_scale());
   double qb0, qb1, qb2;
   qb0 = (11.0e0 - (2.0e0 / 3.0e0 * quarkFlavours)) / 4.0;
   qb1 = (102.0e0 - (38.0e0 * quarkFlavours) / 3.0e0) / 16.0;
@@ -261,9 +253,9 @@ double QedQcd::qcdBeta() const {
 
   double qa0 = 0., qa1 = 0., qa2 = 0.;
 
-  if (displayLoops() > 0) qa0 = qb0 * INVPI;
-  if (displayLoops() > 1) qa1 = qb1 * sqr(INVPI);
-  if (displayLoops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI;
+  if (get_loops() > 0) qa0 = qb0 * INVPI;
+  if (get_loops() > 1) qa1 = qb1 * sqr(INVPI);
+  if (get_loops() > 2) qa2 = qb2 * sqr(INVPI) * INVPI;
 
   // add contributions of the one, two and three loop constributions resp.
   double beta;
@@ -281,11 +273,11 @@ Eigen::ArrayXd QedQcd::massBeta() const {
 
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
-  int quarkFlavours = flavours(displayMu());
-  if (displayLoops() > 0) qg1 = INVPI;
-  if (displayLoops() > 1)
+  const int quarkFlavours = flavours(get_scale());
+  if (get_loops() > 0) qg1 = INVPI;
+  if (get_loops() > 1)
     qg2 = (202.0 / 3.0 - (20.0e0 * quarkFlavours) / 9.0) * sqr(INVPI) / 16.0;
-  if (displayLoops() > 2)
+  if (get_loops() > 2)
     qg3 = (1.249e3 - ((2.216e3 * quarkFlavours) / 27.0e0 +
                       1.6e2 * ZETA3 * quarkFlavours / 3.0e0) -
            140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
@@ -303,62 +295,55 @@ Eigen::ArrayXd QedQcd::massBeta() const {
     x(i) = 3.0 * qed * mf(i);
 
   // switch off relevant beta functions
-  if (displayThresholds() > 0)
+  if (get_thresholds() > 0)
     for(int i = 0; i < x.size(); i++) {
-      if (displayMu() < mf(i))
+      if (get_scale() < mf(i))
          x(i) = 0.0;
     }
   // nowadays, u,d,s masses defined at 2 GeV: don't run them below that
-  if (displayMu() < 2.0)
+  if (get_scale() < 2.0)
      x(mUp - 1) = x(mDown - 1) = x(mStrange - 1) = 0.0;
 
   return x;
 }
 
-DoubleVector QedQcd::beta() const {
-  DoubleVector dydx(11);
-  dydx(1) = qedBeta();
-  dydx(2) = qcdBeta();
-  const auto y = massBeta();
-  for (int i = 0; i < y.size(); i++)
-    dydx(i + 3) = y(i);
-  return dydx;
-}
-
-void QedQcd::runGauge(double x1, double x2) {
+void QedQcd::runGauge(double x1, double x2)
+{
   const double tol = 1.0e-5;
+  Eigen::ArrayXd y(2);
+  y(0) = displayAlpha(ALPHA);
+  y(1) = displayAlpha(ALPHAS);
 
-  DoubleVector y(2);
-  tempLe = this;
-  y(1) = tempLe->displayAlpha(ALPHA);
-  y(2) = tempLe->displayAlpha(ALPHAS);
+  flexiblesusy::Beta_function::Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
+     return gaugeDerivs(x, y);
+  };
 
-  callRK(x1, x2, y, gaugeDerivs, tol);
+  call_rk(x1, x2, y, derivs, tol);
 
-  setAlpha(ALPHA, y(1));
-  setAlpha(ALPHAS, y(2));
+  setAlpha(ALPHA, y(0));
+  setAlpha(ALPHAS, y(1));
 }
 
 // Done at pole mb: extracts running mb(polemb)
 double QedQcd::extractRunningMb(double alphasMb) {
   double mbPole = displayPoleMb();
 
-  if (displayMu() != mbPole) {
+  if (get_scale() != mbPole) {
     ostringstream ii;
     ii << "QedQcd::extractRunningMb called at scale "
-         << displayMu() << " instead of mbpole\n";
+         << get_scale() << " instead of mbpole\n";
     throw flexiblesusy::SetupError(ii.str());
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391 and ZPC48 673
   // (1990)
   double delta = 0.;
-  if (displayLoops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
-  if (displayLoops() > 1)
+  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
+  if (get_loops() > 1)
     delta = delta + sqr(alphasMb / PI) *
       (10.1667 + (displayMass(mUp) + displayMass(mDown) +
                   displayMass(mCharm) + displayMass(mStrange)) / mbPole);
-  if (displayLoops() > 2)
+  if (get_loops() > 2)
     delta = delta + 101.45424 * alphasMb / PI * sqr(alphasMb / PI);
 
   double mbmb = mbPole * (1.0 - delta);
@@ -369,20 +354,20 @@ double QedQcd::extractRunningMb(double alphasMb) {
 // Supposed to be done at mb(mb) -- MSbar, calculates pole mass
 double QedQcd::extractPoleMb(double alphasMb) {
 
-  if (displayMu() != displayMass(mBottom)) {
+  if (get_scale() != displayMass(mBottom)) {
     ostringstream ii;
-    ii << "QedQcd::extractPoleMb called at scale " << displayMu() <<
+    ii << "QedQcd::extractPoleMb called at scale " << get_scale() <<
       " instead of mb(mb)\n";
     throw flexiblesusy::SetupError(ii.str());
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391
   double delta = 0.0;
-  if (displayLoops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
-  if (displayLoops() > 1) delta = delta + sqr(alphasMb / PI) *
+  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
+  if (get_loops() > 1) delta = delta + sqr(alphasMb / PI) *
     (9.2778 + (displayMass(mUp) + displayMass(mDown) + displayMass(mCharm) +
                displayMass(mStrange)) / mbPole);
-  if (displayLoops() > 2)
+  if (get_loops() > 2)
     delta = delta + 94.4182 * alphasMb / PI * sqr(alphasMb / PI);
 
   double mbPole = displayMass(mBottom) * (1.0 + delta);
@@ -391,64 +376,62 @@ double QedQcd::extractPoleMb(double alphasMb) {
 }
 
 // Calculates the running mass from the pole mass:
-void QedQcd::calcRunningMb() {
-
+void QedQcd::calcRunningMb()
+{
   const double tol = 1.0e-5;
-
   // Save initial object
-  DoubleVector saving(display());
-  double saveMu = displayMu();
+  const auto saving(get());
+  const double saveMu = get_scale();
 
   // Set arbitrarily low bottom mass to make sure it's included in the RGEs
   setMass(mBottom, 0.);
-  runto(displayPoleMb(), tol);
-  double mbAtPoleMb = extractRunningMb(displayAlpha(ALPHAS));
+  run_to(displayPoleMb(), tol);
+  const double mbAtPoleMb = extractRunningMb(displayAlpha(ALPHAS));
   setMass(mBottom, mbAtPoleMb);
   // Now, by running down to 1 GeV, you'll be left with mb(mb) since it will
   // decouple at this scale.
-  runto(1.0, tol);
-  double mbmb = displayMass(mBottom);
+  run_to(1.0, tol);
+  const double mbmb = displayMass(mBottom);
 
   // restore initial object
   set(saving);
-  setMu(saveMu);
+  set_scale(saveMu);
   setMass(mBottom, mbmb);
 }
 
 // Calculates the pole mass from the running mass, which should be defined at
 // mb
-void QedQcd::calcPoleMb() {
+void QedQcd::calcPoleMb()
+{
+  const double alphasMZ = displayAlpha(ALPHAS);
+  const double alphaMZ = displayAlpha(ALPHA);
+  const double saveMu = get_scale();
 
-  double alphasMZ = displayAlpha(ALPHAS);
-  double alphaMZ = displayAlpha(ALPHA);
-  double saveMu = displayMu();
-
-  runGauge(displayMu(), displayMass(mBottom));
-  double poleMb = extractPoleMb(displayAlpha(ALPHAS));
+  runGauge(get_scale(), displayMass(mBottom));
+  const double poleMb = extractPoleMb(displayAlpha(ALPHAS));
   setPoleMb(poleMb);
 
   // Reset to erase numerical integration errors.
   setAlpha(ALPHAS, alphasMZ);
   setAlpha(ALPHA, alphaMZ);
-  setMu(saveMu);
+  set_scale(saveMu);
 }
 
 // Takes QedQcd object created at MZ and spits it out at mt
-void QedQcd::toMt() {
-
+void QedQcd::toMt()
+{
   const double tol = 1.0e-5;
 
   setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS)));
   calcPoleMb();
 
-  double alphasMZ = displayAlpha(ALPHAS);
-  double alphaMZ = displayAlpha(ALPHA);
-
-  double mz = displayPoleMZ();
+  const double alphasMZ = displayAlpha(ALPHAS);
+  const double alphaMZ = displayAlpha(ALPHA);
+  const double mz = displayPoleMZ();
 
   runGauge(mz, 1.0);
-  //Run whole lot up to pole top mass
-  double mt = this->displayPoleMt();
+  // Run whole lot up to pole top mass
+  const double mt = this->displayPoleMt();
   run(1.0, mz, tol);
 
   // Reset alphas to erase numerical integration errors.
@@ -458,16 +441,17 @@ void QedQcd::toMt() {
 }
 
 // Takes QedQcd object created at MZ and spits it out at MZ
-void QedQcd::toMz() {
+void QedQcd::toMz()
+{
   const double mt = input(MT_pole), as = a(ALPHAS - 1);
   setMass(mTop, getRunMtFromMz(mt, as));
   calcPoleMb();
 
   const double tol = 1.0e-5;
+  const double alphasMZ = displayAlpha(ALPHAS);
+  const double alphaMZ = displayAlpha(ALPHA);
+  const double mz = displayPoleMZ();
 
-  double alphasMZ = displayAlpha(ALPHAS);
-  double alphaMZ = displayAlpha(ALPHA);
-  double mz = displayPoleMZ();
   runGauge(mz, 1.0);
   run(1.0, mz, tol);
   // Reset alphas to erase numerical integration errors.
@@ -487,7 +471,7 @@ void QedQcd::toMz() {
 void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
    unsigned it = 0;
    bool converged = false;
-   DoubleVector qedqcd_old(display()), qedqcd_new(display());
+   auto qedqcd_old(get()), qedqcd_new(get());
    const double running_precision = 0.1 * precision_goal;
 
    while (!converged && it < max_iterations) {
@@ -518,11 +502,9 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
 
       // check convergence
       runto_safe(scale, running_precision);
-      qedqcd_new = display();
+      qedqcd_new = get();
 
-      converged = flexiblesusy::MaxRelDiff(
-         flexiblesusy::ToEigenArray(qedqcd_old),
-         flexiblesusy::ToEigenArray(qedqcd_new)) < precision_goal;
+      converged = flexiblesusy::MaxRelDiff(qedqcd_old, qedqcd_new) < precision_goal;
 
       qedqcd_old = qedqcd_new;
 
@@ -557,7 +539,7 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
   static const double INVPI = 1.0 / PI;
   Eigen::ArrayXd temp(3);
 
-  const double aem = displayAlpha(ALPHA), m1 = displayMu();
+  const double aem = displayAlpha(ALPHA), m1 = get_scale();
   // Set alpha1,2 at scale m1 from data:
   double a1 = 5.0 * aem / (3.0 * (1.0 - sinth));
   double a2 = aem / sinth;
@@ -577,15 +559,15 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
 
     // calculate alphas(m2)
     if (m2 >= 1.0) {
-       oneset.runto(thresh);
+       oneset.run_to(thresh);
     } else {
-       oneset.runto(1.0);
+       oneset.run_to(1.0);
     }
     // Set alphas(m) to be what's already calculated.
     temp(2) = oneset.displayAlpha(ALPHAS);
 
     if (m2 > mtpole) {
-      if (displayThresholds() > 0) {
+      if (get_thresholds() > 0) {
         const double mtrun = oneset.displayMass(mTop);
         const double alphas_5f = oneset.displayAlpha(ALPHAS);
         const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
@@ -612,18 +594,17 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
 Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
 {
   const double tol = 1.0e-5;
-  const double start = displayMu();
+  const double start = get_scale();
+  auto y = alphas;
+  auto qedqcd(*this);
 
-  QedQcd oneset(*this);
-  tempLe = &oneset;
-  DoubleVector y(3);
-  y(1) = alphas(1);
-  y(2) = alphas(2);
-  y(3) = alphas(3);
+  flexiblesusy::Beta_function::Derivs derivs = [&qedqcd] (double x, const Eigen::ArrayXd& y) {
+     return qedqcd.smGaugeDerivs(x, y);
+  };
 
-  callRK(start, end, y, smGaugeDerivs, tol);
+  call_rk(start, end, y, derivs, tol);
 
-  return flexiblesusy::ToEigenArray(y);
+  return y;
 }
 
 int accessedReadIn; // Should be initialised to zero at start of prog
@@ -700,9 +681,9 @@ bool operator ==(const QedQcd& a, const QedQcd& b)
    const double eps = 1e-10;
 
    return
-      std::fabs(a.displayMu() - b.displayMu()) < eps &&
-      std::fabs(a.displayLoops() - b.displayLoops()) < eps &&
-      std::fabs(a.displayThresholds() - b.displayThresholds()) < eps &&
+      std::fabs(a.get_scale() - b.get_scale()) < eps &&
+      std::fabs(a.get_loops() - b.get_loops()) < eps &&
+      std::fabs(a.get_thresholds() - b.get_thresholds()) < eps &&
       std::fabs(a.displayAlpha(ALPHA) - b.displayAlpha(ALPHA)) < eps &&
       std::fabs(a.displayAlpha(ALPHAS) - b.displayAlpha(ALPHAS)) < eps &&
       std::fabs(a.displayMass(mUp) - b.displayMass(mUp)) < eps &&
