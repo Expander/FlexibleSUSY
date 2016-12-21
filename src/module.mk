@@ -11,7 +11,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/database.cpp \
-		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
@@ -20,7 +19,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/gsl_vector.cpp \
-		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.cpp \
@@ -62,7 +60,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/database.hpp \
-		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
 		$(DIR)/effective_couplings.hpp \
@@ -83,7 +80,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/if.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
-		$(DIR)/linalg.h \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
@@ -91,7 +87,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
-		$(DIR)/mycomplex.h \
 		$(DIR)/nmssm_twoloophiggs.hpp \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
@@ -126,10 +121,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/which.hpp \
-		$(DIR)/wrappers.hpp \
-		$(DIR)/xpr-base.h \
-		$(DIR)/xpr-matrix.h \
-		$(DIR)/xpr-vector.h
+		$(DIR)/wrappers.hpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \

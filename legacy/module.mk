@@ -4,18 +4,26 @@ WITH_$(MODNAME) := yes
 
 LIBLEGACY_HDR := \
 		$(DIR)/conversion.hpp \
+		$(DIR)/def.h \
 		$(DIR)/diagonalization.hpp \
+		$(DIR)/linalg.h \
 		$(DIR)/lowe_legacy.h \
+		$(DIR)/mycomplex.h \
 		$(DIR)/rge.h \
 		$(DIR)/rk_legacy.hpp \
-		$(DIR)/utils.h
+		$(DIR)/utils.h \
+		$(DIR)/xpr-base.h \
+		$(DIR)/xpr-matrix.h \
+		$(DIR)/xpr-vector.h
 
 LIBLEGACY_MK  := \
 		$(DIR)/module.mk
 
 LIBLEGACY_SRC := \
 		$(DIR)/conversion.cpp \
+		$(DIR)/def.cpp \
 		$(DIR)/diagonalization.cpp \
+		$(DIR)/linalg.cpp \
 		$(DIR)/lowe_legacy.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk_legacy.cpp \
