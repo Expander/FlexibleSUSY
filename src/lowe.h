@@ -71,7 +71,7 @@ class QedQcd: public RGE
 {
 private:
   Eigen::ArrayXd a; ///< gauge couplings
-  DoubleVector mf;  ///< fermion running masses
+  Eigen::ArrayXd mf; ///< fermion running masses
   Eigen::ArrayXd input; ///< SLHA input parmeters
   double mbPole;    ///< pole masses of third family quarks
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
@@ -99,7 +99,7 @@ public:
   void setPoleMW(double mw) { input(MW_pole) = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { input(MZ_pole) = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
-  void setMass(mass mno, double m) { mf(mno) = m; };
+  void setMass(mass mno, double m) { mf(mno - 1) = m; }
   /// sets a neutrino pole mass
   void setNeutrinoPoleMass(int i, double m) { input(Mv1_pole + i - 1) = m; }
   /// sets QED or QCD structure constant
@@ -134,9 +134,9 @@ public:
   /// Returns Z boson pole mass
   double displayPoleMZ() const { return input(MZ_pole); }
   /// Returns a vector of running fermion masses
-  const DoubleVector & displayMass() const { return mf; };
+  const Eigen::ArrayXd& displayMass() const { return mf; }
   /// Returns a single running mass
-  double displayMass(mass mno) const { return mf.display(mno); };
+  double displayMass(mass mno) const { return mf(mno - 1); }
   /// Returns a single neutrino pole mass
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant

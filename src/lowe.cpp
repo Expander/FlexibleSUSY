@@ -83,11 +83,11 @@ QedQcd::QedQcd()
 {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
-  mf(1) = MUP; mf(2) = MCHARM;
-  mf(4) = MDOWN; mf(5) = MSTRANGE; mf(6) = MBOTTOM;
-  mf(7) = MELECTRON; mf(8) = MMUON; mf(9) = MTAU;
+  mf(0) = MUP; mf(1) = MCHARM;
+  mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
+  mf(6) = MELECTRON; mf(7) = MMUON; mf(8) = MTAU;
   a(0) = ALPHAMZ;  a(1) = ALPHASMZ;
-  mf(3) = getRunMtFromMz(PMTOP, ALPHASMZ);
+  mf(2) = getRunMtFromMz(PMTOP, ALPHASMZ);
   input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
   input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
   input(MT_pole) = PMTOP;
@@ -126,7 +126,7 @@ void QedQcd::set(const DoubleVector & y) {
   a(ALPHA - 1) = y.display(1);
   a(ALPHAS - 1) = y.display(2);
   for (int i=3; i<=11; i++)
-    mf(i-2) = y.display(i);
+    mf(i-3) = y.display(i);
 }
 
 const DoubleVector QedQcd::display() const {
@@ -134,7 +134,7 @@ const DoubleVector QedQcd::display() const {
   y(1) = a(ALPHA - 1);
   y(2) = a(ALPHAS - 1);
   for (int i=3; i<=11; i++)
-    y(i) = mf.display(i-2);
+    y(i) = mf(i-3);
   return y;
 }
 
@@ -151,12 +151,12 @@ void QedQcd::runto_safe(double scale, double eps)
 //  Active flavours at energy mu
 int QedQcd::flavours(double mu) const {
   int k = 0;
-  // if (mu > mf.display(mTop)) k++;
-  if (mu > mf.display(mCharm)) k++;
-  if (mu > mf.display(mUp)) k++;
-  if (mu > mf.display(mDown)) k++;
-  if (mu > mf.display(mBottom)) k++;
-  if (mu > mf.display(mStrange)) k++;
+  // if (mu > mf(mTop - 1)) k++;
+  if (mu > mf(mCharm - 1)) k++;
+  if (mu > mf(mUp - 1)) k++;
+  if (mu > mf(mDown - 1)) k++;
+  if (mu > mf(mBottom - 1)) k++;
+  if (mu > mf(mStrange - 1)) k++;
   return k;
 }
 
@@ -238,10 +238,10 @@ istream & operator >>(istream &left, QedQcd &m) {
 double QedQcd::qedBeta() const {
   double x;
   x = 24.0 / 9.0;
-  if (displayMu() > mf.display(mCharm)) x += 8.0 / 9.0;
-  // if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
-  if (displayMu() > mf.display(mBottom)) x += 2.0 / 9.0;
-  if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
+  if (displayMu() > mf(mCharm - 1)) x += 8.0 / 9.0;
+  // if (displayMu() > mf(mTop - 1)) x += 8.0 / 9.0;
+  if (displayMu() > mf(mBottom - 1)) x += 2.0 / 9.0;
+  if (displayMu() > mf(mTau - 1)) x += 2.0 / 3.0;
   if (displayMu() > MW) x += -7.0 / 2.0;
 
   return (x * sqr(a(ALPHA - 1)) / PI);
@@ -295,16 +295,16 @@ void QedQcd::massBeta(DoubleVector & x) const {
   const double qed = -a(ALPHA - 1) * INVPI / 2;
 
   for (int i=1;i<=3;i++)   // up quarks
-    x(i) = (qcd + 4.0 * qed / 3.0) * mf.display(i);
+    x(i) = (qcd + 4.0 * qed / 3.0) * mf(i - 1);
   for (int i=4;i<=6;i++)   // down quarks
-    x(i) = (qcd + qed / 3.0) * mf.display(i);
+    x(i) = (qcd + qed / 3.0) * mf(i - 1);
   for (int i=7;i<=9;i++)   // leptons
-    x(i) = 3.0 * qed * mf.display(i);
+    x(i) = 3.0 * qed * mf(i - 1);
 
   // switch off relevant beta functions
   if (displayThresholds() > 0)
     for(int i=1;i<=9;i++) {
-      if (displayMu() < displayMass().display(i))
+      if (displayMu() < mf(i - 1))
          x(i) = 0.0;
     }
   // nowadays, u,d,s masses defined at 2 GeV: don't run them below that
