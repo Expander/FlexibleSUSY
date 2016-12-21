@@ -20,7 +20,6 @@
 #include "def.h"
 #include "wrappers.hpp"
 #include "lowe.h"
-#include "linalg.h"
 #include "ew_input.hpp"
 #include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
@@ -377,43 +376,6 @@ void SLHA_io::set_block(const std::string& name, double value,
       ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n'
       << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
-
-   set_block(ss);
-}
-
-void SLHA_io::set_block(const std::string& name, const softsusy::DoubleMatrix& matrix,
-                        const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_SCALE(scale);
-   ss << '\n';
-
-   for (int i = 1; i <= matrix.displayRows(); ++i)
-      for (int k = 1; k <= matrix.displayCols(); ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i,k)
-            % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
-      }
-
-   set_block(ss);
-}
-
-void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& matrix,
-                        const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_SCALE(scale);
-   ss << '\n';
-
-   for (int i = 1; i <= matrix.displayRows(); ++i)
-      for (int k = 1; k <= matrix.displayCols(); ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k
-            % Re(matrix(i,k))
-            % ("Re(" + symbol + "(" + ToString(i) + "," + ToString(k) + "))");
-      }
 
    set_block(ss);
 }
