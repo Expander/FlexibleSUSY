@@ -28,51 +28,19 @@
 #ifndef NUMERICS_H
 #define NUMERICS_H
 
-#include <cmath>
-#include "def.h"
-#include "utils.h"
-
 namespace softsusy {
 
-/// Passarino-Veltman function definition
+double a0(double m, double q);
 double b0(double p, double m1, double m2, double q);
-/// Passarino-Veltman function definition
 double b1(double p, double m1, double m2, double q);
-/// Passarino-Veltman function definition
 double b22(double p,  double m1, double m2, double q);
-/// Passarino-Veltman function definition
 double c0(double m1, double m2, double m3);
-/// Passarino-Veltman function definition
 double d27(double m1, double m2, double m3, double m4);
-/// Passarino-Veltman function definition
 double d0(double m1, double m2, double m3, double m4);
-
-// inlined PV functions
-inline double a0(double m, double q) {
-   using std::fabs;
-   using std::log;
-  if (fabs(m) < softsusy::EPSTOL) return 0.;
-  return sqr(m) * (1.0 - 2. * log(abs(m / q)));
-}
-
-inline double ffn(double p, double m1, double m2, double q) {
-  return a0(m1, q) - 2.0 * a0(m2, q) -
-    (2.0 * sqr(p) + 2.0 * sqr(m1) - sqr(m2)) *
-    b0(p, m1, m2, q);
-}
-
-inline double gfn(double p, double m1, double m2, double q) {
-  return (sqr(p) - sqr(m1) - sqr(m2)) * b0(p, m1, m2, q) - a0(m1, q)
-    - a0(m2, q);
-}
-
-inline double hfn(double p, double m1, double m2, double q) {
-  return 4.0 * b22(p, m1, m2, q) + gfn(p, m1, m2, q);
-}
-
-inline double b22bar(double p, double m1, double m2, double q) {
-  return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
-}
+double ffn(double p, double m1, double m2, double q);
+double gfn(double p, double m1, double m2, double q);
+double hfn(double p, double m1, double m2, double q);
+double b22bar(double p, double m1, double m2, double q);
 
 } // namespace softsusy
 

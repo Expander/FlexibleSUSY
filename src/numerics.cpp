@@ -32,17 +32,20 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
+#include <algorithm>
 #include <cmath>
 #include <Eigen/Dense>
-
-using namespace softsusy;
-using namespace Eigen;
 
 namespace softsusy {
 
 namespace {
 
+constexpr double EPSTOL = 1.0e-11; ///< underflow accuracy
 constexpr double TOL = 1e-4;
+
+constexpr double sqr(double a) noexcept { return a*a; }
+constexpr double pow3(double a) noexcept { return a*a*a; }
+constexpr double pow6(double a) noexcept { return a*a*a*a*a*a; }
 
 bool is_close(double m1, double m2, double tol)
 {
@@ -78,9 +81,9 @@ double integrandThreshbnr(double x, double p, double m1, double m2, double q) no
   return refnfn(x, p, m1, m2, q);
 }
 
-Array<double,1,1> dd(double x, double p, double m1, double m2, double q) noexcept
+Eigen::Array<double,1,1> dd(double x, double p, double m1, double m2, double q) noexcept
 {
-  Array<double,1,1> dydx;
+  Eigen::Array<double,1,1> dydx;
   dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
   return dydx;
 }
@@ -92,7 +95,7 @@ double bIntegral(double p, double m1, double m2, double q)
 
   const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOL * 1.0e-5;
   const double eps = TOL * 1.0e-3;
-  Array<double,1,1> v;
+  Eigen::Array<double,1,1> v;
   v(0) = 1.0;
 
   runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
@@ -116,10 +119,34 @@ double fB(const std::complex<double>& a) noexcept
   return std::real(std::log(1. - a) - 1. - a * std::log(1.0 - 1.0 / a));
 }
 
-constexpr double pow3(double a) noexcept { return a*a*a; }
-constexpr double pow6(double a) noexcept { return a*a*a*a*a*a; }
-
 } // anonymous namespace
+
+double a0(double m, double q) {
+   using std::fabs;
+   using std::log;
+   constexpr double TOL = 1e-4;
+   if (fabs(m) < TOL) return 0.;
+   return sqr(m) * (1.0 - 2. * log(abs(m / q)));
+}
+
+double ffn(double p, double m1, double m2, double q) {
+   return a0(m1, q) - 2.0 * a0(m2, q) -
+      (2.0 * sqr(p) + 2.0 * sqr(m1) - sqr(m2)) *
+      b0(p, m1, m2, q);
+}
+
+double gfn(double p, double m1, double m2, double q) {
+   return (sqr(p) - sqr(m1) - sqr(m2)) * b0(p, m1, m2, q) - a0(m1, q)
+      - a0(m2, q);
+}
+
+double hfn(double p, double m1, double m2, double q) {
+   return 4.0 * b22(p, m1, m2, q) + gfn(p, m1, m2, q);
+}
+
+double b22bar(double p, double m1, double m2, double q) {
+   return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
+}
 
 /*
   Analytic expressions follow for above integrals: sometimes useful!
@@ -142,8 +169,8 @@ double b0(double p, double m1, double m2, double q)
      return 0.0;
 
   double ans  = 0.;
-  const double mMin = minimum(fabs(m1), fabs(m2));
-  const double mMax = maximum(fabs(m1), fabs(m2));
+  const double mMin = std::min(fabs(m1), fabs(m2));
+  const double mMax = std::max(fabs(m1), fabs(m2));
 
   const double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
   /// Try to increase the accuracy of s
@@ -208,7 +235,7 @@ double b1(double p, double m1, double m2, double q)
   double ans = 0.;
 
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
-  const double pTest = divide_finite(p2, maximum(m12, m22));
+  const double pTest = divide_finite(p2, std::max(m12, m22));
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4;
@@ -221,7 +248,7 @@ double b1(double p, double m1, double m2, double q)
     const double m16 = m12*m14 , m26 = m22*m24;
     const double m18 = sqr(m14), m28 = sqr(m24);
     const double p4 = sqr(p2);
-    if (fabs(m12 - m22) < pTolerance * maximum(m12, m22)) {
+    if (fabs(m12 - m22) < pTolerance * std::max(m12, m22)) {
        ans = 0.08333333333333333*p2/m22
           + 0.008333333333333333*p4/m24
           + sqr(m12 - m22)*(0.041666666666666664/m24 +
@@ -277,7 +304,7 @@ double b22(double p,  double m1, double m2, double q)
   const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
   const double pTolerance = 1.0e-10;
 
-  if (p2 < pTolerance * maximum(m12, m22) ) {
+  if (p2 < pTolerance * std::max(m12, m22) ) {
     // m1 == m2 with good accuracy
     if (is_close(m1, m2, EPSTOL)) {
       answer = -m12 * log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
