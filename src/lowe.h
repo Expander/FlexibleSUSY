@@ -208,8 +208,7 @@ public:
   /// thresholds are assumed. Range of validity is electroweak to top scale.
   // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
   // scheme
-  DoubleVector  getGaugeMu(const double m2, const
-		     double sinth) const;
+  Eigen::ArrayXd getGaugeMu(double m2, double sinth) const;
 };
 
 /// Input numbers into the object: by file stream

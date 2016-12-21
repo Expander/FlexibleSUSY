@@ -873,11 +873,11 @@ void Standard_model::initial_guess_for_parameters(const softsusy::QedQcd& qedqcd
    const double mtau_guess = qedqcd.displayMass(softsusy::mTau);
 
    // guess gauge couplings at mt
-   const softsusy::DoubleVector alpha_sm(qedqcd.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(qedqcd.getGaugeMu(mtpole, sinThetaW2));
 
-   g1 = Sqrt(4. * Pi * alpha_sm(1));
-   g2 = Sqrt(4. * Pi * alpha_sm(2));
-   g3 = Sqrt(4. * Pi * alpha_sm(3));
+   g1 = Sqrt(4. * Pi * alpha_sm(0));
+   g2 = Sqrt(4. * Pi * alpha_sm(1));
+   g3 = Sqrt(4. * Pi * alpha_sm(2));
 
    set_scale(mtpole);
 

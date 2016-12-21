@@ -552,15 +552,15 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
 // thresholds are assumed. Range of validity is electroweak to top scale.
 // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
 // scheme
-DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
+Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
   using std::log;
   static const double INVPI = 1.0 / PI;
-  DoubleVector temp(1, 3);
+  Eigen::ArrayXd temp(3);
 
-  double a1, a2, aem = displayAlpha(ALPHA), m1 = displayMu();
+  const double aem = displayAlpha(ALPHA), m1 = displayMu();
   // Set alpha1,2 at scale m1 from data:
-  a1 = 5.0 * aem / (3.0 * (1.0 - sinth));
-  a2 = aem / sinth;
+  double a1 = 5.0 * aem / (3.0 * (1.0 - sinth));
+  double a2 = aem / sinth;
 
   const double mtpole = displayPoleMt();
   QedQcd oneset(*this);
@@ -572,8 +572,8 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
     a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
     a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
 
-    temp.set(1, a1);
-    temp.set(2, a2);
+    temp(0) = a1;
+    temp(1) = a2;
 
     // calculate alphas(m2)
     if (m2 >= 1.0) {
@@ -582,7 +582,7 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
        oneset.runto(1.0);
     }
     // Set alphas(m) to be what's already calculated.
-    temp.set(3, oneset.displayAlpha(ALPHAS));
+    temp(2) = oneset.displayAlpha(ALPHAS);
 
     if (m2 > mtpole) {
       if (displayThresholds() > 0) {
@@ -592,14 +592,14 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
                                               log(mtrun / mtpole) / 3.0);
         oneset.setAlpha(ALPHAS, alphas_sm);
       }
-      temp = oneset.runSMGauge(m2, temp);
+      temp = flexiblesusy::ToEigenArray(oneset.runSMGauge(m2, flexiblesusy::ToDoubleVector(temp)));
     }
   } else {
     // Above the top threshold use SM RGEs only
-    temp.set(1, a1);
-    temp.set(2, a2);
-    temp.set(3, oneset.displayAlpha(ALPHAS));
-    temp = oneset.runSMGauge(m2, temp);
+    temp(0) = a1;
+    temp(1) = a2;
+    temp(2) = oneset.displayAlpha(ALPHAS);
+    temp = flexiblesusy::ToEigenArray(oneset.runSMGauge(m2, flexiblesusy::ToDoubleVector(temp)));
   }
 
   return temp;
