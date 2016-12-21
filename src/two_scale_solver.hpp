@@ -143,7 +143,7 @@ private:
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
-   Model* get_model(double) const; ///< returns model at given scale
+   Model* get_model(double) const;     ///< returns model at given scale
    void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision

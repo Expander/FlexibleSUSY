@@ -16,16 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "model.hpp"
 #include "two_scale_solver.hpp"
+
+#include "error.hpp"
+#include "functors.hpp"
+#include "logger.hpp"
+#include "model.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include "two_scale_initial_guesser.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
-#include "logger.hpp"
-#include "error.hpp"
-#include "functors.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -256,7 +257,7 @@ Model* RGFlow<Two_scale>::get_model() const
  *
  * The pointers to the models, matching conditions, convergence
  * tester, initial guesser, and running precision calculator are set
- * to zero.  The runnin precision is set to the default value 0.001.
+ * to zero.  The running precision is set to the default value 0.001.
  */
 void RGFlow<Two_scale>::reset()
 {
