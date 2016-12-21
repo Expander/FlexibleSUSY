@@ -40,7 +40,7 @@ public:
     void match_low_to_high_scale_model();
     void match_high_to_low_scale_model();
     double get_scale() const;
-    void set_models(Two_scale_model *lower, Two_scale_model *upper);
+    void set_models(Model *lower, Model *upper);
     double get_initial_scale_guess() const;
     void set_lower_input_parameters(const MSSMD5O_input_parameters&);
     void set_scale(double) {}
@@ -68,7 +68,7 @@ public:
     MSSMD5O_MSSMRHN_matching_up(const MSSMD5O_input_parameters&);
     void match();
     double get_scale() const;
-    void set_models(Two_scale_model *lower, Two_scale_model *upper);
+    void set_models(Model *lower, Model *upper);
     double get_initial_scale_guess() const;
     void set_lower_input_parameters(const MSSMD5O_input_parameters&);
     void set_scale(double);
@@ -85,7 +85,7 @@ public:
     MSSMD5O_MSSMRHN_matching_down(const MSSMD5O_input_parameters&);
     void match();
     double get_scale() const;
-    void set_models(Two_scale_model *upper, Two_scale_model *lower);
+    void set_models(Model *upper, Model *lower);
     double get_initial_scale_guess() const;
     void set_lower_input_parameters(const MSSMD5O_input_parameters&);
     void set_scale(double);

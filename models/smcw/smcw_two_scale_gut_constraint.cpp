@@ -37,7 +37,7 @@ double StandardModelCWGUTConstraint::get_scale() const
    return estimated_scale;
 }
 
-void StandardModelCWGUTConstraint::set_model(Two_scale_model* model)
+void StandardModelCWGUTConstraint::set_model(Model* model)
 {
    smcw = cast_model<StandardModelCW<Two_scale>*>(model);
 }

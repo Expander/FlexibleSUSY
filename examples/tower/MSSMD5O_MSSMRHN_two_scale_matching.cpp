@@ -164,7 +164,7 @@ double MSSMD5O_MSSMRHN_matching::get_initial_scale_guess() const
    return initial_scale_guess;
 }
 
-void MSSMD5O_MSSMRHN_matching::set_models(Two_scale_model *lower_, Two_scale_model *upper_)
+void MSSMD5O_MSSMRHN_matching::set_models(Model *lower_, Model *upper_)
 {
     lower = cast_model<MSSMD5O<Two_scale>*>(lower_);
     upper = cast_model<MSSMRHN<Two_scale>*>(upper_);
@@ -285,7 +285,7 @@ double MSSMD5O_MSSMRHN_matching_up<Two_scale>::get_scale() const
 }
 
 void MSSMD5O_MSSMRHN_matching_up<Two_scale>::set_models(
-   Two_scale_model *lower, Two_scale_model *upper)
+   Model *lower, Model *upper)
 {
    matching.set_models(lower, upper);
 }
@@ -332,7 +332,7 @@ double MSSMD5O_MSSMRHN_matching_down<Two_scale>::get_scale() const
 }
 
 void MSSMD5O_MSSMRHN_matching_down<Two_scale>::set_models(
-   Two_scale_model *upper, Two_scale_model *lower)
+   Model *upper, Model *lower)
 {
    matching.set_models(lower, upper);
 }

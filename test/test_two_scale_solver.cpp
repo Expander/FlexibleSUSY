@@ -1,6 +1,6 @@
+#include "model.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_matching.hpp"
-#include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include "linalg.h"
@@ -14,7 +14,7 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
-class Static_model: public Two_scale_model {
+class Static_model: public Model {
 public:
    Static_model() : parameters(1) {}
    Static_model(const DoubleVector& pars) : parameters(pars) {}
@@ -43,7 +43,7 @@ public:
    virtual double get_scale() const {
       return scale;
    }
-   virtual void set_models(Two_scale_model* mLow_, Two_scale_model* mHigh_) {
+   virtual void set_models(Model* mLow_, Model* mHigh_) {
       mLow = cast_model<Static_model*>(mLow_);
       mHigh = cast_model<Static_model*>(mHigh_);
    }
@@ -52,7 +52,7 @@ private:
    double scale;
 };
 
-class Counting_model: public Two_scale_model {
+class Counting_model: public Model {
 public:
    Counting_model() : number_of_runs(0) {}
    virtual ~Counting_model() {}
@@ -74,7 +74,7 @@ public:
    virtual ~Counting_constraint() {}
    virtual void apply() { ++number_of_apply_calls; }
    virtual double get_scale() const { return scale; }
-   virtual void set_model(Two_scale_model*) {}
+   virtual void set_model(Model*) {}
 
    unsigned get_number_of_apply_calls() const {
       return number_of_apply_calls;
@@ -100,7 +100,7 @@ public:
       ++number_of_get_scale;
       return scale;
    }
-   virtual void set_models(Two_scale_model*, Two_scale_model*) {
+   virtual void set_models(Model*, Model*) {
    }
    unsigned get_number_of_matches() const {
       return number_of_matches;

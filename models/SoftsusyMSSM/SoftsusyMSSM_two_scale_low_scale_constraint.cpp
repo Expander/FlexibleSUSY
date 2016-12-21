@@ -48,7 +48,7 @@ double SoftsusyMSSM_low_scale_constraint::get_scale() const
    return scale;
 }
 
-void SoftsusyMSSM_low_scale_constraint::set_model(Two_scale_model* model)
+void SoftsusyMSSM_low_scale_constraint::set_model(Model* model)
 {
    mssm = cast_model<SoftsusyMSSM<Two_scale>*>(model);
 }

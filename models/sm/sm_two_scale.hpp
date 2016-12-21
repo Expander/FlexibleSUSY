@@ -21,7 +21,7 @@
 
 #include "rge.h"
 #include "linalg.h"
-#include "two_scale_model.hpp"
+#include "model.hpp"
 #include "sm.hpp"
 
 #include <iostream>
@@ -34,7 +34,7 @@ class Two_scale;
 std::ostream& operator <<(std::ostream&, const StandardModel<Two_scale>&);
 
 template<>
-class StandardModel<Two_scale>: public Two_scale_model, protected softsusy::RGE {
+class StandardModel<Two_scale>: public Model, protected softsusy::RGE {
 private:
    softsusy::DoubleMatrix yu, yd, ye; ///< Yukawa matrices for ups, downs and leptons
    softsusy::DoubleVector g;          ///< Gauge couplings (g1 = sqrt(5/3) g_Y)

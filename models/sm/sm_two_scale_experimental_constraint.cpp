@@ -67,7 +67,7 @@ double StandardModel_exp_constraint::get_scale() const
    return Electroweak_constants::MZ;
 }
 
-void StandardModel_exp_constraint::set_model(Two_scale_model* model)
+void StandardModel_exp_constraint::set_model(Model* model)
 {
    sm = cast_model<StandardModel<Two_scale>*>(model);
 }

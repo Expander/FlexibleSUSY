@@ -39,7 +39,7 @@ public:
    virtual ~MSSMcbs_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual void set_model(Model*);
 
    void clear();
    double get_initial_scale_guess() const;

@@ -31,7 +31,7 @@ public:
    virtual ~StandardModelCWGUTConstraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual void set_model(Model*);
 
 private:
    double estimated_scale;

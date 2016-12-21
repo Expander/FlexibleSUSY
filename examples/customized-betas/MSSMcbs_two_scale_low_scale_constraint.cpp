@@ -108,7 +108,7 @@ double MSSMcbs_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
    return initial_scale_guess;
 }
 
-void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
+void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Model* model_)
 {
    model = cast_model<MSSMcbs<Two_scale>*>(model_);
 }

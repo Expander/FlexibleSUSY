@@ -1,6 +1,6 @@
+#include "model.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_matching.hpp"
-#include "two_scale_model.hpp"
 #include "sm_two_scale.hpp"
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "smcw_two_scale.hpp"
@@ -43,7 +43,7 @@ public:
    virtual double get_scale() const {
       return 3000;
    }
-   virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
+   virtual void set_models(Model* sm_, Model* smcw_) {
       sm = cast_model<StandardModel<Two_scale>*>(sm_);
       smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }
@@ -73,7 +73,7 @@ public:
    virtual double get_scale() const {
       return 3000;
    }
-   virtual void set_models(Two_scale_model* smcw_, Two_scale_model* sm_) {
+   virtual void set_models(Model* smcw_, Model* sm_) {
       sm = cast_model<StandardModel<Two_scale>*>(sm_);
       smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }
@@ -105,7 +105,7 @@ public:
    virtual double get_scale() const {
       return scale;
    }
-   virtual void set_models(Two_scale_model* smcw_, Two_scale_model* sm_) {
+   virtual void set_models(Model* smcw_, Model* sm_) {
       sm = cast_model<StandardModel<Two_scale>*>(sm_);
       smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }
@@ -143,7 +143,7 @@ public:
    virtual double get_scale() const {
       return scale;
    }
-   virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
+   virtual void set_models(Model* sm_, Model* smcw_) {
       sm = cast_model<StandardModel<Two_scale>*>(sm_);
       smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }

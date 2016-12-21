@@ -1,6 +1,6 @@
 
+#include "model.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
@@ -62,7 +62,7 @@ private:
    unsigned int iteration, maximum_iterations;
 };
 
-class Static_model: public Two_scale_model {
+class Static_model: public Model {
 public:
    Static_model() {}
    virtual ~Static_model() {}
@@ -79,7 +79,7 @@ public:
    virtual ~Static_constraint() {}
    virtual void apply() {}
    virtual double get_scale() const { return scale; }
-   virtual void set_model(Two_scale_model*) {}
+   virtual void set_model(Model*) {}
 private:
    double scale;
 };

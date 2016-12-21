@@ -20,7 +20,7 @@
 #define SoftsusyMSSM_TWO_SCALE_H
 
 #include "SoftsusyMSSM.hpp"
-#include "two_scale_model.hpp"
+#include "model.hpp"
 #include "softsusy.h"
 
 namespace flexiblesusy {
@@ -28,7 +28,7 @@ namespace flexiblesusy {
 class Two_scale;
 
 template<>
-class SoftsusyMSSM<Two_scale>: public Two_scale_model, public softsusy::MssmSoftsusy {
+class SoftsusyMSSM<Two_scale>: public Model, public softsusy::MssmSoftsusy {
 public:
    SoftsusyMSSM();
    virtual ~SoftsusyMSSM();

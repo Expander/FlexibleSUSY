@@ -4,12 +4,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "two_scale_model.hpp"
+#include "model.hpp"
 #include "two_scale_constraint.hpp"
 
 using namespace flexiblesusy;
 
-class MyModel : public Two_scale_model {
+class MyModel : public Model {
 public:
    virtual ~MyModel() {}
    virtual void calculate_spectrum() {}
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( test_cast_model )
 {
    MyModel model;
 
-   Two_scale_model* model_ptr = &model;
+   Model* model_ptr = &model;
 
    MyModel* mymodel_ptr = cast_model<MyModel*>(model_ptr);
 
