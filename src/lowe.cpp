@@ -26,15 +26,17 @@
 #include "lowe.h"
 #include "ew_input.hpp"
 #include "error.hpp"
-#include "utils.h"
 #include "wrappers.hpp"
 
-#include <iostream>
+#include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace softsusy {
 
 namespace {
+
+constexpr double sqr(double a) noexcept { return a*a; }
 
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
 // it's a very good approximation at these scales, better than 10^-3 accuracy
@@ -85,7 +87,7 @@ Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
 // contributions, from arXiv:1208.3357 [hep-ph].
 Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
 {
-  const double oneO4Pi = 1.0 / (4.0 * PI);
+  const double oneO4Pi = 1.0 / (4.0 * M_PI);
   const double a1 = y(0);
   const double a2 = y(1);
   const double a3 = y(2);
@@ -192,29 +194,29 @@ int QedQcd::flavours(double mu) const {
   return k;
 }
 
-ostream & operator <<(ostream &left, const QedQcd &m) {
+std::ostream& operator<<(std::ostream &left, const QedQcd &m) {
   left << "mU: " << m.displayMass(mUp)
        << "  mC: " << m.displayMass(mCharm)
        << "  mt: " << m.displayMass(mTop)
        << "  mt^pole: " << m.displayPoleMt()
-       << endl;
+       << '\n';
   left << "mD: " << m.displayMass(mDown)
        << "  mS: " << m.displayMass(mStrange)
        << "  mB: " << m.displayMass(mBottom)
        << "  mb(mb):  " << m.displayMbMb()
-       << endl;
+       << '\n';
   left << "mE: " << m.displayMass(mElectron)
        << "  mM: " << m.displayMass(mMuon)
        <<  "  mT: " << m.displayMass(mTau)
        << "  mb^pole: " << m.displayPoleMb()
-       << endl;
+       << '\n';
   left << "aE: " << 1.0 / m.displayAlpha(ALPHA)
        << "  aS: " << m.displayAlpha(ALPHAS)
        << "   Q: " << m.get_scale()
        << "  mT^pole: " << m.displayPoleMtau()
-       << endl;
+       << '\n';
   left << "loops: " << m.get_loops()
-       << "        thresholds: " << m.get_thresholds() << endl;
+       << "        thresholds: " << m.get_thresholds() << '\n';
 
   return left;
 }
@@ -227,16 +229,16 @@ double QedQcd::qedBeta() const {
   // if (get_scale() > mf(mTop - 1)) x += 8.0 / 9.0;
   if (get_scale() > mf(mBottom - 1)) x += 2.0 / 9.0;
   if (get_scale() > mf(mTau - 1)) x += 2.0 / 3.0;
-  if (get_scale() > MW) x += -7.0 / 2.0;
+  if (get_scale() > displayPoleMW()) x += -7.0 / 2.0;
 
-  return (x * sqr(a(ALPHA - 1)) / PI);
+  return (x * sqr(a(ALPHA - 1)) / M_PI);
 }
 
 //  next routine calculates beta function to 3 loops in qcd for The Standard
 //  Model. Note that if quark masses are running, the number of active quarks
 //  will take this into account. Returns beta
 double QedQcd::qcdBeta() const {
-  static const double INVPI = 1.0 / PI;
+  static const double INVPI = 1.0 / M_PI;
   const int quarkFlavours = flavours(get_scale());
   double qb0, qb1, qb2;
   qb0 = (11.0e0 - (2.0e0 / 3.0e0 * quarkFlavours)) / 4.0;
@@ -261,7 +263,7 @@ double QedQcd::qcdBeta() const {
 //(See comments for above function). returns a vector x(1..9) of fermion mass
 //beta functions -- been checked!
 Eigen::ArrayXd QedQcd::massBeta() const {
-  static const double INVPI = 1.0 / PI, ZETA3 = 1.202056903159594;
+  static const double INVPI = 1.0 / M_PI, ZETA3 = 1.202056903159594;
   Eigen::ArrayXd x(9);
 
   // qcd bits: 1,2,3 loop resp.
@@ -322,7 +324,7 @@ double QedQcd::extractRunningMb(double alphasMb) {
   double mbPole = displayPoleMb();
 
   if (get_scale() != mbPole) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "QedQcd::extractRunningMb called at scale "
          << get_scale() << " instead of mbpole\n";
     throw flexiblesusy::SetupError(ii.str());
@@ -331,13 +333,13 @@ double QedQcd::extractRunningMb(double alphasMb) {
   // Following is the MSbar correction from QCD, hep-ph/9912391 and ZPC48 673
   // (1990)
   double delta = 0.;
-  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
+  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / M_PI;
   if (get_loops() > 1)
-    delta = delta + sqr(alphasMb / PI) *
+    delta = delta + sqr(alphasMb / M_PI) *
       (10.1667 + (displayMass(mUp) + displayMass(mDown) +
                   displayMass(mCharm) + displayMass(mStrange)) / mbPole);
   if (get_loops() > 2)
-    delta = delta + 101.45424 * alphasMb / PI * sqr(alphasMb / PI);
+    delta = delta + 101.45424 * alphasMb / M_PI * sqr(alphasMb / M_PI);
 
   double mbmb = mbPole * (1.0 - delta);
 
@@ -348,7 +350,7 @@ double QedQcd::extractRunningMb(double alphasMb) {
 double QedQcd::extractPoleMb(double alphasMb) {
 
   if (get_scale() != displayMass(mBottom)) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "QedQcd::extractPoleMb called at scale " << get_scale() <<
       " instead of mb(mb)\n";
     throw flexiblesusy::SetupError(ii.str());
@@ -356,12 +358,12 @@ double QedQcd::extractPoleMb(double alphasMb) {
 
   // Following is the MSbar correction from QCD, hep-ph/9912391
   double delta = 0.0;
-  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / PI;
-  if (get_loops() > 1) delta = delta + sqr(alphasMb / PI) *
+  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / M_PI;
+  if (get_loops() > 1) delta = delta + sqr(alphasMb / M_PI) *
     (9.2778 + (displayMass(mUp) + displayMass(mDown) + displayMass(mCharm) +
                displayMass(mStrange)) / mbPole);
   if (get_loops() > 2)
-    delta = delta + 94.4182 * alphasMb / PI * sqr(alphasMb / PI);
+    delta = delta + 94.4182 * alphasMb / M_PI * sqr(alphasMb / M_PI);
 
   double mbPole = displayMass(mBottom) * (1.0 + delta);
 
@@ -529,7 +531,7 @@ void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
 // scheme
 Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
   using std::log;
-  static const double INVPI = 1.0 / PI;
+  static const double INVPI = 1.0 / M_PI;
   Eigen::ArrayXd temp(3);
 
   const double aem = displayAlpha(ALPHA), m1 = get_scale();
@@ -543,7 +545,7 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
   if (m1 < mtpole) {
     // Renormalise a1,a2 to threshold scale assuming topless SM with one
     // light Higgs doublet
-    const double thresh = minimum(m2, mtpole);
+    const double thresh = std::min(m2, mtpole);
     a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
     a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
 
