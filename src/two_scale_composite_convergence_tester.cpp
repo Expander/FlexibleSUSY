@@ -22,7 +22,7 @@
 namespace flexiblesusy {
 
 Composite_convergence_tester<Two_scale>::Composite_convergence_tester()
-   : Convergence_tester<Two_scale>()
+   : Convergence_tester()
    , testers()
 {
 }
@@ -32,7 +32,7 @@ Composite_convergence_tester<Two_scale>::~Composite_convergence_tester()
 }
 
 /**
- * Calls the Convergence_tester<Two_scale>::accuracy_goal_reached()
+ * Calls the Convergence_tester::accuracy_goal_reached()
  * functions of all convergence testers.  If at least one of them
  * returns false, then false is returned.  Othewise (all convergence
  * testers yield true) true is returned.
@@ -42,7 +42,7 @@ Composite_convergence_tester<Two_scale>::~Composite_convergence_tester()
  * Otherwise (all convergence testers yield true) true is returned.
  * This implementation is currently not realized, because it is not
  * ensured that all
- * Convergence_tester<Two_scale>::accuracy_goal_reached() functions
+ * Convergence_tester::accuracy_goal_reached() functions
  * are called.
  *
  * @return true if and only if all accuracy_goal_reached() function
@@ -67,13 +67,13 @@ unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
       return 0;
 
    return (*std::max_element(testers.begin(), testers.end(),
-                             [](const Convergence_tester<Two_scale>* a,
-                                const Convergence_tester<Two_scale>* b) {
+                             [](const Convergence_tester* a,
+                                const Convergence_tester* b) {
                                 return a->max_iterations() < b->max_iterations();
                              }))->max_iterations();
 }
 
-void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester<Two_scale>* t)
+void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester* t)
 {
    if (t)
       testers.push_back(t);

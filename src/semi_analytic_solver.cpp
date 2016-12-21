@@ -18,12 +18,12 @@
 
 #include "semi_analytic_solver.hpp"
 
+#include "convergence_tester.hpp"
 #include "error.hpp"
 #include "logger.hpp"
 #include "model.hpp"
 #include "semi_analytic_initial_guesser.hpp"
 #include "two_scale_constraint.hpp"
-#include "two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 
@@ -202,7 +202,7 @@ bool RGFlow<Semi_analytic>::accuracy_goal_reached() const
  *
  * @param convergence_tester_ the convergence tester to be used
  */
-void RGFlow<Semi_analytic>::set_inner_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
+void RGFlow<Semi_analytic>::set_inner_convergence_tester(Convergence_tester* convergence_tester_)
 {
    inner_convergence_tester = convergence_tester_;
 }
@@ -212,7 +212,7 @@ void RGFlow<Semi_analytic>::set_inner_convergence_tester(Convergence_tester<Two_
  *
  * @param convergence_tester_ the convergence tester to be used
  */
-void RGFlow<Semi_analytic>::set_outer_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
+void RGFlow<Semi_analytic>::set_outer_convergence_tester(Convergence_tester* convergence_tester_)
 {
    outer_convergence_tester = convergence_tester_;
 }

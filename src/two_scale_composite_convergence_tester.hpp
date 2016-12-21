@@ -20,7 +20,7 @@
 #define TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
 
 #include "composite_convergence_tester.hpp"
-#include "two_scale_convergence_tester.hpp"
+#include "convergence_tester.hpp"
 #include <vector>
 
 namespace flexiblesusy {
@@ -36,17 +36,17 @@ class Two_scale;
  */
 
 template<>
-class Composite_convergence_tester<Two_scale> : public Convergence_tester<Two_scale> {
+class Composite_convergence_tester<Two_scale> : public Convergence_tester {
 public:
    Composite_convergence_tester();
    virtual ~Composite_convergence_tester();
 
    virtual bool accuracy_goal_reached() override;
    virtual unsigned int max_iterations() const override;
-   void add_convergence_tester(Convergence_tester<Two_scale>*);
+   void add_convergence_tester(Convergence_tester*);
 
 private:
-   std::vector<Convergence_tester<Two_scale>*> testers;
+   std::vector<Convergence_tester*> testers;
 };
 
 }

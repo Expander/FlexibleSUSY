@@ -19,7 +19,7 @@
 #ifndef SM_TWO_SCALE_CONVERGENCE_TESTER_H
 #define SM_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_convergence_tester.hpp"
+#include "convergence_tester.hpp"
 
 namespace flexiblesusy {
 
@@ -35,7 +35,7 @@ class StandardModel;
  * Model is assumed to be a fixed theory (all parameters are known),
  * the function accuracy_goal_reached() returns allways true.
  */
-class StandardModel_convergence_tester : public Convergence_tester<Two_scale> {
+class StandardModel_convergence_tester : public Convergence_tester {
 public:
    StandardModel_convergence_tester(StandardModel<Two_scale>*);
    virtual ~StandardModel_convergence_tester();

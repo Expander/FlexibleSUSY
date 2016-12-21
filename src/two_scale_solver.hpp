@@ -34,8 +34,8 @@ namespace flexiblesusy {
 
 template <class T> class Constraint;
 template <class T> class Matching;
-template <class T> class Convergence_tester;
 template <class T> class Initial_guesser;
+class Convergence_tester;
 class Model;
 class Two_scale;
 class Two_scale_running_precision;
@@ -82,7 +82,7 @@ public:
    /// run model at given scale to given scale
    void run_to(double);
    /// set convergence tester
-   void set_convergence_tester(Convergence_tester<Two_scale>*);
+   void set_convergence_tester(Convergence_tester*);
    /// set running precision calculator
    void set_running_precision(Two_scale_running_precision*);
    /// set initial guesser
@@ -133,7 +133,7 @@ private:
 
    std::vector<std::shared_ptr<Slider> > sliders{}; ///< sliders to be run up and down
    unsigned int iteration{0};             ///< iteration number (starting at 0)
-   Convergence_tester<Two_scale>* convergence_tester{nullptr}; ///< the convergence tester
+   Convergence_tester* convergence_tester{nullptr}; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser{nullptr};       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
    double running_precision{1.0e-3};           ///< RG running precision

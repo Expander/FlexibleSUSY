@@ -1,8 +1,8 @@
+#include "convergence_tester.hpp"
 #include "model.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_constraint.hpp"
-#include "two_scale_convergence_tester.hpp"
 #include "linalg.h"
 #include "error.hpp"
 
@@ -114,7 +114,7 @@ private:
    mutable unsigned number_of_get_scale;
 };
 
-class Counting_convergence_tester : public Convergence_tester<Two_scale> {
+class Counting_convergence_tester : public Convergence_tester {
 public:
    Counting_convergence_tester(unsigned int max_iterations_)
       : iteration(0), maximum_iterations(max_iterations_) {}

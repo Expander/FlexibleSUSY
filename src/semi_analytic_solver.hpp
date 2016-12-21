@@ -32,8 +32,8 @@
 namespace flexiblesusy {
 
 template <class T> class Constraint;
-template <class T> class Convergence_tester;
 template <class T> class Initial_guesser;
+class Convergence_tester;
 class Model;
 class Semi_analytic;
 class Two_scale;
@@ -76,9 +76,9 @@ public:
    /// run model at given scale to given scale
    void run_to(double);
    /// set convergence tester for inner two-scale iteration
-   void set_inner_convergence_tester(Convergence_tester<Two_scale>*);
+   void set_inner_convergence_tester(Convergence_tester*);
    /// set convergence tester for overall iteration
-   void set_outer_convergence_tester(Convergence_tester<Two_scale>*);
+   void set_outer_convergence_tester(Convergence_tester*);
    /// solves the boundary value problem
    void solve();
 
@@ -113,8 +113,8 @@ private:
    std::vector<std::shared_ptr<Slider> > inner_sliders{}; ///< sliders to be used in the inner iteration
    std::vector<std::shared_ptr<Slider> > outer_sliders{}; ///< sliders to be used in the outer iteration
    unsigned int iteration{0};             ///< iteration number (starting at 0)
-   Convergence_tester<Two_scale>* inner_convergence_tester{nullptr}; ///< the convergence tester for the two-scale iteration
-   Convergence_tester<Two_scale>* outer_convergence_tester{nullptr}; ///< the convergence tester for the main iteration
+   Convergence_tester* inner_convergence_tester{nullptr}; ///< the convergence tester for the two-scale iteration
+   Convergence_tester* outer_convergence_tester{nullptr}; ///< the convergence tester for the main iteration
    Initial_guesser<Semi_analytic>* initial_guesser{nullptr};       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
    double running_precision{1.0e-3};           ///< RG running precision

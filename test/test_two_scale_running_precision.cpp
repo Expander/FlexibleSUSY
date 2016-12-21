@@ -1,8 +1,8 @@
 
+#include "convergence_tester.hpp"
 #include "model.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_constraint.hpp"
-#include "two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
 #include "error.hpp"
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( test_increasing_running_precision )
    }
 }
 
-class Static_convergence_tester : public Convergence_tester<Two_scale> {
+class Static_convergence_tester : public Convergence_tester {
 public:
    Static_convergence_tester(unsigned int max_iterations_)
       : iteration(0), maximum_iterations(max_iterations_) {}

@@ -19,7 +19,7 @@
 #ifndef TWO_SCALE_CONVERGENCE_TESTER_DRBAR_H
 #define TWO_SCALE_CONVERGENCE_TESTER_DRBAR_H
 
-#include "two_scale_convergence_tester.hpp"
+#include "convergence_tester.hpp"
 #include "convergence_tester_drbar.hpp"
 #include "error.hpp"
 #include "logger.hpp"
@@ -33,7 +33,7 @@ namespace flexiblesusy {
 
 template <template<class Method> class Model>
 class Convergence_tester_DRbar<Model<Two_scale> > :
-	public Convergence_tester<Two_scale> {
+	public Convergence_tester {
 public:
    using Scale_getter = std::function<double()>;
 
@@ -78,7 +78,7 @@ private:
 template <template<class Method> class Model>
 Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
 (const Model<Two_scale>* model_, double accuracy_goal_, const Scale_getter& sg)
-   : Convergence_tester<Two_scale>()
+   : Convergence_tester()
    , model(model_)
    , scale_getter(sg)
    , max_it(static_cast<int>(-log10(accuracy_goal_) * 10))

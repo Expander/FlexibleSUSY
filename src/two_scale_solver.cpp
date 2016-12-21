@@ -18,12 +18,12 @@
 
 #include "two_scale_solver.hpp"
 
+#include "convergence_tester.hpp"
 #include "error.hpp"
 #include "functors.hpp"
 #include "logger.hpp"
 #include "model.hpp"
 #include "two_scale_constraint.hpp"
-#include "two_scale_convergence_tester.hpp"
 #include "two_scale_initial_guesser.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
@@ -184,7 +184,7 @@ bool RGFlow<Two_scale>::accuracy_goal_reached() const
  *
  * @param convergence_tester_ the convergence tester to be used
  */
-void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
+void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester* convergence_tester_)
 {
    convergence_tester = convergence_tester_;
 }

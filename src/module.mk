@@ -10,6 +10,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/build_info.cpp \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
+		$(DIR)/convergence_tester.cpp \
 		$(DIR)/database.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
@@ -140,14 +141,12 @@ LIBFLEXI_HDR := \
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
-		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_running_precision.cpp \
 		$(DIR)/two_scale_solver.cpp
 
 LIBFLEXI_HDR += \
 		$(DIR)/two_scale_composite_convergence_tester.hpp \
 		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester.hpp \
 		$(DIR)/two_scale_convergence_tester_drbar.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
@@ -159,7 +158,6 @@ ifneq ($(findstring semi_analytic,$(SOLVERS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/semi_analytic_solver.cpp \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
-		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_running_precision.cpp \
 		$(DIR)/two_scale_solver.cpp
 
@@ -167,7 +165,6 @@ LIBFLEXI_HDR += \
 		$(DIR)/semi_analytic_solver.hpp \
 		$(DIR)/two_scale_composite_convergence_tester.hpp \
 		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester.hpp \
 		$(DIR)/two_scale_convergence_tester_drbar.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \

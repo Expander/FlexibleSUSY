@@ -5,7 +5,7 @@
 namespace flexiblesusy {
 
 StandardModel_convergence_tester::StandardModel_convergence_tester(StandardModel<Two_scale>* sm_)
-   : Convergence_tester<Two_scale>()
+   : Convergence_tester()
    , sm(sm_)
 {
    assert(sm && "pointer to StandardModel<Two_scale> must not be zero");
