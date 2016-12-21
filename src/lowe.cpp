@@ -24,7 +24,6 @@
 */
 
 #include "lowe.h"
-#include "def.h"
 #include "ew_input.hpp"
 #include "error.hpp"
 #include "utils.h"
@@ -116,7 +115,6 @@ QedQcd::QedQcd()
   , pmns()
 {
   set_number_of_parameters(11);
-  // Default object: 1998 PDB defined in 'def.h'
   mf(0) = MUP; mf(1) = MCHARM;
   mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
   mf(6) = MELECTRON; mf(7) = MMUON; mf(8) = MTAU;

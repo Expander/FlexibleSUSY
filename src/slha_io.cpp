@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "slha_io.hpp"
-#include "def.h"
 #include "wrappers.hpp"
 #include "lowe.h"
 #include "ew_input.hpp"
