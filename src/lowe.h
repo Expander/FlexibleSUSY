@@ -70,7 +70,7 @@ extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQ
 class QedQcd: public RGE
 {
 private:
-  DoubleVector a;   ///< gauge couplings
+  Eigen::ArrayXd a; ///< gauge couplings
   DoubleVector mf;  ///< fermion running masses
   Eigen::ArrayXd input; ///< SLHA input parmeters
   double mbPole;    ///< pole masses of third family quarks
@@ -103,7 +103,7 @@ public:
   /// sets a neutrino pole mass
   void setNeutrinoPoleMass(int i, double m) { input(Mv1_pole + i - 1) = m; }
   /// sets QED or QCD structure constant
-  void setAlpha(leGauge ai, double ap) { a(ai) = ap; }
+  void setAlpha(leGauge ai, double ap) { a(ai - 1) = ap; }
   /// set input value of alpha_em(MZ)
   void setAlphaEmInput(double a) { input(alpha_em_MSbar_at_MZ) = a; }
   /// set input value of alpha_s(MZ)
@@ -140,7 +140,7 @@ public:
   /// Returns a single neutrino pole mass
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant
-  double displayAlpha(leGauge ai) const { return a.display(ai); };
+  double displayAlpha(leGauge ai) const { return a(ai - 1); };
   /// Returns input value alpha_em(MZ)
   double displayAlphaEmInput() const { return input(alpha_em_MSbar_at_MZ); }
   /// Returns input value alpha_s(MZ)

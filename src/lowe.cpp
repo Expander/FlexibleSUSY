@@ -86,7 +86,7 @@ QedQcd::QedQcd()
   mf(1) = MUP; mf(2) = MCHARM;
   mf(4) = MDOWN; mf(5) = MSTRANGE; mf(6) = MBOTTOM;
   mf(7) = MELECTRON; mf(8) = MMUON; mf(9) = MTAU;
-  a(1) = ALPHAMZ;  a(2) = ALPHASMZ;
+  a(0) = ALPHAMZ;  a(1) = ALPHASMZ;
   mf(3) = getRunMtFromMz(PMTOP, ALPHASMZ);
   input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
   input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
@@ -123,16 +123,16 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
 
 //For communication with outside routines: sets all data by one vector y=1..11.
 void QedQcd::set(const DoubleVector & y) {
-  a(ALPHA) = y.display(1);
-  a(ALPHAS) = y.display(2);
+  a(ALPHA - 1) = y.display(1);
+  a(ALPHAS - 1) = y.display(2);
   for (int i=3; i<=11; i++)
     mf(i-2) = y.display(i);
 }
 
 const DoubleVector QedQcd::display() const {
   DoubleVector y(11);
-  y(1) = a.display(ALPHA);
-  y(2) = a.display(ALPHAS);
+  y(1) = a(ALPHA - 1);
+  y(2) = a(ALPHAS - 1);
   for (int i=3; i<=11; i++)
     y(i) = mf.display(i-2);
   return y;
@@ -244,7 +244,7 @@ double QedQcd::qedBeta() const {
   if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
   if (displayMu() > MW) x += -7.0 / 2.0;
 
-  return (x * sqr(a.display(ALPHA)) / PI);
+  return (x * sqr(a(ALPHA - 1)) / PI);
 }
 
 //  next routine calculates beta function to 3 loops in qcd for The Standard
@@ -290,9 +290,9 @@ void QedQcd::massBeta(DoubleVector & x) const {
            140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
       INVPI / 64.0;
 
-  const double qcd = -2.0 * a.display(ALPHAS) * (
-     qg1  + qg2 * a.display(ALPHAS) + qg3 * sqr(a.display(ALPHAS)));
-  const double qed = -a.display(ALPHA) * INVPI / 2;
+  const double qcd = -2.0 * a(ALPHAS - 1) * (
+     qg1  + qg2 * a(ALPHAS - 1) + qg3 * sqr(a(ALPHAS - 1)));
+  const double qed = -a(ALPHA - 1) * INVPI / 2;
 
   for (int i=1;i<=3;i++)   // up quarks
     x(i) = (qcd + 4.0 * qed / 3.0) * mf.display(i);
@@ -457,7 +457,7 @@ void QedQcd::toMt() {
 
 // Takes QedQcd object created at MZ and spits it out at MZ
 void QedQcd::toMz() {
-  double mt = input(MT_pole), as = a(2);
+  const double mt = input(MT_pole), as = a(ALPHAS - 1);
   setMass(mTop, getRunMtFromMz(mt, as));
   calcPoleMb();
 
