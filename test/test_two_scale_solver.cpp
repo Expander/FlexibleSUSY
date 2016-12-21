@@ -20,7 +20,11 @@ public:
    Static_model(const DoubleVector& pars) : parameters(pars) {}
    virtual ~Static_model() {}
    virtual void calculate_spectrum() {}
+   virtual void clear_problems() {}
    virtual std::string name() const { return "Static_model"; }
+   virtual void print(std::ostream& out = std::cout) const {
+      out << "Model: " << name() << '\n';
+   }
    virtual void run_to(double, double) {}
    virtual void set_parameters(const DoubleVector& v) { parameters = v; }
    virtual DoubleVector get_parameters() const { return parameters; }
@@ -57,6 +61,11 @@ public:
    Counting_model() : number_of_runs(0) {}
    virtual ~Counting_model() {}
    virtual void calculate_spectrum() {}
+   virtual void clear_problems() {}
+   virtual std::string name() const { return "Counting_model"; }
+   virtual void print(std::ostream& out = std::cout) const {
+      out << "Model: " << name() << '\n';
+   }
    virtual void run_to(double, double) { ++number_of_runs; }
    virtual void set_precision(double) {}
    unsigned get_number_of_runs() const {

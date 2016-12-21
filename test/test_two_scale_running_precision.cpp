@@ -67,7 +67,11 @@ public:
    Static_model() {}
    virtual ~Static_model() {}
    virtual void calculate_spectrum() {}
+   virtual void clear_problems() {}
    virtual std::string name() const { return "Static_model"; }
+   virtual void print(std::ostream& out = std::cout) const {
+      out << "Model: " << name() << '\n';
+   }
    virtual void run_to(double, double) {}
    virtual void set_precision(double) {}
 };
