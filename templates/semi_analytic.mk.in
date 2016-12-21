@@ -19,6 +19,11 @@
 @ModelName@_INCLUDE_MK += $(DIR)/semi_analytic.mk
 
 LIB@ModelName@_SRC += \
-		$(DIR)/@ModelName@_semi_analytic_model.cpp
+		$(DIR)/@ModelName@_semi_analytic_convergence_tester.cpp \
+		$(DIR)/@ModelName@_semi_analytic_model.cpp \
+		$(DIR)/@ModelName@_semi_analytic_susy_convergence_tester.cpp
 LIB@ModelName@_HDR += \
-		$(DIR)/@ModelName@_semi_analytic_model.hpp
+		$(DIR)/@ModelName@_semi_analytic_convergence_tester.hpp \
+		$(DIR)/@ModelName@_semi_analytic_model.hpp \
+		$(DIR)/@ModelName@_semi_analytic_susy_convergence_tester.hpp \
+		$(DIR)/@ModelName@_susy_convergence_tester.hpp

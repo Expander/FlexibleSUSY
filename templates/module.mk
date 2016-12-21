@@ -77,8 +77,13 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/two_scale_susy_scale_constraint.cpp.in
 
 SEMI_ANALYTIC_TEMPLATES := \
+		$(DIR)/semi_analytic_convergence_tester.hpp.in \
+		$(DIR)/semi_analytic_convergence_tester.cpp.in \
 		$(DIR)/semi_analytic_model.hpp.in \
-		$(DIR)/semi_analytic_model.cpp.in
+		$(DIR)/semi_analytic_model.cpp.in \
+		$(DIR)/semi_analytic_susy_convergence_tester.hpp.in \
+		$(DIR)/semi_analytic_susy_convergence_tester.cpp.in \
+		$(DIR)/susy_convergence_tester.hpp.in
 
 TEMPLATES    := \
 		$(BASE_TEMPLATES) \
