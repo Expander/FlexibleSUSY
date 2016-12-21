@@ -43,14 +43,12 @@ Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
 Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
 {
   const double oneO4Pi = 1.0 / (4.0 * PI);
-  const double scale = std::exp(x);
-
-  set_scale(scale);
-
   const double a1 = y(0);
   const double a2 = y(1);
   const double a3 = y(2);
   const int nG = 3;
+
+  set_scale(std::exp(x));
 
   Eigen::ArrayXd dydx(3);
 
