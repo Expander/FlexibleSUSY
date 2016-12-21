@@ -16,6 +16,25 @@ namespace softsusy {
 
 namespace {
 
+// Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
+// it's a very good approximation at these scales, better than 10^-3 accuracy
+double getAsmt(double mtop, double alphasMz) {
+  using std::log;
+  return alphasMz /
+      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * log(MZ / mtop));
+}
+
+// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
+// including one-loop standard model correction only
+double getRunMt(double poleMt, double asmt) {
+  return poleMt / (1.0 + (4.0 / (3.0 * M_PI)) * asmt);
+}
+
+// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
+double getRunMtFromMz(double poleMt, double asMZ) {
+  return getRunMt(poleMt, getAsmt(poleMt, asMZ));
+}
+
 ///  external object temp used to get objects into external routines, however:
 ///  don't use it!
 QedQcd_legacy *tempLe;

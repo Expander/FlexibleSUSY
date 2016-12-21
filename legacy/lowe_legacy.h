@@ -185,14 +185,6 @@ istream & operator >>(istream &left, QedQcd_legacy &m);
 /// Call with fname "" if you want it to come from standard input
 /// "massIn" is an example of a data initialisation file:
 void readIn(QedQcd_legacy & oneset, const char fname[80]);
-/// Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
-/// including one-loop standard model correction only
-double getRunMt(double poleMt, double asmt);
-/// Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
-/// it's a very good approximation at these scales, better than 10^-3 accuracy
-double getAsmt(double mtop, double alphasMz);
-/// Given pole mass and alphaS(MZ), returns running top mass -- one loop qcd
-double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd_legacy::QedQcd_legacy(const QedQcd_legacy &m)
    : RGE()
