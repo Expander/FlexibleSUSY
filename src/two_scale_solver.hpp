@@ -36,8 +36,8 @@ template <class T> class Constraint;
 template <class T> class Matching;
 template <class T> class Convergence_tester;
 template <class T> class Initial_guesser;
+class Model;
 class Two_scale;
-class Two_scale_model;
 class Two_scale_running_precision;
 
 /**
@@ -70,11 +70,11 @@ public:
    RGFlow& operator=(RGFlow&&) = delete;
 
    /// add constraint
-   void add(Constraint<Two_scale>*, Two_scale_model*);
+   void add(Constraint<Two_scale>*, Model*);
    /// add matching condition
-   void add(Matching<Two_scale>*, Two_scale_model*, Two_scale_model*);
+   void add(Matching<Two_scale>*, Model*, Model*);
    /// get model at current scale
-   Two_scale_model* get_model() const;
+   Model* get_model() const;
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
    /// clear all internal data
@@ -95,7 +95,7 @@ private:
    public:
       virtual ~Slider() {}
       virtual void clear_problems() {}
-      virtual Two_scale_model* get_model() = 0;
+      virtual Model* get_model() = 0;
       virtual double get_scale() = 0;
       virtual void slide() {}
       virtual void set_precision(double) {}
@@ -103,31 +103,31 @@ private:
 
    struct Constraint_slider : public Slider {
    public:
-      Constraint_slider(Two_scale_model* m, Constraint<Two_scale>* c)
+      Constraint_slider(Model* m, Constraint<Two_scale>* c)
          : model(m), constraint(c) {}
       virtual ~Constraint_slider() {}
       virtual void clear_problems() override;
-      virtual Two_scale_model* get_model() override;
+      virtual Model* get_model() override;
       virtual double get_scale() override;
       virtual void slide() override;
       virtual void set_precision(double) override;
    private:
-      Two_scale_model* model;
+      Model* model;
       Constraint<Two_scale>* constraint;
    };
 
    struct Matching_slider : public Slider {
    public:
-      Matching_slider(Two_scale_model* m1_, Two_scale_model* m2_, Matching<Two_scale>* mc)
+      Matching_slider(Model* m1_, Model* m2_, Matching<Two_scale>* mc)
          : m1(m1_), m2(m2_), matching(mc) {}
       virtual ~Matching_slider() {}
       virtual void clear_problems() override;
-      virtual Two_scale_model* get_model() override;
+      virtual Model* get_model() override;
       virtual double get_scale() override;
       virtual void slide() override;
       virtual void set_precision(double) override;
    private:
-      Two_scale_model *m1, *m2;
+      Model *m1, *m2;
       Matching<Two_scale>* matching;
    };
 
@@ -143,7 +143,7 @@ private:
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
-   Two_scale_model* get_model(double) const; ///< returns model at given scale
+   Model* get_model(double) const; ///< returns model at given scale
    void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision

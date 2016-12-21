@@ -43,7 +43,7 @@ public:
    virtual void apply() override;
    virtual double get_scale() const override;
    virtual std::string name() const override { return "Standard model low-scale constraint"; }
-   virtual void set_model(Two_scale_model*) override;
+   virtual void set_model(Model*) override;
 
    void clear();
    void initialize();

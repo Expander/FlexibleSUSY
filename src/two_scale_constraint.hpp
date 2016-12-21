@@ -26,8 +26,8 @@
 
 namespace flexiblesusy {
 
+class Model;
 class Two_scale;
-class Two_scale_model;
 
 template<>
 class Constraint<Two_scale> {
@@ -36,7 +36,7 @@ public:
    virtual void apply() = 0;                    ///< apply constraint
    virtual double get_scale() const = 0;        ///< get scale where to apply
    virtual std::string name() const { return "unknown constraint"; } ///< name of constraint
-   virtual void set_model(Two_scale_model*) = 0; ///< set model where to apply the constraint
+   virtual void set_model(Model*) = 0; ///< set model where to apply the constraint
 };
 
 template <class TargetModel, class TwoScaleModel>

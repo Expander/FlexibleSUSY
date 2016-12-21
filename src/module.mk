@@ -92,6 +92,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/matching.hpp \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
+		$(DIR)/model.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
 		$(DIR)/mycomplex.h \
@@ -150,10 +151,12 @@ LIBFLEXI_HDR += \
 		$(DIR)/two_scale_convergence_tester_drbar.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
-		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_running_precision.hpp \
 		$(DIR)/two_scale_solver.hpp
 endif
+
+# remove duplicates in case multiple solvers are used
+LIBFLEXI_SRC := $(sort $(LIBFLEXI_SRC))
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \

@@ -24,8 +24,8 @@
 
 namespace flexiblesusy {
 
+class Model;
 class Two_scale;
-class Two_scale_model;
 
 template <class T> class @ModelName@;
 template <class T> class @ModelName@_standard_model_matching_up;
@@ -51,7 +51,7 @@ public:
    virtual ~@ModelName@_standard_model_matching_up();
 
    virtual double get_scale() const override;
-   virtual void set_models(Two_scale_model*, Two_scale_model*) override;
+   virtual void set_models(Model*, Model*) override;
    virtual void match() override;
 
    unsigned get_higgs_index() const;
@@ -87,7 +87,7 @@ public:
    virtual ~@ModelName@_standard_model_matching_down();
 
    virtual double get_scale() const override;
-   virtual void set_models(Two_scale_model*, Two_scale_model*) override;
+   virtual void set_models(Model*, Model*) override;
    virtual void match() override;
 
    unsigned get_higgs_index() const;

@@ -16,26 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_MODEL_H
-#define TWO_SCALE_MODEL_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include <string>
 #include <iostream>
 
 namespace flexiblesusy {
 
-class Two_scale_model {
+class Model {
 public:
-   virtual ~Two_scale_model() {}
+   virtual ~Model() {}
    virtual void calculate_spectrum() = 0;
-   virtual void clear_problems() {}
-   virtual std::string name() const { return "unnamed"; }
+   virtual void clear_problems() = 0;
+   virtual std::string name() const = 0;
+   virtual void print(std::ostream& out = std::cout) const = 0;
    virtual void run_to(double, double eps = -1.0) = 0;
-   virtual void print(std::ostream& out = std::cout) const { out << "Model: " << name(); }
-   friend std::ostream& operator<<(std::ostream& out, const Two_scale_model& model) {
-      model.print(out);
-      return out;
-   }
    virtual void set_precision(double) = 0;
 };
 

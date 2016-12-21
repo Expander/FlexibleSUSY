@@ -39,7 +39,7 @@ using namespace @ModelName@_info;
 #define CLASSNAME @ModelName@<Two_scale>
 
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
-   : Two_scale_model()
+   : Model()
    , @ModelName@_mass_eigenstates(input_)
 {
 }
