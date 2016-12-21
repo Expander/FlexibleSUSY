@@ -42,6 +42,8 @@ namespace softsusy {
 
 namespace {
 
+constexpr double TOL = 1e-4;
+
 bool is_close(double m1, double m2, double tol)
 {
   const double mmax = fabs(std::max(fabs(m1), fabs(m2)));
@@ -55,7 +57,7 @@ bool is_close(double m1, double m2, double tol)
 
 double refnfn(double x, double p, double m1, double m2, double q) noexcept
 {
-  const static std::complex<double> iEpsilon(0.0, TOLERANCE * 1.0e-20);
+  const static std::complex<double> iEpsilon(0.0, TOL * 1.0e-20);
 
   return std::real(x *
     std::log(((1 - x) * sqr(m1) + x * sqr(m2)
@@ -88,8 +90,8 @@ double bIntegral(double p, double m1, double m2, double q)
 {
   using namespace flexiblesusy;
 
-  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
-  const double eps = TOLERANCE * 1.0e-3;
+  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOL * 1.0e-5;
+  const double eps = TOL * 1.0e-3;
   Array<double,1,1> v;
   v(0) = 1.0;
 
@@ -360,7 +362,7 @@ double d0(double m1, double m2, double m3, double m4)
 double d27(double m1, double m2, double m3, double m4) {// checked
 
   if (is_close(m1, m2, EPSTOL)) {
-    const double m1n = m1 + TOLERANCE * 0.01;
+    const double m1n = m1 + TOL * 0.01;
     return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4))
       / (4.0 * (sqr(m1n) - sqr(m2)));
   }
