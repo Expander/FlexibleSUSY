@@ -2838,6 +2838,24 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                                            FlexibleSUSY`HighScaleInput}];
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
 
+              Print["Creating classes for convergence testers ..."];
+              WriteConvergenceTesterClass[Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]],
+                  {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_convergence_tester.hpp.in"}],
+                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_convergence_tester.hpp"}]},
+                   {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_convergence_tester.hpp.in"}],
+                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_convergence_tester.hpp"}]},
+                   {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_convergence_tester.cpp.in"}],
+                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_convergence_tester.cpp"}]}
+                  }
+                                         ];
+              WriteConvergenceTesterClass[FlexibleSUSY`FSConvergenceCheck,
+                  {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_convergence_tester.hpp.in"}],
+                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_convergence_tester.hpp"}]},
+                   {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_convergence_tester.cpp.in"}],
+                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_convergence_tester.cpp"}]}
+                  }
+                                         ];
+
               Print["Creating class for semi-analytic model ..."];
               WriteSemiAnalyticModelClass[semiAnalyticBCs, semiAnalyticSolns,
                                           {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.hpp.in"}],
