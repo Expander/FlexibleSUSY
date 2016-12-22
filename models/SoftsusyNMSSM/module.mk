@@ -2,7 +2,7 @@ DIR          := models/SoftsusyNMSSM
 MODNAME      := SoftsusyNMSSM
 WITH_$(MODNAME) := yes
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
+ifeq ($(WITH_SoftsusyMSSM),yes)
 LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmUtils.cpp \
 		$(DIR)/nmssmsoftpars.cpp \
@@ -32,7 +32,7 @@ LIBSoftsusyNMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 EXESoftsusyNMSSM_SRC  :=
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM),yes yes)
 EXESoftsusyNMSSM_SRC  += \
 		$(DIR)/run_softpoint.cpp
 endif
