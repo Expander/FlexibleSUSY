@@ -95,7 +95,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(CUSTOMBETAS_DEP) $(CUSTOMBETAS_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -129,7 +129,6 @@ showbuild:
 	@echo "FLEXIDIR           = $(FLEXIDIR)"
 	@echo "LIBMODEL           = $(LIBMODEL)"
 	@echo "LIBFLEXI           = $(LIBFLEXI)"
-	@echo "LIBLEGACY          = $(LIBLEGACY)"
 	@echo ""
 	@echo "# compilation information"
 	@echo "CXX                = $(CXX)"

@@ -98,7 +98,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -135,7 +135,6 @@ showbuild:
 	@echo "LIBMODEL1          = $(LIBMODEL1)"
 	@echo "LIBMODEL2          = $(LIBMODEL2)"
 	@echo "LIBFLEXI           = $(LIBFLEXI)"
-	@echo "LIBLEGACY          = $(LIBLEGACY)"
 	@echo ""
 	@echo "# compilation information"
 	@echo "CXX                = $(CXX)"

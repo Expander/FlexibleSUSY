@@ -90,7 +90,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -124,7 +124,6 @@ showbuild:
 	@echo "FLEXIDIR           = $(FLEXIDIR)"
 	@echo "LIBMODEL           = $(LIBMODEL)"
 	@echo "LIBFLEXI           = $(LIBFLEXI)"
-	@echo "LIBLEGACY          = $(LIBLEGACY)"
 	@echo ""
 	@echo "# compilation information"
 	@echo "CXX                = $(CXX)"
