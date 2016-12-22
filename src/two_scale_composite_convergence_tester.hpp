@@ -43,6 +43,7 @@ public:
 
    virtual bool accuracy_goal_reached() override;
    virtual unsigned int max_iterations() const override;
+   virtual void restart() override;
    void add_convergence_tester(Convergence_tester*);
 
 private:

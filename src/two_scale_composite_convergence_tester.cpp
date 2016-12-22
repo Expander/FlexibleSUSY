@@ -73,6 +73,12 @@ unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
                              }))->max_iterations();
 }
 
+void Composite_convergence_tester<Two_scale>::restart()
+{
+   for (auto ct: testers)
+      ct->restart();
+}
+
 void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester* t)
 {
    if (t)
