@@ -61,6 +61,7 @@ models/**/
 !models/smcw/
 !models/SoftsusyMSSM/
 !models/SoftsusyNMSSM/
+!models/SoftsusyFlavourMSSM/
 
 model_files/*/LesHouches.out.*
 
