@@ -44,7 +44,7 @@ tsillibs="@TSILLIBS@"
 create_include_directives_for_FS_modules() {
     local incl=
 
-    for m in config src fflite legacy slhaea doc $models $addons ; do
+    for m in config src fflite slhaea doc $models $addons ; do
         incl="$incl -I${m}"
     done
 
@@ -75,7 +75,6 @@ create_flexiblesusy_libs() {
     done
 
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"
-    flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/legacy/liblegacy${module_lib_ext}"
 
     echo "$flexiblesusylibs"
 }

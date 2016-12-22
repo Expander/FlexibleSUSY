@@ -15,19 +15,16 @@ MODEL           := CMSSM
 MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
 CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
-LEGACYDIR       := $(ABSBASEDIR)/legacy
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
-INCLEGACY       := -I$(LEGACYDIR)
 INCFFLITE       := -I$(FFLITEDIR)
 INCSLHAEA       := -I$(SLHAEADIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
-LIBLEGACY       := $(LEGACYDIR)/liblegacy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
 
 # Variables for compilation
@@ -130,7 +127,6 @@ showbuild:
 	@echo "MODEL              = $(MODEL)"
 	@echo "MODELDIR           = $(MODELDIR)"
 	@echo "FLEXIDIR           = $(FLEXIDIR)"
-	@echo "LEGACYDIR          = $(LEGACYDIR)"
 	@echo "LIBMODEL           = $(LIBMODEL)"
 	@echo "LIBFLEXI           = $(LIBFLEXI)"
 	@echo "LIBLEGACY          = $(LIBLEGACY)"
