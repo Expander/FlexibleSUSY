@@ -212,7 +212,7 @@ while test $# -gt 0; do
         --with-*)
       ### Check for models and addons
             f=`echo $1 | sed 's/--with-//'`
-            for c in $models $addons $algorithms ; do
+            for c in $models $addons $optional_modules $algorithms ; do
                 if test "x`basename $c`" = "x$f" ; then
                     out="$out yes"
                     break
