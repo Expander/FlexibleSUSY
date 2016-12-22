@@ -36,6 +36,9 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+// @todo Check why this is needed to yield non-perturbative point
+using namespace std;
+
 namespace softsusy {
 
 namespace {
