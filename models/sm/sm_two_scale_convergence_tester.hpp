@@ -23,6 +23,8 @@
 
 namespace flexiblesusy {
 
+class Two_scale;
+
 template <class T>
 class StandardModel;
 

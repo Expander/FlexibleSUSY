@@ -34,6 +34,7 @@ public:
    virtual ~SoftsusyNMSSM();
 
    virtual void calculate_spectrum();
+   virtual void clear_problems() {}
    virtual std::string name() const { return "SoftsusyNMSSM"; }
    virtual void run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<softsusy::NmssmSoftsusy>(*this); }

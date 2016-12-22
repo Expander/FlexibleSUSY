@@ -52,6 +52,7 @@ public:
    virtual ~StandardModel();
 
    virtual void calculate_spectrum() {}
+   virtual void clear_problems() {}
    virtual std::string name() const { return "SM"; }
    virtual void run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << *this; }
