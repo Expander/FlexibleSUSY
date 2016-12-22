@@ -33,6 +33,7 @@ math="@MATH@"
 models="@MODELS@"
 module_make_lib_cmd="@MODULE_MAKE_LIB_CMD@"
 module_lib_ext="@MODULE_LIBEXT@"
+optional_modules="@OPTIONAL_MODULES@"
 shared_lib_cmd="@SHARED_LIB_CMD@"
 sqliteflags="@SQLITEFLAGS@"
 sqlitelibs="@SQLITELIBS@"
@@ -41,10 +42,14 @@ threadlibs="@THREADLIBS@"
 tsilflags="@TSILFLAGS@"
 tsillibs="@TSILLIBS@"
 
+create_module_list() {
+    echo "config src fflite legacy slhaea doc $models $addons $optional_modules"
+}
+
 create_include_directives_for_FS_modules() {
     local incl=
 
-    for m in config src fflite legacy slhaea doc $models $addons ; do
+    for m in $(create_module_list) ; do
         incl="$incl -I${m}"
     done
 
@@ -87,6 +92,7 @@ cppflags="$cppflags_from_configure $incl_FS_modules $incl_external_modules"
 flexiblesusy_libs="$(create_flexiblesusy_libs)"
 compile_cmd="$cxx $cppflags $cxxflags"
 libs="$ldflags $flexiblesusy_libs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
+modules="$(create_module_list)"
 
 help() {
 cat <<EOF
@@ -140,6 +146,7 @@ Options:
   --loopfunclibs        Print loop function libraries, LOOPFUNCLIBS
   --math-cmd            Print Mathematica kernel command, MATH
   --models              Print all models that are build
+  --modules             Print list of all makefile modules
   --module-make-lib-cmd Print command to build module libraries, MODULE_MAKE_LIB_CMD
   --module-lib-ext      Print file name extension for module libraries, MODULE_LIBEXT
   --shared-lib-cmd      Print command to build shared library, SHARED_LIB_CMD
@@ -192,6 +199,7 @@ while test $# -gt 0; do
         --loopfunclibs)          out="$out $loopfunclibs" ;;
         --math-cmd)              out="$out $math" ;;
         --models)                out="$out $models" ;;
+        --modules)               out="$out $modules" ;;
         --module-make-lib-cmd)   out="$out $module_make_lib_cmd" ;;
         --module-lib-ext)        out="$out $module_lib_ext" ;;
         --shared-lib-cmd)        out="$out $shared_lib_cmd" ;;
