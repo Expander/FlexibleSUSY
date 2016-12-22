@@ -43,7 +43,7 @@ tsilflags="@TSILFLAGS@"
 tsillibs="@TSILLIBS@"
 
 create_module_list() {
-    echo "config src fflite legacy slhaea doc $models $addons $optional_modules"
+    echo "config src fflite slhaea doc $models $addons $optional_modules"
 }
 
 create_include_directives_for_FS_modules() {
@@ -80,7 +80,6 @@ create_flexiblesusy_libs() {
     done
 
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"
-    flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/legacy/liblegacy${module_lib_ext}"
 
     echo "$flexiblesusylibs"
 }

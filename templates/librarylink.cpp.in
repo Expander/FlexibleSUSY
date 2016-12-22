@@ -750,7 +750,7 @@ std::unique_ptr<@ModelName@_data> make_@ModelName@_data(const Dynamic_array_view
    qedqcd.setAlpha(softsusy::ALPHAS, pars[c]);
    qedqcd.setAlphaSInput(pars[c++]);
    qedqcd.setPoleMZ(pars[c]);
-   qedqcd.setMu(pars[c++]);
+   qedqcd.set_scale(pars[c++]);
    qedqcd.setMass(softsusy::mBottom, pars[c]);
    qedqcd.setMbMb(pars[c++]);
    qedqcd.setPoleMt(pars[c++]);

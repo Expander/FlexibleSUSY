@@ -151,7 +151,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::update_scale()
 
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
-   assert(qedqcd.displayMu() == get_scale() && "Error: low-energy data"
+   assert(qedqcd.get_scale() == get_scale() && "Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
           " constraint.  You need to run the low-energy data set to this"
           " scale!");

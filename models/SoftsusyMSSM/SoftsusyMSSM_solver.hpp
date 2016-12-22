@@ -44,7 +44,7 @@ public:
    void setSoftHighScalePars(const softsusy::DoubleVector&);
    void setSignMu(int);
    void setTanBeta(double);
-   void setLowScaleBoundaryConditions(const softsusy::QedQcd&);
+   void setLowScaleBoundaryConditions(const softsusy::QedQcd_legacy&);
    void setGaugeUnification(bool);
 
 private:
@@ -54,7 +54,7 @@ private:
    softsusy::DoubleVector       fSoftHighScalePars;
    int                          fSignMu;
    double                       fTanBeta;
-   softsusy::QedQcd              fLowScaleBoundaryContitions;
+   softsusy::QedQcd_legacy      fLowScaleBoundaryContitions;
    bool                         fGaugeUnification;
 };
 
@@ -116,7 +116,7 @@ void RGFlow<SoftSusy_t>::setTanBeta(double tanBeta)
    fTanBeta = tanBeta;
 }
 
-void RGFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const softsusy::QedQcd& lowScaleBC)
+void RGFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const softsusy::QedQcd_legacy& lowScaleBC)
 {
    fLowScaleBoundaryContitions = lowScaleBC;
 }

@@ -17,6 +17,7 @@
 #include <linalg.h>
 #include <utils.h>
 #include <numerics.h>
+#include <numerics_legacy.h>
 
 namespace softsusy {
 
@@ -171,9 +172,6 @@ public:
   /// SUSY breaking (see hep-ph/9703211 for example), n5 is the number of
   /// 5-plets, mMess is the messenger scale and lambda is the GMSB scale
   void minimalGmsb(int n5, double lambda, double mMess, double cgrav);  
-
-  /// Reads in soft SUSY breaking parameters from a file
-  void inputSoftParsOnly();
 };
 
 typedef SoftPars<MssmSusy, sBrevity> SoftParsMssm;
@@ -181,9 +179,6 @@ typedef SoftPars<MssmSusy, sBrevity> SoftParsMssm;
 /// Formatted ouput of whole object
 template<class Susy, class Brevity>
 ostream & operator <<(ostream &left, const SoftPars<Susy, Brevity> &s);
-/// Formatted input of whole object
-template<class Susy, class Brevity>
-istream & operator >>(istream &left, SoftPars<Susy, Brevity> &s);
 
 template<class Susy, class Brevity>
 SoftPars<Susy, Brevity>::SoftPars()

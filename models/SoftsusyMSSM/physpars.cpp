@@ -92,25 +92,6 @@ std::ostream & operator <<(std::ostream & left, const sPhysical &s) {
   return left;
 }
 
-std::istream & operator >>(std::istream & left, sPhysical &s) {
-  char c[70];
-  left >> c >> c >> c >> c;
-  left >> c >> s.mh0 >> c >> s.mA0
-       >> c >> s.mHpm;
-  left >> c >> s.thetaH;
-  left >> s.msnu; 
-  left >> c >> s.mu >> c >> s.md >> c >> s.me;
-  left >> c >> s.thetat >> c >> s.thetab >> 
-    c >> s.thetatau;
-  left >> c >> s.mGluino;
-  left >> s.mch;
-  left >> c >> s.thetaL >> c >> s.thetaR;
-  left >> s.mneut;
-  left >> c >> c >> c >> c >> s.mixNeut;
-  left >> c >> c >> c >> c >> s.mixh0;
-  return left;
-}
-
 ostream & operator <<(ostream &st, const sProblem & p) {
   if (!p.test()) return st;
   st << "[ ";

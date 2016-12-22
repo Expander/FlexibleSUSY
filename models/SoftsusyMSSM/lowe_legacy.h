@@ -1,113 +1,54 @@
-// ====================================================================
-// This file is part of FlexibleSUSY.
-//
-// FlexibleSUSY is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published
-// by the Free Software Foundation, either version 3 of the License,
-// or (at your option) any later version.
-//
-// FlexibleSUSY is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with FlexibleSUSY.  If not, see
-// <http://www.gnu.org/licenses/>.
-// ====================================================================
 
 /** \file lowe.h
    - Project:     SOFTSUSY
-   - Author:      Ben Allanach, Alexander Voigt
+   - Author:      Ben Allanach
    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
    - Webpage:     http://hepforge.cedar.ac.uk/softsusy/
-   \brief QedQcd object contains Standard Model quark and lepton
+   \brief QedQcd_legacy object contains Standard Model quark and lepton
    masses. It integrates them using 3 loop qcd x 1 loop qed effective theory.
+
 */
 
-#ifndef LOWE_H
-#define LOWE_H
+#ifndef LOWE_LEGACY_H
+#define LOWE_LEGACY_H
 
-#include <array>
-#include <iosfwd>
+#include "lowe.h"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include "betafunction.hpp"
+#include "def.h"
+#include "utils.h"
+#include "linalg.h"
+#include "rge.h"
 #include "ckm.hpp"
 #include "pmns.hpp"
+#include <array>
 #include <Eigen/Core>
 
 namespace softsusy {
-const double MUP = 2.4e-3; ///< default running quark mass from PDG
-const double MDOWN = 4.75e-3; ///< default running quark mass from PDG
-const double MSTRANGE = 0.104; ///< default running quark mass from PDG
-const double MCHARM = 1.27; ///< default running quark mass from PDG
-const double MBOTTOM = 4.20; ///< default running quark mass from PDG
-const double MTOP = 165.0; ///< default running quark mass from PDG
-/// default pole lepton mass from PDG
-const double MELECTRON = 5.10998902e-4;
-const double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
-const double MTAU = 1.77699; ///< default pole lepton mass from PDG
-const double ALPHASMZ = 0.1184; ///< default running mass from PDG
-const double ALPHAMZ = 1.0 / 127.916; ///< default running alpha(MZ) from PDG
-
-const double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
-const double PMBOTTOM = 4.9; ///< default pole mass from PDG
-/// default central values of CKM matrix elements from PDG 2006 in radians
-const double THETA12CKM = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
-const double THETA13CKM = 0.003960; ///< From Vub in global CKM fit, PDG
-const double THETA23CKM = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
-
-/// used to give order of quark masses stored
-typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
-	      mMuon, mTau} mass;
-/// order of gauge couplings stored in QedQcd
-typedef enum {ALPHA=1, ALPHAS} leGauge;
-
-enum QedQcd_input_parmeters : unsigned {
-   alpha_em_MSbar_at_MZ,
-   alpha_s_MSbar_at_MZ,
-   GFermi,
-   MZ_pole, MW_pole,
-   Mv1_pole, Mv2_pole, Mv3_pole,
-   MElectron_pole, MMuon_pole, MTau_pole,
-   MU_2GeV, MS_2GeV, MT_pole,
-   MD_2GeV, mc_mc, mb_mb,
-   NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
-};
-
-extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_input_parmeter_names;
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
-class QedQcd: public flexiblesusy::Beta_function
+class QedQcd_legacy: public RGE
 {
 private:
-  Eigen::ArrayXd a; ///< gauge couplings
-  Eigen::ArrayXd mf; ///< fermion running masses
+  DoubleVector a;   ///< gauge couplings
+  DoubleVector mf;  ///< fermion running masses
   Eigen::ArrayXd input; ///< SLHA input parmeters
   double mbPole;    ///< pole masses of third family quarks
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
-  Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
-  Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
-  Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
+  DoubleVector runSMGauge(double, const DoubleVector&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
 
 public:
-  QedQcd();
-  QedQcd(const QedQcd&) = default;
-  QedQcd(QedQcd&&) = default;
-  QedQcd& operator=(const QedQcd&) = default;
-  QedQcd& operator=(QedQcd&&) = default;
-  virtual ~QedQcd() {}
-
-  // Beta_function interface
-  virtual Eigen::ArrayXd get() const override;
-  virtual void set(const Eigen::ArrayXd&) override;
-  virtual Eigen::ArrayXd beta() const override;
-
+  QedQcd_legacy(); ///< Initialises with default values defined in lowe.h
+  QedQcd_legacy(const QedQcd_legacy &); ///< Initialises object with another
+  QedQcd_legacy(const QedQcd&); ///< Initialises object with another
+  const QedQcd_legacy& operator=(const QedQcd_legacy & m); ///< Sets two objects equal
+  virtual ~QedQcd_legacy() {};
+  
   void setPoleMt(double mt) { input(MT_pole) = mt; }; ///< set pole top mass
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
   void setPoleMtau(double mtau) { input(MTau_pole) = mtau; }; ///< set pole tau mass
@@ -121,11 +62,11 @@ public:
   void setPoleMW(double mw) { input(MW_pole) = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { input(MZ_pole) = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
-  void setMass(mass mno, double m) { mf(mno - 1) = m; }
+  void setMass(mass mno, double m) { mf(mno) = m; };
   /// sets a neutrino pole mass
   void setNeutrinoPoleMass(int i, double m) { input(Mv1_pole + i - 1) = m; }
   /// sets QED or QCD structure constant
-  void setAlpha(leGauge ai, double ap) { a(ai - 1) = ap; }
+  void setAlpha(leGauge ai, double ap) { a(ai) = ap; }
   /// set input value of alpha_em(MZ)
   void setAlphaEmInput(double a) { input(alpha_em_MSbar_at_MZ) = a; }
   /// set input value of alpha_s(MZ)
@@ -136,11 +77,11 @@ public:
   void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
   /// sets Fermi constant
   void setFermiConstant(double gf) { input(GFermi) = gf; }
+  /// For exporting beta functions to Runge-Kutta
+  void set(const DoubleVector &);
   /// sets all input parameters
   void set_input(const Eigen::ArrayXd&);
 
-  /// Displays input parameters
-  Eigen::ArrayXd displayInput() const { return input; }
   /// Display pole top mass
   double displayPoleMt() const { return input(MT_pole); };
   /// Display pole tau mass
@@ -156,15 +97,13 @@ public:
   /// Returns Z boson pole mass
   double displayPoleMZ() const { return input(MZ_pole); }
   /// Returns a vector of running fermion masses
-  const Eigen::ArrayXd& displayMass() const { return mf; }
+  const DoubleVector & displayMass() const { return mf; };
   /// Returns a single running mass
-  double displayMass(mass mno) const { return mf(mno - 1); }
+  double displayMass(mass mno) const { return mf.display(mno); };
   /// Returns a single neutrino pole mass
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant
-  double displayAlpha(leGauge ai) const { return a(ai - 1); };
-  /// Returns gauge structure constants
-  Eigen::ArrayXd displayAlphas() const { return a; }
+  double displayAlpha(leGauge ai) const { return a.display(ai); };
   /// Returns input value alpha_em(MZ)
   double displayAlphaEmInput() const { return input(alpha_em_MSbar_at_MZ); }
   /// Returns input value alpha_s(MZ)
@@ -172,6 +111,7 @@ public:
   /// Returns Fermi constant
   double displayFermiConstant() const { return input(GFermi); }
   /// Obgligatory: returns vector of all running parameters
+  const DoubleVector display() const;
   /// returns vector of all input parameters
   Eigen::ArrayXd display_input() const;
   /// returns vector of all parameter names
@@ -203,7 +143,9 @@ public:
 
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
-  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
+  void massBeta(DoubleVector &) const; ///< beta functions of masses
+  /// Beta functions of both beta-functions and all MSbar masses
+  DoubleVector beta() const;
 
   /// Does not run the masses, just gauge couplings from start to end
   void runGauge(double start, double end);
@@ -229,13 +171,44 @@ public:
   /// thresholds are assumed. Range of validity is electroweak to top scale.
   // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
   // scheme
-  Eigen::ArrayXd getGaugeMu(double m2, double sinth) const;
+  DoubleVector  getGaugeMu(const double m2, const
+		     double sinth) const;
 };
 
-/// Formatted output from QedQcd object
-std::ostream & operator<<(std::ostream &, const QedQcd &);
+/// Input numbers into the object: by file stream
+ostream & operator <<(ostream &, const QedQcd_legacy &);
+/// Formatted output from QedQcd_legacy object
+istream & operator >>(istream &left, QedQcd_legacy &m);
 
-bool operator ==(const QedQcd&, const QedQcd&);
+/// Reads in a QedQed-type object and returns it in oneset.
+/// Call with fname "" if you want it to come from standard input
+/// "massIn" is an example of a data initialisation file:
+void readIn(QedQcd_legacy & oneset, const char fname[80]);
+
+inline QedQcd_legacy::QedQcd_legacy(const QedQcd_legacy &m)
+   : RGE()
+   , a(m.a)
+   , mf(m.mf)
+   , input(m.input)
+   , mbPole(m.mbPole)
+   , ckm(m.ckm)
+   , pmns(m.pmns)
+{
+  setPars(11);
+  setMu(m.displayMu());
+  setLoops(m.displayLoops());
+  setThresholds(m.displayThresholds());
+}
+
+/// Returns diagonal fermion mass matrices given input object r
+void massFermions(const QedQcd & r, DoubleMatrix & mDon,
+		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
+
+/// Returns diagonal fermion mass matrices given input object r
+void massFermions(const QedQcd_legacy & r, DoubleMatrix & mDon,
+		  DoubleMatrix & mUpq, DoubleMatrix & mEle);
+
+bool operator ==(const QedQcd_legacy&, const QedQcd_legacy&);
 
 } // namespace softsusy
 

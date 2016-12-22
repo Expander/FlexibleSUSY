@@ -15,7 +15,9 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include <lowe.h>
+#include <linalg.h>
+#include <lowe_legacy.h>
+#include <rge.h>
 #include <utils.h>
 
 namespace softsusy {
@@ -131,22 +133,22 @@ public:
   /// Returns tan beta
   double displayTanb() const;
   
-  /// outputs object QedQcd & r valid at 1 GeV from SUSY data at mt, from
+  /// outputs object QedQcd_legacy & r valid at 1 GeV from SUSY data at mt, from
   /// diagonal elements of Yukawa couplings and Higgs VEV vev. 
-  void getMasses(QedQcd & r, double vev) const;
+  void getMasses(QedQcd_legacy & r, double vev) const;
   /// This turns diagonal Yukawa couplings at MZ into CKM mixed ones
   /// Takes diagonal quark Yukawa matrices and mixes them up
   /// according to the CKM matrix assuming:
   /// mix=2, all mixing is in down sector
   /// mix=1, all mixing is in up sector
   void quarkMixing(const DoubleMatrix & CKM, int mix);
-  /// Sets diagonal Yukawa couplings according to data in QedQcd input and
+  /// Sets diagonal Yukawa couplings according to data in QedQcd_legacy input and
   /// Higgs VEV parameter vev=\f$v_1^2+v_2^2\f$
-  void setDiagYukawas(const QedQcd &, double vev);
+  void setDiagYukawas(const QedQcd_legacy &, double vev);
   /// Defines mixed Yukawa matrices from data input in form of CKM matrix and
   /// r, vev. If mix=2, all mixing is in down sector
   /// mix=1, all mixing is in up sector
-  void getQuarkMixedYukawas(const QedQcd & r, const DoubleMatrix &
+  void getQuarkMixedYukawas(const QedQcd_legacy & r, const DoubleMatrix &
 				    CKM, int mix, double vev);
   /// Calculate beta functions of SUSY preserving parameters of RPC MSSM
   DoubleVector beta() const;
@@ -196,10 +198,10 @@ public:
   void diagQuarkBasis(DoubleMatrix & vdl, DoubleMatrix & vdr, 
 			  DoubleMatrix & vul, DoubleMatrix & vur) const;
 };
+
 /// Formatted output
 ostream & operator <<(ostream &, const MssmSusy &);
-/// Formatted input
-istream & operator >>(istream &left, MssmSusy &s);
+
 /// Outputs beta function coefficients for MSSM gauge coupling evolution in
 /// arguments. 
 void setBetas(DoubleMatrix &, DoubleVector  &, DoubleVector  &, DoubleVector

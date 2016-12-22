@@ -122,8 +122,6 @@ struct sProblem {
 };
 /// Formatted output, but won't print unflagged problems
 std::ostream & operator <<(std::ostream &st, const sProblem & p);
-/// Formatted input of physical parameters
-std::istream & operator >>(std::istream & left, sPhysical &s);
 
 /// DRbar values of masses and mixings in MSSM
 struct drBarPars: public sPhysical { 

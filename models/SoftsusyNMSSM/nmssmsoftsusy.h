@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "numerics.h"
 #include "physpars.h"
-#include "lowe.h"
+#include "lowe_legacy.h"
 #include "nmssmsoftpars.h"
 #include "softsusy.h"
 #include "mssmUtils.h"
@@ -32,9 +32,6 @@
 #include "nmssmUtils.h"
 
 namespace softsusy {
-
-/* class NmssmSoftsusy;  */
-/* std::istream & operator >>(std::istream &left, NmssmSoftsusy &s);\ */
 
 /// Contains all supersymmetric NMSSM parameters, incorporating R_p NMSSM
 class NmssmSoftsusy: public Softsusy<SoftParsNmssm> {
@@ -484,7 +481,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   virtual double calcRunningMtau() const;
 
 
-  NmssmSusy guessAtSusyMt(double tanb, DoubleVector nmpars, const QedQcd & oneset);
+  NmssmSusy guessAtSusyMt(double tanb, DoubleVector nmpars, const QedQcd_legacy & oneset);
   
   double predTanb(double muSusy = -6.66e66) const;
   double predMzsq(double & tanb, double muOld = -6.66e66, double eps = 0.);
@@ -510,7 +507,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
 		(NmssmSoftsusy &, const DoubleVector &),
 		double mxGuess, const DoubleVector & pars, 
                 const DoubleVector nmpars, int sgnMu, double tanb,
-		const QedQcd & oneset, bool gaugeUnification, 
+		const QedQcd_legacy & oneset, bool gaugeUnification, 
 		bool ewsbBCscale =  false); 
   
  /// PAq: A print method used in development.  I find it useful and easier to read than couting the normal display function or calling printlong etc.    

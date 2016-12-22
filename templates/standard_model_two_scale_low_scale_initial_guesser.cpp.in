@@ -114,11 +114,11 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters
    mtau_guess = leAtMt.displayMass(mTau);
 
    // guess gauge couplings at mt
-   const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   eft->set_g1(sqrt(4.0 * M_PI * alpha_sm(1)));
-   eft->set_g2(sqrt(4.0 * M_PI * alpha_sm(2)));
-   eft->set_g3(sqrt(4.0 * M_PI * alpha_sm(3)));
+   eft->set_g1(sqrt(4.0 * M_PI * alpha_sm(0)));
+   eft->set_g2(sqrt(4.0 * M_PI * alpha_sm(1)));
+   eft->set_g3(sqrt(4.0 * M_PI * alpha_sm(2)));
    eft->set_scale(mtpole);
 
    eft->set_v(246.22);
