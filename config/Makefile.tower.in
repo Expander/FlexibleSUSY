@@ -33,7 +33,7 @@ LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) \
                    $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
