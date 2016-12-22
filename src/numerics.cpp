@@ -36,9 +36,6 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-// @todo Check why this is needed to yield non-perturbative point
-using namespace std;
-
 namespace softsusy {
 
 namespace {
@@ -129,7 +126,7 @@ double a0(double m, double q) {
    using std::log;
    constexpr double TOL = 1e-4;
    if (fabs(m) < TOL) return 0.;
-   return sqr(m) * (1.0 - 2. * log(abs(m / q)));
+   return sqr(m) * (1.0 - 2. * log(fabs(m / q)));
 }
 
 double ffn(double p, double m1, double m2, double q) {
