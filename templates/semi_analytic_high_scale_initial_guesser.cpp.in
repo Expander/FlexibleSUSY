@@ -41,6 +41,9 @@ namespace flexiblesusy {
 @ModelName@_initial_guesser<Semi_analytic>::@ModelName@_initial_guesser(
    @ModelName@<Semi_analytic>* model_,
    const softsusy::QedQcd& qedqcd_,
+   const @ModelName@_low_scale_constraint<Semi_analytic>& low_constraint_,
+   const @ModelName@_susy_scale_constraint<Semi_analytic>& susy_constraint_,
+   const @ModelName@_high_scale_constraint<Semi_analytic>& high_constraint_
 )
    : model(model_)
    , qedqcd(qedqcd_)
@@ -54,6 +57,9 @@ namespace flexiblesusy {
    , mm_guess(0.)
    , mtau_guess(0.)
    , running_precision(1.0e-3)
+   , low_constraint(low_constraint_)
+   , susy_constraint(susy_constraint_)
+   , high_constraint(high_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
           " @ModelName@<Semi_analytic> must not be zero");
