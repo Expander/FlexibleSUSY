@@ -114,6 +114,11 @@ void CLASSNAME::set_scale(const Scale_getter& scale_getter_)
    scale_getter = scale_getter_;
 }
 
+void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
+{
+   scale_getter = std::move(scale_getter_);
+}
+
 void CLASSNAME::set_scale(double scale_)
 {
    scale = scale_;
@@ -215,6 +220,11 @@ void CLASSNAME::set_loop_order(unsigned loop_order_)
 void CLASSNAME::set_scale(const Scale_getter& scale_getter_)
 {
    scale_getter = scale_getter_;
+}
+
+void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
+{
+   scale_getter = std::move(scale_getter_);
 }
 
 void CLASSNAME::set_scale(double scale_)

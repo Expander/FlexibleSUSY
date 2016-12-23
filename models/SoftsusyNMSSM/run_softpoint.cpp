@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
   void (*boundaryCondition)(MssmSoftsusy &, const DoubleVector &)=extendedSugraBcs;
   void (*nmssmBoundaryCondition)(NmssmSoftsusy&, const DoubleVector&) = NmssmMsugraBcs;
 
-  QedQcd oneset;
+  QedQcd_legacy oneset;
   MssmSoftsusy m;
   NmssmSoftsusy nmssm;
   MssmSoftsusy * r = &m; 

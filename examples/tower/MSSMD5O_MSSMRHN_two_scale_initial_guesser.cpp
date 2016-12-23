@@ -79,11 +79,11 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
    const double mtpole = leAtMt.displayPoleMt();
 
    // guess gauge couplings at mt
-   const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   model_1->set_g1(sqrt(4.0 * M_PI * alpha_sm(1)));
-   model_1->set_g2(sqrt(4.0 * M_PI * alpha_sm(2)));
-   model_1->set_g3(sqrt(4.0 * M_PI * alpha_sm(3)));
+   model_1->set_g1(sqrt(4.0 * M_PI * alpha_sm(0)));
+   model_1->set_g2(sqrt(4.0 * M_PI * alpha_sm(1)));
+   model_1->set_g3(sqrt(4.0 * M_PI * alpha_sm(2)));
    model_1->set_scale(mtpole);
    model_1->set_loops(2);
 

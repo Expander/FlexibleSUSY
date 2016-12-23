@@ -346,7 +346,7 @@ DoFastDiagonalization[particle_Symbol, _] :=
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
-            massMatrixStr, selfEnergyIsSymmetric,
+            massMatrixStr,
             selfEnergyMatrixType, selfEnergyMatrixCType, eigenArrayType,
             addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
             numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
@@ -400,7 +400,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                     numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
                     numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
-                    addTwoLoopHiggsContributions = "\nself_energy += self_energy_2l;\n";
+                    addTwoLoopHiggsContributions = "self_energy += self_energy_2l;\n";
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
 " <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
@@ -419,24 +419,13 @@ for (unsigned i = 0; i < " <> dimStr <> "; i++) {
 ";
                    ];
                 ];
-              selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               result = tadpoleMatrix <>
-                       selfEnergyMatrixCType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        calcTwoLoopHiggsContributions <> "\n" <>
                        "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
-                                  "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
-                                  IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
-                                             "; i2 < " <> dimStr <> "; ++i2) {\n" <>
-                                             IndentText["self_energy(i1,i2) = " <> CastIfReal[
-                                                        selfEnergyFunction <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"
-                                                       ] <>
-                                             "}\n"
-                                            ] <>
-                                  "}\n" <>
-                                  addTwoLoopHiggsContributions <> "\n" <>
-                                  If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
+                                  selfEnergyMatrixCType <> " self_energy = " <> CastIfReal[selfEnergyFunction <> "(p)", selfEnergyMatrixType] <> ";\n" <>
+                                  addTwoLoopHiggsContributions <>
                                   "const " <> selfEnergyMatrixCType <> " M_loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
                                   eigenArrayType <> " eigen_values;\n" <>
@@ -500,34 +489,34 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
               result = qcdCorrections <>
-                       selfEnergyMatrixCType <> " self_energy_1;\n" <>
-                       selfEnergyMatrixCType <> " self_energy_PL;\n" <>
-                       selfEnergyMatrixCType <> " self_energy_PR;\n" <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
-                                  "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
-                                  IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                             IndentText[
-                                                If[topTwoLoop,
-                                                   "if (i1 == 2 && i2 == 2) {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[topSelfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                              "self_energy_PL(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                              "self_energy_PR(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
-                                                   "} else {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                              "self_energy_PL(i1,i2) = " <> CastIfReal[selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                              "self_energy_PR(i1,i2) = " <> CastIfReal[selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
-                                                   "}\n"
-                                                   ,
-                                                   "self_energy_1(i1,i2)  = " <> CastIfReal[selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                   "self_energy_PL(i1,i2) = " <> CastIfReal[selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
-                                                   "self_energy_PR(i1,i2) = " <> CastIfReal[selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"
-                                                  ]
-                                             ] <>
-                                             "}\n"
-                                            ] <>
-                                  "}\n" <>
+                                  If[topTwoLoop,
+                                     selfEnergyMatrixCType <> " self_energy_1;\n" <>
+                                     selfEnergyMatrixCType <> " self_energy_PL;\n" <>
+                                     selfEnergyMatrixCType <> " self_energy_PR;\n" <>
+                                     "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                                     IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
+                                                IndentText[
+                                                    "if (i1 == 2 && i2 == 2) {\n" <>
+                                                    IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[topSelfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                               "self_energy_PL(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                               "self_energy_PR(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
+                                                    "} else {\n" <>
+                                                    IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                               "self_energy_PL(i1,i2) = " <> CastIfReal[selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                               "self_energy_PR(i1,i2) = " <> CastIfReal[selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
+                                                    "}\n"
+                                                ] <>
+                                                "}\n"
+                                     ] <>
+                                     "}\n"
+                                     ,
+                                     "const " <> selfEnergyMatrixCType <> " self_energy_1  = " <> CastIfReal[selfEnergyFunctionS  <> "(p)", selfEnergyMatrixType] <> ";\n" <>
+                                     "const " <> selfEnergyMatrixCType <> " self_energy_PL = " <> CastIfReal[selfEnergyFunctionPL <> "(p)", selfEnergyMatrixType] <> ";\n" <>
+                                     "const " <> selfEnergyMatrixCType <> " self_energy_PR = " <> CastIfReal[selfEnergyFunctionPR <> "(p)", selfEnergyMatrixType] <> ";\n"
+                                    ] <>
                                   If[topTwoLoop,
                                      selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>

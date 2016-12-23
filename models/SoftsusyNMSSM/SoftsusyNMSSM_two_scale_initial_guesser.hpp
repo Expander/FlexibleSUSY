@@ -21,8 +21,7 @@
 
 #include "initial_guesser.hpp"
 #include "SoftsusyNMSSM_parameter_point.hpp"
-#include "lowe.h"
-#include "linalg.h"
+#include "lowe_legacy.h"
 
 namespace flexiblesusy {
 
@@ -41,11 +40,11 @@ public:
                           const SoftsusyNMSSM_sugra_constraint&);
    virtual ~SoftsusyNMSSM_initial_guesser();
    virtual void guess();
-   void set_QedQcd(const softsusy::QedQcd& qedqcd) { oneset = qedqcd; }
+   void set_QedQcd(const softsusy::QedQcd_legacy& qedqcd) { oneset = qedqcd; }
 
 private:
    SoftsusyNMSSM<Two_scale>* nmssm;  ///< SoftsusyNMSSM model
-   softsusy::QedQcd oneset;          ///< low-energy parameters
+   softsusy::QedQcd_legacy oneset;   ///< low-energy parameters
    SoftsusyNMSSM_parameter_point pp; ///< SoftsusyNMSSM parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };

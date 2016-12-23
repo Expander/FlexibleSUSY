@@ -452,6 +452,17 @@ public:
    std::complex<double> self_energy_Fu_1_heavy(double p , unsigned gO1, unsigned gO2) const;
    std::complex<double> self_energy_Fu_PR_heavy(double p , unsigned gO1, unsigned gO2) const;
    std::complex<double> self_energy_Fu_PL_heavy(double p , unsigned gO1, unsigned gO2) const;
+
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PL(double p) const;
+
    std::complex<double> tadpole_hh() const;
 
    /// calculates the tadpoles at current loop order

@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <utility>
 #include <Eigen/Core>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multimin.h>
@@ -62,18 +63,20 @@ public:
    enum Solver_type { GSLSimplex, GSLSimplex2, GSLSimplex2Rand };
 
    Minimizer() = default;
-   Minimizer(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
+   template <typename F>
+   Minimizer(F&&, std::size_t, double, Solver_type solver_type_ = GSLSimplex2);
    virtual ~Minimizer() {}
 
    double get_minimum_value() const { return minimum_value; }
-   void set_function(const Function_t& f) { function = f; }
+   template <typename F>
+   void set_function(F&& f) { function = std::forward<F>(f); }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
    int minimize(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual std::string name() const override { return "Minimizer"; };
+   virtual std::string name() const override { return "Minimizer"; }
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() const override;
 
@@ -99,15 +102,16 @@ private:
  * @param solver_type_ GSL multimin minimizer type
  */
 template <std::size_t dimension>
+template <typename F>
 Minimizer<dimension>::Minimizer(
-   const Function_t& function_,
+   F&& function_,
    std::size_t max_iterations_,
    double precision_,
    Solver_type solver_type_
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , function(function_)
+   , function(std::forward<F>(function_))
    , solver_type(solver_type_)
 {
 }

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <utility>
 #include <Eigen/Core>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
@@ -67,17 +68,19 @@ public:
    enum Solver_type { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton };
 
    Root_finder() = default;
-   Root_finder(const Function_t&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
+   template <typename F>
+   Root_finder(F&&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
    virtual ~Root_finder() {}
 
-   void set_function(const Function_t& f) { function = f; }
+   template <typename F>
+   void set_function(F&& f) { function = std::forward<F>(f); }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
    int find_root(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual std::string name() const override { return "Root_finder<" + solver_type_name() + ">"; };
+   virtual std::string name() const override { return "Root_finder<" + solver_type_name() + ">"; }
    virtual int solve(const Eigen::VectorXd&) override;
    virtual Eigen::VectorXd get_solution() const override;
 
@@ -103,15 +106,16 @@ private:
  * @param solver_type_ GSL multiroot solver type
  */
 template <std::size_t dimension>
+template <typename F>
 Root_finder<dimension>::Root_finder(
-   const Function_t& function_,
+   F&& function_,
    std::size_t max_iterations_,
    double precision_,
    Solver_type solver_type_
 )
    : max_iterations(max_iterations_)
    , precision(precision_)
-   , function(function_)
+   , function(std::forward<F>(function_))
    , solver_type(solver_type_)
 {
 }

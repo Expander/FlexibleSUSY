@@ -296,10 +296,10 @@ void RGFlow<Two_scale>::run_to(double scale_)
 {
    scale = scale_;
 
-   Model* model = get_model();
+   Model* model = get_model(scale_);
 
    if (model)
-      model->run_to(scale);
+      model->run_to(scale_);
 }
 
 /* Implementation of sliders */

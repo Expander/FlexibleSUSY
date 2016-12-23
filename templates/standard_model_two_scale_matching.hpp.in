@@ -60,6 +60,7 @@ public:
    void set_loop_order(unsigned);
    void set_scale(double);
    void set_scale(const Scale_getter&);
+   void set_scale(Scale_getter&&);
    void match_tree_level();
 
 private:
@@ -96,6 +97,7 @@ public:
    void set_loop_order(unsigned);
    void set_scale(double);
    void set_scale(const Scale_getter&);
+   void set_scale(Scale_getter&&);
    void match_tree_level();
 
 private:

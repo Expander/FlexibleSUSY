@@ -5,11 +5,11 @@ BASEDIR=$(dirname $0)
 
 FSCONFIG="$BASEDIR/../flexiblesusy-config"
 VALGRIND="`command -v valgrind`"
-CMSSM_EXE="$BASEDIR/../models/CMSSM/run_CMSSM.x"
-CMSSM_INPUT="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
-CMSSM_OUTPUT="$BASEDIR/LesHouches.out.CMSSM"
-VALGRIND_OUTPUT="${BASEDIR}/test_CMSSM_profile.valgrind.out"
-CALLGRIND_OUTPUT="${BASEDIR}/test_CMSSM_profile.callgrind.out"
+MSSMtower_EXE="$BASEDIR/../models/MSSMtower/run_MSSMtower.x"
+MSSMtower_INPUT="$BASEDIR/../model_files/MSSMtower/LesHouches.in.MSSMtower"
+MSSMtower_OUTPUT="$BASEDIR/LesHouches.out.MSSMtower"
+VALGRIND_OUTPUT="${BASEDIR}/test_MSSMtower_profile.valgrind.out"
+CALLGRIND_OUTPUT="${BASEDIR}/test_MSSMtower_profile.callgrind.out"
 
 if [ -z "$VALGRIND" ]; then
     echo "Error: valgrind not found"
@@ -17,13 +17,13 @@ if [ -z "$VALGRIND" ]; then
     exit 0
 fi
 
-if test ! -x "$CMSSM_EXE"; then
-    echo "Error: CMSSM spectrum generator not found: $CMSSM_EXE"
+if test ! -x "$MSSMtower_EXE"; then
+    echo "Error: MSSMtower spectrum generator not found: $MSSMtower_EXE"
     exit 1
 fi
 
-if test ! -f "$CMSSM_INPUT"; then
-    echo "Error: CMSSM SLHA input file not found: $CMSSM_INPUT"
+if test ! -f "$MSSMtower_INPUT"; then
+    echo "Error: MSSMtower SLHA input file not found: $MSSMtower_INPUT"
     exit 1
 fi
 
@@ -36,9 +36,9 @@ valgrind \
     --collect-jumps=yes \
     --log-file=${VALGRIND_OUTPUT} \
     --callgrind-out-file=${CALLGRIND_OUTPUT} \
-    ${CMSSM_EXE} \
-    --slha-input-file=${CMSSM_INPUT} \
-    --slha-output-file=${CMSSM_OUTPUT}
+    ${MSSMtower_EXE} \
+    --slha-input-file=${MSSMtower_INPUT} \
+    --slha-output-file=${MSSMtower_OUTPUT}
 
 echo "Valgrind log file: ${VALGRIND_OUTPUT}"
 echo "Callgring output file: ${CALLGRIND_OUTPUT}"

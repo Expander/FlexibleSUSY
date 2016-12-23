@@ -29,7 +29,7 @@
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
-   Minimizer<2> minimizer1(NULL, 100, 1.0e-2);
+   Minimizer<2> minimizer1(nullptr, 100, 1.0e-2);
    Minimizer<2> minimizer2(minimizer1);
 }
 

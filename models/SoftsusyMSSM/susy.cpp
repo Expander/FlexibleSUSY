@@ -205,31 +205,6 @@ void MssmSusy::setSusy(const MssmSusy & s) {
   setAllGauge(s.displayGauge());
 }
 
-istream & operator >>(istream &left, MssmSusy &s) {
-  char c[70];
-  DoubleMatrix u(3, 3), d(3, 3), e(3, 3);
-  double g1, g2, g3, smu, mu, tanb, hv;
-  int loops, thresh;
-  left >> c >> c >> c >> c >> mu;
-  left >> c >> u >> c >> d >> c >> e >> c >> c >> hv;
-  left >> c >> c >> tanb >> c >> smu;
-  left >> c >> g1 >> c >> g2 >> c >> g3;
-  left >> c >> thresh >> c >> loops;
-  s.setYukawaMatrix(YU, u);
-  s.setYukawaMatrix(YD, d);
-  s.setYukawaMatrix(YE, e);
-  s.setHvev(hv);
-  s.setTanb(tanb);
-  s.setGaugeCoupling(1, g1);
-  s.setGaugeCoupling(2, g2);
-  s.setGaugeCoupling(3, g3);
-  s.setThresholds(thresh);
-  s.setSusyMu(smu);
-  s.setMu(mu);
-  s.setLoops(loops);
-  return left;
-}
-
 
 
 // Outputs derivatives (DRbar scheme) in the form of ds. a contains the
@@ -564,7 +539,7 @@ DoubleVector MssmSusy::beta() const {
 
 
 // r should be valid AT mt
-void MssmSusy::setDiagYukawas(const QedQcd & r, double vev) {
+void MssmSusy::setDiagYukawas(const QedQcd_legacy & r, double vev) {
 
   double v1, v2; // Higgs VEVs
 
@@ -612,15 +587,15 @@ void MssmSusy::quarkMixing(const DoubleMatrix & CKM, int mix) {
   }
 }
 
-void MssmSusy::getQuarkMixedYukawas(const QedQcd & r, const DoubleMatrix &
+void MssmSusy::getQuarkMixedYukawas(const QedQcd_legacy & r, const DoubleMatrix &
 				    CKM, int mix, double vev) { 
   setDiagYukawas(r, vev);
   quarkMixing(CKM, mix);
 }
 
-// outputs object QedQcd & r valid at 1 GeV from SUSY data at mt, at
+// outputs object QedQcd_legacy & r valid at 1 GeV from SUSY data at mt, at
 // present, only diagonal masses are handled. 
-void MssmSusy::getMasses(QedQcd & r, double vev) const {
+void MssmSusy::getMasses(QedQcd_legacy & r, double vev) const {
   double v1, v2;
   v1 = vev * cos(atan(displayTanb()));
   v2 = vev * sin(atan(displayTanb()));

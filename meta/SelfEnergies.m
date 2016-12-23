@@ -46,6 +46,8 @@ definitions for two-loop Higgs self-energies in the NMSSM";
 CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
 
+SelfEnergyIsSymmetric::usage = "";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -78,6 +80,12 @@ GetField[sym_] :=
                  "or SelfEnergies`Tadpole head: ", sym];
            Quit[1];
           ];
+
+SelfEnergyIsSymmetric[s_SelfEnergies`FSSelfEnergy] :=
+    SelfEnergyIsSymmetric[GetField[s]];
+
+SelfEnergyIsSymmetric[particle_] :=
+    Length[Flatten[{FindMixingMatrixSymbolFor[particle]}]] === 1;
 
 ExprContainsParticle[expr_, particle_] :=
     !FreeQ[expr,particle];
@@ -403,21 +411,16 @@ CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
 CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
     CreateTadpoleFunctionName[GetField[tadpole]];
 
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
 CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
     CreateFunctionName[tadpole] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
+
+CreateFunctionPrototype[selfEnergy_] :=
+    CreateFunctionName[selfEnergy] <>
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+
+CreateFunctionPrototypeMatrix[s_] :=
+    CreateFunctionName[s] <> "(double p) const";
 
 ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
     StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
@@ -426,9 +429,8 @@ ExpressionToStringSequentially[expr_, heads_, result_String] :=
     result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
 
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
-    Module[{decl, expr, field, prototype, body, functionName},
+    Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
-           field = GetField[nPointFunction];
            functionName = CreateFunctionPrototype[nPointFunction];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
@@ -444,6 +446,60 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];
+          ];
+
+CreateNPointFunctionMatrix[_SelfEnergies`Tadpole] := { "", "" };
+
+FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
+    Module[{field = GetField[nPointFunction], dim, name},
+           dim = GetDimension[field];
+           name = CreateSelfEnergyFunctionName[field];
+           "\
+for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
+   for (unsigned k = i; k < " <> ToString[dim] <> "; k++)
+      " <> sym <> "(i, k) = " <> name <> "(p, i, k);
+
+Hermitianize(" <> sym <> ");
+"
+          ];
+
+FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
+    Module[{field = GetField[nPointFunction], dim, name},
+           dim = GetDimension[field];
+           name = CreateSelfEnergyFunctionName[field];
+           "\
+for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
+   for (unsigned k = 0; k < " <> ToString[dim] <> "; k++)
+      " <> sym <> "(i, k) = " <> name <> "(p, i, k);
+"
+          ];
+
+FillSelfEnergyMatrix[nPointFunction_, sym_String] :=
+    Module[{particle = GetField[nPointFunction]},
+           Which[(IsScalar[particle] || IsVector[particle]) && SelfEnergyIsSymmetric[particle],
+                 FillHermitianSelfEnergyMatrix[nPointFunction, sym],
+                 True,
+                 FillGeneralSelfEnergyFunction[nPointFunction, sym]
+                ]
+          ];
+
+CreateNPointFunctionMatrix[nPointFunction_] :=
+    Module[{dim, functionName, type, prototype, def},
+           dim = GetDimension[GetField[nPointFunction]];
+           If[dim == 1, Return[{ "", "" }]];
+           functionName = CreateFunctionPrototypeMatrix[nPointFunction];
+           type = CConversion`CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]];
+           prototype = type <> " " <> functionName <> ";\n";
+           def = "
+" <> type <> " CLASSNAME::" <> functionName <> "
+{
+   " <> type <> " self_energy;
+
+" <> IndentText[FillSelfEnergyMatrix[nPointFunction, "self_energy"]] <> "
+   return self_energy;
+}
+";
+           { prototype, def }
           ];
 
 PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
@@ -487,6 +543,9 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            For[k = 1, k <= Length[nPointFunctions], k++,
                Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
+               prototypes = prototypes <> p;
+               defs = defs <> d;
+               {p,d} = CreateNPointFunctionMatrix[nPointFunctions[[k]]];
                prototypes = prototypes <> p;
                defs = defs <> d;
               ];

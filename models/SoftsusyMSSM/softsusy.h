@@ -25,7 +25,7 @@
 #include <utils.h>
 #include <numerics.h>
 #include <physpars.h>
-#include <lowe.h>
+#include <lowe_legacy.h>
 #include <softpars.h>
 
 #include "mssm_twoloophiggs.h"
@@ -77,7 +77,7 @@ private:
   double msusy;       ///< Scale at which Higgs potential is minimised
   double minV;        ///< Value of Higgs potential at minimum
   double mw;          ///< Pole W mass prediction
-  QedQcd dataSet;     ///< contains low energy data on quark masses etc
+  QedQcd_legacy dataSet;     ///< contains low energy data on quark masses etc
   double fracDiff;    ///< fractional difference to last iteration
   bool setTbAtMX;     ///< flag: do we set tan beta at the SUSY breaking scale?
   bool altEwsb;       ///< flag: do we set mu, mA at the SUSY breaking scale?
@@ -166,7 +166,7 @@ public:
   /// Returns any problem flags associated with the object
   const sProblem & displayProblem() const {return problem; };
   /// Gives the low energy Standard Model data set used for the object
-  inline const QedQcd & displayDataSet() const;
+  inline const QedQcd_legacy & displayDataSet() const;
   /// Displays iteration accuracy attained 
   inline double displayFracDiff() const { return fracDiff; }; 
   double displayMinpot() const;    ///< Returns minimum of Higgs potential
@@ -229,7 +229,7 @@ public:
   /// Sets whole object equal to another  
   void setSoftsusy(const Softsusy & s) { *this = s; };
   /// Sets low energy Standard Model fermion mass and gauge coupling data
-  void setData(const QedQcd & r) { dataSet = r; };
+  void setData(const QedQcd_legacy & r) { dataSet = r; };
   /// Sets potential value at minimum of Higgs potential
   void setMinpot(double);
   /// Sets scale of Higgs potential minimisation and sparticle mass calculation
@@ -968,7 +968,7 @@ public:
 			   (Softsusy<SoftPars>&, const DoubleVector &),
 			   double mxGuess, 
 			   const DoubleVector & pars, int sgnMu, double tanb,
-			   const QedQcd & oneset, bool gaugeUnification, 
+			   const QedQcd_legacy & oneset, bool gaugeUnification, 
 			   bool ewsbBCscale =  false); 
   /// legacy wrapper to provide backward compatibility: does the same as the
   /// above 
@@ -976,7 +976,7 @@ public:
 		(Softsusy<SoftPars>&, const DoubleVector &),
 		double mxGuess, 
 		const DoubleVector & pars, int sgnMu, double tanb,
-		const QedQcd & oneset, bool gaugeUnification, 
+		const QedQcd_legacy & oneset, bool gaugeUnification, 
 		bool ewsbBCscale =  false) {
     fixedPointIteration(boundaryCondition, mxGuess, pars, sgnMu, tanb, oneset,
 			gaugeUnification, ewsbBCscale);
@@ -1160,12 +1160,10 @@ public:
   /// oneset (should be at MZ) - it's very crude, doesn't take radiative
   /// corrections into account etc. oneset provides low energy data and
   /// tanb=tan beta 
-  virtual MssmSusy guessAtSusyMt(double tanb, const QedQcd & oneset);
+  virtual MssmSusy guessAtSusyMt(double tanb, const QedQcd_legacy & oneset);
 };
 
 typedef Softsusy<SoftParsMssm> MssmSoftsusy;
-
-std::istream& operator>>(std::istream& left, MssmSoftsusy& s);
 
 template<class SoftPars>
 Softsusy<SoftPars>::Softsusy()
@@ -1238,7 +1236,7 @@ template<class SoftPars>
 const Softsusy<SoftPars> & Softsusy<SoftPars>::displayMssmSoft() const { return *this; }
 
 template<class SoftPars>
-const QedQcd & Softsusy<SoftPars>::displayDataSet() const { return dataSet; }
+const QedQcd_legacy & Softsusy<SoftPars>::displayDataSet() const { return dataSet; }
 
 template<class SoftPars>
 const sPhysical & Softsusy<SoftPars>::displayPhys() const { return physpars; }

@@ -65,9 +65,9 @@ double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_p
       throw ii;
    }
 
-   if (qedqcd.displayMu() != mz) {
+   if (qedqcd.get_scale() != mz) {
       cout << "WARNING: lowOrg in softsusy.cpp called with qedqcd at scale\n"
-	   << qedqcd.displayMu() << "\ninstead of " << mz << endl;
+	   << qedqcd.get_scale() << "\ninstead of " << mz << endl;
    }
 
    MssmSusy t(mssm.guessAtSusyMt(tanb, qedqcd));

@@ -117,6 +117,8 @@ Taken from:
   https://stackoverflow.com/questions/3136604/evaluate-beyond-one-level-within-hold-in-mathematica
 ";
 
+{ Sqr, Cube, Quad, Power2, Power3, Power4, Power5, Power6, Power7, Power8 };
+
 Begin["`Private`"];
 
 ReleaseHoldAt[expr_, partspec_] :=
@@ -789,8 +791,22 @@ RValueToCFormString[expr_] :=
                     Rational[a_?NumericQ, b_?NumericQ] :> N[Rational[a,b]] /.
                     Power[a_,0.5]            :> Sqrt[a] /.
                     Power[a_,-0.5]           :> 1/Sqrt[a] /.
+                    Power[a_,1/3]            :> Cbrt[a] /.
+                    Power[a_,-1/3]           :> 1/Cbrt[a] /.
                     Power[a_,2]              :> Sqr[a] /.
                     Power[a_,-2]             :> 1/Sqr[a] /.
+                    Power[a_,3]              :> Cube[a] /.
+                    Power[a_,-3]             :> 1/Cube[a] /.
+                    Power[a_,4]              :> Quad[a] /.
+                    Power[a_,-4]             :> 1/Quad[a] /.
+                    Power[a_,5]              :> Power5[a] /.
+                    Power[a_,-5]             :> 1/Power5[a] /.
+                    Power[a_,6]              :> Power6[a] /.
+                    Power[a_,-6]             :> 1/Power6[a] /.
+                    Power[a_,7]              :> Power7[a] /.
+                    Power[a_,-7]             :> 1/Power7[a] /.
+                    Power[a_,8]              :> Power8[a] /.
+                    Power[a_,-8]             :> 1/Power8[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],

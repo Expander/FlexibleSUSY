@@ -169,8 +169,68 @@ FS@ModelName@Set[handle_Integer, a___, (fsSettings | fsSMParameters | fsModelPar
 FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
     FS@ModelName@SetLib[
         handle,
-        First /@ Options[FS@ModelName@Set] /.
+        ReleaseHold[Hold[{
+            (* spectrum generator settings *)
+            OptionValue[precisionGoal],
+            OptionValue[maxIterations],
+            OptionValue[solver],
+            OptionValue[calculateStandardModelMasses],
+            OptionValue[poleMassLoopOrder],
+            OptionValue[ewsbLoopOrder],
+            OptionValue[betaFunctionLoopOrder],
+            OptionValue[thresholdCorrectionsLoopOrder],
+            OptionValue[higgs2loopCorrectionAtAs],
+            OptionValue[higgs2loopCorrectionAbAs],
+            OptionValue[higgs2loopCorrectionAtAt],
+            OptionValue[higgs2loopCorrectionAtauAtau],
+            OptionValue[forceOutput],
+            OptionValue[topPoleQCDCorrections],
+            OptionValue[betaZeroThreshold],
+            OptionValue[forcePositiveMasses],
+            OptionValue[poleMassScale],
+            OptionValue[eftPoleMassScale],
+            OptionValue[eftMatchingScale],
+            OptionValue[eftMatchingLoopOrderUp],
+            OptionValue[eftMatchingLoopOrderDown],
+            OptionValue[eftHiggsIndex],
+            OptionValue[calculateBSMMasses],
+            OptionValue[parameterOutputScale],
+
+            (* Standard Model input parameters *)
+            OptionValue[alphaEmMZ],
+            OptionValue[GF],
+            OptionValue[alphaSMZ],
+            OptionValue[MZ],
+            OptionValue[mbmb],
+            OptionValue[Mt],
+            OptionValue[Mtau],
+            OptionValue[Mv3],
+            OptionValue[MW],
+            OptionValue[Me],
+            OptionValue[Mv1],
+            OptionValue[Mm],
+            OptionValue[Mv2],
+            OptionValue[md2GeV],
+            OptionValue[mu2GeV],
+            OptionValue[ms2GeV],
+            OptionValue[mcmc],
+            OptionValue[CKMTheta12],
+            OptionValue[CKMTheta13],
+            OptionValue[CKMTheta23],
+            OptionValue[CKMDelta],
+            OptionValue[PMNSTheta12],
+            OptionValue[PMNSTheta13],
+            OptionValue[PMNSTheta23],
+            OptionValue[PMNSDelta],
+            OptionValue[PMNSAlpha1],
+            OptionValue[PMNSAlpha2],
+            OptionValue[alphaEm0],
+            OptionValue[Mh]
+
+            (* @ModelName@ input parameters *)
+@setInputParameterArguments@
+        }] /. HoldPattern[OptionValue[param_]] :> param /.
         { p } /.
         FS@ModelName@GetSettings[handle] /.
         FS@ModelName@GetSMInputParameters[handle] /.
-        FS@ModelName@GetInputParameters[handle]];
+        FS@ModelName@GetInputParameters[handle]]];

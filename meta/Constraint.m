@@ -511,15 +511,15 @@ InitialGuessAtLowScaleGaugeCouplings[] :=
     Module[{result = ""},
            If[ValueQ[SARAH`hyperchargeCoupling],
               result = result <> Parameters`SetParameter[SARAH`hyperchargeCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL->"];
+                                                         "Sqrt(4. * Pi * alpha_sm(0))", "MODEL->"];
              ];
            If[ValueQ[SARAH`leftCoupling],
               result = result <> Parameters`SetParameter[SARAH`leftCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL->"];
+                                                         "Sqrt(4. * Pi * alpha_sm(1))", "MODEL->"];
              ];
            If[ValueQ[SARAH`strongCoupling],
               result = result <> Parameters`SetParameter[SARAH`strongCoupling,
-                                                         "Sqrt(4. * Pi * alpha_sm(3))", "MODEL->"];
+                                                         "Sqrt(4. * Pi * alpha_sm(2))", "MODEL->"];
              ];
            result
           ];

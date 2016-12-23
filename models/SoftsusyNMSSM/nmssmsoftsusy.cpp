@@ -8439,7 +8439,7 @@ void NmssmSoftsusy::itLowsoft
 /// Provides the first guess at a SUSY object at mt, inputting tanb and oneset
 /// (should be at MZ) - it's very crude, doesn't take radiative corrections
 /// into account etc. 
-NmssmSusy NmssmSoftsusy::guessAtSusyMt(double tanb, DoubleVector nmpars, const QedQcd & oneset) {
+NmssmSusy NmssmSoftsusy::guessAtSusyMt(double tanb, DoubleVector nmpars, const QedQcd_legacy & oneset) {
    
    /// PA: Most of the work is already done by the MSSM
    NmssmSusy t(Softsusy<SoftParsNmssm>::guessAtSusyMt(tanb, oneset));
@@ -8459,7 +8459,7 @@ NmssmSusy NmssmSoftsusy::guessAtSusyMt(double tanb, DoubleVector nmpars, const Q
 void NmssmSoftsusy::lowOrg
 (void (*boundaryCondition)(NmssmSoftsusy &, const DoubleVector &),
  double mxGuess,  const DoubleVector & pars, const DoubleVector nmpars, 
- int sgnMu, double tanb, const QedQcd & oneset, bool gaugeUnification, 
+ int sgnMu, double tanb, const QedQcd_legacy & oneset, bool gaugeUnification, 
  bool ewsbBCscale) {
 
   try {
