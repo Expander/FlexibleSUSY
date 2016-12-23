@@ -81,6 +81,8 @@ SEMI_ANALYTIC_TEMPLATES := \
 		$(DIR)/semi_analytic_convergence_tester.cpp.in \
 		$(DIR)/semi_analytic_high_scale_initial_guesser.hpp.in \
 		$(DIR)/semi_analytic_high_scale_initial_guesser.cpp.in \
+		$(DIR)/semi_analytic_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/semi_analytic_high_scale_spectrum_generator.cpp.in \
 		$(DIR)/semi_analytic_model.hpp.in \
 		$(DIR)/semi_analytic_model.cpp.in \
 		$(DIR)/semi_analytic_susy_convergence_tester.hpp.in \
