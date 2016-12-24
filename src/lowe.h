@@ -90,10 +90,25 @@ private:
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
+  double qedBeta() const;   ///< QED beta function
+  double qcdBeta() const;   ///< QCD beta function
+  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
   Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
+  /// Does not run the masses, just gauge couplings from start to end
+  void runGauge(double start, double end);
   Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
+
+  int flavours(double) const;  /// returns number of active flavours
+
+  /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
+  double extractPoleMb(double asMb);
+  /// Done at pole mb: extracts running mb(polemb)
+  double extractRunningMb(double asMb);
+  /// Calculates the pole mass from the running mass, which should be defined
+  /// at mb
+  void calcPoleMb();
 
 public:
   QedQcd();
@@ -199,26 +214,6 @@ public:
   /// Returns complex PMNS matrix
   Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
 
-  int flavours(double) const;  /// returns number of active flavours
-
-  double qedBeta() const;   ///< QED beta function
-  double qcdBeta() const;   ///< QCD beta function
-  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
-
-  /// Does not run the masses, just gauge couplings from start to end
-  void runGauge(double start, double end);
-  /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
-  double extractPoleMb(double asMb);
-  /// Done at pole mb: extracts running mb(polemb)
-  double extractRunningMb(double asMb);
-  /// calculates running bottom mass given alpha_s(Mb)^{MSbar} from pole m_b
-  void calcRunningMb();
-  /// Calculates the pole mass from the running mass, which should be defined
-  /// at mb
-  void calcPoleMb();
-
-  /// Evolves object to running top mass
-  void toMt();
   /// Evolves object to MZ
   void toMz();
   /// Evolves object to given scale.  This implementation can be called multiple times

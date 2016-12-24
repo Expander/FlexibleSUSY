@@ -370,30 +370,6 @@ double QedQcd::extractPoleMb(double alphasMb) {
   return mbPole;
 }
 
-// Calculates the running mass from the pole mass:
-void QedQcd::calcRunningMb()
-{
-  const double tol = 1.0e-5;
-  // Save initial object
-  const auto saving(get());
-  const double saveMu = get_scale();
-
-  // Set arbitrarily low bottom mass to make sure it's included in the RGEs
-  setMass(mBottom, 0.);
-  run_to(displayPoleMb(), tol);
-  const double mbAtPoleMb = extractRunningMb(displayAlpha(ALPHAS));
-  setMass(mBottom, mbAtPoleMb);
-  // Now, by running down to 1 GeV, you'll be left with mb(mb) since it will
-  // decouple at this scale.
-  run_to(1.0, tol);
-  const double mbmb = displayMass(mBottom);
-
-  // restore initial object
-  set(saving);
-  set_scale(saveMu);
-  setMass(mBottom, mbmb);
-}
-
 // Calculates the pole mass from the running mass, which should be defined at
 // mb
 void QedQcd::calcPoleMb()
@@ -410,29 +386,6 @@ void QedQcd::calcPoleMb()
   setAlpha(ALPHAS, alphasMZ);
   setAlpha(ALPHA, alphaMZ);
   set_scale(saveMu);
-}
-
-// Takes QedQcd object created at MZ and spits it out at mt
-void QedQcd::toMt()
-{
-  const double tol = 1.0e-5;
-
-  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS), displayPoleMZ()));
-  calcPoleMb();
-
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double mz = displayPoleMZ();
-
-  runGauge(mz, 1.0);
-  // Run whole lot up to pole top mass
-  const double mt = this->displayPoleMt();
-  run(1.0, mz, tol);
-
-  // Reset alphas to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
-  run(mz, mt, tol);
 }
 
 // Takes QedQcd object created at MZ and spits it out at MZ
