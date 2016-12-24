@@ -342,41 +342,10 @@ double QedQcd::extractPoleMb(double alphasMb)
   return mbPole;
 }
 
-// Calculates the pole mass from the running mass, which should be defined at
-// mb
-void QedQcd::calcPoleMb()
-{
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double saveMu = get_scale();
-
-  runGauge(get_scale(), displayMass(mBottom));
-  const double poleMb = extractPoleMb(displayAlpha(ALPHAS));
-  setPoleMb(poleMb);
-
-  // Reset to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
-  set_scale(saveMu);
-}
-
 // Takes QedQcd object created at MZ and spits it out at MZ
 void QedQcd::toMz()
 {
-  const double mt = input(MT_pole), as = a(ALPHAS - 1);
-  setMass(mTop, getRunMtFromMz(mt, as, displayPoleMZ()));
-  calcPoleMb();
-
-  const double tol = 1.0e-5;
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double mz = displayPoleMZ();
-
-  runGauge(mz, 1.0);
-  run(1.0, mz, tol);
-  // Reset alphas to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
+   to(displayPoleMZ());
 }
 
 /**

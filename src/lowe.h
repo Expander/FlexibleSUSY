@@ -104,9 +104,6 @@ private:
 
   /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
   double extractPoleMb(double asMb);
-  /// Calculates the pole mass from the running mass, which should be defined
-  /// at mb
-  void calcPoleMb();
 
 public:
   QedQcd();
