@@ -319,33 +319,6 @@ void QedQcd::runGauge(double x1, double x2)
   setAlpha(ALPHAS, y(1));
 }
 
-// Done at pole mb: extracts running mb(polemb)
-double QedQcd::extractRunningMb(double alphasMb) {
-  double mbPole = displayPoleMb();
-
-  if (get_scale() != mbPole) {
-    std::ostringstream ii;
-    ii << "QedQcd::extractRunningMb called at scale "
-         << get_scale() << " instead of mbpole\n";
-    throw flexiblesusy::SetupError(ii.str());
-  }
-
-  // Following is the MSbar correction from QCD, hep-ph/9912391 and ZPC48 673
-  // (1990)
-  double delta = 0.;
-  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / M_PI;
-  if (get_loops() > 1)
-    delta = delta + sqr(alphasMb / M_PI) *
-      (10.1667 + (displayMass(mUp) + displayMass(mDown) +
-                  displayMass(mCharm) + displayMass(mStrange)) / mbPole);
-  if (get_loops() > 2)
-    delta = delta + 101.45424 * alphasMb / M_PI * sqr(alphasMb / M_PI);
-
-  double mbmb = mbPole * (1.0 - delta);
-
-  return mbmb;
-}
-
 // Supposed to be done at mb(mb) -- MSbar, calculates pole mass
 double QedQcd::extractPoleMb(double alphasMb) {
 
@@ -365,7 +338,7 @@ double QedQcd::extractPoleMb(double alphasMb) {
   if (get_loops() > 2)
     delta = delta + 94.4182 * alphasMb / M_PI * sqr(alphasMb / M_PI);
 
-  double mbPole = displayMass(mBottom) * (1.0 + delta);
+  const double mbPole = displayMass(mBottom) * (1.0 + delta);
 
   return mbPole;
 }
