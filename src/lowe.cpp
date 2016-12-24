@@ -36,6 +36,26 @@ namespace softsusy {
 
 namespace {
 
+constexpr double MUP = 2.4e-3; ///< default running quark mass from PDG
+constexpr double MDOWN = 4.75e-3; ///< default running quark mass from PDG
+constexpr double MSTRANGE = 0.104; ///< default running quark mass from PDG
+constexpr double MCHARM = 1.27; ///< default running quark mass from PDG
+constexpr double MBOTTOM = 4.20; ///< default running quark mass from PDG
+constexpr double MTOP = 165.0; ///< default running quark mass from PDG
+/// default pole lepton mass from PDG
+constexpr double MELECTRON = 5.10998902e-4;
+constexpr double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
+constexpr double MTAU = 1.77699; ///< default pole lepton mass from PDG
+constexpr double ALPHASMZ = 0.1184; ///< default running mass from PDG
+constexpr double ALPHAMZ = 1.0 / 127.916; ///< default running alpha(MZ) from PDG
+
+constexpr double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
+constexpr double PMBOTTOM = 4.9; ///< default pole mass from PDG
+/// default central values of CKM matrix elements from PDG 2006 in radians
+constexpr double THETA12CKM = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
+constexpr double THETA13CKM = 0.003960; ///< From Vub in global CKM fit, PDG
+constexpr double THETA23CKM = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
+
 constexpr double sqr(double a) noexcept { return a*a; }
 
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
