@@ -320,13 +320,12 @@ void QedQcd::runGauge(double x1, double x2)
 }
 
 // Supposed to be done at mb(mb) -- MSbar, calculates pole mass
-double QedQcd::extractPoleMb(double alphasMb) {
-
+double QedQcd::extractPoleMb(double alphasMb)
+{
   if (get_scale() != displayMass(mBottom)) {
-    std::ostringstream ii;
-    ii << "QedQcd::extractPoleMb called at scale " << get_scale() <<
-      " instead of mb(mb)\n";
-    throw flexiblesusy::SetupError(ii.str());
+    throw flexiblesusy::SetupError(
+       "QedQcd::extractPoleMb called at scale "
+       + flexiblesusy::ToString(get_scale()) + " instead of mb(mb)");
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391
