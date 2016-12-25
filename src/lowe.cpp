@@ -184,7 +184,7 @@ void QedQcd::runto_safe(double scale, double eps)
       run_to(scale, eps);
    } catch (...) {
       throw flexiblesusy::NonPerturbativeRunningQedQcdError(
-         std::string("Non-perturbative running to Q = ")
+         "Non-perturbative running to Q = "
          + flexiblesusy::ToString(scale)
          + " during determination of the SM(5) parameters.");
    }
