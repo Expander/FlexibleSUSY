@@ -258,6 +258,13 @@ void Symmetrize(softsusy::DoubleMatrix& m)
          m(i,k) = m(k,i);
 }
 
+namespace {
+  inline double ZeroSqrt_d(double x) noexcept
+  {
+    return ZeroSqrt(x);
+  }
+} // anonymous namespace
+
 softsusy::DoubleVector ZeroSqrt(const softsusy::DoubleVector& x)
 {
    return x.apply(ZeroSqrt_d);
