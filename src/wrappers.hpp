@@ -530,17 +530,10 @@ inline double SignedAbsSqrt(double a) noexcept
    return Sign(a) * AbsSqrt(a);
 }
 
-namespace {
-   inline double SignedAbsSqrt_d(double a) noexcept
-   {
-      return SignedAbsSqrt(a);
-   }
-}
-
 template <typename Derived>
 Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
 {
-   return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
+   return m.unaryExpr([](double a) { return SignedAbsSqrt(a); });
 }
 
 template <class T, typename = typename std::enable_if<std::is_floating_point<T>::value,T>::type>
@@ -558,7 +551,7 @@ double Sqrt(T a) noexcept
 template <typename Scalar, int M, int N>
 Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
 {
-   return m.unaryExpr(std::ptr_fun(Sqrt<Scalar>));
+   return m.unaryExpr([](Scalar a){ return Sqrt(a); });
 }
 
 template <class T>
@@ -578,7 +571,7 @@ constexpr T Sqr(T a) noexcept
 template <typename Scalar, int M, int N>
 Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 {
-   return a.unaryExpr(std::ptr_fun(Sqr<Scalar>));
+   return a.unaryExpr([](Scalar a){ return Sqr(a); });
 }
 
 template <class T>
@@ -733,17 +726,10 @@ inline double ZeroSqrt(double x) noexcept
    return (x > 0.0 ? std::sqrt(x) : 0.0);
 }
 
-namespace {
-  inline double ZeroSqrt_d(double x) noexcept
-  {
-    return ZeroSqrt(x);
-  }
-}
-
 template <typename Derived>
 Derived ZeroSqrt(const Eigen::ArrayBase<Derived>& m)
 {
-   return m.unaryExpr(std::ptr_fun(ZeroSqrt_d));
+   return m.unaryExpr([](double a){ return ZeroSqrt(a); });
 }
 
 }
