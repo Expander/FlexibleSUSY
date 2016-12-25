@@ -36,26 +36,6 @@ namespace softsusy {
 
 namespace {
 
-constexpr double MUP = 2.4e-3; ///< default running quark mass from PDG
-constexpr double MDOWN = 4.75e-3; ///< default running quark mass from PDG
-constexpr double MSTRANGE = 0.104; ///< default running quark mass from PDG
-constexpr double MCHARM = 1.27; ///< default running quark mass from PDG
-constexpr double MBOTTOM = 4.20; ///< default running quark mass from PDG
-constexpr double MTOP = 165.0; ///< default running quark mass from PDG
-/// default pole lepton mass from PDG
-constexpr double MELECTRON = 5.10998902e-4;
-constexpr double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
-constexpr double MTAU = 1.77699; ///< default pole lepton mass from PDG
-constexpr double ALPHASMZ = 0.1184; ///< default running mass from PDG
-constexpr double ALPHAMZ = 1.0 / 127.916; ///< default running alpha(MZ) from PDG
-
-constexpr double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
-constexpr double PMBOTTOM = 4.9; ///< default pole mass from PDG
-/// default central values of CKM matrix elements from PDG 2006 in radians
-constexpr double THETA12CKM = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
-constexpr double THETA13CKM = 0.003960; ///< From Vub in global CKM fit, PDG
-constexpr double THETA23CKM = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
-
 constexpr double sqr(double a) noexcept { return a*a; }
 
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
@@ -132,30 +112,38 @@ QedQcd::QedQcd()
   : a(2)
   , mf(9)
   , input(static_cast<unsigned>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
-  , mbPole(PMBOTTOM)
+  , mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
   , ckm()
   , pmns()
 {
   set_number_of_parameters(11);
-  mf(0) = MUP; mf(1) = MCHARM;
-  mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
-  mf(6) = MELECTRON; mf(7) = MMUON; mf(8) = MTAU;
-  a(0) = ALPHAMZ;  a(1) = ALPHASMZ;
-  mf(2) = getRunMtFromMz(PMTOP, ALPHASMZ, flexiblesusy::Electroweak_constants::MZ);
-  input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
-  input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
-  input(MT_pole) = PMTOP;
-  input(mb_mb) = MBOTTOM;
-  input(MTau_pole) = MTAU;
-  input(MMuon_pole) = MMUON;
-  input(MElectron_pole) = MELECTRON;
+  mf(0) = flexiblesusy::Electroweak_constants::MUP;
+  mf(1) = flexiblesusy::Electroweak_constants::MCHARM;
+  mf(2) = getRunMtFromMz(flexiblesusy::Electroweak_constants::PMTOP,
+                         flexiblesusy::Electroweak_constants::alpha3,
+                         flexiblesusy::Electroweak_constants::MZ);
+  mf(3) = flexiblesusy::Electroweak_constants::MDOWN;
+  mf(4) = flexiblesusy::Electroweak_constants::MSTRANGE;
+  mf(5) = flexiblesusy::Electroweak_constants::MBOTTOM;
+  mf(6) = flexiblesusy::Electroweak_constants::MELECTRON;
+  mf(7) = flexiblesusy::Electroweak_constants::MMUON;
+  mf(8) = flexiblesusy::Electroweak_constants::MTAU;
+  a(0) = flexiblesusy::Electroweak_constants::aem;
+  a(1) = flexiblesusy::Electroweak_constants::alpha3;
+  input(alpha_em_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::aem;
+  input(alpha_s_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::alpha3;
+  input(MT_pole) = flexiblesusy::Electroweak_constants::PMTOP;
+  input(mb_mb) = flexiblesusy::Electroweak_constants::MBOTTOM;
+  input(MTau_pole) = flexiblesusy::Electroweak_constants::MTAU;
+  input(MMuon_pole) = flexiblesusy::Electroweak_constants::MMUON;
+  input(MElectron_pole) = flexiblesusy::Electroweak_constants::MELECTRON;
   input(MW_pole) = flexiblesusy::Electroweak_constants::MW;
   input(MZ_pole) = flexiblesusy::Electroweak_constants::MZ;
   input(GFermi) = flexiblesusy::Electroweak_constants::gfermi;
-  input(mc_mc) = MCHARM;
-  input(MU_2GeV) = MUP;
-  input(MD_2GeV) = MDOWN;
-  input(MS_2GeV) = MSTRANGE;
+  input(mc_mc) = flexiblesusy::Electroweak_constants::MCHARM;
+  input(MU_2GeV) = flexiblesusy::Electroweak_constants::MUP;
+  input(MD_2GeV) = flexiblesusy::Electroweak_constants::MDOWN;
+  input(MS_2GeV) = flexiblesusy::Electroweak_constants::MSTRANGE;
   set_scale(flexiblesusy::Electroweak_constants::MZ);
   set_loops(3);
   set_thresholds(1);
