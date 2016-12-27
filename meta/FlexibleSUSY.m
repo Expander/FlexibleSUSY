@@ -2527,7 +2527,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[haveEWSB,
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
               FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
-
+              If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
+                 FlexibleSUSY`EWSBSubstitutions = FlexibleSUSY`EWSBSubstitutions /. allIndexReplacementRules;
+                ];
               (* adding tadpoles to the EWSB eqs. *)
               ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
               treeLevelEwsbSolutionOutputFile = FileNameJoin[{FSOutputDir,
@@ -2535,11 +2537,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               treeLevelEwsbEqsOutputFile      = FileNameJoin[{FSOutputDir,
                                                               FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
               Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
-              Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
-              Print["Searching for independent EWSB equations ..."];
               If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
-                 FlexibleSUSY`EWSBSubstitutions = FlexibleSUSY`EWSBSubstitutions /. allIndexReplacementRules;
+                 Put[EWSB`ApplySubstitutionsToEqs[ewsbEquations, FlexibleSUSY`EWSBSubstitutions], treeLevelEwsbEqsOutputFile],
+                 Put[ewsbEquations, treeLevelEwsbEqsOutputFile]
                 ];
+              Print["Searching for independent EWSB equations ..."];
               independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
                                                                         FlexibleSUSY`EWSBSubstitutions];
 

@@ -1,7 +1,10 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
 
-GetLinearlyIndependentEqs::"Removes linearly dependent EWSB equations
+ApplySubstitutionsToEqs::usage="Makes the given substitutions in the EWSB
+equations, taking into account SARAH heads";
+
+GetLinearlyIndependentEqs::usage="Removes linearly dependent EWSB equations
 from a list of equations";
 
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
