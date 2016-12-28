@@ -538,7 +538,8 @@ SUSYScale =  Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
-   {vMSSM, Sqrt[vd^2 + vu^2]}
+   {vMSSM, Sqrt[vd^2 + vu^2]},
+   FSSolveEWSBFor[EWSBOutputParameters]
 };
 
 HighScale = g1 == g2;
