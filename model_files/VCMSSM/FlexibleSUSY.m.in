@@ -530,7 +530,7 @@ TreeLevelEWSBSolution = {
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
              (1/3)/(60*2^(1/3)*BMu)])]/2
 	 ] },
-   {MuSq, (mHd2 - tadpole[1] / vd - mHu2 TanBeta^2 + tadpole[2] TanBeta^2 / vu) / (TanBeta^2 - 1) - (g2^2 + GUTNormalization[g1]^2 g1^2) (vd^2 + vu^2) / 8}
+   {MuSq, (mHd2 - tadpole[1] / vd - mHu2 TanBeta^2 + tadpole[2] TanBeta^2 / vu) / (TanBeta^2 - 1) - (g2^2 + GUTNormalization[g1]^2 g1^2) vMSSM^2 / 8}
 };
 
 SUSYScale =  Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
