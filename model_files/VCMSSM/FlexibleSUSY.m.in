@@ -16,6 +16,10 @@ EXTPAR = {
    {10, SolutionNumber}
 };
 
+(* In the VCMSSM, TanBeta = vu / vd is an output of
+   EWSB.  The extra parameter vMSSM is currently
+   required to preserve the magnitude Sqrt[vd^2 + vu^2]
+   during the EWSB iteration. *)
 FSAuxiliaryParameters = {
    {TanBeta, {1}},
    {MuSq, {1}},
