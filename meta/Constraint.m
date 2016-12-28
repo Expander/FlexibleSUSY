@@ -235,7 +235,7 @@ FindFixedParametersFromConstraint[settings_List] :=
 CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_, value_],
              constraintName_String] :=
     Module[{modelParameters, unknownParameters},
-           modelParameters = Parameters`GetModelParameters[];
+           modelParameters = Join[Parameters`GetModelParameters[], Parameters`GetExtraParameters[]];
            If[Head[parameters] =!= List,
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   First parameter must be a list!"];
@@ -275,7 +275,8 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
 
 CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
              constraintName_String] :=
-    Module[{unknownParameters = Complement[parameters, Parameters`GetModelParameters[]]},
+    Module[{unknownParameters = Complement[parameters, Join[Parameters`GetModelParameters[],
+                                                            Parameters`GetExtraParameters[]]]},
            If[unknownParameters =!= {},
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt],
                     "   Unknown parameters: ", unknownParameters];
