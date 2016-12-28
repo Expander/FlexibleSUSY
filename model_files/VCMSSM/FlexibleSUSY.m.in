@@ -22,6 +22,8 @@ FSAuxiliaryParameters = {
    {vMSSM, {1}}
 };
 
+FSEWSBSolvers = { FPIRelative };
+
 EWSBSubstitutions = {
    {vd, vMSSM Cos[ArcTan[TanBeta]]},
    {vu, vMSSM Sin[ArcTan[TanBeta]]},
