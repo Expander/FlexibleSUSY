@@ -136,8 +136,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_2), 1.0e-12);
 
-   BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_1() - Re(vcmssm_tadpole_hh_1), 1.0);
-   BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_2() - Re(vcmssm_tadpole_hh_2), 1.0);
+   BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_1() - Re(vcmssm_tadpole_hh_1), 5.0);
+   BOOST_CHECK_SMALL(vcmssm.get_ewsb_eq_hh_2() - Re(vcmssm_tadpole_hh_2), 5.0);
 
    const double vcmssm_Mu_soln = vcmssm.get_Mu();
    const double vcmssm_BMu = vcmssm.get_BMu();

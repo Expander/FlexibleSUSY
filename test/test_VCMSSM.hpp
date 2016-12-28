@@ -83,8 +83,11 @@ void setup_VCMSSM(flexiblesusy::VCMSSM_mass_eigenstates& m,
    input.Azero = 0.;
    input.SignMu = 1.;
    input.TBGuess = 5.0;
+   input.SolutionNumber = 4;
 
    setup_VCMSSM_const(m, input);
+
+   m.set_input_parameters(input);
 }
 
 void match_CMSSM_to_VCMSSM(flexiblesusy::CMSSM_mass_eigenstates& cmssm,
