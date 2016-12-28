@@ -26,6 +26,8 @@ FSAuxiliaryParameters = {
    {vMSSM, {1}}
 };
 
+(* To allow selecting a particular tree-level solution
+   for TanBeta, only the FPI solver is enabled for EWSB  *)
 FSEWSBSolvers = { FPIRelative };
 
 EWSBSubstitutions = {
