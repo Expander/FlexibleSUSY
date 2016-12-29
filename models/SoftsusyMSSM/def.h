@@ -105,10 +105,8 @@ namespace softsusy{
   /// Switch to use SPHENO conventions for masses in loops
   extern bool sphenoMassConv;
 
-#ifdef COMPILE_THREE_LOOP_RGE
   /// Controls the use of MSSM three-loop RGEs
   extern bool USE_THREE_LOOP_RGE;
-#endif
 
 #ifdef COMPILE_FULL_SUSY_THRESHOLD
   /// Threshold to prevent the re-evaluation of two-loop leading SUSY 

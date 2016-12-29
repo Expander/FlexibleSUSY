@@ -1309,10 +1309,9 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    softSusy.setMh2Squared(m2sq);
 
    const int ewsb_loop_order = 1;
-   const int number_of_ewsb_iterations = 100;
+   const int number_of_ewsb_iterations = 50;
    const double ewsb_iteration_precision = 1.0e-5;
    model.set_ewsb_loop_order(ewsb_loop_order);
-   model.set_number_of_ewsb_iterations(number_of_ewsb_iterations);
    model.set_ewsb_iteration_precision(ewsb_iteration_precision);
 
    // these conditions must be fulfilled to have EWSB
@@ -1449,7 +1448,7 @@ void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
    softSusy.setPhys(physical);
    softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
 
-   model.set_number_of_mass_iterations(1);
+   model.set_precision(std::pow(10,-0.1)); // performs 1 iteration
    model.calculate_Mhh_pole();
 
    hh_ss = softSusy.displayPhys().mh0;
@@ -1500,7 +1499,7 @@ void compare_self_energy_CP_odd_higgs(CMSSM<Two_scale> model,
    softSusy.setPhys(physical);
    softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
 
-   model.set_number_of_mass_iterations(1);
+   model.set_precision(std::pow(10,-0.1)); // performs 1 iteration
    model.calculate_MAh_pole();
 
    Ah_ss = softSusy.displayPhys().mA0;

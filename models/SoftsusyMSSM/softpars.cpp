@@ -3097,57 +3097,6 @@ ostream & operator <<(ostream &left, const SoftPars<Susy, Brevity> &s) {
   return left;
 }
 
-template<class Susy, class Brevity>
-void SoftPars<Susy, Brevity>::inputSoftParsOnly() {
-  char c[70];
-
-  cin >> c >> c >> c >> c >> c;
-  cin >> c >> ua
-       >> c >> da
-       >> c >> ea;
-  cin >> c >> mQLsq
-       >> c >> mURsq
-       >> c >> mDRsq
-       >> c >> mLLsq
-       >> c >> mSEsq;
-  cin >> c >> m3sq >> c >> mH1sq >> c >> mH2sq;
-  cin >> c >> mGaugino; 
-}
-
-template<class Susy, class Brevity>
-istream & operator >>(istream &left, SoftPars<Susy, Brevity> &s) {
-  char c[70];
-
-  left >> c >> c >> c >> c >> c >> c >> c;
-  DoubleMatrix ua(3, 3), da(3, 3), ea(3, 3);
-  left >> c >> ua
-       >> c >> da
-       >> c >> ea;
-  s.setTrilinearMatrix(UA, ua);
-  s.setTrilinearMatrix(DA, da);
-  s.setTrilinearMatrix(EA, ea);
-  DoubleMatrix mqlsq(3, 3), mursq(3, 3), mdrsq(3, 3), mllsq(3, 3), mersq(3, 3);
-  left >> c >> mqlsq
-       >> c >> mursq
-       >> c >> mdrsq
-       >> c >> mllsq
-       >> c >> mersq;
-  s.setSoftMassMatrix(mQl, mqlsq); 
-  s.setSoftMassMatrix(mUr, mursq); 
-  s.setSoftMassMatrix(mDr, mdrsq); 
-  s.setSoftMassMatrix(mLl, mllsq); 
-  s.setSoftMassMatrix(mEr, mersq); 
-  double m3sq, mh1sq, mh2sq;
-  left >> c >> m3sq >> c >> mh1sq >> c >> mh2sq;
-  s.setM3Squared(m3sq); s.setMh1Squared(mh1sq); s.setMh2Squared(mh2sq);
-  DoubleVector mg(3);
-  left >> c >> mg; 
-  s.setAllGauginos(mg);
-  Susy ss;
-  left >> ss;   s.setSusy(ss);
-  return left;
-}
-
 // Boundary conditions to be applied at messenger scale for Gauge mediated
 // SUSY breaking (see hep-ph/9703211 for example)
 template<class Susy, class Brevity>

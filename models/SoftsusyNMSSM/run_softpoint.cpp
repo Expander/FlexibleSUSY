@@ -43,9 +43,7 @@ void errorCall() {
 #ifdef COMPILE_FULL_SUSY_THRESHOLD
   if (USE_TWO_LOOP_THRESHOLD) ii << "--two-loop-susy-thresholds switches on leading 2-loop SUSY threshold corrections to third generation Yukawa couplings and g3.\n";
 #endif //COMPILE_FULL_SUSY_THRESHOLD
-#ifdef COMPILE_THREE_LOOP_RGE
   if (USE_THREE_LOOP_RGE) ii << "--three-loop-rges switches on 3-loop RGEs\n";
-#endif //COMPILE_THREE_LOOP_RGE
   ii << "--mgut=unified sets the scale at which SUSY breaking terms are set to the GUT\n";
   ii << "scale where g1=g2. --mgut=<value> sets it to a fixed scale, ";
   ii << "whereas --mgut=msusy\nsets it to MSUSY\n\n";
@@ -95,7 +93,7 @@ int main(int argc, char *argv[]) {
   void (*boundaryCondition)(MssmSoftsusy &, const DoubleVector &)=extendedSugraBcs;
   void (*nmssmBoundaryCondition)(NmssmSoftsusy&, const DoubleVector&) = NmssmMsugraBcs;
 
-  QedQcd oneset;
+  QedQcd_legacy oneset;
   MssmSoftsusy m;
   NmssmSoftsusy nmssm;
   MssmSoftsusy * r = &m; 
@@ -192,23 +190,17 @@ int main(int argc, char *argv[]) {
 #endif
 	}
 	else if (starts_with(argv[i], "--disable-three-loop-rges")) {
-#ifdef COMPILE_THREE_LOOP_RGE
 	  USE_THREE_LOOP_RGE = false;
-#else
 	  compilationProblem = true;
 	  cout << "Two-loop thresholds not compiled.\n";
 	  cout << "Please use the --enable-two-loop-susy-thresholds with ./configure\n";
 	  cout << "Make sure you install the CLN and GiNaC packages beforehand.\n";
-#endif
 	}
 	else if (starts_with(argv[i], "--three-loop-rges")) {
-#ifdef COMPILE_THREE_LOOP_RGE
 	  USE_THREE_LOOP_RGE = true;
-#else
 	  compilationProblem = true;
 	  cout << "Three-loop RGEs not compiled.\n";
 	  cout << "Please use the --enable-three-loop-rges with ./configure\n";
-#endif
 	}
 	else if (starts_with(argv[i], "--QEWSB=")) 
 	  QEWSB = get_value(argv[i], "--QEWSB=");
@@ -1179,7 +1171,6 @@ int main(int argc, char *argv[]) {
                     if(num == 1) softsusy::SoftHiggsOut = true;
                   }
                      break;
-#ifdef COMPILE_THREE_LOOP_RGE
 		  case 19: {
                     int num = int(d + EPSTOL);
 		    if (num == 1) USE_THREE_LOOP_RGE = true;
@@ -1187,7 +1178,6 @@ int main(int argc, char *argv[]) {
 		    else cout << "WARNING: incorrect setting for SOFTSUSY Block 19 (should be 0 or 1)\n";
 		    break;			     
 		  }
-#endif
 #ifdef COMPILE_FULL_SUSY_THRESHOLD
 		  case 20: {
                     int num = int(d + EPSTOL);

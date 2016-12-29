@@ -11,15 +11,14 @@ LIBFLEXI_SRC := \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/database.cpp \
-		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
 		$(DIR)/error.cpp \
+		$(DIR)/global_thread_pool.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/gsl_vector.cpp \
-		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.cpp \
@@ -32,8 +31,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
-		$(DIR)/rge.cpp \
-		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
@@ -46,7 +43,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
-		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
@@ -64,7 +60,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/database.hpp \
-		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
 		$(DIR)/effective_couplings.hpp \
@@ -75,6 +70,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
+		$(DIR)/global_thread_pool.hpp \
 		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
@@ -84,7 +80,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/if.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
-		$(DIR)/linalg.h \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
@@ -92,7 +87,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
-		$(DIR)/mycomplex.h \
 		$(DIR)/nmssm_twoloophiggs.hpp \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
@@ -100,9 +94,10 @@ LIBFLEXI_HDR := \
 		$(DIR)/physical_input.hpp \
 		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
+		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
-		$(DIR)/rge.h \
+		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
 		$(DIR)/root_finder.hpp \
@@ -122,13 +117,11 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
 		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/sum.hpp \
+		$(DIR)/thread_pool.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
-		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
-		$(DIR)/wrappers.hpp \
-		$(DIR)/xpr-base.h \
-		$(DIR)/xpr-matrix.h \
-		$(DIR)/xpr-vector.h
+		$(DIR)/which.hpp \
+		$(DIR)/wrappers.hpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \

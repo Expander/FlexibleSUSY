@@ -28,6 +28,7 @@
 #include <cmath>
 #include <functional>
 #include <limits>
+#include <utility>
 
 namespace flexiblesusy {
 
@@ -47,7 +48,8 @@ public:
    /// set maximum number of iterations
    void set_max_iterations(unsigned it) { max_it = it; }
    /// set scale getter
-   void set_scale_getter(const Scale_getter& sg) { scale_getter = sg; }
+   template <typename F>
+   void set_scale_getter(F&& sg) { scale_getter = std::forward<F>(sg); }
 
 protected:
    /// get current iteration number

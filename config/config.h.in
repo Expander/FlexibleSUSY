@@ -1,6 +1,9 @@
 /* DO NOT EDIT! GENERATED AUTOMATICALLY! */
 /* generated at @DATE@ */
 
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define PKGNAME "@PKGNAME@"
 
 #define FLEXIBLESUSY_VERSION  "@FLEXIBLESUSY_VERSION@"
@@ -100,3 +103,5 @@
 
 /* Enable statements for addons */
 @DEFINE_ENABLE_ADDONS@
+
+#endif

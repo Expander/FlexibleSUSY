@@ -1004,9 +1004,10 @@ SaveParameterLocally[parameters_List] :=
     StringJoin[SaveParameterLocally /@ parameters];
 
 SaveParameterLocally[parameter_] :=
-    Module[{ parStr, parStrSym },
-           parStr = CConversion`RValueToCFormString[parameter];
-           parStrSym = CConversion`ToValidCSymbolString[parameter];
+    Module[{ par, parStr, parStrSym },
+           par = parameter /. { Re -> Identity, Im -> Identity, Abs -> Identity };
+           parStr = CConversion`RValueToCFormString[par];
+           parStrSym = CConversion`ToValidCSymbolString[par];
            "const auto save_" <> parStrSym <> "_raii = make_raii_save(" <> parStr <> ");\n"
           ];
 

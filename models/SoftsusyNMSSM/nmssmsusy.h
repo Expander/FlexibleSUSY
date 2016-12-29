@@ -158,9 +158,6 @@ public:
 /// Formatted output
 ostream & operator <<(ostream &, const NmssmSusy &);
 
-/// Formatted input
-istream & operator >>(istream &left, NmssmSusy &s);
-
 /// Outputs beta function coefficients for MSSM gauge coupling evolution in
 /// arguments.
 void nmsetBetas(DoubleMatrix &, DoubleVector  &, DoubleVector  &, DoubleVector

@@ -84,10 +84,6 @@ public:
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
    void set_DRbar_masses(const Eigen::ArrayXd&);
-   void set_number_of_ewsb_iterations(std::size_t);
-   void set_number_of_mass_iterations(std::size_t);
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
    void set_pole_mass_loop_order(unsigned);
    unsigned get_pole_mass_loop_order() const;
    void set_physical(const @ModelName@_physical&);
@@ -142,8 +138,6 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   std::size_t number_of_ewsb_iterations;
-   std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;      ///< loop order for EWSB
    unsigned pole_mass_loop_order; ///< loop order for pole masses
    bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
@@ -155,6 +149,8 @@ private:
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems; ///< problems
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
 
+   std::size_t get_number_of_ewsb_iterations() const;
+   std::size_t get_number_of_mass_iterations() const;
    void set_ewsb_solution(const EWSB_solver*);
    template <typename It> void set_best_ewsb_solution(It, It);
    int solve_ewsb_iteratively();

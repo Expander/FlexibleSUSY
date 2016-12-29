@@ -7,6 +7,7 @@ ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
+WriteSLHAImExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
@@ -212,26 +213,26 @@ WriteParameterTuple[expr_, _] :=
 WriteSLHAExtparBlock[{}] := "";
 
 WriteSLHAExtparBlock[extpar_List] :=
-    Module[{result, body = ""},
-           (body = body <> WriteParameterTuple[#, "extpar"])& /@ extpar;
-           result = "std::ostringstream extpar;\n\n" <>
-                    "extpar << \"Block EXTPAR\\n\";\n" <>
-                    body <>
-                    "slha_io.set_block(extpar);\n";
-           Return[result];
-          ];
+    "std::ostringstream extpar;\n\n" <>
+    "extpar << \"Block EXTPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "extpar"]& /@ extpar] <>
+    "slha_io.set_block(extpar);\n";
+
+WriteSLHAImExtparBlock[{}] := "";
+
+WriteSLHAImExtparBlock[imextpar_List] :=
+    "std::ostringstream imextpar;\n\n" <>
+    "imextpar << \"Block IMEXTPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "imextpar"]& /@ imextpar] <>
+    "slha_io.set_block(imextpar);\n";
 
 WriteSLHAMinparBlock[{}] := "";
 
 WriteSLHAMinparBlock[minpar_List] :=
-    Module[{result, body = ""},
-           (body = body <> WriteParameterTuple[#, "minpar"])& /@ minpar;
-           result = "std::ostringstream minpar;\n\n" <>
-                    "minpar << \"Block MINPAR\\n\";\n" <>
-                    body <>
-                    "slha_io.set_block(minpar);\n";
-           Return[result];
-          ];
+    "std::ostringstream minpar;\n\n" <>
+    "minpar << \"Block MINPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "minpar"]& /@ minpar] <>
+    "slha_io.set_block(minpar);\n";
 
 WriteSLHAInputParameterBlocks[{}] := "";
 

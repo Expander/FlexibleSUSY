@@ -6899,9 +6899,9 @@ double Softsusy<SoftPars>::calcMs() const {
 /// (should be at MZ) - it's very crude, doesn't take radiative corrections
 /// into account etc. 
 template<class SoftPars>
-MssmSusy Softsusy<SoftPars>::guessAtSusyMt(double tanb, const QedQcd & oneset) {
+MssmSusy Softsusy<SoftPars>::guessAtSusyMt(double tanb, const QedQcd_legacy & oneset) {
   /// This bit gives a guess at a SUSY object
-  QedQcd leAtMt(oneset);
+  QedQcd_legacy leAtMt(oneset);
 
   DoubleVector a(3), g(3);
   double sinth2 = 1.0 - sqr(MW / MZ);
@@ -6964,7 +6964,7 @@ template<class SoftPars>
 void Softsusy<SoftPars>::fixedPointIteration
 (void (*boundaryCondition)(Softsusy<SoftPars> &, const DoubleVector &),
  double mxGuess, 
- const DoubleVector & pars, int sgnMu, double tanb, const QedQcd &
+ const DoubleVector & pars, int sgnMu, double tanb, const QedQcd_legacy &
  oneset, bool gaugeUnification, bool ewsbBCscale) {
 
   try {
@@ -7011,7 +7011,13 @@ void Softsusy<SoftPars>::fixedPointIteration
     double tol = TOLERANCE;
     
     MssmSusy t(guessAtSusyMt(tanb, oneset));
-    t.setLoops(2); /// 2 loops should protect against ht Landau pole 
+
+    // default SoftSusy loop number
+    int lpnum = 2;
+
+    if (USE_THREE_LOOP_RGE) lpnum = 3;
+
+    t.setLoops(lpnum); /// >= 2 loops should protect against ht Landau pole 
     t.runto(mxBC); 
    
     setSusy(t);
@@ -7039,7 +7045,7 @@ void Softsusy<SoftPars>::fixedPointIteration
   
     physical(0);
   
-    setThresholds(3); setLoops(2);
+    setThresholds(3); setLoops(lpnum);
     
     itLowsoft(maxtries, sgnMu, tol, tanb, boundaryCondition, pars, 
 		gaugeUnification, ewsbBCscale);
@@ -10803,7 +10809,7 @@ void Softsusy<SoftPars>::drbarSLHA(ostream & out, int numPoints, double qMax, in
 
 template<class SoftPars>
 void Softsusy<SoftPars>::sminputsSLHA(ostream & out) {
-  QedQcd d(displayDataSet());
+  QedQcd_legacy d(displayDataSet());
   out << "Block SMINPUTS             # Standard Model inputs\n";
   out << "     1   "; printRow(out, 1.0 / d.displayAlpha(ALPHA)); 
   out << "   # alpha_em^(-1)(MZ) SM MSbar\n";

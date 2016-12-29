@@ -25,6 +25,12 @@ FlexibleSUSY 2.0.0 [not released yet]
    given parameter point.  The third one formats the output according
    to the SLHA standard.
 
+ * Feature: 3-loop beta functions (if available) are calculated in
+   parallel if multi-threading is enabled.  This leads to a ~25% speed
+   improvement in the MSSM when 3-loop RG running is used.
+
+ * Feature: Support for SLHA-2 input block IMEXTPAR.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
@@ -55,6 +61,22 @@ FlexibleSUSY 2.0.0 [not released yet]
       { <model> -> { model parameters ... },
         StandardModel -> { ... } }
 
+ * Change: In multi-threading mode pole masses are calculated using a
+   thread pool instead of spawning threads manually.  This avoids over
+   subscription on machines with very few CPU cores.
+
+ * Change: The performance of FlexibleEFTHiggs has been improved by
+   around 20% by using a faster implementation of the B1 loop function
+   in the limit of vanishing momentum and non-zero masses.
+
+ * Change (commit b5cad9e): Automatically chose the maximum number of
+   EWSB and pole mass iterations based on the user-defined precision
+   goal.  This change leads to a performance improvement for some
+   parameter points where the EWSB equations cannot be fulfilled.
+
+ * Change: The legacy module and most SOFTSUSY components have been
+   removed.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
@@ -76,19 +98,20 @@ FlexibleSUSY-1.7.2 [not released yet]
    very large SUSY scales.  In such a case FlexibleSUSY[23] could be
    set to 0 to suppress the calculation of the non-SM pole masses.
 
+ * Feature (commit 998f11e): Slightly improved speed of the RG
+   running.
+
  * Change (commit 189f508): Speed-up the calculation of the 2L Higgs
    mass corrections in the MSSM and NMSSM, if multi-threading is used,
    by locking the mutex only for the O(at*at) corrections.
 
  * Change: The limits sin(2*theta) = 0 and m_stop1 = m_stop2 have been
    implemented for the 2L O(at*as) Higgs pole mass corrections in the
-   MSSM.
-
- * Bugfix (commit c35dcb2): Fix linking problem of LibraryLink on Mac.
+   MSSM to avoid numeric instabilities.
 
  * Bugfix (commit 20f169f): Re-calculate W pole mass in
    FlexibleEFTHiggs.  Before this commit the electroweak gauge
-   couplings in FlexibleEFTHiggs are be wrong in scenarios with very
+   couplings in FlexibleEFTHiggs are wrong in scenarios with very
    small alpha_em(MZ) (< 1/1000) and/or a small Z pole mass (< 10
    GeV).
 
@@ -97,8 +120,8 @@ FlexibleSUSY-1.7.2 [not released yet]
    the running BSM masses (at the SUSY scale) have been used as
    convergence criterion.  However, they tend to converge very fast,
    compared to the running SM masses at the electroweak scale.  For a
-   more reliable convergence criterion, both the running BSM and SM
-   masses have to be used.
+   more reliable convergence criterion, now both the running BSM and
+   SM masses are used.
 
  * Bugfix (commits 5e1b6b3, cc5bfae): Correction of the 2-loop and
    3-loop QCD corrections to the top pole mass in the Standard Model
@@ -108,14 +131,29 @@ FlexibleSUSY-1.7.2 [not released yet]
    top pole mass.  Before these commits, FlexibleSUSY used the
    expressions from theses references, but wrote result in terms of
    Log[Q^2/mt^2], where mt is the MS-bar mass, while not accounting
-   for the difference between Mt and mt in the logarithms.
+   for the difference between Mt and mt in the logarithms.  This
+   bugfix affects the Higgs pole mass at the 3-loop level.
 
  * Bugfix (commit cecff4b): Flag scalar or vector boson gauge singlet
    tachyons.
 
  * Bugfix (commit 4a3fb5b): Input tan(beta) at the SUSY scale, instead
-   of the matching scale.  This matters when the (unphysical) matching
-   is varied through FlexibleSUSY[19].
+   of at the matching scale in the FlexibleEFTHiggs model files.  This
+   difference matters when the (unphysical) matching scale is varied
+   through FlexibleSUSY[19].
+
+ * Bugfix (commit c35dcb2): Fixed linking problem of the LibraryLink
+   on Mac.
+
+ * Bugfix (commits a643be5, cc9ebf1): Avoid function call ambiguities
+   when multiple LibraryLink libraries are loaded into Mathematica at
+   the same time.
+
+ * Bugfix (commit 1f8e135): Correcting FS<model>Set[] function for
+   models with matrix-valued parameters.
+
+ * Bugfix (commit 4097708): The generated LibraryLink files are now
+   added to the model tarball created by `make pack-<model>-src'.
 
 FlexibleSUSY-1.7.1 [October, 15 2016]
 

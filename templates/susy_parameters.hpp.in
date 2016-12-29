@@ -72,7 +72,7 @@ private:
    struct Susy_traces {
 @traceDefs@
    };
-   void calc_susy_traces(Susy_traces&) const;
+   Susy_traces calc_susy_traces(unsigned) const;
 
 @singleBetaFunctionsDecls@
 };

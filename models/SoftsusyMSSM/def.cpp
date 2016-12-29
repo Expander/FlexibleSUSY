@@ -79,10 +79,8 @@ namespace softsusy {
   /// tree-level masses computed with the 2-loop Higgs potential
   bool sphenoMassConv = false;
 
-#ifdef COMPILE_THREE_LOOP_RGE
   /// Controls the use of MSSM three-loop RGEs
   bool USE_THREE_LOOP_RGE = false;
-#endif
   
 #ifdef COMPILE_FULL_SUSY_THRESHOLD 
 

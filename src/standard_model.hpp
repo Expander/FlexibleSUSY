@@ -125,10 +125,6 @@ public:
    void set_ewsb_loop_order(unsigned);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
-   void set_number_of_ewsb_iterations(std::size_t);
-   void set_number_of_mass_iterations(std::size_t);
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
    void set_pole_mass_loop_order(unsigned);
    unsigned get_pole_mass_loop_order() const;
    void set_physical(const Standard_model_physical&);
@@ -456,6 +452,17 @@ public:
    std::complex<double> self_energy_Fu_1_heavy(double p , unsigned gO1, unsigned gO2) const;
    std::complex<double> self_energy_Fu_PR_heavy(double p , unsigned gO1, unsigned gO2) const;
    std::complex<double> self_energy_Fu_PL_heavy(double p , unsigned gO1, unsigned gO2) const;
+
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PL(double p) const;
+
    std::complex<double> tadpole_hh() const;
 
    /// calculates the tadpoles at current loop order
@@ -567,8 +574,6 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   std::size_t number_of_ewsb_iterations;
-   std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
    unsigned pole_mass_loop_order;
    bool force_output;             ///< switch to force output of pole masses
@@ -579,6 +584,8 @@ private:
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
    Physical_input input;
 
+   std::size_t get_number_of_ewsb_iterations() const;
+   std::size_t get_number_of_mass_iterations() const;
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);

@@ -68,6 +68,10 @@ public:
    virtual void run(double, double, double eps = -1.0);
    virtual void run_to(double, double eps = -1.0);
 
+protected:
+   typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
+   void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
+
 private:
    unsigned num_pars;    ///< number of parameters
    unsigned loops;       ///< to what loop order does the RG evolution run
@@ -77,8 +81,6 @@ private:
    double min_tolerance; ///< minimum tolerance allowed
    double zero_threshold;///< threshold for treating values as zero
 
-   void call_rk(double, double, Eigen::ArrayXd&,
-                runge_kutta::Derivs, double eps = -1.0);
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);
 };

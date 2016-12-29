@@ -161,7 +161,7 @@ void RGFlow<Two_scale>::run_sliders()
       s->slide();
    }
 
-   VERBOSE_MSG("> running slides finished");
+   VERBOSE_MSG("> running sliders finished");
 }
 
 /**
@@ -310,10 +310,10 @@ void RGFlow<Two_scale>::run_to(double scale_)
 {
    scale = scale_;
 
-   Two_scale_model* model = get_model();
+   Two_scale_model* model = get_model(scale_);
 
    if (model)
-      model->run_to(scale);
+      model->run_to(scale_);
 }
 
 /* Implementation of sliders */

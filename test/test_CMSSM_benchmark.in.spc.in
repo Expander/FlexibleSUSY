@@ -14,6 +14,7 @@ Block SOFTSUSY               # SOFTSUSY specific inputs
     2   2                    # up-quark mixing (=1) or down (=2)
     5   1                    # 2-loop running
     3   0                    # printout
+   19   0                    # 3-loop running
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
