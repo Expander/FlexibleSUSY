@@ -110,6 +110,8 @@ public:
 @higgsMassGetterPrototypes@
 @mixingMatrixGetters@
 @phasesGetterSetters@
+@extraParameterSetters@
+@extraParameterGetters@
 @massCalculationPrototypes@
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
@@ -175,6 +177,8 @@ private:
 @mixingMatricesDef@
    // phases
 @phasesDefinition@
+   // extra parameters
+@extraParameterDefs@
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@_mass_eigenstates&);

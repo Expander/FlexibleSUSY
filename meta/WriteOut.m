@@ -374,6 +374,7 @@ FindMacro[par_] :=
           IsOutputParameter[par], Global`MODELPARAMETER,
           IsPhase[par]          , Global`MODELPARAMETER,
           IsInputParameter[par] , Global`INPUTPARAMETER,
+          IsExtraParameter[par] , Global`EXTRAPARAMETER,
           True                  , Identity
          ];
 
@@ -383,7 +384,7 @@ WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH
     Module[{allPars, replacements, protectionRules, exprWithoutProtectedSymbols},
            allPars = Flatten[{FSModelParameters, FSInputParameters,
                               FSOutputParameters, FSPhysicalOutputParameters,
-                              FSPhases, FSDerivedParameters} /. FindAllParametersClassified[expr]];
+                              FSPhases, FSDerivedParameters, FSExtraParameters} /. FindAllParametersClassified[expr]];
            replacements = Join[
                RuleDelayed[#     , FindMacro[#][#]   ]& /@ allPars,
                RuleDelayed[#[i__], FindMacro[#][#][i]]& /@ allPars,

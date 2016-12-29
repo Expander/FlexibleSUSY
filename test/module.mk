@@ -299,6 +299,13 @@ TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
 endif
 
+ifeq ($(WITH_VCMSSM) $(WITH_CMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_VCMSSM_ewsb.cpp
+TEST_SH += \
+		$(DIR)/test_VCMSSM_spectrum.sh
+endif
+
 ifeq ($(WITH_HSSUSY),yes)
 TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
@@ -747,6 +754,8 @@ $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBTE
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
