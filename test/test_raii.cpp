@@ -41,3 +41,20 @@ BOOST_AUTO_TEST_CASE( test_make_raii_save )
 
    BOOST_CHECK_EQUAL(m.p, 1.);
 }
+
+BOOST_AUTO_TEST_CASE( test_make_raii_guard )
+{
+   Real_model m(1.);
+
+   BOOST_CHECK_EQUAL(m.p, 1.);
+
+   {
+      const double initial_value = m.p;
+      const auto guard = make_raii_guard(
+         [&m, initial_value](){ m.p = 2. * initial_value; });
+      m.p = 3.;
+      BOOST_CHECK_EQUAL(m.p, 3.);
+   }
+
+   BOOST_CHECK_EQUAL(m.p, 2.);
+}
