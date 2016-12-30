@@ -13,6 +13,7 @@
 #define LOWE_LEGACY_H
 
 #include "lowe.h"
+#include "ew_input.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -27,6 +28,26 @@
 #include <Eigen/Core>
 
 namespace softsusy {
+
+const double MUP = flexiblesusy::Electroweak_constants::MUP; ///< default running quark mass from PDG
+const double MDOWN = flexiblesusy::Electroweak_constants::MDOWN; ///< default running quark mass from PDG
+const double MSTRANGE = flexiblesusy::Electroweak_constants::MSTRANGE; ///< default running quark mass from PDG
+const double MCHARM = flexiblesusy::Electroweak_constants::MCHARM; ///< default running quark mass from PDG
+const double MBOTTOM = flexiblesusy::Electroweak_constants::MBOTTOM; ///< default running quark mass from PDG
+const double MTOP = flexiblesusy::Electroweak_constants::MTOP; ///< default running quark mass from PDG
+/// default pole lepton mass from PDG
+const double MELECTRON = flexiblesusy::Electroweak_constants::MELECTRON;
+const double MMUON = flexiblesusy::Electroweak_constants::MMUON; ///< default pole lepton mass from PDG
+const double MTAU = flexiblesusy::Electroweak_constants::MTAU; ///< default pole lepton mass from PDG
+const double ALPHASMZ = flexiblesusy::Electroweak_constants::alpha3; ///< default running mass from PDG
+const double ALPHAMZ = flexiblesusy::Electroweak_constants::aem; ///< default running alpha(MZ) from PDG
+
+const double PMTOP = flexiblesusy::Electroweak_constants::PMTOP; ///< default pole mass from CDF/D0 Run II 1207.1069
+const double PMBOTTOM = flexiblesusy::Electroweak_constants::PMBOTTOM; ///< default pole mass from PDG
+/// default central values of CKM matrix elements from PDG 2006 in radians
+const double THETA12CKM = flexiblesusy::Electroweak_constants::CKM_THETA12; ///< From Vus/Vud in global CKM fit, PDG
+const double THETA13CKM = flexiblesusy::Electroweak_constants::CKM_THETA13; ///< From Vub in global CKM fit, PDG
+const double THETA23CKM = flexiblesusy::Electroweak_constants::CKM_THETA23; ///< From Vcb/Vtb in global CKM fit, PDG
 
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
 class QedQcd_legacy: public RGE

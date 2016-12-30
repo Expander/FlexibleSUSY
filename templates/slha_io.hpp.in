@@ -46,6 +46,7 @@
 #define LOCALPHYSICAL(p) physical.p
 #define MODEL model
 #define MODELPARAMETER(p) model.get_##p()
+#define EXTRAPARAMETER(p) model.get_##p()
 #define OBSERVABLES observables
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
@@ -257,6 +258,7 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<Model>& model)
 #undef LOCALPHYSICAL
 #undef MODEL
 #undef MODELPARAMETER
+#undef EXTRAPARAMETER
 #undef OBSERVABLES
 #undef LowEnergyConstant
 #undef SCALES

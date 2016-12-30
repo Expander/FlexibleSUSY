@@ -243,11 +243,11 @@ std::vector<std::string> Problems<Number_of_particles, Number_of_parameters>::ge
 
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (running_tachyons[i])
-         strings.push_back(std::string("running tachyon ") + particle_names[i]);
+         strings.push_back("running tachyon " + particle_names[i]);
    }
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (pole_tachyons[i])
-         strings.push_back(std::string("pole tachyon ") + particle_names[i]);
+         strings.push_back("pole tachyon " + particle_names[i]);
    }
    if (failed_ewsb)
       strings.push_back("no ewsb");
@@ -261,19 +261,19 @@ std::vector<std::string> Problems<Number_of_particles, Number_of_parameters>::ge
       strings.push_back("exception thrown(" + exception_msg + ")");
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (failed_pole_mass_convergence[i])
-         strings.push_back(std::string("no M") + particle_names[i] + " pole convergence");
+         strings.push_back("no M" + particle_names[i] + " pole convergence");
    }
 
    for (const auto& par: non_pert_pars) {
       const std::string par_name = get_parameter_name(par.first);
       std::string str("non-perturbative " + par_name);
       if (par.second.threshold > 0) {
-         str += std::string(" [|") + par_name + "|(" +
+         str += " [|" + par_name + "|(" +
                 std::to_string(par.second.scale) + ") = " +
                 std::to_string(par.second.value) +
                 " > " + std::to_string(par.second.threshold) + "]";
       } else {
-         str += std::string(" [") + par_name + "(" +
+         str += " [" + par_name + "(" +
                 std::to_string(par.second.scale) +
                 ") = " + std::to_string(par.second.value) + "]";
       }
@@ -290,7 +290,7 @@ std::vector<std::string> Problems<Number_of_particles, Number_of_parameters>::ge
 
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (bad_masses[i])
-         strings.push_back(std::string("Warning: imprecise M") + particle_names[i]);
+         strings.push_back("Warning: imprecise M" + particle_names[i]);
    }
 
    return strings;

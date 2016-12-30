@@ -112,30 +112,38 @@ QedQcd::QedQcd()
   : a(2)
   , mf(9)
   , input(static_cast<unsigned>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
-  , mbPole(PMBOTTOM)
+  , mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
   , ckm()
   , pmns()
 {
   set_number_of_parameters(11);
-  mf(0) = MUP; mf(1) = MCHARM;
-  mf(3) = MDOWN; mf(4) = MSTRANGE; mf(5) = MBOTTOM;
-  mf(6) = MELECTRON; mf(7) = MMUON; mf(8) = MTAU;
-  a(0) = ALPHAMZ;  a(1) = ALPHASMZ;
-  mf(2) = getRunMtFromMz(PMTOP, ALPHASMZ, flexiblesusy::Electroweak_constants::MZ);
-  input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
-  input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
-  input(MT_pole) = PMTOP;
-  input(mb_mb) = MBOTTOM;
-  input(MTau_pole) = MTAU;
-  input(MMuon_pole) = MMUON;
-  input(MElectron_pole) = MELECTRON;
+  mf(0) = flexiblesusy::Electroweak_constants::MUP;
+  mf(1) = flexiblesusy::Electroweak_constants::MCHARM;
+  mf(2) = getRunMtFromMz(flexiblesusy::Electroweak_constants::PMTOP,
+                         flexiblesusy::Electroweak_constants::alpha3,
+                         flexiblesusy::Electroweak_constants::MZ);
+  mf(3) = flexiblesusy::Electroweak_constants::MDOWN;
+  mf(4) = flexiblesusy::Electroweak_constants::MSTRANGE;
+  mf(5) = flexiblesusy::Electroweak_constants::MBOTTOM;
+  mf(6) = flexiblesusy::Electroweak_constants::MELECTRON;
+  mf(7) = flexiblesusy::Electroweak_constants::MMUON;
+  mf(8) = flexiblesusy::Electroweak_constants::MTAU;
+  a(0) = flexiblesusy::Electroweak_constants::aem;
+  a(1) = flexiblesusy::Electroweak_constants::alpha3;
+  input(alpha_em_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::aem;
+  input(alpha_s_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::alpha3;
+  input(MT_pole) = flexiblesusy::Electroweak_constants::PMTOP;
+  input(mb_mb) = flexiblesusy::Electroweak_constants::MBOTTOM;
+  input(MTau_pole) = flexiblesusy::Electroweak_constants::MTAU;
+  input(MMuon_pole) = flexiblesusy::Electroweak_constants::MMUON;
+  input(MElectron_pole) = flexiblesusy::Electroweak_constants::MELECTRON;
   input(MW_pole) = flexiblesusy::Electroweak_constants::MW;
   input(MZ_pole) = flexiblesusy::Electroweak_constants::MZ;
   input(GFermi) = flexiblesusy::Electroweak_constants::gfermi;
-  input(mc_mc) = MCHARM;
-  input(MU_2GeV) = MUP;
-  input(MD_2GeV) = MDOWN;
-  input(MS_2GeV) = MSTRANGE;
+  input(mc_mc) = flexiblesusy::Electroweak_constants::MCHARM;
+  input(MU_2GeV) = flexiblesusy::Electroweak_constants::MUP;
+  input(MD_2GeV) = flexiblesusy::Electroweak_constants::MDOWN;
+  input(MS_2GeV) = flexiblesusy::Electroweak_constants::MSTRANGE;
   set_scale(flexiblesusy::Electroweak_constants::MZ);
   set_loops(3);
   set_thresholds(1);
@@ -176,7 +184,7 @@ void QedQcd::runto_safe(double scale, double eps)
       run_to(scale, eps);
    } catch (...) {
       throw flexiblesusy::NonPerturbativeRunningQedQcdError(
-         std::string("Non-perturbative running to Q = ")
+         "Non-perturbative running to Q = "
          + flexiblesusy::ToString(scale)
          + " during determination of the SM(5) parameters.");
    }
@@ -319,41 +327,13 @@ void QedQcd::runGauge(double x1, double x2)
   setAlpha(ALPHAS, y(1));
 }
 
-// Done at pole mb: extracts running mb(polemb)
-double QedQcd::extractRunningMb(double alphasMb) {
-  double mbPole = displayPoleMb();
-
-  if (get_scale() != mbPole) {
-    std::ostringstream ii;
-    ii << "QedQcd::extractRunningMb called at scale "
-         << get_scale() << " instead of mbpole\n";
-    throw flexiblesusy::SetupError(ii.str());
-  }
-
-  // Following is the MSbar correction from QCD, hep-ph/9912391 and ZPC48 673
-  // (1990)
-  double delta = 0.;
-  if (get_loops() > 0) delta = delta + 4.0 / 3.0 * alphasMb / M_PI;
-  if (get_loops() > 1)
-    delta = delta + sqr(alphasMb / M_PI) *
-      (10.1667 + (displayMass(mUp) + displayMass(mDown) +
-                  displayMass(mCharm) + displayMass(mStrange)) / mbPole);
-  if (get_loops() > 2)
-    delta = delta + 101.45424 * alphasMb / M_PI * sqr(alphasMb / M_PI);
-
-  double mbmb = mbPole * (1.0 - delta);
-
-  return mbmb;
-}
-
 // Supposed to be done at mb(mb) -- MSbar, calculates pole mass
-double QedQcd::extractPoleMb(double alphasMb) {
-
+double QedQcd::extractPoleMb(double alphasMb)
+{
   if (get_scale() != displayMass(mBottom)) {
-    std::ostringstream ii;
-    ii << "QedQcd::extractPoleMb called at scale " << get_scale() <<
-      " instead of mb(mb)\n";
-    throw flexiblesusy::SetupError(ii.str());
+    throw flexiblesusy::SetupError(
+       "QedQcd::extractPoleMb called at scale "
+       + flexiblesusy::ToString(get_scale()) + " instead of mb(mb)");
   }
 
   // Following is the MSbar correction from QCD, hep-ph/9912391
@@ -365,93 +345,15 @@ double QedQcd::extractPoleMb(double alphasMb) {
   if (get_loops() > 2)
     delta = delta + 94.4182 * alphasMb / M_PI * sqr(alphasMb / M_PI);
 
-  double mbPole = displayMass(mBottom) * (1.0 + delta);
+  const double mbPole = displayMass(mBottom) * (1.0 + delta);
 
   return mbPole;
-}
-
-// Calculates the running mass from the pole mass:
-void QedQcd::calcRunningMb()
-{
-  const double tol = 1.0e-5;
-  // Save initial object
-  const auto saving(get());
-  const double saveMu = get_scale();
-
-  // Set arbitrarily low bottom mass to make sure it's included in the RGEs
-  setMass(mBottom, 0.);
-  run_to(displayPoleMb(), tol);
-  const double mbAtPoleMb = extractRunningMb(displayAlpha(ALPHAS));
-  setMass(mBottom, mbAtPoleMb);
-  // Now, by running down to 1 GeV, you'll be left with mb(mb) since it will
-  // decouple at this scale.
-  run_to(1.0, tol);
-  const double mbmb = displayMass(mBottom);
-
-  // restore initial object
-  set(saving);
-  set_scale(saveMu);
-  setMass(mBottom, mbmb);
-}
-
-// Calculates the pole mass from the running mass, which should be defined at
-// mb
-void QedQcd::calcPoleMb()
-{
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double saveMu = get_scale();
-
-  runGauge(get_scale(), displayMass(mBottom));
-  const double poleMb = extractPoleMb(displayAlpha(ALPHAS));
-  setPoleMb(poleMb);
-
-  // Reset to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
-  set_scale(saveMu);
-}
-
-// Takes QedQcd object created at MZ and spits it out at mt
-void QedQcd::toMt()
-{
-  const double tol = 1.0e-5;
-
-  setMass(mTop, getRunMtFromMz(displayPoleMt(), displayAlpha(ALPHAS), displayPoleMZ()));
-  calcPoleMb();
-
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double mz = displayPoleMZ();
-
-  runGauge(mz, 1.0);
-  // Run whole lot up to pole top mass
-  const double mt = this->displayPoleMt();
-  run(1.0, mz, tol);
-
-  // Reset alphas to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
-  run(mz, mt, tol);
 }
 
 // Takes QedQcd object created at MZ and spits it out at MZ
 void QedQcd::toMz()
 {
-  const double mt = input(MT_pole), as = a(ALPHAS - 1);
-  setMass(mTop, getRunMtFromMz(mt, as, displayPoleMZ()));
-  calcPoleMb();
-
-  const double tol = 1.0e-5;
-  const double alphasMZ = displayAlpha(ALPHAS);
-  const double alphaMZ = displayAlpha(ALPHA);
-  const double mz = displayPoleMZ();
-
-  runGauge(mz, 1.0);
-  run(1.0, mz, tol);
-  // Reset alphas to erase numerical integration errors.
-  setAlpha(ALPHAS, alphasMZ);
-  setAlpha(ALPHA, alphaMZ);
+   to(displayPoleMZ());
 }
 
 /**

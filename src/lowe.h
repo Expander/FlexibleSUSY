@@ -28,36 +28,14 @@
 #ifndef LOWE_H
 #define LOWE_H
 
-#include <array>
-#include <iosfwd>
-#include <fstream>
-#include <sstream>
-#include <cstring>
 #include "betafunction.hpp"
 #include "ckm.hpp"
 #include "pmns.hpp"
+#include <array>
+#include <iosfwd>
 #include <Eigen/Core>
 
 namespace softsusy {
-const double MUP = 2.4e-3; ///< default running quark mass from PDG
-const double MDOWN = 4.75e-3; ///< default running quark mass from PDG
-const double MSTRANGE = 0.104; ///< default running quark mass from PDG
-const double MCHARM = 1.27; ///< default running quark mass from PDG
-const double MBOTTOM = 4.20; ///< default running quark mass from PDG
-const double MTOP = 165.0; ///< default running quark mass from PDG
-/// default pole lepton mass from PDG
-const double MELECTRON = 5.10998902e-4;
-const double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
-const double MTAU = 1.77699; ///< default pole lepton mass from PDG
-const double ALPHASMZ = 0.1184; ///< default running mass from PDG
-const double ALPHAMZ = 1.0 / 127.916; ///< default running alpha(MZ) from PDG
-
-const double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
-const double PMBOTTOM = 4.9; ///< default pole mass from PDG
-/// default central values of CKM matrix elements from PDG 2006 in radians
-const double THETA12CKM = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
-const double THETA13CKM = 0.003960; ///< From Vub in global CKM fit, PDG
-const double THETA23CKM = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
 
 /// used to give order of quark masses stored
 typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
@@ -90,10 +68,20 @@ private:
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
+  double qedBeta() const;   ///< QED beta function
+  double qcdBeta() const;   ///< QCD beta function
+  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
   Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
+  /// Does not run the masses, just gauge couplings from start to end
+  void runGauge(double start, double end);
   Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
+
+  int flavours(double) const;  /// returns number of active flavours
+
+  /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
+  double extractPoleMb(double asMb);
 
 public:
   QedQcd();
@@ -199,26 +187,6 @@ public:
   /// Returns complex PMNS matrix
   Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
 
-  int flavours(double) const;  /// returns number of active flavours
-
-  double qedBeta() const;   ///< QED beta function
-  double qcdBeta() const;   ///< QCD beta function
-  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
-
-  /// Does not run the masses, just gauge couplings from start to end
-  void runGauge(double start, double end);
-  /// calculates pole bottom mass given alpha_s(Mb)^{MSbar} from running b mass
-  double extractPoleMb(double asMb);
-  /// Done at pole mb: extracts running mb(polemb)
-  double extractRunningMb(double asMb);
-  /// calculates running bottom mass given alpha_s(Mb)^{MSbar} from pole m_b
-  void calcRunningMb();
-  /// Calculates the pole mass from the running mass, which should be defined
-  /// at mb
-  void calcPoleMb();
-
-  /// Evolves object to running top mass
-  void toMt();
   /// Evolves object to MZ
   void toMz();
   /// Evolves object to given scale.  This implementation can be called multiple times

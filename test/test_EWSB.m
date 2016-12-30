@@ -340,4 +340,62 @@ TestNonEquality[solution, {{}}];
 TestEquality[Length[solution], 1];
 TestEquality[Length[solution[[1]]], 5];
 
+Print["testing EWSB substitutions ..."];
+
+subEwsbEqs = {
+    \[Mu]^2 + x^2 + x y + z + 5,
+    B[\[Mu]]  - x^2 + x y + z + 5
+};
+
+ewsbSubs = {
+   {\[Mu], Sign[\[Mu]] Sqrt[MuSqr]}
+};
+
+subEwsbOutputParameters = { MuSqr, B[\[Mu]] };
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+
+TestEquality[subFreePhases, {}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
+                                                   B[\[Mu]] -> x^2 - x y - z - 5}]];
+
+ewsbSubs = {
+   {\[Mu], Sign[\[Mu]] Sqrt[MuSqr]},
+   {B[\[Mu]], BMu0}
+};
+
+subEwsbOutputParameters = { MuSqr, BMu0 };
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+
+TestEquality[subFreePhases, {}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
+                                                   BMu0 -> x^2 - x y - z - 5}]];
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+subEwsbEqs = {
+   mHd2 + x,
+   mHu2 + y
+};
+
+ewsbSubs = {
+   {mHd2, m0^2 + m12^2},
+   {mHu2, m0^2 + AzeroSqr}
+};
+
+subEwsbOutputParameters = {m12, AzeroSqr};
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+
+TestEquality[subFreePhases, {Sign[m12]}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {m12 -> Sign[m12] Sqrt[-(m0^2 + x)], AzeroSqr -> -(m0^2 + y)}]];
+
 PrintTestSummary[];

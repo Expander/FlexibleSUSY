@@ -40,6 +40,8 @@ ApplyConstraint[{parameter_, value_}, modelPrefix_String] :=
           Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
           Parameters`IsPhase[parameter],
           Parameters`SetPhase[parameter, value, modelPrefix],
+          Parameters`IsExtraParameter[parameter],
+          Parameters`SetParameter[parameter, value, modelPrefix],
           True,
           Print["Error: ", parameter, " is neither a model nor an input parameter!"];
           ""
@@ -233,7 +235,7 @@ FindFixedParametersFromConstraint[settings_List] :=
 CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_, value_],
              constraintName_String] :=
     Module[{modelParameters, unknownParameters},
-           modelParameters = Parameters`GetModelParameters[];
+           modelParameters = Join[Parameters`GetModelParameters[], Parameters`GetExtraParameters[]];
            If[Head[parameters] =!= List,
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   First parameter must be a list!"];
@@ -273,7 +275,8 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
 
 CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
              constraintName_String] :=
-    Module[{unknownParameters = Complement[parameters, Parameters`GetModelParameters[]]},
+    Module[{unknownParameters = Complement[parameters, Join[Parameters`GetModelParameters[],
+                                                            Parameters`GetExtraParameters[]]]},
            If[unknownParameters =!= {},
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt],
                     "   Unknown parameters: ", unknownParameters];
@@ -470,12 +473,9 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
 CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
-DefineParameter[{parameter_, type_}] :=
-    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
-
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
-           (result = result <> DefineParameter[#])& /@ inputParameters;
+           (result = result <> Parameters`CreateParameterDefinition[#])& /@ inputParameters;
            Return[result];
           ];
 

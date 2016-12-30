@@ -47,12 +47,12 @@ namespace Electroweak_constants {
       const double MDOWN = 4.75e-3; ///< default running quark mass from PDG
       const double MSTRANGE = 0.104; ///< default running quark mass from PDG
       const double MCHARM = 1.27; ///< default running quark mass from PDG
-      const double MBOTTOM = 4.20; ///< default running quark mass from PDG
+      const double MBOTTOM = 4.18; ///< default running quark mass from PDG
       const double MTOP = 165.0; ///< default running quark mass from PDG
       const double MELECTRON = 5.10998902e-4; ///< default pole lepton mass from PDG
       const double MMUON = 1.05658357e-1; ///< default pole lepton mass from PDG
       const double MTAU = 1.77699; ///< default pole lepton mass from PDG
-      const double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
+      const double PMTOP = 173.34; ///< default pole mass from CDF/D0 Run II 1207.1069
       const double PMBOTTOM = 4.9; ///< default pole mass from PDG
       const double aem = 1.0 / 127.94; // at MZ
       const double sinThetaW2 = 0.23122;
