@@ -221,7 +221,7 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
 
 void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_couplings_gmu()
 {
-   assert(qedqcd.displayMu() == get_scale() && "Error: low-energy data"
+   assert(qedqcd.get_scale() == get_scale() && "Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
           " constraint.  You need to run the low-energy data set to this"
           " scale!");
