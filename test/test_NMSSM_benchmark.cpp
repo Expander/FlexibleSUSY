@@ -21,7 +21,7 @@ struct Data {
 
 bool is_valid_spectrum(const std::string& slha_file)
 {
-   std::ifstream ifs(slha_file.c_str());
+   std::ifstream ifs(slha_file);
    SLHAea::Coll coll(ifs);
 
    // find SPINFO block
@@ -41,7 +41,7 @@ bool is_valid_spectrum(const std::string& slha_file)
    return true;
 }
 
-int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
+void run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
 {
    int status;
    flexiblesusy::Stopwatch stopwatch;
@@ -55,15 +55,14 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
    stopwatch.stop();
 
    fs_data.time = stopwatch.get_time_in_seconds();
+   fs_data.sum_of_times += fs_data.time;
    fs_data.error = status;
 
    if (!fs_data.error) {
       // look for errors in the SLHA output file
       fs_data.error = !is_valid_spectrum(slha_output_file);
-      if (!fs_data.error) {
+      if (!fs_data.error)
          fs_data.number_of_valid_points++;
-         fs_data.sum_of_times += fs_data.time;
-      }
    }
 
    stopwatch.start();
@@ -72,18 +71,15 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
    stopwatch.stop();
 
    ss_data.time = stopwatch.get_time_in_seconds();
+   ss_data.sum_of_times += ss_data.time;
    ss_data.error = status;
 
    if (!ss_data.error) {
       // look for errors in the SLHA output file
       ss_data.error = !is_valid_spectrum(slha_output_file);
-      if (!ss_data.error) {
+      if (!ss_data.error)
          ss_data.number_of_valid_points++;
-         ss_data.sum_of_times += ss_data.time;
-      }
    }
-
-   return 0;
 }
 
 SLHAea::Coll create_point(double tanBeta)

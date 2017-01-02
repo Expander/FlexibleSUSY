@@ -18,9 +18,11 @@ using namespace Eigen;
 
 namespace runge_kutta {
 
+namespace {
 /// Returns |a| with sign of b in front
 double sign(double a, double b)
 { return b >= 0 ? fabs(a) : -fabs(a); }
+} // anonymous namespace
 
 void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
                    double h1, double hmin, Derivs derivs,
@@ -145,4 +147,4 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
 
 } // namespace runge_kutta
 
-}
+} // namespace flexiblesusy

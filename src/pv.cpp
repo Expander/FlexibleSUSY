@@ -51,52 +51,52 @@ struct Initialize_looptools {
 
 }
 
-complex<double> A0(double m2, double scl2)
+complex<double> A0(double m2, double scl2) noexcept
 {
     setmudim(scl2);
     return ::A0(m2);
 }
 
-complex<double> B0(double p2, double m2a, double m2b, double scl2)
+complex<double> B0(double p2, double m2a, double m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B0(p2, m2a, m2b);
 }
 
-complex<double> B1(double p2, double m2a, double m2b, double scl2)
+complex<double> B1(double p2, double m2a, double m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B1(p2, m2a, m2b);
 }
 
-complex<double> B00(double p2, double m2a, double m2b, double scl2)
+complex<double> B00(double p2, double m2a, double m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B00(p2, m2a, m2b);
 }
 
-complex<double> A0(complex<double> m2, double scl2)
+complex<double> A0(complex<double> m2, double scl2) noexcept
 {
     setmudim(scl2);
     return ::A0C(m2);
 }
 
 complex<double> B0
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B0C(p2, m2a, m2b);
 }
 
 complex<double> B1
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B1C(p2, m2a, m2b);
 }
 
 complex<double> B00
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     setmudim(scl2);
     return ::B00C(p2, m2a, m2b);
@@ -122,12 +122,12 @@ struct Initialize_looptools {
     }
 } initialize_looptools;
 
-template<class T> T sqr(T x) { return x*x; }
-template<class T> T sign(T a, T b) { return b >= 0 ? abs(a) : - abs(a); }
+template<class T> T sqr(T x) noexcept { return x*x; }
+template<class T> T sign(T a, T b) noexcept { return b >= 0 ? abs(a) : - abs(a); }
 
 namespace FF {
 
-complex<double> A0(double m2, double scl2)
+complex<double> A0(double m2, double scl2) noexcept
 {
     complex<double> ca0;
     int ier;
@@ -135,7 +135,7 @@ complex<double> A0(double m2, double scl2)
     return ca0;
 }
 
-complex<double> B0(double p2, double m2a, double m2b, double scl2)
+complex<double> B0(double p2, double m2a, double m2b, double scl2) noexcept
 {
     complex<double> cb0;
     int ier;
@@ -143,7 +143,7 @@ complex<double> B0(double p2, double m2a, double m2b, double scl2)
     return cb0;
 }
 
-complex<double> B1(double p2, double m2a, double m2b, double scl2)
+complex<double> B1(double p2, double m2a, double m2b, double scl2) noexcept
 {
     complex<double> cb1;
     int ier;
@@ -155,7 +155,7 @@ complex<double> B1(double p2, double m2a, double m2b, double scl2)
     return cb1;
 }
 
-complex<double> B00(double p2, double m2a, double m2b, double scl2)
+complex<double> B00(double p2, double m2a, double m2b, double scl2) noexcept
 {
     complex<double> cb2i[2];
     int ier;
@@ -169,7 +169,7 @@ complex<double> B00(double p2, double m2a, double m2b, double scl2)
 }
 
 complex<double> A0
-(complex<double> m2, double scl2)
+(complex<double> m2, double scl2) noexcept
 {
     complex<double> ca0;
     int ier;
@@ -178,7 +178,7 @@ complex<double> A0
 }
 
 complex<double> B0
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     complex<double> cb0;
     int ier;
@@ -187,7 +187,7 @@ complex<double> B0
 }
 
 complex<double> B1
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     complex<double> cb1;
     int ier;
@@ -200,7 +200,7 @@ complex<double> B1
 }
 
 complex<double> B00
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     complex<double> cb2i[2];
     int ier;
@@ -218,24 +218,24 @@ complex<double> B00
 namespace AD {
 
 complex<double> fpv
-(const int& n, const std::complex<double>& x, const std::complex<double>& y)
+(const int& n, const std::complex<double>& x, const std::complex<double>& y) noexcept
 {
     complex<double> res; sub_fpv_(res, n, x, y); return res;
 }
 
 complex<double> yfpv
-(const int& n, const std::complex<double>& x, const std::complex<double>& y)
+(const int& n, const std::complex<double>& x, const std::complex<double>& y) noexcept
 {
     complex<double> res; sub_yfpv_(res, n, x, y); return res;
 }
 
 complex<double> fth
-(const int& n, const std::complex<double>& x, const std::complex<double>& y)
+(const int& n, const std::complex<double>& x, const std::complex<double>& y) noexcept
 {
     complex<double> res; sub_fth_(res, n, x, y); return res;
 }
 
-complex<double> xlogx(complex<double> x)
+complex<double> xlogx(complex<double> x) noexcept
 {
     return abs(x) == 0 ? 0.0 : x*log(x);
 }
@@ -247,7 +247,7 @@ enum BFuncType { b0, b1, b00 };
 // translated to C++ for inclusion in FlexibleSUSY
 
 template<BFuncType ft>
-complex<double> B(double p2, double m2a, double m2b, double scl2)
+complex<double> B(double p2, double m2a, double m2b, double scl2) noexcept
 {
     const double mudim = scl2;
     const double delta = 0;
@@ -377,14 +377,14 @@ complex<double> B(double p2, double m2a, double m2b, double scl2)
 
 } // namespace
 
-complex<double> A0(double m2, double scl2)
+complex<double> A0(double m2, double scl2) noexcept
 {
     return FF::A0(m2, scl2);
 }
 
 // LoopTools evaluates B functions (by default) using Ansgar Denner's
 // implementation since version 2.8
-complex<double> B0(double p2, double m2a, double m2b, double scl2)
+complex<double> B0(double p2, double m2a, double m2b, double scl2) noexcept
 {
     // see src/B/Bcoeff.F in LoopTools
     if (fabs(p2) + fabs(m2a) + fabs(m2b) < eps) return 0.0;
@@ -393,7 +393,7 @@ complex<double> B0(double p2, double m2a, double m2b, double scl2)
     // return FF::B0(p2, m2a, m2b, scl2);
 }
 
-complex<double> B1(double p2, double m2a, double m2b, double scl2)
+complex<double> B1(double p2, double m2a, double m2b, double scl2) noexcept
 {
     // see src/B/Bcoeff.F in LoopTools
     if (fabs(p2) + fabs(m2a) + fabs(m2b) < eps) return 0.0;
@@ -402,7 +402,7 @@ complex<double> B1(double p2, double m2a, double m2b, double scl2)
     // return FF::B1(p2, m2a, m2b, scl2);
 }
 
-complex<double> B00(double p2, double m2a, double m2b, double scl2)
+complex<double> B00(double p2, double m2a, double m2b, double scl2) noexcept
 {
     // see src/B/Bcoeff.F in LoopTools
     if (fabs(p2) + fabs(m2a) + fabs(m2b) < eps) return 0.0;
@@ -412,32 +412,32 @@ complex<double> B00(double p2, double m2a, double m2b, double scl2)
 }
 
 complex<double> A0
-(complex<double> m2, double scl2)
+(complex<double> m2, double scl2) noexcept
 {
     return FF::A0(m2, scl2);
 }
 
 complex<double> B0
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     return FF::B0(p2, m2a, m2b, scl2);
 }
 
 complex<double> B1
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     return FF::B1(p2, m2a, m2b, scl2);
 }
 
 complex<double> B00
-(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2)
+(complex<double> p2, complex<double> m2a, complex<double> m2b, double scl2) noexcept
 {
     return FF::B00(p2, m2a, m2b, scl2);
 }
 
 #endif // defined(ENABLE_FFLITE)
 
-double ReA0(double m2, double scl2)
+double ReA0(double m2, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return A0(m2, scl2).real();
@@ -446,7 +446,7 @@ double ReA0(double m2, double scl2)
 #endif
 }
 
-double ReB0(double p2, double m2a, double m2b, double scl2)
+double ReB0(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B0(p2, m2a, m2b, scl2).real();
@@ -455,7 +455,7 @@ double ReB0(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReB1(double p2, double m2a, double m2b, double scl2)
+double ReB1(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B1(p2, m2a, m2b, scl2).real();
@@ -464,7 +464,7 @@ double ReB1(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReB00(double p2, double m2a, double m2b, double scl2)
+double ReB00(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B00(p2, m2a, m2b, scl2).real();
@@ -473,7 +473,7 @@ double ReB00(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReB22(double p2, double m2a, double m2b, double scl2)
+double ReB22(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return B22(p2, m2a, m2b, scl2).real();
@@ -482,7 +482,7 @@ double ReB22(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReH0(double p2, double m2a, double m2b, double scl2)
+double ReH0(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return H0(p2, m2a, m2b, scl2).real();
@@ -491,7 +491,7 @@ double ReH0(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReF0(double p2, double m2a, double m2b, double scl2)
+double ReF0(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return F0(p2, m2a, m2b, scl2).real();
@@ -501,7 +501,7 @@ double ReF0(double p2, double m2a, double m2b, double scl2)
 #endif
 }
 
-double ReG0(double p2, double m2a, double m2b, double scl2)
+double ReG0(double p2, double m2a, double m2b, double scl2) noexcept
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
     return G0(p2, m2a, m2b, scl2).real();

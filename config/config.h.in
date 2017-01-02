@@ -1,6 +1,9 @@
 /* DO NOT EDIT! GENERATED AUTOMATICALLY! */
 /* generated at @DATE@ */
 
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #define PKGNAME "@PKGNAME@"
 
 #define FLEXIBLESUSY_VERSION  "@FLEXIBLESUSY_VERSION@"
@@ -59,6 +62,15 @@
 /* Enable fflite */
 @DEFINE_ENABLE_FFLITE@
 
+/* Enable LAPACK */
+@DEFINE_ENABLE_LAPACK@
+
+/* Enable LibraryLink */
+@DEFINE_ENABLE_LIBRARYLINK@
+
+/* Enable MKL ILP64 workaround */
+@DEFINE_ENABLE_ILP64MKL_WORKAROUND@
+
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
@@ -76,3 +88,5 @@
 
 /* Enable statements for addons */
 @DEFINE_ENABLE_ADDONS@
+
+#endif

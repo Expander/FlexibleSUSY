@@ -10,6 +10,9 @@ CallAllPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
 CallCalculateDRbarMass::usage="";
+CallPoleMassFunction::usage="";
+CallThreadedPoleMassFunction::usage="";
+JoinLoopMassFunctionThread::usage="";
 CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
@@ -54,30 +57,43 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
+AddMtPoleQCDCorrections[1, expr_] := "\
+double qcd_1l = 0.;
+
+{
+   const double currentScale = get_scale();
+   qcd_1l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
+AddMtPoleQCDCorrections[2, expr_] := "\
+double qcd_2l = 0.;
+
+if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+   const double currentScale = get_scale();
+   qcd_2l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
+AddMtPoleQCDCorrections[3, expr_] := "\
+double qcd_3l = 0.;
+
+if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
+   const double currentScale = get_scale();
+   qcd_3l = " <> CConversion`RValueToCFormString[expr] <> ";
+}
+";
+
 Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
     "double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     If[FlexibleSUSY`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
-       "\
-if (pole_mass_loop_order > 1) {
-" <> IndentText["\
-double two_loop[1] = { 0. };
-self_energy_" <> particleName <> "_2loop(two_loop);
-self_energy += two_loop[0];
-"] <> "}
-"
-       , ""] <>
+       "if (pole_mass_loop_order > 1)\n" <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_2loop();\n"], ""] <>
     If[FlexibleSUSY`UseHiggs3LoopSplit === True && particle === SARAH`HiggsBoson,
-       "\
-if (pole_mass_loop_order > 2) {
-" <> IndentText["\
-double three_loop[1] = { 0. };
-self_energy_" <> particleName <> "_3loop(three_loop);
-self_energy += three_loop[0];
-"] <> "}
-"
-       , ""] <>
+       "if (pole_mass_loop_order > 2)\n" <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_3loop();\n"], ""] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(mass_sqr);\n";
@@ -97,7 +113,7 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
               _String, _String, _String, momentum_String, type_] :=
     Module[{massName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
-            qcdOneLoop, qcdTwoLoop
+            qcdOneLoop, qcdTwoLoop, qcdThreeLoop
            },
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
@@ -105,25 +121,20 @@ Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
            topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
            qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
            qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
-"\
-const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
-const double currentScale = get_scale();
-
-const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop] <> ";
-
-double qcd_2l = 0.;
-
-if (add_2loop_corrections) {
-   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop] <> ";
-}
-
+           qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
+                             Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
+                                          Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                             0];
+           AddMtPoleQCDCorrections[1, qcdOneLoop] <> "\n" <>
+           AddMtPoleQCDCorrections[2, qcdTwoLoop] <> "\n" <>
+           AddMtPoleQCDCorrections[3, qcdThreeLoop] <> "
 const double p = " <> momentum <> ";
 const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[topSelfEnergyFunctionS  <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p)",type] <> ";
 const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p)",type] <> ";
 const auto M_loop = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
- - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n
+ - " <> massMatrixName <> " * (qcd_1l + qcd_2l + qcd_3l);\n
 PHYSICAL(" <> massName <> ") = calculate_singlet_mass(M_loop);\n"
           ];
 
@@ -172,7 +183,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <>
                                              massNameReordered <> "(i2));\n" <>
                                              "self_energy(i1,i2) = " <> CastIfReal[
                                              selfEnergyFunction <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
@@ -243,7 +254,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        selfEnergyMatrixCType <> " self_energy_PR;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <>
                                              massNameReordered <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = " <> CastIfReal[
                                              selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
@@ -390,25 +401,19 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                     numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
                     numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
-                    addTwoLoopHiggsContributions = "";
-                    For[k = 0; n = 0, k < dim, k++,
-                        For[l = k, l < dim, l++; n++,
-                            addTwoLoopHiggsContributions = addTwoLoopHiggsContributions <>
-                               "self_energy(" <> ToString[k] <> ", " <>
-                               ToString[l] <> ") += two_loop[" <> ToString[n] <> "];\n";
-                           ];
-                       ];
-                    addTwoLoopHiggsContributions = "\n" <> addTwoLoopHiggsContributions;
+                    addTwoLoopHiggsContributions = "\nself_energy += self_energy_2l;\n";
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
-double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
+" <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
 if (pole_mass_loop_order > 1) {
 " <> IndentText["\
-self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
-for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
-   if (!std::isfinite(two_loop[i])) {
-      two_loop[i] = 0.;
-      problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
+for (unsigned i = 0; i < " <> dimStr <> "; i++) {
+   for (unsigned k = 0; k < " <> dimStr <> "; k++) {
+      if (!std::isfinite(self_energy_2l(i,k))) {
+         self_energy_2l(i,k) = 0.;
+         problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+      }
    }
 }
 "] <> "}
@@ -456,7 +461,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
             eigenArrayType, mixingMatrixType, particleName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
             topTwoLoop = False, thirdGenMass, qcdCorrections = "",
-            qcdOneLoop, qcdTwoLoop
+            qcdOneLoop, qcdTwoLoop, qcdThreeLoop
            },
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -482,19 +487,14 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
-              qcdCorrections = "\
-const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
-const double currentScale = get_scale();
-
-const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
-
-double qcd_2l = 0.;
-
-if (add_2loop_corrections) {
-   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
-}
-
-";
+              qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
+                                (* contribution to self-energy => neg. sign *)
+                                Simplify @ N[-ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
+                                             Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                                0];
+              qcdCorrections = AddMtPoleQCDCorrections[1, qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
+                               AddMtPoleQCDCorrections[2, qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
+                               AddMtPoleQCDCorrections[3, qcdThreeLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n";
              ];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
@@ -532,7 +532,7 @@ if (add_2loop_corrections) {
                                   If[topTwoLoop,
                                      selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>
-                                     "delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l);\n"
+                                     "delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l + qcd_3l);\n"
                                      ,
                                      "const " <> selfEnergyMatrixCType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n"
@@ -638,6 +638,7 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
 DoMediumDiagonalization[particle_Symbol, inputMomentum_:"", _] :=
     "ERROR(\"medium diagonalization of " <> ToString[particle] <> " not implemented\");\n";
 
+
 (* ********** high precision diagonalization routines ********** *)
 
 DoSlowDiagonalization[particle_Symbol, tadpole_] :=
@@ -673,6 +674,7 @@ else
            Return[result];
           ];
 
+
 DoDiagonalization[particle_Symbol, FlexibleSUSY`LowPrecision, tadpole_] :=
     "// diagonalization with low precision\n" <> DoFastDiagonalization[particle, tadpole];
 
@@ -685,8 +687,8 @@ DoDiagonalization[particle_Symbol, FlexibleSUSY`HighPrecision, tadpole_] :=
 CreateLoopMassFunctionName[particle_Symbol] :=
     "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole";
 
-CallPoleMassFunction[particle_Symbol] :=
-    CreateLoopMassFunctionName[particle] <> "();\n";
+CallPoleMassFunction[particle_Symbol, obj_:""] :=
+    obj <> CreateLoopMassFunctionName[particle] <> "();\n";
 
 CreateLoopMassPrototype[particle_Symbol] :=
     "void " <> CreateLoopMassFunctionName[particle] <> "();\n";
@@ -790,42 +792,52 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallThreadedPoleMassFunction[particle_Symbol] :=
+CallThreadedPoleMassFunction[particle_Symbol, ptr_:"this"] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::" <>
-           CreateLoopMassFunctionName[particle] <> "));\n"
+           "fut_" <> massStr <> " = run_async([obj_ptr] () { obj_ptr->" <>
+           CreateLoopMassFunctionName[particle] <> "(); });\n"
           ];
 
+DefineFuture[particle_Symbol] :=
+    "std::future<void> fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ";\n";
+
 JoinLoopMassFunctionThread[particle_Symbol] :=
-    "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
+    Module[{name = "fut_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]]},
+           "if (" <> name <> ".valid()) " <> name <> ".get();\n"
+          ];
 
 CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
-    Module[{particles, susyParticles, smParticles, callSusy = "",
-            callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
+    Module[{particles, susyParticles, smParticles, callSusy,
+            callSM, result, joinSmThreads, joinSusyThreads},
            particles = GetLoopCorrectedParticles[states];
            smParticles = Select[particles, SARAH`SMQ[#]&];
            susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
-              (callSusy = callSusy <> CallPoleMassFunction[#])& /@ susyParticles;
-              (callSM   = callSM   <> CallPoleMassFunction[#])& /@ smParticles;
-              result = callSusy <> "\n" <>
+              callSusy = StringJoin[CallPoleMassFunction /@ susyParticles];
+              callSM   = StringJoin[CallPoleMassFunction /@ smParticles];
+              result = "if (calculate_bsm_pole_masses) {\n" <>
+                       IndentText[callSusy] <>
+                       "}\n\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
                        "}\n";
               ,
-              (callSusy = callSusy <> CallThreadedPoleMassFunction[#])& /@ susyParticles;
-              (callSM   = callSM   <> CallThreadedPoleMassFunction[#])& /@ smParticles;
-              (joinSmThreads   = joinSmThreads   <> JoinLoopMassFunctionThread[#])& /@ smParticles;
-              (joinSusyThreads = joinSusyThreads <> JoinLoopMassFunctionThread[#])& /@ susyParticles;
-              result = callSusy <> "\n" <>
+              callSusy = StringJoin[CallThreadedPoleMassFunction /@ susyParticles];
+              callSM   = StringJoin[CallThreadedPoleMassFunction /@ smParticles];
+              joinSmThreads   = StringJoin[JoinLoopMassFunctionThread /@ smParticles];
+              joinSusyThreads = StringJoin[JoinLoopMassFunctionThread /@ susyParticles];
+              result = StringJoin[DefineFuture /@ particles] <> "\n" <>
+                       "if (calculate_bsm_pole_masses) {\n" <>
+                       IndentText[callSusy] <>
+                       "}\n\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
-                       IndentText[joinSmThreads] <>
                        "}\n\n" <>
-                       joinSusyThreads;
+                       joinSusyThreads <>
+                       joinSmThreads;
              ];
-           Return[result];
+           result
           ];
 
 GetRunningOneLoopDRbarParticles[] :=

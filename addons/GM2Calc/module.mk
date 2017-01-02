@@ -1,5 +1,6 @@
 DIR          := addons/GM2Calc
 MODNAME      := GM2Calc
+WITH_$(MODNAME) := yes
 
 LIBGM2Calc_MK  := $(DIR)/module.mk
 
@@ -20,8 +21,7 @@ LIBGM2Calc_SRC := \
 
 # main()
 EXEGM2Calc_SRC := \
-		$(DIR)/gm2calc.cpp \
-		$(DIR)/gm2scan.cpp
+		$(DIR)/gm2calc.cpp
 
 # header files
 LIBGM2Calc_HDR := \
@@ -64,7 +64,7 @@ EXEGM2Calc_EXE := \
 		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXEGM2Calc_SRC)))
 
 LIBGM2Calc     := \
-		$(DIR)/lib$(MODNAME)$(LIBEXT)
+		$(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIBGM2Calc_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -108,7 +108,7 @@ endif
 $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIBGM2Calc): $(LIBGM2Calc_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^)

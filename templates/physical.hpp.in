@@ -21,11 +21,9 @@
 #ifndef @ModelName@_PHYSICAL_H
 #define @ModelName@_PHYSICAL_H
 
-#include "linalg2.hpp"
 #include <Eigen/Core>
 
 #include <iosfwd>
-#include <string>
 
 namespace flexiblesusy {
 

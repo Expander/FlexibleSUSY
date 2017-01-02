@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 
    try {
       qedqcd.to(qedqcd.displayPoleMZ()); // run SM fermion masses to MZ
-   } catch (const std::string& s) {
-      ERROR(s);
+   } catch (const Error& e) {
+      ERROR(e.what());
       return EXIT_FAILURE;
    }
 
@@ -95,9 +95,8 @@ int main(int argc, char* argv[])
         << std::setw(12) << std::left << "error"
         << '\n';
 
-   for (std::vector<double>::const_iterator it = range.begin(),
-           end = range.end(); it != end; ++it) {
-@setInputParameterTo[1,*it]@
+   for (const auto p: range) {
+@setInputParameterTo[1,p]@
 
       spectrum_generator.run(qedqcd, input);
 
@@ -109,7 +108,7 @@ int main(int argc, char* argv[])
       const bool error = problems.have_problem();
 
       cout << "  "
-           << std::setw(12) << std::left << *it << ' '
+           << std::setw(12) << std::left << p << ' '
            << std::setw(12) << std::left << higgs << ' '
            << std::setw(12) << std::left << error;
       if (error) {

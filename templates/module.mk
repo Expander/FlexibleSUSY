@@ -14,6 +14,8 @@ TEMPLATES    := \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/input_parameters.cpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
+		$(DIR)/librarylink.cpp.in \
+		$(DIR)/librarylink.m.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model_slha.hpp.in \
 		$(DIR)/observables.hpp.in \
@@ -21,6 +23,7 @@ TEMPLATES    := \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
+		$(DIR)/run.m.in \
 		$(DIR)/run_cmd_line.cpp.in \
 		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
@@ -28,6 +31,12 @@ TEMPLATES    := \
 		$(DIR)/susy_scale_constraint.hpp.in \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
+		$(DIR)/standard_model_matching.hpp.in \
+		$(DIR)/standard_model_matching.cpp.in \
+		$(DIR)/standard_model_two_scale_initial_guesser.cpp.in \
+		$(DIR)/standard_model_two_scale_initial_guesser.hpp.in \
+		$(DIR)/standard_model_two_scale_initial_guesser_low_scale_model.cpp.in \
+		$(DIR)/standard_model_two_scale_initial_guesser_low_scale_model.hpp.in \
 		$(DIR)/spectrum_generator_interface.hpp.in \
 		$(DIR)/high_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
@@ -41,6 +50,10 @@ TEMPLATES    := \
 		$(DIR)/two_scale_initial_guesser_low_scale_model.cpp.in \
 		$(DIR)/two_scale_low_scale_constraint.hpp.in \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
+		$(DIR)/standard_model_two_scale_matching.hpp.in \
+		$(DIR)/standard_model_two_scale_matching.cpp.in \
+		$(DIR)/standard_model_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/standard_model_low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
 		$(DIR)/two_scale_model_slha.hpp.in \

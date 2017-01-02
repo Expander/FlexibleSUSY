@@ -34,10 +34,10 @@ struct Two_loop_corrections {
       , higgs_ab_as(true)
       , higgs_at_at(true)
       , higgs_atau_atau(true)
-      , top_qcd(true)
+      , top_qcd(1)
       {}
    bool higgs_at_as, higgs_ab_as, higgs_at_at, higgs_atau_atau;
-   bool top_qcd;
+   unsigned top_qcd; ///< top pole mass QCD corrections
 };
 
 } // namespace flexiblesusy

@@ -18,13 +18,17 @@ Block FlexibleSUSY
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   0                    # Higgs 2-loop corrections O(alpha_tau^2)
    12   0                    # force output
-   13   1                    # Top quark 2-loop corrections QCD
+   13   1                    # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
    14   1.000000000e-11      # beta-function zero threshold
    15   0                    # calculate observables (a_muon, ...)
    16   0                    # force positive majorana masses
    17   0                    # pole mass renormalization scale (0 = SUSY scale)
-   17   0                    # calculate parametric uncertainties
-   17   1                    # calculate parametric uncertainties
+   18   0                    # pole mass renormalization scale in the EFT (0 = min(SUSY scale, Mt))
+   19   0                    # EFT matching scale (0 = SUSY scale)
+   20   2                    # EFT loop order for upwards matching
+   21   1                    # EFT loop order for downwards matching
+   22   0                    # EFT index of SM-like Higgs in the BSM model
+   23   1                    # calculate BSM pole masses
 Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole

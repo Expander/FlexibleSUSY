@@ -35,8 +35,7 @@ namespace flexiblesusy {
 template <unsigned Number_of_particles>
 class Problems {
 public:
-   Problems(const char**);
-   ~Problems() {}
+   explicit Problems(const char**);
 
    void flag_bad_mass(unsigned, bool flag = true);
    void flag_tachyon(unsigned, bool flag = true);
@@ -301,16 +300,14 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
          ostr << "no M" << particle_names[i] << " pole convergence, ";
    }
 
-   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
-           it = non_pert_pars.begin(), end = non_pert_pars.end();
-        it != end; ++it) {
-      ostr << "non-perturbative " << it->first;
-      if (it->second.threshold > 0) {
-         ostr << " [|" << it->first << "|(" << it->second.scale << ") = "
-              << it->second.value << " > " << it->second.threshold << "], ";
+   for (const auto& par: non_pert_pars) {
+      ostr << "non-perturbative " << par.first;
+      if (par.second.threshold > 0) {
+         ostr << " [|" << par.first << "|(" << par.second.scale << ") = "
+              << par.second.value << " > " << par.second.threshold << "], ";
       } else {
-         ostr << " [" << it->first << "(" << it->second.scale << ") = "
-              << it->second.value << "], ";
+         ostr << " [" << par.first << "(" << par.second.scale << ") = "
+              << par.second.value << "], ";
       }
    }
 }

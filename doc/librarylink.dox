@@ -1,0 +1,530 @@
+/**
+\page librarylink Mathematica interface
+\tableofcontents
+
+\section flexiblesusy_mathematica_interface FlexibleSUSY's Mathematica interface
+
+The FlexibleSUSY-generated spectrum generators can be called from
+within Mathematica using Wolfram's LibraryLink interface.
+
+\subsection math_interface_quick_start Quick start for the CMSSM
+
+The following example calculates the pole mass spectrum and the
+observables in the CMSSM for a given parameter point:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+
+(* Create a handle to a model given the input parameters.
+   See Options[FSCMSSMOpenHandle] for all default options. *)
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsModelParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+
+(* calculate pole mass spectrum *)
+FSCMSSMCalculateSpectrum[handle]
+
+(* calculate further observables *)
+FSCMSSMCalculateObservables[handle]
+
+(* close the model handle *)
+FSCMSSMCloseHandle[handle];
+~~~~~~~~~~~~~~~~~~~~
+
+@note For each model, FlexibleSUSY creates an example Mathematica
+script which illustrates the use of the Mathematica interface.  The
+generated example can be found in `models/<model>/run_<model>.m`,
+which can be run for example as
+
+    math -run "<< \"models/<model>/run_<model>.m\""
+.
+Before running the example Mathematica script, the model parameters in
+the script should be set to reasonable values.
+
+In the following more advanced example the Higgs pole mass is
+calculated in the HSSUSY model (an EFT calculation of the SM-like Higgs
+mass, assuming that the high-energy completion is the MSSM) as a
+function of \f$X_t / M_S\f$ for \f$\tan\beta = 5\f$ and different
+values of the SUSY scale.  The example also illustrates how
+parallelization can be used to exploit the performance of multi-core
+systems.
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/HSSUSY/HSSUSY_librarylink.m"];
+
+CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
+    handle = FSHSSUSYOpenHandle[
+        fsSettings -> {
+            precisionGoal -> 1.*^-5,
+            calculateStandardModelMasses -> 1,
+            poleMassLoopOrder -> 2,
+            ewsbLoopOrder -> 2,
+            betaFunctionLoopOrder -> 3,
+            thresholdCorrectionsLoopOrder -> 2,
+            poleMassScale -> 173.34,
+            parameterOutputScale -> 173.34
+        },
+        fsModelParameters -> {
+            TanBeta -> TB,
+            LambdaLoopOrder -> 2,
+            MEWSB -> 173.34,
+            MSUSY -> MS,
+            M1Input -> MS,
+            M2Input -> MS,
+            M3Input -> MS,
+            MuInput -> MS,
+            mAInput -> MS,
+            AtInput -> (Xtt + 1/TB) * MS,
+            msq2 -> MS^2 IdentityMatrix[3],
+            msu2 -> MS^2 IdentityMatrix[3],
+            msd2 -> MS^2 IdentityMatrix[3],
+            msl2 -> MS^2 IdentityMatrix[3],
+            mse2 -> MS^2 IdentityMatrix[3]
+        }
+    ];
+    spec = FSHSSUSYCalculateSpectrum[handle];
+    FSHSSUSYCloseHandle[handle];
+    If[spec =!= $Failed, Pole[M[hh]] /. spec, 0]
+];
+
+LaunchKernels[];
+DistributeDefinitions[CalcMh];
+
+data = {
+    ParallelMap[{#, CalcMh[5, #, 1000 ]}&, Range[-3.5, 3.5, 0.1]],
+    ParallelMap[{#, CalcMh[5, #, 2000 ]}&, Range[-3.5, 3.5, 0.1]],
+    ParallelMap[{#, CalcMh[5, #, 10000]}&, Range[-3.5, 3.5, 0.1]]
+};
+
+plot = ListPlot[data,
+                PlotLegends -> {"MS = 1 TeV", "MS = 2 TeV", "MS = 10 TeV"},
+                Axes -> False, Frame -> True,
+                FrameLabel -> {"Xt / MS", "Mh / GeV"}];
+
+Export["Mh_Xt.png", plot, ImageSize -> 1000];
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+\image html Mh_Xt.png
+
+\subsection math_interface_defs Using the Mathematica interface functions
+
+\subsubsection math_interface_build Building the LibraryLink library
+
+In order to build the LibraryLink library, FlexibleSUSY must be
+configured with `--enable-meta` (enabled by default).
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+./configure --with-models=CMSSM
+make
+~~~~~~~~~~~~~~~~~~~~
+
+The LibraryLink library can be found in
+`models/<model>/<model>_librarylink.so`, where `<model>` is the model
+name.  In order to use FlexibleSUSY's generated `<model>` spectrum
+generator at the Mathematica level, the library functions must be
+loaded using the `models/<model>/<model>_librarylink.m` script.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+~~~~~~~~~~~~~~~~~~~~
+
+\subsubsection FS_model_OpenHandle FS<model>OpenHandle
+
+First, a handle to the model must be created using the
+`FS<model>OpenHandle[]` function.  The function takes as arguments
+
+- the spectrum generator settings via the `fsSettings` variable
+- the Standard Model input parameters via the `fsSMParameters` variable
+- the model input parameters via the `fsModelParameters` variable
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsModelParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+FSCMSSMGetSettings[handle]
+FSCMSSMGetSMInputParameters[handle]
+FSCMSSMGetInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+The `FS<model>OpenHandle[]` fixes all settings and input parameters at
+once.  Unspecified parameters are set to their default values.  The
+default values are stored in the variables `fsDefaultSettings`,
+`fsDefaultSMParameters` and `fs<model>DefaultInputParameters`:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+Print[fsDefaultSettings];
+Print[fsDefaultSMParameters];
+Print[fsCMSSMDefaultInputParameters];
+~~~~~~~~~~~~~~~~~~~~
+
+The settings associated to a `handle` can be listed using the
+`FS<model>GetSettings[]` function.  Please refer to @ref
+FlexibleSUSY_config for more information on the spectrum generator
+settings.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-5, betaFunctionLoopOrder -> 3 }
+];
+FSCMSSMGetSettings[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ precisionGoal -> 0.00001,
+  maxIterations -> 0,
+  calculateStandardModelMasses -> 0,
+  poleMassLoopOrder -> 2,
+  ewsbLoopOrder -> 2,
+  betaFunctionLoopOrder -> 3,
+  thresholdCorrectionsLoopOrder -> 2,
+  higgs2loopCorrectionAtAs -> 1,
+  higgs2loopCorrectionAbAs -> 1,
+  higgs2loopCorrectionAtAt -> 1,
+  higgs2loopCorrectionAtauAtau -> 1,
+  forceOutput -> 0,
+  top2loopCorrectionsQCD -> 1,
+  betaZeroThreshold -> 1.*10^-11,
+  forcePositiveMasses -> 0,
+  poleMassScale -> 0.,
+  parameterOutputScale -> 0. }
+~~~~~~~~~~~~~~~~~~~~
+
+The Standard Model input parameters associated to a `handle` can be
+listed using the `FS<model>GetSMInputParameters[]` function.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSMParameters -> { Mt -> 173.34 }
+];
+FSCMSSMGetSMInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ alphaEmMZ -> 0.00781763, (* alpha_em(MZ) in the SM(5), MS-bar *)
+  GF -> 0.0000116637,      (* Fermi constant *)
+  alphaSMZ -> 0.1184,      (* alpha_s(MZ) in the SM(5), MS-bar *)
+  MZ -> 91.1876,           (* Z pole mass *)
+  mbmb -> 4.18,            (* MS-bar bottom mass at Q = mb *)
+  Mt -> 173.34,            (* top pole mass *)
+  Mtau -> 1.777,           (* tau pole mass *)
+  Mv3 -> 0.,               (* 3rd heaviest neutrino mass *)
+  MW -> 80.385,            (* W pole mass *)
+  Me -> 0.000510999,       (* electron pole mass *)
+  Mv1 -> 0.,               (* 1st neutrino mass *)
+  Mm -> 0.105658,          (* muon pole masss *)
+  Mv2 -> 0.,               (* 2nd neutrino mass *)
+  md2GeV -> 0.00475,       (* MS-bar down quark mass at Q = 2 GeV *)
+  mu2GeV -> 0.0024,        (* MS-bar up quark mass at Q = 2 GeV *)
+  ms2GeV -> 0.104,         (* MS-bar strange quark mass at Q = 2 GeV *)
+  mcmc -> 1.27,            (* MS-bar charm quark mass at Q = mc *)
+  alphaEm0 -> 0.00729735,  (* alpha_em in the Thompson limit *)
+  Mh -> 125.09 }           (* Higgs pole mass *)
+~~~~~~~~~~~~~~~~~~~~
+
+The model input parameters associated to a `handle` can be listed
+using the `FS<model>GetInputParameters[]` function.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMGetInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ m0 -> 125.,
+  m12 -> 500.,
+  TanBeta -> 10.,
+  SignMu -> 1,
+  Azero -> 0. }
+~~~~~~~~~~~~~~~~~~~~
+
+\subsubsection FS_model_Set FS<model>Set
+
+Using the `FS<model>Set[]` function, the input parameters and settings
+associated to a certain handle can be modified.  The `FS<model>Set[]`
+function takes first as argument the handle, and as second argument
+the replacement list of new parameters / settings.
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsModelParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+
+FSCMSSMGetInputParameters[handle]
+
+FSCMSSMSet[handle, TanBeta -> 20];
+
+FSCMSSMGetInputParameters[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{m0 -> 125., m12 -> 500., TanBeta -> 10., SignMu -> 1, Azero -> 0.}
+
+{m0 -> 125., m12 -> 500., TanBeta -> 20., SignMu -> 1, Azero -> 0.}
+~~~~~~~~~~~~~~~~~~~~
+
+\subsubsection FS_model_CalculateSpectrum FS<model>CalculateSpectrum
+
+For each `<model>`, the `FS<model>CalculateSpectrum[handle]` function
+solves the boundary value problem and calculates the pole mass
+spectrum.  The function takes a model handle as arguments, referring
+to the settings and input parameters
+
+The function returns all running model parameters at the parameter
+output scale (either the SUSY scale or the scale set via `fsSettings
+-> { parameterOutputScale -> 1000. }`) and the running masses at the
+same scale.  The running masses are denoted by `M[p]` where `p` is the
+particle name.  The parameter output scale appears in the returned
+list with the symbol `SCALE`.  The calculated pole masses are denoted
+by `Pole[M[p]]`, respectively.  The mixing matrices which correspond
+to the pole masses are denoted by `Pole[Z]`, where Z is the name of
+the mixing matrix.
+
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMCalculateSpectrum[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{M[VG] -> 0., M[Glu] -> 1117.18, M[Fv] -> {0., 0., 0.},
+ M[Sd] -> {942.251, 977.989, 980.297, 980.3, 1023.94, 1023.94},
+ M[Sv] -> {347.371, 348.42, 348.424},
+ M[Su] -> {782.7, 983.889, 983.894, 987.561, 1021., 1021.},
+ M[Se] -> {219.073, 226.223, 226.248, 356.971, 356.976, 358.335},
+ M[hh] -> {88.1593, 732.573}, M[Ah] -> {90.0927, 732.337},
+ M[Hpm] -> {78.4808, 736.531},
+ M[Chi] -> {207.439, 376.528, 633.944, 647.755},
+ M[Cha] -> {376.365, 647.464},
+ M[Fe] -> {0.000520523, 0.107628, 1.81042},
+ M[Fd] -> {0.00243143, 0.0532355, 2.32379},
+ M[Fu] -> {0.00122119, 0.549091, 147.438}, M[VWm] -> 78.4808,
+ M[VP] -> 0., M[VZ] -> 90.0927,
+ ZD -> {{0., 0., -0.965619, 0., 0., -0.259961}, {0., 0., 0.259961, 0.,
+     0., -0.965619}, {0., -0.00456672, 0., 0., -0.99999,
+    0.}, {0.000208583, 0., 0., 1., 0., 0.}, {0., -0.99999, 0., 0.,
+    0.00456672, 0.}, {1., 0., 0., -0.000208583, 0., 0.}},
+ ZV -> {{0., 0., 1.}, {0., 1., 0.}, {1., 0., 0.}},
+ ZU -> {{0., 0., 0.430138, 0., 0., 0.902763}, {0., 0.00896415, 0., 0.,
+     0.99996, 0.}, {0.000019939, 0., 0., 1., 0., 0.}, {0., 0.,
+    0.902763, 0., 0., -0.430138}, {1., 0., 0., -0.000019939, 0.,
+    0.}, {0., 0.99996, 0., 0., -0.00896415, 0.}},
+ ZE -> {{0., 0., 0.145606, 0., 0., 0.989343}, {0., -0.00903329, 0.,
+    0., -0.999959, 0.}, {0.0000436949, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000436949, 0., 0.}, {0., -0.999959, 0., 0., 0.00903329,
+    0.}, {0., 0., 0.989343, 0., 0., -0.145606}},
+ ZH -> {{0.105881, 0.994379}, {0.994379, -0.105881}},
+ ZA -> {{-0.102825, 0.994699}, {0.994699, 0.102825}},
+ ZP -> {{-0.102825, 0.994699}, {0.994699, 0.102825}},
+ ZN -> {{-0.995744, 0.018728, -0.0832596, 0.0348113}, {0.0389752,
+    0.971833, -0.194009, 0.127995}, {0. - 0.0331609 I,
+    0. + 0.0485202 I, 0. + 0.703592 I,
+    0. + 0.70817 I}, {0.0766551, -0.229862, -0.678518, 0.69347}},
+ UM -> {{0.960661, -0.277725}, {0.277725, 0.960661}},
+ UP -> {{0.983012, -0.183543}, {0.183543, 0.983012}},
+ ZEL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZER -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZDL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZDR -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZUL -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZUR -> {{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}},
+ ZZ -> {{-0.871112, 0.491084}, {-0.491084, -0.871112}},
+ Pole[M[VG]] -> 0., Pole[M[Glu]] -> 1151.38,
+ Pole[M[Fv]] -> {0., 0., 0.},
+ Pole[M[Sd]] -> {970.999, 1012.32, 1015.42, 1015.42, 1059.73,
+   1059.73}, Pole[M[Sv]] -> {351.491, 352.69, 352.694},
+ Pole[M[Su]] -> {809.283, 1015.61, 1018.71, 1019.46, 1056.91,
+   1056.91},
+ Pole[M[Se]] -> {222.482, 229.821, 229.847, 361.599, 361.604,
+   362.781}, Pole[M[hh]] -> {114.781, 719.259},
+ Pole[M[Ah]] -> {88.5742, 718.986},
+ Pole[M[Hpm]] -> {77.7605, 723.723},
+ Pole[M[Chi]] -> {204.267, 385.936, 636.143, 649.77},
+ Pole[M[Cha]] -> {385.949, 650.096}, Pole[M[Fe]] -> {0., 0., 0.},
+ Pole[M[Fd]] -> {0., 0., 0.}, Pole[M[Fu]] -> {0., 0., 0.},
+ Pole[M[VWm]] -> 80.3924, Pole[M[VP]] -> 0., Pole[M[VZ]] -> 0.,
+ Pole[ZD] -> {{0., 0., -0.977566, 0., 0., -0.210631}, {0., 0.,
+    0.210631, 0., 0., -0.977566}, {0., -0.0045424, 0., 0., -0.99999,
+    0.}, {0.000207472, 0., 0., 1., 0., 0.}, {0., -0.99999, 0., 0.,
+    0.0045424, 0.}, {1., 0., 0., -0.000207472, 0., 0.}},
+ Pole[ZV] -> {{0., 0., 1.}, {0., 1., 0.}, {1., 0., 0.}},
+ Pole[ZU] -> {{0., 0., 0.427999, 0., 0., 0.903779}, {0., 0., 0.903779,
+     0., 0., -0.427999}, {0., 0.00911132, 0., 0., 0.999958,
+    0.}, {0.0000202664, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000202664, 0., 0.}, {0., 0.999958, 0., 0., -0.00911132,
+    0.}}, Pole[
+   ZE] -> {{0., 0., 0.144271, 0., 3.02431*10^-15,
+    0.989538}, {0., -0.00895024, 2.08714*10^-14, 0., -0.99996,
+    0.}, {0.0000432932, 0., 0., 1., 0., 0.}, {1., 0.,
+    0., -0.0000432932, 0., 0.}, {0., -0.99996, -1.86811*10^-16, 0.,
+    0.00895024, 0.}, {0., 0., -0.989538, 0., -2.06711*10^-14,
+    0.144271}},
+ Pole[ZH] -> {{0.106581, 0.994304}, {0.994304, -0.106581}},
+ Pole[ZA] -> {{-0.0989827, 0.995089}, {0.995089, 0.0989827}},
+ Pole[ZP] -> {{-0.0995943, 0.995028}, {0.995028, 0.0995943}},
+ Pole[ZN] -> {{-0.995819, 0.0174686, -0.082821,
+    0.0343646}, {0.0380335, 0.970567, -0.197841,
+    0.131955}, {0. - 0.0332126 I, 0. + 0.0483916 I, 0. + 0.703447 I,
+    0. + 0.70832 I}, {0.0761299, -0.235272, -0.677615, 0.692596}},
+ Pole[UM] -> {{0.95912, -0.283001}, {0.283001, 0.95912}},
+ Pole[UP] -> {{0.981917, -0.189314}, {0.189314, 0.981917}},
+ Pole[ZEL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZER] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZDL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZDR] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZUL] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZUR] -> {{0., 0., 0.}, {0., 0., 0.}, {0., 0., 0.}},
+ Pole[ZZ] -> {{0., 0.}, {0., 0.}},
+ Yd -> {{0.000136987, 0., 0.}, {0., 0.0029993, 0.}, {0., 0.,
+    0.130923}},
+ Ye -> {{0.0000293264, 0., 0.}, {0., 0.00606377, 0.}, {0., 0.,
+    0.102}},
+ Yu -> {{7.1123*10^-6, 0., 0.}, {0., 0.00319794, 0.}, {0., 0.,
+    0.858685}}, \[Mu] -> 630.611, g1 -> 0.467953, g2 -> 0.642978,
+ g3 -> 1.06483, vd -> 25.1013, vu -> 242.823,
+ T[Yd] -> {{-0.192259, 0., 0.}, {0., -4.20945, 0.}, {0.,
+    0., -171.869}},
+ T[Ye] -> {{-0.00878455, 0., 0.}, {0., -1.81633, 0.}, {0.,
+    0., -30.3818}},
+ T[Yu] -> {{-0.00817412, 0., 0.}, {0., -3.67535, 0.}, {0.,
+    0., -764.191}}, B[\[Mu]] -> 54854.6,
+ mq2 -> {{1.04513*10^6, 0., 0.}, {0., 1.04512*10^6, 0.}, {0., 0.,
+    889135.}},
+ ml2 -> {{125372., 0., 0.}, {0., 125369., 0.}, {0., 0., 124639.}},
+ mHd2 -> 109915., mHu2 -> -385101.,
+ md2 -> {{960350., 0., 0.}, {0., 960345., 0.}, {0., 0., 951180.}},
+ mu2 -> {{969326., 0., 0.}, {0., 969321., 0.}, {0., 0., 659257.}},
+ me2 -> {{49272.2, 0., 0.}, {0., 49266.9, 0.}, {0., 0., 47778.5}},
+ MassB -> 209.358, MassWB -> 388.421, MassG -> 1117.18,
+ SCALE -> 879.186}
+~~~~~~~~~~~~~~~~~~~~
+
+\subsubsection FS_model_CalculateObservables FS<model>CalculateObservables
+
+For each `<model>`, the `FS<model>CalculateObservables[handle]`
+function calculates further observables, such as effective Higgs
+couplings to two photons or gluons.
+
+Note: The observables to be calculated must be specified in the model
+file in the `ExtraSLHAOutputBlocks`.  Available observables are:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+FlexibleSUSYObservable`aMuonGM2Calc
+FlexibleSUSYObservable`aMuonGM2CalcUncertainty
+FlexibleSUSYObservable`CpHiggsPhotonPhoton
+FlexibleSUSYObservable`CpHiggsGluonGluon
+FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton
+FlexibleSUSYObservable`CpPseudoScalarGluonGluon
+~~~~~~~~~~~~~~~~~~~~
+
+Note: The `FS<model>CalculateObservables[handle]` function assumes,
+that the pole mass spectrum has been calculated before, using the
+`FS<model>CalculateSpectrum[handle]` function.
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+handle = FSCMSSMOpenHandle[
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+FSCMSSMCalculateSpectrum[handle]
+FSCMSSMCalculateObservables[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+_Output_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+{ FlexibleSUSYObservable`CpHiggsPhotonPhoton ->
+    {0.0000296409 - 2.1245*10^-7 I, 7.82123*10^-7 + 9.1076*10^-7 I},
+  FlexibleSUSYObservable`CpHiggsGluonGluon ->
+    {-0.0000670724 - 2.65658*10^-6 I, 2.72135*10^-6 + 4.91993*10^-6 I},
+  FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ->
+    1.05105*10^-6 - 8.33068*10^-7 I,
+  FlexibleSUSYObservable`CpPseudoScalarGluonGluon ->
+    6.71448*10^-6 + 8.41625*10^-7 I }
+~~~~~~~~~~~~~~~~~~~~
+
+\subsection redirecting_msg_output Redirecting info messages to a file
+
+When FlexibleSUSY is configured with `--enable-verbose`, a lot of
+additional debug output is written to `stdout` and `stderr` if
+FlexibleSUSY is used at the command line.  When the Mathematica
+interface is used, this output is redirected to the notebook and
+printed if form of messages of type `FS<model>::info`, where `<model>`
+is the model name.
+
+By default, no more than three messages of the same type are witten to
+the notebook.  In order to write all messages to the notebook, set
+
+    Off[General::stop];
+
+The function, which writes the messages is called
+`FS<model>Message` and is defined as
+
+    FS<model>Message[s_] := Message[FS<model>::info, s]
+
+where `s` is the message string.  If one would like to write the
+messages to a file, the function can be re-defined to
+
+    FS<model>Message[s_] := WriteString["info.txt", s <> "\n"];
+
+_Example_:
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/CMSSM/CMSSM_librarylink.m"];
+
+handle = FSCMSSMOpenHandle[
+  fsModelParameters -> { m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1 }
+];
+
+(* write all messages to "info.txt" *)
+FSCMSSMMessage[s_] := WriteString["info.txt", s <> "\n"];
+
+FSCMSSMCalculateSpectrum[handle]
+~~~~~~~~~~~~~~~~~~~~
+
+*/

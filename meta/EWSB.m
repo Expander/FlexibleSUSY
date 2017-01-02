@@ -45,6 +45,12 @@ vector.";
 CreateEWSBParametersInitializationList::usage="Creates initialization
 list with EWSB output parameters";
 
+CreateEWSBParametersInitializationComma::usage="Creates initialization
+list with EWSB output parameters";
+
+CreateEWSBParametersInitialization::usage="Creates initialization
+of EWSB output parameters";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -631,10 +637,10 @@ CreateNewEWSBRootFinder[] :=
     "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, ";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIRelative] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIAbsolute] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPITadpole] :=
     "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_tadpole(ewsb_iteration_precision, CLASSNAME::tadpole_equations, &params))";
@@ -657,8 +663,11 @@ CreateEWSBRootFinders[{}] :=
           Quit[1];
          ];
 
+MakeUniquePtr[str_String, obj_String] :=
+    "std::unique_ptr<" <> obj <> ">(" <> str <> ")";
+
 CreateEWSBRootFinders[rootFinders_List] :=
-    Utils`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
+    Utils`StringJoinWithSeparator[MakeUniquePtr[#,"EWSB_solver"]& /@ (CreateEWSBRootFinder /@ rootFinders), ",\n"];
 
 WrapPhase[phase_ /; phase === Null, str_String] :=
     str;
@@ -785,17 +794,19 @@ SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
            Return[result];
           ];
 
+CreateEWSBParametersInitializationComma[{}] := "";
+
+CreateEWSBParametersInitializationComma[parameters_List] :=
+    Utils`StringJoinWithSeparator[ConvertToReal /@ parameters, ", "];
+
 CreateEWSBParametersInitializationList[parameters_List] :=
-    Module[{result = "{}"},
-           If[Length[parameters] > 0,
-              result = Utils`StringJoinWithSeparator[
-                  ConvertToReal /@ parameters,
-                  ", "
-              ];
-              result = "{ " <> result <> " }";
-             ];
-           result
-          ];
+    "{" <> CreateEWSBParametersInitializationComma[parameters] <> "}";
+
+SetEWSBParameter[par_, idx_, array_String] :=
+    array <> "[" <> ToString[idx] <> "] = " <> ConvertToReal[par] <> ";\n";
+
+CreateEWSBParametersInitialization[parameters_List, array_String] :=
+    StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
 
 End[];
 

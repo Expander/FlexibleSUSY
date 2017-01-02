@@ -3079,8 +3079,6 @@ void SoftPars<Susy, Brevity>::standardSugra(double m0,  double m12, double a0) {
   universalTrilinears(a0);
 }
 
-#define HR "---------------------------------------------------------------\n"
-
 template<class Susy, class Brevity>
 ostream & operator <<(ostream &left, const SoftPars<Susy, Brevity> &s) {
   left << "SUSY breaking MSSM parameters at Q: " << s.displayMu() << endl;
@@ -3098,8 +3096,6 @@ ostream & operator <<(ostream &left, const SoftPars<Susy, Brevity> &s) {
   left << s.displaySusy();
   return left;
 }
-
-#undef HR
 
 template<class Susy, class Brevity>
 void SoftPars<Susy, Brevity>::inputSoftParsOnly() {

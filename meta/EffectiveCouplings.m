@@ -402,7 +402,7 @@ RunStrongCouplingToScale[scale_] :=
     Module[{result = ""},
            If[ValueQ[SARAH`hyperchargeCoupling] && ValueQ[SARAH`leftCoupling] &&
               ValueQ[SARAH`strongCoupling],
-              result = result <> "run_SM_strong_coupling_to(" <> scale <> ");\n";
+              result = result <> "run_SM_strong_coupling_to(sm, " <> scale <> ");\n";
              ];
            result
           ];

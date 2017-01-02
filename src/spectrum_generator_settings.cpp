@@ -18,7 +18,7 @@
 
 #include "spectrum_generator_settings.hpp"
 
-#include <cassert>
+#include <iostream>
 
 namespace flexiblesusy {
 
@@ -35,14 +35,12 @@ Spectrum_generator_settings::Spectrum_generator_settings()
 
 double Spectrum_generator_settings::get(Settings o) const
 {
-   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
-   return values[o];
+   return values.at(o);
 }
 
 void Spectrum_generator_settings::set(Settings o, double value)
 {
-   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
-   values[o] = value;
+   values.at(o) = value;
 }
 
 /**
@@ -63,11 +61,17 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
  * | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
  * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | top_2loop_corrections_qcd        | 0, 1                         | 1 (= enabled)   |
+ * | top_pole_qcd_corrections         | 0 (1L), 1 (2L), 2 (3L)       | 1 (= 2L QCD)    |
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
  * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | force_positive_masses            | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_scale                  | any positive double          | 0 (= SUSY scale)|
+ * | eft_pole_mass_scale              | any positive double          | 0 (= minimum of {Mt, SUSY scale})|
+ * | eft_matching_scale               | any positive double          | 0 (= SUSY scale)|
+ * | eft_matching_loop_order_up       | 0, 1, 2                      | 2 (= 2-loop)    |
+ * | eft_matching_loop_order_down     | 0, 1                         | 1 (= 1-loop)    |
+ * | eft_higgs_index                  | any integer >= 0             | 0 (= lightest)  |
+ * | calculate_bsm_masses             | 0 (no) or 1 (yes)            | 1 (= yes)       |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -84,11 +88,17 @@ void Spectrum_generator_settings::reset()
    values[higgs_2loop_correction_at_at]     = 1.;
    values[higgs_2loop_correction_atau_atau] = 1.;
    values[calculate_sm_masses]   = 0.; // 0 = false
-   values[top_2loop_corrections_qcd]        = 1.;
+   values[top_pole_qcd_corrections]         = 1.;
    values[beta_zero_threshold]              = 1.0e-11;
    values[calculate_observables]            = 0;
    values[force_positive_masses]            = 0;
    values[pole_mass_scale]                  = 0;
+   values[eft_pole_mass_scale]              = 0;
+   values[eft_matching_scale]               = 0;
+   values[eft_matching_loop_order_up]       = 2.;
+   values[eft_matching_loop_order_down]     = 1.;
+   values[eft_higgs_index]                  = 0;
+   values[calculate_bsm_masses]             = 1.;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
@@ -98,7 +108,7 @@ Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() con
    two_loop_corrections.higgs_ab_as     = get(higgs_2loop_correction_ab_as);
    two_loop_corrections.higgs_at_at     = get(higgs_2loop_correction_at_at);
    two_loop_corrections.higgs_atau_atau = get(higgs_2loop_correction_atau_atau);
-   two_loop_corrections.top_qcd         = get(top_2loop_corrections_qcd);
+   two_loop_corrections.top_qcd         = get(top_pole_qcd_corrections);
 
    return two_loop_corrections;
 }
@@ -110,7 +120,22 @@ void Spectrum_generator_settings::set_two_loop_corrections(
    set(higgs_2loop_correction_ab_as, two_loop_corrections.higgs_ab_as);
    set(higgs_2loop_correction_at_at, two_loop_corrections.higgs_at_at);
    set(higgs_2loop_correction_atau_atau, two_loop_corrections.higgs_atau_atau);
-   set(top_2loop_corrections_qcd, two_loop_corrections.top_qcd);
+   set(top_pole_qcd_corrections, two_loop_corrections.top_qcd);
+}
+
+std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_settings& sgs)
+{
+   ostr << "(";
+
+   for (unsigned i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
+      ostr << sgs.get(static_cast<Spectrum_generator_settings::Settings>(i));
+      if (i < Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1)
+         ostr << ", ";
+   }
+
+   ostr << ")";
+
+   return ostr;
 }
 
 } // namespace flexiblesusy

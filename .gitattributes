@@ -44,6 +44,7 @@ model_files/SMNoRGEs            export-ignore
 model_files/TensorCoupling      export-ignore
 model_files/THDMIIMSSMBCApprox  export-ignore
 model_files/HGTHDMIIMSSMBCApprox export-ignore
+model_files/SMtower             export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore

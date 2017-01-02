@@ -19,6 +19,7 @@
 #ifndef SLHA_IO_H
 #define SLHA_IO_H
 
+#include <cassert>
 #include <string>
 #include <iosfwd>
 #include <vector>
@@ -126,9 +127,9 @@ public:
    typedef boost::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
-      bool quark_flavour_violated;   ///< key = 6
-      bool lepton_flavour_violated;  ///< key = 6
-      double parameter_output_scale; ///< key = 12
+      bool quark_flavour_violated;   ///< MODSEL[6]
+      bool lepton_flavour_violated;  ///< MODSEL[6]
+      double parameter_output_scale; ///< MODSEL[12]
       Modsel()
          : quark_flavour_violated(false)
          , lepton_flavour_violated(false)
@@ -152,17 +153,7 @@ public:
       }
    };
 
-   class ReadError : public Error {
-   public:
-      ReadError(const std::string& message_) : message(message_) {}
-      virtual ~ReadError() {}
-      virtual std::string what() const { return message; }
-   private:
-      std::string message;
-   };
-
    SLHA_io();
-   ~SLHA_io() {}
 
    void clear();
 
@@ -248,6 +239,10 @@ private:
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
    static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
+   template <class Derived>
+   double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   template <class Derived>
+   double read_vector(const std::string&, Eigen::MatrixBase<Derived>&) const;
 };
 
 template <class Scalar>
@@ -268,13 +263,15 @@ Scalar SLHA_io::convert_to(const std::string& str)
  * Fills a matrix from a SLHA block
  *
  * @param block_name block name
- * @param matrix matrix to be filled
+ * @param dense matrix to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
-double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
+   assert(matrix.cols() > 1 && "Matrix has not more than 1 column");
+
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
 
@@ -282,34 +279,21 @@ double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Deri
    double scale = 0.;
 
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
+      for (const auto& line: *block) {
+         if (!line.is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
+            if (line.size() > 3 &&
+                to_lower(line[0]) == "block" && line[2] == "Q=")
+               scale = convert_to<double>(line[3]);
             continue;
          }
 
-         if (cols == 1) {
-            // vector
-            if (line->size() >= 2) {
-               const int i = convert_to<int>((*line)[0]) - 1;
-               if (0 <= i && i < rows) {
-                  const double value = convert_to<double>((*line)[1]);
-                  matrix(i,0) = value;
-               }
-            }
-         } else {
-            // martix
-            if (line->size() >= 3) {
-               const int i = convert_to<int>((*line)[0]) - 1;
-               const int k = convert_to<int>((*line)[1]) - 1;
-               if (0 <= i && i < rows && 0 <= k && k < cols) {
-                  const double value = convert_to<double>((*line)[2]);
-                  matrix(i,k) = value;
-               }
+         if (line.size() >= 3) {
+            const int i = convert_to<int>(line[0]) - 1;
+            const int k = convert_to<int>(line[1]) - 1;
+            if (0 <= i && i < rows && 0 <= k && k < cols) {
+               const double value = convert_to<double>(line[2]);
+               matrix(i,k) = value;
             }
          }
       }
@@ -319,6 +303,67 @@ double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Deri
    }
 
    return scale;
+}
+
+/**
+ * Fills a vector from a SLHA block
+ *
+ * @param block_name block name
+ * @param dense vector to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+template <class Derived>
+double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Derived>& vector) const
+{
+   assert(vector.cols() == 1 && "Vector has more than 1 columns");
+
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   const int rows = vector.rows();
+   double scale = 0.;
+
+   while (block != data.cend()) {
+      for (const auto& line: *block) {
+         if (!line.is_data_line()) {
+            // read scale from block definition
+            if (line.size() > 3 &&
+                to_lower(line[0]) == "block" && line[2] == "Q=")
+               scale = convert_to<double>(line[3]);
+            continue;
+         }
+
+         if (line.size() >= 2) {
+            const int i = convert_to<int>(line[0]) - 1;
+            if (0 <= i && i < rows) {
+               const double value = convert_to<double>(line[1]);
+               vector(i,0) = value;
+            }
+         }
+      }
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
+   }
+
+   return scale;
+}
+
+/**
+ * Fills a matrix or vector from a SLHA block
+ *
+ * @param block_name block name
+ * @param dense matrix or vector to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+template <class Derived>
+double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& dense) const
+{
+   return dense.cols() == 1
+      ? read_vector(block_name, dense)
+      : read_matrix(block_name, dense);
 }
 
 template<class Scalar, int NRows>

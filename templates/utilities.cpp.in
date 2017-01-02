@@ -54,13 +54,6 @@ void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)
 
 } // namespace utilities
 
-@ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
-   : spectrum()
-   , scale(0.0)
-   , width(16)
-{
-}
-
 
 void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@_mass_eigenstates& model)
 {
@@ -78,9 +71,9 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
    if (spectrum.empty())
       return;
 
-   std::ofstream filestr(file_name.c_str(), std::ios::out);
+   std::ofstream filestr(file_name, std::ios::out);
    VERBOSE_MSG("@ModelName@_spectrum_plotter::write_to_file: opening file: "
-               << file_name.c_str());
+               << file_name);
    if (filestr.fail()) {
       ERROR("@ModelName@_spectrum_plotter::write_to_file: can't open file "
             << file_name);
@@ -92,18 +85,18 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
 
    filestr.close();
    VERBOSE_MSG("@ModelName@_spectrum_plotter::write_to_file: file written: "
-               << file_name.c_str());
+               << file_name);
 }
 
 void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std::ofstream& filestr) const
 {
-   for (std::size_t s = 0; s < spectrum.size(); ++s) {
-      if (!filestr.good()) {
-         ERROR("@ModelName@_spectrum_plotter::write_spectrum: "
-               "file stream is corrupted");
-         break;
-      }
+   if (!filestr.good()) {
+      ERROR("@ModelName@_spectrum_plotter::write_spectrum: "
+            "file stream is corrupted");
+      return;
+   }
 
+   for (std::size_t s = 0; s < spectrum.size(); ++s) {
       const std::string& name = spectrum[s].name;
       const std::string& latex_name = spectrum[s].latex_name;
       const std::valarray<double>& masses = spectrum[s].masses;
@@ -112,7 +105,7 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
       filestr << std::left << "# " << name << '\n';
 
       for (std::size_t i = 0; i < multiplicity; ++i) {
-         std::string lname("$" + latex_name + "$");
+         const std::string lname("$" + latex_name + "$");
          std::stringstream lname_with_index;
          lname_with_index << "$" << latex_name;
          if (multiplicity > 1)
@@ -219,6 +212,8 @@ void to_database(
  * @param entry entry number (0 = first entry)
  * @param qedqcd pointer to low-energy data.  If zero, the low-energy
  *    data structure will not be filled
+ * @param physical_input pointer to physical non-SLHA input.  If zero,
+ *    the physical_input data structure will not be filled.
  * @param observables pointer to observables.  If zero, the observables
  *    data structure will not be filled
  *

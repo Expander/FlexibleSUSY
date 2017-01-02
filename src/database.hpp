@@ -29,6 +29,8 @@ namespace database {
 class Database {
 public:
    Database(const std::string& file_name);
+   Database(const Database&) = delete;
+   Database(Database&&) = delete;
    ~Database();
 
    /// insert a row of doubles into a table

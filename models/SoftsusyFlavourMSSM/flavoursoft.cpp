@@ -212,9 +212,8 @@ const DoubleMatrix FlavourMssmSoftsusy::displayMns() const {
 			      displayThetaB23(), d);
 }
 
-#define HR "----------------------------------------------------------"
-
 ostream & operator <<(ostream & left, const FlavourMssmSoftsusy & m) {
+  const std::string HR = "----------------------------------------------------------";
   left << m.displayMssmSoft();
   left << "Flavour violating parameters:\n";
   left << "CKM data: 12=" << m.displayTheta12() 
@@ -239,8 +238,6 @@ ostream & operator <<(ostream & left, const FlavourMssmSoftsusy & m) {
   left << HR;
   return left;
 }
-
-#undef HR
 
 void FlavourMssmSoftsusy::modselSLHA(ostream & out, const char model []) {
   MssmSoftsusy::modselSLHA(out, model);

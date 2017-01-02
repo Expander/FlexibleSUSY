@@ -154,12 +154,12 @@ double self_energy_higgs_2loop_at_as_sm(
 
 /**
  * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_t^2)\f$.
- * Taken from arxiv:1205.6497, Eq. (20).
+ * Taken from arxiv:1504.05200, Eq. (20).
  *
  * @note The result contains the 2-loop tadpole diagrams.  It is
  * therefore not 1-particle irreducible (1PI).
  *
- * @note The sign of the result is opposite to arxiv:1205.6497,
+ * @note The sign of the result is opposite to arxiv:1504.05200,
  * Eq. (20).
  *
  * @param scale renormalization scale
@@ -178,7 +178,7 @@ double self_energy_higgs_2loop_at_at_sm(
    const double LogT2 = Sqr(LogT);
 
    const double result =
-      2*mt2*(-3*yt4*(9*LogT2 - 3*LogT + 2 + Sqr(Pi)/3.));
+      2*mt2*(-3*yt4*(3*LogT2 - 7*LogT + 2 + Sqr(Pi)/3.));
 
    return - result * twoLoop;
 }

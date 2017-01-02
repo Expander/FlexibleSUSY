@@ -122,9 +122,17 @@ FactorOutLoopFactor[expr_] :=
            expr
           ];
 
+TimeConstrainedSimplify[expr_] :=
+    TimeConstrained[Simplify[expr], FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint, expr];
+
+CollectMatMul[expr_] :=
+    TimeConstrained[Collect[expr, SARAH`MatMul[___], TimeConstrainedSimplify],
+                    FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint,
+                    expr];
+
 (* split expression into sub-expressions of given maximum size *)
 SplitExpression[expr_, size_Integer] :=
-    FactorOutLoopFactor /@ (Plus @@@ Utils`SplitList[ToList[expr, Plus], size]);
+    CollectMatMul[FactorOutLoopFactor /@ (Plus @@@ Utils`SplitList[ToList[expr, Plus], size])];
 
 NeedToSplitExpression[expr_, threshold_Integer] :=
     Length[ToList[expr, Plus]] > threshold;
@@ -133,13 +141,16 @@ ConvertSingleExprToC[expr_, type_, target_String] :=
     "const " <> CConversion`CreateCType[type] <> " " <> target <>
     " = " <> CastTo[RValueToCFormString[expr], type] <> ";\n"
 
+TryCreateUnitMatrix[CConversion`MatrixType[_,m_,n_] /; m =!= n] := 1;
+TryCreateUnitMatrix[type_] := CConversion`CreateUnitMatrix[type];
+
 ConvertExprToC[expr_, type_, target_String] :=
     Module[{result, splitExpr},
            If[NeedToSplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize],
               splitExpr = SplitExpression[expr, FlexibleSUSY`FSMaximumExpressionSize];
               result = MapIndexed[
                   ConvertSingleExprToC[
-                      #1 * CConversion`CreateUnitMatrix[type] /. {
+                      #1 * TryCreateUnitMatrix[type] /. {
                           CConversion`UNITMATRIX[r_]^_        :> CConversion`UNITMATRIX[r],
                           CConversion`UNITMATRIXCOMPLEX[r_]^_ :> CConversion`UNITMATRIXCOMPLEX[r]
                       },
@@ -190,6 +201,8 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             (* replace SARAH traces in expr *)
             traceRules = Rule[#,ToValidCSymbol[#]]& /@ (Traces`FindSARAHTraces[expr, sarahTraces]);
             beta = beta /. traceRules;
+            (* collecting complicated matrix multiplications *)
+            beta = loopFactor CollectMatMul[beta / loopFactor];
             (* declare SARAH traces locally *)
             localDecl  = localDecl <> Traces`CreateLocalCopiesOfSARAHTraces[expr, sarahTraces, "TRACE_STRUCT"];
             If[beta === 0,
@@ -226,7 +239,7 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
             Return[{localDecl, beta1L, beta2L, beta3L}];
           ];
 
-CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
+CreateBetaFunction[betaFunctions_List] :=
     Module[{def = "",
             localDecl = "", beta1L = "", beta2L = "", beta3L = "",
             allDecl = "", allBeta = "",
@@ -281,7 +294,7 @@ ConvertSarahRGEs[betaFunctions_List] :=
                    (* protect tensor products *)
                    expr = CConversion`ProtectTensorProducts[#, name]& /@ expr;
                    (* simplify expressions *)
-                   expr = TimeConstrained[Simplify[#], FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint, #]& /@ expr;
+                   expr = TimeConstrainedSimplify /@ expr;
                    AppendTo[lst, BetaFunction[name, type, expr]];
                   ];
               ];

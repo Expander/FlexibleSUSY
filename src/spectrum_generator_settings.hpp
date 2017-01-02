@@ -20,6 +20,8 @@
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
 #include "two_loop_corrections.hpp"
+#include <array>
+#include <iosfwd>
 
 namespace flexiblesusy {
 
@@ -47,16 +49,21 @@ public:
       higgs_2loop_correction_at_at,     ///< [10] Higgs 2-loop correction O(alpha_t alpha_t + alpha_t alpha_b + alpha_b alpha_b)
       higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
       force_output,          ///< [12] force output
-      top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
+      top_pole_qcd_corrections,         ///< [13] Top-quark pole mass QCD corrections
       beta_zero_threshold,   ///< [14] beta function zero threshold
       calculate_observables, ///< [15] calculate observables (a_muon, ...)
       force_positive_masses, ///< [16] force positive masses of majoran fermions
       pole_mass_scale,       ///< [17] renormalization scale at which the pole masses are calculated
+      eft_pole_mass_scale,   ///< [18] renormalization scale at which the pole masses are calculated in the EFT
+      eft_matching_scale,    ///< [19] renormalization scale at which the EFT is matched to the full model
+      eft_matching_loop_order_up, ///< [20] loop order at which the gauge and Yukawa couplings of the full model are calculated from the EFT ones (upwards matching)
+      eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
+      eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
+      calculate_bsm_masses,  ///< [23] calculate BSM pole masses
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
    Spectrum_generator_settings();
-   ~Spectrum_generator_settings() {}
 
    double get(Settings) const; ///< get value of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
@@ -66,8 +73,10 @@ public:
    void set_two_loop_corrections(const Two_loop_corrections&);
 
 private:
-   double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings
+   std::array<double, NUMBER_OF_OPTIONS> values; ///< spectrum generator settings
 };
+
+std::ostream& operator<<(std::ostream&, const Spectrum_generator_settings&);
 
 } // namespace flexiblesusy
 

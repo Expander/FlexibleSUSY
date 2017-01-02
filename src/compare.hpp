@@ -25,14 +25,14 @@ namespace flexiblesusy {
 
 template<class Real, int N>
 struct Compare {
-    Compare(const Eigen::Array<Real, N, 1>& s_) : s(s_) {}
+    explicit Compare(const Eigen::Array<Real, N, 1>& s_) : s(s_) {}
     bool operator() (int i, int j) { return s[i] < s[j]; }
     const Eigen::Array<Real, N, 1>& s;
 };
 
 template<class Real, int N>
 struct CompareAbs {
-    CompareAbs(const Eigen::Array<Real, N, 1>& w_) : w(w_) {}
+    explicit CompareAbs(const Eigen::Array<Real, N, 1>& w_) : w(w_) {}
     bool operator() (int i, int j) { return std::abs(w[i]) < std::abs(w[j]); }
     const Eigen::Array<Real, N, 1>& w;
 };

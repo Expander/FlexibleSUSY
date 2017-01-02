@@ -1,5 +1,6 @@
 DIR          := @DIR@
 MODNAME      := @ADDON@
+WITH_$(MODNAME) := yes
 
 LIB@ADDON@_MK  := $(DIR)/module.mk
 
@@ -35,7 +36,7 @@ EXE@ADDON@_EXE := \
 		$(patsubst %.f, %.x, $(filter %.f, $(EXE@ADDON@_SRC)))
 
 LIB@ADDON@     := \
-		$(DIR)/lib$(MODNAME)$(LIBEXT)
+		$(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 LIB@ADDON@_INSTALL_DIR := \
 		$(INSTALL_DIR)/$(DIR)
@@ -63,13 +64,15 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME)-src:
 		@true
 
-clean-$(MODNAME): clean-$(MODNAME)-src
+distclean-$(MODNAME): clean-$(MODNAME)-src
 # END:   NOT EXPORTED ##########################################
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 		-rm -f $(EXE@ADDON@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+
+clean-generated:: clean-$(MODNAME)-src
 
 clean-obj::     clean-$(MODNAME)-obj
 
@@ -97,10 +100,10 @@ $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAG
 endif
 
 $(LIB@ADDON@): $(LIB@ADDON@_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(EXE@ADDON@_EXE): $(EXE@ADDON@_OBJ) $(LIB@ADDON@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(TSILLIBS) $(FLIBS) $(THREADLIBS)
 
 ALLDEP += $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP)
 ALLSRC += $(LIB@ADDON@_SRC) $(EXE@ADDON@_SRC)

@@ -40,6 +40,22 @@ unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
    return pos;
 }
 
+template <class BinaryOp, class Derived>
+Derived binary_map(
+   const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b, BinaryOp op)
+{
+   typename Derived::PlainObject result(a.rows(), b.cols());
+
+   assert(a.rows() == b.rows());
+   assert(a.cols() == b.cols());
+
+   for (int k = 0; k < a.cols(); k++)
+      for (int i = 0; i < a.rows(); i++)
+         result(i,k) = op(a(i,k), b(i,k));
+
+   return result;
+}
+
 /**
  * Divides a by b element wise.  If the quotient is not finite, it is
  * set to zero.
@@ -47,37 +63,16 @@ unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
  * @param a numerator
  * @param b denominator
  */
-template <typename Scalar, int M, int N>
-Eigen::Matrix<Scalar,M,N> div_save(
-   const Eigen::Matrix<Scalar,M,N>& a, const Eigen::Matrix<Scalar,M,N>& b)
+template <class Derived>
+Derived div_safe(
+   const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b)
 {
-   Eigen::Matrix<Scalar,M,N> result(Eigen::Matrix<Scalar,M,N>::Zero());
+   typedef typename Derived::Scalar Scalar;
 
-   for (int i = 0; i < M; i++) {
-      for (int k = 0; k < N; k++) {
-         const double quotient = a(i,k) / b(i,k);
-         if (std::isfinite(quotient))
-            result(i,k) = quotient;
-      }
-   }
-
-   return result;
-}
-
-template <class BinaryOp, class Derived>
-Derived binary_map(
-   const Eigen::ArrayBase<Derived>& a, const Eigen::ArrayBase<Derived>& b, BinaryOp op)
-{
-   typename Derived::PlainObject result(a.rows(), b.cols());
-
-   assert(a.rows() == b.rows());
-   assert(a.cols() == b.cols());
-
-   for (int i = 0; i < a.rows(); i++)
-      for (int k = 0; k < a.cols(); k++)
-         result(i,k) = op(a(i,k), b(i,k));
-
-   return result;
+   return binary_map(a, b, [](Scalar x, Scalar y){
+         const Scalar q = x / y;
+         return std::isfinite(q) ? q : Scalar{};
+      });
 }
 
 /**
@@ -177,8 +172,8 @@ std::string print_scientific(const Eigen::DenseBase<Derived>& v,
 {
    std::ostringstream sstr;
 
-   for (std::size_t i = 0; i < v.rows(); i++) {
-      for (std::size_t k = 0; k < v.cols(); k++) {
+   for (std::size_t k = 0; k < v.cols(); k++) {
+      for (std::size_t i = 0; i < v.rows(); i++) {
          sstr << std::setprecision(number_of_digits)
               << std::scientific << v(i,k) << ' ';
       }

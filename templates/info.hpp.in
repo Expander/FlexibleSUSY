@@ -39,8 +39,9 @@ namespace @ModelName@_info {
    extern const char* particle_mixing_names[NUMBER_OF_MIXINGS];
    extern const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS];
    extern const char* model_name;
-   extern const bool is_low_energy_model;
-   extern const bool is_supersymmetric_model;
+   constexpr bool is_low_energy_model = @isLowEnergyModel@;
+   constexpr bool is_supersymmetric_model = @isSupersymmetricModel@;
+   constexpr bool is_FlexibleEFTHiggs = @isFlexibleEFTHiggs@;
 
    void print(std::ostream&);
 }

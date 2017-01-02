@@ -21,7 +21,6 @@
 #include "@ModelName@_effective_couplings.hpp"
 
 #include "effective_couplings.hpp"
-#include "standard_model.hpp"
 #include "wrappers.hpp"
 
 namespace flexiblesusy {
@@ -45,12 +44,10 @@ using namespace effective_couplings;
 {
 }
 
-@ModelName@_effective_couplings::~@ModelName@_effective_couplings()
-{
-}
-
 void @ModelName@_effective_couplings::calculate_effective_couplings()
 {
+   const standard_model::Standard_model sm(initialise_SM());
+
 @calculateLoopCouplings@
 }
 
@@ -65,18 +62,21 @@ void @ModelName@_effective_couplings::copy_mixing_matrices_from_model()
 @copyMixingMatrices@
 }
 
-void @ModelName@_effective_couplings::run_SM_strong_coupling_to(double m)
+standard_model::Standard_model @ModelName@_effective_couplings::initialise_SM() const
 {
-   using namespace standard_model;
-
-   Standard_model sm;
+   standard_model::Standard_model sm;
 
    sm.set_loops(2);
    sm.set_thresholds(2);
-   sm.set_low_energy_data(qedqcd);
    sm.set_physical_input(physical_input);
 
-   sm.initialise_from_input();
+   sm.initialise_from_input(qedqcd);
+
+   return sm;
+}
+
+void @ModelName@_effective_couplings::run_SM_strong_coupling_to(standard_model::Standard_model sm, double m)
+{
    sm.run_to(m);
 
 @setSMStrongCoupling@

@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "two_scale_composite_convergence_tester.hpp"
-#include <cassert>
 #include <algorithm>
 
 namespace flexiblesusy {
@@ -54,37 +53,30 @@ bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
 {
    bool precision_reached = true;
 
-   for (std::vector<Convergence_tester<Two_scale>*>::iterator
-           it = testers.begin(), end = testers.end();
-        it != end; ++it) {
-      const bool tester_result = (*it)->accuracy_goal_reached();
+   for (auto ct: testers) {
+      const bool tester_result = ct->accuracy_goal_reached();
       precision_reached = precision_reached && tester_result;
    }
 
    return precision_reached;
 }
 
-namespace {
-
-bool compare_max_iterations(const Convergence_tester<Two_scale>* a,
-			    const Convergence_tester<Two_scale>* b)
-{
-   return a->max_iterations() < b->max_iterations();
-}
-
-}
-
 unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
 {
+   if (testers.empty())
+      return 0;
+
    return (*std::max_element(testers.begin(), testers.end(),
-			     compare_max_iterations))->max_iterations();
+                             [](const Convergence_tester<Two_scale>* a,
+                                const Convergence_tester<Two_scale>* b) {
+                                return a->max_iterations() < b->max_iterations();
+                             }))->max_iterations();
 }
 
 void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester<Two_scale>* t)
 {
-   assert(t && "<Composite_convergence_tester<Two_scale>::add_convergence_tester> "
-          "convergence tester must not be zero");
-   testers.push_back(t);
+   if (t)
+      testers.push_back(t);
 }
 
-}
+} // namespace flexiblesusy

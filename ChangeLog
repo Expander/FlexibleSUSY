@@ -1,4 +1,157 @@
-Flexiblesusy-1.5.2 [not released yet]
+FlexibleSUSY-1.7.2 [December, 15 2016]
+
+ * Feature (commit b052e35): New flag FlexibleSUSY[23] to disable the
+   pole mass calculation of the non-SM particles.  This flag is useful
+   in FlexibleEFTHiggs, when the SUSY scale is so high that the non-SM
+   particle masses become unreliable or tachyonic: If a non-SM pole
+   mass becomes tachyonic (maybe because the loop corrections become
+   too large) FlexibleSUSY would flag the given parameter point as
+   unphysical.  However, one might still be interested in the value of
+   the SM-like Higgs mass, which is valid in FlexibleEFTHiggs even for
+   very large SUSY scales.  In such a case FlexibleSUSY[23] could be
+   set to 0 to suppress the calculation of the non-SM pole masses.
+
+ * Feature (commit 998f11e): Slightly improved speed of the RG
+   running.
+
+ * Change (commit 189f508): Speed-up the calculation of the 2L Higgs
+   mass corrections in the MSSM and NMSSM, if multi-threading is used,
+   by locking the mutex only for the O(at*at) corrections.
+
+ * Change: The limits sin(2*theta) = 0 and m_stop1 = m_stop2 have been
+   implemented for the 2L O(at*as) Higgs pole mass corrections in the
+   MSSM to avoid numeric instabilities.
+
+ * Bugfix (commit 20f169f): Re-calculate W pole mass in
+   FlexibleEFTHiggs.  Before this commit the electroweak gauge
+   couplings in FlexibleEFTHiggs are wrong in scenarios with very
+   small alpha_em(MZ) (< 1/1000) and/or a small Z pole mass (< 10
+   GeV).
+
+ * Bugfix (commit 38d17ca): More reliable convergence criterion for
+   FlexibleEFTHiggs for large SUSY scales.  Before this commit, only
+   the running BSM masses (at the SUSY scale) have been used as
+   convergence criterion.  However, they tend to converge very fast,
+   compared to the running SM masses at the electroweak scale.  For a
+   more reliable convergence criterion, now both the running BSM and
+   SM masses are used.
+
+ * Bugfix (commits 5e1b6b3, cc5bfae): Correction of the 2-loop and
+   3-loop QCD corrections to the top pole mass in the Standard Model
+   in the MS-bar scheme.  Refs. [hep-ph/9803493, hep-ph/9912391,
+   hep-ph/9911434] have expressed the relation between the top pole
+   mass and the MS-bar mass in terms of Log[Q^2/Mt^2], where Mt is the
+   top pole mass.  Before these commits, FlexibleSUSY used the
+   expressions from theses references, but wrote result in terms of
+   Log[Q^2/mt^2], where mt is the MS-bar mass, while not accounting
+   for the difference between Mt and mt in the logarithms.  This
+   bugfix affects the Higgs pole mass at the 3-loop level.
+
+ * Bugfix (commit cecff4b): Flag scalar or vector boson gauge singlet
+   tachyons.
+
+ * Bugfix (commit 4a3fb5b): Input tan(beta) at the SUSY scale, instead
+   of at the matching scale in the FlexibleEFTHiggs model files.  This
+   difference matters when the (unphysical) matching scale is varied
+   through FlexibleSUSY[19].
+
+ * Bugfix (commit c35dcb2): Fixed linking problem of the LibraryLink
+   on Mac.
+
+ * Bugfix (commits a643be5, cc9ebf1): Avoid function call ambiguities
+   when multiple LibraryLink libraries are loaded into Mathematica at
+   the same time.
+
+ * Bugfix (commit 1f8e135): Correcting FS<model>Set[] function for
+   models with matrix-valued parameters.
+
+ * Bugfix (commit 4097708): The generated LibraryLink files are now
+   added to the model tarball created by `make pack-<model>-src'.
+
+FlexibleSUSY-1.7.1 [October, 15 2016]
+
+ * Change (commit b1efa8c): Updated to GM2Calc 1.3.0.
+
+ * Change (commit 05d8e11): The loop order of the BSM top Yukawa
+   coupling at the scale M_SUSY in FlexibleEFTHiggs is now set
+   automatically to match the loop order of the matching condition
+   from the SM to the BSM model.
+
+   Before this commit, the user had to set FlexibleEFTHiggs[13] = 0
+   and FlexibleEFTHiggs[20] = 1 when yt(BSM) should be calculated
+   using 1L QCD corrections.  Analogous, the user had to set
+   FlexibleEFTHiggs[13] = 1 and FlexibleEFTHiggs[20] = 2 when yt(BSM)
+   should be calculated using 2L QCD corrections.  Now,
+   FlexibleEFTHiggs[13] is set automatically to FlexibleEFTHiggs[20] -
+   1 when yt(BSM) is calculated in FlexibleEFTHiggs.
+
+ * Change (commit b533d67): Faster calculation of effective vertices h
+   -> photon photon and h -> gluon gluon.
+
+ * Bugfix (commit 8b04191): Improve numerical stability of low-scale
+   iteration which determines the SM(5) parameters by using a higher
+   RG running precision than the precision goal for the convergence.
+
+ * Bugfix (commit 44d2f01): Print SLHA output even if QedQcd class
+   throws an exception.
+
+FlexibleSUSY-1.7.0 [September, 19 2016]
+
+ * Feature: FlexibleSUSY is now able to generate custom spectrum
+   generators using the FlexibleEFTHiggs method described in
+   [arXiv:1609.00371].  The following FlexibleEFTHiggs example models
+   are provided: CMSSMtower, MSSMtower, MSSMNoFVtower, NMSSMtower,
+   NUHMSSMalttower, MRSSMtower, E6SSMtower.  A documentation of the
+   new model file options to create a custom FlexibleEFTHiggs spectrum
+   generator can be found in doc/html/FlexibleEFTHiggs.html .
+
+ * Feature: FlexibleSUSY now provides a Mathematica interface for the
+   generated spectrum generators.  For each model, an example
+   Mathematica script
+
+      models/<model>/run_<model>.m
+
+   is generated, which illustrates the usage.  The documentation of
+   the Mathematica interface and several examples can be found in
+   FlexibleSUSY's HTML documentation.  Please see the section
+   "Creating the soucre code documentation" in the README file for a
+   description about how to generate the documentation.
+
+ * Change: The configure options for creating dynamic libraries and
+   statically linked executable have been changed.  By default, static
+   FlexibleSUSY libraries and dynamically linked executables are
+   created.
+
+   To generate shared FlexibleSUSY libraries, run
+
+      $ ./configure --enable-shared-libs ...
+
+   To generate statically linked executables, run
+
+      $ ./configure --enable-static ...
+
+   Please refer to the README file for more information.
+
+ * Bugfix (commit 39f8d36): Fix segfault when multi-threading is used
+   in statically linked executables.
+
+ * Bugfix (commit 3126ac1): Catch NaNs from inside the MSSM 2L Higgs
+   mass routines of Pietro Slavich.
+
+ * Bugfix (commit b6db614): Correcting 2-loop self energy O(alpha_t^2)
+   in the Standard Model.  Before, Eq. (20) of arxiv:1205.6497 has
+   been used.  However, this is incorrect, because it includes 2-loop
+   contributions from the momentum iteration of the 1-loop self
+   energy, which would be double counted, because FlexibleSUSY already
+   does a momentum iteration of the 1-loop self energy.  To fix this,
+   Eq. (20) of arxiv:1504.05200 has been used, which does not include
+   these 2-loop pieces.
+
+FlexibleSUSY-1.6.1 [August, 28 2016]
+
+ * Bugfix (commit db67c81): Fix compilation with --disable-threads .
+
+FlexibleSUSY-1.6.0 [August, 27 2016]
 
  * Feature (commit 4e9ef56): Allow user to access the beta-functions
    of the model parameters on the r.h.s. of the constraints.  BETA[p]
@@ -12,10 +165,45 @@ Flexiblesusy-1.5.2 [not released yet]
        {\[Lambda], BETA[g1] + BETA[g2] + BETA[1,Yu][3,3]}
    };
 
+ * Feature (commit 5e0bca1): Allow user to add 3-loop QCD corrections
+   of [arxiv:hep-ph/9912391] when calculating the top pole mass in
+   non-SUSY models.  The 3-loop QCD corrections are added if the flag
+   FlexibleSUSY[13] is set to 2 and the pole mass loop order,
+   FlexibleSUSY[4], is set to a value > 2.
+
+   FlexibleSUSY[13] = 0 and FlexibleSUSY[4] > 0: 1L QCD correction
+   FlexibleSUSY[13] = 1 and FlexibleSUSY[4] > 1: 2L QCD correction
+   FlexibleSUSY[13] = 2 and FlexibleSUSY[4] > 2: 3L QCD correction
+
+ * Feature (commits 98bc536, e8fd56a): Speed up of the RG running in
+   models with very complicated beta functions.
+
+ * Change (commit 728b5ea): `make clean' no longer removes generated
+   source files to avoid the need to re-generate them.  To remove the
+   generated files use either
+
+   $ make clean-<model>-src # deletes generated files for <model>
+
+   or
+
+   $ make clean-generated   # deletes all generated files
+
  * Bugfix (commit a5342eb): Avoid non-portable use of sed in
    createmodel.  This fixes `make install-src' on Mac.
 
-Flexiblesusy-1.5.1 [July, 12 2017]
+ * Bugfix (commit 44b31fa): Fix potential race condition when
+   different model classes that make use of the (N)MSSM 2-loop Higgs
+   mass routines of P. Slavich call calculate_spectrum() at the same
+   time.
+
+ * Bugfix (commit 0d08b99): Do not try to generate non-squared unit
+   matrices for beta function expressions that must be splitted.
+   Non-squared unit matrices did appear for non-squared matrix-valued
+   parameters, as for example T[hE] in the SE6SSM.
+
+   Thanks to Dylan Harries.
+
+FlexibleSUSY-1.5.1 [July, 12 2016]
 
  * Bugfix (commit 63f5361): Fix numerical instability of SOFTSUSY's B1
    function in parameter regions with p << m1,m2 and m1 close to m2.

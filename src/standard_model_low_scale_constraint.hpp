@@ -16,10 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef NMSSM_TWOLOOPHIGGS_H
-#define NMSSM_TWOLOOPHIGGS_H
 
-#include "mssm_twoloophiggs.h"
-#include "nmssm2loop.h"
+#ifndef SM_LOW_SCALE_CONSTRAINT_H
+#define SM_LOW_SCALE_CONSTRAINT_H
+
+namespace flexiblesusy {
+namespace standard_model {
+
+template <class T>
+class Standard_model_low_scale_constraint;
+
+} // namespace standard_model
+} // namespace flexiblesusy
 
 #endif

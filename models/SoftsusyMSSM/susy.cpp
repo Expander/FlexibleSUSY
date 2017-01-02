@@ -12,8 +12,6 @@
 
 namespace softsusy {
 
-#define HR "---------------------------------------------------------------\n"
-
 const sBrevity & sBrevity::operator=(const sBrevity &s) {
   if (this == &s) return *this;
   dt = s.dt; ut = s.ut; et = s.et; 
@@ -639,8 +637,6 @@ void MssmSusy::getMasses(QedQcd & r, double vev) const {
   r.setMass(mMuon, v1 * e1(2, 2));
   r.setMass(mTau, v1 * e1(3, 3));
 }
-
-#undef HR
 
 // Rotates to quark mass basis, returning the mixing matrices defined as 
 // yu_diag = vul yu vur^T  

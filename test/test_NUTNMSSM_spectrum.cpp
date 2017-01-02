@@ -443,8 +443,7 @@ void compare_tadpoles_2loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    const double tu_1_and_2loop_ss = ss.displayTadpole2Ms();
    const double ts_1_and_2loop_ss = ss.displayTadpoleSMs();
 
-   double two_loop_tadpole[3];
-   fs.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(fs.tadpole_hh_2loop());
 
    // check equality of 1-loop tadpoles again
    // works only if amu = the lightest CP-even Higgs,

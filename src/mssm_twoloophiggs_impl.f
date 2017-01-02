@@ -39,11 +39,34 @@ c
      $     ,pi,k
       double precision F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb
      $     ,FAp
+      double precision, parameter :: eps_st = 1d-5
+      double precision, parameter :: eps_t1 = 1d-5
       
       pi = 3.14159265897d0
       
       mt = dsqrt(t)
       mb = dsqrt(b)
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(st).lt.eps_st) then
+         if (st.ge.0.0d0) then
+            st = eps_st
+         else
+            st = -eps_st
+         endif
+      endif
+      ct = sqrt(1.d0-st*st)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when T1 == T2
+      if (dabs((T1-T2)/T1).lt.eps_t1) then
+         if (T1.gt.T2) then
+            T1 = T2 / (1d0 - eps_t1)
+         else
+            T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
       
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
@@ -104,12 +127,35 @@ c
      $     ,pi,k
       double precision F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb
      $     ,FAp
+      double precision, parameter :: eps_st = 1d-5
+      double precision, parameter :: eps_t1 = 1d-5
       
       pi = 3.14159265897d0
       
       mt = dsqrt(t)
       mb = dsqrt(b)
       
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(st).lt.eps_st) then
+         if (st.ge.0.0d0) then
+            st = eps_st
+         else
+            st = -eps_st
+         endif
+      endif
+      ct = sqrt(1.d0-st*st)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when T1 == T2
+      if (dabs((T1-T2)/T1).lt.eps_t1) then
+         if (T1.gt.T2) then
+            T1 = T2 / (1d0 - eps_t1)
+         else
+            T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
+
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
       c2t = ct**2 - st**2
@@ -154,11 +200,34 @@ c
       double precision F1t,F2t,F3t,F4t,F1b,F2b,F3b,F4b,F5,F6,Ft,Fb,Gt,Gb
      $     ,FAp
       double precision v1,v2,S1,S2
+      double precision, parameter :: eps_st = 1d-10
+      double precision, parameter :: eps_t1 = 1d-8
       
       pi = 3.14159265897d0
       
       mt = dsqrt(t)
       mb = dsqrt(b)
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(st).lt.eps_st) then
+         if (st.ge.0.0d0) then
+            st = eps_st
+         else
+            st = -eps_st
+         endif
+      endif
+      ct = sqrt(1.d0-st*st)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when T1 == T2
+      if (dabs((T1-T2)/T1).lt.eps_t1) then
+         if (T1.gt.T2) then
+            T1 = T2 / (1d0 - eps_t1)
+         else
+            T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
       
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
@@ -5569,7 +5638,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
 
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       tauF1ab = 
      $     (2.*BL*mu2/t*(mu2-BL+t)/delt(BL,mu2,t)
@@ -5608,7 +5679,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt  = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt  = s2t*(T1-T2)/2d0/Sqrt(t) - mu/sb/cb
@@ -5721,7 +5794,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
@@ -5837,7 +5912,9 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
@@ -6316,12 +6393,16 @@ c     when necessary we consider the residues:
       Nc = 1d0
       
       mu2 = mu**2
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
       
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
       At = sb**2*Xt+cb**2*Yt
-      if (At.eq.0d0) At=1d-10
+      if (At.eq.0d0) then
+         At=1d-10
+      endif
       
       ct2 = (1d0+c2t)/2d0
       st2 = (1d0-c2t)/2d0
@@ -6462,11 +6543,13 @@ c             running (DRbar) parameters, evaluated at the scale Q.
 
 c     ADDED by BEN: guards against NANs when sin theta is zero!
       if (dabs(st).lt.1.0d-10) then
-         if (st.ge.0.0d0) st=1.0d-10
+         if (st.ge.0.0d0) then
+            st=1.0d-10
          else 
             st=-1.0d-10
          endif
-         ct = sqrt(1.d0-st*st)
+      endif
+      ct = sqrt(1.d0-st*st)
 c     end of addition by BEN 13/6/12
       
       s2t = 2d0*ct*st
@@ -6523,12 +6606,15 @@ c$$$      k = 3d0*ht**2/(16d0*Pi**2)**2
       cb2 = cb**2
       mu2 = mu**2
 
-      if(mu2.eq.0d0) mu2 = 1d-10
+      if (mu2.eq.0d0) then
+         mu2 = 1d-10
+      endif
 
       Xt = s2t*(T1-T2)/2d0/Sqrt(t)
       Yt = Xt - mu/cb/sb
       At = sb2*Xt+cb2*Yt
       
+
       F2l = (delt(mu2,t,T1)+2*mu2*t)/T1*phi(mu2,t,T1)
      $     -(delt(mu2,t,T2)+2*mu2*t)/T2*phi(mu2,t,T2)
      $     +A0*cb2*(2*Sqrt(t)+s2t*Yt)/4/s2t/T1/(T1-T2)*

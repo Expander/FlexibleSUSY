@@ -22,7 +22,11 @@ hep-ph/0210258 Eq. (60)-(61).  (M_f = pole mass, m_f = DR-bar mass)";
 
 GetDeltaMPoleOverMRunningQCDTwoLoopMSbar::usage="Returns two-loop QCD
 contributions to Delta M_f/m_f in the MS-bar scheme.  Taken from
-hep-ph/9803493 Eq. (17).  (M_f = pole mass, m_f = MS-bar mass)";
+hep-ph/9803493 Eq. (17).  (M_f = pole mass, m_f = MS-bar mass)
+
+Note: Eq. (17) of [hep-ph/9803493] is expressed in terms of
+Log[Q^2/M_f^2].  This function, however, returns Delta M_f/m_f as a
+function of Log[Q^2/m_f^2].  We have accounted for the difference.";
 
 Begin["`Private`"];
 
@@ -91,7 +95,7 @@ GetDeltaMPoleOverMRunningQCDTwoLoopMSbar[quark_, renScale_] :=
            result = (alphaStrong / (4 Pi))^2 (
                CF CA (1111/24 - 8 Zeta[2] - 4 I31 + 185/6 log + 11/2 log^2)
                - CF t Nf (71/6 + 8 Zeta[2] + 26/3 log + 2 log^2)
-               + CF^2 (121/8 + 30 Zeta[2] + 8 I31 + 27/2 log + 9/2 log^2)
+               + CF^2 (-71/8 + 30 Zeta[2] + 8 I31 - 9/2 log + 9/2 log^2)
                - 12 CF t (1 - 2 Zeta[2]));
            result
           ];

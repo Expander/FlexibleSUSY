@@ -55,9 +55,9 @@ BOOST_AUTO_TEST_CASE(test_SUM_complex)
    BOOST_CHECK_EQUAL(sum_2.imag(), 9.);
 }
 
-BOOST_AUTO_TEST_CASE(test_SUM_benchmark_1)
+BOOST_AUTO_TEST_CASE(test_SUM_benchmark_large_sum)
 {
-   const std::size_t N = 10000;
+   constexpr std::size_t N = 10000;
    Stopwatch stopwatch;
 
    stopwatch.start();
@@ -77,10 +77,37 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_1)
    BOOST_MESSAGE("loop took " << time_loop << " seconds");
 
    BOOST_CHECK_EQUAL(result_loop, result_SUM);
-
-   // The passing of the following test justifies the expansion of the
-   // sums of the Feynman diagrams at the meta code level, instead of
-   // using the SUM() macro.  If this test fails at some later point,
-   // we should use the SUM() macro, because it is much more readable.
    BOOST_CHECK_LT(10*time_loop, time_SUM);
+}
+
+BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
+{
+   constexpr std::size_t N = 10;
+   constexpr std::size_t M = 1000000;
+   Stopwatch stopwatch;
+
+   stopwatch.start();
+   std::size_t result_SUM = 0;
+   for (std::size_t i = 0; i < M; i++)
+      result_SUM += SUM(i,1,N,SUM(k,1,N,k*i));
+   stopwatch.stop();
+   const double time_SUM = stopwatch.get_time_in_seconds();
+
+   stopwatch.start();
+   std::size_t result_loop = 0;
+   for (std::size_t l = 0; l < M; l++)
+      for (std::size_t i = 1; i <= N; i++)
+         for (std::size_t k = 1; k <= N; k++)
+            result_loop += k*i;
+   stopwatch.stop();
+   const double time_loop = stopwatch.get_time_in_seconds();
+
+   BOOST_MESSAGE("SUM  took " << time_SUM  << " seconds");
+   BOOST_MESSAGE("loop took " << time_loop << " seconds");
+
+   BOOST_CHECK_EQUAL(result_loop, result_SUM);
+
+   // If the following test passes, we should use the SUM() macro
+   // instead of an explicit sum over Feynman diagrams.
+   BOOST_CHECK_LT(10*time_SUM, time_loop);
 }

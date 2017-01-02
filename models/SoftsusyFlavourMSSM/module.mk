@@ -1,5 +1,6 @@
 DIR          := models/SoftsusyFlavourMSSM
 MODNAME      := SoftsusyFlavourMSSM
+WITH_$(MODNAME) := yes
 
 LIBSoftsusyFlavourMSSM_SRC  := \
 		$(DIR)/flavoursoft.cpp
@@ -11,7 +12,7 @@ LIBSoftsusyFlavourMSSM_OBJ  := \
 LIBSoftsusyFlavourMSSM_DEP  := \
 		$(LIBSoftsusyFlavourMSSM_OBJ:.o=.d)
 
-LIBSoftsusyFlavourMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
+LIBSoftsusyFlavourMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -35,7 +36,7 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyFlavourMSSM_DEP) $(LIBSoftsusyFlavourMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
 
 $(LIBSoftsusyFlavourMSSM): $(LIBSoftsusyFlavourMSSM_OBJ)
-		$(MAKELIB) $@ $^
+		$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ALLDEP += $(LIBSoftsusyFlavourMSSM_DEP)
 ALLLIB += $(LIBSoftsusyFlavourMSSM)

@@ -24,6 +24,7 @@
  */
 
 #include "@ModelName@_two_scale_model_slha.hpp"
+#include "linalg2.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "pmns.hpp"

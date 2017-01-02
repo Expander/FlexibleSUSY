@@ -72,7 +72,6 @@ public:
    typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
 
    Coupling_monitor(const Model&, const DataGetter&);
-   ~Coupling_monitor() {}
 
    /// get couplings at all scales
    void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
@@ -85,8 +84,8 @@ public:
 
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
-   struct TDataComp {
-      bool operator() (const TData::value_type& i,const TData::value_type& j) {
+   struct TScaleComp {
+      bool operator() (const TData::value_type& i,const TData::value_type& j) const {
          return i.first < j.first;
       }
    };
@@ -127,7 +126,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
 
    // find gauge couplings at the greatest scale
    TData::const_iterator maxScale
-      = max_element(couplings.begin(), couplings.end(), TDataComp());
+      = max_element(couplings.begin(), couplings.end(), TScaleComp());
 
    return *maxScale;
 }
@@ -212,9 +211,9 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    const std::ios_base::openmode openmode
       = (overwrite ? std::ios::out : std::ios::app);
 
-   std::ofstream filestr(file_name.c_str(), openmode);
+   std::ofstream filestr(file_name, openmode);
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: opening file: "
-               << file_name.c_str());
+               << file_name);
    if (filestr.fail()) {
       ERROR("can't open file " << file_name
             << " for writing running couplings");
@@ -225,18 +224,17 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    write_parameter_names_line(filestr);
 
    // write data
-   for (TData::const_iterator it = couplings.begin();
-        it != couplings.end(); ++it) {
+   for (const auto& c: couplings) {
       if (!filestr.good()) {
          ERROR("file " << file_name << " is corrupted");
          break;
       }
 
-      filestr << std::left << std::setw(width) << it->first;
+      filestr << std::left << std::setw(width) << c.first;
 
       // write all gauge couplings in order
-      for (int i = 0; i < it->second.size(); ++i) {
-         filestr << std::left << std::setw(width) << it->second(i);
+      for (int i = 0; i < c.second.size(); ++i) {
+         filestr << std::left << std::setw(width) << c.second(i);
       }
 
       filestr << '\n';
@@ -244,7 +242,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
 
    filestr.close();
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: file written: "
-               << file_name.c_str());
+               << file_name);
 }
 
 /**
@@ -286,7 +284,7 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
       couplings.push_back(TData::value_type(scale, data_getter.get_parameters(model)));
    }
 
-   std::sort(couplings.begin(), couplings.end(), TDataComp());
+   std::sort(couplings.begin(), couplings.end(), TScaleComp());
 }
 
 }

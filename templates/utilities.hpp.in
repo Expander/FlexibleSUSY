@@ -86,9 +86,6 @@ public:
 
 class @ModelName@_spectrum_plotter {
 public:
-   @ModelName@_spectrum_plotter();
-   ~@ModelName@_spectrum_plotter() {}
-
    void extract_spectrum(const @ModelName@_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
@@ -105,9 +102,9 @@ private:
          {}
    };
    typedef std::vector<TParticle> TSpectrum;
-   TSpectrum spectrum;
-   double scale;
-   unsigned width;
+   TSpectrum spectrum{};
+   double scale{0.};
+   unsigned width{16};
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
    static std::valarray<double> to_valarray(double);

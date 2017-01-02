@@ -24,6 +24,32 @@
 
 using namespace flexiblesusy;
 
+BOOST_AUTO_TEST_CASE(test_div_safe_zero)
+{
+   Eigen::Array<double,3,3> v1, v2, result;
+   v1.setZero();
+   v2.setZero();
+   result = div_safe(v1, v2);
+
+   BOOST_CHECK(result.allFinite());
+
+   for (int i = 0; i < result.rows(); i++)
+      for (int k = 0; k < result.cols(); k++)
+         BOOST_CHECK_EQUAL(result(i,k), 0.);
+}
+
+BOOST_AUTO_TEST_CASE(test_div_safe)
+{
+   Eigen::Array<double,3,1> v1, v2, result;
+   v1 << 1, 2, 3;
+   v2 << 0, 1, 2;
+   result = div_safe(v1, v2);
+
+   BOOST_CHECK_EQUAL(result(0), 0.);
+   BOOST_CHECK_EQUAL(result(1), 2.);
+   BOOST_CHECK_EQUAL(result(2), 3./2.);
+}
+
 BOOST_AUTO_TEST_CASE(test_reorder_vector)
 {
    Eigen::Array<double,3,1> vec1, vec2;

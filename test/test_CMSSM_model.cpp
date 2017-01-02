@@ -1036,8 +1036,7 @@ void compare_tadpoles_2loop(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double td_1_and_2loop_ss = s.displayTadpole1Ms();
    const double tu_1_and_2loop_ss = s.displayTadpole2Ms();
 
-   double two_loop_tadpole[2];
-   m.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(m.tadpole_hh_2loop());
 
    // check equality of 1-loop tadpoles again
    TEST_CLOSE(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
@@ -1277,8 +1276,7 @@ void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    model.set_ewsb_loop_order(2);
    model.solve_ewsb();
 
-   double two_loop_tadpole[2];
-   model.tadpole_hh_2loop(two_loop_tadpole);
+   const auto two_loop_tadpole(model.tadpole_hh_2loop());
 
    TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real()
               - two_loop_tadpole[0], 0.0, 0.007);
@@ -1346,14 +1344,13 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
          CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision),
+         fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision)),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
          CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision)
+         fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))
    };
 
-   double x_init[2];
-   model.ewsb_initial_guess(x_init);
+   const auto x_init(model.ewsb_initial_guess());
 
    // starting values for Mu, BMu
    const double Mu_0 = model.get_Mu();
