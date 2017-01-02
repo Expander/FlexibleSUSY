@@ -292,10 +292,8 @@ struct EvaluationContext {
    template<class Field>
    double mass( const typename field_indices<Field>::type & ) const;
 
-   double electronCharge( void ) const;
-
    template<class Field>
-   double chargeCount( const typename field_indices<Field>::type & ) const;
+   double charge( const typename field_indices<Field>::type & ) const;
 };
 
 /**
@@ -537,7 +535,7 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = context.charge<PhotonEmitter>( photonEmitterIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -546,7 +544,7 @@ double DiagramEvaluator<OneLoopDiagram<0>,
       double massRatioSquared = photonEmitterMass/exchangeFieldMass;
       massRatioSquared *= massRatioSquared;
 
-      double loopFactor = photonEmitterChargeCount * OneLoopFunctionA( massRatioSquared );
+      double loopFactor = photonEmitterCharge * OneLoopFunctionA( massRatioSquared );
 
       double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
@@ -585,7 +583,7 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterChargeCount = context.chargeCount<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = context.charge<PhotonEmitter>( photonEmitterIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
@@ -594,7 +592,7 @@ double DiagramEvaluator<OneLoopDiagram<1>,
       double massRatioSquared = exchangeFieldMass / photonEmitterMass;
       massRatioSquared *= massRatioSquared;
 
-      double loopFactor = photonEmitterChargeCount * OneLoopFunctionB( massRatioSquared );
+      double loopFactor = photonEmitterCharge * OneLoopFunctionB( massRatioSquared );
 
       double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 

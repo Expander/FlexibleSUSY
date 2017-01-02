@@ -243,28 +243,13 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                    If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
                                    ] &) /@ fields, "\n\n"] <> "\n\n" <>
        
-       "double EvaluationContext::electronCharge( void ) const\n" <>
-       "{\n" <>
-       IndentText @
-       ("using PhotonVertex = VertexFunction<Photon, " <>
-        CXXNameOfField[SARAH`Electron] <> ", " <> CXXNameOfField[SARAH`AntiField @ SARAH`Electron] <>
-        ">;\n" <>
-        If[electronDimension === 1,
-           "constexpr std::array<unsigned, 0> indices{};\n",
-           "constexpr std::array<unsigned, 2> indices{" <>
-           ToString[GetElectronIndex[]-1] <> ", " <> ToString[GetElectronIndex[]-1] <> "};\n"
-           ] <>
-        "return PhotonVertex::vertex( indices, *this ).left().real();\n"
-        ) <>
-       "}\n\n" <>
-       
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
                                     photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
                                     numberOfIndices},
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
                                    "template<>\n" <>
-                                   "double EvaluationContext::chargeCount<" <> CXXNameOfField[#] <>
+                                   "double EvaluationContext::charge<" <> CXXNameOfField[#] <>
                                    ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
                                    "> &indices ) const\n" <>
                                    "{\n" <>
@@ -276,7 +261,7 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                     If[photonVertexType === SingleComponentedVertex,
                                        ".value().real();\n",
                                        ".left().real();\n"] <>
-                                    "return fieldCharge / electronCharge();\n"
+                                    "return fieldCharge;\n"
                                     ) <>
                                    "}"] &) /@ photonEmitters, "\n\n"]
        ];
