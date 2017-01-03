@@ -55,7 +55,7 @@ namespace flexiblesusy {
 #define MODELCLASSNAME @ModelName@<Two_scale>
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint()
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
@@ -64,7 +64,7 @@ namespace flexiblesusy {
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
    @ModelName@<Two_scale>* model_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , model(model_)
 {
    initialize();

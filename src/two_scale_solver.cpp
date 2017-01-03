@@ -24,7 +24,7 @@
 #include "initial_guesser.hpp"
 #include "logger.hpp"
 #include "model.hpp"
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
 
@@ -48,7 +48,7 @@ namespace flexiblesusy {
  * @param c constraint
  * @param m model
  */
-void RGFlow<Two_scale>::add(Constraint<Two_scale>* c, Model* m)
+void RGFlow<Two_scale>::add(Single_scale_constraint* c, Model* m)
 {
    if (!c) throw SetupError("constraint pointer is NULL");
    if (!m) throw SetupError("model pointer is NULL");

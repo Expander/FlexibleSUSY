@@ -23,7 +23,7 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "error.hpp"
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 
 namespace flexiblesusy {
 

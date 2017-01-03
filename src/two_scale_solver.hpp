@@ -32,11 +32,12 @@
 
 namespace flexiblesusy {
 
-template <class T> class Constraint;
 template <class T> class Matching;
 class Convergence_tester;
 class Initial_guesser;
 class Model;
+class Single_scale_constraint;
+
 class Two_scale;
 class Two_scale_running_precision;
 
@@ -70,7 +71,7 @@ public:
    RGFlow& operator=(RGFlow&&) = delete;
 
    /// add constraint
-   void add(Constraint<Two_scale>*, Model*);
+   void add(Single_scale_constraint*, Model*);
    /// add matching condition
    void add(Matching<Two_scale>*, Model*, Model*);
    /// get model at current scale
@@ -103,7 +104,7 @@ private:
 
    struct Constraint_slider : public Slider {
    public:
-      Constraint_slider(Model* m, Constraint<Two_scale>* c)
+      Constraint_slider(Model* m, Single_scale_constraint* c)
          : model(m), constraint(c) {}
       virtual ~Constraint_slider() {}
       virtual void clear_problems() override;
@@ -113,7 +114,7 @@ private:
       virtual void set_precision(double) override;
    private:
       Model* model;
-      Constraint<Two_scale>* constraint;
+      Single_scale_constraint* constraint;
    };
 
    struct Matching_slider : public Slider {

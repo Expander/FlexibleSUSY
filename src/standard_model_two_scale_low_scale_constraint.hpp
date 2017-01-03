@@ -21,7 +21,7 @@
 #define STANDARD_MODEL_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 
 #include "standard_model_low_scale_constraint.hpp"
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "lowe.h"
 #include <Eigen/Core>
 
@@ -35,7 +35,7 @@ template <class T>
 class StandardModel;
 
 template<>
-class Standard_model_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+class Standard_model_low_scale_constraint<Two_scale> : public Single_scale_constraint {
 public:
    Standard_model_low_scale_constraint();
    Standard_model_low_scale_constraint(StandardModel<Two_scale>*, const softsusy::QedQcd&);
