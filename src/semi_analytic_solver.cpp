@@ -42,7 +42,7 @@ namespace flexiblesusy {
  * @param c constraint
  * @param m model
  */
-void RGFlow<Semi_analytic>::add_inner(Constraint<Two_scale>* c, Model* m)
+void RGFlow<Semi_analytic>::add_inner(Single_scale_constraint* c, Model* m)
 {
    if (!c) throw SetupError("constraint pointer is NULL");
    if (!m) throw SetupError("model pointer is NULL");
@@ -55,7 +55,7 @@ void RGFlow<Semi_analytic>::add_inner(Constraint<Two_scale>* c, Model* m)
  * @param c constraint
  * @param m model
  */
-void RGFlow<Semi_analytic>::add_outer(Constraint<Two_scale>* c, Model* m)
+void RGFlow<Semi_analytic>::add_outer(Single_scale_constraint* c, Model* m)
 {
    if (!c) throw SetupError("constraint pointer is NULL");
    if (!m) throw SetupError("model pointer is NULL");
@@ -350,7 +350,7 @@ Model* RGFlow<Semi_analytic>::Constraint_slider::get_model() {
    return model;
 }
 
-Constraint<Two_scale>* RGFlow<Semi_analytic>::Constraint_slider::get_constraint() {
+Single_scale_constraint* RGFlow<Semi_analytic>::Constraint_slider::get_constraint() {
    return constraint;
 }
 

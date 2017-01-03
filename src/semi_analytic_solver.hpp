@@ -31,10 +31,10 @@
 
 namespace flexiblesusy {
 
-template <class T> class Constraint;
 class Convergence_tester;
 class Initial_guesser;
 class Model;
+class Single_scale_constraint;
 class Semi_analytic;
 class Two_scale;
 class Two_scale_running_precision;
@@ -64,9 +64,9 @@ public:
    RGFlow& operator=(RGFlow&&) = delete;
 
    /// add inner constraint
-   void add_inner(Constraint<Two_scale>*, Model*);
+   void add_inner(Single_scale_constraint*, Model*);
    /// add outer constraint
-   void add_outer(Constraint<Two_scale>*, Model*);
+   void add_outer(Single_scale_constraint*, Model*);
    /// get model at current scale
    Model* get_model() const;
    /// get number of used iterations
@@ -92,7 +92,7 @@ private:
       virtual ~Slider() {}
       virtual void clear_problems() {}
       virtual Model* get_model() = 0;
-      virtual Constraint<Two_scale>* get_constraint() = 0;
+      virtual Single_scale_constraint* get_constraint() = 0;
       virtual double get_scale() = 0;
       virtual void slide() {}
       virtual void set_precision(double) {}
@@ -100,18 +100,18 @@ private:
 
    struct Constraint_slider : public Slider {
    public:
-      Constraint_slider(Model* m, Constraint<Two_scale>* c)
+      Constraint_slider(Model* m, Single_scale_constraint* c)
          : model(m), constraint(c) {}
       virtual ~Constraint_slider() {}
       virtual void clear_problems() override;
       virtual Model* get_model() override;
-      virtual Constraint<Two_scale>* get_constraint() override;
+      virtual Single_scale_constraint* get_constraint() override;
       virtual double get_scale() override;
       virtual void slide() override;
       virtual void set_precision(double) override;
    private:
       Model* model;
-      Constraint<Two_scale>* constraint;
+      Single_scale_constraint* constraint;
    };
 
    std::vector<std::shared_ptr<Slider> > inner_sliders{}; ///< sliders to be used in the inner iteration
