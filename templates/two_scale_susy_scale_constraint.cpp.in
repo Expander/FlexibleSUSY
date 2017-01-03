@@ -52,8 +52,7 @@ namespace flexiblesusy {
 
 @ModelName@_susy_scale_constraint<Two_scale>::@ModelName@_susy_scale_constraint(
    @ModelName@<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
-   : Single_scale_constraint()
-   , model(model_)
+   : model(model_)
    , qedqcd(qedqcd_)
 {
    initialize();

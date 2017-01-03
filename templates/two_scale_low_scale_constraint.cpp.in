@@ -61,13 +61,8 @@ namespace flexiblesusy {
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
    @ModelName@<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
-   : Single_scale_constraint()
-   , model(model_)
+   : model(model_)
    , qedqcd(qedqcd_)
-   , new_g1(0.)
-   , new_g2(0.)
-   , new_g3(0.)
-   , self_energy_w_at_mw(0.)
 {
    initialize();
 }
