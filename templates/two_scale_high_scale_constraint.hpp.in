@@ -35,7 +35,7 @@ class Two_scale;
 template<>
 class @ModelName@_high_scale_constraint<Two_scale> : public Single_scale_constraint {
 public:
-   @ModelName@_high_scale_constraint();
+   @ModelName@_high_scale_constraint() = default;
    @ModelName@_high_scale_constraint(@ModelName@<Two_scale>*);
    virtual ~@ModelName@_high_scale_constraint();
    virtual void apply() override;
@@ -55,9 +55,9 @@ protected:
    bool check_non_perturbative();
 
 private:
-   double scale;
-   double initial_scale_guess;
-   @ModelName@<Two_scale>* model;
+   double scale{0.};
+   double initial_scale_guess{0.};
+   @ModelName@<Two_scale>* model{nullptr};
 };
 
 } // namespace flexiblesusy

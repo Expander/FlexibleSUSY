@@ -54,14 +54,6 @@ namespace flexiblesusy {
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 
-@ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint()
-   : Single_scale_constraint()
-   , scale(0.)
-   , initial_scale_guess(0.)
-   , model(0)
-{
-}
-
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
    @ModelName@<Two_scale>* model_)
    : Single_scale_constraint()

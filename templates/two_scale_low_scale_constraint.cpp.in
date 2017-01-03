@@ -59,34 +59,6 @@ namespace flexiblesusy {
 #define ALPHA_EM_DRBAR alpha_em_drbar
 #define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 
-@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
-   : Single_scale_constraint()
-   , scale(0.)
-   , initial_scale_guess(0.)
-   , model(0)
-   , qedqcd()
-   , ckm()
-   , pmns()
-   , MWDRbar(0.)
-   , MZDRbar(0.)
-   , AlphaS(0.)
-   , EDRbar(0.)
-   , ThetaWDRbar(0.)
-   , new_g1(0.)
-   , new_g2(0.)
-   , new_g3(0.)
-   , self_energy_w_at_mw(0.)
-   , threshold_corrections_loop_order(1)
-{
-   ckm << 1., 0., 0.,
-          0., 1., 0.,
-          0., 0., 1.;
-
-   pmns << 1., 0., 0.,
-           0., 1., 0.,
-           0., 0., 1.;
-}
-
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
    @ModelName@<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
    : Single_scale_constraint()
