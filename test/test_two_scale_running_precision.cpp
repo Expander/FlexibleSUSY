@@ -1,8 +1,8 @@
 
 #include "convergence_tester.hpp"
 #include "model.hpp"
+#include "single_scale_constraint.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_constraint.hpp"
 #include "two_scale_running_precision.hpp"
 #include "error.hpp"
 
@@ -79,7 +79,7 @@ public:
    virtual void set_precision(double) {}
 };
 
-class Static_constraint : public Constraint<Two_scale> {
+class Static_constraint : public Single_scale_constraint {
 public:
    Static_constraint(double scale_)
       : scale(scale_) {}

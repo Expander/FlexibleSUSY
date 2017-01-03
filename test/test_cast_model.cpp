@@ -5,7 +5,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "model.hpp"
-#include "two_scale_constraint.hpp"
 
 using namespace flexiblesusy;
 

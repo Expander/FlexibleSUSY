@@ -1,8 +1,8 @@
 #include "convergence_tester.hpp"
 #include "model.hpp"
+#include "single_scale_constraint.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_matching.hpp"
-#include "two_scale_constraint.hpp"
 #include "linalg.h"
 #include "error.hpp"
 
@@ -75,7 +75,7 @@ private:
    unsigned number_of_runs;
 };
 
-class Counting_constraint : public Constraint<Two_scale> {
+class Counting_constraint : public Single_scale_constraint {
 public:
    Counting_constraint(double scale_)
       : scale(scale_)
