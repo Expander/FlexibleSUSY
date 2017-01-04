@@ -124,7 +124,7 @@ void @ModelName@_high_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   model = NULL;
+   model = nullptr;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::initialize()
