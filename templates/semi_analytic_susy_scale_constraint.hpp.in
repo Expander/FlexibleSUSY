@@ -51,7 +51,7 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
-
+@setSemiAnalyticConstraint@
 protected:
    void update_scale();
 
@@ -60,6 +60,7 @@ private:
    double initial_scale_guess{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
+@semiAnalyticConstraint@
 };
 
 } // namespace flexiblesusy

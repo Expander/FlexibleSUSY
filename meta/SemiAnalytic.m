@@ -7,6 +7,8 @@ A semi-analytic solution to the RGEs has the structure
 SemiAnalyticSolution[parameter, {basis}]";
 
 CheckSemiAnalyticBoundaryConditions::usage="";
+IsSemiAnalyticSetting::usage="";
+IsSemiAnalyticConstraint::usage="";
 SelectSemiAnalyticConstraint::usage="";
 
 SetSemiAnalyticParameters::usage="";
@@ -112,23 +114,26 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
            True
           ];
 
-RemoveUnusedSettings[constraints_List] :=
-    Module[{isUsed},
-           isUsed[setting_] := Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
-                                            allSemiAnalyticParameters] =!= {};
-           Select[constraints, isUsed[#]&]
+IsSemiAnalyticSetting[setting_] :=
+    Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
+                 allSemiAnalyticParameters] =!= {};
+
+RemoveUnusedSettings[constraints_List] := Select[constraints, IsSemiAnalyticSetting];
+
+IsSemiAnalyticConstraint[constraint_] :=
+    Module[{sortedPars, fixedPars},
+           sortedPars = Sort[allSemiAnalyticParameters];
+           fixedPars = Sort[Intersection[sortedPars,
+                                         Constraint`FindFixedParametersFromConstraint[constraint]]];
+           fixedPars =!= {} && fixedPars === sortedPars
           ];
 
 SelectSemiAnalyticConstraint[constraints_List] :=
-    Module[{i, sortedPars, fixedPars, result = {}},
-           sortedPars = Sort[allSemiAnalyticParameters];
-           For[i = 1, i <= Length[constraints], i++,
-               fixedPars = Sort[Intersection[sortedPars,
-                                             Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
-               If[fixedPars =!= {} && fixedPars === sortedPars,
-                  result = constraints[[i]];
-                 ];
-              ];
+    Module[{validConstraints, result = {}},
+           validConstraints = Select[constraints, IsSemiAnalyticConstraint];
+           If[Length[validConstraints] >= 1,
+              result = validConstraints[[1]];
+             ];
            RemoveUnusedSettings[result]
           ];
 

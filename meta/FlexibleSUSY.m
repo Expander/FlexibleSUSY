@@ -817,6 +817,104 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  } ];
           ];
 
+WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
+                                 {minimumScale_, maximumScale_},
+                                 mustSetSemiAnalyticBCs_, files_List] :=
+   Module[{applyConstraint = "", calculateScale, scaleGuess,
+           restrictScale,
+           temporarySetting = "", temporaryResetting = "",
+           setDRbarYukawaCouplings,
+           calculateDRbarMasses,
+           calculateDeltaAlphaEm, calculateDeltaAlphaS,
+           calculateGaugeCouplings,
+           calculateThetaW,
+           recalculateMWPole,
+           checkPerturbativityForDimensionlessParameters = "",
+           semiAnalyticConstraint = "",
+           setSemiAnalyticConstraint = "",
+           clearSemiAnalyticConstraint = "",
+           updateSemiAnalyticConstraint = ""},
+          Constraint`SetBetaFunctions[GetBetaFunctions[]];
+          applyConstraint = Constraint`ApplyConstraints[settings];
+          calculateScale  = Constraint`CalculateScale[condition, "scale"];
+          scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
+          restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
+          temporarySetting   = Constraint`SetTemporarily[settings];
+          temporaryResetting = Constraint`ResetTemporarily[settings];
+          calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
+          calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
+          calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleOptions];
+          setDRbarYukawaCouplings = {
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
+          };
+          calculateDRbarMasses = {
+              LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "upQuarksDRbar", "qedqcd.displayMass(softsusy::mUp)"      ],
+              LoopMasses`CallCalculateDRbarMass["Charmed Quark"    , "Up-Quarks"  , 2, "upQuarksDRbar", "qedqcd.displayMass(softsusy::mCharm)"   ],
+              LoopMasses`CallCalculateDRbarMass["Top Quark"        , "Up-Quarks"  , 3, "upQuarksDRbar", "qedqcd.displayPoleMt()"                 ],
+              LoopMasses`CallCalculateDRbarMass["Down Quark"       , "Down-Quarks", 1, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mDown)"    ],
+              LoopMasses`CallCalculateDRbarMass["Strange Quark"    , "Down-Quarks", 2, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mStrange)" ],
+              LoopMasses`CallCalculateDRbarMass["Bottom Quark"     , "Down-Quarks", 3, "downQuarksDRbar", "qedqcd.displayMass(softsusy::mBottom)"  ],
+              LoopMasses`CallCalculateDRbarMass["Electron"         , "Leptons"    , 1, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mElectron)"],
+              LoopMasses`CallCalculateDRbarMass["Muon"             , "Leptons"    , 2, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mMuon)"    ],
+              LoopMasses`CallCalculateDRbarMass["Tau"              , "Leptons"    , 3, "downLeptonsDRbar", "qedqcd.displayMass(softsusy::mTau)"     ],
+              LoopMasses`CallCalculateDRbarMass["Electron Neutrino", "Neutrinos"  , 1, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(1)"      ],
+              LoopMasses`CallCalculateDRbarMass["Muon Neutrino"    , "Neutrinos"  , 2, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(2)"      ],
+              LoopMasses`CallCalculateDRbarMass["Tau Neutrino"     , "Neutrinos"  , 3, "neutrinoDRbar", "qedqcd.displayNeutrinoPoleMass(3)"      ]
+          };
+          If[FSCheckPerturbativityOfDimensionlessParameters,
+             checkPerturbativityForDimensionlessParameters =
+                 Constraint`CheckPerturbativityForParameters[
+                     Parameters`GetModelParametersWithMassDimension[0],
+                     FlexibleSUSY`FSPerturbativityThreshold
+                 ];
+            ];
+          If[mustSetSemiAnalyticBCs,
+             semiAnalyticConstraint = FlexibleSUSY`FSModelName <> "_soft_parameters_constraint<Semi_analytic>* soft_constraint{nullptr};\n";
+             setSemiAnalyticConstraint = "void set_soft_parameters_constraint(" <> FlexibleSUSY`FSModelName
+                                         <> "_soft_parameters_constraint* sc) { soft_constraint = sc; }\n";
+             clearSemiAnalyticConstraint = "soft_constraint = nullptr;\n";
+             updateSemiAnalyticConstraint = "if (soft_constraint) soft_constraint.set_boundary_scale(scale);\n";
+            ];
+          WriteOut`ReplaceInFiles[files,
+                 { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
+                   "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
+                   "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
+                   "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
+                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
+                   "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
+                   "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
+                   "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
+                   "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
+                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
+                   "@calculateDRbarMassUp@"      -> IndentText[IndentText[calculateDRbarMasses[[1]]]],
+                   "@calculateDRbarMassCharm@"   -> IndentText[IndentText[calculateDRbarMasses[[2]]]],
+                   "@calculateDRbarMassTop@"     -> IndentText[IndentText[calculateDRbarMasses[[3]]]],
+                   "@calculateDRbarMassDown@"    -> IndentText[IndentText[calculateDRbarMasses[[4]]]],
+                   "@calculateDRbarMassStrange@" -> IndentText[IndentText[calculateDRbarMasses[[5]]]],
+                   "@calculateDRbarMassBottom@"  -> IndentText[IndentText[calculateDRbarMasses[[6]]]],
+                   "@calculateDRbarMassElectron@"-> IndentText[IndentText[calculateDRbarMasses[[7]]]],
+                   "@calculateDRbarMassMuon@"    -> IndentText[IndentText[calculateDRbarMasses[[8]]]],
+                   "@calculateDRbarMassTau@"     -> IndentText[IndentText[calculateDRbarMasses[[9]]]],
+                   "@calculateDRbarMassElectronNeutrino@"-> IndentText[IndentText[calculateDRbarMasses[[10]]]],
+                   "@calculateDRbarMassMuonNeutrino@"    -> IndentText[IndentText[calculateDRbarMasses[[11]]]],
+                   "@calculateDRbarMassTauNeutrino@"     -> IndentText[IndentText[calculateDRbarMasses[[12]]]],
+                   "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
+                   "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
+                   "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
+                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
+                   "@semiAnalyticConstraint@" -> IndentText[semiAnalyticConstraint],
+                   "@setSemiAnalyticConstraint@" -> IndentText[setSemiAnalyticConstraint],
+                   "@clearSemiAnalyticConstraint@" -> IndentText[clearSemiAnalyticConstraint],
+                   "@updateSemiAnalyticConstraint@" -> IndentText[updateSemiAnalyticConstraint],
+                   Sequence @@ GeneralReplacementRules[]
+                 } ];
+          ];
+
 WriteInitialGuesserClass[lowScaleGuess_List, susyScaleGuess_List, highScaleGuess_List, files_List] :=
    Module[{initialGuessAtLowScale, initialGuessAtLowScaleGaugeCouplings = "",
            initialGuessAtHighScale, setDRbarYukawaCouplings,
@@ -2941,6 +3039,42 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_convergence_tester.cpp"}]}
                   }
                                          ];
+
+              Print["Creating class for high-scale constraint ..."];
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale,
+                                               Select[FlexibleSUSY`HighScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               FlexibleSUSY`HighScaleFirstGuess,
+                                               {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
+                                               SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.hpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.hpp"}]},
+                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.cpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.cpp"}]}
+                                               }];
+
+              Print["Creating class for susy-scale constraint ..."];
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale,
+                                               Select[FlexibleSUSY`SUSYScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               FlexibleSUSY`SUSYScaleFirstGuess,
+                                               {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
+                                               SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.hpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.hpp"}]},
+                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.cpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.cpp"}]}
+                                               }];
+
+              Print["Creating class for low-scale constraint ..."];
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`LowScale,
+                                               Select[FlexibleSUSY`LowScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               FlexibleSUSY`LowScaleFirstGuess,
+                                               {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
+                                               SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.hpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.hpp"}]},
+                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.cpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.cpp"}]}
+                                               }];
 
               Print["Creating class for semi-analytic model ..."];
               WriteSemiAnalyticModelClass[semiAnalyticBCs, semiAnalyticSolns,

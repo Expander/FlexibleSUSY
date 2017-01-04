@@ -96,6 +96,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::clear()
    initial_scale_guess = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
+@clearSemiAnalyticConstraint@
 }
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::initialize()
@@ -114,6 +115,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::update_scale()
 
 @calculateScale@
 @restrictScale@
+@updateSemiAnalyticConstraint@
 }
 
 } // namespace flexiblesusy

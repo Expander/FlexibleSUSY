@@ -53,7 +53,7 @@ public:
    const softsusy::QedQcd& get_sm_parameters() const { return qeqqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
-
+@setSemiAnalyticConstraint@
 private:
    double scale{0.};
    double initial_scale_guess{0.};
@@ -72,6 +72,7 @@ private:
    double new_g3{0.};
    double self_energy_w_at_mw{0.};
    unsigned threshold_corrections_loop_order{1}; ///< threshold corrections loop order
+@semiAnalyticConstraint@
 
    double calculate_theta_w(double);
    void calculate_threshold_corrections();

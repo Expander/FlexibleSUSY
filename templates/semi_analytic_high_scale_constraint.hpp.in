@@ -49,7 +49,7 @@ public:
    @ModelName@<Semi_analytic>* get_model() const { return model; }
    void initialize();
    void set_scale(double s) { scale = s; }
-
+@setSemiAnalyticConstraint@
 protected:
    void update_scale();
    bool check_non_perturbative();
@@ -58,6 +58,7 @@ private:
    double scale{0.};
    double initial_scale_guess{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
+@semiAnalyticConstraint@
 };
 
 } // namespace flexiblesusy
