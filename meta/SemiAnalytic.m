@@ -14,6 +14,7 @@ SelectSemiAnalyticConstraint::usage="";
 
 SetSemiAnalyticParameters::usage="";
 GetSemiAnalyticParameters::usage="";
+GetBoundaryValueParameters::usage="";
 
 IsAllowedSemiAnalyticParameter::usage="";
 IsSemiAnalyticParameter::usage="";
@@ -121,7 +122,7 @@ IsSemiAnalyticSetting[setting_] :=
 
 IsBasisParameterSetting[setting_, solutions_List] :=
     Module[{allBasisParameters},
-           allBasisParameters = Parameters`FindAllParameters[DeleteDuplicates[Flatten[(GetBasis[#]& /@ solutions)]]];
+           allBasisParameters = GetBoundaryValueParameters[solutions];
            allBasisParameters = DeleteCases[allBasisParameters,
                                             p_ /; (Parameters`IsModelParameter[p] && !IsAllowedSemiAnalyticParameter[p])];
            Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
