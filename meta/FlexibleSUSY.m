@@ -2283,7 +2283,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
-            semiAnalyticBCs, semiAnalyticSolns},
+            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleGuess,
+            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -3020,7 +3021,32 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
                                                                            FlexibleSUSY`SUSYScaleInput,
                                                                            FlexibleSUSY`HighScaleInput}];
+
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
+
+              (* construct additional semi-analytic constraint from user-defined constraints *)
+              Which[SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`HighScaleInput],
+                    semiAnalyticScale = FlexibleSUSY`HighScale;
+                    semiAnalyticScaleGuess = FlexibleSUSY`HighScaleFirstGuess;
+                    semiAnalyticScaleMinimum = FlexibleSUSY`HighScaleMinimum;
+                    semiAnalyticScaleMaximum = FlexibleSUSY`HighScaleMaximum;,
+                    SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`SUSYScaleInput],
+                    semiAnalyticScale = FlexibleSUSY`SUSYScale;
+                    semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
+                    semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
+                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;,
+                    SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`LowScaleInput],
+                    semiAnalyticScale = FlexibleSUSY`LowScale;
+                    semiAnalyticScaleGuess = FlexibleSUSY`LowScaleFirstGuess;
+                    semiAnalyticScaleMinimum = FlexibleSUSY`LowScaleMinimum;
+                    semiAnalyticScaleMaximum = FlexibleSUSY`LowScaleMaximum;,
+                    True,
+                    semiAnalyticScale = FlexibleSUSY`SUSYScale;
+                    semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
+                    semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
+                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;
+                   ];
+
               Print["Creating classes for convergence testers ..."];
               WriteConvergenceTesterClass[Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]],
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_convergence_tester.hpp.in"}],
@@ -3079,6 +3105,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.hpp"}]},
                                                 {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.cpp.in"}],
                                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.cpp"}]}
+                                               }];
+
+              Print["Creating class for semi-analytic constraint ..."];
+              WriteSemiAnalyticConstraintClass[semiAnalyticScale, {},
+                                               semiAnalyticScaleGuess,
+                                               {semiAnalyticScaleMinimum, semiAnalyticScaleMaximum}, False,
+                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.hpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.hpp"}]},
+                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.cpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.cpp"}]}
                                                }];
 
               Print["Creating class for semi-analytic model ..."];

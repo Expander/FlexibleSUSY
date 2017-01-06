@@ -10,6 +10,8 @@ CheckSemiAnalyticBoundaryConditions::usage="";
 IsSemiAnalyticSetting::usage="";
 IsBasisParameterSetting::usage="";
 IsSemiAnalyticConstraint::usage="";
+IsSemiAnalyticConstraintScale::usage="Returns True if given constraint
+corresponds to the scale at which the semi-analytic solutions are evaluated.";
 SelectSemiAnalyticConstraint::usage="";
 
 SetSemiAnalyticParameters::usage="";
@@ -147,6 +149,8 @@ SelectSemiAnalyticConstraint[constraints_List] :=
              ];
            RemoveUnusedSettings[result]
           ];
+
+IsSemiAnalyticConstraintScale[settings_List] := MemberQ[settings, FlexibleSUSY`FSSolveEWSBFor[___]];
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
     Module[{allParameters},
