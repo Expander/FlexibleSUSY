@@ -8,6 +8,7 @@ SemiAnalyticSolution[parameter, {basis}]";
 
 CheckSemiAnalyticBoundaryConditions::usage="";
 IsSemiAnalyticSetting::usage="";
+IsBasisParameterSetting::usage="";
 IsSemiAnalyticConstraint::usage="";
 SelectSemiAnalyticConstraint::usage="";
 
@@ -117,6 +118,15 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
 IsSemiAnalyticSetting[setting_] :=
     Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
                  allSemiAnalyticParameters] =!= {};
+
+IsBasisParameterSetting[setting_, solutions_List] :=
+    Module[{allBasisParameters},
+           allBasisParameters = Parameters`FindAllParameters[DeleteDuplicates[Flatten[(GetBasis[#]& /@ solutions)]]];
+           allBasisParameters = DeleteCases[allBasisParameters,
+                                            p_ /; (Parameters`IsModelParameter[p] && !IsAllowedSemiAnalyticParameter[p])];
+           Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
+                        allBasisParameters] =!= {}
+          ];
 
 RemoveUnusedSettings[constraints_List] := Select[constraints, IsSemiAnalyticSetting];
 

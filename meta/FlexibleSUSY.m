@@ -3021,7 +3021,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                                            FlexibleSUSY`SUSYScaleInput,
                                                                            FlexibleSUSY`HighScaleInput}];
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
-
               Print["Creating classes for convergence testers ..."];
               WriteConvergenceTesterClass[Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]],
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_convergence_tester.hpp.in"}],
@@ -3042,7 +3041,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for high-scale constraint ..."];
               WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale,
-                                               Select[FlexibleSUSY`HighScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               Select[FlexibleSUSY`HighScaleInput,
+                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
+                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
                                                FlexibleSUSY`HighScaleFirstGuess,
                                                {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
@@ -3054,7 +3055,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for susy-scale constraint ..."];
               WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale,
-                                               Select[FlexibleSUSY`SUSYScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               Select[FlexibleSUSY`SUSYScaleInput,
+                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
+                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
                                                FlexibleSUSY`SUSYScaleFirstGuess,
                                                {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
@@ -3066,7 +3069,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for low-scale constraint ..."];
               WriteSemiAnalyticConstraintClass[FlexibleSUSY`LowScale,
-                                               Select[FlexibleSUSY`LowScaleInput, !SemiAnalytic`IsSemiAnalyticSetting[#]&],
+                                               Select[FlexibleSUSY`LowScaleInput,
+                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
+                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
                                                FlexibleSUSY`LowScaleFirstGuess,
                                                {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
