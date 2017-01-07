@@ -126,6 +126,34 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    sm.get_physical().clear();
 }
 
+namespace {
+
+double calculate_Mhh_pole(const Standard_model& sm)
+{
+   const double mh = sm.get_Mhh();
+   const double self_energy = Re(sm.self_energy_hh(mh));
+   const double M_tree = sm.get_mass_matrix_hh();
+   const double M_loop = M_tree - self_energy;
+
+   return SignedAbsSqrt(M_loop);
+}
+
+double calculate_Mhh_pole(const @ModelName@_mass_eigenstates& model, unsigned idx)
+{
+   const auto mh = model.get_M@HiggsBoson(idx)@;
+   const auto self_energy = Re(model.self_energy_hh(mh));
+   const auto M_tree = model.get_mass_matrix_@HiggsBoson@();
+   const decltype(M_tree) M_loop = M_tree - self_energy;
+
+   // @todo generalize
+   decltype(model.get_physical().M@HiggsBoson@) Mhh2;
+   fs_diagonalize_hermitian(M_loop, Mhh2);
+
+   return SignedAbsSqrt(Mhh2(idx));
+}
+
+} // anonymous namespace
+
 
 /**
  * Calculates \f$\lambda(Q)\f$ at the current loop level from the
@@ -141,14 +169,14 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
-   model.calculate_M@HiggsBoson@_pole();
 
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
-   sm.calculate_Mhh_pole();
 
-   sm.set_Lambdax((Sqr(model.get_physical().M@HiggsBoson_idx@)
-                   - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
+   const double Mhh_sm = calculate_Mhh_pole(sm);
+   const double Mhh_bsm = calculate_Mhh_pole(model, idx);
+
+   sm.set_Lambdax((Sqr(Mhh_bsm) - Sqr(Mhh_sm) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
 }
 
 /**
