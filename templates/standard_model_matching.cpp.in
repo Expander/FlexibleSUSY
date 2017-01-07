@@ -257,7 +257,6 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
 
 @gauge1Linit@
 @alphaEM1Lmatching@
-@alphaS1Lmatching@
 
    calculate_SM_pole_masses(model, sm);
 
