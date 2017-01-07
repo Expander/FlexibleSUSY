@@ -989,31 +989,34 @@ GetRenormalizationScheme[] :=
 
 WriteMatchingClass[susyScaleMatching_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
-            gauge1Linit = "", alphaS1Lmatching = "", alphaEM1Lmatching = "",
-            setRunningFermionMasses = "", setYukawas = "",
+            alphaS1Lmatching = "", alphaEM1Lmatching = "",
+            setRunningUpQuarkMasses = "", setRunningDownQuarkMasses = "",
+            setRunningDownLeptonMasses = "", setYukawas = "",
             callAllSMPoleMassFunctions = "",
             callAllSMPoleMassFunctionsThreads = ""},
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               If[Head[susyScaleMatching] === List,
                  userMatching = Constraint`ApplyConstraints[susyScaleMatching];
                 ];
-              gauge1Linit = Parameters`CreateLocalConstRefs[
-                  ThresholdCorrections`CalculateColorCoupling[scheme] +
-                  ThresholdCorrections`CalculateElectromagneticCoupling[scheme]];
-              alphaS1Lmatching = "delta_alpha_s = alpha_s/(2.*Pi)*(" <>
-              CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n";
-              alphaEM1Lmatching = "delta_alpha_em = alpha_em/(2.*Pi)*(" <>
-              CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n";
-              setRunningFermionMasses           = FlexibleEFTHiggsMatching`CalculateRunningFermionMasses[];
+              alphaS1Lmatching = Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateColorCoupling[scheme]] <> "\n" <>
+                                 "delta_alpha_s += alpha_s/(2.*Pi)*(" <>
+                                 CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n";
+              alphaEM1Lmatching = Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> "\n" <>
+                                  "delta_alpha_em += alpha_em/(2.*Pi)*(" <>
+                                  CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n";
+              setRunningUpQuarkMasses           = FlexibleEFTHiggsMatching`CalculateRunningUpQuarkMasses[];
+              setRunningDownQuarkMasses         = FlexibleEFTHiggsMatching`CalculateRunningDownQuarkMasses[];
+              setRunningDownLeptonMasses        = FlexibleEFTHiggsMatching`CalculateRunningDownLeptonMasses[];
               setYukawas                        = ThresholdCorrections`SetDRbarYukawaCouplings[];
               callAllSMPoleMassFunctions        = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
               callAllSMPoleMassFunctionsThreads = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
              ];
            WriteOut`ReplaceInFiles[files,
-                       { "@gauge1Linit@"             -> IndentText[WrapLines[gauge1Linit]],
-                         "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
-                         "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
-                         "@setRunningFermionMasses@" -> IndentText[setRunningFermionMasses],
+                       { "@alphaS1Lmatching@"        -> IndentText[IndentText[WrapLines[alphaS1Lmatching]]],
+                         "@alphaEM1Lmatching@"       -> IndentText[IndentText[WrapLines[alphaEM1Lmatching]]],
+                         "@setRunningUpQuarkMasses@" -> IndentText[IndentText[setRunningUpQuarkMasses]],
+                         "@setRunningDownQuarkMasses@" -> IndentText[IndentText[setRunningDownQuarkMasses]],
+                         "@setRunningDownLeptonMasses@" -> IndentText[IndentText[setRunningDownLeptonMasses]],
                          "@setYukawas@"              -> IndentText[WrapLines[setYukawas]],
                          "@applyUserMatching@"       -> IndentText[IndentText[WrapLines[userMatching]]],
                          "@callAllSMPoleMassFunctions@" -> IndentText[callAllSMPoleMassFunctions],

@@ -1,6 +1,5 @@
 #include <complex>
 #include "wrappers.hpp"
-#include "rge.h"
 
 using namespace flexiblesusy;
 
