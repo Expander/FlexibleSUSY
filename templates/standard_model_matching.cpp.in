@@ -274,7 +274,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    else
       model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
 
-@setRunningFermionMasses@
+   upQuarksDRbar.diagonal() = sm.get_MFu();
+   downQuarksDRbar.diagonal() = sm.get_MFd();
+   downLeptonsDRbar.diagonal() = sm.get_MFe();
 
    // define and apply 1L-matched gauge parameters
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_@hyperchargeCoupling@;
