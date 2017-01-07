@@ -175,11 +175,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
    Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
    Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
 
-   for (unsigned gen = 0; gen < 3; gen++) {
-      upQuarksDRbar(gen, gen)    = sm.get_MFu(gen);
-      downQuarksDRbar(gen, gen)  = sm.get_MFd(gen);
-      downLeptonsDRbar(gen, gen) = sm.get_MFe(gen);
-   }
+   upQuarksDRbar.diagonal()    = sm.get_MFu();
+   downQuarksDRbar.diagonal()  = sm.get_MFd();
+   downLeptonsDRbar.diagonal() = sm.get_MFe();
 
 @setYukawas@
 
