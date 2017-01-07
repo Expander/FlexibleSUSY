@@ -34,14 +34,6 @@
 namespace flexiblesusy {
 namespace standard_model {
 
-Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint()
-   : Constraint<Two_scale>()
-   , scale(0.)
-   , model(nullptr)
-   , qedqcd()
-{
-}
-
 Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint(
    StandardModel<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
    : Constraint<Two_scale>()
