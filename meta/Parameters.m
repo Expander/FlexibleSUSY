@@ -66,7 +66,8 @@ IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
 IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
-IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
+IsDerivedParameter::usage="returns True if parameter is a derived parameter";
+IsExtraParameter::usage="returns True if parameter is an auxiliary parameter";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -430,6 +431,11 @@ IsInputParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
 
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
+
+IsDerivedParameter[parameter_] := MemberQ[GetDependenceSPhenoSymbols[], parameter];
+
+IsDerivedParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsDerivedParameter[parameter];
 
 IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
 
