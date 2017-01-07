@@ -402,8 +402,6 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    const double delta_alpha_em = calculate_delta_alpha_em(alpha_em, model);
    const double delta_alpha_s = calculate_delta_alpha_s(alpha_s, model, 0);
 
-   calculate_SM_pole_masses(model, sm);
-
    // running W, Z masses (via 1L matching)
    const double mW2_1L = Sqr(calculate_MW_DRbar(sm, model));
    const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, model));
