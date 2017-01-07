@@ -518,7 +518,7 @@ CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
 CreateBoundaryValuesDefinitions[solutions_List] :=
     Module[{boundaryValues, defns},
            boundaryValues = GetBoundaryValueParameters[solutions];
-           defns = (CConversion`CreateCType[Parameters`GetType[#]]
+           defns = (CConversion`CreateCType[Parameters`GetType[#]] <> " "
                     <> GetBoundaryValueParameterName[#])& /@ boundaryValues;
            Utils`StringJoinWithSeparator[defns, ";\n"] <> ";\n"
           ];
