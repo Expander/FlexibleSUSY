@@ -294,6 +294,46 @@ Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @M
    return downLeptonsDRbar;
 }
 
+double calculate_MW_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+{
+   double mw = 0.;
+
+   if (loop_order == 0) {
+      mw = sm.get_MVWp();
+   } else {
+      const double mw2 = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW(0)@);
+
+      if (mw2 < 0.)
+         model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
+      else
+         model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
+
+      mw = AbsSqrt(mw2);
+   }
+
+   return mw;
+}
+
+double calculate_MZ_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+{
+   double mz = 0.;
+
+   if (loop_order == 0) {
+      mz = sm.get_MVZ();
+   } else {
+      const double mz2 = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
+
+      if (mz2 < 0.)
+         model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
+      else
+         model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorZ@);
+
+      mz = AbsSqrt(mz2);
+   }
+
+   return mz;
+}
+
 } // anonymous namespace
 
 /**
@@ -319,18 +359,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    calculate_SM_pole_masses(model, sm);
 
    // running W, Z masses (via 1L matching)
-   const double mW2_1L = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW(0)@);
-   const double mZ2_1L = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
-
-   if (mZ2_1L < 0.)
-      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
-   else
-      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorZ@);
-
-   if (mW2_1L < 0.)
-      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
-   else
-      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
+   const double mW2_1L = Sqr(calculate_MW_DRbar(sm, model));
+   const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, model));
 
    const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar(sm, model);
    const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar(sm, model);
