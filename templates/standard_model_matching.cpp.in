@@ -255,6 +255,45 @@ double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstate
    return delta_alpha_s;
 }
 
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+{
+   Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
+
+   if (loop_order == 0) {
+      upQuarksDRbar.diagonal() = sm.get_MFu();
+   } else {
+@setRunningUpQuarkMasses@
+   }
+
+   return upQuarksDRbar;
+}
+
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+{
+   Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
+
+   if (loop_order == 0) {
+      downQuarksDRbar.diagonal() = sm.get_MFd();
+   } else {
+@setRunningDownQuarkMasses@
+   }
+
+   return downQuarksDRbar;
+}
+
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+{
+   Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
+
+   if (loop_order == 0) {
+      downLeptonsDRbar.diagonal() = sm.get_MFe();
+   } else {
+@setRunningDownLeptonMasses@
+   }
+
+   return downLeptonsDRbar;
+}
+
 } // anonymous namespace
 
 /**
@@ -265,10 +304,6 @@ double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstate
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
-   Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
-
    model.calculate_DRbar_masses();
    model.solve_ewsb();
 
@@ -297,7 +332,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    else
       model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
 
-@setRunningFermionMasses@
+   const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar(sm, model);
+   const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar(sm, model);
+   const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar(sm, model);
 
    // define and apply 1L-matched gauge parameters
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_@hyperchargeCoupling@;
