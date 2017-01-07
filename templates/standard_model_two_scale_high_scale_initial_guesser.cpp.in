@@ -28,7 +28,6 @@
 #include "wrappers.hpp"
 
 #include <Eigen/Core>
-#include <cassert>
 
 namespace flexiblesusy {
 
@@ -55,8 +54,9 @@ namespace flexiblesusy {
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
 {
-   assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
-          " @ModelName@<Two_scale> must not be zero");
+   if (!model)
+      throw SetupError("@ModelName@_initial_guesser: Error: pointer to model"
+                       " @ModelName@<Two_scale> must not be zero");
 }
 
 @ModelName@_standard_model_initial_guesser<Two_scale>::~@ModelName@_standard_model_initial_guesser()

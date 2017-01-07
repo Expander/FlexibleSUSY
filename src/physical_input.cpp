@@ -17,8 +17,7 @@
 // ====================================================================
 
 #include "physical_input.hpp"
-
-#include <cassert>
+#include "error.hpp"
 
 namespace flexiblesusy {
 
@@ -63,7 +62,9 @@ void Physical_input::set(Input o, double value)
 
 void Physical_input::set(const Eigen::ArrayXd& vec)
 {
-   assert(vec.size() == values.size() && "Parameters array has wrong size");
+   if (vec.size() != values.size())
+      throw SetupError("Parameters array has wrong size");
+
    std::copy(vec.data(), vec.data() + vec.size(), values.begin());
 }
 

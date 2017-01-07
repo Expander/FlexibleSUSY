@@ -20,7 +20,6 @@
 #define FIXED_POINT_ITERATOR_H
 
 #include <iostream>
-#include <cassert>
 #include <limits>
 #include <string>
 #include <utility>
@@ -58,7 +57,7 @@ public:
     * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
     */
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
-      assert(a.size() == b.size() && "Error: vectors have different size.");
+      if (a.size() != b.size()) throw SetupError("Error: vectors have different size.");
 
       const std::size_t dimension = a.size();
       double residual = 0.;
@@ -96,7 +95,7 @@ public:
     * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
     */
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
-      assert(a.size() == b.size() && "Error: vectors have different size.");
+      if (a.size() != b.size()) throw SetupError("Error: vectors have different size.");
 
       const std::size_t dimension = a.size();
       double rel_diff = 0.;
@@ -145,7 +144,7 @@ public:
     * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
     */
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
-      assert(a.size() == b.size() && "Error: vectors have different size.");
+      if (a.size() != b.size()) throw SetupError("Error: vectors have different size.");
 
       if (precision < 0.)
          GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);

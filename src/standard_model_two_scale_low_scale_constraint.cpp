@@ -28,7 +28,6 @@
 #include "threshold_loop_functions.hpp"
 #include "weinberg_angle.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <limits>
 
@@ -58,8 +57,9 @@ Standard_model_low_scale_constraint<Two_scale>::~Standard_model_low_scale_constr
 
 void Standard_model_low_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: Standard_model_low_scale_constraint::apply():"
-          " model pointer must not be zero");
+   if (!model)
+      throw SetupError("Error: Standard_model_low_scale_constraint::apply():"
+                       " model pointer must not be zero");
 
    qedqcd.run_to(scale, 1.0e-5);
    model->calculate_DRbar_masses();

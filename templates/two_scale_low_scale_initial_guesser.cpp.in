@@ -21,11 +21,11 @@
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "lowe.h"
+#include "error.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
 #include <Eigen/Core>
-#include <cassert>
 
 namespace flexiblesusy {
 
@@ -48,8 +48,9 @@ namespace flexiblesusy {
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
 {
-   assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
-          " @ModelName@<Two_scale> must not be zero");
+   if (!model)
+      throw SetupError("@ModelName@_initial_guesser: Error: pointer to model"
+                       " @ModelName@<Two_scale> must not be zero");
 }
 
 @ModelName@_initial_guesser<Two_scale>::~@ModelName@_initial_guesser()
