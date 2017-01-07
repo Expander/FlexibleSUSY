@@ -141,7 +141,7 @@ double calculate_Mhh_pole(const Standard_model& sm)
 double calculate_Mhh_pole(const @ModelName@_mass_eigenstates& model, unsigned idx)
 {
    const auto mh = model.get_M@HiggsBoson(idx)@;
-   const auto self_energy = Re(model.self_energy_hh(mh));
+   const auto self_energy = Re(model.self_energy_@HiggsBoson@(mh));
    const auto M_tree = model.get_mass_matrix_@HiggsBoson@();
    const decltype(M_tree) M_loop = M_tree - self_energy;
 
