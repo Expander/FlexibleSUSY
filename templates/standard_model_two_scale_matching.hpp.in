@@ -72,8 +72,6 @@ private:
    double scale{0.};
    unsigned loop_order{0};
    unsigned higgs_idx{0}; ///< Higgs index
-
-   @ModelName@<Two_scale> calculate_tree_level_parameters() const;
 };
 
 template<>
@@ -112,8 +110,6 @@ private:
    double scale{0.};
    unsigned loop_order{0};
    unsigned higgs_idx{0}; ///< Higgs index
-
-   @ModelName@<Two_scale> calculate_tree_level_parameters() const;
 };
 
 } // namespace flexiblesusy
