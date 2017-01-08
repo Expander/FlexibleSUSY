@@ -25,6 +25,8 @@ GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
 CreateBoundaryValueParameters::usage="Creates new parameters
 representing the boundary values.";
+CreateCoefficientParameters::usage="Creaters new parameters
+representing the coefficients in the semi-analytic solutions.";
 
 CreateSemiAnalyticSolutionsDefinitions::usage="";
 CreateSemiAnalyticSolutionsInitialization::usage="";
@@ -487,13 +489,22 @@ CreateBoundaryValueParameters[solutions_List] :=
 GetBoundaryValueParameterName[par_] :=
     CConversion`ToValidCSymbolString[CreateBoundaryValueParameter[par]];
 
-CreateCoefficientNames[solution_SemiAnalyticSolution] :=
-    Module[{par, basis, basisSize, i},
-           par = CConversion`ToValidCSymbolString[GetName[solution]];
-           basis = GetBasis[solution];
-           basisSize = Length[basis];
-           Table[par <> "_coeff_" <> ToString[i], {i, 1, basisSize}]
+CreateCoefficients[SemiAnalyticSolution[par_, basis_]] :=
+    Module[{i},
+           Table[Symbol[CConversion`ToValidCSymbolString[par] <> "Coeff" <> ToString[i]], {i, 1, Length[basis]}]
           ];
+
+CreateCoefficientParameters[solutions_List] :=
+    Module[{types, coefficients, withTypes},
+           types = Parameters`GetType[GetName[#]]& /@ solutions;
+           coefficients = CreateCoefficients /@ solutions;
+           withTypes = MapIndexed[With[{coeffs = #1, type = types[[First[#2]]]},
+                                       ({#, type}) & /@ coeffs] &, coefficients];
+           Join[Sequence @@ withTypes]
+          ];
+
+CreateCoefficientNames[solution_SemiAnalyticSolution] :=
+    CConversion`ToValidCSymbolString /@ CreateCoefficients[solution];
 
 CreateSemiAnalyticSolutionsDefinitions[solution_SemiAnalyticSolution] :=
     Module[{par, type, coeffs, defs = ""},

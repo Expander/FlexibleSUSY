@@ -38,7 +38,7 @@ using namespace @ModelName@_info;
 
 #define CLASSNAME @ModelName@<Semi_analytic>
 
-#define COEFFICIENT(parameter,i) parameter##_coeff_##i
+#define COEFFICIENT(parameter,i) parameter##Coeff##i
 #define INPUTPARAMETER(parameter) model.get_input().parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
 

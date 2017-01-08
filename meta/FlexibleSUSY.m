@@ -3033,6 +3033,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
               Parameters`AddExtraParameters[SemiAnalytic`CreateBoundaryValueParameters[semiAnalyticSolns]];
+              Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
 
               (* construct additional semi-analytic constraint from user-defined constraints *)
               Which[SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`HighScaleInput],
