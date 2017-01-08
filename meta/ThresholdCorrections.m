@@ -606,7 +606,7 @@ if (mw_pole_sqr < 0.)
 return AbsSqrt(mw_pole_sqr);"
           ];
 
-RecalculateMWPole[_,_] := "";
+RecalculateMWPole[_,_] := "return mw_pole;";
 
 WarnIfFreeQ[coupling_, expr_, sym_] :=
     If[FreeQ[expr, sym],
