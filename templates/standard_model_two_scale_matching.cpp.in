@@ -32,12 +32,10 @@ namespace flexiblesusy {
 CLASSNAME::@ModelName@_standard_model_matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
-   @ModelName@<Two_scale>* high_0l_,
    const Scale_getter& scale_getter_,
    unsigned loop_order_,
    unsigned higgs_idx_)
    : model(high_)
-   , model_0l(high_0l_)
    , eft(low_)
    , scale_getter(scale_getter_)
    , scale(0.)
@@ -73,15 +71,13 @@ void CLASSNAME::match()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
-   model_0l->run_to(get_scale());
-   model_0l->solve_ewsb_tree_level();
 
-   @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model_0l, *eft);
-
-   if (model->get_thresholds() && loop_order)
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *model_0l, *eft, loop_order);
-   else
+   if (model->get_thresholds() && loop_order) {
+      const auto model_0l = calculate_tree_level_parameters();
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, model_0l, *eft, loop_order);
+   } else {
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+   }
 }
 
 void CLASSNAME::match_tree_level()
@@ -91,11 +87,21 @@ void CLASSNAME::match_tree_level()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
-   model_0l->run_to(get_scale());
-   model_0l->solve_ewsb_tree_level();
 
-   @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model_0l, *eft);
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+}
+
+@ModelName@<Two_scale> CLASSNAME::calculate_tree_level_parameters() const
+{
+   auto model_0l = *model;
+   model_0l.set_pole_mass_loop_order(0);
+   model_0l.set_ewsb_loop_order(0);
+   model_0l.solve_ewsb_tree_level();
+   model_0l.calculate_DRbar_parameters();
+
+   @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(model_0l, *eft);
+
+   return model_0l;
 }
 
 unsigned CLASSNAME::get_higgs_index() const
@@ -142,12 +148,10 @@ void CLASSNAME::set_scale(double scale_)
 CLASSNAME::@ModelName@_standard_model_matching_down(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
-   @ModelName@<Two_scale>* high_0l_,
    const Scale_getter& scale_getter_,
    unsigned loop_order_,
    unsigned higgs_idx_)
    : model(high_)
-   , model_0l(high_0l_)
    , eft(low_)
    , scale_getter(scale_getter_)
    , scale(0.)
@@ -183,13 +187,13 @@ void CLASSNAME::match()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
-   model_0l->run_to(get_scale());
-   model_0l->solve_ewsb_tree_level();
 
-   if (model->get_thresholds() && loop_order)
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, *model_0l, loop_order, higgs_idx);
-   else
+   if (model->get_thresholds() && loop_order) {
+      const auto model_0l = calculate_tree_level_parameters();
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, model_0l, loop_order, higgs_idx);
+   } else {
       @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+   }
 }
 
 void CLASSNAME::match_tree_level()
@@ -199,10 +203,21 @@ void CLASSNAME::match_tree_level()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
-   model_0l->run_to(get_scale());
-   model_0l->solve_ewsb_tree_level();
 
    @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+}
+
+@ModelName@<Two_scale> CLASSNAME::calculate_tree_level_parameters() const
+{
+   auto model_0l = *model;
+   model_0l.set_pole_mass_loop_order(0);
+   model_0l.set_ewsb_loop_order(0);
+   model_0l.solve_ewsb_tree_level();
+   model_0l.calculate_DRbar_parameters();
+
+   @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(model_0l, *eft);
+
+   return model_0l;
 }
 
 unsigned CLASSNAME::get_higgs_index() const

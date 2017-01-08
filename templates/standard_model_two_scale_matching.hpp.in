@@ -20,6 +20,7 @@
 #define @ModelName@_TWO_SCALE_MATCHING_H
 
 #include "two_scale_matching.hpp"
+#include "@ModelName@_two_scale_model.hpp"
 #include <functional>
 
 namespace flexiblesusy {
@@ -45,7 +46,6 @@ public:
 
    @ModelName@_standard_model_matching_up(standard_model::StandardModel<Two_scale>*,
                                           @ModelName@<Two_scale>*,
-                                          @ModelName@<Two_scale>*,
                                           const Scale_getter&,
                                           unsigned, unsigned);
 
@@ -59,7 +59,6 @@ public:
    unsigned get_loop_order() const;
    void set_higgs_index(unsigned);
    void set_loop_order(unsigned);
-   void set_model_0l(@ModelName@<Two_scale>* m) { model_0l = m; }
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
@@ -67,12 +66,14 @@ public:
 
 private:
    @ModelName@<Two_scale>* model{nullptr};
-   @ModelName@<Two_scale>* model_0l{nullptr};
    standard_model::StandardModel<Two_scale>* eft{nullptr};
+   @ModelName@<Two_scale> model_0l{};
    Scale_getter scale_getter{};
    double scale{0.};
    unsigned loop_order{0};
    unsigned higgs_idx{0}; ///< Higgs index
+
+   @ModelName@<Two_scale> calculate_tree_level_parameters() const;
 };
 
 template<>
@@ -84,7 +85,6 @@ public:
    @ModelName@_standard_model_matching_down() = default;
 
    @ModelName@_standard_model_matching_down(standard_model::StandardModel<Two_scale>*,
-                                            @ModelName@<Two_scale>*,
                                             @ModelName@<Two_scale>*,
                                             const Scale_getter&,
                                             unsigned, unsigned);
@@ -99,7 +99,6 @@ public:
    unsigned get_loop_order() const;
    void set_higgs_index(unsigned);
    void set_loop_order(unsigned);
-   void set_model_0l(@ModelName@<Two_scale>* m) { model_0l = m; }
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
@@ -107,12 +106,14 @@ public:
 
 private:
    @ModelName@<Two_scale>* model{nullptr};
-   @ModelName@<Two_scale>* model_0l{nullptr};
    standard_model::StandardModel<Two_scale>* eft{nullptr};
+   @ModelName@<Two_scale> model_0l{};
    Scale_getter scale_getter{};
    double scale{0.};
    unsigned loop_order{0};
    unsigned higgs_idx{0}; ///< Higgs index
+
+   @ModelName@<Two_scale> calculate_tree_level_parameters() const;
 };
 
 } // namespace flexiblesusy
