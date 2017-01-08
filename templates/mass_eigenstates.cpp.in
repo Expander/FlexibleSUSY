@@ -245,6 +245,22 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
 }
 
 /**
+ * This function returns the vector of tadpoles, each divided by the
+ * corresponding VEV.  Thus, the returned tadpoles have the dimension
+ * GeV^2 each.
+ *
+ * @return vector of tadpoles
+ */
+CLASSNAME::EWSB_vector_t CLASSNAME::tadpole_equations_over_vevs() const
+{
+   auto tadpole = tadpole_equations();
+
+@divideTadpoleByVEV@
+
+   return tadpole;
+}
+
+/**
  * This method solves the EWSB conditions iteratively, trying several
  * root finding methods until a solution is found.
  */
