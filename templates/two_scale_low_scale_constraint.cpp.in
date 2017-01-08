@@ -135,6 +135,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    initial_scale_guess = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
+   ckm.setIdentity();
+   pmns.setIdentity();
+   neutrinoDRbar.setZero();
    MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
@@ -155,6 +158,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 @scaleGuess@
    scale = initial_scale_guess;
 
+   ckm = qedqcd.get_complex_ckm();
+   pmns = qedqcd.get_complex_pmns();
+   neutrinoDRbar = Eigen::Matrix<double,3,3>::Zero();
    MWDRbar = 0.;
    MZDRbar = 0.;
    AlphaS = 0.;
@@ -163,8 +169,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
-   ckm = qedqcd.get_complex_ckm();
-   pmns = qedqcd.get_complex_pmns();
    self_energy_w_at_mw = 0.;
 }
 
