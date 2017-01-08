@@ -93,7 +93,11 @@ void CLASSNAME::match_tree_level()
 
 @ModelName@<Two_scale> CLASSNAME::calculate_tree_level_parameters() const
 {
+   eft->calculate_DRbar_parameters();
+   eft->solve_ewsb();
+
    auto model_0l = *model;
+   model_0l.get_problems().clear();
    model_0l.set_pole_mass_loop_order(0);
    model_0l.set_ewsb_loop_order(0);
    model_0l.solve_ewsb_tree_level();
@@ -209,7 +213,11 @@ void CLASSNAME::match_tree_level()
 
 @ModelName@<Two_scale> CLASSNAME::calculate_tree_level_parameters() const
 {
+   eft->calculate_DRbar_parameters();
+   eft->solve_ewsb();
+
    auto model_0l = *model;
+   model_0l.get_problems().clear();
    model_0l.set_pole_mass_loop_order(0);
    model_0l.set_ewsb_loop_order(0);
    model_0l.solve_ewsb_tree_level();
