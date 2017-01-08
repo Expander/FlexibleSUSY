@@ -50,7 +50,7 @@ class @ModelName@_standard_model_initial_guesser;
 template<>
 class @ModelName@_standard_model_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
-   @ModelName@_standard_model_initial_guesser(@ModelName@<Two_scale>*,
+   @ModelName@_standard_model_initial_guesser(@ModelName@<Two_scale>*, @ModelName@<Two_scale>*,
                                standard_model::StandardModel<Two_scale>*,
                                const softsusy::QedQcd&,
                                const standard_model::Standard_model_low_scale_constraint<Two_scale>&,
@@ -62,6 +62,7 @@ public:
 
 private:
    @ModelName@<Two_scale>* model; ///< pointer to model class
+   @ModelName@<Two_scale>* model_0l; ///< pointer to model class
    standard_model::StandardModel<Two_scale>* eft; ///< pointer to effective model class
    softsusy::QedQcd qedqcd; ///< Standard Model low-energy data
    double mu_guess; ///< guessed DR-bar mass of up-quark
