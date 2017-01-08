@@ -2276,7 +2276,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
-            haveEWSB = True,
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
@@ -2662,9 +2661,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* filter out trivial EWSB eqs. *)
            ewsbEquations = Select[ewsbEquations, (#=!=0)&];
 
-           haveEWSB = ewsbEquations =!= {};
-
-           If[haveEWSB,
+           If[ewsbEquations =!= {},
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
               FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
               If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
