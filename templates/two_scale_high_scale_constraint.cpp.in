@@ -30,7 +30,6 @@
 #include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <cerrno>
 #include <cstring>
@@ -67,8 +66,9 @@ namespace flexiblesusy {
 
 void @ModelName@_high_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: @ModelName@_high_scale_constraint::apply():"
-          " model pointer must not be zero");
+   if (!model)
+      throw SetupError("Error: @ModelName@_high_scale_constraint::apply():"
+                       " model pointer must not be zero");
 
 @temporarySetting@
 
@@ -129,8 +129,9 @@ void @ModelName@_high_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_high_scale_constraint<Two_scale>::initialize()
 {
-   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
-          "initialize(): model pointer is zero.");
+   if (!model)
+      throw SetupError("@ModelName@_high_scale_constraint<Two_scale>::"
+                       "initialize(): model pointer is zero.");
 
 @scaleGuess@
    scale = initial_scale_guess;
@@ -138,8 +139,9 @@ void @ModelName@_high_scale_constraint<Two_scale>::initialize()
 
 void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 {
-   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
-          "update_scale(): model pointer is zero.");
+   if (!model)
+      throw SetupError("@ModelName@_high_scale_constraint<Two_scale>::"
+                       "update_scale(): model pointer is zero.");
 
    const double currentScale = model->get_scale();
    const @ModelName@_soft_parameters beta_functions(model->calc_beta());

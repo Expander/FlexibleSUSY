@@ -20,6 +20,7 @@
 #define EIGEN_UTILS_H
 
 #include <Eigen/Core>
+#include <cassert>
 #include <iomanip>
 #include <sstream>
 #include <string>

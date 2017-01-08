@@ -1,7 +1,9 @@
 BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopMasses`", "Constraint`", "ThresholdCorrections`", "Parameters`"}];
 
 CallSMPoleMassFunctions::usage = "";
-CalculateRunningFermionMasses::usage = "";
+CalculateRunningUpQuarkMasses::usage = "";
+CalculateRunningDownQuarkMasses::usage = "";
+CalculateRunningDownLeptonMasses::usage = "";
 FillSMFermionPoleMasses::usage = "";
 
 Begin["`Private`"];
@@ -18,7 +20,7 @@ CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
            result
           ];
 
-CalculateRunningFermionMasses[] :=
+CalculateRunningUpQuarkMasses[] :=
     Module[{result = "", i, iStr, mq, mqFun},
            For[i = 0, i < 3, i++,
                iStr = ToString[i];
@@ -29,6 +31,11 @@ CalculateRunningFermionMasses[] :=
                         "sm.get_physical().MFu(" <> iStr <> ") - " <>
                         "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
               ];
+           result
+          ];
+
+CalculateRunningDownQuarkMasses[] :=
+    Module[{result = "", i, iStr, mq, mqFun},
            For[i = 0, i < 3, i++,
                iStr = ToString[i];
                mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownQuark[i + 1, True]];
@@ -38,6 +45,11 @@ CalculateRunningFermionMasses[] :=
                         "sm.get_physical().MFd(" <> iStr <> ") - " <>
                         "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
               ];
+           result
+          ];
+
+CalculateRunningDownLeptonMasses[] :=
+    Module[{result = "", i, iStr, mq, mqFun},
            For[i = 0, i < 3, i++,
                iStr = ToString[i];
                mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownLepton[i + 1, True]];

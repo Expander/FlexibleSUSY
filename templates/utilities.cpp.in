@@ -21,13 +21,13 @@
 #include "@ModelName@_utilities.hpp"
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_observables.hpp"
+#include "error.hpp"
 #include "logger.hpp"
 #include "physical_input.hpp"
 #include "database.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
 
-#include <cassert>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -315,7 +315,9 @@ Eigen::ArrayXd extract_entry(const std::string& file_name, std::size_t entry)
       offset += number_of_observables;
    }
 
-   assert(offset == total_entries);
+   if (offset != total_entries)
+      throw SetupError("from_database: offset (" + ToString(offset) +
+                       ") != total_entries (" + ToString(total_entries) + ").");
 
    return model;
 }

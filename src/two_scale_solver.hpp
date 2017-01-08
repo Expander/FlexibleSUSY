@@ -61,8 +61,6 @@ class Two_scale_running_precision;
 template<>
 class RGFlow<Two_scale> {
 public:
-   /// Create empty two scale solver.
-   /// The RG running precision is set to the default value 0.001.
    RGFlow() = default;
    RGFlow(const RGFlow&) = delete;
    RGFlow(RGFlow&&) = delete;
@@ -145,12 +143,11 @@ private:
    void clear_problems();              ///< clear model problems
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
    Model* get_model(double) const;     ///< returns model at given scale
-   void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
-   void update_running_precision();    ///< update the RG running precision
-   std::vector<std::shared_ptr<Slider> > sort_sliders() const; ///< sort the sliders w.r.t. to scale
-
+   void initial_guess();               ///< initial guess
    void run_sliders();                 ///< run all sliders
+   std::vector<std::shared_ptr<Slider> > sort_sliders() const; ///< sort the sliders w.r.t. to scale
+   void update_running_precision();    ///< update the RG running precision
 };
 
 }

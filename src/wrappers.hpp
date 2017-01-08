@@ -34,6 +34,7 @@
 
 #include "dilog.hpp"
 #include "eigen_tensor.hpp"
+#include "error.hpp"
 #include "if.hpp"
 #include "sum.hpp"
 #include "which.hpp"
@@ -348,7 +349,8 @@ double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
 {
    typename Eigen::MatrixBase<Derived>::PlainObject sumTol(a.rows());
 
-   assert(a.rows() == b.rows());
+   if (a.rows() != b.rows())
+      throw SetupError("MaxRelDiff: vectors have different size!");
 
    for (int i = 0; i < a.rows(); i++)
       sumTol(i) = MaxRelDiff(a(i), b(i));
@@ -399,7 +401,7 @@ template <typename T>
 T PolyLog(int n, T z) {
    if (n == 2)
       return gm2calc::dilog(z);
-   assert(false && "PolyLog(n!=2) not implemented");
+   throw SetupError("PolyLog(n!=2) not implemented");
 }
 
 template <typename Base, typename Exponent>
