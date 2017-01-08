@@ -60,7 +60,7 @@ class Two_scale_running_precision;
 template<>
 class RGFlow<Two_scale> {
 public:
-   RGFlow();
+   RGFlow() = default;
    RGFlow(const RGFlow&) = delete;
    RGFlow(RGFlow&&) = delete;
 
@@ -126,25 +126,24 @@ private:
       Matching<Two_scale>* matching;
    };
 
-   std::vector<std::shared_ptr<Slider> > sliders; ///< sliders to be run up and down
-   unsigned int iteration;             ///< iteration number (starting at 0)
-   Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
-   Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
-   Two_scale_running_precision* running_precision_calculator; ///< RG running precision calculator
-   double running_precision;           ///< RG running precision
-   double scale;                       ///< current scale
+   std::vector<std::shared_ptr<Slider> > sliders{}; ///< sliders to be run up and down
+   unsigned int iteration{0};                       ///< iteration number (starting at 0)
+   Convergence_tester<Two_scale>* convergence_tester{nullptr}; ///< the convergence tester
+   Initial_guesser<Two_scale>* initial_guesser{nullptr};       ///< does initial guess
+   Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
+   double running_precision{1.0e-3};                ///< RG running precision
+   double scale{0.};                                ///< current scale
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
    Two_scale_model* get_model(double) const; ///< returns model at given scale
-   void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
-   void update_running_precision();    ///< update the RG running precision
-   std::vector<std::shared_ptr<Slider> > sort_sliders() const; ///< sort the sliders w.r.t. to scale
-
+   void initial_guess();               ///< initial guess
    void run_sliders();                 ///< run all sliders
+   std::vector<std::shared_ptr<Slider> > sort_sliders() const; ///< sort the sliders w.r.t. to scale
+   void update_running_precision();    ///< update the RG running precision
 };
 
 }

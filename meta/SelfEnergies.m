@@ -28,6 +28,8 @@ FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
 FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
 
+DivideTadpoleByVEV::usage="Divides each tadpole by corresponding VEV";
+
 CreateTwoLoopTadpolesMSSM::usage="Creates function prototypes and
 definitions for two-loop tadpoles in the MSSM";
 
@@ -582,6 +584,15 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", str
                       "tadpole_2l(" <> ToString[v-1] <> ");\n";
               ];
            Return[IndentText[IndentText[body]]];
+          ];
+
+DivideTadpoleByVEV[higgsAndVEV_List, arrayName_String] :=
+    Module[{body = "", v, vev},
+           For[v = 1, v <= Length[higgsAndVEV], v++,
+               vev = CConversion`ToValidCSymbolString[higgsAndVEV[[v,3]]];
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] /= " <> vev <> ";\n";
+              ];
+           body
           ];
 
 AssertFieldDimension[field_, dim_, model_] :=

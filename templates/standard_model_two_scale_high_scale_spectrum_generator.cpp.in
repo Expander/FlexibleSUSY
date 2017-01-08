@@ -67,7 +67,7 @@ double @ModelName@_spectrum_generator<Two_scale>::get_eft_pole_mass_scale() cons
 void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
-   @ModelName@<Two_scale>& model = this->model;
+   auto& model = this->model;
    model.clear();
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(this->settings.get(Spectrum_generator_settings::calculate_sm_masses));

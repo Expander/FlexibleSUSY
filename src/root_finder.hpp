@@ -253,7 +253,7 @@ const gsl_multiroot_fsolver_type* Root_finder<dimension>::solver_type_to_gsl_poi
                        + std::to_string(solver_type));
    }
 
-   return NULL;
+   return nullptr;
 }
 
 template <std::size_t dimension>

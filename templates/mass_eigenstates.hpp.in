@@ -122,6 +122,8 @@ public:
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
    EWSB_vector_t tadpole_equations() const;
+   /// calculates the tadpoles divided by VEVs at current loop order
+   EWSB_vector_t tadpole_equations_over_vevs() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@

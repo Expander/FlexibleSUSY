@@ -186,7 +186,7 @@ public:
     /// add a model, constraints and matching condition
     /// order of constraints: ascending t
     void add_model(Lattice_model*,
-		   InterTheoryConstraint *m = NULL,
+		   InterTheoryConstraint *m = nullptr,
 		   const std::vector<SingleSiteConstraint*>& constraints = std::vector<SingleSiteConstraint*>());
     /// add a model and up- and downwards constraints
     /// order of upward_constraints: ascending t

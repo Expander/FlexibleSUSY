@@ -37,7 +37,7 @@ class StandardModel;
 template<>
 class Standard_model_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
-   Standard_model_low_scale_constraint();
+   Standard_model_low_scale_constraint() = default;
    Standard_model_low_scale_constraint(StandardModel<Two_scale>*, const softsusy::QedQcd&);
    virtual ~Standard_model_low_scale_constraint();
    virtual void apply() override;
@@ -49,12 +49,11 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const;
    void set_sm_parameters(const softsusy::QedQcd&);
-   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
-   double scale;
-   StandardModel<Two_scale>* model;
-   softsusy::QedQcd qedqcd;
+   double scale{0.};
+   StandardModel<Two_scale>* model{nullptr};
+   softsusy::QedQcd qedqcd{};
 };
 
 } // namespace standard_model

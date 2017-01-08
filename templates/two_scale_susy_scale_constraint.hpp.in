@@ -36,7 +36,7 @@ class Two_scale;
 template<>
 class @ModelName@_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
-   @ModelName@_susy_scale_constraint();
+   @ModelName@_susy_scale_constraint() = default;
    @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*, const softsusy::QedQcd&);
    virtual ~@ModelName@_susy_scale_constraint();
    virtual void apply() override;
@@ -56,10 +56,12 @@ protected:
    void update_scale();
 
 private:
-   double scale;
-   double initial_scale_guess;
-   @ModelName@<Two_scale>* model;
-   softsusy::QedQcd qedqcd;
+   double scale{0.};
+   double initial_scale_guess{0.};
+   @ModelName@<Two_scale>* model{nullptr};
+   softsusy::QedQcd qedqcd{};
+
+   void check_model_ptr() const;
 };
 
 } // namespace flexiblesusy

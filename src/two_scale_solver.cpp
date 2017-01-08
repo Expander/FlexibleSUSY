@@ -42,21 +42,6 @@
 namespace flexiblesusy {
 
 /**
- * Create empty two scale solver.
- * The RG running precision is set to the default value 0.001.
- */
-RGFlow<Two_scale>::RGFlow()
-   : sliders()
-   , iteration(0)
-   , convergence_tester(nullptr)
-   , initial_guesser(nullptr)
-   , running_precision_calculator(nullptr)
-   , running_precision(1.0e-3)
-   , scale(0)
-{
-}
-
-/**
  * Adding a model constraint
  *
  * @param c constraint

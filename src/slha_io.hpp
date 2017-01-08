@@ -19,7 +19,6 @@
 #ifndef SLHA_IO_H
 #define SLHA_IO_H
 
-#include <cassert>
 #include <string>
 #include <sstream>
 #include <iosfwd>
@@ -269,7 +268,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
 template <class Derived>
 double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   assert(matrix.cols() > 1 && "Matrix has not more than 1 column");
+   if (matrix.cols() <= 1) throw SetupError("Matrix has less than 2 columns");
 
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
@@ -315,7 +314,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
 template <class Derived>
 double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Derived>& vector) const
 {
-   assert(vector.cols() == 1 && "Vector has more than 1 columns");
+   if (vector.cols() != 1) throw SetupError("Vector has more than 1 column");
 
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
