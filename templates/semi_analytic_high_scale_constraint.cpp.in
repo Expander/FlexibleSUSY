@@ -36,6 +36,7 @@
 #include <cstring>
 
 #define DERIVEDPARAMETER(p) model->p()
+#define EXTRAPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -73,7 +74,7 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::apply()
    update_scale();
 
 @applyConstraint@
-
+@saveBoundaryValueParameters@
    check_non_perturbative();
 
 @temporaryResetting@

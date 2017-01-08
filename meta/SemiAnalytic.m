@@ -23,14 +23,18 @@ IsSemiAnalyticParameter::usage="";
 
 GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
+CreateBoundaryValueParameters::usage="Creates new parameters
+representing the boundary values.";
 
 CreateSemiAnalyticSolutionsDefinitions::usage="";
 CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
+SetBoundaryValueParameters::usage="";
 
 ApplySemiAnalyticBoundaryConditions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
+SaveBoundaryValueParameters::usage="";
 
 Begin["`Private`"];
 
@@ -475,8 +479,13 @@ ReplaceImplicitConstraints[settings_List] :=
            ReplacePart[settings, Rule[#[[1]], Sequence @@ #[[2]]] & /@ replacements]
           ];
 
+CreateBoundaryValueParameter[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
+
+CreateBoundaryValueParameters[solutions_List] :=
+    {CreateBoundaryValueParameter[#], Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
+
 GetBoundaryValueParameterName[par_] :=
-    "basis_" <> CConversion`ToValidCSymbolString[par];
+    CConversion`ToValidCSymbolString[CreateBoundaryValueParameter[par]];
 
 CreateCoefficientNames[solution_SemiAnalyticSolution] :=
     Module[{par, basis, basisSize, i},
@@ -531,6 +540,20 @@ CreateBoundaryValuesInitialization[solutions_List] :=
            Return[def];
           ];
 
+CreateBoundaryValueSetter[parameter_] :=
+    Module[{basisParStr, type},
+           basisParStr = GetBoundaryValueParameterName[parameter];
+           type = Parameters`GetType[parameter];
+           CConversion`CreateInlineSetter[basisParStr, type]
+          ];
+
+SetBoundaryValueParameters[solutions_List] :=
+    Module[{boundaryValues, result = ""},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           (result = result <> CreateBoundaryValueSetter[#])& /@ boundaryValues;
+           Return[result];
+          ];
+
 ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
     Which[Parameters`IsModelParameter[parameter],
           Parameters`SetParameter[parameter, value, modelPrefix],
@@ -573,6 +596,35 @@ EvaluateSemiAnalyticSolutions[solutions_List] :=
                                 <> " = " <> GetBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
            (result = result <> EvaluateSemiAnalyticSolution[#])& /@ solutions;
            setBoundaryValues <> result
+          ];
+
+SaveBoundaryValueParameter[parameter_, modelPrefix_String:"model->"] :=
+    Module[{basisPar = CreateBoundaryValueParameter[parameter],
+            parStr = CConversion`ToValidCSymbolString[parameter],
+            macro, value},
+           Which[Parameters`IsModelParameter[parameter],
+                 macro = "MODELPARAMETER",
+                 Parameters`IsInputParameter[parameter],
+                 macro = "INPUTPARAMETER",
+                 Parameters`IsExtraParameter[parameter],
+                 macro = "EXTRAPARAMETER",
+                 Parameters`IsOutputParameter[parameter],
+                 macro = "MODELPARAMETER",
+                 Parameters`IsPhase[parameter],
+                 macro = "PHASE",
+                 True,
+                 Print["Error: unrecognized parameter ", parameter];
+                 Quit[1];
+                ];
+           value = macro <> "(" <> parStr <> ")";
+           Parameters`SetParameter[basisPar, value, modelPrefix]
+          ];
+
+SaveBoundaryValueParameters[solutions_List] :=
+    Module[{boundaryValueParameters, result = ""},
+           boundaryValueParameters = GetBoundaryValueParameters[solutions];
+           (result = result <> SaveBoundaryValueParameter[#])& /@ boundaryValueParameters;
+           Return[result];
           ];
 
 DependsAtMostOn[num_?NumericQ, pars_List] := True;

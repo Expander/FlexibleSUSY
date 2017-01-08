@@ -37,6 +37,7 @@
 namespace flexiblesusy {
 
 #define DERIVEDPARAMETER(p) model->p()
+#define EXTRAPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -84,7 +85,7 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::apply()
    calculate_DRbar_gauge_couplings();
 
 @applyConstraint@
-
+@saveBoundaryValueParameters@
    if (model->get_thresholds())
       qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 

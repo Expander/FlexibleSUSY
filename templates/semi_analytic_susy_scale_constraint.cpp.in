@@ -34,6 +34,7 @@
 namespace flexiblesusy {
 
 #define DERIVEDPARAMETER(p) model->p()
+#define EXTRAPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -74,6 +75,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 
    // apply user-defined susy scale constraints
 @applyConstraint@
+@saveBoundaryValueParameters@
 @temporaryResetting@
 }
 

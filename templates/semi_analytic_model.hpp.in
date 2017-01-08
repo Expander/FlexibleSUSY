@@ -59,6 +59,7 @@ public:
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 
+@setBoundaryValueParameters@
    void calculate_coefficients(double);
 
 private:
