@@ -123,7 +123,7 @@ void @ModelName@_susy_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   model = NULL;
+   model = nullptr;
    qedqcd = softsusy::QedQcd();
 }
 

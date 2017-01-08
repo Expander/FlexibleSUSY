@@ -235,7 +235,7 @@ const gsl_multimin_fminimizer_type* Minimizer<dimension>::solver_type_to_gsl_poi
                        + std::to_string(solver_type));
    }
 
-   return NULL;
+   return nullptr;
 }
 
 } // namespace flexiblesusy
