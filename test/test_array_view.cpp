@@ -19,6 +19,22 @@ BOOST_AUTO_TEST_CASE( test_empty_range )
    BOOST_CHECK_EQUAL(av.size(), 0);
 }
 
+BOOST_AUTO_TEST_CASE( test_const_element_type )
+{
+   const double a[4] = { 1., 2., 3., 4. };
+   auto av = make_dynamic_array_view(a, a + 4);
+
+   BOOST_CHECK_EQUAL(av.size(), 4);
+}
+
+BOOST_AUTO_TEST_CASE( test_const_element_type_2 )
+{
+   const double a[4] = { 1., 2., 3., 4. };
+   Dynamic_array_view<const double> av(a);
+
+   BOOST_CHECK_EQUAL(av.size(), 4);
+}
+
 BOOST_AUTO_TEST_CASE( test_length_init )
 {
    double a[4] = { 1., 2., 3., 4. };
