@@ -74,9 +74,7 @@ namespace flexiblesusy {
 
 void @ModelName@_low_scale_constraint<Two_scale>::apply()
 {
-   if (!model)
-      throw SetupError("Error: @ModelName@_low_scale_constraint::apply():"
-                       " model pointer must not be zero");
+   check_model_ptr();
 
 @temporarySetting@
 
@@ -151,9 +149,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "initialize(): model pointer is zero.");
+   check_model_ptr();
 
 @scaleGuess@
    scale = initial_scale_guess;
@@ -174,9 +170,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "update_scale(): model pointer is zero.");
+   check_model_ptr();
 
 @calculateScale@
 @restrictScale@
@@ -184,14 +178,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
 {
+   check_model_ptr();
+
    if (qedqcd.get_scale() != get_scale())
       throw SetupError("Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
           " constraint.  You need to run the low-energy data set to this"
           " scale!");
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_threshold_corrections(): model pointer is zero");
 
    const double alpha_em = qedqcd.displayAlpha(softsusy::ALPHA);
    const double alpha_s  = qedqcd.displayAlpha(softsusy::ALPHAS);
@@ -226,9 +219,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_theta_w(): model pointer is zero");
+   check_model_ptr();
 
    double theta_w = 0.;
 
@@ -239,10 +230,7 @@ double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alp
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_DRbar_gauge_couplings(): model pointer is zero");
-
+   check_model_ptr();
    calculate_threshold_corrections();
 
 @calculateGaugeCouplings@
@@ -266,9 +254,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_delta_alpha_em(): model pointer is zero");
+   check_model_ptr();
 
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaEm@
@@ -276,9 +262,7 @@ double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(dou
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(double alphaS) const
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_delta_alpha_s(): model pointer is zero");
+   check_model_ptr();
 
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaS@
@@ -293,9 +277,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplin
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_@UpYukawa@_DRbar(): model pointer is zero");
+   check_model_ptr();
 
    Eigen::Matrix<std::complex<double>,3,3> upQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
    upQuarksDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
@@ -311,9 +293,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_@DownYukawa@_DRbar(): model pointer is zero");
+   check_model_ptr();
 
    Eigen::Matrix<std::complex<double>,3,3> downQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
    downQuarksDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
@@ -329,9 +309,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "calculate_@ElectronYukawa@_DRbar(): model pointer is zero");
+   check_model_ptr();
 
    Eigen::Matrix<std::complex<double>,3,3> downLeptonsDRbar(ZEROMATRIXCOMPLEX(3,3));
    downLeptonsDRbar(0,0) = qedqcd.displayPoleMel();
@@ -363,11 +341,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
  */
 double @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole(double mw_pole)
 {
-   if (!model)
-      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>::"
-                       "recalculate_mw_pole(): model pointer is zero");
+   check_model_ptr();
 
 @recalculateMWPole@
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::check_model_ptr() const
+{
+   if (!model)
+      throw SetupError("@ModelName@_low_scale_constraint<Two_scale>: "
+                       "model pointer is zero!");
 }
 
 } // namespace flexiblesusy

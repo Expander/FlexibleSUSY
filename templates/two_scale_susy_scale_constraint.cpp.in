@@ -65,9 +65,7 @@ namespace flexiblesusy {
 
 void @ModelName@_susy_scale_constraint<Two_scale>::apply()
 {
-   if (!model)
-      throw SetupError("Error: @ModelName@_susy_scale_constraint::apply():"
-                       " model pointer must not be zero");
+   check_model_ptr();
 
 @temporarySetting@
 
@@ -91,9 +89,7 @@ double @ModelName@_susy_scale_constraint<Two_scale>::get_initial_scale_guess() c
 
 const @ModelName@_input_parameters& @ModelName@_susy_scale_constraint<Two_scale>::get_input_parameters() const
 {
-   if (!model)
-      throw SetupError("@ModelName@_susy_scale_constraint<Two_scale>::get_input_parameters(): "
-                       "model pointer is zero!");
+   check_model_ptr();
 
    return model->get_input();
 }
@@ -129,9 +125,7 @@ void @ModelName@_susy_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_susy_scale_constraint<Two_scale>::initialize()
 {
-   if (!model)
-      throw SetupError("@ModelName@_susy_scale_constraint<Two_scale>::initialize(): "
-                       "model pointer is zero!");
+   check_model_ptr();
 
 @scaleGuess@
    scale = initial_scale_guess;
@@ -139,12 +133,17 @@ void @ModelName@_susy_scale_constraint<Two_scale>::initialize()
 
 void @ModelName@_susy_scale_constraint<Two_scale>::update_scale()
 {
-   if (!model)
-      throw SetupError("@ModelName@_susy_scale_constraint<Two_scale>::update_scale(): "
-                       "model pointer is zero!");
+   check_model_ptr();
 
 @calculateScale@
 @restrictScale@
+}
+
+void @ModelName@_susy_scale_constraint<Two_scale>::check_model_ptr() const
+{
+   if (!model)
+      throw SetupError("@ModelName@_susy_scale_constraint<Two_scale>: "
+                       "model pointer is zero!");
 }
 
 } // namespace flexiblesusy
