@@ -984,7 +984,9 @@ CreateVEVToTadpoleAssociation[] :=
     Module[{association, vev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
-           vevs = Join[FindVEV /@ Transpose[vevs][[3]], FindVEV /@ Transpose[vevs][[2]]];
+           vevs = Flatten @
+                  Join[ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[3]],
+                       ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[2]]];
            association = CreateHiggsToEWSBEqAssociation[];
            {#[[1]], #[[2]], vevs[[#[[2]]]]}& /@ association
           ];
@@ -1136,7 +1138,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-"];
            calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+"];
-           divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[CreateVEVToTadpoleAssociation[], "tadpole"];
+           divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
