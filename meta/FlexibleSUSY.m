@@ -979,8 +979,9 @@ CreateVEVToTadpoleAssociation[] :=
     Module[{association, vev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           vevs = Join[FindVEV /@ Transpose[vevs][[3]], FindVEV /@ Transpose[vevs][[2]]];
            association = CreateHiggsToEWSBEqAssociation[];
-           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+           {#[[1]], #[[2]], vevs[[#[[2]]]]}& /@ association
           ];
 
 GetRenormalizationScheme[] :=
