@@ -109,11 +109,12 @@ public:
       if (threads.empty()) {
          (*ptask)();
       } else {
-         std::unique_lock<std::mutex> lock(mutex);
-         tasks.emplace([ptask](){ (*ptask)(); });
+         {
+            std::unique_lock<std::mutex> lock(mutex);
+            tasks.emplace([ptask](){ (*ptask)(); });
+         }
+         condition.notify_one();
       }
-
-      condition.notify_one();
 
       return fut;
    }
@@ -125,8 +126,10 @@ public:
       if (threads.empty()) {
          task();
       } else {
-         std::unique_lock<std::mutex> lock(mutex);
-         tasks.emplace(std::forward<Task>(task));
+         {
+            std::unique_lock<std::mutex> lock(mutex);
+            tasks.emplace(std::forward<Task>(task));
+         }
          condition.notify_one();
       }
    }
