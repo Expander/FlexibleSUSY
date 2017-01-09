@@ -261,7 +261,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
  * Fills a matrix from a SLHA block
  *
  * @param block_name block name
- * @param dense matrix to be filled
+ * @param matrix matrix to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */
@@ -307,7 +307,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
  * Fills a vector from a SLHA block
  *
  * @param block_name block name
- * @param dense vector to be filled
+ * @param vector vector to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */

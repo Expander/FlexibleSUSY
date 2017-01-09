@@ -84,7 +84,7 @@ void @ModelName@_slha_io::set_imextpar(const @ModelName@_input_parameters& input
 /**
  * Stores the MODSEL input parameters in the SLHA object.
  *
- * @param model struct of MODSEL parameters
+ * @param modsel struct of MODSEL parameters
  */
 void @ModelName@_slha_io::set_modsel(const SLHA_io::Modsel& modsel)
 {
