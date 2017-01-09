@@ -870,11 +870,16 @@ GetDimOfVEV[vev_] :=
            {idx_}                     , SARAH`getDimParameters[vev][[1]]
           ];
 
-ExpandGaugeIndices[gauge_, number_] :=
-    Table[gauge[i], {i,1,number}];
+ExpandIndices[sym_, 1] := sym;
+
+ExpandIndices[sym_, number_] :=
+    Table[sym[i], {i,1,number}];
 
 ExpandGaugeIndices[gauge_List] :=
-    Flatten[ExpandGaugeIndices[#,GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+    Flatten[ExpandIndices[#, GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+
+ExpandVEVIndices[vev_] :=
+    ExpandIndices[vev, GetDimOfVEV[vev]];
 
 (* Returns a list of three-component lists where the information is
    stored which Higgs corresponds to which EWSB eq. and whether the
