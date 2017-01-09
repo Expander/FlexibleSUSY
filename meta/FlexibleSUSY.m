@@ -893,8 +893,7 @@ ExpandGaugeIndices[gauge_List] :=
    EWSB eq. 4 corresponds to hh[3], the 1L tadpole[4] is real
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
-            vev, dimVev},
+    Module[{vevs},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
