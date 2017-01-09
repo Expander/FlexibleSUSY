@@ -38,8 +38,7 @@ Command_line_options::Command_line_options(const Dynamic_array_view<char*>& args
  * Parse string of program options and store the given option values
  * in the member variables of this class.
  *
- * @param argc number of program arguments
- * @param argv program arguments
+ * @param args command line arguments
  */
 void Command_line_options::parse(const Dynamic_array_view<char*>& args)
 {

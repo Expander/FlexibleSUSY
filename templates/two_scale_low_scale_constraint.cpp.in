@@ -337,7 +337,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
  * Recalculates the W boson pole mass using the new gauge couplings.
  *
  * @param mw_pole current W pole mass
- * @param new W pole mass
+ * @return new W pole mass
  */
 double @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole(double mw_pole)
 {
