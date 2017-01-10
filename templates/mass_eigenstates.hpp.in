@@ -32,9 +32,9 @@
 #ifndef @ModelName@_MASS_EIGENSTATES_H
 #define @ModelName@_MASS_EIGENSTATES_H
 
-#include "@ModelName@_soft_parameters.hpp"
-#include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
+#include "@ModelName@_physical.hpp"
+#include "@ModelName@_soft_parameters.hpp"
 #include "two_loop_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
@@ -138,16 +138,16 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   unsigned ewsb_loop_order;      ///< loop order for EWSB
-   unsigned pole_mass_loop_order; ///< loop order for pole masses
-   bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
-   bool calculate_bsm_pole_masses;///< switch to calculate the pole masses of the BSM particles
-   bool force_output;             ///< switch to force output of pole masses
-   double precision;              ///< RG running precision
-   double ewsb_iteration_precision; ///< precision goal of EWSB solution
-   @ModelName@_physical physical; ///< contains the pole masses and mixings
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems; ///< problems
-   Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
+   unsigned ewsb_loop_order{2};           ///< loop order for EWSB
+   unsigned pole_mass_loop_order{2};      ///< loop order for pole masses
+   bool calculate_sm_pole_masses{false};  ///< switch to calculate the pole masses of the Standard Model particles
+   bool calculate_bsm_pole_masses{true};  ///< switch to calculate the pole masses of the BSM particles
+   bool force_output{false};              ///< switch to force output of pole masses
+   double precision{1.e-3};               ///< RG running precision
+   double ewsb_iteration_precision{1.e-5};///< precision goal of EWSB solution
+   @ModelName@_physical physical{}; ///< contains the pole masses and mixings
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names}; ///< problems
+   Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
 
    std::size_t get_number_of_ewsb_iterations() const;
    std::size_t get_number_of_mass_iterations() const;

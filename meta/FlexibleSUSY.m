@@ -1266,7 +1266,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
            phasesInit                   = Phases`CreatePhasesInitialization[phases];
            If[Parameters`GetExtraParameters[] =!= {},
-              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinition[#]&
+              extraParameterDefs           = StringJoin[Parameters`CreateInitializedParameterDefinition[#]&
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@

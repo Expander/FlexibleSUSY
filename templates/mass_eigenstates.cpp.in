@@ -76,20 +76,6 @@ using namespace @ModelName@_info;
 
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
-   , ewsb_loop_order(2)
-   , pole_mass_loop_order(2)
-   , calculate_sm_pole_masses(false)
-   , calculate_bsm_pole_masses(true)
-   , force_output(false)
-   , precision(1.0e-3)
-   , ewsb_iteration_precision(1.0e-5)
-   , physical()
-   , problems(@ModelName@_info::particle_names, @ModelName@_info::parameter_names)
-   , two_loop_corrections()
-@physicalMassesInit@
-@mixingMatricesInit@
-@phasesInit@
-@extraParametersInit@
 {
 }
 

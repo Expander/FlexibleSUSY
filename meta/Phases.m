@@ -32,18 +32,18 @@ ConvertSarahPhases[phases_List] :=
 GetPhaseType[Exp[_]] := CConversion`ScalarType[CConversion`realScalarCType];
 GetPhaseType[_]      := CConversion`ScalarType[CConversion`complexScalarCType];
 
-CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`realScalarCType]] :=
-    "(0)";
+CreateDefaultPhaseValue[type_ /; type === CConversion`ScalarType[CConversion`realScalarCType]] := "0";
+CreateDefaultPhaseValue[type_ /; type === CConversion`ScalarType[CConversion`complexScalarCType]] := "1,0";
 
-CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    "(1,0)";
+CreatePhaseInit[type_] := "(" <> CreateDefaultPhaseValue[type] <> ")";
 
 CreatePhasesDefinition[phases_List] :=
-    Module[{result = "", k},
+    Module[{result = "", k, type},
            For[k = 1, k <= Length[phases], k++,
-               result = result <> CConversion`CreateCType[
-                            GetPhaseType[phases[[k]]]] <> " " <>
-                        CreatePhaseName[phases[[k]]] <> ";\n";
+               type = GetPhaseType[phases[[k]]];
+               result = result <> CConversion`CreateCType[type]
+                               <> " " <> CreatePhaseName[phases[[k]]]
+                               <> "{" <> CreateDefaultPhaseValue[type] <> "};\n";
               ];
            Return[result];
           ];

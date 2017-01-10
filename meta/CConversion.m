@@ -92,6 +92,9 @@ given a vector or matrix, a C/C++ inline getter for a single element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
 
+CreateDefaultValue::usage="creates a default value for a given
+parameter type";
+
 CreateDefaultConstructor::usage="creates C/C++ default constructor for
 a given parameter type";
 
@@ -348,27 +351,26 @@ CreateGetterPrototype[parameter_String, type_String] :=
 CreateGetterPrototype[parameter_, type_] :=
     CreateGetterPrototype[parameter, CreateGetterReturnType[type]];
 
-(* create default constructor initialization list *)
-CreateDefaultConstructor[parameter_, type_] :=
+(* create default value for given parameter *)
+CreateDefaultValue[type_] :=
     Block[{},
           Print["Error: unknown parameter type: " <> ToString[type]];
           Return[""];
          ];
 
-CreateDefaultConstructor[parameter_String, CConversion`ScalarType[_]] :=
-    parameter <> "(0)";
+CreateDefaultValue[CConversion`ScalarType[_]] := "0";
+CreateDefaultValue[CConversion`ArrayType[type_, entries_]] :=
+    CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero()";
+CreateDefaultValue[CConversion`VectorType[type_, entries_]] :=
+    CreateCType[CConversion`VectorType[type, entries]] <> "::Zero()";
+CreateDefaultValue[CConversion`MatrixType[type_, rows_, cols_]] :=
+    CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero()";
+CreateDefaultValue[CConversion`TensorType[type_, dims__]] :=
+    CreateCType[CConversion`TensorType[type, dims]] <> "::Zero()";
 
-CreateDefaultConstructor[parameter_String, CConversion`ArrayType[type_, entries_]] :=
-    parameter <> "(" <> CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`TensorType[type_, dims__]] :=
-    parameter <> "(" <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero())";
+(* create default constructor initialization list *)
+CreateDefaultConstructor[parameter_String, type_] :=
+    parameter <> "(" <> CreateDefaultValue[type] <> ")";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
