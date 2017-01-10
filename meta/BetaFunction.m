@@ -453,7 +453,7 @@ CreateGetters[betaFunctions_List] :=
 
 (* create parameter definition in C++ class *)
 CreateParameterDefinitions[betaFunction_BetaFunction] :=
-    Parameters`CreateParameterDefinition[{GetName[betaFunction], GetType[betaFunction]}];
+    Parameters`CreateInitializedParameterDefinition[{GetName[betaFunction], GetType[betaFunction]}];
 
 CreateParameterDefinitions[betaFunctions_List] :=
     Module[{def = ""},
@@ -465,8 +465,8 @@ CreateParameterDefinitions[betaFunctions_List] :=
 CreateParameterDefaultInitialization[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
            dataType = CConversion`CreateCType[GetType[betaFunction]];
-           name = ToValidCSymbolString[GetName[betaFunction]];
-           def  = def <> ", " <> CreateDefaultConstructor[name, GetType[betaFunction]];
+           name = CConversion`ToValidCSymbolString[GetName[betaFunction]];
+           def  = def <> ", " <> CConversion`CreateDefaultConstructor[name, GetType[betaFunction]];
            Return[def];
           ];
 
