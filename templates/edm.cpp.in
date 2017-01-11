@@ -407,13 +407,11 @@ template<class ...F> struct VertexFunctionData;
 template<class ...F> class VertexFunction {
    using Data = VertexFunctionData<F...>;
    using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
-   using fieldIndexStart_type = decltype(Data::fieldIndexStart);
 public:
    using vertex_type = typename Data::vertex_type;
    using indices_type = typename decltype(Data::index_bounds)::indices_type;
 
    static constexpr bounds_type index_bounds = Data::index_bounds;
-   static constexpr fieldIndexStart_type fieldIndexStart = Data::fieldIndexStart;
 
    /**
     * @fn fieldIndices
@@ -426,11 +424,12 @@ public:
     */
    template<unsigned fieldIndex>
    static
-   std::array<unsigned, fieldIndexStart[fieldIndex+1] - fieldIndexStart[fieldIndex]>
+   std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
    fieldIndices(const indices_type &indices)
    {
-      constexpr auto length = fieldIndexStart[fieldIndex+1] - fieldIndexStart[fieldIndex];
-      auto begin = indices.begin() + fieldIndexStart[fieldIndex];
+      constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
+      constexpr auto offset = Data::fieldIndexStart[fieldIndex];
+      auto begin = indices.begin() + offset;
       return make_array<length>::iterate(begin);
    }
 
