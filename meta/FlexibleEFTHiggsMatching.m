@@ -1,24 +1,11 @@
 BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopMasses`", "Constraint`", "ThresholdCorrections`", "Parameters`"}];
 
-CallSMPoleMassFunctions::usage = "";
 CalculateRunningUpQuarkMasses::usage = "";
 CalculateRunningDownQuarkMasses::usage = "";
 CalculateRunningDownLeptonMasses::usage = "";
 FillSMFermionPoleMasses::usage = "";
 
 Begin["`Private`"];
-
-CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
-    Module[{particles, result, Selector},
-           Selector[p_] := SARAH`SMQ[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
-           particles = Select[LoopMasses`GetLoopCorrectedParticles[states], Selector];
-           If[enablePoleMassThreads =!= True,
-              result = StringJoin[LoopMasses`CallPoleMassFunction[#,"model."]& /@ particles];
-              ,
-              result = StringJoin[LoopMasses`CallThreadedPoleMassFunction[#,"model_ptr"]& /@ particles] <> "\n";
-             ];
-           result
-          ];
 
 CalculateRunningUpQuarkMasses[] :=
     Module[{result = "", i, iStr, mq, mqFun},
