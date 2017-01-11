@@ -381,15 +381,6 @@ double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
    return x.cwiseAbs().maxCoeff();
 }
 
-template <typename DerivedA, typename DerivedB>
-auto operator-(const Eigen::MatrixBase<DerivedA>& a, const Eigen::DiagonalWrapper<DerivedB>& b) -> decltype(a.eval())
-{
-   auto result = a.eval();
-   result.diagonal() -= b.diagonal();
-
-   return result;
-}
-
 inline constexpr int Sign(double x) noexcept
 {
    return (x >= 0.0 ? 1 : -1);

@@ -13,7 +13,7 @@ CalculateMHiggsPoleOneMomentumIteration[particle_] :=
 "const double Mh2_pole = M_tree - self_energy - tadpole(0);
 Mh_pole = SignedAbsSqrt(Mh2_pole);"
        ,
-"const auto M_loop = (M_tree - self_energy - tadpole.asDiagonal()).eval();
+"const auto M_loop = (M_tree - self_energy - " <> CreateCType[TreeMasses`GetMassMatrixType[particle]] <> "(tadpole.asDiagonal())).eval();
 
 " <> CreateCType[CConversion`ArrayType[CConversion`realScalarCType, GetDimension[particle]]] <> " Mh2_pole;
 fs_diagonalize_hermitian(M_loop, Mh2_pole);
