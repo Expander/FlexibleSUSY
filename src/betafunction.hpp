@@ -40,7 +40,7 @@ namespace flexiblesusy {
  */
 class Beta_function {
 public:
-   Beta_function();
+   Beta_function() = default;
    Beta_function(const Beta_function&) = default;
    Beta_function(Beta_function&&) = default;
    virtual ~Beta_function() {}
@@ -73,13 +73,13 @@ protected:
    void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
 
 private:
-   unsigned num_pars;    ///< number of parameters
-   unsigned loops;       ///< to what loop order does the RG evolution run
-   unsigned thresholds;  ///< threshold correction loop order
-   double scale;         ///< current renormalization scale
-   double tolerance;     ///< running tolerance
-   double min_tolerance; ///< minimum tolerance allowed
-   double zero_threshold;///< threshold for treating values as zero
+   unsigned num_pars{0};         ///< number of parameters
+   unsigned loops{0};            ///< to what loop order does the RG evolution run
+   unsigned thresholds{0};       ///< threshold correction loop order
+   double scale{0.};             ///< current renormalization scale
+   double tolerance{1.e-4};      ///< running tolerance
+   double min_tolerance{1.e-11}; ///< minimum tolerance allowed
+   double zero_threshold{1.e-11};///< threshold for treating values as zero
 
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);
