@@ -58,9 +58,13 @@ LL@CLASSNAME@_MMA  := \
 
 LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
+		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
+		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_info.hpp \
+		$(DIR)/@CLASSNAME@_initial_guesser.hpp \
 		$(DIR)/@CLASSNAME@_input_parameters.hpp \
+		$(DIR)/@CLASSNAME@_low_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.hpp \
 		$(DIR)/@CLASSNAME@_model.hpp \
 		$(DIR)/@CLASSNAME@_model_slha.hpp \
@@ -72,6 +76,7 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_soft_parameters.hpp \
 		$(DIR)/@CLASSNAME@_standard_model_matching.hpp \
 		$(DIR)/@CLASSNAME@_susy_parameters.hpp \
+		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
