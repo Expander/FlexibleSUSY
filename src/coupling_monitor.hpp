@@ -69,7 +69,7 @@ namespace flexiblesusy {
 template <class Model, class DataGetter>
 class Coupling_monitor {
 public:
-   typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
+   using TTouple = std::pair<double, Eigen::ArrayXd>;///< touple of scale and couplings
 
    Coupling_monitor(const Model&, const DataGetter&);
 
@@ -83,7 +83,7 @@ public:
    void write_to_file(const std::string&, bool overwrite = true) const;
 
 private:
-   typedef std::vector<TTouple> TData; ///< container for the scales and couplings
+   using TData = std::vector<TTouple>; ///< container for the scales and couplings
    struct TScaleComp {
       bool operator() (const TData::value_type& i,const TData::value_type& j) const {
          return i.first < j.first;

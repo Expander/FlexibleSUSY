@@ -124,7 +124,7 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef std::function<void(int, double)> Tuple_processor;
+   using Tuple_processor = std::function<void(int, double)>;
    enum Position { front, back };
    struct Modsel {
       bool quark_flavour_violated{false};   ///< MODSEL[6]

@@ -120,8 +120,8 @@ private:
 template <std::size_t dimension>
 class Convergence_tester_tadpole {
 public:
-   typedef Eigen::Matrix<double,dimension,1> Vector_t;
-   typedef std::function<Vector_t(const Vector_t&)> Function_t;
+   using Vector_t = Eigen::Matrix<double,dimension,1>;
+   using Function_t = std::function<Vector_t(const Vector_t&)>;
 
    Convergence_tester_tadpole(double precision_,
                               const Function_t& tadpole_function_)
@@ -199,8 +199,8 @@ private:
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
 class Fixed_point_iterator : public EWSB_solver {
 public:
-   typedef Eigen::Matrix<double,dimension,1> Vector_t;
-   typedef std::function<Vector_t(const Vector_t&)> Function_t;
+   using Vector_t = Eigen::Matrix<double,dimension,1>;
+   using Function_t = std::function<Vector_t(const Vector_t&)>;
 
    Fixed_point_iterator() = default;
    template <typename F>

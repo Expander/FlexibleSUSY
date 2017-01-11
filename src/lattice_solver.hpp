@@ -49,13 +49,13 @@ class Lattice;
 class Lattice_constraint;
 // class SingleSiteConstraint;
 // class InterTheoryConstraint;
-typedef Constraint<Lattice> SingleSiteConstraint;
-typedef Matching<Lattice> InterTheoryConstraint;
+using SingleSiteConstraint = Constraint<Lattice>;
+using InterTheoryConstraint = Matching<Lattice>;
 
 class Two_scale_running_precision;
 
 
-typedef std::vector<Real> RVec;
+using RVec = std::vector<Real>;
 
 
 template<class T>

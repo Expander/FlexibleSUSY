@@ -38,10 +38,10 @@
 namespace softsusy {
 
 /// used to give order of quark masses stored
-typedef enum {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
-	      mMuon, mTau} mass;
+enum mass {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
+           mMuon, mTau};
 /// order of gauge couplings stored in QedQcd
-typedef enum {ALPHA=1, ALPHAS} leGauge;
+enum leGauge {ALPHA=1, ALPHAS};
 
 enum QedQcd_input_parmeters : unsigned {
    alpha_em_MSbar_at_MZ,
