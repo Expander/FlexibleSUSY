@@ -315,7 +315,7 @@ FindAllParametersFromList[expr_, parameters_List] :=
           ];
 
 (* Returns all parameters within an expression *)
-FindAllParameters[expr_] :=
+FindAllParameters[expr_, exceptions_:{}] :=
     Module[{allParameters, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
@@ -326,11 +326,12 @@ FindAllParameters[expr_] :=
                Join[allModelParameters, allOutPars,
                     GetInputParameters[], Phases`GetArg /@ allPhases,
                     GetDependenceSPhenoSymbols[], GetExtraParameters[]]];
+           allParameters = DeleteCases[allParameters, p_ /; MemberQ[exceptions, p]];
            FindAllParametersFromList[expr, allParameters]
           ];
 
-FindAllParametersClassified[expr_] :=
-    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
+FindAllParametersClassified[expr_, exceptions_:{}] :=
+    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr, exceptions]]],
             inputPars, modelPars, outputPars, extraPars,
             poleMasses, phases, depNum, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
