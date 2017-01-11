@@ -21,6 +21,7 @@
 
 #include <array>
 #include <cmath>
+#include <complex>
 #include <limits>
 #include <cstddef>
 #include <cstdlib>
@@ -37,6 +38,14 @@ template <typename T>
 bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 {
    return is_zero(a - b, prec);
+}
+
+template <typename T>
+bool is_equal(std::complex<T> a, std::complex<T> b,
+              T prec = std::numeric_limits<T>::epsilon())
+{
+   return (is_equal(a.real(), b.real(), prec)
+           && is_equal(a.imag(), b.imag(), prec));
 }
 
 template <typename T>
