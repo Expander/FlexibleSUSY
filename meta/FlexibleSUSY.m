@@ -991,7 +991,8 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
             alphaS1Lmatching = "", alphaEM1Lmatching = "",
             setRunningUpQuarkMasses = "", setRunningDownQuarkMasses = "",
-            setRunningDownLeptonMasses = "", setYukawas = ""},
+            setRunningDownLeptonMasses = "", setYukawas = "",
+            calculateMHiggsPoleOneMomentumIteration = ""},
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               If[Head[susyScaleMatching] === List,
                  userMatching = Constraint`ApplyConstraints[susyScaleMatching];
@@ -1006,6 +1007,7 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               setRunningDownQuarkMasses         = FlexibleEFTHiggsMatching`CalculateRunningDownQuarkMasses[];
               setRunningDownLeptonMasses        = FlexibleEFTHiggsMatching`CalculateRunningDownLeptonMasses[];
               setYukawas                        = ThresholdCorrections`SetDRbarYukawaCouplings[];
+              calculateMHiggsPoleOneMomentumIteration = FlexibleEFTHiggsMatching`CalculateMHiggsPoleOneMomentumIteration[SARAH`HiggsBoson];
              ];
            WriteOut`ReplaceInFiles[files,
                        { "@alphaS1Lmatching@"        -> IndentText[IndentText[WrapLines[alphaS1Lmatching]]],
@@ -1015,6 +1017,7 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
                          "@setRunningDownLeptonMasses@" -> IndentText[IndentText[setRunningDownLeptonMasses]],
                          "@setYukawas@"              -> IndentText[WrapLines[setYukawas]],
                          "@applyUserMatching@"       -> IndentText[IndentText[WrapLines[userMatching]]],
+                         "@calculateMHiggsPoleOneMomentumIteration@" -> IndentText[calculateMHiggsPoleOneMomentumIteration],
                          Sequence @@ GeneralReplacementRules[]
                        } ];
         ];

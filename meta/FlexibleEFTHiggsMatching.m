@@ -1,11 +1,25 @@
 BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopMasses`", "Constraint`", "ThresholdCorrections`", "Parameters`"}];
 
+CalculateMHiggsPoleOneMomentumIteration::usage = "";
 CalculateRunningUpQuarkMasses::usage = "";
 CalculateRunningDownQuarkMasses::usage = "";
 CalculateRunningDownLeptonMasses::usage = "";
 FillSMFermionPoleMasses::usage = "";
 
 Begin["`Private`"];
+
+CalculateMHiggsPoleOneMomentumIteration[particle_] :=
+    If[GetDimension[particle] == 1,
+"const double Mh2_pole = M_tree - self_energy - tadpole(0);
+Mh_pole = SignedAbsSqrt(Mh2_pole);"
+       ,
+"const auto M_loop = (M_tree - self_energy - tadpole.asDiagonal()).eval();
+
+" <> CreateCType[CConversion`ArrayType[CConversion`realScalarCType, GetDimension[particle]]] <> " Mh2_pole;
+fs_diagonalize_hermitian(M_loop, Mh2_pole);
+
+Mh_pole = SignedAbsSqrt(Mh2_pole(idx));"
+      ];
 
 CalculateRunningUpQuarkMasses[] :=
     Module[{result = "", i, iStr, mq, mqFun},
