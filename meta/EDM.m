@@ -129,7 +129,7 @@ Module[{prototypes, definitions, evaluators},
                                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
                                 "{\n" <>
                                 IndentText @
-                                ("CMSSM_mass_eigenstates model_ = model;\n" <>
+                                (FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                                  "EvaluationContext context{ model_ };\n" <>
                                  "std::array<unsigned, " <>
                                  ToString @ numberOfIndices <>
@@ -257,11 +257,10 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                    ("using PhotonVertex = VertexFunction<Photon, " <>
                                     CXXNameOfField[#] <> ", " <> CXXNameOfField[SARAH`AntiField @ #] <>
                                     ">;\n\n" <>
-                                    "double fieldCharge = PhotonVertex::vertex( concatenate( indices, indices ), *this )" <>
+                                    "return PhotonVertex::vertex( concatenate( indices, indices ), *this )" <>
                                     If[photonVertexType === SingleComponentedVertex,
                                        ".value().real();\n",
-                                       ".left().real();\n"] <>
-                                    "return fieldCharge;\n"
+                                       ".left().real();\n"]
                                     ) <>
                                    "}"] &) /@ photonEmitters, "\n\n"]
        ];
@@ -391,9 +390,9 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                             ,
                             ";/n"
                             ] <>
-                         "static constexpr std::array<unsigned, " <> ToString @ Length[fieldIndexStart] <>
-                         "> fieldIndexStart = { { " <> StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <>
-                         " } };\n" <>
+                         "static constexpr unsigned fieldIndexStart[" <> ToString @ Length[fieldIndexStart] <>
+                         "] = { " <> StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <>
+                         " };\n" <>
                          "using vertex_type = " <> VertexClassName[parsedVertex] <> ";\n"
                          ) <>
                         "};");
