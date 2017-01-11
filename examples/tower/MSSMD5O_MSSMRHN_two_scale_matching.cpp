@@ -23,7 +23,7 @@
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
-#include "two_scale_constraint.hpp" // for cast_model
+#include "model.hpp" // for cast_model
 #include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
 #include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
