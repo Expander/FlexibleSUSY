@@ -32,12 +32,16 @@
 
 #include "@ModelName@_ewsb_solver.hpp"
 #include "@ModelName@_ewsb_solver_interface.hpp"
-#include "@ModelName@_mass_eigenstates.hpp"
+#include "error.hpp"
+
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
 class EWSB_solver;
 class Two_scale;
+
+class @ModelName@_mass_eigenstates;
 
 template<>
 class @ModelName@_ewsb_solver<Two_scale> : public @ModelName@_ewsb_solver_interface {
