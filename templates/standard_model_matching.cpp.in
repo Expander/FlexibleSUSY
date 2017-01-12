@@ -131,8 +131,9 @@ double calculate_Mh2_pole(const Standard_model& sm)
 {
    const double p = sm.get_Mhh();
    const double self_energy = Re(sm.self_energy_hh(p));
-   const double mh2_tree = sm.get_mass_matrix_hh();
-   const double Mh2_pole = mh2_tree - self_energy;
+   const double tadpole = Re(sm.tadpole_hh() / sm.get_v());
+   const double mh2_tree = Sqr(sm.get_Mhh());
+   const double Mh2_pole = mh2_tree - self_energy + tadpole;
 
    return Mh2_pole;
 }
