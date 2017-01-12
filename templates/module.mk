@@ -5,6 +5,8 @@ BASE_TEMPLATES := \
 		$(DIR)/a_muon.hpp.in \
 		$(DIR)/a_muon.cpp.in \
 		$(DIR)/convergence_tester.hpp.in \
+		$(DIR)/ewsb_solver.hpp.in \
+		$(DIR)/ewsb_solver_interface.hpp.in \
 		$(DIR)/effective_couplings.hpp.in \
 		$(DIR)/effective_couplings.cpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
@@ -59,6 +61,8 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/standard_model_two_scale_matching.cpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \
+		$(DIR)/two_scale_ewsb_solver.hpp.in \
+		$(DIR)/two_scale_ewsb_solver.cpp.in \
 		$(DIR)/two_scale_high_scale_constraint.hpp.in \
 		$(DIR)/two_scale_high_scale_constraint.cpp.in \
 		$(DIR)/two_scale_high_scale_initial_guesser.hpp.in \

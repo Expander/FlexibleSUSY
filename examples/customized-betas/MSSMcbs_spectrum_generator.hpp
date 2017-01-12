@@ -20,6 +20,7 @@
 #define MSSMCBS_SPECTRUM_GENERATOR_H
 
 #include "MSSMcbs_two_scale_model.hpp"
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_high_scale_constraint.hpp"
 #include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "MSSMcbs_two_scale_low_scale_constraint.hpp"
@@ -110,6 +111,9 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections_loop_order);
+
+   CMSSM_ewsb_solver<T> ewsb_solver;
+   model.set_ewsb_solver(&ewsb_solver);
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();

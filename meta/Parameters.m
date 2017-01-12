@@ -89,6 +89,10 @@ GetExtraParametersAndTypes::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
+FindMacro::usage="Returns preprocessor macro for parameter";
+WrapPreprocessorMacroAround::usage="Applies preprocessor symbols
+to parameters";
+
 GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
  DependenceSPheno rule is defined";
 
@@ -1032,6 +1036,39 @@ RemoveProtectedHeads[expr_] :=
     expr /. { FlexibleSUSY`LowEnergyConstant[__] -> FlexibleSUSY`LowEnergyConstant[],
               FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[],
               FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[]};
+
+CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
+    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];
+
+CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
+    Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
+
+FindMacro[par_] :=
+    Which[IsModelParameter[par] , Global`MODELPARAMETER,
+          IsOutputParameter[par], Global`MODELPARAMETER,
+          IsPhase[par]          , Global`MODELPARAMETER,
+          IsInputParameter[par] , Global`INPUTPARAMETER,
+          IsExtraParameter[par] , Global`EXTRAPARAMETER,
+          True                  , Identity
+         ];
+
+WrapPreprocessorMacroAround[expr_String, ___] := expr;
+
+WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
+    Module[{allPars, replacements, protectionRules, exprWithoutProtectedSymbols},
+           allPars = Flatten[{FSModelParameters, FSInputParameters,
+                              FSOutputParameters, FSPhysicalOutputParameters,
+                              FSPhases, FSDerivedParameters, FSExtraParameters} /. FindAllParametersClassified[expr]];
+           replacements = Join[
+               RuleDelayed[#     , FindMacro[#][#]   ]& /@ allPars,
+               RuleDelayed[#[i__], FindMacro[#][#][i]]& /@ allPars,
+               {RuleDelayed[FlexibleSUSY`M[p_[i__]], FindMacro[FlexibleSUSY`M[p]][FlexibleSUSY`M[p]][i]]}
+           ];
+           protectionRules = CreateRulesForProtectedHead[expr, protectedHeads];
+           exprWithoutProtectedSymbols = expr /. protectionRules;
+           (* substitute back protected symbols *)
+           exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
+          ];
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>

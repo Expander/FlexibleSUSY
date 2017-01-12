@@ -363,39 +363,6 @@ SortBlocks[modelParameters_List] :=
            Flatten[SplitRealAndImagPartBlocks /@ collected, 1]
           ];
 
-CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
-    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];
-
-CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
-    Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
-
-FindMacro[par_] :=
-    Which[IsModelParameter[par] , Global`MODELPARAMETER,
-          IsOutputParameter[par], Global`MODELPARAMETER,
-          IsPhase[par]          , Global`MODELPARAMETER,
-          IsInputParameter[par] , Global`INPUTPARAMETER,
-          IsExtraParameter[par] , Global`EXTRAPARAMETER,
-          True                  , Identity
-         ];
-
-WrapPreprocessorMacroAround[expr_String, ___] := expr;
-
-WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
-    Module[{allPars, replacements, protectionRules, exprWithoutProtectedSymbols},
-           allPars = Flatten[{FSModelParameters, FSInputParameters,
-                              FSOutputParameters, FSPhysicalOutputParameters,
-                              FSPhases, FSDerivedParameters, FSExtraParameters} /. FindAllParametersClassified[expr]];
-           replacements = Join[
-               RuleDelayed[#     , FindMacro[#][#]   ]& /@ allPars,
-               RuleDelayed[#[i__], FindMacro[#][#][i]]& /@ allPars,
-               {RuleDelayed[FlexibleSUSY`M[p_[i__]], FindMacro[FlexibleSUSY`M[p]][FlexibleSUSY`M[p]][i]]}
-           ];
-           protectionRules = CreateRulesForProtectedHead[expr, protectedHeads];
-           exprWithoutProtectedSymbols = expr /. protectionRules;
-           (* substitute back protected symbols *)
-           exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
-          ];
-
 SetAttributes[WriteSLHABlockEntry, HoldFirst];
 
 WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
@@ -487,7 +454,7 @@ WriteSLHABlockEntry[{par_?IsObservable, idx___}, comment_String:""] :=
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, idx3Str, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
-           parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
+           parVal = CConversion`RValueToCFormString[Parameters`WrapPreprocessorMacroAround[par]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
            idx3Str = ToString[idx3];
@@ -500,7 +467,7 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
-           parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
+           parVal = CConversion`RValueToCFormString[Parameters`WrapPreprocessorMacroAround[par]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
            commentStr = If[comment == "", parStr, comment];
@@ -512,7 +479,7 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
 WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, pdgStr, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
-           parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
+           parVal = CConversion`RValueToCFormString[Parameters`WrapPreprocessorMacroAround[par]];
            (* print unnormalized hypercharge gauge coupling *)
            If[par === SARAH`hyperchargeCoupling,
               parVal = parVal <> " * " <>
@@ -530,7 +497,7 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
 WriteSLHABlockEntry[{par_}, comment_String:""] :=
     Module[{parStr, parVal, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
-           parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
+           parVal = CConversion`RValueToCFormString[Parameters`WrapPreprocessorMacroAround[par]];
            commentStr = If[comment == "", parStr, comment];
            (* result *)
            "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> commentStr <> "\")\n"
@@ -564,10 +531,10 @@ WriteSLHABlock[{blockName_, Re[parameter_]}, scale_String:"model.get_scale()"] :
     WriteSLHABlock[{blockName, parameter}, scale];
 
 WriteSLHABlock[{blockName_, Im[parameter_]}, scale_String:"model.get_scale()"] :=
-    WriteSLHAMatrix[{parameter, blockName}, ToString[FindMacro[parameter]], scale, "set_block_imag"];
+    WriteSLHAMatrix[{parameter, blockName}, ToString[Parameters`FindMacro[parameter]], scale, "set_block_imag"];
 
 WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
-    WriteSLHAMatrix[{parameter, blockName}, ToString[FindMacro[parameter]], scale];
+    WriteSLHAMatrix[{parameter, blockName}, ToString[Parameters`FindMacro[parameter]], scale];
 
 WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_String:"model.get_scale()"] :=
     WriteSLHABlock[{blockName, parameter}, scale];
@@ -595,7 +562,7 @@ GetExtraSLHAOutputBlockScale[scale_?NumericQ] := ToString[scale];
 GetExtraSLHAOutputBlockScale[scale_] :=
     Module[{result},
            scaleStr = CConversion`RValueToCFormString[
-               WrapPreprocessorMacroAround[Parameters`DecreaseIndexLiterals[scale]]];
+               Parameters`WrapPreprocessorMacroAround[Parameters`DecreaseIndexLiterals[scale]]];
            StringReplace[scaleStr, "CurrentScale" -> "model.get_scale()"]
           ];
 

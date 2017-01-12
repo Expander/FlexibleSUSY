@@ -47,7 +47,7 @@
 
 namespace flexiblesusy {
 
-class EWSB_solver;
+class @ModelName@_ewsb_solver_interface;
 /**
  * @class @ModelName@_mass_eigenstates
  * @brief model class with routines for determing masses and mixinga and EWSB
@@ -93,6 +93,7 @@ public:
    @ModelName@_physical& get_physical();
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems();
+   void set_ewsb_solver(@ModelName@_ewsb_solver_interface*);
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
@@ -116,12 +117,10 @@ public:
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
 
-   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
-
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
-   EWSB_vector_t tadpole_equations() const;
+   Eigen::Matrix<double,number_of_ewsb_equations,1> tadpole_equations() const;
 
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
@@ -132,12 +131,6 @@ public:
 @dependencePrototypes@
 
 private:
-   class EEWSBStepFailed : public Error {
-   public:
-      virtual ~EEWSBStepFailed() {}
-      virtual std::string what() const { return "Could not perform EWSB step."; }
-   };
-
    unsigned ewsb_loop_order{2};           ///< loop order for EWSB
    unsigned pole_mass_loop_order{2};      ///< loop order for pole masses
    bool calculate_sm_pole_masses{false};  ///< switch to calculate the pole masses of the Standard Model particles
@@ -148,17 +141,11 @@ private:
    @ModelName@_physical physical{}; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names}; ///< problems
    Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
+   @ModelName@_ewsb_solver_interface* ewsb_solver{nullptr};
 
    std::size_t get_number_of_ewsb_iterations() const;
    std::size_t get_number_of_mass_iterations() const;
-   void set_ewsb_solution(const EWSB_solver*);
-   template <typename It> void set_best_ewsb_solution(It, It);
-   int solve_ewsb_iteratively();
-   int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const EWSB_vector_t&);
    int solve_ewsb_tree_level_custom();
-   EWSB_vector_t ewsb_initial_guess();
-   EWSB_vector_t ewsb_step() const;
    void copy_DRbar_masses_to_pole_masses();
 
    // Passarino-Veltman loop functions

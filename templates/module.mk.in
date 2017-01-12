@@ -60,6 +60,8 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
+		$(DIR)/@CLASSNAME@_ewsb_solver.hpp \
+		$(DIR)/@CLASSNAME@_ewsb_solver_interface.hpp \
 		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_info.hpp \
 		$(DIR)/@CLASSNAME@_initial_guesser.hpp \

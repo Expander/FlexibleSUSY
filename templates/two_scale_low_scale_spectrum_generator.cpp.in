@@ -20,6 +20,7 @@
 
 #include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
+#include "@ModelName@_two_scale_ewsb_solver.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 
 #include "error.hpp"
@@ -62,6 +63,9 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    model.set_loops(this->settings.get(Spectrum_generator_settings::beta_loop_order));
    model.set_thresholds(this->settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
    model.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
+
+   @ModelName@_ewsb_solver<Two_scale> ewsb_solver;
+   model.set_ewsb_solver(&ewsb_solver);
 
    susy_scale_constraint.clear();
    low_scale_constraint .clear();

@@ -21,6 +21,7 @@
 LIB@ModelName@_SRC += \
 		$(DIR)/@ModelName@_standard_model_two_scale_matching.cpp \
 		$(DIR)/@ModelName@_two_scale_convergence_tester.cpp \
+		$(DIR)/@ModelName@_two_scale_ewsb_solver.cpp \
 		$(DIR)/@ModelName@_two_scale_high_scale_constraint.cpp \
 		$(DIR)/@ModelName@_two_scale_initial_guesser.cpp \
 		$(DIR)/@ModelName@_two_scale_low_scale_constraint.cpp \
@@ -30,6 +31,7 @@ LIB@ModelName@_SRC += \
 LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_standard_model_two_scale_matching.hpp \
 		$(DIR)/@ModelName@_two_scale_convergence_tester.hpp \
+		$(DIR)/@ModelName@_two_scale_ewsb_solver.hpp \
 		$(DIR)/@ModelName@_two_scale_high_scale_constraint.hpp \
 		$(DIR)/@ModelName@_two_scale_initial_guesser.hpp \
 		$(DIR)/@ModelName@_two_scale_low_scale_constraint.hpp \

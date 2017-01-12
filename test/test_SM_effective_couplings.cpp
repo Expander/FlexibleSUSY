@@ -7,6 +7,7 @@
 #include "effective_couplings.hpp"
 #include "SM_mass_eigenstates.hpp"
 #include "SM_effective_couplings.hpp"
+#include "SM_two_scale_ewsb_solver.hpp"
 #include "physical_input.hpp"
 #include "standard_model.hpp"
 #include "wrappers.hpp"
@@ -222,7 +223,7 @@ void set_test_model_parameters(SM_mass_eigenstates& model, const softsusy::QedQc
    model.set_pole_mass_loop_order(0);
    model.set_ewsb_loop_order(0);
    model.calculate_DRbar_masses();
-   model.solve_ewsb();
+   model.solve_ewsb_tree_level();
    model.calculate_spectrum();
 }
 
@@ -232,6 +233,8 @@ BOOST_AUTO_TEST_CASE( test_LO_effective_couplings )
    Physical_input physical_inputs;
 
    SM_mass_eigenstates model;
+   SM_ewsb_solver<Two_scale> ewsb_solver;
+   model.set_ewsb_solver(&ewsb_solver);
    set_test_model_parameters(model, qedqcd);
 
    Standard_model_tester sm_tester(model, qedqcd, physical_inputs);
