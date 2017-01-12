@@ -1,0 +1,254 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+/**
+ * @file @ModelName@_two_scale_ewsb_solver.cpp
+ *
+ * @brief implementation of EWSB solver for two-scale iteration
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
+ */
+
+#include "@ModelName@_two_scale_ewsb_solver.hpp"
+#include "logger.hpp"
+#include "error.hpp"
+#include "root_finder.hpp"
+#include "fixed_point_iterator.hpp"
+#include "raii.hpp"
+
+namespace flexiblesusy {
+
+#define INPUT(parameter) model->get_input().parameter
+#define LOCALINPUT(parameter) INPUT(parameter)
+#define INPUTPARAMETER(parameter) LOCALINPUT(parameter)
+#define MODELPARAMETER(parameter) model->get_##parameter()
+#define EXTRAPARAMETER(parameter) model->get_##parameter()
+#define DERIVEDPARAMETER(parameter) model->parameter()
+#define PHASE(p) MODELPARAMETER(p)
+
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::tadpole_equations() const
+{
+   return model->tadpole_equations();
+}
+
+/**
+ * This method solves the EWSB conditions iteratively, trying several
+ * root finding methods until a solution is found.
+ */
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively()
+{
+   auto ewsb_solver = *this;
+
+   auto ewsb_stepper = [ewsb_solver](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
+      auto model = ewsb_solver.model;
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+@applyEWSBSubstitutions@
+      if (ewsb_solver.loop_order > 0)
+         model->calculate_DRbar_masses();
+
+      return ewsb_solver.ewsb_step();
+   };
+
+   auto tadpole_stepper = [ewsb_solver](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
+      auto model = ewsb_solver.model;
+@getEWSBParametersFromVector@
+@setEWSBParametersFromLocalCopies@
+@applyEWSBSubstitutions@
+      if (ewsb_solver.loop_order > 0)
+         model->calculate_DRbar_masses();
+
+      return ewsb_solver.tadpole_equations();
+   };
+
+   std::unique_ptr<EWSB_solver> solvers[] = {
+@EWSBSolvers@
+   };
+
+   const auto x_init(initial_guess());
+
+   VERBOSE_MSG("\t\tSolving EWSB equations ...");
+   VERBOSE_MSG("\t\tInitial guess: x_init = " << x_init.transpose());
+
+   int status;
+   for (auto& solver: solvers) {
+      VERBOSE_MSG("\t\t\tStarting EWSB iteration using " << solver->name());
+      status = solve_iteratively_with(solver.get(), x_init);
+      if (status == EWSB_solver::SUCCESS) {
+         VERBOSE_MSG("\t\t\t" << solver->name() << " finished successfully!");
+         break;
+      }
+#ifdef ENABLE_VERBOSE
+      else {
+         WARNING("\t\t\t" << solver->name() << " could not find a solution!"
+                 " (requested precision: " << precision << ")");
+      }
+#endif
+   }
+
+   if (status == EWSB_solver::SUCCESS) {
+      model->get_problems().unflag_no_ewsb();
+   } else {
+      set_best_ewsb_solution(std::begin(solvers), std::end(solvers));
+      model->get_problems().flag_no_ewsb();
+#ifdef ENABLE_VERBOSE
+      WARNING("\t\tCould not find a solution to the EWSB equations!"
+              " (requested precision: " << precision << ")");
+#endif
+   }
+
+   return status;
+}
+
+/**
+ * Solves EWSB equations with given EWSB solver
+ *
+ * @param solver EWSB solver
+ * @param x_init initial values
+ *
+ * @return status of the EWSB solver
+ */
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_with(
+   EWSB_solver* solver, const EWSB_vector_t& x_init)
+{
+   const int status = solver->solve(x_init);
+
+   if (status == EWSB_solver::SUCCESS)
+      set_ewsb_solution(solver);
+
+   return status;
+}
+
+/**
+ * Sets EWSB output parameters from given solver.
+ *
+ * @param solver solver
+ */
+void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(const EWSB_solver* solver)
+{
+   const auto solution = solver->get_solution();
+
+@setEWSBSolution@
+@setModelParametersFromEWSB@
+   model->calculate_DRbar_masses();
+}
+
+/**
+ * Sets EWSB output parameters from the solver from the range [first,
+ * last), which minimizes the tadpole equations at most.
+ *
+ * @param first iterator to first solver
+ * @param last iterator to last solver
+ */
+template <typename It>
+void @ModelName@_ewsb_solver<Two_scale>::set_best_ewsb_solution(It first, It last)
+{
+   auto ma(*this), mb(*this);
+
+   const auto best_solver =
+      std::min_element(first, last,
+                       [this, &ma, &mb](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
+                          ma.set_ewsb_solution(a.get());
+                          mb.set_ewsb_solution(b.get());
+                          return Total(Abs(Re(ma.model->tadpole_equations()))) < Total(Abs(Re(mb.model->tadpole_equations())));
+                       });
+
+   VERBOSE_MSG("\t\tUsing best solution from " << (*best_solver)->name());
+
+   set_ewsb_solution(best_solver->get());
+}
+
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(unsigned l)
+{
+   // temporarily set `ewsb_loop_order' to `loop_order' and do
+   // iteration
+   const auto old_loop_order = model->get_ewsb_loop_order();
+   const auto save_model_loop_order_raii = make_raii_guard(
+      [this, old_loop_order] () { this->model->set_ewsb_loop_order(old_loop_order); });
+   const auto save_loop_order_raii = make_raii_save(loop_order);
+   loop_order = l;
+   model->set_ewsb_loop_order(l);
+   return solve_iteratively();
+}
+
+int @ModelName@_ewsb_solver<Two_scale>::solve(@ModelName@_mass_eigenstates* model_)
+{
+   if (!model_) {
+      throw SetupError("Error: @ModelName@_ewsb_solver::solve():"
+                       " model pointer must not be zero");
+   }
+   model = model_;
+
+   if (loop_order == 0) {
+      return solve_tree_level();
+   }
+   return solve_iteratively_at(loop_order);
+}
+
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::initial_guess()
+{
+   EWSB_vector_t x_init(EWSB_vector_t::Zero());
+
+@ewsbInitialGuess@
+
+   return x_init;
+}
+
+int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level()
+{
+   int error = 0;
+
+@solveEwsbTreeLevel@
+
+   return error;
+}
+
+/**
+ * Calculates EWSB output parameters including loop-corrections.
+ *
+ * Throws exception of type EEWSBStepFailed if new EWSB parameters are
+ * inf or nan.
+ *
+ * @return new set of EWSB output parameters
+ */
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::ewsb_step() const
+{
+   std::array<double, number_of_ewsb_equations> tadpole{};
+   EWSB_vector_t ewsb_parameters(EWSB_vector_t::Zero());
+
+   if (loop_order > 0) {
+@calculateOneLoopTadpolesNoStruct@
+      if (loop_order > 1) {
+@calculateTwoLoopTadpolesNoStruct@
+      }
+   }
+
+@solveEwsbWithTadpoles@
+
+   if (!is_finite)
+      throw EEWSBStepFailed();
+
+@fillArrayWithEWSBParameters@
+
+   return ewsb_parameters;
+}
+
+} // namespace flexiblesusy
