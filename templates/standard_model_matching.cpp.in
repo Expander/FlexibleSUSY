@@ -127,14 +127,14 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 
 namespace {
 
-double calculate_Mhh_pole(const Standard_model& sm)
+double calculate_Mh2_pole(const Standard_model& sm)
 {
-   const double mh = sm.get_Mhh();
-   const double self_energy = Re(sm.self_energy_hh(mh));
-   const double M_tree = sm.get_mass_matrix_hh();
-   const double M_loop = M_tree - self_energy;
+   const double p = sm.get_Mhh();
+   const double self_energy = Re(sm.self_energy_hh(p));
+   const double mh2_tree = sm.get_mass_matrix_hh();
+   const double Mh2_pole = mh2_tree - self_energy;
 
-   return SignedAbsSqrt(M_loop);
+   return Mh2_pole;
 }
 
 /// calculate loop tadpoles
@@ -149,25 +149,25 @@ auto calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model) -> @ModelNa
    return tadpole_loop;
 }
 
-double calculate_Mhh_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
+double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
    // solve at tree-level to obtain plain tree-level mass matrix
    model.calculate_DRbar_masses();
    model.solve_ewsb_tree_level();
-   const auto M_tree = model.get_mass_matrix_@HiggsBoson@();
+   const auto mh2_tree = model.get_mass_matrix_@HiggsBoson@();
 
    // calculate 1L self-energy using tree-level parameters
-   const auto mh = model_0l.get_M@HiggsBoson(idx)@;
-   const auto self_energy = Re(model_0l.self_energy_hh(mh));
+   const auto p = model_0l.get_M@HiggsBoson(idx)@;
+   const auto self_energy = Re(model_0l.self_energy_hh(p));
 
    // calculate 1L tadpoles using tree-level parameters
    const auto tadpole = calculate_tadpole_over_vevs(model_0l);
 
-   double Mh_pole = 0.;
+   double Mh2_pole = 0.;
 
 @calculateMHiggsPoleOneMomentumIteration@
 
-   return Mh_pole;
+   return Mh2_pole;
 }
 
 } // anonymous namespace
@@ -191,10 +191,11 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
 
-   const double Mhh_sm = calculate_Mhh_pole(sm);
-   const double Mhh_bsm = calculate_Mhh_pole(model, model_0l, idx);
+   const double mh2_sm = Sqr(sm.get_Mhh());
+   const double Mh2_sm = calculate_Mh2_pole(sm);
+   const double Mh2_bsm = calculate_Mh2_pole(model, model_0l, idx);
 
-   sm.set_Lambdax((Sqr(Mhh_bsm) - Sqr(Mhh_sm) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
+   sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
 }
 
 /**
