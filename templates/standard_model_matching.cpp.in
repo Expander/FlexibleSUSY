@@ -152,8 +152,8 @@ double calculate_Mh2_pole(const Standard_model& sm)
 double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
    // solve at tree-level to obtain plain tree-level mass matrix
-   model.calculate_DRbar_masses();
    model.solve_ewsb_tree_level();
+   model.calculate_DRbar_masses();
    const auto mh2_tree = model.get_mass_matrix_@HiggsBoson@();
 
    // calculate 1L self-energy using tree-level parameters
