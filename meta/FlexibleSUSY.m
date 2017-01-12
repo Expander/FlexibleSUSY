@@ -2733,7 +2733,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                    ];
                  Print["Using user-defined EWSB eqs. solution"];
                  freePhases = {};
-                 ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
+                 ewsbSolution = Rule[#[[1]], #[[2]]]& /@ FlexibleSUSY`TreeLevelEWSBSolution;
                 ];
               ,
               Print["Note: There are no EWSB equations."];
