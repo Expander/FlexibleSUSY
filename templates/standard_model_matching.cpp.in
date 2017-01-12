@@ -138,13 +138,13 @@ double calculate_Mh2_pole(const Standard_model& sm)
 }
 
 /// calculate loop tadpoles
-auto calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model) -> @ModelName@_mass_eigenstates::EWSB_vector_t
+@ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model, unsigned loop_order)
 {
-   model.set_ewsb_loop_order(1);
-   const auto tadpole_all = model.tadpole_equations_over_vevs(); // 0L + 1L
+   model.set_ewsb_loop_order(loop_order);
+   const auto tadpole_all = model.tadpole_equations_over_vevs(); // 0L + nL
    model.set_ewsb_loop_order(0);
    const auto tadpole_0l = model.tadpole_equations_over_vevs(); // 0L
-   std::remove_const<decltype(tadpole_all)>::type tadpole_loop = tadpole_all - tadpole_0l;
+   const auto tadpole_loop = (tadpole_all - tadpole_0l).eval();
 
    return tadpole_loop;
 }
@@ -161,7 +161,7 @@ double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_
    const auto self_energy = Re(model_0l.self_energy_hh(p));
 
    // calculate 1L tadpoles using tree-level parameters
-   const auto tadpole = calculate_tadpole_over_vevs(model_0l);
+   const auto tadpole = calculate_tadpole_over_vevs(model_0l, 1);
 
    double Mh2_pole = 0.;
 
