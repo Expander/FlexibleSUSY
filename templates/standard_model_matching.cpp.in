@@ -26,7 +26,6 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_info.hpp"
 #include "config.h"
-#include "thread_pool.hpp"
 #include <cmath>
 
 using namespace flexiblesusy::standard_model;
