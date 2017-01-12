@@ -5,7 +5,7 @@
 namespace flexiblesusy {
 
 StandardModelCWGUTConstraint::StandardModelCWGUTConstraint(double estimated_scale_, double lambda_at_mgut_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , estimated_scale(estimated_scale_)
    , smcw(NULL)
    , gut_scale_calculator()

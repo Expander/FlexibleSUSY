@@ -19,13 +19,13 @@
 #ifndef SMCW_GUT_CONSTRAINT_H
 #define SMCW_GUT_CONSTRAINT_H
 
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "smcw_two_scale.hpp"
 #include "gut_scale_calculator.hpp"
 
 namespace flexiblesusy {
 
-class StandardModelCWGUTConstraint : public Constraint<Two_scale> {
+class StandardModelCWGUTConstraint : public Single_scale_constraint {
 public:
    StandardModelCWGUTConstraint(double, double);
    virtual ~StandardModelCWGUTConstraint();

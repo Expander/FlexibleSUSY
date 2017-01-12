@@ -29,7 +29,7 @@ namespace flexiblesusy {
  * @param pp_ Mssm parameter point
  */
 SoftsusyMSSM_susy_scale_constraint::SoftsusyMSSM_susy_scale_constraint(const SoftsusyMSSM_parameter_point& pp_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , mssm(NULL)
    , scale(pp_.msGuess)
    , pp(pp_)

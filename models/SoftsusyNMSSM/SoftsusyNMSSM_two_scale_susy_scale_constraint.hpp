@@ -19,7 +19,7 @@
 #ifndef SoftsusyNMSSM_MSUSY_CONSTRAINT_H
 #define SoftsusyNMSSM_MSUSY_CONSTRAINT_H
 
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "SoftsusyNMSSM_parameter_point.hpp"
 #include "linalg.h"
 
@@ -38,7 +38,7 @@ template<class T> class SoftsusyNMSSM;
  * does the EWSB.
  */
 
-class SoftsusyNMSSM_susy_scale_constraint : public Constraint<Two_scale> {
+class SoftsusyNMSSM_susy_scale_constraint : public Single_scale_constraint {
 public:
    SoftsusyNMSSM_susy_scale_constraint(const SoftsusyNMSSM_parameter_point&);
    virtual ~SoftsusyNMSSM_susy_scale_constraint();

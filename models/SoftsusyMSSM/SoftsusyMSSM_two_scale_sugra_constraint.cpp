@@ -22,7 +22,7 @@
 namespace flexiblesusy {
 
 SoftsusyMSSM_sugra_constraint::SoftsusyMSSM_sugra_constraint(const SoftsusyMSSM_parameter_point& pp_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , mx_guess(pp_.mxGuess)
    , mssm(NULL)
    , pp(pp_)
