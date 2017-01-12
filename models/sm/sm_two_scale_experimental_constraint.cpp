@@ -25,7 +25,7 @@
 namespace flexiblesusy {
 
 StandardModel_exp_constraint::StandardModel_exp_constraint()
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , sm(NULL)
 {
 }

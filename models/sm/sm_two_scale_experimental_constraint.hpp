@@ -19,7 +19,7 @@
 #ifndef SM_TWO_SCALE_EXP_CONSTRAINT_H
 #define SM_TWO_SCALE_EXP_CONSTRAINT_H
 
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "ew_input.hpp"
 #include <cmath>
 
@@ -37,7 +37,7 @@ class StandardModel;
  * This class applies all experimental constraints to the Standard
  * Model at the Z mass scale.
  */
-class StandardModel_exp_constraint : public Constraint<Two_scale> {
+class StandardModel_exp_constraint : public Single_scale_constraint {
 public:
    StandardModel_exp_constraint();
    virtual ~StandardModel_exp_constraint();
