@@ -60,7 +60,7 @@
 
 using namespace flexiblesusy;
 
-typedef mint Handle;
+using Handle = mint;
 
 class Redirect_output {
 public:
@@ -203,7 +203,7 @@ private:
 };
 
 /// current handles
-typedef std::map<Handle, std::unique_ptr<@ModelName@_data> > Handle_map;
+using Handle_map = std::map<Handle, std::unique_ptr<@ModelName@_data>>;
 Handle_map handles_@ModelName@;
 
 /******************************************************************/

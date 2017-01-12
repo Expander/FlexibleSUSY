@@ -134,7 +134,7 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
  * This function calls run_except() from the derived class and
  * translates an emitted exception into an problem code.
  *
- * @param qedqcd Standard Model input parameters
+ * @param qedqcd_ Standard Model input parameters
  * @param input model input parameters
  */
 template <class T>

@@ -49,7 +49,6 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const;
    void set_sm_parameters(const softsusy::QedQcd&);
-   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale{0.};

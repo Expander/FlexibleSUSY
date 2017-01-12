@@ -58,6 +58,8 @@ private:
    double scale{0.};
    double initial_scale_guess{0.};
    @ModelName@<Two_scale>* model{nullptr};
+
+   void check_model_ptr() const;
 };
 
 } // namespace flexiblesusy

@@ -86,7 +86,7 @@ void RGFlow<Lattice>::add_model
  const vector<SingleSiteConstraint*>& us,
  const vector<SingleSiteConstraint*>& ds)
 {
-    typedef vector<SingleSiteConstraint*>::const_iterator ci_t;
+    using ci_t = vector<SingleSiteConstraint*>::const_iterator;
 
     vector<SingleSiteConstraint*> rs(ds.size());
     reverse_copy(ds.begin(), ds.end(), rs.begin());

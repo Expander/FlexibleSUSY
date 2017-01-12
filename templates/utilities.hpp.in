@@ -93,7 +93,7 @@ private:
          , masses(masses_)
          {}
    };
-   typedef std::vector<TParticle> TSpectrum;
+   using TSpectrum = std::vector<TParticle>;
    TSpectrum spectrum{};
    double scale{0.};
    unsigned width{16};

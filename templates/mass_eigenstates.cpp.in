@@ -245,6 +245,22 @@ Eigen::Matrix<double,CLASSNAME::number_of_ewsb_equations,1> CLASSNAME::tadpole_e
    return tadpole;
 }
 
+/**
+ * This function returns the vector of tadpoles, each divided by the
+ * corresponding VEV.  Thus, the returned tadpoles have the dimension
+ * GeV^2 each.
+ *
+ * @return vector of tadpoles
+ */
+Eigen::Matrix<double,CLASSNAME::number_of_ewsb_equations,1> CLASSNAME::tadpole_equations_over_vevs() const
+{
+   auto tadpole = tadpole_equations();
+
+@divideTadpoleByVEV@
+
+   return tadpole;
+}
+
 int CLASSNAME::solve_ewsb_tree_level_custom()
 {
    int error = 0;

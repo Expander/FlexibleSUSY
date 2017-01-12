@@ -105,10 +105,7 @@ PrintParameter[parameter_, streamName_String] :=
           ];
 
 PrintParameters[parameters_List, streamName_String] :=
-    Module[{result = ""},
-           (result = result <> PrintParameter[#,streamName])& /@ parameters;
-           Return[result];
-          ];
+    StringJoin[PrintParameter[#, streamName]& /@ parameters];
 
 PrintInputParameter[Null, _] := "";
 

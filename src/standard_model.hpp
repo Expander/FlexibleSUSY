@@ -566,7 +566,7 @@ private:
    double calc_beta_v_two_loop(const Beta_traces&) const;
    double calc_beta_v_three_loop(const Beta_traces&) const;
 
-   typedef Eigen::Matrix<double,number_of_ewsb_equations,1> EWSB_vector_t;
+   using EWSB_vector_t = Eigen::Matrix<double,number_of_ewsb_equations,1>;
 
    class EEWSBStepFailed : public Error {
    public:

@@ -69,7 +69,7 @@ public:
    virtual void run_to(double, double eps = -1.0);
 
 protected:
-   typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
+   using Derivs = std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)>;
    void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
 
 private:

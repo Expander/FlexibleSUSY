@@ -49,13 +49,13 @@ class Lattice;
 class Lattice_constraint;
 // class SingleSiteConstraint;
 // class InterTheoryConstraint;
-typedef Constraint<Lattice> SingleSiteConstraint;
-typedef Matching<Lattice> InterTheoryConstraint;
+using SingleSiteConstraint = Constraint<Lattice>;
+using InterTheoryConstraint = Matching<Lattice>;
 
 class Two_scale_running_precision;
 
 
-typedef std::vector<Real> RVec;
+using RVec = std::vector<Real>;
 
 
 template<class T>
@@ -186,7 +186,7 @@ public:
     /// add a model, constraints and matching condition
     /// order of constraints: ascending t
     void add_model(Lattice_model*,
-		   InterTheoryConstraint *m = NULL,
+		   InterTheoryConstraint *m = nullptr,
 		   const std::vector<SingleSiteConstraint*>& constraints = std::vector<SingleSiteConstraint*>());
     /// add a model and up- and downwards constraints
     /// order of upward_constraints: ascending t

@@ -58,8 +58,8 @@ namespace flexiblesusy {
 template <std::size_t dimension>
 class Minimizer : public EWSB_solver {
 public:
-   typedef Eigen::Matrix<double,dimension,1> Vector_t;
-   typedef std::function<double(const Vector_t&)> Function_t;
+   using Vector_t = Eigen::Matrix<double,dimension,1>;
+   using Function_t = std::function<double(const Vector_t&)>;
    enum Solver_type { GSLSimplex, GSLSimplex2, GSLSimplex2Rand };
 
    Minimizer() = default;
@@ -235,7 +235,7 @@ const gsl_multimin_fminimizer_type* Minimizer<dimension>::solver_type_to_gsl_poi
                        + std::to_string(solver_type));
    }
 
-   return NULL;
+   return nullptr;
 }
 
 } // namespace flexiblesusy

@@ -56,7 +56,7 @@ private:
     std::vector<RGFlow<Lattice>::EqRow *> rows;
 };
 
-typedef Matching<Lattice> InterTheoryConstraint;
+using InterTheoryConstraint = Matching<Lattice>;
 
 template<>
 class Matching<Lattice> : public Lattice_constraint {
@@ -116,7 +116,7 @@ protected:
 private:
 };
 
-typedef Constraint<Lattice> SingleSiteConstraint;
+using SingleSiteConstraint = Constraint<Lattice>;
 
 template<>
 class Constraint<Lattice> : public IntraTheoryConstraint {
@@ -210,9 +210,9 @@ public:
 	A *v;
     };
 
-    typedef Adapter_<Eigen::ArrayXd, Eigen::VectorXd, Eigen::MatrixXd> Adapter;
-    typedef Adapter_<const Eigen::ArrayXd, const Eigen::VectorXd,
-		     const Eigen::MatrixXd> const_Adapter;
+    using Adapter = Adapter_<Eigen::ArrayXd, Eigen::VectorXd, Eigen::MatrixXd>;
+    using const_Adapter = Adapter_<const Eigen::ArrayXd, const Eigen::VectorXd,
+                                   const Eigen::MatrixXd>;
 
     // Lattice_RKRGE() {}
     void init(RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span) {

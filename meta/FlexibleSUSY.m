@@ -972,11 +972,16 @@ GetDimOfVEV[vev_] :=
            {idx_}                     , SARAH`getDimParameters[vev][[1]]
           ];
 
-ExpandGaugeIndices[gauge_, number_] :=
-    Table[gauge[i], {i,1,number}];
+ExpandIndices[sym_, 1] := sym;
+
+ExpandIndices[sym_, number_] :=
+    Table[sym[i], {i,1,number}];
 
 ExpandGaugeIndices[gauge_List] :=
-    Flatten[ExpandGaugeIndices[#,GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+    Flatten[ExpandIndices[#, GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+
+ExpandVEVIndices[vev_] :=
+    ExpandIndices[vev, GetDimOfVEV[vev]];
 
 (* Returns a list of three-component lists where the information is
    stored which Higgs corresponds to which EWSB eq. and whether the
@@ -995,8 +1000,7 @@ ExpandGaugeIndices[gauge_List] :=
    EWSB eq. 4 corresponds to hh[3], the 1L tadpole[4] is real
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
-            vev, dimVev},
+    Module[{vevs},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
@@ -1082,8 +1086,11 @@ CreateVEVToTadpoleAssociation[] :=
     Module[{association, vev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           vevs = Flatten @
+                  Join[ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[3]],
+                       ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[2]]];
            association = CreateHiggsToEWSBEqAssociation[];
-           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+           {#[[1]], #[[2]], vevs[[#[[2]]]]}& /@ association
           ];
 
 GetRenormalizationScheme[] :=
@@ -1203,7 +1210,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             higgsMassGetters = "", higgsToEWSBEqAssociation,
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations],
-            calculateTreeLevelTadpoles = "",
+            calculateTreeLevelTadpoles = "", divideTadpoleByVEV = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
             physicalMassesDef = "", mixingMatricesDef = "",
             physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
@@ -1275,6 +1282,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-"];
+           divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True || FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
@@ -1329,7 +1337,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
-           masses                       = DeleteCases[FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices, FlexibleSUSY`M[_List]];
+           masses                       = Flatten[(FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices) /.
+                                                  FlexibleSUSY`M[p_List] :> (FlexibleSUSY`M /@ p)];
            {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            getPhysical                  = TreeMasses`CreatePhysicalArrayGetter[massMatrices];
@@ -1386,6 +1395,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
+                            "@divideTadpoleByVEV@"     -> IndentText[divideTadpoleByVEV],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@clearPhases@"            -> IndentText[clearPhases],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],

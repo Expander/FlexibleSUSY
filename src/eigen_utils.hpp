@@ -67,7 +67,7 @@ template <class Derived>
 Derived div_safe(
    const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b)
 {
-   typedef typename Derived::Scalar Scalar;
+   using Scalar = typename Derived::Scalar;
 
    return binary_map(a, b, [](Scalar x, Scalar y){
          const Scalar q = x / y;

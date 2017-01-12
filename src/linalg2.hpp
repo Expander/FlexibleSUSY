@@ -64,9 +64,9 @@ void hermitian_eigen
 #ifdef ENABLE_LAPACK
 
 #   ifdef ENABLE_ILP64MKL_WORKAROUND
-typedef int64_t lapack_int;
+using lapack_int = int64_t;
 #   else
-typedef int lapack_int;
+using lapack_int = int;
 #   endif
 
 extern "C" void zgesvd_
