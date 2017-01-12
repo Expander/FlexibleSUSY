@@ -448,7 +448,8 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
 @applyUserMatching@
    }
 
-
+#undef MODELPARAMETER
+#define MODELPARAMETER(p) model_0l.get_##p()
 @setYukawas@
 }
 
