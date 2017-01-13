@@ -33,6 +33,7 @@ CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
 SetBoundaryValueParameters::usage="";
+CreateSemiAnalyticCoefficientGetters::usage="";
 
 ApplySemiAnalyticBoundaryConditions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
@@ -527,6 +528,19 @@ CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
     Module[{def = ""},
            (def = def <> CreateSemiAnalyticSolutionDefaultInitialization[#])& /@ solutions;
            Return[def];
+          ];
+
+CreateSemiAnalyticCoefficientGetters[solution_SemiAnalyticSolution] :=
+    Module[{getters = "", coeffs},
+           coeffs = CreateCoefficientParameters[solution];
+           getters = (CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ coeffs;
+           StringJoin[getters]
+          ];
+
+CreateSemiAnalyticCoefficientGetters[solutions_List] :=
+    Module[{getter = ""},
+           (getter = getter <> CreateSemiAnalyticCoefficientGetters[#])& /@ solutions;
+           Return[getter];
           ];
 
 CreateBoundaryValuesDefinitions[solutions_List] :=
