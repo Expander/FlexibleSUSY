@@ -277,6 +277,30 @@ double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstate
    return delta_alpha_s;
 }
 
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar_tree_level(const Standard_model& sm)
+{
+   Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
+   upQuarksDRbar.diagonal() = sm.get_MFu();
+
+   return upQuarksDRbar;
+}
+
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar_tree_level(const Standard_model& sm)
+{
+   Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
+   downQuarksDRbar.diagonal() = sm.get_MFd();
+
+   return downQuarksDRbar;
+}
+
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar_tree_level(const Standard_model& sm)
+{
+   Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
+   downLeptonsDRbar.diagonal() = sm.get_MFe();
+
+   return downLeptonsDRbar;
+}
+
 Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
@@ -397,18 +421,19 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, model, model_0l));
 
    // running BSM quark and lepton masses (via nL matching)
-   const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar(sm, model, 0);
-   const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar(sm, model, 0);
-   const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar(sm, model, 0);
+   const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar_tree_level(sm);
+   const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar_tree_level(sm);
+   const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar_tree_level(sm);
 
    // running BSM gauge couplings (via 1L matching)
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_@hyperchargeCoupling@;
    const double g2_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) / (1. - mW2_1L/mZ2_1L)) / @ModelName@_info::normalization_@leftCoupling@;
    const double g3_1L = AbsSqrt(4. * Pi * alpha_s * (1. + delta_alpha_s)) / @ModelName@_info::normalization_@strongCoupling@;
+   const double g3_0L = AbsSqrt(4. * Pi * alpha_s) / @ModelName@_info::normalization_@strongCoupling@;
 
    model.set_@hyperchargeCoupling@(g1_1L);
    model.set_@leftCoupling@(g2_1L);
-   model.set_@strongCoupling@(g3_1L);
+   model.set_@strongCoupling@(g3_0L);
 
    {
       auto MODEL = &model;
