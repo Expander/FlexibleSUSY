@@ -1019,8 +1019,8 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               callAllSMPoleMassFunctionsThreads = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
              ];
            WriteOut`ReplaceInFiles[files,
-                       { "@alphaS1Lmatching@"        -> IndentText[IndentText[WrapLines[alphaS1Lmatching]]],
-                         "@alphaEM1Lmatching@"       -> IndentText[IndentText[WrapLines[alphaEM1Lmatching]]],
+                       { "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
+                         "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
                          "@setRunningUpQuarkMasses@" -> IndentText[setRunningUpQuarkMasses],
                          "@setRunningDownQuarkMasses@" -> IndentText[setRunningDownQuarkMasses],
                          "@setRunningDownLeptonMasses@" -> IndentText[setRunningDownLeptonMasses],

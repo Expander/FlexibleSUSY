@@ -231,28 +231,22 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
 
 namespace {
 
-double calculate_delta_alpha_em(double alpha_em, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_delta_alpha_em(double alpha_em, const @ModelName@_mass_eigenstates& model)
 {
+   const double currentScale = model.get_scale();
    double delta_alpha_em = 0.;
 
-   if (loop_order > 0) {
-      const double currentScale = model.get_scale();
-
 @alphaEM1Lmatching@
-   }
 
    return delta_alpha_em;
 }
 
-double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstates& model)
 {
+   const double currentScale = model.get_scale();
    double delta_alpha_s = 0.;
 
-   if (loop_order > 0) {
-      const double currentScale = model.get_scale();
-
 @alphaS1Lmatching@
-   }
 
    return delta_alpha_s;
 }
