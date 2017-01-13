@@ -481,37 +481,33 @@ ReplaceImplicitConstraints[settings_List] :=
            ReplacePart[settings, Rule[#[[1]], Sequence @@ #[[2]]] & /@ replacements]
           ];
 
-CreateBoundaryValueParameter[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
+CreateBoundaryValue[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
 
 CreateBoundaryValueParameters[solutions_List] :=
-    {CreateBoundaryValueParameter[#], Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
+    {CreateBoundaryValue[#], Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
 
-GetBoundaryValueParameterName[par_] :=
-    CConversion`ToValidCSymbolString[CreateBoundaryValueParameter[par]];
+CreateBoundaryValueParameterName[par_] :=
+    CConversion`ToValidCSymbolString[CreateBoundaryValue[par]];
 
 CreateCoefficients[SemiAnalyticSolution[par_, basis_]] :=
     Module[{i},
            Table[Symbol[CConversion`ToValidCSymbolString[par] <> "Coeff" <> ToString[i]], {i, 1, Length[basis]}]
           ];
 
+CreateCoefficientParameters[solution_SemiAnalyticSolution] :=
+    {#, Parameters`GetType[GetName[solution]]}& /@ CreateCoefficients[solution];
+
 CreateCoefficientParameters[solutions_List] :=
-    Module[{types, coefficients, withTypes},
-           types = Parameters`GetType[GetName[#]]& /@ solutions;
-           coefficients = CreateCoefficients /@ solutions;
-           withTypes = MapIndexed[With[{coeffs = #1, type = types[[First[#2]]]},
-                                       ({#, type}) & /@ coeffs] &, coefficients];
-           Join[Sequence @@ withTypes]
-          ];
+    Join[CreateCoefficientParameters /@ solutions];
 
 CreateCoefficientNames[solution_SemiAnalyticSolution] :=
     CConversion`ToValidCSymbolString /@ CreateCoefficients[solution];
 
 CreateSemiAnalyticSolutionsDefinitions[solution_SemiAnalyticSolution] :=
-    Module[{par, type, coeffs, defs = ""},
-           par = GetName[solution];
-           type = CConversion`CreateCType[Parameters`GetType[par]];
-           coeffs = CreateCoefficientNames[solution];
-           Utils`StringJoinWithSeparator[(type <> " " <> #)& /@ coeffs, ";\n"] <> ";\n"
+    Module[{coeffs, defs = ""},
+           coeffs = CreateCoefficientParameters[solution];
+           (defs = defs <> Parameters`CreateInitializedParameterDefinition[#])& /@ coeffs;
+           Return[defs];
           ];
 
 CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
@@ -521,11 +517,9 @@ CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
           ];
 
 CreateSemiAnalyticSolutionDefaultInitialization[solution_SemiAnalyticSolution] :=
-    Module[{par, type = "", coeffs, defaults},
-           par = GetName[solution];
-           type = Parameters`GetType[par];
-           coeffs = CreateCoefficientNames[solution];
-           defaults = CConversion`CreateDefaultConstructor[#, type]& /@ coeffs;
+    Module[{coeffs, defaults},
+           coeffs = CreateCoefficientParameters[solution];
+           defaults = CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]]& /@ coeffs;
            "," <> Utils`StringJoinWithSeparator[defaults, ","]
           ];
 
@@ -537,23 +531,21 @@ CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
 
 CreateBoundaryValuesDefinitions[solutions_List] :=
     Module[{boundaryValues, defns},
-           boundaryValues = GetBoundaryValueParameters[solutions];
-           defns = (CConversion`CreateCType[Parameters`GetType[#]] <> " "
-                    <> GetBoundaryValueParameterName[#])& /@ boundaryValues;
-           Utils`StringJoinWithSeparator[defns, ";\n"] <> ";\n"
+           boundaryValues = CreateBoundaryValueParameters[solutions];
+           defns = (Parameters`CreateInitializedParameterDefinition[#])& /@ boundaryValues;
+           StringJoin[defns] <> "\n"
           ];
 
 CreateBoundaryValuesInitialization[solutions_List] :=
     Module[{boundaryValues, def = ""},
-           boundaryValues = GetBoundaryValueParameters[solutions];
-           (def = def <> "," <> CConversion`CreateDefaultConstructor[GetBoundaryValueParameterName[#],
-                                                                     Parameters`GetType[#]])& /@ boundaryValues;
+           boundaryValues = CreateBoundaryValueParameters[solutions];
+           (def = def <> "," <> CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
            Return[def];
           ];
 
 CreateBoundaryValueSetter[parameter_] :=
     Module[{basisParStr, type},
-           basisParStr = GetBoundaryValueParameterName[parameter];
+           basisParStr = CreateBoundaryValueParameterName[parameter];
            type = Parameters`GetType[parameter];
            CConversion`CreateInlineSetter[basisParStr, type]
           ];
@@ -587,7 +579,7 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_S
            boundaryValues = GetBoundaryValueParameters[solutions];
            parameters = Select[Parameters`FindAllParameters[#[[2]]& /@ noMacros], !MemberQ[boundaryValues, #]&];
            setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
-                                <> " = " <> GetBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
+                                <> " = " <> CreateBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
            (result = result <> ApplySettingLocally[#, modelPrefix])& /@ settings;
            Parameters`CreateLocalConstRefs[parameters] <> StringJoin[setBoundaryValues] <> result
           ];
@@ -604,13 +596,13 @@ EvaluateSemiAnalyticSolutions[solutions_List] :=
     Module[{boundaryValues, setBoundaryValues, result = ""},
            boundaryValues = GetBoundaryValueParameters[solutions];
            setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
-                                <> " = " <> GetBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
+                                <> " = " <> CreateBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
            (result = result <> EvaluateSemiAnalyticSolution[#])& /@ solutions;
            setBoundaryValues <> result
           ];
 
 SaveBoundaryValueParameter[parameter_, modelPrefix_String:"model->"] :=
-    Module[{basisPar = CreateBoundaryValueParameter[parameter],
+    Module[{basisPar = CreateBoundaryValue[parameter],
             parStr = CConversion`ToValidCSymbolString[parameter],
             macro, value},
            Which[Parameters`IsModelParameter[parameter],
