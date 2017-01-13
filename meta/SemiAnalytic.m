@@ -47,6 +47,9 @@ GetName[SemiAnalyticSolution[name_, basis_List]] := name;
 
 GetBasis[SemiAnalyticSolution[name_, basis_List]] := basis;
 
+GetBoundaryValueParameters[solution_SemiAnalyticSolution] :=
+    DeleteDuplicates[Flatten[Parameters`FindAllParameters[GetBasis[solution]]]];
+
 GetBoundaryValueParameters[solutions_List] :=
     DeleteDuplicates[Flatten[(Parameters`FindAllParameters[GetBasis[#]])& /@ solutions]];
 
@@ -599,20 +602,17 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_S
           ];
 
 EvaluateSemiAnalyticSolution[solution_] :=
-    Module[{parameter, basis, value},
+    Module[{parameter, basisRules, coeffs},
            parameter = GetName[solution];
-           basis = GetBasis[solution];
-           value = Sum[Global`COEFFICIENT[parameter, i] basis[[i]], {i, 1, Length[basis]}];
-           Parameters`SetParameter[parameter, value]
+           basisRules = Rule[#, CreateBoundaryValue[#]]& /@ (GetBoundaryValueParameters[solution]);
+           coeffs = CreateCoefficients[solution];
+           Parameters`SetParameter[parameter, Dot[coeffs, GetBasis[solution]] /. basisRules]
           ];
 
 EvaluateSemiAnalyticSolutions[solutions_List] :=
-    Module[{boundaryValues, setBoundaryValues, result = ""},
-           boundaryValues = GetBoundaryValueParameters[solutions];
-           setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
-                                <> " = " <> CreateBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
+    Module[{result = ""},
            (result = result <> EvaluateSemiAnalyticSolution[#])& /@ solutions;
-           setBoundaryValues <> result
+           Return[result];
           ];
 
 SaveBoundaryValueParameter[parameter_, modelPrefix_String:"model->"] :=
