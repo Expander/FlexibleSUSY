@@ -138,16 +138,16 @@ double calculate_Mh2_pole(const Standard_model& sm)
    return Mh2_pole;
 }
 
-/// calculate loop tadpoles
+/// calculate loop tadpoles over vevs (at fixed loop order)
 @ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model, unsigned loop_order)
 {
    model.set_ewsb_loop_order(loop_order);
-   const auto tadpole_all = model.tadpole_equations_over_vevs(); // 0L + nL
-   model.set_ewsb_loop_order(0);
-   const auto tadpole_0l = model.tadpole_equations_over_vevs(); // 0L
-   const auto tadpole_loop = (tadpole_all - tadpole_0l).eval();
+   const auto tadpole_lo = model.tadpole_equations_over_vevs(); // nL
 
-   return tadpole_loop;
+   model.set_ewsb_loop_order(loop_order - 1);
+   const auto tadpole_lom1 = model.tadpole_equations_over_vevs(); // (n-1)L
+
+   return (tadpole_lo - tadpole_lom1).eval();
 }
 
 double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
