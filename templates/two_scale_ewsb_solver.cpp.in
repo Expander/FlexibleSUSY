@@ -34,6 +34,8 @@
 #include "fixed_point_iterator.hpp"
 #include "raii.hpp"
 
+#include <memory>
+
 namespace flexiblesusy {
 
 #define INPUT(parameter) model->get_input().parameter
