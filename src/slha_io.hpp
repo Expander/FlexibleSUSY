@@ -124,7 +124,7 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef std::function<void(int, double)> Tuple_processor;
+   using Tuple_processor = std::function<void(int, double)>;
    enum Position { front, back };
    struct Modsel {
       bool quark_flavour_violated{false};   ///< MODSEL[6]
@@ -261,7 +261,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
  * Fills a matrix from a SLHA block
  *
  * @param block_name block name
- * @param dense matrix to be filled
+ * @param matrix matrix to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */
@@ -307,7 +307,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
  * Fills a vector from a SLHA block
  *
  * @param block_name block name
- * @param dense vector to be filled
+ * @param vector vector to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */

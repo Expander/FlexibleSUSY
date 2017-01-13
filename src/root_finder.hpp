@@ -63,8 +63,8 @@ namespace flexiblesusy {
 template <std::size_t dimension>
 class Root_finder : public EWSB_solver {
 public:
-   typedef Eigen::Matrix<double,dimension,1> Vector_t;
-   typedef std::function<Vector_t(const Vector_t&)> Function_t;
+   using Vector_t = Eigen::Matrix<double,dimension,1>;
+   using Function_t = std::function<Vector_t(const Vector_t&)>;
    enum Solver_type { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton };
 
    Root_finder() = default;

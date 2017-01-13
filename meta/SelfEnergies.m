@@ -589,7 +589,7 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", str
 DivideTadpoleByVEV[higgsAndVEV_List, arrayName_String] :=
     Module[{body = "", v, vev},
            For[v = 1, v <= Length[higgsAndVEV], v++,
-               vev = CConversion`ToValidCSymbolString[higgsAndVEV[[v,3]]];
+               vev = CConversion`RValueToCFormString[higgsAndVEV[[v,3]]];
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] /= " <> vev <> ";\n";
               ];
            body

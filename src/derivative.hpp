@@ -101,7 +101,7 @@ auto derivative_one_sided(const F& f, A x, A eps = std::numeric_limits<A>::epsil
    static_assert(Order <= 7, "1st forward derivative with order > 7 not implemented");
    static_assert(sign == -1 || sign == +1, "sign must be either +1 or -1 for one-sided derivative");
 
-   typedef decltype(f(x)) return_type;
+   using return_type = decltype(f(x));
 
    // coefficients from Math. Comp. 51 (1988), 699-706, Table 3
    // DOI: http://dx.doi.org/10.1090/S0025-5718-1988-0935077-0
@@ -181,7 +181,7 @@ auto derivative_central(const F& f, A x, A eps = std::numeric_limits<A>::epsilon
 {
    static_assert(Order <= 3, "1st central derivative with order > 3 not implemented");
 
-   typedef decltype(f(x)) return_type;
+   using return_type = decltype(f(x));
 
    // coefficients from Math. Comp. 51 (1988), 699-706, Table 1
    // DOI: http://dx.doi.org/10.1090/S0025-5718-1988-0935077-0

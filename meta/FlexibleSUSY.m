@@ -870,11 +870,16 @@ GetDimOfVEV[vev_] :=
            {idx_}                     , SARAH`getDimParameters[vev][[1]]
           ];
 
-ExpandGaugeIndices[gauge_, number_] :=
-    Table[gauge[i], {i,1,number}];
+ExpandIndices[sym_, 1] := sym;
+
+ExpandIndices[sym_, number_] :=
+    Table[sym[i], {i,1,number}];
 
 ExpandGaugeIndices[gauge_List] :=
-    Flatten[ExpandGaugeIndices[#,GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+    Flatten[ExpandIndices[#, GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+
+ExpandVEVIndices[vev_] :=
+    ExpandIndices[vev, GetDimOfVEV[vev]];
 
 (* Returns a list of three-component lists where the information is
    stored which Higgs corresponds to which EWSB eq. and whether the
@@ -893,8 +898,7 @@ ExpandGaugeIndices[gauge_List] :=
    EWSB eq. 4 corresponds to hh[3], the 1L tadpole[4] is real
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
-            vev, dimVev},
+    Module[{vevs},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
@@ -980,8 +984,11 @@ CreateVEVToTadpoleAssociation[] :=
     Module[{association, vev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           vevs = Flatten @
+                  Join[ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[3]],
+                       ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[2]]];
            association = CreateHiggsToEWSBEqAssociation[];
-           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+           {#[[1]], #[[2]], vevs[[#[[2]]]]}& /@ association
           ];
 
 GetRenormalizationScheme[] :=
@@ -1010,11 +1017,11 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               calculateMHiggsPoleOneMomentumIteration = FlexibleEFTHiggsMatching`CalculateMHiggsPoleOneMomentumIteration[SARAH`HiggsBoson];
              ];
            WriteOut`ReplaceInFiles[files,
-                       { "@alphaS1Lmatching@"        -> IndentText[IndentText[WrapLines[alphaS1Lmatching]]],
-                         "@alphaEM1Lmatching@"       -> IndentText[IndentText[WrapLines[alphaEM1Lmatching]]],
-                         "@setRunningUpQuarkMasses@" -> IndentText[IndentText[setRunningUpQuarkMasses]],
-                         "@setRunningDownQuarkMasses@" -> IndentText[IndentText[setRunningDownQuarkMasses]],
-                         "@setRunningDownLeptonMasses@" -> IndentText[IndentText[setRunningDownLeptonMasses]],
+                       { "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
+                         "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
+                         "@setRunningUpQuarkMasses@" -> IndentText[setRunningUpQuarkMasses],
+                         "@setRunningDownQuarkMasses@" -> IndentText[setRunningDownQuarkMasses],
+                         "@setRunningDownLeptonMasses@" -> IndentText[setRunningDownLeptonMasses],
                          "@setYukawas@"              -> IndentText[WrapLines[setYukawas]],
                          "@applyUserMatching@"       -> IndentText[IndentText[WrapLines[userMatching]]],
                          "@calculateMHiggsPoleOneMomentumIteration@" -> IndentText[calculateMHiggsPoleOneMomentumIteration],
@@ -1128,7 +1135,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-"];
            calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+"];
-           divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[CreateVEVToTadpoleAssociation[], "tadpole"];
+           divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
