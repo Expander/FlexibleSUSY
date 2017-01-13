@@ -34,6 +34,8 @@
 #include "@ModelName@_model.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
+#include "model.hpp"
+
 namespace flexiblesusy {
 
 class Semi_analytic;
@@ -42,7 +44,7 @@ class Semi_analytic;
  * @brief model class with routines for determining masses and mixings and EWSB
  */
 template<>
-class @ModelName@<Semi_analytic> : public @ModelName@_mass_eigenstates {
+class @ModelName@<Semi_analytic> : public Model, public @ModelName@_mass_eigenstates {
 public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@(const @ModelName@&) = default;
