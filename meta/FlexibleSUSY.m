@@ -1171,7 +1171,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
            solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution];
            getEWSBParametersFromVector  = EWSB`GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, "ewsb_pars"];
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model->"];
-           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[ewsbSubstitutions];
+           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, ewsbSubstitutions, "model->"];
            applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, ewsbSubstitutions];
            WriteOut`ReplaceInFiles[files,
                           { "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],

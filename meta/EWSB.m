@@ -179,17 +179,17 @@ FindFreePhase[parameter_, freePhases_] :=
            If[phases === {}, Null, phases[[1]]]
           ];
 
+WrapPhase[phase_ /; phase === Null, str_String, macro_String:"LOCALINPUT"] :=
+    str;
+
+WrapPhase[phase_, str_String, macro_String:"LOCALINPUT"] :=
+    macro <> "(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
+
 GetValueWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
-    Module[{result, parameterStr, freePhase, gslInput},
-           parameterStr = ToValidCSymbolString[parameter];
+    Module[{freePhase, gslInput},
            freePhase = FindFreePhase[parameter, freePhases];
            gslInput = gslIntputVector <> "(" <> ToString[index] <> ")";
-           If[freePhase =!= Null,
-              result = "INPUT(" <> CConversion`ToValidCSymbolString[freePhase] <> ") * " <> "Abs(" <> gslInput <> ")";
-              ,
-              result = gslInput;
-             ];
-           Return[result];
+           WrapPhase[freePhase, gslInput, "INPUT"]
           ];
 
 FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
@@ -707,9 +707,10 @@ ReplaceFixedParametersBySymbolsInTarget[solution_List] :=
     ReplaceFixedParametersBySymbolsInTarget[solution, GetFixedParameter /@ solution];
 
 CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
-    Module[{result = "", body = "",
+    Module[{result = "", body = "", fixedPars,
             i, par, expr, parStr, oldParStr, reducedSolution,
             type},
+           fixedPars = GetFixedParameter /@ solution;
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
@@ -762,7 +763,7 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";,
                  result = result <>
                           "if (is_finite) {\n" <>
-                          IndentText[WrapLines[SetModelParametersFromEWSB[substitutions]]] <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions]]] <>
                           "} else {\n" <>
                           IndentText[body] <>
                           "}";
@@ -774,9 +775,10 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
           ];
 
 CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
-    Module[{result = "", failBody = "", successBody = "",
+    Module[{result = "", failBody = "", successBody = "", fixedPars,
             i, par, expr, parStr, oldParStr, decls = "", reducedSolution,
             type},
+           fixedPars = GetFixedParameter /@ solution;
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
@@ -834,9 +836,9 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";,
                  result = result <>
                           "if (is_finite) {\n" <>
-                          IndentText[WrapLines[SetModelParametersFromEWSB[substitutions]]] <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions, "model->"]]] <>
                           "} else {\n" <>
-                          IndentText[body] <>
+                          IndentText[failBody] <>
                           "}";
                 ];
               ,
@@ -880,24 +882,6 @@ MakeUniquePtr[str_String, obj_String] :=
 
 CreateEWSBRootFinders[rootFinders_List] :=
     Utils`StringJoinWithSeparator[MakeUniquePtr[#,"EWSB_solver"]& /@ (CreateEWSBRootFinder /@ rootFinders), ",\n"];
-
-WrapPhase[phase_ /; phase === Null, str_String] :=
-    str;
-
-WrapPhase[phase_, str_String] :=
-    "LOCALINPUT(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
-
-SetEWSBSolution[par_, idx_, phase_, func_String, class_String] :=
-    Parameters`SetParameter[par, WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"], class, None];
-
-SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String, class_String] :=
-    Module[{result = "", i, phase},
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               phase = FindFreePhase[parametersFixedByEWSB[[i]], freePhases];
-               result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, phase, func, class];
-              ];
-           result
-          ];
 
 ConvertToReal[par_] :=
     If[Parameters`IsRealParameter[par],
@@ -993,6 +977,10 @@ SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
            result
           ];
 
+SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String, class_String] :=
+    GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, func] <>
+    SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, class];
+
 CreateEWSBParametersInitializationComma[{}] := "";
 
 CreateEWSBParametersInitializationComma[parameters_List] :=
@@ -1007,17 +995,18 @@ SetEWSBParameter[par_, idx_, array_String] :=
 CreateEWSBParametersInitialization[parameters_List, array_String] :=
     StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
 
-SetModelParametersFromEWSB[substitutions_List] :=
-    Module[{subs = substitutions, result = ""},
+SetModelParametersFromEWSB[parametersFixedByEWSB_List, substitutions_List, class_String] :=
+    Module[{subs = substitutions, localPars, result = ""},
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
                                         Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]]],
                             RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
                                         Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
-           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], Parameters`GetType[#[[1]]]])& /@ subs;
-           Parameters`CreateLocalConstRefsForInputParameters[#[[2]]& /@ subs, "LOCALINPUT"] <> result
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ subs;
+           localPars = Parameters`FindAllParameters[#[[2]]& /@ subs, parametersFixedByEWSB];
+           Parameters`CreateLocalConstRefs[localPars] <> result
           ];
 
-ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
+ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model->"] :=
     Module[{pars, subs = substitutions, result = ""},
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
                                         Global`INPUT[CConversion`ToValidCSymbol[Sign[p]]]],
