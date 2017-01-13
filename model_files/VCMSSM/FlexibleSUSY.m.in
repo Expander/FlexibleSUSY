@@ -46,495 +46,495 @@ EWSBInitialGuess = {
 TreeLevelEWSBSolution = {
    {TanBeta,
     Which[SolutionNumber == 1, -(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-       20*(mHu2 - tadpole[2]/vu))/(80*BMu) -
+       20*(mHu2 - tadpole[2]/vu))/(80*B[\[Mu]]) -
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) -
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu)]/2 -
+        (60*2^(1/3)*B[\[Mu]])]/2 -
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(800*BMu^2) +
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(800*B[\[Mu]]^2) +
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) +
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu) - ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
-            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*BMu) -
+        (60*2^(1/3)*B[\[Mu]]) - ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
+            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*B[\[Mu]]) -
          (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-            20*(mHu2 - tadpole[2]/vu))^3/(8000*BMu^3))/
+            20*(mHu2 - tadpole[2]/vu))^3/(8000*B[\[Mu]]^3))/
         (4*Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/
-                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-           (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+           (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
              25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
              800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2 + Sqrt[
-                -4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+                -4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                     75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                     2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                     1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                 (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                 (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                   540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                   540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-              (1/3)) - (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
+              (1/3)) - (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
                  20*(mHd2 - tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-              Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+              Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                    75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                    2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                    1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                  540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                  540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-             (1/3)/(60*2^(1/3)*BMu)])]/2,
+             (1/3)/(60*2^(1/3)*B[\[Mu]])])]/2,
           SolutionNumber == 2, -(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-       20*(mHu2 - tadpole[2]/vu))/(80*BMu) -
+       20*(mHu2 - tadpole[2]/vu))/(80*B[\[Mu]]) -
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) -
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu)]/2 +
+        (60*2^(1/3)*B[\[Mu]])]/2 +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(800*BMu^2) +
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(800*B[\[Mu]]^2) +
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) +
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu) - ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
-            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*BMu) -
+        (60*2^(1/3)*B[\[Mu]]) - ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
+            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*B[\[Mu]]) -
          (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-            20*(mHu2 - tadpole[2]/vu))^3/(8000*BMu^3))/
+            20*(mHu2 - tadpole[2]/vu))^3/(8000*B[\[Mu]]^3))/
         (4*Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/
-                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-           (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+           (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
              25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
              800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2 + Sqrt[
-                -4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+                -4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                     75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                     2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                     1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                 (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                 (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                   540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                   540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-              (1/3)) - (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
+              (1/3)) - (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
                  20*(mHd2 - tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-              Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+              Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                    75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                    2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                    1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                  540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                  540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-             (1/3)/(60*2^(1/3)*BMu)])]/2,
+             (1/3)/(60*2^(1/3)*B[\[Mu]])])]/2,
           SolutionNumber == 3, -(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-       20*(mHu2 - tadpole[2]/vu))/(80*BMu) +
+       20*(mHu2 - tadpole[2]/vu))/(80*B[\[Mu]]) +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) -
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu)]/2 -
+        (60*2^(1/3)*B[\[Mu]])]/2 -
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(800*BMu^2) +
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(800*B[\[Mu]]^2) +
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) +
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
-            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*BMu) -
+        (60*2^(1/3)*B[\[Mu]]) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
+            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*B[\[Mu]]) -
          (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-            20*(mHu2 - tadpole[2]/vu))^3/(8000*BMu^3))/
+            20*(mHu2 - tadpole[2]/vu))^3/(8000*B[\[Mu]]^3))/
         (4*Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/
-                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-           (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+           (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
              25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
              800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2 + Sqrt[
-                -4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+                -4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                     75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                     2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                     1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                 (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                 (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                   540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                   540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-              (1/3)) - (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
+              (1/3)) - (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
                  20*(mHd2 - tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-              Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+              Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                    75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                    2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                    1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                  540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                  540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-             (1/3)/(60*2^(1/3)*BMu)])]/2,
+             (1/3)/(60*2^(1/3)*B[\[Mu]])])]/2,
           SolutionNumber == 4, -(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-       20*(mHu2 - tadpole[2]/vu))/(80*BMu) +
+       20*(mHu2 - tadpole[2]/vu))/(80*B[\[Mu]]) +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) -
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu)]/2 +
+        (60*2^(1/3)*B[\[Mu]])]/2 +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(800*BMu^2) +
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(800*B[\[Mu]]^2) +
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) +
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
-            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*BMu) -
+        (60*2^(1/3)*B[\[Mu]]) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
+            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*B[\[Mu]]) -
          (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-            20*(mHu2 - tadpole[2]/vu))^3/(8000*BMu^3))/
+            20*(mHu2 - tadpole[2]/vu))^3/(8000*B[\[Mu]]^3))/
         (4*Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/
-                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-           (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+           (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
              25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
              800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2 + Sqrt[
-                -4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+                -4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                     75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                     2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                     1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                 (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                 (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                   540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                   540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-              (1/3)) - (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
+              (1/3)) - (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
                  20*(mHd2 - tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-              Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+              Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                    75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                    2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                    1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                  540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                  540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-             (1/3)/(60*2^(1/3)*BMu)])]/2,
+             (1/3)/(60*2^(1/3)*B[\[Mu]])])]/2,
          True, -(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-       20*(mHu2 - tadpole[2]/vu))/(80*BMu) +
+       20*(mHu2 - tadpole[2]/vu))/(80*B[\[Mu]]) +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) -
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu)]/2 +
+        (60*2^(1/3)*B[\[Mu]])]/2 +
     Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-          20*(mHu2 - tadpole[2]/vu))^2/(800*BMu^2) +
-       (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+          20*(mHu2 - tadpole[2]/vu))^2/(800*B[\[Mu]]^2) +
+       (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
          25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
          800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-         (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+         400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+         (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-           540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+           540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                 tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-           Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+           Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                 75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                 2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                 1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)) +
-       (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+       (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-          540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
+          540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                 vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-          Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
+          Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 + 75*
                 g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 + 2400*
                 (mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) - 1200*
                 (mHu2 - tadpole[2]/vu)^2)^3 +
-            (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+            (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^(1/3)/
-        (60*2^(1/3)*BMu) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
-            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*BMu) -
+        (60*2^(1/3)*B[\[Mu]]) + ((-2*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 -
+            20*(mHd2 - tadpole[1]/vd) + 20*(mHu2 - tadpole[2]/vu)))/(5*B[\[Mu]]) -
          (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/vd) +
-            20*(mHu2 - tadpole[2]/vu))^3/(8000*BMu^3))/
+            20*(mHu2 - tadpole[2]/vu))^3/(8000*B[\[Mu]]^3))/
         (4*Sqrt[(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 - 20*(mHd2 - tadpole[1]/
-                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*BMu^2) -
-           (-1600*BMu^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
+                 vd) + 20*(mHu2 - tadpole[2]/vu))^2/(1600*B[\[Mu]]^2) -
+           (-1600*B[\[Mu]]^2 + 9*g1^4*vMSSM^4 + 30*g1^2*g2^2*vMSSM^4 +
              25*g2^4*vMSSM^4 - 400*(mHd2 - tadpole[1]/vd)^2 +
              800*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
-             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*BMu*
-             (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
-                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*BMu*
+             400*(mHu2 - tadpole[2]/vu)^2)/(10*2^(2/3)*B[\[Mu]]*
+             (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 - 540*B[\[Mu]]*
                 (3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 - tadpole[1]/
                      vd) - 20*(mHu2 - tadpole[2]/vu))^2 + Sqrt[
-                -4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+                -4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                     75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                     2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                     1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                 (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                 (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                   540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                   540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                         tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-              (1/3)) - (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
+              (1/3)) - (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 +
                  20*(mHd2 - tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-              540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+              540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                    tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 +
-              Sqrt[-4*(-4800*BMu^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
+              Sqrt[-4*(-4800*B[\[Mu]]^2 + 27*g1^4*vMSSM^4 + 90*g1^2*g2^2*vMSSM^4 +
                    75*g2^4*vMSSM^4 - 1200*(mHd2 - tadpole[1]/vd)^2 +
                    2400*(mHd2 - tadpole[1]/vd)*(mHu2 - tadpole[2]/vu) -
                    1200*(mHu2 - tadpole[2]/vu)^2)^3 +
-                (540*BMu*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                (540*B[\[Mu]]*(-3*g1^2*vMSSM^2 - 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2 -
-                  540*BMu*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
+                  540*B[\[Mu]]*(3*g1^2*vMSSM^2 + 5*g2^2*vMSSM^2 + 20*(mHd2 -
                        tadpole[1]/vd) - 20*(mHu2 - tadpole[2]/vu))^2)^2])^
-             (1/3)/(60*2^(1/3)*BMu)])]/2
+             (1/3)/(60*2^(1/3)*B[\[Mu]])])]/2
 	 ] },
    {MuSq, (mHd2 - tadpole[1] / vd - mHu2 TanBeta^2 + tadpole[2] TanBeta^2 / vu) / (TanBeta^2 - 1) - (g2^2 + GUTNormalization[g1]^2 g1^2) vMSSM^2 / 8}
 };
