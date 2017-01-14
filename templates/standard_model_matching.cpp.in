@@ -89,6 +89,22 @@ Standard_model calculate_SM_tree_level(const Standard_model& sm, const @ModelNam
    return sm_0l;
 }
 
+@ModelName@_mass_eigenstates calculate_@ModelName@_tree_level(
+   const @ModelName@_mass_eigenstates& model,
+   Standard_model eft)
+{
+   auto model_0l = model;
+   model_0l.get_problems().clear();
+   model_0l.set_pole_mass_loop_order(0);
+   model_0l.set_ewsb_loop_order(0);
+   model_0l.solve_ewsb_tree_level();
+   model_0l.calculate_DRbar_parameters();
+
+   match_low_to_high_scale_model_tree_level(model_0l, eft);
+
+   return model_0l;
+}
+
 /**
  * Calculates squared Higgs pole mass in the SM,
  * \f$(M_h^{\text{SM}})^2\f$.
@@ -132,8 +148,8 @@ double calculate_Mh2_pole(const Standard_model& sm, const Standard_model& sm_0l)
  * Calculates squared Higgs pole mass in the @ModelName@,
  * \f$(M_h^{\text{@ModelName@}})^2\f$.
  *
- * @param model BSM parameters
- * @param model_0l tree-level BSM parameters
+ * @param model @ModelName@ parameters
+ * @param model_0l tree-level @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  *
  * @return squared Higgs pole mass in the @ModelName@
@@ -165,8 +181,8 @@ double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_
  * that the Higgs pole masses are equal in both models.
  *
  * @param sm Standard Model
- * @param model BSM parameters
- * @param model_0l tree-level BSM parameters
+ * @param model @ModelName@ parameters
+ * @param model_0l tree-level @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_impl(
@@ -344,17 +360,17 @@ void match_low_to_high_scale_model_impl(
    const double delta_alpha_em = calculate_delta_alpha_em(alpha_em, model_0l);
    const double delta_alpha_s = calculate_delta_alpha_s(alpha_s, model_0l);
 
-   // running BSM W, Z masses (via 1L matching)
+   // running @ModelName@ W, Z masses (via 1L matching)
    const auto sm_0l = calculate_SM_tree_level(sm, model_0l, idx);
    const double mW2_1L = Sqr(calculate_MW_DRbar(sm, sm_0l, model, model_0l));
    const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, sm_0l, model, model_0l));
 
-   // running BSM quark and lepton masses (via nL matching)
+   // running @ModelName@ quark and lepton masses (via nL matching)
    const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar_tree_level(sm);
    const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar_tree_level(sm);
    const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar_tree_level(sm);
 
-   // running BSM gauge couplings (via 1L matching)
+   // running @ModelName@ gauge couplings (via 1L matching)
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_@hyperchargeCoupling@;
    const double g2_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) / (1. - mW2_1L/mZ2_1L)) / @ModelName@_info::normalization_@leftCoupling@;
    const double g3_1L = AbsSqrt(4. * Pi * alpha_s * (1. + delta_alpha_s)) / @ModelName@_info::normalization_@strongCoupling@;
@@ -388,8 +404,8 @@ void match_low_to_high_scale_model_impl(
  * Calculates \f$\lambda(Q)\f$ at the tree level from the lightest
  * CP-even Higgs boson mass of the @ModelName@.
  *
- * @param sm Standard Model
- * @param model BSM model
+ * @param sm Standard Model parameters
+ * @param model @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_tree_level(
@@ -439,12 +455,15 @@ void match_low_to_high_scale_model_tree_level(
  * couplings and the SM vev.
  */
 void match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm, unsigned idx, unsigned loop_order)
+   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned idx, unsigned loop_order)
 {
    if (loop_order == 0) {
       match_low_to_high_scale_model_tree_level(model, sm);
       return;
    }
+
+   // tree-level @ModelName@ parameters
+   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
 
    // temporarily set loop order to `loop_order'
    const auto los_sm = make_raii_set_loop_order(sm, loop_order);
@@ -462,18 +481,20 @@ void match_low_to_high_scale_model(
  * 1-loop Higgs pole masses are equal in both models.
  *
  * @param sm Standard Model
- * @param model BSM parameters
- * @param model_0l tree-level BSM parameters
+ * @param model @ModelName@ parameters
  * @param loop_order downwards matching loop order
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, unsigned loop_order, unsigned idx)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
 {
    if (loop_order == 0) {
       match_high_to_low_scale_model_tree_level(sm, model, idx);
       return;
    }
+
+   // tree-level @ModelName@ parameters
+   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
 
    // temporarily set loop order to `loop_order'
    const auto los_sm = make_raii_set_loop_order(sm, loop_order);

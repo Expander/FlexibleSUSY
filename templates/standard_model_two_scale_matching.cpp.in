@@ -27,26 +27,6 @@
 
 namespace flexiblesusy {
 
-namespace {
-
-@ModelName@<Two_scale> calculate_tree_level_parameters(
-   const @ModelName@<Two_scale>& model,
-   standard_model::StandardModel<Two_scale>& eft)
-{
-   auto model_0l = model;
-   model_0l.get_problems().clear();
-   model_0l.set_pole_mass_loop_order(0);
-   model_0l.set_ewsb_loop_order(0);
-   model_0l.solve_ewsb_tree_level();
-   model_0l.calculate_DRbar_parameters();
-
-   @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(model_0l, eft);
-
-   return model_0l;
-}
-
-} // anonymous namespace
-
 #define CLASSNAME @ModelName@_standard_model_matching_up<Two_scale>
 
 CLASSNAME::@ModelName@_standard_model_matching_up(
@@ -93,8 +73,7 @@ void CLASSNAME::match()
    model->run_to(get_scale());
 
    if (model->get_thresholds() && loop_order) {
-      const auto model_0l = calculate_tree_level_parameters(*model, *eft);
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, model_0l, *eft, higgs_idx, loop_order);
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, higgs_idx, loop_order);
    } else {
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
    }
@@ -196,8 +175,7 @@ void CLASSNAME::match()
    model->run_to(get_scale());
 
    if (model->get_thresholds() && loop_order) {
-      const auto model_0l = calculate_tree_level_parameters(*model, *eft);
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, model_0l, loop_order, higgs_idx);
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order, higgs_idx);
    } else {
       @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
    }
