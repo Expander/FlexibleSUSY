@@ -79,7 +79,20 @@ constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loo
    return RAII_set_loop_order<T>(model, loop_order);
 }
 
-Standard_model calculate_SM_tree_level(const Standard_model& sm, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
+/**
+ * Returns SM parameters with tree-level lambda.  The tree-level
+ * lambda is calculated from the tree-level @ModelName@ parameters.
+ *
+ * @param sm SM parameters
+ * @param model_0l @ModelName@ tree-level parameters
+ * @param idx Index of SM-like Higgs in the Higgs multiplet
+ *
+ * @return SM tree-level parameters
+ */
+Standard_model calculate_SM_tree_level(
+   const Standard_model& sm,
+   const @ModelName@_mass_eigenstates& model_0l,
+   unsigned idx)
 {
    auto sm_0l = sm;
    sm_0l.set_Lambdax(Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v()));
@@ -89,9 +102,19 @@ Standard_model calculate_SM_tree_level(const Standard_model& sm, const @ModelNam
    return sm_0l;
 }
 
+/**
+ * Calculates @ModelName@ tree-level parameters (g1, g2, g3, Yu, Yd,
+ * Ye, v) by performing a tree-level matching from the SM to the
+ * @ModelName@.
+ *
+ * @param model @ModelName@ parameters
+ * @param sm SM parameters
+ *
+ * @return @ModelName@ with tree-level parameters
+ */
 @ModelName@_mass_eigenstates calculate_@ModelName@_tree_level(
    const @ModelName@_mass_eigenstates& model,
-   Standard_model eft)
+   Standard_model sm)
 {
    auto model_0l = model;
    model_0l.get_problems().clear();
@@ -100,7 +123,7 @@ Standard_model calculate_SM_tree_level(const Standard_model& sm, const @ModelNam
    model_0l.solve_ewsb_tree_level();
    model_0l.calculate_DRbar_parameters();
 
-   match_low_to_high_scale_model_tree_level(model_0l, eft);
+   match_low_to_high_scale_model_tree_level(model_0l, sm);
 
    return model_0l;
 }
@@ -133,7 +156,8 @@ double calculate_Mh2_pole(const Standard_model& sm, const Standard_model& sm_0l)
  *
  * @return tadpole at loop order
  */
-@ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model, unsigned loop_order)
+@ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(
+   @ModelName@_mass_eigenstates model, unsigned loop_order)
 {
    model.set_ewsb_loop_order(loop_order);
    const auto tadpole_lo = model.tadpole_equations_over_vevs(); // nL
@@ -154,7 +178,10 @@ double calculate_Mh2_pole(const Standard_model& sm, const Standard_model& sm_0l)
  *
  * @return squared Higgs pole mass in the @ModelName@
  */
-double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
+double calculate_Mh2_pole(
+   @ModelName@_mass_eigenstates model,
+   const @ModelName@_mass_eigenstates& model_0l,
+   unsigned idx)
 {
    // solve at tree-level to obtain plain tree-level mass matrix
    model.solve_ewsb_tree_level();
@@ -186,7 +213,10 @@ double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_impl(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
+   Standard_model& sm,
+   @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_0l,
+   unsigned idx)
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
@@ -312,7 +342,11 @@ double calculate_MZ_pole(const @ModelName@_mass_eigenstates& model, const @Model
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MW_DRbar(const Standard_model& sm, const Standard_model& sm_0l, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
+double calculate_MW_DRbar(
+   const Standard_model& sm,
+   const Standard_model& sm_0l,
+   @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_0l)
 {
    const double MW_sm = calculate_MW_pole(sm, sm_0l);
    const double MW_bsm = calculate_MW_pole(model, model_0l);
@@ -326,7 +360,11 @@ double calculate_MW_DRbar(const Standard_model& sm, const Standard_model& sm_0l,
    return AbsSqrt(mw2);
 }
 
-double calculate_MZ_DRbar(const Standard_model& sm, const Standard_model& sm_0l, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
+double calculate_MZ_DRbar(
+   const Standard_model& sm,
+   const Standard_model& sm_0l,
+   @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_0l)
 {
    const double MZ_sm = calculate_MZ_pole(sm, sm_0l);
    const double MZ_bsm = calculate_MZ_pole(model, model_0l);
@@ -346,7 +384,10 @@ double calculate_MZ_DRbar(const Standard_model& sm, const Standard_model& sm_0l,
  * Model couplings and the SM vev.
  */
 void match_low_to_high_scale_model_impl(
-   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm, unsigned idx)
+   @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_0l,
+   Standard_model& sm,
+   unsigned idx)
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
