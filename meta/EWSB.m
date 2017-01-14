@@ -769,7 +769,7 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";
                 ];
               ,
-              result = "error = solve_ewsb_iteratively(0);\n";
+              result = "error = solve_ewsb_tree_level();\n";
              ];
            Return[result];
           ];
@@ -842,7 +842,7 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";
                 ];
               ,
-              result = "error = solve_ewsb_iteratively(0);\n";
+              result = "error = solve_iteratively_at(0);\n";
              ];
            Return[result];
           ];
