@@ -127,25 +127,28 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 
 namespace {
 
-/**
- * Calculates squared Higgs pole mass in the SM,
- * \f$(M_h^{\text{SM}})^2\f$.
- *
- * @param sm Standard Model parameters
- * @param model_0l tree-level BSM parameters
- * @param idx Higgs index (in mass ordered Higgs multiplet)
- *
- * @return squared Higgs pole mass in the SM
- */
-double calculate_Mh2_pole(const Standard_model& sm, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
+Standard_model calculate_SM_tree_level(const Standard_model& sm, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
-   // SM with tree-level lambda
    auto sm_0l = sm;
    sm_0l.set_Lambdax(Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v()));
    sm_0l.solve_ewsb_tree_level();
    sm_0l.calculate_DRbar_masses();
 
-   const double p = model_0l.get_M@HiggsBoson(idx)@;
+   return sm_0l;
+}
+
+/**
+ * Calculates squared Higgs pole mass in the SM,
+ * \f$(M_h^{\text{SM}})^2\f$.
+ *
+ * @param sm Standard Model parameters
+ * @param sm_0l tree-level SM parameters
+ *
+ * @return squared Higgs pole mass in the SM
+ */
+double calculate_Mh2_pole(const Standard_model& sm, const Standard_model& sm_0l)
+{
+   const double p = sm_0l.get_Mhh();
    const double self_energy = Re(sm_0l.self_energy_hh(p));
    const double tadpole = Re(sm_0l.tadpole_hh() / sm.get_v());
    const double mh2_tree = Sqr(sm.get_Mhh());
@@ -227,7 +230,7 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    sm.solve_ewsb();
 
    const double mh2_sm = Sqr(sm.get_Mhh());
-   const double Mh2_sm = calculate_Mh2_pole(sm, model_0l, idx);
+   const double Mh2_sm = calculate_Mh2_pole(sm, calculate_SM_tree_level(sm, model_0l, idx));
    const double Mh2_bsm = calculate_Mh2_pole(model, model_0l, idx);
 
    sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
@@ -272,7 +275,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_lev
  * couplings and the SM vev.
  */
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm, unsigned loop_order)
+   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm, unsigned idx, unsigned loop_order)
 {
    if (loop_order == 0) {
       match_low_to_high_scale_model_tree_level(model, sm);
@@ -283,7 +286,7 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    const auto los_sm = make_raii_set_loop_order(sm, loop_order);
    const auto los_model = make_raii_set_loop_order(model, loop_order);
 
-   match_low_to_high_scale_model(model, model_0l, sm);
+   match_low_to_high_scale_model(model, model_0l, sm, idx);
 
    model.get_physical().clear();
    sm.get_physical().clear();
@@ -362,10 +365,11 @@ Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @M
    return downLeptonsDRbar;
 }
 
-double calculate_MW_pole(const Standard_model& sm)
+double calculate_MW_pole(const Standard_model& sm, const Standard_model& sm_0l)
 {
    const double mw = sm.get_MVWp();
-   const double self_energy = Re(sm.self_energy_VWp(mw));
+   const double p = sm_0l.get_MVWp();
+   const double self_energy = Re(sm_0l.self_energy_VWp(p));
    const double M_loop = Sqr(mw) - self_energy;
 
    return SignedAbsSqrt(M_loop);
@@ -381,10 +385,11 @@ double calculate_MW_pole(const @ModelName@_mass_eigenstates& model, const @Model
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MZ_pole(const Standard_model& sm)
+double calculate_MZ_pole(const Standard_model& sm, const Standard_model& sm_0l)
 {
    const double mz = sm.get_MVZ();
-   const double self_energy = Re(sm.self_energy_VZ(mz));
+   const double p = sm_0l.get_MVZ();
+   const double self_energy = Re(sm_0l.self_energy_VZ(p));
    const double M_loop = Sqr(mz) - self_energy;
 
    return SignedAbsSqrt(M_loop);
@@ -400,9 +405,9 @@ double calculate_MZ_pole(const @ModelName@_mass_eigenstates& model, const @Model
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MW_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
+double calculate_MW_DRbar(const Standard_model& sm, const Standard_model& sm_0l, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
 {
-   const double MW_sm = calculate_MW_pole(sm);
+   const double MW_sm = calculate_MW_pole(sm, sm_0l);
    const double MW_bsm = calculate_MW_pole(model, model_0l);
    const double mw2 = Sqr(MW_sm) - Sqr(MW_bsm) + Sqr(model.get_M@VectorW(0)@);
 
@@ -414,9 +419,9 @@ double calculate_MW_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates
    return AbsSqrt(mw2);
 }
 
-double calculate_MZ_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
+double calculate_MZ_DRbar(const Standard_model& sm, const Standard_model& sm_0l, @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l)
 {
-   const double MZ_sm = calculate_MZ_pole(sm);
+   const double MZ_sm = calculate_MZ_pole(sm, sm_0l);
    const double MZ_bsm = calculate_MZ_pole(model, model_0l);
    const double mz2 = Sqr(MZ_sm) - Sqr(MZ_bsm) + Sqr(model.get_M@VectorZ(0)@);
 
@@ -436,7 +441,7 @@ double calculate_MZ_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates
  * Model couplings and the SM vev.
  */
 void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm)
+   @ModelName@_mass_eigenstates& model, const @ModelName@_mass_eigenstates& model_0l, Standard_model& sm, unsigned idx)
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
@@ -451,8 +456,9 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
    const double delta_alpha_s = calculate_delta_alpha_s(alpha_s, model_0l);
 
    // running BSM W, Z masses (via 1L matching)
-   const double mW2_1L = Sqr(calculate_MW_DRbar(sm, model, model_0l));
-   const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, model, model_0l));
+   const auto sm_0l = calculate_SM_tree_level(sm, model_0l, idx);
+   const double mW2_1L = Sqr(calculate_MW_DRbar(sm, sm_0l, model, model_0l));
+   const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, sm_0l, model, model_0l));
 
    // running BSM quark and lepton masses (via nL matching)
    const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar_tree_level(sm);

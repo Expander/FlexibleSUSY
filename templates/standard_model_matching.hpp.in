@@ -36,10 +36,10 @@ public:
    static void match_high_to_low_scale_model_tree_level(standard_model::Standard_model&, @ModelName@_mass_eigenstates&, unsigned);
    static void match_high_to_low_scale_model(standard_model::Standard_model&, @ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, unsigned, unsigned);
    static void match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates&, standard_model::Standard_model&);
-   static void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, standard_model::Standard_model&, unsigned);
+   static void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, standard_model::Standard_model&, unsigned, unsigned);
 protected:
    static void match_high_to_low_scale_model(standard_model::Standard_model&, @ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, unsigned);
-   static void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, standard_model::Standard_model&);
+   static void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, const @ModelName@_mass_eigenstates&, standard_model::Standard_model&, unsigned);
 };
 
 } // namespace flexiblesusy

@@ -94,7 +94,7 @@ void CLASSNAME::match()
 
    if (model->get_thresholds() && loop_order) {
       const auto model_0l = calculate_tree_level_parameters(*model, *eft);
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, model_0l, *eft, loop_order);
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, model_0l, *eft, higgs_idx, loop_order);
    } else {
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
    }
