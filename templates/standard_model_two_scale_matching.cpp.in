@@ -72,11 +72,10 @@ void CLASSNAME::match()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (model->get_thresholds() && loop_order) {
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, higgs_idx, loop_order);
-   } else {
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
+   else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
-   }
 }
 
 void CLASSNAME::match_tree_level()
@@ -174,11 +173,10 @@ void CLASSNAME::match()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (model->get_thresholds() && loop_order) {
+   if (model->get_thresholds() && loop_order)
       @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order, higgs_idx);
-   } else {
+   else
       @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
-   }
 }
 
 void CLASSNAME::match_tree_level()

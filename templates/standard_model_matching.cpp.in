@@ -455,7 +455,7 @@ void match_low_to_high_scale_model_tree_level(
  * couplings and the SM vev.
  */
 void match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned idx, unsigned loop_order)
+   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned loop_order, unsigned idx)
 {
    if (loop_order == 0) {
       match_low_to_high_scale_model_tree_level(model, sm);
