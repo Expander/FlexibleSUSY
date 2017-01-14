@@ -127,16 +127,17 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 
 namespace {
 
-double calculate_Mh2_pole(const Standard_model& sm, double p, double lambda_tree)
+double calculate_Mh2_pole(const Standard_model& sm, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
-   const double mh2_tree = Sqr(sm.get_Mhh());
-
+   // SM with tree-level lambda
    auto sm_0l = sm;
-   sm_0l.set_Lambdax(lambda_tree);
+   sm_0l.set_Lambdax(Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v()));
    sm_0l.calculate_DRbar_masses();
 
+   const double p = model_0l.get_M@HiggsBoson(idx)@;
    const double self_energy = Re(sm_0l.self_energy_hh(p));
    const double tadpole = Re(sm_0l.tadpole_hh() / sm.get_v());
+   const double mh2_tree = Sqr(sm.get_Mhh());
    const double Mh2_pole = mh2_tree - self_energy + tadpole;
 
    return Mh2_pole;
@@ -154,7 +155,7 @@ double calculate_Mh2_pole(const Standard_model& sm, double p, double lambda_tree
    return (tadpole_lo - tadpole_lom1).eval();
 }
 
-double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx, double p)
+double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
    // solve at tree-level to obtain plain tree-level mass matrix
    model.solve_ewsb_tree_level();
@@ -162,6 +163,7 @@ double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_
    const auto mh2_tree = model.get_mass_matrix_@HiggsBoson@();
 
    // calculate 1L self-energy using tree-level parameters
+   const double p = model_0l.get_M@HiggsBoson(idx)@;
    const auto self_energy = Re(model_0l.self_energy_hh(p));
 
    // calculate 1L tadpoles using tree-level parameters
@@ -195,10 +197,9 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
 
-   const double lambda_tree = Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v());
    const double mh2_sm = Sqr(sm.get_Mhh());
-   const double Mh2_sm = calculate_Mh2_pole(sm, model_0l.get_M@HiggsBoson(idx)@, lambda_tree);
-   const double Mh2_bsm = calculate_Mh2_pole(model, model_0l, idx, model_0l.get_M@HiggsBoson(idx)@);
+   const double Mh2_sm = calculate_Mh2_pole(sm, model_0l, idx);
+   const double Mh2_bsm = calculate_Mh2_pole(model, model_0l, idx);
 
    sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
 }
