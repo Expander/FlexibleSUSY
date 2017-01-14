@@ -103,7 +103,8 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_lev
  * 1-loop Higgs pole masses are equal in both models.
  *
  * @param sm Standard Model
- * @param model BSM model
+ * @param model BSM parameters
+ * @param model_0l tree-level BSM parameters
  * @param loop_order downwards matching loop order
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
