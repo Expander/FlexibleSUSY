@@ -127,11 +127,22 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
 
 namespace {
 
+/**
+ * Calculates squared Higgs pole mass in the SM,
+ * \f$(M_h^{\text{SM}})^2\f$.
+ *
+ * @param sm Standard Model parameters
+ * @param model_0l tree-level BSM parameters
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
+ *
+ * @return squared Higgs pole mass in the SM
+ */
 double calculate_Mh2_pole(const Standard_model& sm, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
    // SM with tree-level lambda
    auto sm_0l = sm;
    sm_0l.set_Lambdax(Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v()));
+   sm_0l.solve_ewsb_tree_level();
    sm_0l.calculate_DRbar_masses();
 
    const double p = model_0l.get_M@HiggsBoson(idx)@;
@@ -143,7 +154,14 @@ double calculate_Mh2_pole(const Standard_model& sm, const @ModelName@_mass_eigen
    return Mh2_pole;
 }
 
-/// calculate loop tadpoles over vevs (at fixed loop order)
+/**
+ * Calculates tadpoles over vevs (at given fixed loop order)
+ *
+ * @param model model parameters
+ * @param loop_order loop order
+ *
+ * @return tadpole at loop order
+ */
 @ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(@ModelName@_mass_eigenstates model, unsigned loop_order)
 {
    model.set_ewsb_loop_order(loop_order);
@@ -155,6 +173,16 @@ double calculate_Mh2_pole(const Standard_model& sm, const @ModelName@_mass_eigen
    return (tadpole_lo - tadpole_lom1).eval();
 }
 
+/**
+ * Calculates squared Higgs pole mass in the @ModelName@,
+ * \f$(M_h^{\text{@ModelName@}})^2\f$.
+ *
+ * @param model BSM parameters
+ * @param model_0l tree-level BSM parameters
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
+ *
+ * @return squared Higgs pole mass in the @ModelName@
+ */
 double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_mass_eigenstates& model_0l, unsigned idx)
 {
    // solve at tree-level to obtain plain tree-level mass matrix
@@ -185,7 +213,8 @@ double calculate_Mh2_pole(@ModelName@_mass_eigenstates model, const @ModelName@_
  * that the Higgs pole masses are equal in both models.
  *
  * @param sm Standard Model
- * @param model BSM model
+ * @param model BSM parameters
+ * @param model_0l tree-level BSM parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
