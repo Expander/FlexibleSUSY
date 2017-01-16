@@ -1,10 +1,11 @@
-BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopMasses`", "Constraint`", "ThresholdCorrections`", "Parameters`"}];
+BeginPackage["FlexibleEFTHiggsMatching`", {"CConversion`", "TreeMasses`", "LoopMasses`", "Constraint`", "ThresholdCorrections`", "Parameters`", "Utils`"}];
 
 CalculateMHiggsPoleOneMomentumIteration::usage = "";
 CalculateRunningUpQuarkMasses::usage = "";
 CalculateRunningDownQuarkMasses::usage = "";
 CalculateRunningDownLeptonMasses::usage = "";
 FillSMFermionPoleMasses::usage = "";
+SetBSMParameters::usage = "";
 
 Begin["`Private`"];
 
@@ -83,6 +84,46 @@ FillSMFermionPoleMasses[] :=
                         "eft.get_physical().MFe(" <> ToString[i] <> ");\n";
               ];
            result
+          ];
+
+(* find loop order at which parameter needs to be determined given the
+   expression which determines the Higgs mass
+
+   par = parameter
+
+   exprs = list of expressions which determine Mh.
+   exprs[[1]] contains the tree-level expression.
+   exprs[[2]] contains the 1-loop expression.
+   exprs[[3]] contains the 2-loop expression.
+
+   towerLoopOrder = requested loop order of the tower
+ *)
+FindMHiggsLoopOrderFor[par_, exprs_List, towerLoopOrder_] :=
+    Module[{i},
+           For[i = 0, i < Length[exprs], i++,
+               If[!FreeQ[exprs[[i+1]], par],
+                  Return[Max[{0, towerLoopOrder - i}]];
+                 ];
+              ];
+           0
+          ];
+
+SetBSMParameterAtLoopOrder[par_, lo_, struct_String] :=
+    Module[{parName = CConversion`ToValidCSymbolString[par]},
+           struct <> "set_" <> parName <> "(model_" <> ToString[lo] <> "l.get_" <> parName <> "());\n"
+          ];
+
+SetBSMParameters[susyScaleMatching_List, higgsMassMatrix_, struct_String:""] :=
+    Module[{pars, loopOrder},
+           (* BSM parameters fixed by matching SM -> BSM *)
+           pars = Intersection[Join[{SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling,
+                                     SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+                                    First /@ susyScaleMatching],
+                               Parameters`GetModelParameters[]
+                              ];
+           (* find matching loop orders for parameters for FlexibleEFTHiggs-1L *)
+           loopOrder = FindMHiggsLoopOrderFor[#, {higgsMassMatrix, 0}, 1]& /@ pars;
+           StringJoin[SetBSMParameterAtLoopOrder[#[[1]], #[[2]], struct]& /@ Utils`Zip[pars, loopOrder]]
           ];
 
 End[];

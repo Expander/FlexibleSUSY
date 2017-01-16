@@ -994,9 +994,10 @@ CreateVEVToTadpoleAssociation[] :=
 GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
-WriteMatchingClass[susyScaleMatching_List, files_List] :=
+WriteMatchingClass[susyScaleMatching_List, massMatrices_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
             alphaS1Lmatching = "", alphaEM1Lmatching = "",
+            setBSMParameters = "", higgsMassMatrix,
             setRunningUpQuarkMasses = "", setRunningDownQuarkMasses = "",
             setRunningDownLeptonMasses = "", setYukawas = "",
             calculateMHiggsPoleOneMomentumIteration = ""},
@@ -1010,6 +1011,12 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               alphaEM1Lmatching = Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> "\n" <>
                                   "delta_alpha_em += alpha_em/(2.*Pi)*(" <>
                                   CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n";
+              higgsMassMatrix = Select[massMatrices, (TreeMasses`GetMassEigenstate[#] === SARAH`HiggsBoson)&];
+              If[higgsMassMatrix === {},
+                 Print["Error: Could not find mass matrix for ", SARAH`HiggsBoson];
+                 Quit[1];
+                ];
+              setBSMParameters                  = FlexibleEFTHiggsMatching`SetBSMParameters[susyScaleMatching, GetMassMatrix[higgsMassMatrix[[1]]], "model."];
               setRunningUpQuarkMasses           = FlexibleEFTHiggsMatching`CalculateRunningUpQuarkMasses[];
               setRunningDownQuarkMasses         = FlexibleEFTHiggsMatching`CalculateRunningDownQuarkMasses[];
               setRunningDownLeptonMasses        = FlexibleEFTHiggsMatching`CalculateRunningDownLeptonMasses[];
@@ -1019,6 +1026,7 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
            WriteOut`ReplaceInFiles[files,
                        { "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
                          "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
+                         "@setBSMParameters@"        -> IndentText[setBSMParameters],
                          "@setRunningUpQuarkMasses@" -> IndentText[setRunningUpQuarkMasses],
                          "@setRunningDownQuarkMasses@" -> IndentText[setRunningDownQuarkMasses],
                          "@setRunningDownLeptonMasses@" -> IndentText[setRunningDownLeptonMasses],
@@ -2767,7 +2775,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               ];
 
            Print["Creating matching class ..."];
-           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching, massMatrices,
                               {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
