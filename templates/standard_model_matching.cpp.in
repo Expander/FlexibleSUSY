@@ -20,7 +20,7 @@
 
 #include "@ModelName@_standard_model_matching.hpp"
 #include "wrappers.hpp"
-#include "two_scale_matching.hpp"
+#include "single_scale_matching.hpp"
 #include "two_loop_corrections.hpp"
 #include "standard_model.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"

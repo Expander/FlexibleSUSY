@@ -21,7 +21,7 @@
 
 #include "MSSMD5O_MSSMRHN_matching.hpp"
 #include "MSSMD5O_input_parameters.hpp"
-#include "two_scale_matching.hpp"
+#include "single_scale_matching.hpp"
 
 namespace flexiblesusy {
 
@@ -62,7 +62,7 @@ private:
 };
 
 template<>
-class MSSMD5O_MSSMRHN_matching_up<Two_scale> : public Matching<Two_scale> {
+class MSSMD5O_MSSMRHN_matching_up<Two_scale> : public Single_scale_matching {
 public:
     MSSMD5O_MSSMRHN_matching_up();
     MSSMD5O_MSSMRHN_matching_up(const MSSMD5O_input_parameters&);
@@ -79,7 +79,7 @@ private:
 };
 
 template<>
-class MSSMD5O_MSSMRHN_matching_down<Two_scale> : public Matching<Two_scale> {
+class MSSMD5O_MSSMRHN_matching_down<Two_scale> : public Single_scale_matching {
 public:
     MSSMD5O_MSSMRHN_matching_down();
     MSSMD5O_MSSMRHN_matching_down(const MSSMD5O_input_parameters&);

@@ -34,12 +34,12 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_initial_guesser.hpp"
 
+#include "composite_convergence_tester.hpp"
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_composite_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
@@ -156,7 +156,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
       convergence_tester_1.set_max_iterations(max_iterations);
       convergence_tester_2.set_max_iterations(max_iterations);
    }
-   Composite_convergence_tester<T> convergence_tester;
+   Composite_convergence_tester convergence_tester;
    convergence_tester.add_convergence_tester(&convergence_tester_1);
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 

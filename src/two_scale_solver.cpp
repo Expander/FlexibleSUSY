@@ -25,7 +25,7 @@
 #include "logger.hpp"
 #include "model.hpp"
 #include "single_scale_constraint.hpp"
-#include "two_scale_matching.hpp"
+#include "single_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
 
 #include <cmath>
@@ -64,7 +64,7 @@ void RGFlow<Two_scale>::add(Single_scale_constraint* c, Model* m)
  * @param m1 model 1
  * @param m2 model 2
  */
-void RGFlow<Two_scale>::add(Matching<Two_scale>* mc, Model* m1, Model* m2)
+void RGFlow<Two_scale>::add(Single_scale_matching* mc, Model* m1, Model* m2)
 {
    if (!mc) throw SetupError("matching condition pointer is NULL");
    if (!m1) throw SetupError("model pointer 1 is NULL");

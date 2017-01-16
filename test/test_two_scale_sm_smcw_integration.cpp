@@ -1,6 +1,6 @@
 #include "model.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_matching.hpp"
+#include "single_scale_matching.hpp"
 #include "sm_two_scale.hpp"
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "smcw_two_scale.hpp"
@@ -22,10 +22,10 @@ using namespace softsusy;
 #define YD StandardModel<Two_scale>::YD
 #define YE StandardModel<Two_scale>::YE
 
-class Trivial_SM_SMCW_matching_condition_upwards: public Matching<Two_scale> {
+class Trivial_SM_SMCW_matching_condition_upwards: public Single_scale_matching {
 public:
    Trivial_SM_SMCW_matching_condition_upwards()
-      : Matching<Two_scale>()
+      : Single_scale_matching()
       , sm(0)
       , smcw(0)
       {}
@@ -52,10 +52,10 @@ private:
    StandardModelCW<Two_scale>* smcw;
 };
 
-class Trivial_SM_SMCW_matching_condition_downwards: public Matching<Two_scale> {
+class Trivial_SM_SMCW_matching_condition_downwards: public Single_scale_matching {
 public:
    Trivial_SM_SMCW_matching_condition_downwards()
-      : Matching<Two_scale>()
+      : Single_scale_matching()
       , sm(0)
       , smcw(0)
       {}
@@ -82,10 +82,10 @@ private:
    StandardModelCW<Two_scale>* smcw;
 };
 
-class Dynamic_SM_SMCW_matching_condition_downwards: public Matching<Two_scale> {
+class Dynamic_SM_SMCW_matching_condition_downwards: public Single_scale_matching {
 public:
    Dynamic_SM_SMCW_matching_condition_downwards()
-      : Matching<Two_scale>()
+      : Single_scale_matching()
       , sm(0)
       , smcw(0)
       , scale(3000) // initial guess
@@ -121,10 +121,10 @@ private:
    double scale; ///< dynamic matching scale
 };
 
-class Dynamic_SM_SMCW_matching_condition_upwards: public Matching<Two_scale> {
+class Dynamic_SM_SMCW_matching_condition_upwards: public Single_scale_matching {
 public:
    Dynamic_SM_SMCW_matching_condition_upwards()
-      : Matching<Two_scale>()
+      : Single_scale_matching()
       , sm(0)
       , smcw(0)
       , scale(3000) // initial guess

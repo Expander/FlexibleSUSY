@@ -1,8 +1,8 @@
 #include "convergence_tester.hpp"
 #include "model.hpp"
 #include "single_scale_constraint.hpp"
+#include "single_scale_matching.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_matching.hpp"
 #include "linalg.h"
 #include "error.hpp"
 
@@ -33,7 +33,7 @@ private:
    DoubleVector parameters;
 };
 
-class Trivial_matching_condition: public Matching<Two_scale> {
+class Trivial_matching_condition: public Single_scale_matching {
 public:
    Trivial_matching_condition(double scale_ = 100.)
       : mLow(0)
@@ -94,7 +94,7 @@ private:
    unsigned number_of_apply_calls;
 };
 
-class Counting_matching_condition: public Matching<Two_scale> {
+class Counting_matching_condition: public Single_scale_matching {
 public:
    Counting_matching_condition(double scale_)
       : scale(scale_)

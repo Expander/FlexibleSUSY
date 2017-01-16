@@ -16,18 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "two_scale_composite_convergence_tester.hpp"
+#include "composite_convergence_tester.hpp"
 #include <algorithm>
 
 namespace flexiblesusy {
 
-Composite_convergence_tester<Two_scale>::Composite_convergence_tester()
-   : Convergence_tester()
-   , testers()
-{
-}
-
-Composite_convergence_tester<Two_scale>::~Composite_convergence_tester()
+Composite_convergence_tester::~Composite_convergence_tester()
 {
 }
 
@@ -49,7 +43,7 @@ Composite_convergence_tester<Two_scale>::~Composite_convergence_tester()
  * calls of all convergence testers return true.  Otherewise false is
  * returned.
  */
-bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
+bool Composite_convergence_tester::accuracy_goal_reached()
 {
    bool precision_reached = true;
 
@@ -61,7 +55,7 @@ bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
    return precision_reached;
 }
 
-unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
+unsigned int Composite_convergence_tester::max_iterations() const
 {
    if (testers.empty())
       return 0;
@@ -73,13 +67,13 @@ unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
                              }))->max_iterations();
 }
 
-void Composite_convergence_tester<Two_scale>::restart()
+void Composite_convergence_tester::restart()
 {
    for (auto ct: testers)
       ct->restart();
 }
 
-void Composite_convergence_tester<Two_scale>::add_convergence_tester(Convergence_tester* t)
+void Composite_convergence_tester::add_convergence_tester(Convergence_tester* t)
 {
    if (t)
       testers.push_back(t);

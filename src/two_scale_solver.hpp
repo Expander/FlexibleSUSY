@@ -32,11 +32,11 @@
 
 namespace flexiblesusy {
 
-template <class T> class Matching;
 class Convergence_tester;
 class Initial_guesser;
 class Model;
 class Single_scale_constraint;
+class Single_scale_matching;
 
 class Two_scale;
 class Two_scale_running_precision;
@@ -71,7 +71,7 @@ public:
    /// add constraint
    void add(Single_scale_constraint*, Model*);
    /// add matching condition
-   void add(Matching<Two_scale>*, Model*, Model*);
+   void add(Single_scale_matching*, Model*, Model*);
    /// get model at current scale
    Model* get_model() const;
    /// get number of used iterations
@@ -117,7 +117,7 @@ private:
 
    struct Matching_slider : public Slider {
    public:
-      Matching_slider(Model* m1_, Model* m2_, Matching<Two_scale>* mc)
+      Matching_slider(Model* m1_, Model* m2_, Single_scale_matching* mc)
          : m1(m1_), m2(m2_), matching(mc) {}
       virtual ~Matching_slider() {}
       virtual void clear_problems() override;
@@ -127,7 +127,7 @@ private:
       virtual void set_precision(double) override;
    private:
       Model *m1, *m2;
-      Matching<Two_scale>* matching;
+      Single_scale_matching* matching;
    };
 
    std::vector<std::shared_ptr<Slider> > sliders{}; ///< sliders to be run up and down

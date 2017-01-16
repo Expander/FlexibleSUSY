@@ -16,38 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
-#define TWO_SCALE_COMPOSITE_CONVERGENCE_TESTER_H
-
-#include "composite_convergence_tester.hpp"
-#include "convergence_tester.hpp"
-#include <vector>
+#ifndef SINGLE_SCALE_MATCHING_H
+#define SINGLE_SCALE_MATCHING_H
 
 namespace flexiblesusy {
 
-class Two_scale;
+class Model;
 
-/**
- * @class Composite_convergence_tester
- * @brief A composite convergence tester
- *
- * This class collects convergence testers that will be checked when
- * Composite_convergence_tester::accuracy_goal_reached() is called.
- */
-
-template<>
-class Composite_convergence_tester<Two_scale> : public Convergence_tester {
+class Single_scale_matching {
 public:
-   Composite_convergence_tester();
-   virtual ~Composite_convergence_tester();
-
-   virtual bool accuracy_goal_reached() override;
-   virtual unsigned int max_iterations() const override;
-   virtual void restart() override;
-   void add_convergence_tester(Convergence_tester*);
-
-private:
-   std::vector<Convergence_tester*> testers;
+   virtual ~Single_scale_matching() {}
+   virtual void match() = 0;
+   virtual double get_scale() const = 0;
+   virtual void set_models(Model*, Model*) = 0;
 };
 
 }

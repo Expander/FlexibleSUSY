@@ -23,8 +23,8 @@
 #include "@ModelName@_two_scale_ewsb_solver.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "standard_model_two_scale_convergence_tester.hpp"
-#include "two_scale_composite_convergence_tester.hpp"
 
+#include "composite_convergence_tester.hpp"
 #include "error.hpp"
 #include "lowe.h"
 #include "numerics2.hpp"
@@ -138,7 +138,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
          this->settings.get(Spectrum_generator_settings::max_iterations));
    }
 
-   Composite_convergence_tester<Two_scale> cct;
+   Composite_convergence_tester cct;
    cct.add_convergence_tester(&model_ct);
    cct.add_convergence_tester(&eft_ct);
 
