@@ -222,15 +222,16 @@ double calculate_Mh2_pole(
  *
  * @param sm Standard Model
  * @param model @ModelName@ parameters
- * @param model_0l tree-level @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_impl(
    Standard_model& sm,
    @ModelName@_mass_eigenstates& model,
-   const @ModelName@_mass_eigenstates& model_0l,
    unsigned idx)
 {
+   // tree-level @ModelName@ parameters
+   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
+
    model.calculate_DRbar_masses();
    model.solve_ewsb();
 
@@ -398,10 +399,13 @@ double calculate_MZ_DRbar(
  */
 void match_low_to_high_scale_model_impl(
    @ModelName@_mass_eigenstates& model,
-   const @ModelName@_mass_eigenstates& model_0l,
    Standard_model& sm,
    unsigned idx)
 {
+   // tree-level parameters
+   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
+   const auto sm_0l = calculate_SM_tree_level(sm, model_0l, idx);
+
    model.calculate_DRbar_masses();
    model.solve_ewsb();
 
@@ -415,7 +419,6 @@ void match_low_to_high_scale_model_impl(
    const double delta_alpha_s = calculate_delta_alpha_s(alpha_s, model_0l);
 
    // running @ModelName@ W, Z masses (via 1L matching)
-   const auto sm_0l = calculate_SM_tree_level(sm, model_0l, idx);
    const double mW2_1L = Sqr(calculate_MW_DRbar(sm, sm_0l, model, model_0l));
    const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm, sm_0l, model, model_0l));
 
@@ -516,14 +519,11 @@ void match_low_to_high_scale_model(
       return;
    }
 
-   // tree-level @ModelName@ parameters
-   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
-
    // temporarily set loop order to `loop_order'
    const auto los_sm = make_raii_set_loop_order(sm, loop_order);
    const auto los_model = make_raii_set_loop_order(model, loop_order);
 
-   match_low_to_high_scale_model_impl(model, model_0l, sm, idx);
+   match_low_to_high_scale_model_impl(model, sm, idx);
 
    model.get_physical().clear();
    sm.get_physical().clear();
@@ -547,14 +547,11 @@ void match_high_to_low_scale_model(
       return;
    }
 
-   // tree-level @ModelName@ parameters
-   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
-
    // temporarily set loop order to `loop_order'
    const auto los_sm = make_raii_set_loop_order(sm, loop_order);
    const auto los_model = make_raii_set_loop_order(model, loop_order);
 
-   match_high_to_low_scale_model_impl(sm, model, model_0l, idx);
+   match_high_to_low_scale_model_impl(sm, model, idx);
 
    model.get_physical().clear();
    sm.get_physical().clear();
