@@ -27,10 +27,9 @@ DATE=$(date 2>/dev/null || echo unknown)
 # platform information
 debmultiarch=""
 
-# default library directories
-ld_library_path=$(echo "${LD_LIBRARY_PATH}" | tr ':' ' ')
-default_lib_paths="${ld_library_path} /usr/lib /usr/local/lib"
-default_inc_paths="/usr/include /usr/local/include"
+# default library and include directories
+default_lib_paths="$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib"
+default_inc_paths="$CPATH:$CPLUS_INCLUDE_PATH:/usr/include:/usr/local/include"
 
 # configure log file
 logfile="$BASEDIR/config.log"
@@ -355,7 +354,7 @@ contains_not() {
 #_____________________________________________________________________
 check_library() {
     # This function will try to locate a library [$1] in the directory
-    # given in $2 or in a default path [$*].
+    # given in $2 or in a default path [$3].
     #
     # The result of the search is stored in found_lib and found_dir,
     # which should be immediately copied, since the variables value will
@@ -365,12 +364,15 @@ check_library() {
     if test $# -lt 3 ; then
         echo "check_library: Too few arguments"
         return 1
+    elif test $# -gt 3 ; then
+        echo "check_library: Too many arguments.  Default path should be colon-separated."
+        return 1
     fi
 
     # Save arguments in local names
-    lib=$1       ; shift
-    libdirl=$1
-    libdirs="$*"
+    lib="$1"
+    libdirl="$2"
+    libdirs="$3"
     # check if we got a specific argument as to where the library
     # is to be found
     if test ! "x$libdirl" = "x" ; then
@@ -391,26 +393,37 @@ check_library() {
     found_lib=""
 
     if test "x$machine_word_size" = "x64"; then
-	for p in ${libdirs}; do
+        IFS=":"
+        for p in $libdirs; do
+            unset IFS
             libdir64=$(echo "$p" | grep lib | sed -e 's|lib$|lib64|g' -e 's|lib/|lib64/|g')
-            libdirs="$libdirs $libdir64"
-	done
+            libdirs="$libdirs:$libdir64"
+        done
+        unset IFS
     fi
     if test "x$machine_word_size" = "x32"; then
-	for p in ${libdirs}; do
+        IFS=":"
+        for p in $libdirs; do
+            unset IFS
             libdir32=$(echo "$p" | grep lib | sed -e 's|lib$|lib32|g' -e 's|lib/|lib32/|g')
-            libdirs="$libdirs $libdir32"
-	done
+            libdirs="$libdirs:$libdir32"
+        done
+        unset IFS
     fi
     # look first in the DEB_HOST_MULTIARCH directories
     if test "x$debmultiarch" != "x" ; then
-	for p in ${libdirs}; do
+        IFS=":"
+        for p in $libdirs; do
+            unset IFS
             multiarch_libdir=$(echo "$p" | sed "s|lib$|lib/$debmultiarch|")
-            libdirs="$multiarch_libdir $libdirs"
-	done
+            libdirs="$multiarch_libdir:$libdirs"
+        done
+        unset IFS
     fi
 
-    for p in ${libdirs}; do
+    IFS=":"
+    for p in $libdirs; do
+        unset IFS
         for l in ${libs}; do
             liblist=$(echo $p/$l) # expands wildcard
             for n in ${liblist} ; do
@@ -422,6 +435,7 @@ check_library() {
             done
         done
     done
+    unset IFS
 
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
         result "not found in $libdirs"
@@ -436,7 +450,7 @@ check_library() {
 #_____________________________________________________________________
 check_header() {
     # This function will try to locate a header file [$1] in the
-    # directory given in $2 or in a default path [$*].
+    # directory given in $2 or in a default path [$3].
     #
     # The result of the search is stored in found_hdr and found_dir,
     # which should be immediately copied, since the variables value
@@ -446,11 +460,14 @@ check_header() {
     if test $# -lt 2 ; then
         echo "check_header: Too few arguments"
         return 1
+    elif test $# -gt 3 ; then
+        echo "check_header: Too many arguments.  The default paths should be colon-separated."
+        return 1
     fi
 
     # Save arguments in local names
-    hdr=$1       ; shift
-    hdrdirl=$1
+    hdr="$1"       ; shift
+    hdrdirl="$1"
     hdrdirs="$*"
     # check if we got a specific argument as to where the library
     # is to be found
@@ -471,7 +488,9 @@ check_header() {
     found_dir=""
     found_hdr=""
 
-    for p in ${hdrdirs}; do
+    IFS=":"
+    for p in $hdrdirs; do
+        unset IFS
         for h in ${hdrs}; do
             hdrlist=$(echo $p/$h) # expands wildcard
             for n in ${hdrlist} ; do
@@ -483,6 +502,7 @@ check_header() {
             done
         done
     done
+    unset IFS
 
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
         result "not found in $hdrdirs"
@@ -1044,14 +1064,20 @@ check_platform() {
     logmsg "Machine word size: ${machine_word_size}"
     logmsg ""
 
-    for p in $(echo "$PATH" | tr ':' ' '); do
+    IFS=":"
+    for p in $PATH; do
+        unset IFS
         logmsg "PATH: ${p}"
     done
+    unset IFS
     logmsg ""
 
-    for p in ${ld_library_path}; do
+    IFS=":"
+    for p in $ld_library_path; do
+        unset IFS
         logmsg "LD_LIBRARY_PATH: ${p}"
     done
+    unset IFS
     logmsg ""
 
     operating_system=$( (uname -s) 2>/dev/null || echo unknown)
@@ -1510,8 +1536,14 @@ check_cxxflags() {
 
 #_____________________________________________________________________
 check_eigen_incl() {
-    eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
-                     /usr/local/include/eigen3"
+    # Eigen headers are usually in the `eigen3` subdirectory of the include paths.
+    eigen_inc_paths=""
+    IFS=":"
+    for inc_path in $default_inc_paths; do
+        unset IFS
+        eigen_inc_paths="$eigen_inc_paths:$inc_path/eigen3:$inc_path"
+    done
+    unset IFS
     check_header "Eigen/Core" "$eigen_inc_dir" "$eigen_inc_paths"
     if test "x$found_hdr" = "x" ; then
         message "Error: Eigen 3 must be installed, see http://eigen.tuxfamily.org"
@@ -1614,7 +1646,7 @@ check_fortran_libs() {
 
     case "$FC" in
         gfortran*)
-            gfortran_lib_search_paths=$(${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' ')
+            gfortran_lib_search_paths=$(${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p')
             check_library "libgfortran" "$gfortran_lib_search_paths" "$default_lib_paths"
             if test "x$found_lib" = "x" ; then
                 message "Error: libgfortran not found in $gfortran_lib_search_paths $default_lib_paths"
