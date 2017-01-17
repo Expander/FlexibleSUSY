@@ -25,8 +25,6 @@ GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
 
 SetTemporarily::usage="set temporary variables";
 
-ResetTemporarily::usage="set temporary variables";
-
 Begin["`Private`"];
 
 allBetaFunctions = {};
@@ -599,30 +597,30 @@ CheckPerturbativityForParameters[pars_List, thresh_] :=
     Parameters`CreateLocalConstRefs[pars] <> "\n" <>
     StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
 
-SaveValue[par_[idx__], prefix_String] :=
+SaveValue[par_[idx__]] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par],
-            parStrIdx = CConversion`ToValidCSymbolString[par[idx]]},
-           "const auto " <> prefix <> parStrIdx <> " = MODELPARAMETER(" <> parStr <> ")" <>
-           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");"
+            parStrIdx = CConversion`ToValidCSymbolString[par[idx]], oldVal},
+           oldVal = "old_" <> parStrIdx;
+           "const auto " <> oldVal <> " = MODELPARAMETER(" <> parStr <> ")" <>
+           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");\n" <>
+           "const auto save_" <> parStrIdx <> " = make_raii_guard([this," <> oldVal <> "]{ " <>
+           Parameters`SetParameter[par[idx], oldVal, "MODEL->"] <> " });\n"
           ];
 
-SaveValue[par_, prefix_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <> parStr <> ");"
+SaveValue[par_] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par], oldVal},
+           oldVal = "old_" <> parStr;
+           "const auto " <> oldVal <> " = MODELPARAMETER(" <> parStr <> ");\n" <>
+           "const auto save_" <> parStr <> " = make_raii_guard([this," <> oldVal <> "]{ " <>
+           Parameters`SetParameter[par, oldVal, "MODEL->"] <> " });\n"
           ];
-
-RestoreValue[par_, prefix_String] :=
-    Parameters`SetParameter[
-        par,
-        prefix <> CConversion`ToValidCSymbolString[par],
-        "MODEL->"];
 
 SetTemporarily[settings_List] :=
     Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
             set, savedVals},
            If[tempSettings === {}, Return[""];];
            set = ApplyConstraints[tempSettings];
-           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]], "old_"]& /@ tempSettings, "\n"];
+           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]]]& /@ tempSettings, "\n"];
            "// temporary parameter re-definitons\n" <>
            savedVals <> "\n{\n" <> IndentText[set] <> "}"
           ];

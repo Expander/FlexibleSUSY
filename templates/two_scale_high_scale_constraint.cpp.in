@@ -26,6 +26,7 @@
 #include "ew_input.hpp"
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
+#include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
@@ -76,8 +77,6 @@ void @ModelName@_high_scale_constraint<Two_scale>::apply()
 @applyConstraint@
 
    check_non_perturbative();
-
-@temporaryResetting@
 }
 
 bool @ModelName@_high_scale_constraint<Two_scale>::check_non_perturbative()
