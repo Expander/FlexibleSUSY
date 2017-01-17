@@ -29,7 +29,11 @@ template <typename T>
 class RAII_save {
 public:
    RAII_save(T& var_) noexcept : var(var_), value(var_) {}
+   RAII_save(const RAII_save&) = delete;
+   RAII_save(RAII_save&&) = default;
    ~RAII_save() { var = value; }
+   RAII_save& operator=(const RAII_save&) = delete;
+   RAII_save& operator=(RAII_save&& other) = default;
 
 private:
    T& var;
