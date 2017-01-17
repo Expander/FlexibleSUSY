@@ -57,8 +57,6 @@
 
 namespace flexiblesusy {
 
-using namespace @ModelName@_info;
-
 #define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
