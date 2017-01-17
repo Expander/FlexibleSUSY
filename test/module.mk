@@ -322,6 +322,8 @@ TEST_SH += \
 endif
 
 ifeq ($(WITH_MSSMtower),yes)
+TEST_SRC += \
+		$(DIR)/test_MSSMtower_lambda_threshold_correction.cpp
 TEST_SH += \
 		$(DIR)/test_MSSMtower_librarylink.sh \
 		$(DIR)/test_MSSMtower_profile.sh
@@ -676,6 +678,8 @@ $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LI
 $(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_MSSMtower_lambda_threshold_correction.x: $(LIBMSSMtower) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
