@@ -53,6 +53,12 @@ GetBoundaryValueParameters[solution_SemiAnalyticSolution] :=
 GetBoundaryValueParameters[solutions_List] :=
     DeleteDuplicates[Flatten[(Parameters`FindAllParameters[GetBasis[#]])& /@ solutions]];
 
+IsDimensionZero[par_] :=
+    Module[{dimZeroPars},
+           dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+           MemberQ[Parameters`StripIndices[#]& /@ dimZeroPars, Parameters`StripIndices[par]]
+          ];
+
 IsDimensionOne[par_] :=
     Module[{dimOnePars},
            dimOnePars = { SARAH`BetaTijk };
@@ -114,20 +120,6 @@ SetSemiAnalyticParameters[parameters_List] :=
 
 GetSemiAnalyticParameters[] := allSemiAnalyticParameters;
 
-CheckSemiAnalyticBoundaryConditions[constraints_List] :=
-    Module[{i, sortedPars, fixedPars},
-           sortedPars = Sort[allSemiAnalyticParameters];
-           For[i = 1, i <= Length[constraints], i++,
-               fixedPars = Sort[Intersection[sortedPars,
-                                             Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
-               If[fixedPars =!= {} && fixedPars =!= sortedPars,
-                  Print["Error: all semi-analytic parameters must be set at the same scale."];
-                  Return[False];
-                 ];
-              ];
-           True
-          ];
-
 IsSemiAnalyticSetting[setting_] :=
     Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
                  allSemiAnalyticParameters] =!= {};
@@ -161,6 +153,23 @@ SelectSemiAnalyticConstraint[constraints_List] :=
           ];
 
 IsSemiAnalyticConstraintScale[settings_List] := MemberQ[settings, FlexibleSUSY`FSSolveEWSBFor[___]];
+
+CheckSemiAnalyticBoundaryConditions[constraints_List] :=
+    Module[{i, sortedPars, fixedPars, boundaryValueSettings, boundaryValuePars},
+           sortedPars = Sort[allSemiAnalyticParameters];
+           For[i = 1, i <= Length[constraints], i++,
+               fixedPars = Sort[Intersection[sortedPars,
+                                             Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
+               If[fixedPars =!= {} && fixedPars =!= sortedPars,
+                  Print["Error: all semi-analytic parameters must be set at the same scale."];
+                  Return[False];
+                 ];
+              ];
+           boundaryValueSettings = GetBoundaryValueSubstitutions[SelectSemiAnalyticConstraint[constraints]];
+           boundaryValuePars = Select[Parameters`FindAllParameters[#[[2]]& /@ boundaryValueSettings],
+                                      !IsDimensionZero[#]&];
+           And @@ (PolynomialQ[#[[2]], boundaryValuePars]& /@ boundaryValueSettings)
+          ];
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
     Module[{allParameters},
