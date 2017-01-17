@@ -32,6 +32,7 @@
 using namespace flexiblesusy::standard_model;
 
 namespace flexiblesusy {
+namespace @ModelName@_standard_model_matching {
 
 #define MODELPARAMETER(p) model.get_##p()
 #define SMPARAMETER(p) sm.get_##p()
@@ -79,54 +80,6 @@ constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loo
    return RAII_set_loop_order<T>(model, loop_order);
 }
 
-} // anonymous namespace
-
-/**
- * Calculates \f$\lambda(Q)\f$ at the tree level from the lightest
- * CP-even Higgs boson mass of the @ModelName@.
- *
- * @param sm Standard Model
- * @param model BSM model
- * @param idx Higgs index (in mass ordered Higgs multiplet)
- */
-void @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
-{
-   model.calculate_DRbar_masses();
-   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(idx)@/sm.get_v()));
-   sm.calculate_DRbar_masses();
-}
-
-
-/**
- * Calculates \f$\lambda(Q)\f$ at the 1-loop level from the lightest
- * CP-even Higgs boson mass of the @ModelName@ by requiring that the
- * 1-loop Higgs pole masses are equal in both models.
- *
- * @param sm Standard Model
- * @param model BSM model
- * @param loop_order downwards matching loop order
- * @param idx Higgs index (in mass ordered Higgs multiplet)
- */
-void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
-{
-   if (loop_order == 0) {
-      match_high_to_low_scale_model_tree_level(sm, model, idx);
-      return;
-   }
-
-   // temporarily set loop order to `loop_order'
-   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
-   const auto los_model = make_raii_set_loop_order(model, loop_order);
-
-   match_high_to_low_scale_model(sm, model, idx);
-
-   model.get_physical().clear();
-   sm.get_physical().clear();
-}
-
-
 /**
  * Calculates \f$\lambda(Q)\f$ at the current loop level from the
  * lightest CP-even Higgs boson mass of the @ModelName@ by requiring
@@ -136,7 +89,7 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
  * @param model BSM model
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
-void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
+void match_high_to_low_scale_model(
    Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
 {
    model.calculate_DRbar_masses();
@@ -151,40 +104,7 @@ void @ModelName@_standard_model_matching::match_high_to_low_scale_model(
                    - Sqr(sm.get_physical().Mhh) + Sqr(sm.get_Mhh()))/Sqr(sm.get_v()));
 }
 
-/**
- * Calculates the gauge and Yukawa couplings and the SM-like VEV in
- * the @ModelName@ at the tree level from the known Standard Model
- * couplings and the SM vev.
- */
-void @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(
-   @ModelName@_mass_eigenstates& model, Standard_model& sm)
-{
-   sm.calculate_DRbar_masses();
-   model.set_@hyperchargeCoupling@(sm.get_g1()*standard_model_info::normalization_g1/@ModelName@_info::normalization_@hyperchargeCoupling@);
-   model.set_@leftCoupling@(sm.get_g2()*standard_model_info::normalization_g2/@ModelName@_info::normalization_@leftCoupling@);
-   model.set_@strongCoupling@(sm.get_g3()*standard_model_info::normalization_g3/@ModelName@_info::normalization_@strongCoupling@);
-
-   {
-      auto MODEL = &model;
-      const double VEV = sm.get_v();
-
-@applyUserMatching@
-   }
-
-   Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
-   Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
-
-   upQuarksDRbar.diagonal()    = sm.get_MFu();
-   downQuarksDRbar.diagonal()  = sm.get_MFd();
-   downLeptonsDRbar.diagonal() = sm.get_MFe();
-
-@setYukawas@
-
-   model.calculate_DRbar_masses();
-}
-
-static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standard_model& sm)
+void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
 #ifdef ENABLE_THREADS
    auto model_ptr = &model;
@@ -206,142 +126,83 @@ static void calculate_SM_pole_masses(@ModelName@_mass_eigenstates& model, Standa
 #endif
 }
 
-/**
- * Calculates the gauge and Yukawa couplings and the SM-like VEV in
- * the @ModelName@ at the 1-loop level from the known Standard Model
- * couplings and the SM vev.
- */
-void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned loop_order)
-{
-   if (loop_order == 0) {
-      match_low_to_high_scale_model_tree_level(model, sm);
-      return;
-   }
-
-   // temporarily set loop order to `loop_order'
-   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
-   const auto los_model = make_raii_set_loop_order(model, loop_order);
-
-   match_low_to_high_scale_model(model, sm);
-
-   model.get_physical().clear();
-   sm.get_physical().clear();
-}
-
-namespace {
-
-double calculate_delta_alpha_em(double alpha_em, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_delta_alpha_em(double alpha_em, const @ModelName@_mass_eigenstates& model)
 {
    const double currentScale = model.get_scale();
    double delta_alpha_em = 0.;
 
-   if (loop_order > 0) {
 @alphaEM1Lmatching@
-   }
 
    return delta_alpha_em;
 }
 
-double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstates& model)
 {
    const double currentScale = model.get_scale();
    double delta_alpha_s = 0.;
 
-   if (loop_order > 0) {
 @alphaS1Lmatching@
-   }
 
    return delta_alpha_s;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
 
-   if (loop_order == 0) {
-      upQuarksDRbar.diagonal() = sm.get_MFu();
-   } else {
 @setRunningUpQuarkMasses@
-   }
 
    return upQuarksDRbar;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFd_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
 
-   if (loop_order == 0) {
-      downQuarksDRbar.diagonal() = sm.get_MFd();
-   } else {
 @setRunningDownQuarkMasses@
-   }
 
    return downQuarksDRbar;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
 
-   if (loop_order == 0) {
-      downLeptonsDRbar.diagonal() = sm.get_MFe();
-   } else {
 @setRunningDownLeptonMasses@
-   }
 
    return downLeptonsDRbar;
 }
 
-double calculate_MW_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_MW_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
-   double mw = 0.;
+   const double mw2 = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW(0)@);
 
-   if (loop_order == 0) {
-      mw = sm.get_MVWp();
-   } else {
-      const double mw2 = Sqr(sm.get_physical().MVWp) - Sqr(model.get_physical().M@VectorW_0@) + Sqr(model.get_M@VectorW(0)@);
+   if (mw2 < 0.)
+      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
+   else
+      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
 
-      if (mw2 < 0.)
-         model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorW@);
-      else
-         model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorW@);
-
-      mw = AbsSqrt(mw2);
-   }
-
-   return mw;
+   return AbsSqrt(mw2);
 }
 
-double calculate_MZ_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order = 1)
+double calculate_MZ_DRbar(const Standard_model& sm, @ModelName@_mass_eigenstates& model)
 {
-   double mz = 0.;
+   const double mz2 = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
 
-   if (loop_order == 0) {
-      mz = sm.get_MVZ();
-   } else {
-      const double mz2 = Sqr(sm.get_physical().MVZ) - Sqr(model.get_physical().M@VectorZ_0@) + Sqr(model.get_M@VectorZ(0)@);
+   if (mz2 < 0.)
+      model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
+   else
+      model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorZ@);
 
-      if (mz2 < 0.)
-         model.get_problems().flag_running_tachyon(@ModelName@_info::@VectorZ@);
-      else
-         model.get_problems().unflag_running_tachyon(@ModelName@_info::@VectorZ@);
-
-      mz = AbsSqrt(mz2);
-   }
-
-   return mz;
+   return AbsSqrt(mz2);
 }
-
-} // anonymous namespace
 
 /**
  * Calculates the gauge and Yukawa couplings and the SM-like VEV in
  * the @ModelName@ at the current loop level from the known Standard
  * Model couplings and the SM vev.
  */
-void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
+void match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, Standard_model& sm)
 {
    model.calculate_DRbar_masses();
@@ -386,4 +247,107 @@ void @ModelName@_standard_model_matching::match_low_to_high_scale_model(
 @setYukawas@
 }
 
+} // anonymous namespace
+
+/**
+ * Calculates \f$\lambda(Q)\f$ at the tree level from the lightest
+ * CP-even Higgs boson mass of the @ModelName@.
+ *
+ * @param sm Standard Model
+ * @param model BSM model
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
+ */
+void match_high_to_low_scale_model_tree_level(
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
+{
+   model.calculate_DRbar_masses();
+   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(idx)@/sm.get_v()));
+   sm.calculate_DRbar_masses();
+}
+
+/**
+ * Calculates \f$\lambda(Q)\f$ at the 1-loop level from the lightest
+ * CP-even Higgs boson mass of the @ModelName@ by requiring that the
+ * 1-loop Higgs pole masses are equal in both models.
+ *
+ * @param sm Standard Model
+ * @param model BSM model
+ * @param loop_order downwards matching loop order
+ * @param idx Higgs index (in mass ordered Higgs multiplet)
+ */
+void match_high_to_low_scale_model(
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
+{
+   if (loop_order == 0) {
+      match_high_to_low_scale_model_tree_level(sm, model, idx);
+      return;
+   }
+
+   // temporarily set loop order to `loop_order'
+   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
+   const auto los_model = make_raii_set_loop_order(model, loop_order);
+
+   match_high_to_low_scale_model(sm, model, idx);
+
+   model.get_physical().clear();
+   sm.get_physical().clear();
+}
+
+/**
+ * Calculates the gauge and Yukawa couplings and the SM-like VEV in
+ * the @ModelName@ at the tree level from the known Standard Model
+ * couplings and the SM vev.
+ */
+void match_low_to_high_scale_model_tree_level(
+   @ModelName@_mass_eigenstates& model, Standard_model& sm)
+{
+   sm.calculate_DRbar_masses();
+   model.set_@hyperchargeCoupling@(sm.get_g1()*standard_model_info::normalization_g1/@ModelName@_info::normalization_@hyperchargeCoupling@);
+   model.set_@leftCoupling@(sm.get_g2()*standard_model_info::normalization_g2/@ModelName@_info::normalization_@leftCoupling@);
+   model.set_@strongCoupling@(sm.get_g3()*standard_model_info::normalization_g3/@ModelName@_info::normalization_@strongCoupling@);
+
+   {
+      auto MODEL = &model;
+      const double VEV = sm.get_v();
+
+@applyUserMatching@
+   }
+
+   Eigen::Matrix<double, 3, 3> upQuarksDRbar    = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downQuarksDRbar  = ZEROMATRIX(3,3);
+   Eigen::Matrix<double, 3, 3> downLeptonsDRbar = ZEROMATRIX(3,3);
+
+   upQuarksDRbar.diagonal()    = sm.get_MFu();
+   downQuarksDRbar.diagonal()  = sm.get_MFd();
+   downLeptonsDRbar.diagonal() = sm.get_MFe();
+
+@setYukawas@
+
+   model.calculate_DRbar_masses();
+}
+
+/**
+ * Calculates the gauge and Yukawa couplings and the SM-like VEV in
+ * the @ModelName@ at the 1-loop level from the known Standard Model
+ * couplings and the SM vev.
+ */
+void match_low_to_high_scale_model(
+   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned loop_order)
+{
+   if (loop_order == 0) {
+      match_low_to_high_scale_model_tree_level(model, sm);
+      return;
+   }
+
+   // temporarily set loop order to `loop_order'
+   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
+   const auto los_model = make_raii_set_loop_order(model, loop_order);
+
+   match_low_to_high_scale_model(model, sm);
+
+   model.get_physical().clear();
+   sm.get_physical().clear();
+}
+
+} // namespace @ModelName@_standard_model_matching
 } // namespace flexiblesusy
