@@ -22,10 +22,12 @@
 
 #include <Eigen/Dense>
 #include "constraint.hpp"
-#include "matching.hpp"
 #include "lattice_solver.hpp"
 
 namespace flexiblesusy {
+
+template <class T>
+class Matching;
 
 class Lattice;
 
