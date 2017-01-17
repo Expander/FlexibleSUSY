@@ -141,6 +141,12 @@ TestEquality[Sort[Parameters`FindAllParameters[expr]],
              Sort[modelParameters]
             ];
 
+expr = 2 * SARAH`B[Mu] + SARAH`Q[WOp];
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[{SARAH`B[Mu], SARAH`Q[WOp]}]
+            ];
+
 Print["testing GetType[] ..."];
 
 TestEquality[Parameters`GetType[x],
