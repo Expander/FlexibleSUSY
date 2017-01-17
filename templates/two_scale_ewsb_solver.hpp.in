@@ -72,14 +72,16 @@ private:
    double precision{1.e-5};                     ///< precision goal
    @ModelName@_mass_eigenstates* model{nullptr}; ///< temporary pointer to model class
 
+   void set_ewsb_solution(@ModelName@_mass_eigenstates*, const EWSB_solver*);
+   template <typename It> void set_best_ewsb_solution(@ModelName@_mass_eigenstates*, It, It);
+
+   int solve_tree_level(@ModelName@_mass_eigenstates*);
+   int solve_iteratively(@ModelName@_mass_eigenstates*);
+   int solve_iteratively_at(@ModelName@_mass_eigenstates*, unsigned);
+   int solve_iteratively_with(@ModelName@_mass_eigenstates*, EWSB_solver*, const EWSB_vector_t&);
+
+   EWSB_vector_t initial_guess() const;
    EWSB_vector_t tadpole_equations() const;
-   void set_ewsb_solution(const EWSB_solver*);
-   template <typename It> void set_best_ewsb_solution(It, It);
-   int solve_tree_level();
-   int solve_iteratively();
-   int solve_iteratively_at(unsigned);
-   int solve_iteratively_with(EWSB_solver*, const EWSB_vector_t&);
-   EWSB_vector_t initial_guess();
    EWSB_vector_t ewsb_step() const;
 };
 
