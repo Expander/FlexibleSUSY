@@ -842,7 +842,7 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";
                 ];
               ,
-              result = "error = solve_iteratively_at(0);\n";
+              result = "error = solve_iteratively_at(model, 0);\n";
              ];
            Return[result];
           ];
