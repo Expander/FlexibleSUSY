@@ -198,6 +198,9 @@ CallSVDFunction::usage="";
 CallDiagonalizeSymmetricFunction::usage="";
 CallDiagonalizeHermitianFunction::usage="";
 
+FlagPoleTachyon::usage = "";
+FlagRunningTachyon::usage = "";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -1250,7 +1253,7 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
            If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
            " < 0.) " <>
-           "problems.flag_pole_tachyon(" <> particleName <> ");\n"
+           FlagPoleTachyon[particleName]
           ];
 
 CheckPoleMassesForTachyons[macro_String] :=
@@ -1338,20 +1341,25 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            {prototype, def}
           ];
 
-FlagTachyon[particle_String] :=
-    "problems.flag_running_tachyon(" <>
+FlagPoleTachyon[particle_String, problems_String:"problems."] :=
+    problems <> "flag_pole_tachyon(" <>
     FlexibleSUSY`FSModelName <> "_info::" <> particle <>
     ");\n";
 
-FlagTachyon[particles_List] :=
-    StringJoin[FlagTachyon /@ particles];
+FlagRunningTachyon[particle_String, problems_String:"problems."] :=
+    problems <> "flag_running_tachyon(" <>
+    FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ");\n";
 
-FlagTachyon[particle_] :=
-    FlagTachyon[ToValidCSymbolString[GetHead[particle]]];
+FlagRunningTachyon[particles_List] :=
+    StringJoin[FlagRunningTachyon /@ particles];
 
-CheckTachyon[particle_, eigenvector_String] :=
+FlagRunningTachyon[particle_] :=
+    FlagRunningTachyon[ToValidCSymbolString[GetHead[particle]]];
+
+CheckRunningTachyon[particle_, eigenvector_String] :=
     "if (" <> eigenvector <> If[GetDimension[particle] > 1, ".minCoeff()", ""] <> " < 0.) {\n" <>
-    IndentText[FlagTachyon[particle]] <>
+    IndentText[FlagRunningTachyon[particle]] <>
     "}\n";
 
 FlagBadMass[particle_String, eigenvalue_String] :=
@@ -1473,7 +1481,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               body = body <> "\n" <>
                      IndentText[
                          If[ContainsMassless[eigenVector], "",
-                            CheckTachyon[eigenVector, ev] <> "\n"] <>
+                            CheckRunningTachyon[eigenVector, ev] <> "\n"] <>
                          ev <> " = AbsSqrt(" <> ev <> ");\n"
                      ];
              ];
@@ -1541,7 +1549,7 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               !IsMassless[massESSymbol],
               body = body <> "\n" <>
                      If[ContainsMassless[eigenVector], "",
-                        CheckTachyon[massESSymbol, ev] <> "\n"] <>
+                        CheckRunningTachyon[massESSymbol, ev] <> "\n"] <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];

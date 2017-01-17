@@ -143,7 +143,7 @@ Do1DimVector[particleName_String, massName_String, massMatrixName_String,
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy;\n\n" <>
     "if (mass_sqr < 0.)\n" <>
-    IndentText["problems.flag_pole_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+    IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 
@@ -686,7 +686,7 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            If[!IsFermion[particle] &&
               !(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (!force_output && problems.is_running_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+              body = "if (!force_output && problems.is_running_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> ToValidCSymbolString[particle] <> "))\n" <>
                      IndentText["return;"] <> "\n\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
@@ -715,7 +715,7 @@ Create1DimPoleMassFunction[particle_Symbol] :=
               Return[""];
              ];
            If[!(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (!force_output && problems.is_running_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+              body = "if (!force_output && problems.is_running_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> ToValidCSymbolString[particle] <> "))\n" <>
                      IndentText["return 0.;"] <> "\n\n";
              ];
            If[!IsMassless[particle],
@@ -734,7 +734,7 @@ Create1DimPoleMassFunction[particle_Symbol] :=
                       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
                       "const double mass_sqr = " <> mTree <> " - self_energy;\n\n" <>
                       "if (mass_sqr < 0.)\n" <>
-                      IndentText["problems.flag_pole_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                      IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
                       "return AbsSqrt(mass_sqr);\n";
               ,
               body = "return 0.;\n";
@@ -1085,7 +1085,7 @@ CreateRunningDRbarMassFunction[particle_, _] :=
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
               "if (mass_sqr < 0.) {\n" <>
-              IndentText["problems.flag_running_tachyon(" <> particleName <> ");\n" <>
+              IndentText[TreeMasses`FlagPoleTachyon[particleName] <>
                          "return m_pole;"] <> "\n}\n\n" <>
               "return AbsSqrt(mass_sqr);\n";
              ];

@@ -41,7 +41,9 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           Parameters`IsExtraParameter[parameter],
           Parameters`SetParameter[parameter, value, modelName <> "->"],
           True,
-          Print["Error: ", parameter, " is neither a model nor an input parameter!"];
+          Print["Error: ", parameter, " cannot be set in the constraint,",
+                " because it is neither a model nor an input parameter!"];
+          Quit[1];
           ""
          ];
 
