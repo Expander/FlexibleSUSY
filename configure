@@ -206,7 +206,7 @@ sqlite_inc_dir=""
 tsil_lib_dir=""
 tsil_inc_dir=""
 # available RG solvers
-SOLVERS="two_scale"
+SOLVERS="all"
 available_solvers="two_scale lattice semi_analytic"
 # models that will be compiled
 MODELS="all"
