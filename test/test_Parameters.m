@@ -147,6 +147,11 @@ TestEquality[Sort[Parameters`FindAllParameters[expr]],
              Sort[{SARAH`B[Mu], SARAH`Q[WOp]}]
             ];
 
+expr = Which[WOp > 1, Sqrt[B[Mu]]];
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[{B[Mu], WOp}]];
+
 Print["testing GetType[] ..."];
 
 TestEquality[Parameters`GetType[x],

@@ -307,7 +307,7 @@ FindAllParametersFromList[expr_, parameters_List] :=
                  Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[parameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
                }]];
            (* remove parameters found from compactExpr *)
-           compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
+           compactExpr = compactExpr /. (RuleDelayed[#, Evaluate[CConversion`ToValidCSymbolString[#]]]& /@ symbols);
            (* find all parameters without SARAH head in compactExpr *)
            symbols = Join[symbols,
                { Cases[compactExpr, a_Symbol /; MemberQ[parameters,a], {0,Infinity}],
