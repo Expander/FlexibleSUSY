@@ -300,6 +300,39 @@ double calculate_MFe_pole_1loop(
    return MFe_pole(i);
 }
 
+double calculate_MFu_pole_1loop(
+   unsigned i,
+   const @ModelName@_mass_eigenstates& model_0l)
+{
+   double MFu_pole_i = 0.;
+
+@calculateMUpQuarkPole1L@
+
+   return MFu_pole_i;
+}
+
+double calculate_MFd_pole_1loop(
+   unsigned i,
+   const @ModelName@_mass_eigenstates& model_0l)
+{
+   double MFd_pole_i = 0.;
+
+@calculateMDownQuarkPole1L@
+
+   return MFd_pole_i;
+}
+
+double calculate_MFe_pole_1loop(
+   unsigned i,
+   const @ModelName@_mass_eigenstates& model_0l)
+{
+   double MFe_pole_i = 0.;
+
+@calculateMDownLeptonPole1L@
+
+   return MFe_pole_i;
+}
+
 Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(const Standard_model& sm_0l)
 {
    Eigen::Matrix<double,3,1> MFu_pole;
@@ -333,22 +366,34 @@ Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(const Standard_model& sm_0l)
 Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
-   // @todo implement me
-   return ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,1> MFu_pole;
+   MFu_pole << calculate_MFu_pole_1loop(0, model_0l),
+               calculate_MFu_pole_1loop(1, model_0l),
+               calculate_MFu_pole_1loop(2, model_0l);
+
+   return MFu_pole.asDiagonal();
 }
 
 Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
-   // @todo implement me
-   return ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,1> MFd_pole;
+   MFd_pole << calculate_MFd_pole_1loop(0, model_0l),
+               calculate_MFd_pole_1loop(1, model_0l),
+               calculate_MFd_pole_1loop(2, model_0l);
+
+   return MFd_pole.asDiagonal();
 }
 
 Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
-   // @todo implement me
-   return ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,1> MFe_pole;
+   MFe_pole << calculate_MFe_pole_1loop(0, model_0l),
+               calculate_MFe_pole_1loop(1, model_0l),
+               calculate_MFe_pole_1loop(2, model_0l);
+
+   return MFe_pole.asDiagonal();
 }
 
 Eigen::Matrix<double,3,3> calculate_MFu_DRbar_1loop(
