@@ -243,7 +243,7 @@ Eigen::Matrix<double,3,3> calculate_MFe_DRbar_tree_level(const Standard_model& s
    return downLeptonsDRbar;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
 
@@ -252,7 +252,7 @@ Eigen::Matrix<double,3,3> calculate_MFu_DRbar(const Standard_model& sm, const @M
    return upQuarksDRbar;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFd_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
 
@@ -261,7 +261,7 @@ Eigen::Matrix<double,3,3> calculate_MFd_DRbar(const Standard_model& sm, const @M
    return downQuarksDRbar;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
 {
    Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
 
@@ -270,7 +270,7 @@ Eigen::Matrix<double,3,3> calculate_MFe_DRbar(const Standard_model& sm, const @M
    return downLeptonsDRbar;
 }
 
-double calculate_MW_pole(const Standard_model& sm_0l, const Standard_model& sm)
+double calculate_MW_pole_1loop(const Standard_model& sm_0l, const Standard_model& sm)
 {
    const double mw = sm.get_MVWp();
    const double p = sm_0l.get_MVWp();
@@ -280,7 +280,7 @@ double calculate_MW_pole(const Standard_model& sm_0l, const Standard_model& sm)
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MW_pole(const @ModelName@_mass_eigenstates& model_0l, const @ModelName@_mass_eigenstates& model)
+double calculate_MW_pole_1loop(const @ModelName@_mass_eigenstates& model_0l, const @ModelName@_mass_eigenstates& model)
 {
    const double mw = model.get_M@VectorW(0)@;
    const double p = model_0l.get_M@VectorW(0)@;
@@ -290,7 +290,7 @@ double calculate_MW_pole(const @ModelName@_mass_eigenstates& model_0l, const @Mo
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MZ_pole(const Standard_model& sm_0l, const Standard_model& sm)
+double calculate_MZ_pole_1loop(const Standard_model& sm_0l, const Standard_model& sm)
 {
    const double mz = sm.get_MVZ();
    const double p = sm_0l.get_MVZ();
@@ -300,7 +300,7 @@ double calculate_MZ_pole(const Standard_model& sm_0l, const Standard_model& sm)
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MZ_pole(const @ModelName@_mass_eigenstates& model_0l, const @ModelName@_mass_eigenstates& model)
+double calculate_MZ_pole_1loop(const @ModelName@_mass_eigenstates& model_0l, const @ModelName@_mass_eigenstates& model)
 {
    const double mz = model.get_M@VectorZ(0)@;
    const double p = model_0l.get_M@VectorZ(0)@;
@@ -310,27 +310,27 @@ double calculate_MZ_pole(const @ModelName@_mass_eigenstates& model_0l, const @Mo
    return SignedAbsSqrt(M_loop);
 }
 
-double calculate_MW_DRbar(
+double calculate_MW_DRbar_1loop(
    const Standard_model& sm_0l,
    const Standard_model& sm,
    const @ModelName@_mass_eigenstates& model_0l,
    const @ModelName@_mass_eigenstates& model)
 {
-   const double MW_sm = calculate_MW_pole(sm_0l, sm);
-   const double MW_bsm = calculate_MW_pole(model_0l, model);
+   const double MW_sm = calculate_MW_pole_1loop(sm_0l, sm);
+   const double MW_bsm = calculate_MW_pole_1loop(model_0l, model);
    const double mw2 = Sqr(MW_sm) - Sqr(MW_bsm) + Sqr(model.get_M@VectorW(0)@);
 
    return AbsSqrt(mw2);
 }
 
-double calculate_MZ_DRbar(
+double calculate_MZ_DRbar_1loop(
    const Standard_model& sm_0l,
    const Standard_model& sm,
    const @ModelName@_mass_eigenstates& model_0l,
    const @ModelName@_mass_eigenstates& model)
 {
-   const double MZ_sm = calculate_MZ_pole(sm_0l, sm);
-   const double MZ_bsm = calculate_MZ_pole(model_0l, model);
+   const double MZ_sm = calculate_MZ_pole_1loop(sm_0l, sm);
+   const double MZ_bsm = calculate_MZ_pole_1loop(model_0l, model);
    const double mz2 = Sqr(MZ_sm) - Sqr(MZ_bsm) + Sqr(model.get_M@VectorZ(0)@);
 
    return AbsSqrt(mz2);
@@ -369,8 +369,8 @@ double calculate_MZ_DRbar(
    const double delta_alpha_s = calculate_delta_alpha_s(alpha_s, model_0l);
 
    // running @ModelName@ W, Z masses (via 1L matching)
-   const double mW2_1L = Sqr(calculate_MW_DRbar(sm_0l, sm, model_0l, model));
-   const double mZ2_1L = Sqr(calculate_MZ_DRbar(sm_0l, sm, model_0l, model));
+   const double mW2_1L = Sqr(calculate_MW_DRbar_1loop(sm_0l, sm, model_0l, model));
+   const double mZ2_1L = Sqr(calculate_MZ_DRbar_1loop(sm_0l, sm, model_0l, model));
 
    // running @ModelName@ quark and lepton masses (via 1L matching)
    // @todo do 1-loop fermion mass matching
