@@ -219,55 +219,130 @@ double calculate_delta_alpha_s(double alpha_s, const @ModelName@_mass_eigenstate
    return delta_alpha_s;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFu_DRbar_tree_level(const Standard_model& sm)
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar_tree_level(const @ModelName@_mass_eigenstates& model)
 {
-   Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
-   upQuarksDRbar.diagonal() = sm.get_MFu();
-
-   return upQuarksDRbar;
-}
-
-Eigen::Matrix<double,3,3> calculate_MFd_DRbar_tree_level(const Standard_model& sm)
-{
-   Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
-   downQuarksDRbar.diagonal() = sm.get_MFd();
-
-   return downQuarksDRbar;
-}
-
-Eigen::Matrix<double,3,3> calculate_MFe_DRbar_tree_level(const Standard_model& sm)
-{
-   Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
-   downLeptonsDRbar.diagonal() = sm.get_MFe();
-
-   return downLeptonsDRbar;
-}
-
-Eigen::Matrix<double,3,3> calculate_MFu_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
-{
-   Eigen::Matrix<double,3,3> upQuarksDRbar = ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,3> mf = ZEROMATRIX(3,3);
 
 @setRunningUpQuarkMasses@
 
-   return upQuarksDRbar;
+   return mf;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFd_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar_tree_level(const @ModelName@_mass_eigenstates& model)
 {
-   Eigen::Matrix<double,3,3> downQuarksDRbar = ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,3> mf = ZEROMATRIX(3,3);
 
 @setRunningDownQuarkMasses@
 
-   return downQuarksDRbar;
+   return mf;
 }
 
-Eigen::Matrix<double,3,3> calculate_MFe_DRbar_1loop(const Standard_model& sm, const @ModelName@_mass_eigenstates& model)
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar_tree_level(const @ModelName@_mass_eigenstates& model)
 {
-   Eigen::Matrix<double,3,3> downLeptonsDRbar = ZEROMATRIX(3,3);
+   Eigen::Matrix<double,3,3> mf = ZEROMATRIX(3,3);
 
 @setRunningDownLeptonMasses@
 
-   return downLeptonsDRbar;
+   return mf;
+}
+
+Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   // @todo implement me
+   return ZEROMATRIX(3,3);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFu_DRbar_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l,
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   Eigen::Matrix<double,3,3> mf_sm = ZEROMATRIX(3,3);
+
+   const auto Mf_sm  = calculate_MFu_pole_1loop(sm_0l, sm_1l);
+   const auto Mf_bsm = calculate_MFu_pole_1loop(model_0l, model_1l);
+   const auto mf_bsm = calculate_MFu_DRbar_tree_level(model_1l);
+
+   mf_sm = mf_bsm - Mf_bsm + Mf_sm;
+
+   return Abs(mf_sm);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFd_DRbar_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l,
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   Eigen::Matrix<double,3,3> mf_sm = ZEROMATRIX(3,3);
+
+   const auto Mf_sm  = calculate_MFd_pole_1loop(sm_0l, sm_1l);
+   const auto Mf_bsm = calculate_MFd_pole_1loop(model_0l, model_1l);
+   const auto mf_bsm = calculate_MFd_DRbar_tree_level(model_1l);
+
+   mf_sm = mf_bsm - Mf_bsm + Mf_sm;
+
+   return Abs(mf_sm);
+}
+
+Eigen::Matrix<double,3,3> calculate_MFe_DRbar_1loop(
+   const Standard_model& sm_0l,
+   const Standard_model& sm_1l,
+   const @ModelName@_mass_eigenstates& model_0l,
+   const @ModelName@_mass_eigenstates& model_1l)
+{
+   Eigen::Matrix<double,3,3> mf_sm = ZEROMATRIX(3,3);
+
+   const auto Mf_sm  = calculate_MFe_pole_1loop(sm_0l, sm_1l);
+   const auto Mf_bsm = calculate_MFe_pole_1loop(model_0l, model_1l);
+   const auto mf_bsm = calculate_MFe_DRbar_tree_level(model_1l);
+
+   mf_sm = mf_bsm - Mf_bsm + Mf_sm;
+
+   return Abs(mf_sm);
 }
 
 double calculate_MW_pole_1loop(const Standard_model& sm_0l, const Standard_model& sm)
@@ -373,10 +448,9 @@ double calculate_MZ_DRbar_1loop(
    const double mZ2_1L = Sqr(calculate_MZ_DRbar_1loop(sm_0l, sm, model_0l, model));
 
    // running @ModelName@ quark and lepton masses (via 1L matching)
-   // @todo do 1-loop fermion mass matching
-   const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar_tree_level(sm_0l);
-   const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar_tree_level(sm_0l);
-   const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar_tree_level(sm_0l);
+   const Eigen::Matrix<double, 3, 3> upQuarksDRbar    = calculate_MFu_DRbar_1loop(sm_0l, sm, model_0l, model);
+   const Eigen::Matrix<double, 3, 3> downQuarksDRbar  = calculate_MFd_DRbar_1loop(sm_0l, sm, model_0l, model);
+   const Eigen::Matrix<double, 3, 3> downLeptonsDRbar = calculate_MFe_DRbar_1loop(sm_0l, sm, model_0l, model);
 
    // running @ModelName@ gauge couplings (via 1L matching)
    const double g1_1L = AbsSqrt(4. * Pi * alpha_em * (1. + delta_alpha_em) * mZ2_1L / mW2_1L) / @ModelName@_info::normalization_@hyperchargeCoupling@;

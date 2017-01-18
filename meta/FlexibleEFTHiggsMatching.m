@@ -28,9 +28,7 @@ CalculateRunningUpQuarkMasses[] :=
                mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetUpQuark[i + 1, True]];
                If[Length[TreeMasses`GetSMUpQuarks[]] == 3, mqFun = mq <> "()"];
                result = result <>
-                        "upQuarksDRbar(" <> iStr <> "," <> iStr <> ") = " <>
-                        "sm.get_physical().MFu(" <> iStr <> ") - " <>
-                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+                        "mf(" <> iStr <> "," <> iStr <> ") = model.get_M" <> mqFun <> ";\n";
               ];
            result
           ];
@@ -42,9 +40,7 @@ CalculateRunningDownQuarkMasses[] :=
                mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownQuark[i + 1, True]];
                If[Length[TreeMasses`GetSMDownQuarks[]] == 3, mqFun = mq <> "()"];
                result = result <>
-                        "downQuarksDRbar(" <> iStr <> "," <> iStr <> ") = " <>
-                        "sm.get_physical().MFd(" <> iStr <> ") - " <>
-                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+                        "mf(" <> iStr <> "," <> iStr <> ") = model.get_M" <> mqFun <> ";\n";
               ];
            result
           ];
@@ -56,9 +52,7 @@ CalculateRunningDownLeptonMasses[] :=
                mq = mqFun = CConversion`RValueToCFormString[TreeMasses`GetDownLepton[i + 1, True]];
                If[Length[TreeMasses`GetSMChargedLeptons[]] == 3, mqFun = mq <> "()"];
                result = result <>
-                        "downLeptonsDRbar(" <> iStr <> "," <> iStr <> ") = " <>
-                        "sm.get_physical().MFe(" <> iStr <> ") - " <>
-                        "model.get_physical().M" <> mq <> " + model.get_M" <> mqFun <> ";\n";
+                        "mf(" <> iStr <> "," <> iStr <> ") = model.get_M" <> mqFun <> ";\n";
               ];
            result
           ];
