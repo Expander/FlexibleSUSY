@@ -822,8 +822,8 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                   par    = reducedSolution[[i,1]];
                   parStr = CConversion`ToValidCSymbolString[par];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
-                  failBody = failBody <> Parameters`SetParameter[par, oldParStr, "model->", None];
-                  successBody = successBody <> Parameters`SetParameter[par, parStr, "model->", None];
+                  failBody = failBody <> Parameters`SetParameter[par, oldParStr, "model.", None];
+                  successBody = successBody <> Parameters`SetParameter[par, parStr, "model.", None];
                  ];
               successBody = successBody;
               failBody = failBody <> "error = 1;\n";
@@ -836,7 +836,7 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";,
                  result = result <>
                           "if (is_finite) {\n" <>
-                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions, "model->"]]] <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions, "model."]]] <>
                           "} else {\n" <>
                           IndentText[failBody] <>
                           "}";
@@ -1006,7 +1006,7 @@ SetModelParametersFromEWSB[parametersFixedByEWSB_List, substitutions_List, class
            Parameters`CreateLocalConstRefs[localPars] <> result
           ];
 
-ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model->"] :=
+ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
     Module[{pars, subs = substitutions, result = ""},
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
                                         Global`INPUT[CConversion`ToValidCSymbol[Sign[p]]]],

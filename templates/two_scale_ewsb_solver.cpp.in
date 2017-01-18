@@ -38,52 +38,48 @@
 
 namespace flexiblesusy {
 
-#define INPUT(parameter) model->get_input().parameter
+#define INPUT(parameter) model.get_input().parameter
 #define LOCALINPUT(parameter) INPUT(parameter)
 #define INPUTPARAMETER(parameter) LOCALINPUT(parameter)
-#define MODELPARAMETER(parameter) model->get_##parameter()
-#define EXTRAPARAMETER(parameter) model->get_##parameter()
-#define DERIVEDPARAMETER(parameter) model->parameter()
+#define MODELPARAMETER(parameter) model.get_##parameter()
+#define EXTRAPARAMETER(parameter) model.get_##parameter()
+#define DERIVEDPARAMETER(parameter) model.parameter()
 #define PHASE(p) MODELPARAMETER(p)
 
 /**
  * This method solves the EWSB conditions iteratively, trying several
  * root finding methods until a solution is found.
  */
-int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively(@ModelName@_mass_eigenstates* model_to_solve)
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively(@ModelName@_mass_eigenstates& model_to_solve)
 {
-   auto model_ = *model_to_solve;
-   model_.set_ewsb_loop_order(loop_order);
+   auto model = model_to_solve;
+   model.set_ewsb_loop_order(loop_order);
 
-   model = &model_;
-
-   auto ewsb_stepper = [this](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
-      auto model = this->model;
+   auto ewsb_stepper = [this, model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
 @applyEWSBSubstitutions@
       if (this->loop_order > 0)
-         model->calculate_DRbar_masses();
+         model.calculate_DRbar_masses();
 
-      return this->ewsb_step();
+      return this->ewsb_step(model);
    };
 
-   auto tadpole_stepper = [this](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
-      auto model = this->model;
+   auto tadpole_stepper = [this, model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
 @applyEWSBSubstitutions@
       if (this->loop_order > 0)
-         model->calculate_DRbar_masses();
+         model.calculate_DRbar_masses();
 
-      return this->tadpole_equations();
+      return this->tadpole_equations(model);
    };
 
    std::unique_ptr<EWSB_solver> solvers[] = {
 @EWSBSolvers@
    };
 
-   const auto x_init(initial_guess());
+   const auto x_init(initial_guess(model_to_solve));
 
    VERBOSE_MSG("\t\tSolving EWSB equations ...");
    VERBOSE_MSG("\t\tInitial guess: x_init = " << x_init.transpose());
@@ -105,10 +101,10 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively(@ModelName@_mass_eigen
    }
 
    if (status == EWSB_solver::SUCCESS) {
-      model_to_solve->get_problems().unflag_no_ewsb();
+      model_to_solve.get_problems().unflag_no_ewsb();
    } else {
       set_best_ewsb_solution(model_to_solve, std::begin(solvers), std::end(solvers));
-      model_to_solve->get_problems().flag_no_ewsb();
+      model_to_solve.get_problems().flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
       WARNING("\t\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << precision << ")");
@@ -127,7 +123,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively(@ModelName@_mass_eigen
  * @return status of the EWSB solver
  */
 int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_with(
-   @ModelName@_mass_eigenstates* model_to_solve, EWSB_solver* solver, const EWSB_vector_t& x_init)
+   @ModelName@_mass_eigenstates& model_to_solve, EWSB_solver* solver, const EWSB_vector_t& x_init)
 {
    const int status = solver->solve(x_init);
 
@@ -142,13 +138,13 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_with(
  *
  * @param solver solver
  */
-void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(@ModelName@_mass_eigenstates* model, const EWSB_solver* solver)
+void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(@ModelName@_mass_eigenstates& model, const EWSB_solver* solver)
 {
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
 @setModelParametersFromEWSB@
-   model->calculate_DRbar_masses();
+   model.calculate_DRbar_masses();
 }
 
 /**
@@ -159,15 +155,15 @@ void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(@ModelName@_mass_eige
  * @param last iterator to last solver
  */
 template <typename It>
-void @ModelName@_ewsb_solver<Two_scale>::set_best_ewsb_solution(@ModelName@_mass_eigenstates* model, It first, It last)
+void @ModelName@_ewsb_solver<Two_scale>::set_best_ewsb_solution(@ModelName@_mass_eigenstates& model, It first, It last)
 {
-   auto ma(*model), mb(*model);
+   auto ma(model), mb(model);
 
    const auto best_solver =
       std::min_element(first, last,
                        [this, &ma, &mb](const std::unique_ptr<EWSB_solver>& a, const std::unique_ptr<EWSB_solver>& b) {
-                          this->set_ewsb_solution(&ma, a.get());
-                          this->set_ewsb_solution(&mb, b.get());
+                          this->set_ewsb_solution(ma, a.get());
+                          this->set_ewsb_solution(mb, b.get());
                           return Total(Abs(Re(ma.tadpole_equations()))) < Total(Abs(Re(mb.tadpole_equations())));
                        });
 
@@ -176,7 +172,7 @@ void @ModelName@_ewsb_solver<Two_scale>::set_best_ewsb_solution(@ModelName@_mass
    set_ewsb_solution(model, best_solver->get());
 }
 
-int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(@ModelName@_mass_eigenstates* model_to_solve, unsigned l)
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, unsigned l)
 {
    // temporarily set `ewsb_loop_order' to `loop_order' and do
    // iteration
@@ -186,20 +182,15 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(@ModelName@_mass_ei
    return solve_iteratively(model_to_solve);
 }
 
-int @ModelName@_ewsb_solver<Two_scale>::solve(@ModelName@_mass_eigenstates* model_to_solve)
+int @ModelName@_ewsb_solver<Two_scale>::solve(@ModelName@_mass_eigenstates& model_to_solve)
 {
-   if (!model_to_solve) {
-      throw SetupError("Error: @ModelName@_ewsb_solver::solve():"
-                       " model pointer must not be zero");
-   }
-
    if (loop_order == 0) {
       return solve_tree_level(model_to_solve);
    }
    return solve_iteratively_at(model_to_solve, loop_order);
 }
 
-int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigenstates* model)
+int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigenstates& model)
 {
    int error = 0;
 
@@ -208,7 +199,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigens
    return error;
 }
 
-@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::initial_guess() const
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::initial_guess(const @ModelName@_mass_eigenstates& model) const
 {
    EWSB_vector_t x_init(EWSB_vector_t::Zero());
 
@@ -217,9 +208,9 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigens
    return x_init;
 }
 
-@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::tadpole_equations() const
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::tadpole_equations(const @ModelName@_mass_eigenstates& model) const
 {
-   return model->tadpole_equations();
+   return model.tadpole_equations();
 }
 
 /**
@@ -230,7 +221,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigens
  *
  * @return new set of EWSB output parameters
  */
-@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::ewsb_step() const
+@ModelName@_ewsb_solver<Two_scale>::EWSB_vector_t @ModelName@_ewsb_solver<Two_scale>::ewsb_step(const @ModelName@_mass_eigenstates& model) const
 {
    std::array<double, number_of_ewsb_equations> tadpole{};
    EWSB_vector_t ewsb_parameters(EWSB_vector_t::Zero());

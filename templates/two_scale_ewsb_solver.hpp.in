@@ -56,7 +56,7 @@ public:
    virtual void set_number_of_iterations(std::size_t n) override { number_of_iterations = n; }
    virtual void set_precision(double p) override { precision = p; }
 
-   virtual int solve(@ModelName@_mass_eigenstates*) override;
+   virtual int solve(@ModelName@_mass_eigenstates&) override;
 private:
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
    using EWSB_vector_t = Eigen::Matrix<double,number_of_ewsb_equations,1>;
@@ -70,19 +70,18 @@ private:
    std::size_t number_of_iterations{100};       ///< maximum number of iterations
    unsigned loop_order{2};                      ///< loop order to solve EWSB at
    double precision{1.e-5};                     ///< precision goal
-   @ModelName@_mass_eigenstates* model{nullptr}; ///< temporary pointer to model class
 
-   void set_ewsb_solution(@ModelName@_mass_eigenstates*, const EWSB_solver*);
-   template <typename It> void set_best_ewsb_solution(@ModelName@_mass_eigenstates*, It, It);
+   void set_ewsb_solution(@ModelName@_mass_eigenstates&, const EWSB_solver*);
+   template <typename It> void set_best_ewsb_solution(@ModelName@_mass_eigenstates&, It, It);
 
-   int solve_tree_level(@ModelName@_mass_eigenstates*);
-   int solve_iteratively(@ModelName@_mass_eigenstates*);
-   int solve_iteratively_at(@ModelName@_mass_eigenstates*, unsigned);
-   int solve_iteratively_with(@ModelName@_mass_eigenstates*, EWSB_solver*, const EWSB_vector_t&);
+   int solve_tree_level(@ModelName@_mass_eigenstates&);
+   int solve_iteratively(@ModelName@_mass_eigenstates&);
+   int solve_iteratively_at(@ModelName@_mass_eigenstates&, unsigned);
+   int solve_iteratively_with(@ModelName@_mass_eigenstates&, EWSB_solver*, const EWSB_vector_t&);
 
-   EWSB_vector_t initial_guess() const;
-   EWSB_vector_t tadpole_equations() const;
-   EWSB_vector_t ewsb_step() const;
+   EWSB_vector_t initial_guess(const @ModelName@_mass_eigenstates&) const;
+   EWSB_vector_t tadpole_equations(const @ModelName@_mass_eigenstates&) const;
+   EWSB_vector_t ewsb_step(const @ModelName@_mass_eigenstates&) const;
 };
 
 } // namespace flexiblesusy

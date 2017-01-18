@@ -48,7 +48,7 @@ public:
    virtual void set_number_of_iterations(std::size_t) = 0;
    virtual void set_precision(double) = 0;
 
-   virtual int solve(@ModelName@_mass_eigenstates*) = 0;
+   virtual int solve(@ModelName@_mass_eigenstates&) = 0;
 };
 
 } // namespace flexiblesusy

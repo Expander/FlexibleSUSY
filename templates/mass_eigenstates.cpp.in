@@ -284,7 +284,7 @@ int CLASSNAME::solve_ewsb_tree_level()
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
    ewsb_solver->set_precision(ewsb_iteration_precision);
 
-   return ewsb_solver->solve(this);
+   return ewsb_solver->solve(*this);
 }
 
 int CLASSNAME::solve_ewsb_one_loop()
@@ -301,7 +301,7 @@ int CLASSNAME::solve_ewsb_one_loop()
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
    ewsb_solver->set_precision(ewsb_iteration_precision);
 
-   return ewsb_solver->solve(this);
+   return ewsb_solver->solve(*this);
 }
 
 int CLASSNAME::solve_ewsb()
@@ -320,7 +320,7 @@ int CLASSNAME::solve_ewsb()
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
    ewsb_solver->set_precision(ewsb_iteration_precision);
 
-   return ewsb_solver->solve(this);
+   return ewsb_solver->solve(*this);
 }
 
 void CLASSNAME::print(std::ostream& ostr) const
