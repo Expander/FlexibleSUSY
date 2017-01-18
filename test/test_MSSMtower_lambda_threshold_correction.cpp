@@ -11,7 +11,7 @@
 using namespace flexiblesusy;
 using namespace flexiblesusy::standard_model;
 
-Standard_model create_sm()
+Standard_model create_sm(double Q)
 {
    Eigen::Matrix<double,3,3> Yu, Yd, Ye;
    Yu.setZero();
@@ -20,7 +20,7 @@ Standard_model create_sm()
    Yu(2,2) = 0.9;
 
    Standard_model sm;
-   sm.set_scale(2000);
+   sm.set_scale(Q);
    sm.set_g1(0.3);
    sm.set_g2(0.4);
    sm.set_g3(0.9);
@@ -36,7 +36,7 @@ Standard_model create_sm()
    return sm;
 }
 
-MSSMtower_mass_eigenstates create_mssm()
+MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q)
 {
    Eigen::Matrix<double,3,3> Yu, Yd, Ye, Id;
    Id.setIdentity();
@@ -46,12 +46,8 @@ MSSMtower_mass_eigenstates create_mssm()
    Yu(2,2) = 0.9;
 
    const double v = 0.1;
-   const double tb = 5.;
    const double beta = ArcTan(tb);
-   const double MS = 2000.;
    const double Mu = MS;
-   const double Q = 3000.;
-   const double Xt = -2 * MS;
    const double Xb = 0 * MS;
    const double Xl = 0 * MS;
    const double At = Xt + Mu/tb;
@@ -59,7 +55,7 @@ MSSMtower_mass_eigenstates create_mssm()
    const double Al = Xl + Mu*tb;
 
    MSSMtower_mass_eigenstates mssm;
-   mssm.set_scale(MS);
+   mssm.set_scale(Q);
    mssm.set_g1(0.3);
    mssm.set_g2(0.4);
    mssm.set_g3(0.9);
@@ -143,8 +139,8 @@ double calculate_delta_lambda_fs(const Standard_model& sm, const MSSMtower_mass_
 
 BOOST_AUTO_TEST_CASE( test_threshold_0L )
 {
-   Standard_model sm = create_sm();
-   MSSMtower_mass_eigenstates mssm = create_mssm();
+   Standard_model sm = create_sm(3000.);
+   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2*2000., 5, 3000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 0);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 0);
@@ -157,8 +153,8 @@ BOOST_AUTO_TEST_CASE( test_threshold_0L )
 
 BOOST_AUTO_TEST_CASE( test_threshold_1L )
 {
-   Standard_model sm = create_sm();
-   MSSMtower_mass_eigenstates mssm = create_mssm();
+   Standard_model sm = create_sm(2000.);
+   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2*2000., 5, 2000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 1);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 1);
