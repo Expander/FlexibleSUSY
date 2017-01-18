@@ -46,7 +46,12 @@ class @ModelName@_mass_eigenstates;
 template<>
 class @ModelName@_ewsb_solver<Two_scale> : public @ModelName@_ewsb_solver_interface {
 public:
+   @ModelName@_ewsb_solver() = default;
+   @ModelName@_ewsb_solver(const @ModelName@_ewsb_solver&) = default;
+   @ModelName@_ewsb_solver(@ModelName@_ewsb_solver&&) = default;
    virtual ~@ModelName@_ewsb_solver() {}
+   @ModelName@_ewsb_solver& operator=(const @ModelName@_ewsb_solver&) = default;
+   @ModelName@_ewsb_solver& operator=(@ModelName@_ewsb_solver&&) = default;
 
    unsigned get_loop_order() const { return loop_order; }
    std::size_t get_number_of_iterations() const { return number_of_iterations; }
