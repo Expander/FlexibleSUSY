@@ -48,11 +48,11 @@ MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q
    const double v = 0.1;
    const double beta = ArcTan(tb);
    const double Mu = MS;
-   const double Xb = 0 * MS;
-   const double Xl = 0 * MS;
-   const double At = Xt + Mu/tb;
-   const double Ab = Xb + Mu*tb;
-   const double Al = Xl + Mu*tb;
+   const double Xb = 0;
+   const double Xl = 0;
+   const double At = Xt*MS + Mu/tb;
+   const double Ab = Xb*MS + Mu*tb;
+   const double Al = Xl*MS + Mu*tb;
 
    MSSMtower_mass_eigenstates mssm;
    mssm.set_scale(Q);
@@ -140,7 +140,7 @@ double calculate_delta_lambda_fs(const Standard_model& sm, const MSSMtower_mass_
 BOOST_AUTO_TEST_CASE( test_threshold_0L )
 {
    Standard_model sm = create_sm(3000.);
-   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2*2000., 5, 3000.);
+   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2., 5, 3000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 0);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 0);
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_0L )
 BOOST_AUTO_TEST_CASE( test_threshold_1L )
 {
    Standard_model sm = create_sm(2000.);
-   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2*2000., 5, 2000.);
+   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2., 5, 2000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 1);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 1);
