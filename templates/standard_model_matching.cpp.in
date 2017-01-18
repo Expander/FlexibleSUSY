@@ -39,46 +39,6 @@ namespace @ModelName@_standard_model_matching {
 
 namespace {
 
-template <class T>
-class RAII_set_loop_order {
-public:
-   RAII_set_loop_order(T& model_, unsigned loop_order_) noexcept
-      : model(model_), loop_order(loop_order_)
-   {
-      model_pole_mass_order = model.get_pole_mass_loop_order();
-      model_ewsb_order = model.get_ewsb_loop_order();
-      tlc = model.get_two_loop_corrections();
-
-      // set top quark QCD corrections to given loop order
-      Two_loop_corrections tlc_new = tlc;
-      tlc_new.top_qcd = loop_order_ ? loop_order_ - 1 : 0;
-
-      model.set_pole_mass_loop_order(loop_order);
-      model.set_ewsb_loop_order(loop_order);
-      model.set_two_loop_corrections(tlc_new);
-   }
-
-   ~RAII_set_loop_order() {
-      model.set_pole_mass_loop_order(model_pole_mass_order);
-      model.set_ewsb_loop_order(model_ewsb_order);
-      model.set_two_loop_corrections(tlc);
-      model.calculate_DRbar_masses();
-      model.solve_ewsb();
-   }
-private:
-   T& model;
-   Two_loop_corrections tlc;       ///< 2-loop corrections
-   unsigned loop_order;            ///< temporary loop order
-   unsigned model_pole_mass_order; ///< old model pole mass loop order
-   unsigned model_ewsb_order;      ///< old model EWSB loop order
-};
-
-template <typename T>
-constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loop_order)
-{
-   return RAII_set_loop_order<T>(model, loop_order);
-}
-
 /**
  * Returns SM parameters with tree-level lambda.  The tree-level
  * lambda is calculated from the tree-level @ModelName@ parameters.
@@ -188,18 +148,18 @@ auto calculate_mh2_tree_level(@ModelName@_mass_eigenstates model) -> decltype(mo
  * \f$(M_h^{\text{@ModelName@}})^2\f$.
  *
  * @param model_0l tree-level @ModelName@ parameters
- * @param model @ModelName@ parameters
+ * @param model_1l 1-loop @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  *
  * @return squared Higgs pole mass in the @ModelName@
  */
 double calculate_Mh2_pole(
    const @ModelName@_mass_eigenstates& model_0l,
-   const @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_1l,
    unsigned idx)
 {
    // calculate tree-level mass matrix
-   const auto mh2_tree = calculate_mh2_tree_level(model);
+   const auto mh2_tree = calculate_mh2_tree_level(model_1l);
 
    // calculate 1L self-energy using tree-level parameters
    const double p = model_0l.get_M@HiggsBoson(idx)@;
@@ -221,26 +181,23 @@ double calculate_Mh2_pole(
  * that the Higgs pole masses are equal in both models.
  *
  * @param sm Standard Model
- * @param model @ModelName@ parameters
+ * @param model_1l @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_impl(
    Standard_model& sm,
-   @ModelName@_mass_eigenstates& model,
+   const @ModelName@_mass_eigenstates& model_1l,
    unsigned idx)
 {
    // tree-level @ModelName@ parameters
-   const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
-
-   model.calculate_DRbar_masses();
-   model.solve_ewsb();
+   const auto model_0l = calculate_@ModelName@_tree_level(model_1l, sm);
 
    sm.calculate_DRbar_masses();
    sm.solve_ewsb();
 
    const double mh2_sm = Sqr(sm.get_Mhh());
    const double Mh2_sm = calculate_Mh2_pole(calculate_SM_tree_level(sm, model_0l, idx), sm);
-   const double Mh2_bsm = calculate_Mh2_pole(model_0l, model, idx);
+   const double Mh2_bsm = calculate_Mh2_pole(model_0l, model_1l, idx);
 
    sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
 }
@@ -486,10 +443,11 @@ void match_low_to_high_scale_model_impl(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_tree_level(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
+   Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned idx)
 {
-   model.calculate_DRbar_masses();
-   sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(idx)@/sm.get_v()));
+   auto model_tmp = model;
+   model_tmp.calculate_DRbar_masses();
+   sm.set_Lambdax(Sqr(model_tmp.get_M@HiggsBoson(idx)@/sm.get_v()));
    sm.calculate_DRbar_masses();
 }
 
@@ -555,21 +513,14 @@ void match_low_to_high_scale_model(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
+   Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
 {
    if (loop_order == 0) {
       match_high_to_low_scale_model_tree_level(sm, model, idx);
       return;
    }
 
-   // temporarily set loop order to `loop_order'
-   const auto los_sm = make_raii_set_loop_order(sm, loop_order);
-   const auto los_model = make_raii_set_loop_order(model, loop_order);
-
    match_high_to_low_scale_model_impl(sm, model, idx);
-
-   model.get_physical().clear();
-   sm.get_physical().clear();
 }
 
 } // namespace @ModelName@_standard_model_matching
