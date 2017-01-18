@@ -92,17 +92,16 @@ Standard_model calculate_SM_tree_level(
  * Calculates squared Higgs pole mass in the SM,
  * \f$(M_h^{\text{SM}})^2\f$.
  *
- * @param sm_0l tree-level SM parameters
- * @param sm Standard Model parameters
+ * @param sm_0l SM parameters with tree-level lambda
  *
  * @return squared Higgs pole mass in the SM
  */
-double calculate_Mh2_pole(const Standard_model& sm_0l, const Standard_model& sm)
+double calculate_Mh2_pole(const Standard_model& sm_0l)
 {
    const double p = sm_0l.get_Mhh();
    const double self_energy = Re(sm_0l.self_energy_hh(p));
-   const double tadpole = Re(sm_0l.tadpole_hh() / sm.get_v());
-   const double mh2_tree = Sqr(sm.get_Mhh());
+   const double tadpole = Re(sm_0l.tadpole_hh() / sm_0l.get_v());
+   const double mh2_tree = Sqr(sm_0l.get_Mhh());
    const double Mh2_pole = mh2_tree - self_energy + tadpole;
 
    return Mh2_pole;
@@ -191,12 +190,10 @@ void match_high_to_low_scale_model_impl(
 {
    // tree-level @ModelName@ parameters
    const auto model_0l = calculate_@ModelName@_tree_level(model_1l, sm);
+   const auto sm_0l = calculate_SM_tree_level(sm, model_0l, idx);
 
-   sm.calculate_DRbar_masses();
-   sm.solve_ewsb();
-
-   const double mh2_sm = Sqr(sm.get_Mhh());
-   const double Mh2_sm = calculate_Mh2_pole(calculate_SM_tree_level(sm, model_0l, idx), sm);
+   const double mh2_sm = Sqr(sm_0l.get_Mhh());
+   const double Mh2_sm = calculate_Mh2_pole(sm_0l);
    const double Mh2_bsm = calculate_Mh2_pole(model_0l, model_1l, idx);
 
    sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
