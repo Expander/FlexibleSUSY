@@ -152,30 +152,6 @@ const int Standard_model::numberOfParameters;
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 Standard_model::Standard_model()
-   : Beta_function()
-   , ewsb_loop_order(2)
-   , pole_mass_loop_order(2)
-   , force_output(false)
-   , precision(1.0e-4)
-   , ewsb_iteration_precision(1.0e-5)
-   , physical()
-   , problems(standard_model_info::particle_names, standard_model_info::parameter_names)
-   , two_loop_corrections()
-   , input()
-   , g1(0), g2(0), g3(0), Lambdax(0), Yu(Eigen::Matrix<double,3,3>::Zero()), Yd
-   (Eigen::Matrix<double,3,3>::Zero()), Ye(Eigen::Matrix<double,3,3>::Zero())
-   , mu2(0), v(0)
-   , MVG(0), MHp(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), Mhh(0), MVP
-      (0), MVZ(0), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double,
-      3,1>::Zero()), MFe(Eigen::Array<double,3,1>::Zero()), MVWp(0), MVPVZ(
-      Eigen::Array<double,2,1>::Zero())
-   , Vd(Eigen::Matrix<std::complex<double>,3,3>::Zero()), Ud(Eigen::Matrix<
-      std::complex<double>,3,3>::Zero()), Vu(Eigen::Matrix<std::complex<double>,3,
-      3>::Zero()), Uu(Eigen::Matrix<std::complex<double>,3,3>::Zero()), Ve(
-      Eigen::Matrix<std::complex<double>,3,3>::Zero()), Ue(Eigen::Matrix<
-      std::complex<double>,3,3>::Zero()), ZZ(Eigen::Matrix<double,2,2>::Zero())
-
-
 {
    set_number_of_parameters(numberOfParameters);
 }
@@ -185,6 +161,8 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    double,3,3>& Yu_, const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<
    double,3,3>& Ye_, double mu2_, double v_)
    : Beta_function()
+   , g1(g1_), g2(g2_), g3(g3_), Lambdax(Lambdax_), Yu(Yu_), Yd(Yd_), Ye(Ye_)
+   , mu2(mu2_), v(v_)
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , force_output(false)
@@ -194,8 +172,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    , problems(standard_model_info::particle_names, standard_model_info::parameter_names)
    , two_loop_corrections()
    , input()
-   , g1(g1_), g2(g2_), g3(g3_), Lambdax(Lambdax_), Yu(Yu_), Yd(Yd_), Ye(Ye_)
-   , mu2(mu2_), v(v_)
    , MVG(0), MHp(0), MFv(Eigen::Array<double,3,1>::Zero()), MAh(0), Mhh(0), MVP
       (0), MVZ(0), MFd(Eigen::Array<double,3,1>::Zero()), MFu(Eigen::Array<double,
       3,1>::Zero()), MFe(Eigen::Array<double,3,1>::Zero()), MVWp(0), MVPVZ(

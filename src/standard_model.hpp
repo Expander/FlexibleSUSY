@@ -507,34 +507,34 @@ public:
 protected:
 
    // Running parameters
-   double g1;
-   double g2;
-   double g3;
-   double Lambdax;
-   Eigen::Matrix<double,3,3> Yu;
-   Eigen::Matrix<double,3,3> Yd;
-   Eigen::Matrix<double,3,3> Ye;
-   double mu2;
-   double v;
+   double g1{0.};
+   double g2{0.};
+   double g3{0.};
+   double Lambdax{0.};
+   Eigen::Matrix<double,3,3> Yu{Eigen::Matrix<double,3,3>::Zero()};
+   Eigen::Matrix<double,3,3> Yd{Eigen::Matrix<double,3,3>::Zero()};
+   Eigen::Matrix<double,3,3> Ye{Eigen::Matrix<double,3,3>::Zero()};
+   double mu2{0.};
+   double v{0.};
 
 private:
 
    static const int numberOfParameters = 33;
 
    struct Beta_traces {
-      double traceYdAdjYd;
-      double traceYeAdjYe;
-      double traceYuAdjYu;
-      double traceYdAdjYdYdAdjYd;
-      double traceYeAdjYeYeAdjYe;
-      double traceYuAdjYuYuAdjYu;
-      double traceYdAdjYuYuAdjYd;
-      double traceYdAdjYdYdAdjYdYdAdjYd;
-      double traceYdAdjYdYdAdjYuYuAdjYd;
-      double traceYdAdjYuYuAdjYdYdAdjYd;
-      double traceYdAdjYuYuAdjYuYuAdjYd;
-      double traceYeAdjYeYeAdjYeYeAdjYe;
-      double traceYuAdjYuYuAdjYuYuAdjYu;
+      double traceYdAdjYd{};
+      double traceYeAdjYe{};
+      double traceYuAdjYu{};
+      double traceYdAdjYdYdAdjYd{};
+      double traceYeAdjYeYeAdjYe{};
+      double traceYuAdjYuYuAdjYu{};
+      double traceYdAdjYuYuAdjYd{};
+      double traceYdAdjYdYdAdjYdYdAdjYd{};
+      double traceYdAdjYdYdAdjYuYuAdjYd{};
+      double traceYdAdjYuYuAdjYdYdAdjYd{};
+      double traceYdAdjYuYuAdjYuYuAdjYd{};
+      double traceYeAdjYeYeAdjYeYeAdjYe{};
+      double traceYuAdjYuYuAdjYuYuAdjYu{};
    };
    void calc_beta_traces(Beta_traces&) const;
 
@@ -574,15 +574,16 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   unsigned ewsb_loop_order;
-   unsigned pole_mass_loop_order;
-   bool force_output;             ///< switch to force output of pole masses
-   double precision;              ///< RG running precision
-   double ewsb_iteration_precision;
-   Standard_model_physical physical; ///< contains the pole masses and mixings
-   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS> problems;
-   Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-   Physical_input input;
+   unsigned ewsb_loop_order{2};
+   unsigned pole_mass_loop_order{2};
+   bool force_output{false};             ///< switch to force output of pole masses
+   double precision{1.e-4};              ///< RG running precision
+   double ewsb_iteration_precision{1.e-5};
+   Standard_model_physical physical{}; ///< contains the pole masses and mixings
+   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS> problems{
+      standard_model_info::particle_names, standard_model_info::parameter_names};
+   Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
+   Physical_input input{};
 
    std::size_t get_number_of_ewsb_iterations() const;
    std::size_t get_number_of_mass_iterations() const;
@@ -608,27 +609,27 @@ private:
    double G0(double, double, double) const;
 
    // DR-bar masses
-   double MVG;
-   double MHp;
-   Eigen::Array<double,3,1> MFv;
-   double MAh;
-   double Mhh;
-   double MVP;
-   double MVZ;
-   Eigen::Array<double,3,1> MFd;
-   Eigen::Array<double,3,1> MFu;
-   Eigen::Array<double,3,1> MFe;
-   double MVWp;
-   Eigen::Array<double,2,1> MVPVZ;
+   double MVG{0.};
+   double MHp{0.};
+   Eigen::Array<double,3,1> MFv{Eigen::Array<double,3,1>::Zero()};
+   double MAh{0.};
+   double Mhh{0.};
+   double MVP{0.};
+   double MVZ{0.};
+   Eigen::Array<double,3,1> MFd{Eigen::Array<double,3,1>::Zero()};
+   Eigen::Array<double,3,1> MFu{Eigen::Array<double,3,1>::Zero()};
+   Eigen::Array<double,3,1> MFe{Eigen::Array<double,3,1>::Zero()};
+   double MVWp{0.};
+   Eigen::Array<double,2,1> MVPVZ{Eigen::Array<double,2,1>::Zero()};
 
    // DR-bar mixing matrices
-   Eigen::Matrix<std::complex<double>,3,3> Vd;
-   Eigen::Matrix<std::complex<double>,3,3> Ud;
-   Eigen::Matrix<std::complex<double>,3,3> Vu;
-   Eigen::Matrix<std::complex<double>,3,3> Uu;
-   Eigen::Matrix<std::complex<double>,3,3> Ve;
-   Eigen::Matrix<std::complex<double>,3,3> Ue;
-   Eigen::Matrix<double,2,2> ZZ;
+   Eigen::Matrix<std::complex<double>,3,3> Vd{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ud{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Vu{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Uu{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ve{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ue{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<double,2,2> ZZ{Eigen::Matrix<double,2,2>::Zero()};
 
 
 };
