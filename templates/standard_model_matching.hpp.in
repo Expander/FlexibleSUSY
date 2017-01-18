@@ -30,8 +30,8 @@ namespace @ModelName@_standard_model_matching {
 void match_high_to_low_scale_model_tree_level(standard_model::Standard_model&, @ModelName@_mass_eigenstates&, unsigned);
 void match_high_to_low_scale_model(standard_model::Standard_model&, @ModelName@_mass_eigenstates&, unsigned, unsigned);
 
-void match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates&, standard_model::Standard_model&);
-void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, standard_model::Standard_model&, unsigned, unsigned);
+void match_low_to_high_scale_model_tree_level(@ModelName@_mass_eigenstates&, const standard_model::Standard_model&);
+void match_low_to_high_scale_model(@ModelName@_mass_eigenstates&, const standard_model::Standard_model&, unsigned, unsigned);
 
 } // namespace @ModelName@_standard_model_matching
 } // namespace flexiblesusy
