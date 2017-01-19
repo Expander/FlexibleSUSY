@@ -47,7 +47,7 @@ Block MINPAR                 # Input parameters
     1   500                  # m0
     2   500                  # m12
     3   10                   # TanBeta
-    4   1                    # CosPhi
     5   0                    # Azero
 Block EXTPAR
   100   0.1                  # etaInput
+  101   0                    # Phi
