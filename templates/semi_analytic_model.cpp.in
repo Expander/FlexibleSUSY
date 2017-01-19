@@ -81,11 +81,6 @@ void CLASSNAME::set_precision(double p)
    @ModelName@_mass_eigenstates::set_precision(p);
 }
 
-void CLASSNAME::set_model_parameters_to_boundary_values(@ModelName@_soft_parameters& model) const
-{
-@applySemiAnalyticBCs@
-}
-
 void CLASSNAME::calculate_parameter_values()
 {
 @calculateParameterValues@

@@ -70,7 +70,6 @@ private:
    // boundary values
 @boundaryValuesDefs@
 
-   void set_parameters_to_boundary_values(@ModelName@_soft_parameters&) const;
    void calculate_parameter_values();
 };
 

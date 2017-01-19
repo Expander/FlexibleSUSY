@@ -25,15 +25,22 @@ GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
 CreateBoundaryValueParameters::usage="Creates new parameters
 representing the boundary values.";
-CreateCoefficientParameters::usage="Creaters new parameters
+CreateCoefficientParameters::usage="Creates new parameters
 representing the coefficients in the semi-analytic solutions.";
 
 CreateSemiAnalyticSolutionsDefinitions::usage="";
 CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
+CreateLocalBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
 SetBoundaryValueParameters::usage="";
 CreateSemiAnalyticCoefficientGetters::usage="";
+ConstructTrialDatasets::usage="Returns a list of datasets of the form
+{integer id, {pars}, {input values}}";
+InitializeTrialInputValues::usage="";
+CreateBasisEvaluators::usage="";
+CreateSemiAnalyticCoefficientsCalculation::usage="";
+CreateCoefficientsCalculations::usage="";
 
 ApplySemiAnalyticBoundaryConditions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
@@ -555,11 +562,17 @@ CreateSemiAnalyticCoefficientGetters[solutions_List] :=
            Return[getter];
           ];
 
-CreateBoundaryValuesDefinitions[solutions_List] :=
+CreateBoundaryValuesDefinitions[solutions_List, createParameters_:CreateBoundaryValueParameters] :=
     Module[{boundaryValues, defns},
-           boundaryValues = CreateBoundaryValueParameters[solutions];
+           boundaryValues = createParameters[solutions];
            defns = (Parameters`CreateInitializedParameterDefinition[#])& /@ boundaryValues;
            StringJoin[defns] <> "\n"
+          ];
+
+CreateLocalBoundaryValuesDefinitions[solutions_List] :=
+    Module[{createLocalPars},
+           createLocalPars = With[{solns = #}, {#, Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions])]&;
+           CreateBoundaryValuesDefinitions[solutions, createLocalPars]
           ];
 
 CreateBoundaryValuesInitialization[solutions_List] :=
@@ -581,6 +594,10 @@ SetBoundaryValueParameters[solutions_List] :=
            boundaryValues = GetBoundaryValueParameters[solutions];
            (result = result <> CreateBoundaryValueSetter[#])& /@ boundaryValues;
            Return[result];
+          ];
+
+CreateSemiAnalyticCoefficientsCalculation[solutions_List] :=
+    Module[{trialValues},
           ];
 
 ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
@@ -605,9 +622,110 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_S
            boundaryValues = GetBoundaryValueParameters[solutions];
            parameters = Select[Parameters`FindAllParameters[#[[2]]& /@ noMacros], !MemberQ[boundaryValues, #]&];
            setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
-                                <> " = " <> CreateBoundaryValueParameterName[#] <> ";\n")& /@ boundaryValues;
+                                <> " = BOUNDARYVALUE(" <> CConversion`ToValidCSymbolString[#] <> ");\n")& /@ boundaryValues;
            (result = result <> ApplySettingLocally[#, modelPrefix])& /@ settings;
            Parameters`CreateLocalConstRefs[parameters] <> StringJoin[setBoundaryValues] <> result
+          ];
+
+GetDefaultSettings[parameters_List] := {#, 0}& /@ parameters;
+
+(* @note assumes the solution is a polynomial in the boundary value parameters *)
+GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List, trialValues_List:{}] :=
+    Module[{i, par, basis, trialValueRules = {},
+            termPars, settings, inputs},
+           par = GetName[solution];
+           basis = GetBasis[solution];
+           If[trialValues =!= {},
+              trialValueRules = Rule[{#[[1]], _}, {#[[1]], #[[2]]}] & /@ trialValues;
+             ];
+           inputs = Reap[For[i = 1, i <= Length[basis], i++,
+                             termPars = Parameters`FindAllParameters[basis[[i]]];
+                             settings = {#, 1} & /@ termPars;
+                             If[trialValueRules =!= {},
+                                settings = settings /. trialValueRules;
+                               ];
+                             settings = Rule[{#[[1]], _}, {#[[1]], #[[2]]}] & /@ settings;
+                             Sow[defaultSettings /. settings];
+                            ];
+                        ];
+           {par, Flatten[Last[inputs],1]}
+          ];
+
+AreEquivalentInputSets[inputSetOne_, inputSetTwo_] :=
+    Module[{sortedSetOne, sortedSetTwo},
+           sortedSetOne = Sort[Sort /@ inputSetOne];
+           sortedSetTwo = Sort[Sort /@ inputSetTwo];
+           sortedSetOne === sortedSetTwo
+          ];
+
+RequireSameInput[{parOne_, basisOne_}, {parTwo_, basisTwo_}] :=
+    Module[{parOneType, parTwoType, sortedBasisOne, sortedBasisTwo},
+           parOneType = CConversion`GetScalarElementType[Parameters`GetType[parOne]];
+           parTwoType = CConversion`GetScalarElementType[Parameters`GetType[parTwo]];
+           (parOneType === parTwoType) && AreEquivalentInputSets[basisOne, basisTwo]
+          ];
+
+ConstructTrialDatasets[solutions_List, trialValues_List:{}] :=
+    Module[{boundaryValues, defaultSettings, requiredBases, datasets},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           defaultSettings = GetDefaultSettings[boundaryValues];
+           requiredBases = GetRequiredBasisPoints[#, defaultSettings, trialValues]& /@ solutions;
+           datasets = Gather[requiredBases, RequireSameInput];
+           MapIndexed[{First[#2], (#[[1]]) & /@ #1, First[(#[[2]]) & /@ #1]} &, datasets]
+          ];
+
+InitializeTrialInput[index_, basisValues_List, keys_List, struct_String:"trial_data"] :=
+    Module[{result = ""},
+           (result = result <> struct <> "[" <> ToString[index-1] <> "].boundary_values."
+                    <> CConversion`ToValidCSymbolString[#[[1]]]
+                    <> " = " <> CConversion`RValueToCFormString[#[[2]]]
+                    <> ";\n")& /@ basisValues;
+           (result = result <> struct <> "[" <> ToString[index-1] <> "].basis_sets.push_back("
+                     <> ToString[#] <> ");\n")& /@ keys;
+           result
+          ];
+
+CollectDatasetIndices[equivalentInputs_List] :=
+    Module[{inputValues, indices},
+           inputValues = First[equivalentInputs][[1]];
+           indices = #[[2]] & /@ equivalentInputs;
+           {inputValues, indices}
+          ];
+
+InitializeTrialInputValues[datasets_List] :=
+    Module[{distinctInputs, numPoints, initialization = ""},
+           distinctInputs = Flatten[With[{index = #[[1]], inputsList = #[[3]]}, {#, index} & /@
+                                         inputsList] & /@ datasets, 1];
+           distinctInputs = CollectDatasetIndices /@ Gather[distinctInputs, AreEquivalentInputSets[#1[[1]], #2[[1]]]&];
+           initialization = MapIndexed[InitializeTrialInput[First[#2], #1[[1]], #1[[2]]]&, distinctInputs];
+           {Length[distinctInputs], Utils`StringJoinWithSeparator[initialization, "\n"]}
+          ];
+
+CreateBasisEvaluator[name_String, basis_List] :=
+    Module[{i, dim, boundaryValues, setBoundaryValues, returnType, body = "", result = ""},
+           dim = Length[basis];
+           boundaryValues = Parameters`FindAllParameters[basis];
+           If[And @@ (Parameters`IsRealExpression[#]& /@ basis),
+              returnType = CConversion`MatrixType[CConversion`realScalarCType, 1, dim];,
+              returnType = CConversion`MatrixType[CConversion`complexScalarCType, 1, dim];
+             ];
+           body = CConversion`CreateDefaultDefinition["result", returnType] <> ";\n";
+           setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
+                                <> " = BOUNDARYVALUE(" <> CConversion`ToValidCSymbolString[#] <> ");\n")& /@ boundaryValues;
+           body = body <> setBoundaryValues <> "\n";
+           For[i = 1, i <= dim, i++,
+               body = body <> "result(" <> ToString[i-1] <> ") = " <> CConversion`RValueToCFormString[basis[[i]]] <> ";\n";
+              ];
+           body = body <> "\nreturn result;\n";
+           result = "auto " <> name <> " = [] (const Boundary_values& boundary_values) {\n";
+           result <> IndentText[body] <> "};\n"
+          ];
+
+CreateBasisEvaluators[solutions_List] :=
+    Module[{bases, evaluators = ""},
+           bases = DeleteDuplicates[GetBasis[#]& /@ solutions];
+           evaluators = MapIndexed[CreateBasisEvaluator["basis_" <> ToString[First[#2]], #1]&, bases];
+           Utils`StringJoinWithSeparator[evaluators, "\n"] <> "\n"
           ];
 
 EvaluateSemiAnalyticSolution[solution_] :=
@@ -651,6 +769,60 @@ SaveBoundaryValueParameters[solutions_List] :=
            boundaryValueParameters = GetBoundaryValueParameters[solutions];
            (result = result <> SaveBoundaryValueParameter[#])& /@ boundaryValueParameters;
            Return[result];
+          ];
+
+CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
+    Module[{par = GetName[solution], basis = GetBasis[solution],
+            i, parStr, dims, indices = {}, coeffs,
+            name, prototype, function = "", body = ""},
+           parStr = CConversion`ToValidCSymbolString[par];
+           name = "calculate_" <> parStr <> "_coefficients";
+           dims = Parameters`GetParameterDimensions[par];
+           If[dims =!= {1},
+              indices = Table["i" <> ToString[i], {i, 1, Length[dims]}];
+             ];
+           prototype = "void " <> name <> "(const Solver_type&, const std::vector<"
+                   <> FlexibleSUSY`FSModelName <> "_soft_parameters>&);\n";
+
+           body = "rhs(j) = data.at(j).get_" <> parStr <> "(" <>
+                  If[indices =!= {}, Utils`StringJoinWithSeparator[indices, ", "], ""] <> ");\n";
+           body = "Eigen::VectorXd rhs(n);\nfor (std::size_t j = 0; j < n; ++j) {\n"
+                  <> IndentText[body] <> "}\nauto solution = solver.solve(rhs);\n";
+
+           coeffs = CConversion`ToValidCSymbolString[#]& /@ CreateCoefficients[solution];
+           If[indices =!= {},
+              coeffs = (# <> "(" <> Utils`StringJoinWithSeparator[indices, ", "] <> ")")& /@ coeffs;
+             ];
+           For[i = 1, i <= Length[coeffs], i++,
+               body = body <> coeffs[[i]] <> " = solution(" <> ToString[i-1] <> ");\n";
+              ];
+
+           If[indices =!= {},
+              For[i = Length[indices], i > 0, i--,
+                  body = "for (int " <> indices[[i]] <> " = 0; "
+                          <> indices[[i]] <> " < " <> ToString[dims[[i]]]
+                          <> "; ++" <> indices[[i]] <> ") {\n"
+                          <> IndentText[body] <> "}\n";
+                 ];
+             ];
+
+           body = "const std::size_t n = data.size();\n" <> body;
+
+           function = "void " <> FlexibleSUSY`FSModelName <> "_semi_analytic_solutions::"
+                      <> name <> "(\n"
+                      <> IndentText["const Solver_type& solver, const std::vector<"
+                      <> FlexibleSUSY`FSModelName <> "_soft_parameters>& data)\n"] <> "{\n";
+           function = function <> IndentText[body] <> "}\n";
+
+           {prototype, function}
+          ];
+
+CreateCoefficientsCalculations[solutions_List] :=
+    Module[{defs, prototypes = "", functions = ""},
+           defs = CreateCoefficientsCalculation[#]& /@ solutions;
+           prototypes = StringJoin[#[[1]]& /@ defs];
+           functions = Utils`StringJoinWithSeparator[#[[2]]& /@ defs, "\n"];
+           {prototypes, functions}
           ];
 
 DependsAtMostOn[num_?NumericQ, pars_List] := True;

@@ -29,7 +29,13 @@
 #ifndef @ModelName@_SEMI_ANALYTIC_SOLUTIONS_H
 #define @ModelName@_SEMI_ANALYTIC_SOLUTIONS_H
 
+#include <Eigen/Core>
+
+#include <vector>
+
 namespace flexiblesusy {
+
+class @ModelName@_soft_parameters;
 
 /**
  * @class @ModelName@_semi_analytic_solutions
@@ -37,15 +43,64 @@ namespace flexiblesusy {
  */
 class @ModelName@_semi_analytic_solutions {
 public:
+   @ModelName@_semi_analytic_solutions();
+   @ModelName@_semi_analytic_solutions(const @ModelName@_semi_analytic_solutions&) = default;
+   @ModelName@_semi_analytic_solutions(@ModelName@_semi_analytic_solutions&&) = default;
+   ~@ModelName@_semi_analytic_solutions() = default;
+   @ModelName@_semi_analytic_solutions& operator=(const @ModelName@_semi_analytic_solutions&) = default;
+   @ModelName@_semi_analytic_solutions& operator=(@ModelName@_semi_analytic_solutions&&) = default;
+
+   double get_input_scale() const { return input_scale; }
+   double get_output_scale() const { return output_scale; }
+
+   void set_input_scale(double s) { input_scale = s; }
+   void set_output_scale(double s) { output_scale = s; }
+
 @coefficientGetters@
-   void calculate_coefficients(double);
+   void calculate_coefficients(const @ModelName@_soft_parameters&);
 
 private:
+   using Data_vector_t = std::vector<@ModelName@_soft_parameters*>
+
+   struct Boundary_values {
+@boundaryValueStructDefs@
+   };
+
+   struct Model_data {
+      Boundary_values boundary_values{};
+      @ModelName@_soft_parameters model{};
+      std::vector<int> basis_sets{};
+   };
+
+   double input_scale{0.};  ///< scale at which boundary conditions hold
+   double output_scale{0.}; ///< scale at which coefficients are calculated
+   std::array<Model_data,@numberOfTrialPoints@> trial_data{};
+
    // semi-analytic solution coefficients
 @semiAnalyticSolutionsDefs@
-   // boundary values
-@boundaryValuesDefs@
+
+   void initialize_trial_values();
+   void calculate_trial_data(const @ModelName@_soft_parameters&);
+   void set_to_boundary_values(@ModelName@_soft_parameters&, const Boundary_values&) const;
+   std::map<int,Data_vector_t> create_datasets() const;
+
+   template <class Scalar, int Rows, int Cols, class Basis>
+   Eigen::Matrix<Scalar,Rows,Cols> compute_basis_points(const std::vector<Boundary_values>&, const Basis&) const;
+
+
+@calculateCoefficientsPrototypes@
 };
+
+template <class Scalar, int Rows, int Cols, class Basis>
+Eigen::Matrix<Scalar,Rows,Cols> @ModelName@_semi_analytic_solutions::compute_basis_points(
+   const std::vector<Boundary_values>& points, const Basis& basis) const
+{
+   Eigen::Matrix<Scalar,Rows,Cols> result;
+   for (int i = 0; i < Rows; ++i) {
+      result.row(i) = basis(points.at(i));
+   }
+   return result;
+}
 
 } // namespace flexiblesusy
 
