@@ -39,6 +39,8 @@ ConstructTrialDatasets::usage="Returns a list of datasets of the form
 {integer id, {pars}, {input values}}";
 InitializeTrialInputValues::usage="";
 CreateBasisEvaluators::usage="";
+CreateLinearSystemSolvers::usage="";
+CalculateCoefficients::usage="";
 CreateSemiAnalyticCoefficientsCalculation::usage="";
 CreateCoefficientsCalculations::usage="";
 
@@ -596,10 +598,6 @@ SetBoundaryValueParameters[solutions_List] :=
            Return[result];
           ];
 
-CreateSemiAnalyticCoefficientsCalculation[solutions_List] :=
-    Module[{trialValues},
-          ];
-
 ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
     Which[Parameters`IsModelParameter[parameter],
           Parameters`SetParameter[parameter, value, modelPrefix],
@@ -726,6 +724,47 @@ CreateBasisEvaluators[solutions_List] :=
            bases = DeleteDuplicates[GetBasis[#]& /@ solutions];
            evaluators = MapIndexed[CreateBasisEvaluator["basis_" <> ToString[First[#2]], #1]&, bases];
            Utils`StringJoinWithSeparator[evaluators, "\n"] <> "\n"
+          ];
+
+CreateLinearSystemSolver[dataset_, solutions_List] :=
+    Module[{idx, inputs, pars, parTypes, elementType, basisLengths, basisSize,
+            solverName, evaluatorName, result = ""},
+           idx = ToString[dataset[[1]]];
+           pars = dataset[[2]];
+           parTypes = CConversion`GetScalarElementType[Parameters`GetType[#]]& /@ dataset[[2]];
+           If[MemberQ[parTypes, CConversion`ScalarType[CConversion`complexScalarCType]],
+              elementType = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]],
+              elementType = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]]
+             ];
+           basisLengths = Length[GetBasis[#]]& /@ Select[solutions, MemberQ[pars, GetName[#]]&];
+           If[Length[DeleteDuplicates[basisLengths]] =!= 1,
+              Print["Error: invalid collection of parameters specified:", pars];
+              Quit[1];
+             ];
+           basisSize = ToString[First[basisLengths]];
+           solverName = "solver_" <> idx;
+           evaluatorName = "basis_" <> idx;
+           "auto " <> solverName <> " = create_solver<" <> elementType
+           <> "," <> basisSize <> ">(datasets[" <> idx <> "], " <> evaluatorName <> ");\n"
+          ];
+
+CreateLinearSystemSolvers[datasets_List, solutions_List] :=
+    Module[{result = ""},
+           (result = result <> CreateLinearSystemSolver[#, solutions])& /@ datasets;
+           Return[result];
+          ];
+
+
+CalculateCoefficients[datasets_List] :=
+    Module[{i, result = ""},
+           For[i = 1, i <= Length[datasets], i++,
+               (result = result <> "calculate_"
+                         <> CConversion`ToValidCSymbolString[#]
+                         <> "_coefficients(solver_" <> ToString[datasets[[i,1]]]
+                         <> ", datasets[" <> ToString[datasets[[i,1]]]
+                         <> "]);\n")& /@ datasets[[i,2]];
+              ];
+           Return[result];
           ];
 
 EvaluateSemiAnalyticSolution[solution_] :=

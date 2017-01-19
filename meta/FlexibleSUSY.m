@@ -1459,23 +1459,28 @@ WriteTwoScaleModelClass[files_List] :=
 
 WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
     Module[{semiAnalyticSolutionsDefs = "", boundaryValueStructDefs = "",
-            coefficientGetters = "", basisLambdas = "", applyBoundaryConditions = "",
+            coefficientGetters = "", createBasisEvaluators = "", applyBoundaryConditions = "",
             datasets, numberOfTrialPoints, initializeTrialBoundaryValues = "",
+            createLinearSystemSolvers = "", calculateCoefficients = "",
             calculateCoefficientsPrototypes = "", calculateCoefficientsFunctions = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            boundaryValueStructDefs = SemiAnalytic`CreateLocalBoundaryValuesDefinitions[semiAnalyticSolns];
            coefficientGetters = SemiAnalytic`CreateSemiAnalyticCoefficientGetters[semiAnalyticSolns];
-           basisLambdas = SemiAnalytic`CreateBasisEvaluators[semiAnalyticSolns];
+           createBasisEvaluators = SemiAnalytic`CreateBasisEvaluators[semiAnalyticSolns];
            datasets = SemiAnalytic`ConstructTrialDatasets[semiAnalyticSolns];
+           createLinearSystemSolvers = SemiAnalytic`CreateLinearSystemSolvers[datasets, semiAnalyticSolns];
            {numberOfTrialPoints, initializeTrialBoundaryValues} = SemiAnalytic`InitializeTrialInputValues[datasets];
            applyBoundaryConditions = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
+           calculateCoefficients = SemiAnalytic`CalculateCoefficients[datasets];
            {calculateCoefficientsPrototypes, calculateCoefficientsFunctions} = SemiAnalytic`CreateCoefficientsCalculations[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@boundaryValueStructDefs@" -> IndentText[IndentText[WrapLines[boundaryValueStructDefs]]],
                                             "@coefficientGetters@" -> IndentText[WrapLines[coefficientGetters]],
                                             "@numberOfTrialPoints@" -> ToString[numberOfTrialPoints],
                                             "@initializeTrialBoundaryValues@" -> IndentText[WrapLines[initializeTrialBoundaryValues]],
-                                            "@basisLambdas@" -> IndentText[WrapLines[basisLambdas]],
+                                            "@createBasisEvaluators@" -> IndentText[WrapLines[createBasisEvaluators]],
+                                            "@createLinearSystemSolvers@" -> IndentText[WrapLines[createLinearSystemSolvers]],
+                                            "@calculateCoefficients@" -> IndentText[calculateCoefficients],
                                             "@applyBoundaryConditions@" -> IndentText[WrapLines[applyBoundaryConditions]],
                                             "@calculateCoefficientsPrototypes@" -> IndentText[calculateCoefficientsPrototypes],
                                             "@calculateCoefficientsFunctions@" -> calculateCoefficientsFunctions,

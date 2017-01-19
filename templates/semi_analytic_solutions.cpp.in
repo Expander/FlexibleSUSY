@@ -72,7 +72,7 @@ std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_sem
    std::map<int,Data_vector_t> datasets;
    for (const auto& point: trial_data) {
       for (auto idx: point.basis_sets) {
-         datasets[idx].push_back(&point.model);
+         datasets[idx].push_back(&point);
       }
    }
    return datasets;
@@ -83,11 +83,11 @@ void @ModelName@_semi_analytic_solutions::calculate_coefficients(const @ModelNam
    @ModelName@_soft_parameters model(model_);
    model.run_to(input_scale);
 
-@basisLambdas@
-
+   calculate_trial_data(model);
    std::map<int,Data_vector_t> datasets(create_datasets());
 
-   // for each parameter, compute coefficients using appropriate dataset
+@createBasisEvaluators@
+@createLinearSystemSolvers@
 @calculateCoefficients@
 }
 

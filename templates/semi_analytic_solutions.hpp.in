@@ -60,8 +60,6 @@ public:
    void calculate_coefficients(const @ModelName@_soft_parameters&);
 
 private:
-   using Data_vector_t = std::vector<@ModelName@_soft_parameters*>
-
    struct Boundary_values {
 @boundaryValueStructDefs@
    };
@@ -71,6 +69,8 @@ private:
       @ModelName@_soft_parameters model{};
       std::vector<int> basis_sets{};
    };
+
+   using Data_vector_t = std::vector<Model_data*>
 
    double input_scale{0.};  ///< scale at which boundary conditions hold
    double output_scale{0.}; ///< scale at which coefficients are calculated
@@ -84,22 +84,24 @@ private:
    void set_to_boundary_values(@ModelName@_soft_parameters&, const Boundary_values&) const;
    std::map<int,Data_vector_t> create_datasets() const;
 
-   template <class Scalar, int Rows, int Cols, class Basis>
-   Eigen::Matrix<Scalar,Rows,Cols> compute_basis_points(const std::vector<Boundary_values>&, const Basis&) const;
-
+   template <class Scalar, int BasisSize, class BasisEvaluator>
+   Eigen::JacobiSVD<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> > create_solver(
+      const Data_vector_t&, const BasisEvaluator&) const;
 
 @calculateCoefficientsPrototypes@
 };
 
-template <class Scalar, int Rows, int Cols, class Basis>
-Eigen::Matrix<Scalar,Rows,Cols> @ModelName@_semi_analytic_solutions::compute_basis_points(
-   const std::vector<Boundary_values>& points, const Basis& basis) const
+template <class Scalar, int BasisSize, class BasisEvaluator>
+Eigen::JacobiSVD<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> > create_solver(
+   const Data_vector_t& data, const BasisEvaluator& ev) const
 {
-   Eigen::Matrix<Scalar,Rows,Cols> result;
-   for (int i = 0; i < Rows; ++i) {
-      result.row(i) = basis(points.at(i));
+   const std::size_t n = data.size();
+   Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> lhs(n, BasisSize);
+   for (std::size_t i = 0; i < n; ++i) {
+      lhs.row(i) = ev(data[i]->boundary_values);
    }
-   return result;
+   return Eigen::JacobiSVD<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> >(
+      lhs, Eigen::ComputeThinU | Eigen::ComputeThinV);
 }
 
 } // namespace flexiblesusy
