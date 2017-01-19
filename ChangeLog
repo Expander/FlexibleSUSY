@@ -14,6 +14,10 @@ FlexibleSUSY-1.7.3 [not released yet]
    and $CPLUS_INCLUDE_PATH .
    Thanks to Joshua Ellis.
 
+ * Bugfix (commit bc770ae): Ensure that phase of (complex) mu
+   parameter has magnitude 1 in the CMSSMCPV.
+   Thanks to Jobst Ziebell.
+
 FlexibleSUSY-1.7.2 [December, 15 2016]
 
  * Feature (commit b052e35): New flag FlexibleSUSY[23] to disable the
