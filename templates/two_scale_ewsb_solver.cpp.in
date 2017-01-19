@@ -117,6 +117,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively(@ModelName@_mass_eigen
 /**
  * Solves EWSB equations with given EWSB solver
  *
+ * @param model_to_solve model to solve EWSB conditions for
  * @param solver EWSB solver
  * @param x_init initial values
  *
@@ -136,6 +137,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_with(
 /**
  * Sets EWSB output parameters from given solver.
  *
+ * @param model model to set EWSB output parameters in
  * @param solver solver
  */
 void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(@ModelName@_mass_eigenstates& model, const EWSB_solver* solver)
@@ -151,6 +153,7 @@ void @ModelName@_ewsb_solver<Two_scale>::set_ewsb_solution(@ModelName@_mass_eige
  * Sets EWSB output parameters from the solver from the range [first,
  * last), which minimizes the tadpole equations at most.
  *
+ * @param model model to set EWSB output parameters in
  * @param first iterator to first solver
  * @param last iterator to last solver
  */
@@ -218,6 +221,8 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigens
  *
  * Throws exception of type EEWSBStepFailed if new EWSB parameters are
  * inf or nan.
+ *
+ * @param model model to use for calculating the EWSB output parameters
  *
  * @return new set of EWSB output parameters
  */
