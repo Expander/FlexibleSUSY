@@ -727,14 +727,14 @@ CreateBasisEvaluators[solutions_List] :=
           ];
 
 CreateLinearSystemSolver[dataset_, solutions_List] :=
-    Module[{idx, inputs, pars, parTypes, elementType, basisLengths, basisSize,
+    Module[{idx, inputs, pars, parTypes, matrixType, basisLengths, basisSize,
             solverName, evaluatorName, result = ""},
            idx = ToString[dataset[[1]]];
            pars = dataset[[2]];
            parTypes = CConversion`GetScalarElementType[Parameters`GetType[#]]& /@ dataset[[2]];
            If[MemberQ[parTypes, CConversion`ScalarType[CConversion`complexScalarCType]],
-              elementType = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]],
-              elementType = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]]
+              matrixType = "Eigen::MatrixXcd",
+              matrixType = "Eigen::MatrixXd"
              ];
            basisLengths = Length[GetBasis[#]]& /@ Select[solutions, MemberQ[pars, GetName[#]]&];
            If[Length[DeleteDuplicates[basisLengths]] =!= 1,
@@ -744,7 +744,7 @@ CreateLinearSystemSolver[dataset_, solutions_List] :=
            basisSize = ToString[First[basisLengths]];
            solverName = "solver_" <> idx;
            evaluatorName = "basis_" <> idx;
-           "auto " <> solverName <> " = create_solver<" <> elementType
+           "auto " <> solverName <> " = create_solver<" <> matrixType
            <> "," <> basisSize <> ">(datasets[" <> idx <> "], " <> evaluatorName <> ");\n"
           ];
 
@@ -848,7 +848,7 @@ CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
            body = "const std::size_t n = data.size();\n"
                   <> matrixType <> " rhs(n" <> If[numCols =!= 1, ", "
                   <> ToString[numCols], ""] <> ");\n" <> body;
-           body = body <> "auto solution = solver.solve(rhs);\n";
+           body = body <> matrixType <> " solution = solver.solve(rhs);\n";
 
            coeffs = CConversion`ToValidCSymbolString[#]& /@ CreateCoefficients[solution];
 
@@ -867,12 +867,13 @@ CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
            body = body <> setCoeffs;
 
            name = "calculate_" <> parStr <> "_coefficients";
-           prototype = "void " <> name <> "(const " <> solverType <> "&, const std::vector<"
-                   <> FlexibleSUSY`FSModelName <> "_soft_parameters>&);\n";
+           prototype = "void " <> name <> "(const " <> solverType <> "&, const Data_vector_t&);\n";
 
            function = "void " <> FlexibleSUSY`FSModelName <> "_semi_analytic_solutions::"
                       <> name <> "(\n"
-                      <> IndentText["const " <> solverType <> "& solver, const Data_vector_t& data)\n"] <> "{\n";
+                      <> IndentText["const " <> solverType <> "& solver, const "
+                                    <> FlexibleSUSY`FSModelName
+                                    <> "_semi_analytic_solutions::Data_vector_t& data)\n"] <> "{\n";
            function = function <> IndentText[body] <> "}\n";
 
            {prototype, function}

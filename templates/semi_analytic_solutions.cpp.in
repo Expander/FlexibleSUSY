@@ -57,7 +57,8 @@ void @ModelName@_semi_analytic_solutions::calculate_trial_data(const @ModelName@
    }
 }
 
-@ModelName@_soft_parameters run_to_output_scale(const @ModelName@_soft_parameters& model, const Boundary_values& values)
+@ModelName@_soft_parameters @ModelName@_semi_analytic_solutions::run_to_output_scale(
+   const @ModelName@_soft_parameters& model, const Boundary_values& values) const
 {
    @ModelName@_soft_parameters result(model);
    set_to_boundary_values(result, values);
@@ -70,7 +71,7 @@ void @ModelName@_semi_analytic_solutions::calculate_trial_data(const @ModelName@
 std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_semi_analytic_solutions::create_datasets() const
 {
    std::map<int,Data_vector_t> datasets;
-   for (const auto& point: trial_data) {
+   for (auto& point: trial_data) {
       for (auto idx: point.basis_sets) {
          datasets[idx].push_back(&point);
       }
@@ -78,7 +79,7 @@ std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_sem
    return datasets;
 }
 
-void @ModelName@_semi_analytic_solutions::calculate_coefficients(const @ModelName@_mass_eigenstates& model_)
+void @ModelName@_semi_analytic_solutions::calculate_coefficients(const @ModelName@_soft_parameters& model_)
 {
    @ModelName@_soft_parameters model(model_);
    model.run_to(input_scale);
@@ -92,7 +93,7 @@ void @ModelName@_semi_analytic_solutions::calculate_coefficients(const @ModelNam
 }
 
 void @ModelName@_semi_analytic_solutions::set_to_boundary_values(
-   @ModelName@_soft_parameters& model, const Boundary_values& values) const
+   @ModelName@_soft_parameters& model, const Boundary_values& boundary_values) const
 {
 @applyBoundaryConditions@
 }
