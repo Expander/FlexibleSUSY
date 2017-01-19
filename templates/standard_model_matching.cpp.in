@@ -26,6 +26,7 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_info.hpp"
 #include "config.h"
+#include "global_thread_pool.hpp"
 #include <cmath>
 
 using namespace flexiblesusy::standard_model;
@@ -336,9 +337,17 @@ double calculate_MFe_pole_1loop(
 Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(const Standard_model& sm_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFu_pole_1loop(0, sm_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFu_pole_1loop(1, sm_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFu_pole_1loop(2, sm_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFu_pole_1loop(0, sm_0l),
              calculate_MFu_pole_1loop(1, sm_0l),
              calculate_MFu_pole_1loop(2, sm_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
@@ -346,9 +355,17 @@ Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(const Standard_model& sm_0l)
 Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(const Standard_model& sm_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFd_pole_1loop(0, sm_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFd_pole_1loop(1, sm_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFd_pole_1loop(2, sm_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFd_pole_1loop(0, sm_0l),
              calculate_MFd_pole_1loop(1, sm_0l),
              calculate_MFd_pole_1loop(2, sm_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
@@ -356,9 +373,17 @@ Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(const Standard_model& sm_0l)
 Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(const Standard_model& sm_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFe_pole_1loop(0, sm_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFe_pole_1loop(1, sm_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&sm_0l]{ return calculate_MFe_pole_1loop(2, sm_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFe_pole_1loop(0, sm_0l),
              calculate_MFe_pole_1loop(1, sm_0l),
              calculate_MFe_pole_1loop(2, sm_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
@@ -367,9 +392,17 @@ Eigen::Matrix<double,3,3> calculate_MFu_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFu_pole_1loop(0, model_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFu_pole_1loop(1, model_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFu_pole_1loop(2, model_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFu_pole_1loop(0, model_0l),
              calculate_MFu_pole_1loop(1, model_0l),
              calculate_MFu_pole_1loop(2, model_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
@@ -378,9 +411,17 @@ Eigen::Matrix<double,3,3> calculate_MFd_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFd_pole_1loop(0, model_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFd_pole_1loop(1, model_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFd_pole_1loop(2, model_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFd_pole_1loop(0, model_0l),
              calculate_MFd_pole_1loop(1, model_0l),
              calculate_MFd_pole_1loop(2, model_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
@@ -389,9 +430,17 @@ Eigen::Matrix<double,3,3> calculate_MFe_pole_1loop(
    const @ModelName@_mass_eigenstates& model_0l)
 {
    Eigen::Matrix<double,3,1> M_pole;
+
+#ifdef ENABLE_THREADS
+   auto M_0 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFe_pole_1loop(0, model_0l); });
+   auto M_1 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFe_pole_1loop(1, model_0l); });
+   auto M_2 = global_thread_pool().run_packaged_task([&model_0l]{ return calculate_MFe_pole_1loop(2, model_0l); });
+   M_pole << M_0.get(), M_1.get(), M_2.get();
+#else
    M_pole << calculate_MFe_pole_1loop(0, model_0l),
              calculate_MFe_pole_1loop(1, model_0l),
              calculate_MFe_pole_1loop(2, model_0l);
+#endif
 
    return M_pole.asDiagonal();
 }
