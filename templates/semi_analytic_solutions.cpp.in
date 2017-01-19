@@ -71,7 +71,7 @@ void @ModelName@_semi_analytic_solutions::calculate_trial_data(const @ModelName@
 std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_semi_analytic_solutions::create_datasets() const
 {
    std::map<int,Data_vector_t> datasets;
-   for (auto& point: trial_data) {
+   for (const auto& point: trial_data) {
       for (auto idx: point.basis_sets) {
          datasets[idx].push_back(&point);
       }

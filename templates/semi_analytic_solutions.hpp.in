@@ -74,7 +74,7 @@ private:
       std::vector<int> basis_sets{};
    };
 
-   using Data_vector_t = std::vector<Model_data*>;
+   using Data_vector_t = std::vector<const Model_data*>;
 
    double input_scale{0.};  ///< scale at which boundary conditions hold
    double output_scale{0.}; ///< scale at which coefficients are calculated
