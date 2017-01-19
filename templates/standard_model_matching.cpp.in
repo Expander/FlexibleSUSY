@@ -184,7 +184,7 @@ double calculate_Mh2_pole(
  * @param model_1l @ModelName@ parameters
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
-void match_high_to_low_scale_model_impl(
+void match_high_to_low_scale_model_1loop(
    Standard_model& sm,
    const @ModelName@_mass_eigenstates& model_1l,
    unsigned idx)
@@ -619,7 +619,7 @@ double calculate_MZ_DRbar_1loop(
  * the @ModelName@ at the necessary loop level from the known Standard
  * Model couplings and the SM vev.
  */
-void match_low_to_high_scale_model_impl(
+void match_low_to_high_scale_model_1loop(
    @ModelName@_mass_eigenstates& model,
    const Standard_model& sm,
    unsigned idx)
@@ -701,7 +701,7 @@ void match_low_to_high_scale_model(
       return;
    }
 
-   match_low_to_high_scale_model_impl(model, sm, idx);
+   match_low_to_high_scale_model_1loop(model, sm, idx);
 }
 
 /**
@@ -722,7 +722,7 @@ void match_high_to_low_scale_model(
       return;
    }
 
-   match_high_to_low_scale_model_impl(sm, model, idx);
+   match_high_to_low_scale_model_1loop(sm, model, idx);
 }
 
 } // namespace @ModelName@_standard_model_matching
