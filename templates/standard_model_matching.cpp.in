@@ -56,7 +56,10 @@ Standard_model calculate_SM_tree_level(
    unsigned idx)
 {
    auto sm_0l = sm;
+   sm_0l.get_problems().clear();
    sm_0l.set_Lambdax(Sqr(model_0l.get_M@HiggsBoson(idx)@/sm.get_v()));
+   sm_0l.set_pole_mass_loop_order(0);
+   sm_0l.set_ewsb_loop_order(0);
    sm_0l.solve_ewsb_tree_level();
    sm_0l.calculate_DRbar_masses();
 
