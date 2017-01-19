@@ -810,47 +810,69 @@ SaveBoundaryValueParameters[solutions_List] :=
            Return[result];
           ];
 
+GetAllIndexCombinations[bounds_List] := Tuples[Range[0, #-1]& /@ bounds];
+
 CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
     Module[{par = GetName[solution], basis = GetBasis[solution],
-            i, parStr, dims, indices = {}, coeffs,
-            name, prototype, function = "", body = ""},
+            parStr, parType, solverType, dims, i, indices = {}, numCols, coeffs, setCoeffs = "",
+            matrixType, name, prototype, function = "", body = ""},
            parStr = CConversion`ToValidCSymbolString[par];
-           name = "calculate_" <> parStr <> "_coefficients";
+           parType = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
+           If[Parameters`IsRealParameter[par],
+              solverType = "Eigen::JacobiSVD<Eigen::MatrixXd>",
+              solverType = "Eigen::JacobiSVD<Eigen::MatrixXcd>"
+             ];
            dims = Parameters`GetParameterDimensions[par];
            If[dims =!= {1},
               indices = Table["i" <> ToString[i], {i, 1, Length[dims]}];
              ];
-           prototype = "void " <> name <> "(const Solver_type&, const std::vector<"
-                   <> FlexibleSUSY`FSModelName <> "_soft_parameters>&);\n";
+           numCols = Times @@ dims;
+           If[numCols === 1,
+              matrixType = "Eigen::VectorX",
+              matrixType = "Eigen::MatrixX"
+             ];
+           If[Parameters`IsRealParameter[par],
+              matrixType = matrixType <> "d",
+              matrixType = matrixType <> "cd"
+             ];
 
-           body = "rhs(j) = data.at(j).get_" <> parStr <> "(" <>
-                  If[indices =!= {}, Utils`StringJoinWithSeparator[indices, ", "], ""] <> ");\n";
-           body = "Eigen::VectorXd rhs(n);\nfor (std::size_t j = 0; j < n; ++j) {\n"
-                  <> IndentText[body] <> "}\nauto solution = solver.solve(rhs);\n";
+           If[numCols === 1,
+              body = "rhs(j) = data[j]->model.get_" <> parStr <> "();\n";,
+              body = MapIndexed[("rhs(j, " <> ToString[First[#2]] <> ") = data[j]->model.get_"
+                                 <> parStr <> "(" <> Utils`StringJoinWithSeparator[ToString /@ #1, ", "]
+                                 <> ");\n")&, GetAllIndexCombinations[dims]];
+              body = StringJoin[body];
+             ];
+           body = "for (std::size_t j = 0; j < n; ++j) {\n"
+                  <> IndentText[body] <> "}\n";
+           body = "const std::size_t n = data.size();\n"
+                  <> matrixType <> " rhs(n" <> If[numCols =!= 1, ", "
+                  <> ToString[numCols], ""] <> ");\n" <> body;
+           body = body <> "auto solution = solver.solve(rhs);\n";
 
            coeffs = CConversion`ToValidCSymbolString[#]& /@ CreateCoefficients[solution];
-           If[indices =!= {},
-              coeffs = (# <> "(" <> Utils`StringJoinWithSeparator[indices, ", "] <> ")")& /@ coeffs;
-             ];
+
            For[i = 1, i <= Length[coeffs], i++,
-               body = body <> coeffs[[i]] <> " = solution(" <> ToString[i-1] <> ");\n";
+               If[numCols === 1,
+                  setCoeffs = setCoeffs <> coeffs[[i]] <> " = solution(" <> ToString[i-1] <> ");\n",
+                  setCoeffs = setCoeffs
+                              <> StringJoin[MapIndexed[(coeffs[[i]] <> "("
+                                                        <> Utils`StringJoinWithSeparator[ToString /@ #1, ", "]
+                                                        <> ") = solution(" <> ToString[i-1] <> ", "
+                                                        <> ToString[First[#2]] <> ");\n")&,
+                                                       GetAllIndexCombinations[dims]]];
+                 ];
               ];
 
-           If[indices =!= {},
-              For[i = Length[indices], i > 0, i--,
-                  body = "for (int " <> indices[[i]] <> " = 0; "
-                          <> indices[[i]] <> " < " <> ToString[dims[[i]]]
-                          <> "; ++" <> indices[[i]] <> ") {\n"
-                          <> IndentText[body] <> "}\n";
-                 ];
-             ];
+           body = body <> setCoeffs;
 
-           body = "const std::size_t n = data.size();\n" <> body;
+           name = "calculate_" <> parStr <> "_coefficients";
+           prototype = "void " <> name <> "(const " <> solverType <> "&, const std::vector<"
+                   <> FlexibleSUSY`FSModelName <> "_soft_parameters>&);\n";
 
            function = "void " <> FlexibleSUSY`FSModelName <> "_semi_analytic_solutions::"
                       <> name <> "(\n"
-                      <> IndentText["const Solver_type& solver, const std::vector<"
-                      <> FlexibleSUSY`FSModelName <> "_soft_parameters>& data)\n"] <> "{\n";
+                      <> IndentText["const " <> solverType <> "& solver, const Data_vector_t& data)\n"] <> "{\n";
            function = function <> IndentText[body] <> "}\n";
 
            {prototype, function}
