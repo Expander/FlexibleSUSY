@@ -571,14 +571,14 @@ CreateSemiAnalyticCoefficientGetters[solutions_List] :=
 CreateBoundaryValueGetters[solutions_List] :=
     Module[{boundaryValues, getters = ""},
            boundaryValues = CreateBoundaryValueParameters[solutions];
-           (getters = getters <> CConversion`CreateInlineGetters[CreateBoundaryValueParameterName[#[[1]]], #[[2]]])& /@ boundaryValues;
+           (getters = getters <> CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
            Return[getters];
           ];
 
 CreateBoundaryValueSetters[solutions_List] :=
     Module[{boundaryValues, setters = ""},
            boundaryValues = CreateBoundaryValueParameters[solutions];
-           (setters = setters <> CConversion`CreateInlineSetters[CreateBoundaryValueParameterName[#[[1]]], #[[2]]])& /@ boundaryValues;
+           (setters = setters <> CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
            Return[setters];
           ];
 
