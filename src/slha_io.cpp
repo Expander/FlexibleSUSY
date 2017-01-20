@@ -400,7 +400,7 @@ void SLHA_io::set_physical_input(const Physical_input& input)
    std::ostringstream ss;
    ss << "Block FlexibleSUSYInput\n";
 
-   for (int i = 0; i < names.size(); i++) {
+   for (std::size_t i = 0; i < names.size(); i++) {
       ss << FORMAT_ELEMENT(i, input.get(static_cast<Physical_input::Input>(i)),
                            names[i]);
    }
