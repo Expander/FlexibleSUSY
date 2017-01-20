@@ -1460,6 +1460,7 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
             createBasisEvaluators = "", applyBoundaryConditions = "",
             datasets, numberOfTrialPoints, initializeTrialBoundaryValues = "",
             createLinearSystemSolvers = "", calculateCoefficients = "",
+            evaluateSemiAnalyticSolns = "",
             calculateCoefficientsPrototypes = "", calculateCoefficientsFunctions = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            boundaryValueStructDefs = SemiAnalytic`CreateLocalBoundaryValuesDefinitions[semiAnalyticSolns];
@@ -1472,6 +1473,7 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
            createLinearSystemSolvers = SemiAnalytic`CreateLinearSystemSolvers[datasets, semiAnalyticSolns];
            {numberOfTrialPoints, initializeTrialBoundaryValues} = SemiAnalytic`InitializeTrialInputValues[datasets];
            applyBoundaryConditions = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
+           evaluateSemiAnalyticSolns = SemiAnalytic`EvaluateSemiAnalyticSolutions[semiAnalyticSolns];
            calculateCoefficients = SemiAnalytic`CalculateCoefficients[datasets];
            {calculateCoefficientsPrototypes, calculateCoefficientsFunctions} = SemiAnalytic`CreateCoefficientsCalculations[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
@@ -1486,6 +1488,7 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
                                             "@createLinearSystemSolvers@" -> IndentText[WrapLines[createLinearSystemSolvers]],
                                             "@calculateCoefficients@" -> IndentText[calculateCoefficients],
                                             "@applyBoundaryConditions@" -> IndentText[WrapLines[applyBoundaryConditions]],
+                                            "@evaluateSemiAnalyticSolns@" -> IndentText[WrapLines[evaluateSemiAnalyticSolns]],
                                             "@calculateCoefficientsPrototypes@" -> IndentText[calculateCoefficientsPrototypes],
                                             "@calculateCoefficientsFunctions@" -> calculateCoefficientsFunctions,
                                             Sequence @@ GeneralReplacementRules[] }];
@@ -1493,16 +1496,14 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
 
 WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
     Module[{semiAnalyticSolutionsDefs = "", boundaryValuesDefs = "",
-            calculateParameterValues = "", calculateCoeffFunctions = "",
+            calculateCoeffFunctions = "",
             setBoundaryValueParameters = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
            applySemiAnalyticBCs = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
-           calculateParameterValues = SemiAnalytic`EvaluateSemiAnalyticSolutions[semiAnalyticSolns];
            setBoundaryValueParameters = SemiAnalytic`SetModelBoundaryValueParameters[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
-                                            "@calculateParameterValues@" -> IndentText[WrapLines[calculateParameterValues]],
                                             "@calculateCoeffFunctions@" -> calculateCoeffFunctions,
                                             "@setBoundaryValueParameters@" -> IndentText[WrapLines[setBoundaryValueParameters]],
                                             Sequence @@ GeneralReplacementRules[] }];

@@ -796,17 +796,17 @@ ExpandSemiAnalyticSolution[solution_SemiAnalyticSolution] :=
 ExpandSemiAnalyticSolutions[solutions_List] :=
     ExpandSemiAnalyticSolution /@ solutions;
 
-EvaluateSemiAnalyticSolution[solution_] :=
+EvaluateSemiAnalyticSolution[solution_, class_String] :=
     Module[{parameter, basisRules, coeffs},
            parameter = GetName[solution];
            basisRules = Rule[#, CreateBoundaryValue[#]]& /@ (GetBoundaryValueParameters[solution]);
            coeffs = CreateCoefficients[solution];
-           Parameters`SetParameter[parameter, Dot[coeffs, GetBasis[solution]] /. basisRules]
+           Parameters`SetParameter[parameter, Dot[coeffs, GetBasis[solution]] /. basisRules, class]
           ];
 
-EvaluateSemiAnalyticSolutions[solutions_List] :=
+EvaluateSemiAnalyticSolutions[solutions_List, class_String:"model."] :=
     Module[{result = ""},
-           (result = result <> EvaluateSemiAnalyticSolution[#])& /@ solutions;
+           (result = result <> EvaluateSemiAnalyticSolution[#, class])& /@ solutions;
            Return[result];
           ];
 

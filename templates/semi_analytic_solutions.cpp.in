@@ -98,5 +98,11 @@ void @ModelName@_semi_analytic_solutions::set_to_boundary_values(
 @applyBoundaryConditions@
 }
 
+void @ModelName@_semi_analytic_solutions::evaluate_solutions(
+   @ModelName@_soft_parameters& model)
+{
+@evaluateSemiAnalyticSolns@
+}
+
 @calculateCoefficientsFunctions@
 } // namespace flexiblesusy

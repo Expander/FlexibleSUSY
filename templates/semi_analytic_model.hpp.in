@@ -69,8 +69,6 @@ private:
 @semiAnalyticSolutionsDefs@
    // boundary values
 @boundaryValuesDefs@
-
-   void calculate_parameter_values();
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Semi_analytic>&);
