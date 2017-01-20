@@ -88,6 +88,9 @@ given a vector or matrix, a C/C++ inline getter for a single element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
 
+CreateDefaultAggregateInitialization::usage = "creates C/C++ default
+aggregate initialization for a given parameter type";
+
 CreateDefaultConstructor::usage="creates C/C++ default constructor for
 a given parameter type";
 
@@ -365,6 +368,17 @@ CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, 
 
 CreateDefaultConstructor[parameter_String, CConversion`TensorType[type_, dims__]] :=
     parameter <> "(" <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero())";
+
+CreateDefaultAggregateInitialization[type_] :=
+    Block[{},
+          Print["Error: unknown parameter type: " <> ToString[type]];
+          Return[""];
+         ];
+
+CreateDefaultAggregateInitialization[CConversion`ScalarType[_]] := "{}";
+
+CreateDefaultAggregateInitialization[t:(CConversion`ArrayType|CConversion`VectorType|CConversion`MatrixType|CConversion`TensorType)[__]] :=
+    "{" <> CreateCType[t] <> "::Zero()}";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
