@@ -212,7 +212,7 @@ void to_database(
 }
 
 namespace {
-Eigen::ArrayXd extract_entry(const std::string& file_name, std::size_t entry)
+Eigen::ArrayXd extract_entry(const std::string& file_name, long long entry)
 {
    database::Database db(file_name);
    Eigen::ArrayXd values;
@@ -242,30 +242,30 @@ Eigen::ArrayXd extract_entry(const std::string& file_name, std::size_t entry)
  * @return mass eigenstates
  */
 @ModelName@_mass_eigenstates from_database(
-   const std::string& file_name, std::size_t entry, softsusy::QedQcd* qedqcd,
+   const std::string& file_name, long long entry, softsusy::QedQcd* qedqcd,
    Physical_input* physical_input, @ModelName@_observables* observables)
 {
    using utilities::append;
 
    @ModelName@_mass_eigenstates model;
-   const std::size_t number_of_parameters = model.get_number_of_parameters();
-   const std::size_t number_of_masses = @ModelName@_parameter_getter().get_number_of_masses();
-   const std::size_t number_of_mixings = @ModelName@_info::NUMBER_OF_MIXINGS;
-   const std::size_t number_of_input_parameters = @ModelName@_info::NUMBER_OF_INPUT_PARAMETERS;
-   const std::size_t number_of_low_energy_input_parameters =
-      (qedqcd ? softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS : 0u);
-   const std::size_t number_of_extra_physical_input_parameters =
-      (physical_input ? Physical_input::NUMBER_OF_INPUT_PARAMETERS : 0u);
-   const std::size_t number_of_observables =
-      (observables ? @ModelName@_observables::NUMBER_OF_OBSERVABLES : 0u);
-   const std::size_t total_entries = 9 + number_of_input_parameters
+   const auto number_of_parameters = model.get_number_of_parameters();
+   const auto number_of_masses = @ModelName@_parameter_getter().get_number_of_masses();
+   const auto number_of_mixings = @ModelName@_info::NUMBER_OF_MIXINGS;
+   const auto number_of_input_parameters = @ModelName@_info::NUMBER_OF_INPUT_PARAMETERS;
+   const auto number_of_low_energy_input_parameters =
+      (qedqcd ? softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS : 0);
+   const auto number_of_extra_physical_input_parameters =
+      (physical_input ? Physical_input::NUMBER_OF_INPUT_PARAMETERS : 0);
+   const auto number_of_observables =
+      (observables ? @ModelName@_observables::NUMBER_OF_OBSERVABLES : 0);
+   const auto total_entries = 9 + number_of_input_parameters
       + number_of_parameters + number_of_masses + number_of_mixings
       + number_of_low_energy_input_parameters
       + number_of_extra_physical_input_parameters + number_of_observables;
 
    const Eigen::ArrayXd values(extract_entry(file_name, entry));
 
-   if (static_cast<std::size_t>(values.rows()) < total_entries) {
+   if (values.rows() < total_entries) {
       ERROR("data set " << entry << " extracted from " << file_name
             << " contains " << values.rows() << " entries."
             " Expected number of entries at least: " << total_entries);
