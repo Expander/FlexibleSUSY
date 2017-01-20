@@ -33,6 +33,7 @@
 
 #include "@ModelName@_model.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
+#include "@ModelName@_semi_analytic_solutions.hpp"
 
 #include "model.hpp"
 
@@ -61,14 +62,13 @@ public:
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 
-@setBoundaryValueParameters@
-   void calculate_coefficients(double);
+   void calculate_semi_analytic_solutions(double);
 
+@getBoundaryValueParameters@
+@setBoundaryValueParameters@
+@getSemiAnalyticCoefficients@
 private:
-   // semi-analytic solution coefficients
-@semiAnalyticSolutionsDefs@
-   // boundary values
-@boundaryValuesDefs@
+   @ModelName@_semi_analytic_solutions solutions{};
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Semi_analytic>&);

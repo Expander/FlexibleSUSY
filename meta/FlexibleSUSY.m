@@ -1494,17 +1494,16 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
           ];
 
 WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
-    Module[{semiAnalyticSolutionsDefs = "", boundaryValuesDefs = "",
-            calculateCoeffFunctions = "",
-            setBoundaryValueParameters = ""},
-           semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
-           boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
-           applySemiAnalyticBCs = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
+    Module[{getBoundaryValueParameters = "", setBoundaryValueParameters = "",
+            getSemiAnalyticCoefficients = "", printSemiAnalyticCoefficients = ""},
+           getBoundaryValueParameters = SemiAnalytic`GetModelBoundaryValueParameters[semiAnalyticSolns];
            setBoundaryValueParameters = SemiAnalytic`SetModelBoundaryValueParameters[semiAnalyticSolns];
-           WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
-                                            "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
-                                            "@calculateCoeffFunctions@" -> calculateCoeffFunctions,
-                                            "@setBoundaryValueParameters@" -> IndentText[WrapLines[setBoundaryValueParameters]],
+           getSemiAnalyticCoefficients = SemiAnalytic`GetModelCoefficients[semiAnalyticSolns];
+           printSemiAnalyticCoefficients = SemiAnalytic`PrintModelCoefficients[semiAnalyticSolns, "ostr"];
+           WriteOut`ReplaceInFiles[files, { "@getBoundaryValueParameters@"   -> IndentText[WrapLines[getBoundaryValueParameters]],
+                                            "@setBoundaryValueParameters@"   -> IndentText[WrapLines[setBoundaryValueParameters]],
+                                            "@getSemiAnalyticCoefficients@"  -> IndentText[WrapLines[getSemiAnalyticCoefficients]],
+                                            "@printSemiAnalyticCoefficients@" -> IndentText[WrapLines[printSemiAnalyticCoefficients]],
                                             Sequence @@ GeneralReplacementRules[] }];
           ];
 

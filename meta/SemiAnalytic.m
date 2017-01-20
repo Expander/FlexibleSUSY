@@ -35,7 +35,6 @@ CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
 CreateLocalBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
-SetModelBoundaryValueParameters::usage="";
 CreateSemiAnalyticCoefficientGetters::usage="";
 CreateBoundaryValueGetters::usage="";
 CreateBoundaryValueSetters::usage="";
@@ -51,6 +50,11 @@ CreateCoefficientsCalculations::usage="";
 ApplySemiAnalyticBoundaryConditions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
 SaveBoundaryValueParameters::usage="";
+
+GetModelBoundaryValueParameters::usage="";
+SetModelBoundaryValueParameters::usage="";
+GetModelCoefficients::usage="";
+PrintModelCoefficients::usage="";
 
 Begin["`Private`"];
 
@@ -582,18 +586,68 @@ CreateBoundaryValueSetters[solutions_List] :=
            Return[setters];
           ];
 
-SetBoundaryValueParameter[parameter_String, struct_String] :=
-    Module[{def = "", body = "", setter = ""},
-           def = "void set_" <> parameter <> "(" <> parameter <> "_) ";
-           body = "{ " <> struct <> "set_" <> parameter <> "(" <> parameter <> "_); }\n";
-           def <> body
+GetBoundaryValueFromStruct[parameter_, struct_String] :=
+    Module[{parStr, type, name, body = "", function},
+           type = Parameters`GetType[parameter];
+           parStr = CreateBoundaryValueParameterName[parameter];
+           name = CConversion`CreateGetterReturnType[type]
+                  <> " CLASSNAME::get_" <> parStr <> "() const {";
+           body = struct <> "get_" <> parStr <> "();";
+           name <> " " <> body <> " }\n"
           ];
 
-SetModelBoundaryValueParameters[solutions_List, struct_String:"semi_analytic_solutions->"] :=
-    Module[{boundaryValues, setters = ""},
-           boundaryValues = CreateBoundaryValueParameterName /@ GetBoundaryValueParameters[solutions];
-           (setters = setters <> SetBoundaryValueParameter[#, struct])& /@ boundaryValues;
-           Return[setters];
+SetBoundaryValueFromStruct[parameter_, struct_String] :=
+    Module[{parStr, type, name, body = "", function},
+           type = Parameters`GetType[parameter];
+           parStr = CreateBoundaryValueParameterName[parameter];
+           name = "void set_" <> parStr <> "("
+                  <> CConversion`CreateSetterInputType[type]
+                  <> " " <> parStr <> "_) {";
+           body = struct <> "set_" <> parStr <> "(" <> parStr <> "_);";
+           name <> " " <> body <> " }\n"
+          ];
+
+GetCoefficientsFromStruct[solution_, struct_String] :=
+    Module[{i, parameter, type, coeffStrs, name, body = "", functions = ""},
+           parameter = GetName[solution];
+           type = Parameters`GetType[parameter];
+           coeffStrs = CreateCoefficientNames[solution];
+           For[i = 1, i <= Length[coeffStrs], i++,
+               name = CConversion`CreateGetterReturnType[type]
+                      <> " get_" <> coeffStrs[[i]] <> "() const {";
+               body = struct <> "get_" <> coeffStrs[[i]] <> "();";
+               functions = functions <> name <> " " <> body <> " }\n";
+              ];
+           Return[functions];
+          ];
+
+GetModelBoundaryValueParameters[solutions_List, struct_String:"solutions."] :=
+    Module[{boundaryValues, result},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           result = GetBoundaryValueFromStruct[#, struct]& /@ boundaryValues;
+           StringJoin[result]
+          ];
+
+SetModelBoundaryValueParameters[solutions_List, struct_String:"solutions."] :=
+    Module[{boundaryValues, result},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           result = GetBoundaryValueFromStruct[#, struct]& /@ boundaryValues;
+           StringJoin[result]
+          ];
+
+GetModelCoefficients[solutions_List, struct_String:"solutions."] :=
+    Module[{result},
+           result = GetCoefficientsFromStruct[#, struct]& /@ solutions;
+           Utils`StringJoinWithSeparator[result, "\n"]
+          ];
+
+PrintModelCoefficients[solutions_List, streamName_String, struct_String:"solutions."] :=
+    Module[{coeffs, result = ""},
+           coeffs = CreateCoefficientParameters[solutions];
+           result = streamName <> " << input_scale = " <> struct <> "get_input_scale() << '\\n';\n";
+           result = result <> streamName <> " << output_scale = " <> struct
+                    <> "get_output_scale() << '\\n';\n";
+           result <> WriteOut`PrintExtraParameters[coeffs, streamName, "COEFFICIENT"]
           ];
 
 CreateBoundaryValuesDefinitions[solutions_List, createParameters_:CreateBoundaryValueParameters] :=

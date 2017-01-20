@@ -38,7 +38,7 @@ using namespace @ModelName@_info;
 
 #define CLASSNAME @ModelName@<Semi_analytic>
 
-#define COEFFICIENT(parameter,i) parameter##Coeff##i
+#define COEFFICIENT(coefficient) solutions.get_##coefficient()
 #define INPUTPARAMETER(parameter) model.get_input().parameter
 #define MODELPARAMETER(parameter) model.get_##parameter()
 
@@ -74,6 +74,10 @@ void CLASSNAME::run_to(double scale, double eps)
 void CLASSNAME::print(std::ostream& out) const
 {
    @ModelName@_mass_eigenstates::print(out);
+   ostr << "----------------------------------------\n"
+           "semi-analytic coefficients:\n"
+           "----------------------------------------\n";
+@printSemiAnalyticCoefficients@
 }
 
 void CLASSNAME::set_precision(double p)
@@ -81,7 +85,18 @@ void CLASSNAME::set_precision(double p)
    @ModelName@_mass_eigenstates::set_precision(p);
 }
 
-@calculateCoeffFunctions@
+void CLASSNAME::set_semi_analytic_solutions(const @ModelName@_semi_analytic_solutions& s)
+{
+   solutions = s;
+}
+
+void CLASSNAME::calculate_semi_analytic_solutions(double input_scale)
+{
+   solutions->set_input_scale(input_scale);
+   solutions->set_output_scale(get_scale());
+   solutions->calculate_coefficients(*this);
+   solutions->evaluate_solutions(*this);
+}
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@<Semi_analytic>& model)
 {
