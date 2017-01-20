@@ -1190,8 +1190,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
           ];
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
-                parametersFixedByEWSB_List, ewsbInitialGuessValues_List,
-                ewsbSolution_List, freePhases_List,
+                parametersFixedByEWSB_List, ewsbSubstitutions_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{ewsbEquationsTreeLevel, independentEwsbEquationsTreeLevel,
@@ -1243,7 +1242,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
            independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB,
-                                                                     FlexibleSUSY`EWSBSubstitutions];
+                                                                     ewsbSubstitutions];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            independentEwsbEquationsTreeLevel = independentEwsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            For[k = 1, k <= Length[massMatrices], k++,
@@ -1365,7 +1364,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`CreateMemberTreeLevelEwsbSolver[solveTreeLevelEWSBviaSoftHiggsMasses];
               solveEWSBTemporarily = "solve_ewsb_tree_level_custom();";
               ,
-              saveEWSBOutputParameters = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters];
+              saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersFixedByEWSB];
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
               solveEWSBTemporarily = "solve_ewsb_tree_level();";
              ];
@@ -2908,9 +2907,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
-           WriteModelClass[massMatrices, ewsbEquations,
-                           FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
-                           ewsbSolution, freePhases, nPointFunctions, vertexRules, Parameters`GetPhases[],
+           WriteModelClass[massMatrices, ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
+                           FlexibleSUSY`EWSBSubstitutions, nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
