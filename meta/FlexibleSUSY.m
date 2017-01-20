@@ -655,7 +655,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
               templateFile_String, makefileModuleTemplates_List,
               additionalTraces_List:{}, numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
-           display, parameterDefaultInit,
+           display,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters,
@@ -673,7 +673,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];
           set                  = BetaFunction`CreateSetFunction[betaFun, numberOfBaseClassParameters];
           display              = BetaFunction`CreateDisplayFunction[betaFun, numberOfBaseClassParameters];
-          parameterDefaultInit = BetaFunction`CreateParameterDefaultInitialization[betaFun];
           cCtorParameterList   = BetaFunction`CreateCCtorParameterList[betaFun];
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
@@ -689,7 +688,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
-                   "@parameterDefaultInit@" -> WrapLines[parameterDefaultInit],
                    "@display@"              -> IndentText[display],
                    "@set@"                  -> IndentText[set],
                    "@cCtorParameterList@"   -> WrapLines[cCtorParameterList],

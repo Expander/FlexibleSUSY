@@ -38,7 +38,6 @@ const int @ModelName@_susy_parameters::numberOfParameters;
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()
-   @parameterDefaultInit@
    , input(input_)
 {
    set_number_of_parameters(numberOfParameters);

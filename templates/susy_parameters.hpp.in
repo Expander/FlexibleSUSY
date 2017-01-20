@@ -64,7 +64,7 @@ public:
 
 protected:
 @parameterDef@
-   @ModelName@_input_parameters input;
+   @ModelName@_input_parameters input{};
 
 private:
    static const int numberOfParameters = @numberOfParameters@;
