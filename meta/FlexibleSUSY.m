@@ -717,16 +717,14 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set, inputPars},
+   Module[{defineInputParameters, printInputParameters, get, set, inputPars},
           inputPars = {First[#], #[[3]]}& /@ inputParameters;
           defineInputParameters = Constraint`DefineInputParameters[inputPars];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[inputPars];
           printInputParameters = WriteOut`PrintInputParameters[inputPars,"ostr"];
           get = Parameters`CreateInputParameterArrayGetter[inputPars];
           set = Parameters`CreateInputParameterArraySetter[inputPars];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
-                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            "@printInputParameters@"       -> IndentText[printInputParameters],
                            "@get@"                        -> IndentText[get],
                            "@set@"                        -> IndentText[set],

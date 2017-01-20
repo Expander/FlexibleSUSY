@@ -4,7 +4,6 @@ BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "Te
 ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
-InitializeInputParameters::usage="";
 InitialGuessAtLowScaleGaugeCouplings::usage="";
 IsFixed::usage="returns true if given parameter is fixed in given constraint";
 
@@ -473,39 +472,19 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
 CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
+DefineAndDefaultInitialize[{t:FlexibleSUSY`Phase[_], _}] :=
+    CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
+    ToValidCSymbolString[t] <> "{1.,.0};\n";
+
+DefineAndDefaultInitialize[{t:Sign[_], _}] :=
+    CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
+    ToValidCSymbolString[t] <> "{1};\n";
+
+DefineAndDefaultInitialize[p:{_,_}] :=
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[p];
+
 DefineInputParameters[inputParameters_List] :=
-    Module[{result = ""},
-           (result = result <> Parameters`CreateParameterDefinition[#])& /@ inputParameters;
-           Return[result];
-          ];
-
-InitializeInputParameter[{FlexibleSUSY`Phase[phase_], _}] :=
-    ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> "(1.,.0)";
-
-InitializeInputParameter[{Sign[phase_], _}] :=
-    ToValidCSymbolString[Sign[phase]] <> "(1)";
-
-InitializeInputParameter[{parameter_, type_}] :=
-    CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[parameter],type];
-
-InitializeInputParameter[pars__] :=
-    Module[{},
-           Print["Error: Default values for parameters must be given in the",
-                 " form {parameter, value} where value is a number."];
-           Return[""];
-          ];
-
-InitializeInputParameters[defaultValues_List] :=
-    Module[{result = "", i},
-           For[i = 1, i <= Length[defaultValues], i++,
-               If[i == 1,
-                  result = ": ";,
-                  result = result <> ", ";
-                 ];
-               result = result <> InitializeInputParameter[defaultValues[[i]]];
-              ];
-           Return[result];
-          ];
+    StringJoin[DefineAndDefaultInitialize /@ inputParameters];
 
 InitialGuessAtLowScaleGaugeCouplings[] :=
     Module[{result = ""},
