@@ -415,11 +415,9 @@ int Standard_model::solve_ewsb_iteratively(int loop_order)
 {
    // temporarily set `ewsb_loop_order' to `loop_order' and do
    // iteration
-   const int old_loop_order = ewsb_loop_order;
+   const auto save_loop_order_raii = make_raii_save(ewsb_loop_order);
    ewsb_loop_order = loop_order;
-   const int status = solve_ewsb_iteratively();
-   ewsb_loop_order = old_loop_order;
-   return status;
+   return solve_ewsb_iteratively();
 }
 
 
