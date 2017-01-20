@@ -242,7 +242,7 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
 
    std::complex<double> deltaRhoHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
-@deltaRhoHat2LoopSM@   }
+@DeltaRhoHat2LoopSM@   }
 
    const double deltaRhoHat2LoopSMreal = std::real(deltaRhoHat2LoopSM);
 
@@ -278,7 +278,7 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, do
 
    std::complex<double> deltaRHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
-@deltaRHat2LoopSM@   }
+@DeltaRHat2LoopSM@   }
 
    const double deltaRHat2LoopSMreal = std::real(deltaRHat2LoopSM);
 

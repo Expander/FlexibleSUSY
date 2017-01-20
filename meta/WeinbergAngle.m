@@ -5,8 +5,8 @@ GetBottomMass::usage="";
 GetTopMass::usage="";
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
-deltaRhoHat2LoopSM::usage="";
-deltaRHat2LoopSM::usage="";
+DeltaRhoHat2LoopSM::usage="";
+DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
 
 Begin["`Private`"];
@@ -127,7 +127,7 @@ HiggsContributions2LoopSM[massMatrices_List] :=
           ];
 
 (*formula according to (C.6) from hep-ph/9606211*)
-deltaRhoHat2LoopSM[massMatrices_List]:=
+DeltaRhoHat2LoopSM[massMatrices_List]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
@@ -138,7 +138,7 @@ deltaRhoHat2LoopSM[massMatrices_List]:=
           ];
 
 (*formula according to (C.5) from hep-ph/9606211*)
-deltaRHat2LoopSM[massMatrices_List]:=
+DeltaRHat2LoopSM[massMatrices_List]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
