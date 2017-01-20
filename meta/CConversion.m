@@ -77,6 +77,7 @@ CreateZero::usage="creates a zero matrix for a given parameter
 type";
 
 CreateGetterPrototype::usage="creates C/C++ getter prototype";
+CreateSetterPrototype::usage="creates C/C++ setter prototype";
 
 CreateInlineSetter::usage="creates C/C++ inline setter"
 CreateInlineElementSetter::usage="creates C/C++ inline setter for a
@@ -91,6 +92,7 @@ CreateInlineGetters::usage="creates a C/C++ inline getter, and, if
 given a vector or matrix, a C/C++ inline getter for a single element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
+CreateSetterInputType::usage="creates C/C++ setter input type";
 
 CreateDefaultValue::usage="creates a default value for a given
 parameter type";
@@ -350,6 +352,12 @@ CreateGetterPrototype[parameter_String, type_String] :=
 
 CreateGetterPrototype[parameter_, type_] :=
     CreateGetterPrototype[parameter, CreateGetterReturnType[type]];
+
+CreateSetterPrototype[parameter_String, type_String] :=
+    "void set_" <> parameter <> "(" <> type <> " " <> parameter <> "_);\n"
+
+CreateSetterPrototype[parameter_, type_] :=
+    CreateSetterPrototype[parameter, CreateSetterInputType[type]];
 
 (* create default value for given parameter *)
 CreateDefaultValue[type_] :=
