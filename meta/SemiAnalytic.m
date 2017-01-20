@@ -524,7 +524,7 @@ CreateCoefficientParameters[solution_SemiAnalyticSolution] :=
     {#, Parameters`GetType[GetName[solution]]}& /@ CreateCoefficients[solution];
 
 CreateCoefficientParameters[solutions_List] :=
-    Join[CreateCoefficientParameters /@ solutions];
+    Join[Sequence @@ (CreateCoefficientParameters /@ solutions)];
 
 CreateCoefficientNames[solution_SemiAnalyticSolution] :=
     CConversion`ToValidCSymbolString /@ CreateCoefficients[solution];
