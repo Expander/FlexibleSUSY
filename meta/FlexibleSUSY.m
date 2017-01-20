@@ -2179,6 +2179,24 @@ PrepareUnrotatedParticles[eigenstates_] :=
            TreeMasses`SetUnrotatedParticles[nonMixedParticles];
           ];
 
+PrepareEWSBEquations[indexReplacementRules_] :=
+    Module[{ewsbEquations},
+           ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
+                           Parameters`ApplyGUTNormalization[] /.
+                           indexReplacementRules /.
+                           SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx,start,stop}];
+           If[Head[ewsbEquations] =!= List,
+              Print["Error: Could not find EWSB equations for eigenstates ",
+                    FSEigenstates];
+              Quit[1];
+             ];
+           (* filter out trivial EWSB eqs. *)
+           ewsbEquations = Select[ewsbEquations, (#=!=0)&];
+           ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
+           (* add tadpoles to the EWSB eqs. *)
+           MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations]
+          ];
+
 ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
                        mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
     Module[{particles, particle, i, precisionList = {}, higgs},
@@ -2681,15 +2699,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          numberOfSusyParameters];
 
            (********************* EWSB *********************)
-           ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
-                           Parameters`ApplyGUTNormalization[] /.
-                           allIndexReplacementRules /.
-                           SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx,start,stop}];
-           If[Head[ewsbEquations] =!= List,
-              Print["Error: Could not find EWSB equations for eigenstates ",
-                    FSEigenstates];
-              Quit[1];
-             ];
+           ewsbEquations = PrepareEWSBEquations[allIndexReplacementRules];
 
            If[FlexibleSUSY`EWSBInitialGuess =!= {},
               FlexibleSUSY`EWSBInitialGuess = EWSB`GetValidEWSBInitialGuesses[FlexibleSUSY`EWSBInitialGuess];
@@ -2699,17 +2709,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`EWSBSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
              ];
 
-           (* filter out trivial EWSB eqs. *)
-           ewsbEquations = Select[ewsbEquations, (#=!=0)&];
-
            If[ewsbEquations =!= {},
-              ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
               FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
               If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
                  FlexibleSUSY`EWSBSubstitutions = FlexibleSUSY`EWSBSubstitutions /. allIndexReplacementRules;
                 ];
-              (* adding tadpoles to the EWSB eqs. *)
-              ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
               treeLevelEwsbSolutionOutputFile = FileNameJoin[{FSOutputDir,
                                                               FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
               treeLevelEwsbEqsOutputFile      = FileNameJoin[{FSOutputDir,
