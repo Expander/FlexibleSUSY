@@ -23,6 +23,8 @@ IsSemiAnalyticParameter::usage="";
 
 GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
+ExpandSemiAnalyticSolutions::usage="Expands the given solutions
+in terms of the coefficients.";
 CreateBoundaryValueParameters::usage="Creates new parameters
 representing the boundary values.";
 CreateCoefficientParameters::usage="Creates new parameters
@@ -766,6 +768,17 @@ CalculateCoefficients[datasets_List] :=
               ];
            Return[result];
           ];
+
+ExpandSemiAnalyticSolution[solution_SemiAnalyticSolution] :=
+    Module[{par, basis, coeffs},
+           par = GetName[solution];
+           basis = GetBasis[solution];
+           coeffs = CreateCoefficients[solution];
+           {par, Dot[coeffs, basis]}
+          ];
+
+ExpandSemiAnalyticSolutions[solutions_List] :=
+    ExpandSemiAnalyticSolution /@ solutions;
 
 EvaluateSemiAnalyticSolution[solution_] :=
     Module[{parameter, basisRules, coeffs},

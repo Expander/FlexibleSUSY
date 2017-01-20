@@ -2325,7 +2325,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
             semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleGuess,
-            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum},
+            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum, semiAnalyticSolnsOutputFile},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -3076,6 +3076,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
               Parameters`AddExtraParameters[SemiAnalytic`CreateBoundaryValueParameters[semiAnalyticSolns]];
               Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
+              semiAnalyticSolnsOutputFile = FileNameJoin[{FSOutputDir,
+                                                          FlexibleSUSY`FSModelName <> "_semi_analytic_solutions.m"}];
+              Print["Writing semi-analytic solutiosn to ", semiAnalyticSolnsOutputFile];
+              Put[SemiAnalytic`ExpandSemiAnalyticSolutions[semiAnalyticSolns], semiAnalyticSolnsOutputFile];
 
               (* construct additional semi-analytic constraint from user-defined constraints *)
               Which[SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`HighScaleInput],
