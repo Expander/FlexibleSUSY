@@ -35,8 +35,10 @@ CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
 CreateLocalBoundaryValuesDefinitions::usage="";
 CreateBoundaryValuesInitialization::usage="";
-SetBoundaryValueParameters::usage="";
+SetModelBoundaryValueParameters::usage="";
 CreateSemiAnalyticCoefficientGetters::usage="";
+CreateBoundaryValueGetters::usage="";
+CreateBoundaryValueSetters::usage="";
 ConstructTrialDatasets::usage="Returns a list of datasets of the form
 {integer id, {pars}, {input values}}";
 InitializeTrialInputValues::usage="";
@@ -566,6 +568,34 @@ CreateSemiAnalyticCoefficientGetters[solutions_List] :=
            Return[getter];
           ];
 
+CreateBoundaryValueGetters[solutions_List] :=
+    Module[{boundaryValues, getters = ""},
+           boundaryValues = CreateBoundaryValueParameters[solutions];
+           (getters = getters <> CConversion`CreateInlineGetters[CreateBoundaryValueParameterName[#[[1]]], #[[2]]])& /@ boundaryValues;
+           Return[getters];
+          ];
+
+CreateBoundaryValueSetters[solutions_List] :=
+    Module[{boundaryValues, setters = ""},
+           boundaryValues = CreateBoundaryValueParameters[solutions];
+           (setters = setters <> CConversion`CreateInlineSetters[CreateBoundaryValueParameterName[#[[1]]], #[[2]]])& /@ boundaryValues;
+           Return[setters];
+          ];
+
+SetBoundaryValueParameter[parameter_String, struct_String] :=
+    Module[{def = "", body = "", setter = ""},
+           def = "void set_" <> parameter <> "(" <> parameter <> "_) ";
+           body = "{ " <> struct <> "set_" <> parameter <> "(" <> parameter <> "_); }\n";
+           def <> body
+          ];
+
+SetModelBoundaryValueParameters[solutions_List, struct_String:"semi_analytic_solutions->"] :=
+    Module[{boundaryValues, setters = ""},
+           boundaryValues = CreateBoundaryValueParameterName /@ GetBoundaryValueParameters[solutions];
+           (setters = setters <> SetBoundaryValueParameter[#, struct])& /@ boundaryValues;
+           Return[setters];
+          ];
+
 CreateBoundaryValuesDefinitions[solutions_List, createParameters_:CreateBoundaryValueParameters] :=
     Module[{boundaryValues, defns},
            boundaryValues = createParameters[solutions];
@@ -584,20 +614,6 @@ CreateBoundaryValuesInitialization[solutions_List] :=
            boundaryValues = CreateBoundaryValueParameters[solutions];
            (def = def <> "," <> CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
            Return[def];
-          ];
-
-CreateBoundaryValueSetter[parameter_] :=
-    Module[{basisParStr, type},
-           basisParStr = CreateBoundaryValueParameterName[parameter];
-           type = Parameters`GetType[parameter];
-           CConversion`CreateInlineSetter[basisParStr, type]
-          ];
-
-SetBoundaryValueParameters[solutions_List] :=
-    Module[{boundaryValues, result = ""},
-           boundaryValues = GetBoundaryValueParameters[solutions];
-           (result = result <> CreateBoundaryValueSetter[#])& /@ boundaryValues;
-           Return[result];
           ];
 
 ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=

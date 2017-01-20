@@ -1455,14 +1455,18 @@ WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
 WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
-    Module[{semiAnalyticSolutionsDefs = "", boundaryValueStructDefs = "",
-            coefficientGetters = "", createBasisEvaluators = "", applyBoundaryConditions = "",
+    Module[{semiAnalyticSolutionsDefs = "", boundaryValueStructDefs = "", boundaryValuesDefs = "",
+            boundaryValueGetters = "", boundaryValueSetters = "", coefficientGetters = "",
+            createBasisEvaluators = "", applyBoundaryConditions = "",
             datasets, numberOfTrialPoints, initializeTrialBoundaryValues = "",
             createLinearSystemSolvers = "", calculateCoefficients = "",
             calculateCoefficientsPrototypes = "", calculateCoefficientsFunctions = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            boundaryValueStructDefs = SemiAnalytic`CreateLocalBoundaryValuesDefinitions[semiAnalyticSolns];
+           boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
            coefficientGetters = SemiAnalytic`CreateSemiAnalyticCoefficientGetters[semiAnalyticSolns];
+           boundaryValueGetters = SemiAnalytic`CreateBoundaryValueGetters[semiAnalyticSolns];
+           boundaryValueSetters = SemiAnalytic`CreateBoundaryValueSetters[semiAnalyticSolns];
            createBasisEvaluators = SemiAnalytic`CreateBasisEvaluators[semiAnalyticSolns];
            datasets = SemiAnalytic`ConstructTrialDatasets[semiAnalyticSolns];
            createLinearSystemSolvers = SemiAnalytic`CreateLinearSystemSolvers[datasets, semiAnalyticSolns];
@@ -1471,7 +1475,10 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
            calculateCoefficients = SemiAnalytic`CalculateCoefficients[datasets];
            {calculateCoefficientsPrototypes, calculateCoefficientsFunctions} = SemiAnalytic`CreateCoefficientsCalculations[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
+                                            "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
                                             "@boundaryValueStructDefs@" -> IndentText[IndentText[WrapLines[boundaryValueStructDefs]]],
+                                            "@boundaryValueGetters@" -> IndentText[WrapLines[boundaryValueGetters]],
+                                            "@boundaryValueSetters@" -> IndentText[WrapLines[boundaryValueSetters]],
                                             "@coefficientGetters@" -> IndentText[WrapLines[coefficientGetters]],
                                             "@numberOfTrialPoints@" -> ToString[numberOfTrialPoints],
                                             "@initializeTrialBoundaryValues@" -> IndentText[WrapLines[initializeTrialBoundaryValues]],
@@ -1492,7 +1499,7 @@ WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_
            boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
            applySemiAnalyticBCs = SemiAnalytic`ApplySemiAnalyticBoundaryConditions[semiAnalyticBCs, semiAnalyticSolns];
            calculateParameterValues = SemiAnalytic`EvaluateSemiAnalyticSolutions[semiAnalyticSolns];
-           setBoundaryValueParameters = SemiAnalytic`SetBoundaryValueParameters[semiAnalyticSolns];
+           setBoundaryValueParameters = SemiAnalytic`SetModelBoundaryValueParameters[semiAnalyticSolns];
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
                                             "@calculateParameterValues@" -> IndentText[WrapLines[calculateParameterValues]],

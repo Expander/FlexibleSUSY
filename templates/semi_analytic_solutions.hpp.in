@@ -60,8 +60,11 @@ public:
    void set_input_scale(double s) { input_scale = s; }
    void set_output_scale(double s) { output_scale = s; }
 
+@boundaryValueGetters@
+@boundaryValueSetters@
 @coefficientGetters@
    void calculate_coefficients(const @ModelName@_soft_parameters&);
+   void set_semi_analytic_solutions(@ModelName@_soft_parameters&);
 
 private:
    struct Boundary_values {
@@ -82,6 +85,8 @@ private:
 
    // semi-analytic solution coefficients
 @semiAnalyticSolutionsDefs@
+   // boundary values to use when setting model parameters
+@boundaryValuesDefs@
 
    void initialize_trial_values();
    void calculate_trial_data(const @ModelName@_soft_parameters&);
