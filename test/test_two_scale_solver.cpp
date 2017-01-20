@@ -116,17 +116,17 @@ private:
 
 class Counting_convergence_tester : public Convergence_tester<Two_scale> {
 public:
-   Counting_convergence_tester(int int max_iterations_)
+   Counting_convergence_tester(int max_iterations_)
       : iteration(0), maximum_iterations(max_iterations_) {}
    virtual ~Counting_convergence_tester() {}
    virtual bool accuracy_goal_reached() {
       return false;
    }
-   virtual int int max_iterations() const {
+   virtual int max_iterations() const {
       return maximum_iterations;
    }
 private:
-   int int iteration, maximum_iterations;
+   int iteration, maximum_iterations;
 };
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
