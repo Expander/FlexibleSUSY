@@ -2211,18 +2211,6 @@ SolveEWSBEquations[ewsbEquations_, ewsbOutputParameters_, ewsbSubstitutions_, tr
                                                                           ewsbOutputParameters,
                                                                           treeLevelEwsbSolutionOutputFile,
                                                                           ewsbSubstitutions];
-              If[ewsbSolution === {},
-                 Print["Warning: could not find an analytic solution to the EWSB eqs."];
-                 Print["   An iterative algorithm will be used.  You can try to set"];
-                 Print["   the solution by hand in the model file like this:"];
-                 Print[""];
-                 Print["   TreeLevelEWSBSolution = {"];
-                 For[i = 1, i <= Length[ewsbOutputParameters], i++,
-                 Print["      { ", ewsbOutputParameters[[i]], ", ... }" <>
-                       If[i != Length[ewsbOutputParameters], ",", ""]];
-                      ];
-                 Print["   };\n"];
-                ];
               Print["   The EWSB solution was written to the file:"];
               Print["      ", treeLevelEwsbSolutionOutputFile];
              ,
@@ -2794,18 +2782,30 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Parameters`AddInputParameters[inputParameters];
              ];
 
-           (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
-           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIRelative],
-              Print["Warning: FPIRelative was selected, but no analytic"];
-              Print["   solution to the EWSB eqs. is provided."];
-              Print["   FPIRelative will be removed from the list of EWSB solvers."];
-              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIRelative]];
-             ];
-           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIAbsolute],
-              Print["Warning: FPIAbsolute was selected, but no analytic"];
-              Print["   solution to the EWSB eqs. is provided."];
-              Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
-              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
+           If[ewsbSolution === {},
+              Print["Warning: could not find an analytic solution to the EWSB eqs."];
+              Print["   An iterative algorithm will be used.  You can try to set"];
+              Print["   the solution by hand in the model file like this:"];
+              Print[""];
+              Print["   TreeLevelEWSBSolution = {"];
+              For[i = 1, i <= Length[FlexibleSUSY`EWSBOutputParameters], i++,
+              Print["      { ", FlexibleSUSY`EWSBOutputParameters[[i]], ", ... }" <>
+                    If[i != Length[FlexibleSUSY`EWSBOutputParameters], ",", ""]];
+                   ];
+              Print["   };\n"];
+              (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
+              If[MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIRelative],
+                 Print["Warning: FPIRelative was selected, but no analytic"];
+                 Print["   solution to the EWSB eqs. is provided."];
+                 Print["   FPIRelative will be removed from the list of EWSB solvers."];
+                 FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIRelative]];
+                ];
+              If[MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIAbsolute],
+                 Print["Warning: FPIAbsolute was selected, but no analytic"];
+                 Print["   solution to the EWSB eqs. is provided."];
+                 Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
+                 FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
+                ];
              ];
 
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
