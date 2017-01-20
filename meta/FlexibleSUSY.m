@@ -2711,6 +2711,27 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
                lesHouchesInputParameterReplacementRules;
 
+           If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
+              SemiAnalytic`SetSemiAnalyticParameters[BetaFunction`GetName[#]& /@ susyBreakingBetaFunctions];
+
+              (* @note currently require all semi-analytic parameters to be set at same scale *)
+              If[!SemiAnalytic`CheckSemiAnalyticBoundaryConditions[{FlexibleSUSY`LowScaleInput,
+                                                                    FlexibleSUSY`SUSYScaleInput,
+                                                                    FlexibleSUSY`HighScaleInput}],
+                 Print["Error: the requested boundary conditions are not"];
+                 Print["   supported by the semi-analytic solver."];
+                 Print["   Please modify the boundary conditions or disable"];
+                 Print["   the semi-analytic solver."];
+                 Quit[1];
+                ];
+
+              semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
+                                                                           FlexibleSUSY`SUSYScaleInput,
+                                                                           FlexibleSUSY`HighScaleInput}];
+
+              semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
+             ];
+
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
@@ -3074,26 +3095,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
               PrintHeadline["Creating semi-analytic solver"];
 
-              SemiAnalytic`SetSemiAnalyticParameters[BetaFunction`GetName[#]& /@ susyBreakingBetaFunctions];
-
-              (* @note currently require all semi-analytic parameters to be set at same scale *)
-              If[!SemiAnalytic`CheckSemiAnalyticBoundaryConditions[{FlexibleSUSY`LowScaleInput,
-                                                                    FlexibleSUSY`SUSYScaleInput,
-                                                                    FlexibleSUSY`HighScaleInput}],
-                 Print["Error: the requested boundary conditions are not"];
-                 Print["   supported by the semi-analytic solver."];
-                 Print["   Please modify the boundary conditions or disable"];
-                 Print["   the semi-analytic solver."];
-                 Quit[1];
-                ];
-
-              semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
-                                                                           FlexibleSUSY`SUSYScaleInput,
-                                                                           FlexibleSUSY`HighScaleInput}];
-
-              semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
               Parameters`AddExtraParameters[SemiAnalytic`CreateBoundaryValueParameters[semiAnalyticSolns]];
               Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
+
               semiAnalyticSolnsOutputFile = FileNameJoin[{FSOutputDir,
                                                           FlexibleSUSY`FSModelName <> "_semi_analytic_solutions.m"}];
               Print["Writing semi-analytic solutions to ", semiAnalyticSolnsOutputFile];
