@@ -403,7 +403,7 @@ void @ModelName@_data::put_input_parameters(MLINK link) const
 /******************************************************************/
 
 template <typename P>
-unsigned number_of_problems(const P& problems)
+int number_of_problems(const P& problems)
 {
    return problems.have_tachyon()
       + problems.no_ewsb()
@@ -417,7 +417,7 @@ unsigned number_of_problems(const P& problems)
 /******************************************************************/
 
 template <typename P>
-unsigned number_of_warnings(const P& problems)
+int number_of_warnings(const P& problems)
 {
    return problems.have_bad_mass();
 }

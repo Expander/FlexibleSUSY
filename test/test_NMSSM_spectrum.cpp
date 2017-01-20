@@ -58,7 +58,7 @@ public:
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
-   void set_loops(unsigned l) { loops = l; }
+   void set_loops(int l) { loops = l; }
    void test(const NMSSM_input_parameters& pp, double mxGuess, const QedQcd& qedqcd = QedQcd()) {
       // run softsusy
       softsusy::numRewsbLoops = loops;
@@ -103,7 +103,7 @@ private:
    double mx, msusy;
    NmssmSoftsusy softSusy;
    bool gaugeUnification;
-   unsigned loops;
+   int loops;
 };
 
 class NMSSM_tester {
@@ -121,7 +121,7 @@ public:
    double get_msusy() const { return msusy; }
    NMSSM_physical get_physical() const { return mssm.get_physical(); }
    NMSSM<Two_scale> get_model() const { return mssm; }
-   void set_loops(unsigned l) { loops = l; }
+   void set_loops(int l) { loops = l; }
    void set_low_scale_constraint(NMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(NMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(NMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -184,7 +184,7 @@ private:
    NMSSM_high_scale_constraint<Two_scale>* high_constraint;
    NMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
    NMSSM_low_scale_constraint<Two_scale>*  low_constraint;
-   unsigned loops;
+   int loops;
 };
 
 BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )

@@ -277,8 +277,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_mass_enum )
    srand(1);
 
    {
-      unsigned n_particles = 0;
-      for (unsigned i = 0; i < CMSSM_info::NUMBER_OF_PARTICLES; i++)
+      int n_particles = 0;
+      for (int i = 0; i < CMSSM_info::NUMBER_OF_PARTICLES; i++)
          n_particles += CMSSM_info::particle_multiplicities[i];
 
       BOOST_CHECK_EQUAL(n_particles,

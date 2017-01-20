@@ -827,7 +827,7 @@ CreateParticleEnum[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CConversion`ToValidCSymbolString /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           "enum Particles : unsigned { " <> result <> "NUMBER_OF_PARTICLES };\n"
+           "enum Particles : int { " <> result <> "NUMBER_OF_PARTICLES };\n"
           ];
 
 DecomposeParticle[particle_] :=
@@ -846,7 +846,7 @@ CreateParticleMassEnum[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParticleMassEnum /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           "enum Masses : unsigned { " <> result <> "NUMBER_OF_MASSES };\n"
+           "enum Masses : int { " <> result <> "NUMBER_OF_MASSES };\n"
           ];
 
 CreateParticleMassEnum[p_] :=
@@ -867,7 +867,7 @@ CreateParticleMixingEnum[mixings_List] :=
            result = Utils`StringJoinWithSeparator[
                Parameters`CreateParameterEnums[#[[1]], #[[2]]]& /@ GetMixingMatricesAndTypesFrom[nonNullMixings], ", "];
            If[Length[nonNullMixings] > 0, result = result <> ", ";];
-           "enum Mixings : unsigned { " <> result <> "NUMBER_OF_MIXINGS };\n"
+           "enum Mixings : int { " <> result <> "NUMBER_OF_MIXINGS };\n"
           ];
 
 SARAHNameStr[p_] :=
@@ -883,7 +883,7 @@ CreateParticleNames[particles_List] :=
 CreateParticleMultiplicity[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[GetDimension /@ particles, ", "];
-           "const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
+           "const std::array<int, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
            result <> "};\n"
           ];
 

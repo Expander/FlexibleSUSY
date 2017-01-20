@@ -64,7 +64,7 @@ public:
       gaugeUnification = true;
       loops = 1;
    }
-   void set_loops(unsigned l) { loops = l; }
+   void set_loops(int l) { loops = l; }
    void test(const NUTNMSSM_input_parameters& pp, double mxGuess, const QedQcd& qedqcd) {
       // run softsusy
       softsusy::numRewsbLoops = loops;
@@ -124,7 +124,7 @@ private:
    double mx, msusy;
    NmssmSoftsusy softSusy;
    bool gaugeUnification;
-   unsigned loops;
+   int loops;
 };
 
 class NUTNMSSM_tester {
@@ -151,7 +151,7 @@ public:
       low_constraint = NULL;
       loops = 1;
    }
-   void set_loops(unsigned l) { loops = l; }
+   void set_loops(int l) { loops = l; }
    void set_low_scale_constraint(NUTNMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(NUTNMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(NUTNMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -225,7 +225,7 @@ private:
    NUTNMSSM_high_scale_constraint<Two_scale>* high_constraint;
    NUTNMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
    NUTNMSSM_low_scale_constraint<Two_scale>*  low_constraint;
-   unsigned loops;
+   int loops;
 };
 
 void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& qedqcd)

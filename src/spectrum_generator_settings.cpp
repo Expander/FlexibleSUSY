@@ -161,7 +161,7 @@ std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_settings& 
 {
    ostr << "(";
 
-   for (unsigned i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
+   for (int i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
       ostr << sgs.get(static_cast<Spectrum_generator_settings::Settings>(i));
       if (i < Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1)
          ostr << ", ";

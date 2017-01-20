@@ -919,7 +919,7 @@ CreateInputParameterEnum[inputParameters_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           "enum Input_parameters : unsigned { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
+           "enum Input_parameters : int { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
           ];
 
 CreateInputParameterNames[inputParameters_List] :=

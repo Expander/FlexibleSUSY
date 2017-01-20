@@ -48,15 +48,15 @@ public:
    Beta_function& operator=(Beta_function&&) = default;
 
    void set_scale(double s) { scale = s; }
-   void set_number_of_parameters(unsigned pars) { num_pars = pars; }
-   void set_loops(unsigned l) { loops = l; }
-   void set_thresholds(unsigned t) { thresholds = t; }
+   void set_number_of_parameters(int pars) { num_pars = pars; }
+   void set_loops(int l) { loops = l; }
+   void set_thresholds(int t) { thresholds = t; }
    void set_zero_threshold(double t) { zero_threshold = t; }
 
    double get_scale() const { return scale; }
-   unsigned get_number_of_parameters() const { return num_pars; }
-   unsigned get_loops() const { return loops; }
-   unsigned get_thresholds() const { return thresholds; }
+   int get_number_of_parameters() const { return num_pars; }
+   int get_loops() const { return loops; }
+   int get_thresholds() const { return thresholds; }
    double get_zero_threshold() const { return zero_threshold; }
 
    void reset();
@@ -73,9 +73,9 @@ protected:
    void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
 
 private:
-   unsigned num_pars;    ///< number of parameters
-   unsigned loops;       ///< to what loop order does the RG evolution run
-   unsigned thresholds;  ///< threshold correction loop order
+   int num_pars;         ///< number of parameters
+   int loops;            ///< to what loop order does the RG evolution run
+   int thresholds;       ///< threshold correction loop order
    double scale;         ///< current renormalization scale
    double tolerance;     ///< running tolerance
    double min_tolerance; ///< minimum tolerance allowed

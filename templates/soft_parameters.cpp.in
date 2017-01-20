@@ -56,7 +56,7 @@ Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
    return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta(unsigned loops) const
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta(int loops) const
 {
 @beta@
 
@@ -101,7 +101,7 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& pars)
 @set@
 }
 
-@ModelName@_soft_parameters::Soft_traces @ModelName@_soft_parameters::calc_soft_traces(unsigned loops) const
+@ModelName@_soft_parameters::Soft_traces @ModelName@_soft_parameters::calc_soft_traces(int loops) const
 {
    Soft_traces soft_traces;
 

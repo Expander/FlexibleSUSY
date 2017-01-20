@@ -155,8 +155,8 @@ void check_goldstone_masses(const CMSSMCPV_input_parameters& input)
 
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_goldstone_boson_masses )
 {
-   for (unsigned m = 0; m < 10; m++) {
-      for (unsigned e = 0; e < 10; e++) {
+   for (int m = 0; m < 10; m++) {
+      for (int e = 0; e < 10; e++) {
          CMSSMCPV_input_parameters input;
          input.TanBeta = 10.;
          input.m0 = 125.;

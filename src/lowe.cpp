@@ -111,7 +111,7 @@ Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
 QedQcd::QedQcd()
   : a(2)
   , mf(9)
-  , input(static_cast<unsigned>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
+  , input(static_cast<int>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
   , mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
   , ckm()
   , pmns()
@@ -365,8 +365,8 @@ void QedQcd::toMz()
  * @param precision_goal precision goal
  * @param max_iterations maximum number of iterations
  */
-void QedQcd::to(double scale, double precision_goal, unsigned max_iterations) {
-   unsigned it = 0;
+void QedQcd::to(double scale, double precision_goal, int max_iterations) {
+   int it = 0;
    bool converged = false;
    auto qedqcd_old(get()), qedqcd_new(get());
    const double running_precision = 0.1 * precision_goal;

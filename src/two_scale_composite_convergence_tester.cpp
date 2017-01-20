@@ -61,7 +61,7 @@ bool Composite_convergence_tester<Two_scale>::accuracy_goal_reached()
    return precision_reached;
 }
 
-unsigned int Composite_convergence_tester<Two_scale>::max_iterations() const
+int Composite_convergence_tester<Two_scale>::max_iterations() const
 {
    if (testers.empty())
       return 0;

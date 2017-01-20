@@ -39,7 +39,7 @@ namespace flexiblesusy {
 class @ModelName@_susy_parameters : public Beta_function {
 public:
    explicit @ModelName@_susy_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   @ModelName@_susy_parameters(double scale_, unsigned loops_, unsigned thresholds_, const @ModelName@_input_parameters& input_@cCtorParameterList@);
+   @ModelName@_susy_parameters(double scale_, int loops_, int thresholds_, const @ModelName@_input_parameters& input_@cCtorParameterList@);
    @ModelName@_susy_parameters(const @ModelName@_susy_parameters&) = default;
    @ModelName@_susy_parameters(@ModelName@_susy_parameters&&) = default;
    virtual ~@ModelName@_susy_parameters() {}
@@ -55,7 +55,7 @@ public:
    void set_input_parameters(const @ModelName@_input_parameters&);
 
    @ModelName@_susy_parameters calc_beta() const;
-   @ModelName@_susy_parameters calc_beta(unsigned) const;
+   @ModelName@_susy_parameters calc_beta(int) const;
    virtual void clear();
 
 @setter@
@@ -72,7 +72,7 @@ private:
    struct Susy_traces {
 @traceDefs@
    };
-   Susy_traces calc_susy_traces(unsigned) const;
+   Susy_traces calc_susy_traces(int) const;
 
 @singleBetaFunctionsDecls@
 };

@@ -8,7 +8,7 @@
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE(test_SUM_unsigned)
+BOOST_AUTO_TEST_CASE(test_SUM_int)
 {
    BOOST_CHECK_EQUAL(SUM(i,1,0,1), 0);
    BOOST_CHECK_EQUAL(SUM(i,1,1,1), 1);

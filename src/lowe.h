@@ -43,7 +43,7 @@ enum mass {mUp=1, mCharm, mTop, mDown, mStrange, mBottom, mElectron,
 /// order of gauge couplings stored in QedQcd
 enum leGauge {ALPHA=1, ALPHAS};
 
-enum QedQcd_input_parmeters : unsigned {
+enum QedQcd_input_parmeters : int {
    alpha_em_MSbar_at_MZ,
    alpha_s_MSbar_at_MZ,
    GFermi,
@@ -190,7 +190,7 @@ public:
   /// Evolves object to MZ
   void toMz();
   /// Evolves object to given scale.  This implementation can be called multiple times
-  void to(double, double tol = 1e-5, unsigned max_iterations = 20);
+  void to(double, double tol = 1e-5, int max_iterations = 20);
   /// This will calculate the three gauge couplings of the Standard Model at
   /// the scale m2.
   /// It's a simple one-loop calculation only and no

@@ -43,17 +43,17 @@ public:
 
    virtual bool accuracy_goal_reached() override;
    virtual double get_accuracy_goal() const { return accuracy_goal; }
-   virtual unsigned int max_iterations() const override { return max_it; }
+   virtual int max_iterations() const override { return max_it; }
    double get_current_accuracy() const { return current_accuracy; }
    /// set maximum number of iterations
-   void set_max_iterations(unsigned it) { max_it = it; }
+   void set_max_iterations(int it) { max_it = it; }
    /// set scale getter
    template <typename F>
    void set_scale_getter(F&& sg) { scale_getter = std::forward<F>(sg); }
 
 protected:
    /// get current iteration number
-   unsigned get_iteration() const { return it_count; }
+   int get_iteration() const { return it_count; }
    /// get model at current iteration
    const Model<Two_scale>& get_current_iteration_model() const { return current_model; }
    /// get model state during last iteration
@@ -66,8 +66,8 @@ private:
    Model<Two_scale> current_model{};        ///< model state at current iteration
    Model<Two_scale> last_iteration_model{}; ///< model state at last iteration
    Scale_getter scale_getter{};             ///< function to retrieve scale
-   unsigned int it_count{0};                ///< iteration
-   unsigned int max_it{40};                 ///< maximum number of iterations
+   int it_count{0};                         ///< iteration
+   int max_it{40};                          ///< maximum number of iterations
    double accuracy_goal{1e-4};              ///< accuracy goal
    double current_accuracy{std::numeric_limits<double>::infinity()}; ///< current accuracy
 

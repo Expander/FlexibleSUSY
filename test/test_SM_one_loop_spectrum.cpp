@@ -109,8 +109,8 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
    Eigen::Matrix<std::complex<double>,3,3> se_t_no_gluon;
 
    // top self-energies with and without gluon
-   for (unsigned i = 0; i < 3; i++) {
-      for (unsigned k = 0; k < 3; k++) {
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
          se_t(i,k) = m.self_energy_Fu_1(p,i,k);
          se_t_no_gluon(i,k) = m.self_energy_Fu_1_heavy_rotated(p,i,k);
       }
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
    // adding gluon contrbution
    Eigen::Matrix<std::complex<double>,3,3> se_t_check(se_t_no_gluon);
 
-   for (unsigned i = 0; i < 3; i++) {
+   for (int i = 0; i < 3; i++) {
       const double gluon_contrib =
          -5.333333333333333 *
          (-0.5 + ReB0(Sqr(p),Sqr(MFu(i)),0,Sqr(scale)))
@@ -133,8 +133,8 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
 
    se_t_check = Vu.transpose() * se_t_check * Uu;
 
-   for (unsigned i = 0; i < 3; i++) {
-      for (unsigned k = 0; k < 3; k++) {
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
          BOOST_CHECK_CLOSE(Re(se_t(i,k)), Re(se_t_check(i,k)), 1.0e-10);
          BOOST_CHECK_CLOSE(Im(se_t(i,k)), Im(se_t_check(i,k)), 1.0e-10);
       }

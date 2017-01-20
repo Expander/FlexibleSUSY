@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
 
    BOOST_TEST_MESSAGE("mt_drbar(guess) = " << m.get_MFu(2));
 
-   unsigned iterations = 100;
+   int iterations = 100;
 
    // calculate top DR-bar mass from top pole mass using two-loop
    // corrections

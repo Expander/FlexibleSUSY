@@ -49,7 +49,7 @@ void append(std::vector<std::string>& a, const Iterable& b)
 
 void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)
 {
-   const unsigned a_rows = a.rows();
+   const auto a_rows = a.rows();
    a.conservativeResize(a_rows + b.rows());
    a.block(a_rows, 0, b.rows(), 1) = b;
 }
@@ -272,7 +272,7 @@ Eigen::ArrayXd extract_entry(const std::string& file_name, std::size_t entry)
       return model;
    }
 
-   unsigned offset = 0;
+   int offset = 0;
 
    // restore settings
    model.set_loops(values(offset++));

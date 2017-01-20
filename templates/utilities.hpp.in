@@ -55,12 +55,12 @@ public:
    std::vector<std::string> get_mass_names() const {
       using namespace @ModelName@_info;
       std::vector<std::string> masses;
-      for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
-         for (unsigned m = 0; m < particle_multiplicities[i]; m++) {
+      for (int i = 0; i < NUMBER_OF_PARTICLES; i++) {
+         for (int m = 0; m < particle_multiplicities[i]; m++) {
             masses.push_back(
                std::string("M") + particle_names[i] +
                (particle_multiplicities[i] == 1 ? "" : "("
-                + std::to_string(static_cast<unsigned long long>(m)) + ")"));
+                + std::to_string(static_cast<long long>(m)) + ")"));
          }
       }
       return masses;
@@ -96,7 +96,7 @@ private:
    using TSpectrum = std::vector<TParticle>;
    TSpectrum spectrum{};
    double scale{0.};
-   unsigned width{16};
+   int width{16};
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
    static std::valarray<double> to_valarray(double);

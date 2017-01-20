@@ -59,7 +59,7 @@ public:
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
       if (a.size() != b.size()) throw SetupError("Error: vectors have different size.");
 
-      const std::size_t dimension = a.size();
+      const auto dimension = a.size();
       double residual = 0.;
 
       if (precision < 0.)
@@ -97,7 +97,7 @@ public:
    int operator()(const GSL_vector& a, const GSL_vector& b) const {
       if (a.size() != b.size()) throw SetupError("Error: vectors have different size.");
 
-      const std::size_t dimension = a.size();
+      const auto dimension = a.size();
       double rel_diff = 0.;
 
       if (precision < 0.)
