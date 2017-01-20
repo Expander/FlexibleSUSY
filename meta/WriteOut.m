@@ -6,6 +6,7 @@ BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
+PrintExtraParameters::usage="Creates extra parameter printout statements";
 WriteSLHAExtparBlock::usage="";
 WriteSLHAImExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
@@ -120,6 +121,22 @@ PrintInputParameter[{parameter_, type_}, streamName_String] :=
 PrintInputParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
+           Return[result];
+          ];
+
+PrintExtraParameter[{parameter_, type_}, streamName_String, macro_String:"EXTRAPARAMETER"] :=
+    Module[{parameterName, parameterNameWithoutIndices, expr},
+           parameterNameWithoutIndices = parameter /.
+                                         a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
+           parameterName = CConversion`ToValidCSymbolString[parameterNameWithoutIndices];
+           expr = TransposeIfVector[parameterNameWithoutIndices, type];
+           Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
+                  macro <> "(" <> CConversion`RValueToCFormString[expr] <> ") << '\\n';\n"];
+          ];
+
+PrintExtraParameters[parameters_List, streamName_String, macro_String:"EXTRAPARAMETER"] :=
+    Module[{result = ""},
+           (result = result <> PrintExtraParameter[#,streamName,macro])& /@ parameters;
            Return[result];
           ];
 
