@@ -3096,7 +3096,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
               semiAnalyticSolnsOutputFile = FileNameJoin[{FSOutputDir,
                                                           FlexibleSUSY`FSModelName <> "_semi_analytic_solutions.m"}];
-              Print["Writing semi-analytic solutiosn to ", semiAnalyticSolnsOutputFile];
+              Print["Writing semi-analytic solutions to ", semiAnalyticSolnsOutputFile];
               Put[SemiAnalytic`ExpandSemiAnalyticSolutions[semiAnalyticSolns], semiAnalyticSolnsOutputFile];
 
               (* construct additional semi-analytic constraint from user-defined constraints *)
