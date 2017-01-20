@@ -84,10 +84,6 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    , physical()
    , problems(@ModelName@_info::particle_names, @ModelName@_info::parameter_names)
    , two_loop_corrections()
-@physicalMassesInit@
-@mixingMatricesInit@
-@phasesInit@
-@extraParametersInit@
 {
 }
 

@@ -883,15 +883,9 @@ GetSLHASoftSquaredMassType[c_] :=
     CConversion`ToRealType[Parameters`GetType[c]];
 
 CreateSLHAYukawaDefinition[] :=
-    Module[{result = "", yuks},
-           yuks = GetYukawas[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHAYukawaType[#]] <>
-                        " " <> CreateSLHAYukawaName[#] <> ";\n";
-           ]& /@ yuks;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHAYukawaName[#], GetSLHAYukawaType[#]}
+    ]& /@ GetYukawas[]];
 
 CreateSLHAYukawaGetters[] :=
     Module[{result = "", yuks},
@@ -939,26 +933,14 @@ ConvertYukawaCouplingsToSLHA[] :=
 (* SLHA fermion mixing matrices *)
 
 CreateSLHAFermionMixingMatricesDef[] :=
-    Module[{result = "", yuks},
-           yuks = GetFermionMixingMatrices[];
-           Block[{},
-                 result = result <>
-                          CConversion`CreateCType[GetSLHAFermionMixingMatrixType[#]] <>
-                          " " <> CreateSLHAFermionMixingMatrixName[#] <> ";\n";
-           ]& /@ yuks;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHAFermionMixingMatrixName[#], GetSLHAFermionMixingMatrixType[#]}
+    ]& /@ GetFermionMixingMatrices[]];
 
 CreateSLHATrilinearCouplingDefinition[] :=
-    Module[{result = "", tril},
-           tril = GetTrilinearCouplings[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHATrilinearCouplingType[#]] <>
-                        " " <> CreateSLHATrilinearCouplingName[#] <> ";\n";
-           ]& /@ tril;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHATrilinearCouplingName[#], GetSLHATrilinearCouplingType[#]}
+    ]& /@ GetTrilinearCouplings[]];
 
 CreateSLHATrilinearCouplingGetters[] :=
     Module[{result = "", tril},
@@ -1017,15 +999,9 @@ CreateSLHAFermionMixingMatricesGetters[] :=
           ];
 
 CreateSLHASoftSquaredMassesDefinition[] :=
-    Module[{result = "", massSq},
-           massSq = GetSoftSquaredMasses[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHASoftSquaredMassType[#]] <>
-                        " " <> CreateSLHASoftSquaredMassName[#] <> ";\n";
-           ]& /@ massSq;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHASoftSquaredMassName[#], GetSLHASoftSquaredMassType[#]}
+    ]& /@ GetSoftSquaredMasses[]];
 
 CreateSLHASoftSquaredMassesGetters[] :=
     Module[{result = "", massSq},

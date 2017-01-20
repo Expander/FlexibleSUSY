@@ -1042,7 +1042,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             numberOfIndependentEWSBEquations,
             calculateTreeLevelTadpoles = "", divideTadpoleByVEV = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
-            physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
@@ -1053,7 +1052,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
-            phasesInit = "", extraParameterDefs = "", extraParametersInit = "",
+            extraParameterDefs = "",
             extraParameterSetters = "", extraParameterGetters = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
@@ -1103,9 +1102,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
-               physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
-               physicalMassesInitNoLeadingComma = StringTrim[physicalMassesInit, StartOfString ~~ ","];
-               mixingMatricesInit   = mixingMatricesInit <> TreeMasses`CreateMixingMatrixInitialization[massMatrices[[k]]];
                clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
@@ -1164,9 +1160,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
-           phasesInit                   = Phases`CreatePhasesInitialization[phases];
            If[Parameters`GetExtraParameters[] =!= {},
-              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinition[#]&
+              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
@@ -1174,10 +1169,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
-              extraParametersInit
-                  = ", " <> Utils`StringJoinWithSeparator[CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#],
-                                                                                               Parameters`GetType[#]]& /@
-                                                          Parameters`GetExtraParameters[], ", "];
               clearExtraParameters         = StringJoin[CConversion`SetToDefault[CConversion`ToValidCSymbolString[#],
                                                                                  Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
@@ -1277,9 +1268,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
-                            "@physicalMassesInit@"     -> IndentText[WrapLines[physicalMassesInit]],
-                            "@physicalMassesInitNoLeadingComma@" -> IndentText[WrapLines[physicalMassesInitNoLeadingComma]],
-                            "@mixingMatricesInit@"     -> IndentText[WrapLines[mixingMatricesInit]],
                             "@massCalculationPrototypes@" -> IndentText[massCalculationPrototypes],
                             "@massCalculationFunctions@"  -> WrapLines[massCalculationFunctions],
                             "@calculateAllMasses@"        -> IndentText[calculateAllMasses],
@@ -1297,11 +1285,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
                             "@phasesGetterSetters@"          -> IndentText[phasesGetterSetters],
-                            "@phasesInit@"                   -> IndentText[WrapLines[phasesInit]],
                             "@extraParameterDefs@"           -> IndentText[extraParameterDefs],
                             "@extraParameterGetters@"        -> IndentText[extraParameterGetters],
                             "@extraParameterSetters@"        -> IndentText[extraParameterSetters],
-                            "@extraParametersInit@"          -> IndentText[WrapLines[extraParametersInit]],
                             "@clearExtraParameters@"         -> IndentText[clearExtraParameters],
                             "@loopMassesPrototypes@"         -> IndentText[WrapLines[loopMassesPrototypes]],
                             "@loopMassesFunctions@"          -> WrapLines[loopMassesFunctions],

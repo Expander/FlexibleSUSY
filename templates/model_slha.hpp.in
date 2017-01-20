@@ -57,7 +57,7 @@ public:
    explicit @ModelName@_slha(const Model&, bool do_convert_masses_to_slha = true);
    @ModelName@_slha(const @ModelName@_slha&) = default;
    @ModelName@_slha(@ModelName@_slha&&) = default;
-   virtual ~@ModelName@_slha();
+   virtual ~@ModelName@_slha() {}
    @ModelName@_slha& operator=(const @ModelName@_slha&) = default;
    @ModelName@_slha& operator=(@ModelName@_slha&&) = default;
 
@@ -81,10 +81,10 @@ public:
 @slhaFerimonMixingMatricesGetters@
 
 private:
-   @ModelName@_physical physical_slha; ///< contains the pole masses and mixings in slha convention
-   Eigen::Matrix<std::complex<double>,3,3> ckm;
-   Eigen::Matrix<std::complex<double>,3,3> pmns;
-   bool convert_masses_to_slha;        ///< allow/disallow for negative majoran fermion masses
+   @ModelName@_physical physical_slha{}; ///< contains the pole masses and mixings in slha convention
+   Eigen::Matrix<std::complex<double>,3,3> ckm{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
+   Eigen::Matrix<std::complex<double>,3,3> pmns{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
+   bool convert_masses_to_slha{true};    ///< allow/disallow for negative majoran fermion masses
 @slhaYukawaDef@
 @slhaFerimonMixingMatricesDef@
 @slhaTrilinearCouplingsDef@
@@ -100,10 +100,6 @@ private:
 template <class Model>
 @ModelName@_slha<Model>::@ModelName@_slha(const @ModelName@_input_parameters& input_)
    : Model(input_)
-   , physical_slha()
-   , ckm(Eigen::Matrix<std::complex<double>,3,3>::Identity())
-   , pmns(Eigen::Matrix<std::complex<double>,3,3>::Identity())
-   , convert_masses_to_slha(true)
 {
 }
 
@@ -122,11 +118,6 @@ template <class Model>
    , convert_masses_to_slha(do_convert_masses_to_slha)
 {
    convert_to_slha();
-}
-
-template <class Model>
-@ModelName@_slha<Model>::~@ModelName@_slha()
-{
 }
 
 template <class Model>

@@ -474,7 +474,7 @@ CalculateScaleFromExpr[expr_, scaleName_String] :=
 
 DefineAndDefaultInitialize[{t:FlexibleSUSY`Phase[_], _}] :=
     CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
-    ToValidCSymbolString[t] <> "{1.,.0};\n";
+    ToValidCSymbolString[t] <> "{1.,0.};\n";
 
 DefineAndDefaultInitialize[{t:Sign[_], _}] :=
     CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
