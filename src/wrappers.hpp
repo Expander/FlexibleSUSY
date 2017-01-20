@@ -706,7 +706,7 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
 
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
-constexpr unsigned UnitStep(T x) noexcept
+constexpr int UnitStep(T x) noexcept
 {
    return x < T() ? 0 : 1;
 }
