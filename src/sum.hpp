@@ -25,12 +25,12 @@ namespace flexiblesusy {
 
 #define SUM(...) (get_sum(__VA_ARGS__)(__VA_ARGS__))
 
-#define get_sum(...) get_sum_macro(__VA_ARGS__, sum_user_t, sum_size_t,)
+#define get_sum(...) get_sum_macro(__VA_ARGS__, sum_user_t, sum_ptrdiff_t,)
 
 #define get_sum_macro(_1, _2, _3, _4, _5, name, ...) name
 
-#define sum_size_t(idx, ini, fin, expr)		\
-    sum<std::size_t, (ini), (fin)>([&](std::size_t (idx)) { return (expr); })
+#define sum_ptrdiff_t(idx, ini, fin, expr)      \
+    sum<std::ptrdiff_t, (ini), (fin)>([&](std::ptrdiff_t (idx)) { return (expr); })
 
 #define sum_user_t(type, idx, ini, fin, expr)	\
     sum<type, (ini), (fin)>([&](type (idx)) { return (expr); })
