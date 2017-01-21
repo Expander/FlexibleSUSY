@@ -43,7 +43,7 @@ double StandardModelCW_convergence_tester::max_rel_diff() const
    return max_diff;
 }
 
-unsigned int StandardModelCW_convergence_tester::max_iterations() const
+int StandardModelCW_convergence_tester::max_iterations() const
 {
    return 10;
 }
