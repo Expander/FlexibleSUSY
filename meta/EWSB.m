@@ -836,6 +836,7 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                           "}";,
                  result = result <>
                           "if (is_finite) {\n" <>
+                          IndentText[successBody] <>
                           IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions, "model."]]] <>
                           "} else {\n" <>
                           IndentText[failBody] <>
