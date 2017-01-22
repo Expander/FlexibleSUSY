@@ -90,9 +90,16 @@ CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
 ApplySubstitutionsToEqs[eqs_List, substitutions_List] :=
-    Module[{pars, parsWithoutHeads, uniqueRules, uniqueEqs, uniqueSubs, result},
-           pars = (#[[1]])& /@ substitutions;
-           parsWithoutHeads = Cases[pars, (Re | Im | SARAH`L | SARAH`B | SARAH`T | SARAH`Q)[p_] | p_ :> p];
+    Module[{pars, removeHeadsRules, parsWithoutHeads, uniqueRules, uniqueEqs, uniqueSubs, result},
+           pars = Parameters`FindAllParameters[(#[[1]])& /@ substitutions];
+           removeHeadsRules = { SARAH`L[p_][__] :> p, SARAH`L[p_] :> p,
+                                SARAH`B[p_][__] :> p, SARAH`B[p_] :> p,
+                                SARAH`T[p_][__] :> p, SARAH`T[p_] :> p,
+                                SARAH`Q[p_][__] :> p, SARAH`Q[p_] :> p,
+                                Re[p_[__]] :> p, Re[p_] :> p,
+                                Im[p_[__]] :> p, Im[p_] :> p
+                              };
+           parsWithoutHeads = DeleteDuplicates[pars /. removeHeadsRules];
            uniqueRules = DeleteDuplicates @ Flatten[{
                Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
                Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
