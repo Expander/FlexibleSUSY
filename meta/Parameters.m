@@ -1071,11 +1071,11 @@ WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH
           ];
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
-    "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
-    macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
+    "const auto " <> prefix <> CConversion`ToValidCSymbolString[parameter] <> " = " <>
+    macro <> "(" <> CConversion`ToValidCSymbolString[parameter] <> ");\n";
 
 PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
+    "calculate_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
 
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
