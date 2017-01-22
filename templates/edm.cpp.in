@@ -477,7 +477,7 @@ double OneLoopFunctionA(double r)
               0.076923076923076923077 * d * d * d * d * d * d * d * d * d * d );
    }
 
-   return 1.0 / (2.0 * d * d) * (3.0 - r + 2.0 * std::log(r) / d);
+   return 1.0 / (2.0 * d * d) * (3.0 - r - 2.0 * std::log(r) / d);
 }
 
 double OneLoopFunctionB(double r)
@@ -500,7 +500,7 @@ double OneLoopFunctionB(double r)
               0.0075757575757575757576 * d * d * d * d * d * d * d * d * d +
               0.0064102564102564102564 * d * d * d * d * d * d * d * d * d * d );
 
-   return 1.0 / (2.0 * d * d) * (1.0 + r + 2.0 * r * std::log(r) / d);
+   return 1.0 / (2.0 * d * d) * (1.0 + r - 2.0 * r * std::log(r) / d);
 }
 
 @EDM_Definitions@
