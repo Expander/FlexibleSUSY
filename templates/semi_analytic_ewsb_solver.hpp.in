@@ -54,17 +54,17 @@ public:
    @ModelName@_ewsb_solver& operator=(const @ModelName@_ewsb_solver&) = default;
    @ModelName@_ewsb_solver& operator=(@ModelName@_ewsb_solver&&) = default;
 
-   unsigned get_loop_order() const { return loop_order; }
-   std::size_t get_number_of_iterations() const { return number_of_iterations; }
+   int get_loop_order() const { return loop_order; }
+   int get_number_of_iterations() const { return number_of_iterations; }
    double get_precision() const { return precision; }
 
-   virtual void set_loop_order(unsigned l) override { loop_order = l; }
-   virtual void set_number_of_iterations(std::size_t n) override { number_of_iterations = n; }
+   virtual void set_loop_order(int l) override { loop_order = l; }
+   virtual void set_number_of_iterations(int n) override { number_of_iterations = n; }
    virtual void set_precision(double p) override { precision = p; }
 
    virtual int solve(@ModelName@_mass_eigenstates&) override;
 private:
-   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
+   static const int number_of_ewsb_equations = @numberOfEWSBEquations@;
    using EWSB_vector_t = Eigen::Matrix<double,number_of_ewsb_equations,1>;
 
    class EEWSBStepFailed : public Error {
@@ -73,9 +73,9 @@ private:
       virtual std::string what() const { return "Could not perform EWSB step."; }
    };
 
-   std::size_t number_of_iterations{100};       ///< maximum number of iterations
-   unsigned loop_order{2};                      ///< loop order to solve EWSB at
-   double precision{1.e-5};                     ///< precision goal
+   int number_of_iterations{100}; ///< maximum number of iterations
+   int loop_order{2};             ///< loop order to solve EWSB at
+   double precision{1.e-5};       ///< precision goal
    @ModelName@_semi_analytic_solutions* solutions{nullptr}; ///< semi-analytic solutions calculator
 
    void set_ewsb_solution(@ModelName@_mass_eigenstates&, const EWSB_solver*);
@@ -83,7 +83,7 @@ private:
 
    int solve_tree_level(@ModelName@_mass_eigenstates&);
    int solve_iteratively(@ModelName@_mass_eigenstates&);
-   int solve_iteratively_at(@ModelName@_mass_eigenstates&, unsigned);
+   int solve_iteratively_at(@ModelName@_mass_eigenstates&, int);
    int solve_iteratively_with(@ModelName@_mass_eigenstates&, EWSB_solver*, const EWSB_vector_t&);
 
    EWSB_vector_t initial_guess(const @ModelName@_mass_eigenstates&) const;

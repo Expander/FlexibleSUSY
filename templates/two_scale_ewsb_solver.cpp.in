@@ -175,7 +175,7 @@ void @ModelName@_ewsb_solver<Two_scale>::set_best_ewsb_solution(@ModelName@_mass
    set_ewsb_solution(model, best_solver->get());
 }
 
-int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, unsigned l)
+int @ModelName@_ewsb_solver<Two_scale>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, int l)
 {
    // temporarily set `ewsb_loop_order' to `loop_order' and do
    // iteration

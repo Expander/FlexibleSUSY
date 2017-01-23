@@ -182,7 +182,7 @@ void @ModelName@_ewsb_solver<Semi_analytic>::set_best_ewsb_solution(@ModelName@_
    set_ewsb_solution(model, best_solver->get());
 }
 
-int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, unsigned l)
+int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, int l)
 {
    // temporarily set `ewsb_loop_order' to `loop_order' and do
    // iteration

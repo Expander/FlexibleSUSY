@@ -30,8 +30,6 @@
 #ifndef @ModelName@_EWSB_SOLVER_INTERFACE_H
 #define @ModelName@_EWSB_SOLVER_INTERFACE_H
 
-#include <cstdio>
-
 namespace flexiblesusy {
 
 class @ModelName@_mass_eigenstates;
@@ -44,8 +42,8 @@ class @ModelName@_ewsb_solver_interface {
 public:
    virtual ~@ModelName@_ewsb_solver_interface() {}
 
-   virtual void set_loop_order(unsigned) = 0;
-   virtual void set_number_of_iterations(std::size_t) = 0;
+   virtual void set_loop_order(int) = 0;
+   virtual void set_number_of_iterations(int) = 0;
    virtual void set_precision(double) = 0;
 
    virtual int solve(@ModelName@_mass_eigenstates&) = 0;
