@@ -79,7 +79,7 @@ void RGFlow<Semi_analytic>::solve()
 {
    check_setup();
 
-   const unsigned max_iterations = get_max_iterations();
+   const int max_iterations = get_max_iterations();
    if ((inner_sliders.empty() && outer_sliders.empty())
        || max_iterations == 0)
       return;
@@ -236,7 +236,7 @@ void RGFlow<Semi_analytic>::set_running_precision(Two_scale_running_precision* r
  * Returns the number of performed iterations
  * @return number of performed iterations
  */
-unsigned int RGFlow<Semi_analytic>::number_of_iterations_done() const
+int RGFlow<Semi_analytic>::number_of_iterations_done() const
 {
    return iteration;
 }
@@ -245,7 +245,7 @@ unsigned int RGFlow<Semi_analytic>::number_of_iterations_done() const
  * Returns the maximum number of iterations set in the outer
  * convergence tester.
  */
-unsigned int RGFlow<Semi_analytic>::get_max_iterations() const
+int RGFlow<Semi_analytic>::get_max_iterations() const
 {
    return outer_convergence_tester->max_iterations();
 }

@@ -70,7 +70,7 @@ public:
    /// get model at current scale
    Model* get_model() const;
    /// get number of used iterations
-   unsigned int number_of_iterations_done() const;
+   int number_of_iterations_done() const;
    /// clear all internal data
    void reset();
    /// run model at given scale to given scale
@@ -116,7 +116,7 @@ private:
 
    std::vector<std::shared_ptr<Slider> > inner_sliders{}; ///< sliders to be used in the inner iteration
    std::vector<std::shared_ptr<Slider> > outer_sliders{}; ///< sliders to be used in the outer iteration
-   unsigned int iteration{0};             ///< iteration number (starting at 0)
+   int iteration{0};             ///< iteration number (starting at 0)
    Convergence_tester* inner_convergence_tester{nullptr}; ///< the convergence tester for the two-scale iteration
    Convergence_tester* outer_convergence_tester{nullptr}; ///< the convergence tester for the main iteration
    Initial_guesser* initial_guesser{nullptr};       ///< does initial guess
@@ -128,7 +128,7 @@ private:
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
    void prepare_inner_iteration(RGFlow<Two_scale>& solver) const; ///< set-up inner two-scale iteration
-   unsigned int get_max_iterations() const; ///< returns max. number of iterations
+   int get_max_iterations() const; ///< returns max. number of iterations
    Model* get_model(double) const;     ///< returns model at given scale
    void initial_guess();               ///< initial guess
    double get_precision();             ///< returns running precision
