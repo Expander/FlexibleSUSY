@@ -74,9 +74,9 @@ public:
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale_1(double s) { parameter_output_scale_1 = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model_1.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model_1.set_ewsb_loop_order(l); }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_pole_mass_loop_order(int l) { model_1.set_pole_mass_loop_order(l); }
+   void set_ewsb_loop_order(int l) { model_1.set_ewsb_loop_order(l); }
+   void set_max_iterations(int n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
    void run(const softsusy::QedQcd& qedqcd, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
@@ -96,7 +96,7 @@ private:
    double matching_scale;
    double parameter_output_scale_1; ///< output scale for running parameters
    double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
+   int max_iterations; ///< maximum number of iterations
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 

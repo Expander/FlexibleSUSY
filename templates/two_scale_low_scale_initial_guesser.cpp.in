@@ -179,7 +179,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
    model->run_to(susy_scale_guess, running_precision);
 
    // set EWSB loop order to 0 temporarily
-   const unsigned lo = model->get_ewsb_loop_order();
+   const auto lo = model->get_ewsb_loop_order();
    model->set_ewsb_loop_order(0);
 
    // apply susy-scale constraint

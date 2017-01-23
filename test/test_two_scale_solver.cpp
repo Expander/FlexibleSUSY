@@ -68,11 +68,11 @@ public:
    }
    virtual void run_to(double, double) { ++number_of_runs; }
    virtual void set_precision(double) {}
-   unsigned get_number_of_runs() const {
+   int get_number_of_runs() const {
       return number_of_runs;
    }
 private:
-   unsigned number_of_runs;
+   int number_of_runs;
 };
 
 class Counting_constraint : public Single_scale_constraint {
@@ -85,13 +85,13 @@ public:
    virtual double get_scale() const { return scale; }
    virtual void set_model(Model*) {}
 
-   unsigned get_number_of_apply_calls() const {
+   int get_number_of_apply_calls() const {
       return number_of_apply_calls;
    }
 
 private:
    double   scale;
-   unsigned number_of_apply_calls;
+   int number_of_apply_calls;
 };
 
 class Counting_matching_condition: public Single_scale_matching {
@@ -111,34 +111,34 @@ public:
    }
    virtual void set_models(Model*, Model*) {
    }
-   unsigned get_number_of_matches() const {
+   int get_number_of_matches() const {
       return number_of_matches;
    }
-   unsigned get_number_of_get_scale() const {
+   int get_number_of_get_scale() const {
       return number_of_get_scale;
    }
 private:
    double   scale;
-   unsigned number_of_matches;
-   mutable unsigned number_of_get_scale;
+   int number_of_matches;
+   mutable int number_of_get_scale;
 };
 
 class Counting_convergence_tester : public Convergence_tester {
 public:
-   Counting_convergence_tester(unsigned int max_iterations_)
+   Counting_convergence_tester(int max_iterations_)
       : iteration(0), maximum_iterations(max_iterations_) {}
    virtual ~Counting_convergence_tester() {}
    virtual bool accuracy_goal_reached() {
       return false;
    }
-   virtual unsigned int max_iterations() const {
+   virtual int max_iterations() const {
       return maximum_iterations;
    }
    virtual void restart() {
       iteration = 0;
    }
 private:
-   unsigned int iteration, maximum_iterations;
+   int iteration, maximum_iterations;
 };
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
 BOOST_AUTO_TEST_CASE( test_count_method_calls )
 {
-   for (unsigned number_of_iterations = 0;
+   for (int number_of_iterations = 0;
         number_of_iterations < 10; ++number_of_iterations ) {
       Counting_model model1, model2;
       Counting_constraint model1_c1(1000), model1_c2(2000);

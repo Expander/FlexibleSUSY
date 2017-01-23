@@ -33,8 +33,8 @@ CLASSNAME::@ModelName@_standard_model_matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    const Scale_getter& scale_getter_,
-   unsigned loop_order_,
-   unsigned higgs_idx_)
+   int loop_order_,
+   int higgs_idx_)
    : model(high_)
    , eft(low_)
    , scale_getter(scale_getter_)
@@ -89,22 +89,22 @@ void CLASSNAME::match_tree_level()
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
-unsigned CLASSNAME::get_higgs_index() const
+int CLASSNAME::get_higgs_index() const
 {
    return higgs_idx;
 }
 
-unsigned CLASSNAME::get_loop_order() const
+int CLASSNAME::get_loop_order() const
 {
    return loop_order;
 }
 
-void CLASSNAME::set_higgs_index(unsigned idx)
+void CLASSNAME::set_higgs_index(int idx)
 {
    higgs_idx = idx;
 }
 
-void CLASSNAME::set_loop_order(unsigned loop_order_)
+void CLASSNAME::set_loop_order(int loop_order_)
 {
    loop_order = loop_order_;
 }
@@ -134,8 +134,8 @@ CLASSNAME::@ModelName@_standard_model_matching_down(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
    const Scale_getter& scale_getter_,
-   unsigned loop_order_,
-   unsigned higgs_idx_)
+   int loop_order_,
+   int higgs_idx_)
    : model(high_)
    , eft(low_)
    , scale_getter(scale_getter_)
@@ -190,22 +190,22 @@ void CLASSNAME::match_tree_level()
    @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
 }
 
-unsigned CLASSNAME::get_higgs_index() const
+int CLASSNAME::get_higgs_index() const
 {
    return higgs_idx;
 }
 
-unsigned CLASSNAME::get_loop_order() const
+int CLASSNAME::get_loop_order() const
 {
    return loop_order;
 }
 
-void CLASSNAME::set_higgs_index(unsigned idx)
+void CLASSNAME::set_higgs_index(int idx)
 {
    higgs_idx = idx;
 }
 
-void CLASSNAME::set_loop_order(unsigned loop_order_)
+void CLASSNAME::set_loop_order(int loop_order_)
 {
    if (loop_order_ > 1) {
       WARNING("Matching loop order " << loop_order_

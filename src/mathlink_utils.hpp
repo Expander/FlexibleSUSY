@@ -58,7 +58,7 @@ template <int M>
 void MLPut(MLINK link, const Eigen::Array<double,M,1>& a)
 {
    double v[M];
-   for (unsigned i = 0; i < M; i++)
+   for (int i = 0; i < M; i++)
       v[i] = a(i);
    MLPutRealList(link, v, M);
 }
@@ -74,8 +74,8 @@ template <int M, int N>
 void MLPut(MLINK link, const Eigen::Matrix<double,M,N>& m)
 {
    double mat[M][N];
-   for (unsigned i = 0; i < M; i++)
-      for (unsigned k = 0; k < N; k++)
+   for (int i = 0; i < M; i++)
+      for (int k = 0; k < N; k++)
          mat[i][k] = m(i, k);
 
    long dims[] = { M, N };
@@ -86,7 +86,7 @@ template <int M>
 void MLPut(MLINK link, const Eigen::Array<std::complex<double>,M,1>& a)
 {
    MLPutFunction(link, "List", M);
-   for (unsigned i = 0; i < M; i++)
+   for (int i = 0; i < M; i++)
       MLPut(link, a(i));
 }
 
@@ -101,9 +101,9 @@ template <int M, int N>
 void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
 {
    MLPutFunction(link, "List", M);
-   for (unsigned i = 0; i < M; i++) {
+   for (int i = 0; i < M; i++) {
       MLPutFunction(link, "List", N);
-      for (unsigned k = 0; k < N; k++)
+      for (int k = 0; k < N; k++)
          MLPut(link, m(i,k));
    }
 }

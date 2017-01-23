@@ -28,7 +28,7 @@ class StandardModelCW_convergence_tester : public Convergence_tester_DRbar<Stand
 public:
    StandardModelCW_convergence_tester(StandardModelCW<Two_scale>*, double);
    virtual ~StandardModelCW_convergence_tester();
-   virtual unsigned int max_iterations() const;
+   virtual int max_iterations() const;
 
 protected:
    virtual double max_rel_diff() const;

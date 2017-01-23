@@ -97,6 +97,9 @@ CreateSetterInputType::usage="creates C/C++ setter input type";
 CreateDefaultValue::usage="creates a default value for a given
 parameter type";
 
+CreateDefaultAggregateInitialization::usage = "creates C/C++ default
+aggregate initialization for a given parameter type";
+
 CreateDefaultConstructor::usage="creates C/C++ default constructor for
 a given parameter type";
 
@@ -379,6 +382,17 @@ CreateDefaultValue[CConversion`TensorType[type_, dims__]] :=
 (* create default constructor initialization list *)
 CreateDefaultConstructor[parameter_String, type_] :=
     parameter <> "(" <> CreateDefaultValue[type] <> ")";
+
+CreateDefaultAggregateInitialization[type_] :=
+    Block[{},
+          Print["Error: unknown parameter type: " <> ToString[type]];
+          Return[""];
+         ];
+
+CreateDefaultAggregateInitialization[CConversion`ScalarType[_]] := "{}";
+
+CreateDefaultAggregateInitialization[t:(CConversion`ArrayType|CConversion`VectorType|CConversion`MatrixType|CConversion`TensorType)[__]] :=
+    "{" <> CreateCType[t] <> "::Zero()}";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];

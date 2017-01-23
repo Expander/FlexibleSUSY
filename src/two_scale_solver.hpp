@@ -75,7 +75,7 @@ public:
    /// get model at current scale
    Model* get_model() const;
    /// get number of used iterations
-   unsigned int number_of_iterations_done() const;
+   int number_of_iterations_done() const;
    /// clear all internal data
    void reset();
    /// run model at given scale to given scale
@@ -131,7 +131,7 @@ private:
    };
 
    std::vector<std::shared_ptr<Slider> > sliders{}; ///< sliders to be run up and down
-   unsigned int iteration{0};             ///< iteration number (starting at 0)
+   int iteration{0};             ///< iteration number (starting at 0)
    Convergence_tester* convergence_tester{nullptr}; ///< the convergence tester
    Initial_guesser* initial_guesser{nullptr};       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator{nullptr}; ///< RG running precision calculator
@@ -141,7 +141,7 @@ private:
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
-   unsigned int get_max_iterations() const; ///< returns max. number of iterations
+   int get_max_iterations() const; ///< returns max. number of iterations
    Model* get_model(double) const;     ///< returns model at given scale
    double get_precision();             ///< returns running precision
    void initial_guess();               ///< initial guess

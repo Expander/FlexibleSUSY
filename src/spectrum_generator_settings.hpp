@@ -36,7 +36,7 @@ namespace flexiblesusy {
 class Spectrum_generator_settings {
 public:
    /// Spectrum generator settings
-   enum Settings : unsigned {
+   enum Settings : int {
       precision,             ///< [0] overall precision goal
       max_iterations,        ///< [1] maximum number of iterations (0 = automatic)
       solver,                ///< [2] RG solver algorithm (0 = two-scale)

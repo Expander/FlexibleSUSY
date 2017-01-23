@@ -48,7 +48,7 @@ public:
    virtual void set(const Eigen::ArrayXd&);
 
    @ModelName@_soft_parameters calc_beta() const;
-   @ModelName@_soft_parameters calc_beta(unsigned) const;
+   @ModelName@_soft_parameters calc_beta(int) const;
    virtual void clear();
 
 @setter@
@@ -63,7 +63,7 @@ private:
    struct Soft_traces {
 @traceDefs@
    };
-   Soft_traces calc_soft_traces(unsigned) const;
+   Soft_traces calc_soft_traces(int) const;
 
 @singleBetaFunctionsDecls@
 };

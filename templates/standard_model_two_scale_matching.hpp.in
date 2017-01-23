@@ -46,7 +46,7 @@ public:
    @ModelName@_standard_model_matching_up(standard_model::StandardModel<Two_scale>*,
                                           @ModelName@<Two_scale>*,
                                           const Scale_getter&,
-                                          unsigned, unsigned);
+                                          int, int);
 
    virtual ~@ModelName@_standard_model_matching_up();
 
@@ -54,10 +54,10 @@ public:
    virtual void set_models(Model*, Model*) override;
    virtual void match() override;
 
-   unsigned get_higgs_index() const;
-   unsigned get_loop_order() const;
-   void set_higgs_index(unsigned);
-   void set_loop_order(unsigned);
+   int get_higgs_index() const;
+   int get_loop_order() const;
+   void set_higgs_index(int);
+   void set_loop_order(int);
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
@@ -68,8 +68,8 @@ private:
    standard_model::StandardModel<Two_scale>* eft{nullptr};
    Scale_getter scale_getter{};
    double scale{0.};
-   unsigned loop_order{0};
-   unsigned higgs_idx{0}; ///< Higgs index
+   int loop_order{0};
+   int higgs_idx{0}; ///< Higgs index
 };
 
 template<>
@@ -83,7 +83,7 @@ public:
    @ModelName@_standard_model_matching_down(standard_model::StandardModel<Two_scale>*,
                                             @ModelName@<Two_scale>*,
                                             const Scale_getter&,
-                                            unsigned, unsigned);
+                                            int, int);
 
    virtual ~@ModelName@_standard_model_matching_down();
 
@@ -91,10 +91,10 @@ public:
    virtual void set_models(Model*, Model*) override;
    virtual void match() override;
 
-   unsigned get_higgs_index() const;
-   unsigned get_loop_order() const;
-   void set_higgs_index(unsigned);
-   void set_loop_order(unsigned);
+   int get_higgs_index() const;
+   int get_loop_order() const;
+   void set_higgs_index(int);
+   void set_loop_order(int);
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
@@ -105,8 +105,8 @@ private:
    standard_model::StandardModel<Two_scale>* eft{nullptr};
    Scale_getter scale_getter{};
    double scale{0.};
-   unsigned loop_order{0};
-   unsigned higgs_idx{0}; ///< Higgs index
+   int loop_order{0};
+   int higgs_idx{0}; ///< Higgs index
 };
 
 } // namespace flexiblesusy

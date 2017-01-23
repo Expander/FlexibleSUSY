@@ -62,7 +62,7 @@ public:
    @ModelName@_mass_eigenstates& operator=(@ModelName@_mass_eigenstates&&) = default;
 
    /// number of EWSB equations
-   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
+   static const int number_of_ewsb_equations = @numberOfEWSBEquations@;
 
    void calculate_DRbar_masses();
    void calculate_DRbar_parameters();
@@ -80,12 +80,12 @@ public:
    void reorder_DRbar_masses();
    void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
-   void set_ewsb_loop_order(unsigned);
+   void set_ewsb_loop_order(int);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
    void set_DRbar_masses(const Eigen::ArrayXd&);
-   void set_pole_mass_loop_order(unsigned);
-   unsigned get_pole_mass_loop_order() const;
+   void set_pole_mass_loop_order(int);
+   int get_pole_mass_loop_order() const;
    void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
@@ -133,8 +133,8 @@ public:
 @dependencePrototypes@
 
 private:
-   unsigned ewsb_loop_order{2};           ///< loop order for EWSB
-   unsigned pole_mass_loop_order{2};      ///< loop order for pole masses
+   int ewsb_loop_order{2};           ///< loop order for EWSB
+   int pole_mass_loop_order{2};      ///< loop order for pole masses
    bool calculate_sm_pole_masses{false};  ///< switch to calculate the pole masses of the Standard Model particles
    bool calculate_bsm_pole_masses{true};  ///< switch to calculate the pole masses of the BSM particles
    bool force_output{false};              ///< switch to force output of pole masses
@@ -145,8 +145,8 @@ private:
    Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
    @ModelName@_ewsb_solver_interface* ewsb_solver{nullptr};
 
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
+   int get_number_of_ewsb_iterations() const;
+   int get_number_of_mass_iterations() const;
    int solve_ewsb_tree_level_custom();
    void copy_DRbar_masses_to_pole_masses();
 

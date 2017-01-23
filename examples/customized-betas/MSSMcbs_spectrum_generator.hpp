@@ -65,12 +65,12 @@ public:
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_pole_mass_loop_order(int l) { model.set_pole_mass_loop_order(l); }
+   void set_ewsb_loop_order(int l) { model.set_ewsb_loop_order(l); }
+   void set_beta_loop_order(int l) { beta_loop_order = l; }
+   void set_max_iterations(int n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
+   void set_threshold_corrections_loop_order(int t) { threshold_corrections_loop_order = t; }
 
    void run(const softsusy::QedQcd& qedqcd, const CMSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
@@ -85,9 +85,9 @@ private:
    double high_scale, susy_scale, low_scale;
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
+   int max_iterations; ///< maximum number of iterations
+   int beta_loop_order; ///< beta-function loop order
+   int threshold_corrections_loop_order; ///< threshold corrections loop order
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 

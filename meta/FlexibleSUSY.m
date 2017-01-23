@@ -656,7 +656,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
               templateFile_String, makefileModuleTemplates_List,
               additionalTraces_List:{}, numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
-           display, parameterDefaultInit,
+           display,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters,
@@ -674,7 +674,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];
           set                  = BetaFunction`CreateSetFunction[betaFun, numberOfBaseClassParameters];
           display              = BetaFunction`CreateDisplayFunction[betaFun, numberOfBaseClassParameters];
-          parameterDefaultInit = BetaFunction`CreateParameterDefaultInitialization[betaFun];
           cCtorParameterList   = BetaFunction`CreateCCtorParameterList[betaFun];
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
@@ -690,7 +689,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
-                   "@parameterDefaultInit@" -> WrapLines[parameterDefaultInit],
                    "@display@"              -> IndentText[display],
                    "@set@"                  -> IndentText[set],
                    "@cCtorParameterList@"   -> WrapLines[cCtorParameterList],
@@ -718,16 +716,14 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set, inputPars},
+   Module[{defineInputParameters, printInputParameters, get, set, inputPars},
           inputPars = {First[#], #[[3]]}& /@ inputParameters;
           defineInputParameters = Constraint`DefineInputParameters[inputPars];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[inputPars];
           printInputParameters = WriteOut`PrintInputParameters[inputPars,"ostr"];
           get = Parameters`CreateInputParameterArrayGetter[inputPars];
           set = Parameters`CreateInputParameterArraySetter[inputPars];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
-                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            "@printInputParameters@"       -> IndentText[printInputParameters],
                            "@get@"                        -> IndentText[get],
                            "@set@"                        -> IndentText[set],
@@ -1268,7 +1264,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             calculateTreeLevelTadpoles = "", divideTadpoleByVEV = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
             physicalMassesDef = "", mixingMatricesDef = "",
-            physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
@@ -1277,7 +1272,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
-            phasesInit = "", extraParameterDefs = "", extraParametersInit = "",
+            extraParameterDefs = "",
             extraParameterSetters = "", extraParameterGetters = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
@@ -1314,9 +1309,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
-               physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
-               physicalMassesInitNoLeadingComma = StringTrim[physicalMassesInit, StartOfString ~~ ","];
-               mixingMatricesInit   = mixingMatricesInit <> TreeMasses`CreateMixingMatrixInitialization[massMatrices[[k]]];
                clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
@@ -1363,9 +1355,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
-           phasesInit                   = Phases`CreatePhasesInitialization[phases];
            If[Parameters`GetExtraParameters[] =!= {},
-              extraParameterDefs           = StringJoin[Parameters`CreateInitializedParameterDefinition[#]&
+              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
@@ -1373,10 +1364,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
-              extraParametersInit
-                  = ", " <> Utils`StringJoinWithSeparator[CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#],
-                                                                                               Parameters`GetType[#]]& /@
-                                                          Parameters`GetExtraParameters[], ", "];
               clearExtraParameters         = StringJoin[CConversion`SetToDefault[CConversion`ToValidCSymbolString[#],
                                                                                  Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
@@ -1459,9 +1446,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@checkPoleMassesForTachyons@" -> IndentText[checkPoleMassesForTachyons],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
-                            "@physicalMassesInit@"     -> IndentText[WrapLines[physicalMassesInit]],
-                            "@physicalMassesInitNoLeadingComma@" -> IndentText[WrapLines[physicalMassesInitNoLeadingComma]],
-                            "@mixingMatricesInit@"     -> IndentText[WrapLines[mixingMatricesInit]],
                             "@massCalculationPrototypes@" -> IndentText[massCalculationPrototypes],
                             "@massCalculationFunctions@"  -> WrapLines[massCalculationFunctions],
                             "@calculateAllMasses@"        -> IndentText[calculateAllMasses],
@@ -1479,11 +1463,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
                             "@phasesGetterSetters@"          -> IndentText[phasesGetterSetters],
-                            "@phasesInit@"                   -> IndentText[WrapLines[phasesInit]],
                             "@extraParameterDefs@"           -> IndentText[extraParameterDefs],
                             "@extraParameterGetters@"        -> IndentText[extraParameterGetters],
                             "@extraParameterSetters@"        -> IndentText[extraParameterSetters],
-                            "@extraParametersInit@"          -> IndentText[WrapLines[extraParametersInit]],
                             "@clearExtraParameters@"         -> IndentText[clearExtraParameters],
                             "@loopMassesPrototypes@"         -> IndentText[WrapLines[loopMassesPrototypes]],
                             "@loopMassesFunctions@"          -> WrapLines[loopMassesFunctions],

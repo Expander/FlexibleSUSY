@@ -15,7 +15,7 @@ struct Data {
 
    double time;
    int error;
-   unsigned number_of_valid_points;
+   int number_of_valid_points;
    double sum_of_times;
 };
 
@@ -104,7 +104,7 @@ SLHAea::Coll create_point(double tanBeta)
 
 void test_tanbeta_scan()
 {
-   const unsigned num_points = 100;
+   const int num_points = 100;
    const double tanBeta_start = 2.;
    const double tanBeta_stop = 80.;
    const double tanBeta_step = (tanBeta_stop - tanBeta_start) / num_points;
@@ -115,7 +115,7 @@ void test_tanbeta_scan()
           "Softsusy / s (status)",
           "FlexibleSUSY / s (status)");
 
-   for (unsigned i = 0; i < num_points; i++) {
+   for (int i = 0; i < num_points; i++) {
       const double tanBeta = tanBeta_start + i * tanBeta_step;
       const SLHAea::Coll coll(create_point(tanBeta));
       const std::string input_file("test/test_CMSSM_benchmark.in.spc");

@@ -49,7 +49,7 @@ private:
  */
 class NoConvergenceError : public Error {
 public:
-   explicit NoConvergenceError(unsigned number_of_iterations_, const std::string msg = "")
+   explicit NoConvergenceError(int number_of_iterations_, const std::string msg = "")
       : message(msg), number_of_iterations(number_of_iterations_) {}
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
@@ -59,10 +59,10 @@ public:
       return "NoConvergenceError: no convergence after "
          + std::to_string(number_of_iterations) + " iterations";
    }
-   unsigned get_number_of_iterations() const { return number_of_iterations; }
+   int get_number_of_iterations() const { return number_of_iterations; }
 private:
    std::string message;
-   unsigned number_of_iterations;
+   int number_of_iterations;
 };
 
 /**
@@ -71,7 +71,7 @@ private:
  */
 class NoRhoConvergenceError : public Error {
 public:
-   NoRhoConvergenceError(unsigned number_of_iterations_,
+   NoRhoConvergenceError(int number_of_iterations_,
                          double sin_theta_, double rho_hat_)
       : number_of_iterations(number_of_iterations_)
       , sin_theta(sin_theta_)
@@ -86,11 +86,11 @@ public:
               << ")";
       return message.str();
    }
-   unsigned get_number_of_iterations() const { return number_of_iterations; }
+   int get_number_of_iterations() const { return number_of_iterations; }
    double get_sin_theta() const { return sin_theta; }
    double get_rho_hat() const { return rho_hat; }
 private:
-   unsigned number_of_iterations;
+   int number_of_iterations;
    double sin_theta, rho_hat;
 };
 

@@ -125,8 +125,8 @@ void check_goldstone_masses(const NMSSMCPV_input_parameters& input)
 
 BOOST_AUTO_TEST_CASE( test_NMSSMCPV_goldstone_boson_masses )
 {
-   for (unsigned m = 0; m < 10; m++) {
-      for (unsigned e = 0; e < 10; e++) {
+   for (int m = 0; m < 10; m++) {
+      for (int e = 0; e < 10; e++) {
          NMSSMCPV_input_parameters input;
          input.m0 = 250.;
          input.m12 = 200.;

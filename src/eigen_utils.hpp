@@ -29,9 +29,9 @@
 namespace flexiblesusy {
 
 template <typename Derived>
-unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
+int closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 {
-   unsigned pos;
+   int pos;
    typename Derived::PlainObject tmp;
    tmp.setConstant(mass);
 
@@ -175,12 +175,12 @@ void reorder_vector(
 
 template<class Derived>
 std::string print_scientific(const Eigen::DenseBase<Derived>& v,
-                             unsigned number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
+                             int number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
 {
    std::ostringstream sstr;
 
-   for (std::size_t k = 0; k < v.cols(); k++) {
-      for (std::size_t i = 0; i < v.rows(); i++) {
+   for (int k = 0; k < v.cols(); k++) {
+      for (int i = 0; i < v.rows(); i++) {
          sstr << std::setprecision(number_of_digits)
               << std::scientific << v(i,k) << ' ';
       }

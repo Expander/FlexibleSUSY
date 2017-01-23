@@ -277,7 +277,7 @@ CreateCouplingFunction[coupling_, expr_] :=
            cFunctionName = cFunctionName <> "(";
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, cFunctionName = cFunctionName <> ", ";];
-               cFunctionName = cFunctionName <> "unsigned ";
+               cFunctionName = cFunctionName <> "int ";
                (* variable names must not be integers *)
                If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   cFunctionName = cFunctionName <> ToValidCSymbolString[indices[[i]]];
@@ -367,14 +367,14 @@ ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
 DeclareFieldIndices[field_Symbol] := "";
 
 DeclareFieldIndices[field_[ind1_, ind2_]] :=
-    ", unsigned " <> ToValidCSymbolString[ind1] <>
-    ", unsigned " <> ToValidCSymbolString[ind2];
+    ", int " <> ToValidCSymbolString[ind1] <>
+    ", int " <> ToValidCSymbolString[ind2];
 
 DeclareFieldIndices[field_[PL]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[PR]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[1]]  := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[ind_]] :=
-    "unsigned " <> ToValidCSymbolString[ind];
+    "int " <> ToValidCSymbolString[ind];
 
 CreateFunctionNamePrefix[field_[idx1_,idx2_]] := CreateFunctionNamePrefix[field];
 CreateFunctionNamePrefix[field_[PL]]          := CreateFunctionNamePrefix[field] <> "_PL";
@@ -457,8 +457,8 @@ FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
            dim = GetDimension[field];
            name = CreateSelfEnergyFunctionName[field];
            "\
-for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
-   for (unsigned k = i; k < " <> ToString[dim] <> "; k++)
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = i; k < " <> ToString[dim] <> "; k++)
       " <> sym <> "(i, k) = " <> name <> "(p, i, k);
 
 Hermitianize(" <> sym <> ");
@@ -470,8 +470,8 @@ FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
            dim = GetDimension[field];
            name = CreateSelfEnergyFunctionName[field];
            "\
-for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
-   for (unsigned k = 0; k < " <> ToString[dim] <> "; k++)
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = 0; k < " <> ToString[dim] <> "; k++)
       " <> sym <> "(i, k) = " <> name <> "(p, i, k);
 "
           ];

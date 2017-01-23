@@ -55,7 +55,7 @@ bool Composite_convergence_tester::accuracy_goal_reached()
    return precision_reached;
 }
 
-unsigned int Composite_convergence_tester::max_iterations() const
+int Composite_convergence_tester::max_iterations() const
 {
    if (testers.empty())
       return 0;

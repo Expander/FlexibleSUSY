@@ -46,7 +46,7 @@ public:
    double get_initial_scale_guess() const;
    void initialize();
    void set_sm_parameters(const softsusy::QedQcd&);
-   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
+   void set_threshold_corrections_loop_order(int); ///< threshold corrections loop order
 
 private:
    double scale;
@@ -55,7 +55,7 @@ private:
    softsusy::QedQcd qedqcd;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
+   int threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

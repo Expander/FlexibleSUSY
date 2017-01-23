@@ -113,7 +113,7 @@ std::complex<double> Standard_model_tester::get_eff_CphhVPVP()
 
    std::complex<double> result = AS1(0.25 * Sqr(Mhh) / Sqr(MVWp));
 
-   for (unsigned i = 0; i < 3; ++i) {
+   for (int i = 0; i < 3; ++i) {
       if (MFu(i) > Mhh) {
          result += 4.0 * qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFu(i))) / 3.0;
       } else {
@@ -157,7 +157,7 @@ std::complex<double> Standard_model_tester::get_eff_CphhVGVG()
 
    std::complex<double> result;
 
-   for (unsigned i = 0; i < 3; ++i) {
+   for (int i = 0; i < 3; ++i) {
       result += qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFd(i)));
       result += qcd_fermion * AS12(0.25 * Sqr(Mhh) / Sqr(MFu(i)));
    }

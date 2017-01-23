@@ -34,7 +34,7 @@ CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
                        "MaxRelDiff(OLD(" <> esStr <> "),NEW(" <> esStr <> "));\n";
               ,
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle] - 1;
-              result = "for (unsigned i = " <> ToString[dimStart] <>
+              result = "for (int i = " <> ToString[dimStart] <>
                        "; i < " <> ToString[dim] <> "; i++) {\n";
               body = diff <> "[i + " <> ToString[offset] <> "] = " <>
                      "MaxRelDiff(OLD1(" <> esStr <> ",i),NEW1(" <> esStr <> ",i));";
@@ -81,7 +81,7 @@ CalcDifference[parameter_, offset_Integer, diff_String, {idx_List, pos_Integer, 
            dim = Length[idx];
            dimStr = ToString[dim];
            i = idxPool[[pos]];
-           result = "for (unsigned " <> i <> " = 0; " <> i <> " < " <> ToString[idx[[pos]]] <> "; " <> i <> "++) {\n" <>
+           result = "for (int " <> i <> " = 0; " <> i <> " < " <> ToString[idx[[pos]]] <> "; " <> i <> "++) {\n" <>
                     IndentText[
                         CalcDifference[parameter, offset, diff, {idx, pos+1, idxPool}]
                     ] <>

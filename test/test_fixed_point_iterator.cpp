@@ -14,9 +14,9 @@ using namespace flexiblesusy;
 
 typedef Eigen::Matrix<double,2,1> EV2_t;
 
-static unsigned number_of_calls = 0;
+static int number_of_calls = 0;
 void reset() { number_of_calls = 0; }
-unsigned get_number_of_calls() { return number_of_calls; }
+int get_number_of_calls() { return number_of_calls; }
 
 /**
  * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,

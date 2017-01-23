@@ -51,14 +51,8 @@ mass matrix calcualtion functions";
 CreatePhysicalMassDefinition::usage="creates definition of physical
 mass.";
 
-CreatePhysicalMassInitialization::usage="creates default
-initialization of the given mass eigenstate";
-
 CreateMixingMatrixDefinition::usage="creates definition of mixing
 matrix";
-
-CreateMixingMatrixInitialization::usage="creates default
-initialization of the given mixing matrix";
 
 ClearOutputParameters::usage="clears masses and mixing matrices";
 
@@ -833,7 +827,7 @@ CreateParticleEnum[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CConversion`ToValidCSymbolString /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           "enum Particles : unsigned { " <> result <> "NUMBER_OF_PARTICLES };\n"
+           "enum Particles : int { " <> result <> "NUMBER_OF_PARTICLES };\n"
           ];
 
 DecomposeParticle[particle_] :=
@@ -852,7 +846,7 @@ CreateParticleMassEnum[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParticleMassEnum /@ particles, ", "];
            If[Length[particles] > 0, result = result <> ", ";];
-           "enum Masses : unsigned { " <> result <> "NUMBER_OF_MASSES };\n"
+           "enum Masses : int { " <> result <> "NUMBER_OF_MASSES };\n"
           ];
 
 CreateParticleMassEnum[p_] :=
@@ -873,7 +867,7 @@ CreateParticleMixingEnum[mixings_List] :=
            result = Utils`StringJoinWithSeparator[
                Parameters`CreateParameterEnums[#[[1]], #[[2]]]& /@ GetMixingMatricesAndTypesFrom[nonNullMixings], ", "];
            If[Length[nonNullMixings] > 0, result = result <> ", ";];
-           "enum Mixings : unsigned { " <> result <> "NUMBER_OF_MIXINGS };\n"
+           "enum Mixings : int { " <> result <> "NUMBER_OF_MIXINGS };\n"
           ];
 
 SARAHNameStr[p_] :=
@@ -889,7 +883,7 @@ CreateParticleNames[particles_List] :=
 CreateParticleMultiplicity[particles_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[GetDimension /@ particles, ", "];
-           "const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
+           "const std::array<int, NUMBER_OF_PARTICLES> particle_multiplicities = {" <>
            result <> "};\n"
           ];
 
@@ -1580,56 +1574,32 @@ CreatePhysicalMassDefinition[p:TreeMasses`FSMassMatrix[_, massESSymbols_List, _]
           ];
 
 CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result = "", massESSymbol, dim, dimStr, returnType},
+    Module[{result = "", massESSymbol, dim, dimStr, type},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
            dimStr = ToString[dim];
            If[dim == 1,
-              returnType = CConversion`ScalarType[CConversion`realScalarCType];,
-              returnType = CConversion`ArrayType[CConversion`realScalarCType, dim];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ArrayType[CConversion`realScalarCType, dim];
              ];
-           result = CConversion`CreateCType[returnType] <> " " <>
-                    CConversion`ToValidCSymbolString[FlexibleSUSY`M[MakeESSymbol[massESSymbol]]] <> "{" <>
-                    CConversion`CreateDefaultValue[returnType] <> "};\n";
-           Return[result];
-          ];
-
-CreatePhysicalMassInitialization[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
-    Module[{massMatrices},
-           massMatrices = DeleteDuplicates[TreeMasses`FSMassMatrix[0, #, Null]& /@ massESSymbols];
-           StringJoin[CreatePhysicalMassInitialization /@ massMatrices]
-          ];
-
-CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result = "", massESSymbol, dim, massType},
-           massESSymbol = GetMassEigenstate[massMatrix];
-           dim = GetDimension[massESSymbol];
-           If[dim == 1,
-              massType = CConversion`ScalarType[CConversion`realScalarCType];,
-              massType = CConversion`ArrayType[CConversion`realScalarCType, dim];
-             ];
-           result = ", " <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[MakeESSymbol[massESSymbol]]]
-                    <> "(" <> CConversion`CreateDefaultValue[massType] <> ")";
-           Return[result];
+           Parameters`CreateParameterDefinitionAndDefaultInitialize[
+               {ToValidCSymbolString[FlexibleSUSY`M[MakeESSymbol[massESSymbol]]], type}
+           ]
           ];
 
 DefineMatrix[Null, _] := "";
 
 DefineMatrix[matrix_Symbol, type_] :=
-    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[matrix] <> "{" <> CConversion`CreateDefaultValue[type] <> "};\n";
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[{ToValidCSymbolString[matrix], type}];
 
 DefineMatrix[matrix_List, type_] :=
-    Module[{result = ""},
-           (result = result <> DefineMatrix[#,type])& /@ matrix;
-           Return[result];
-          ];
+    StringJoin[DefineMatrix[#,type]& /@ matrix];
 
 CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, mixingMatrixSymbol, matrixType},
+    Module[{mixingMatrixSymbol, type},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           matrixType = GetMixingMatrixType[massMatrix];
-           result = DefineMatrix[mixingMatrixSymbol, matrixType];
-           Return[result];
+           type = GetMixingMatrixType[massMatrix];
+           DefineMatrix[mixingMatrixSymbol, type]
           ];
 
 ClearOutputParameters[p:TreeMasses`FSMassMatrix[_,massESSymbols_List,_]] :=
@@ -1687,25 +1657,6 @@ CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
                  result = result <> "PHYSICAL(" <> mixStr <> ") = " <> mixStr <> ";\n";
                 ];
              ];
-           Return[result];
-          ];
-
-InitializeMatrix[Null, _] := "";
-
-InitializeMatrix[matrix_Symbol, type_] :=
-    ", " <> CConversion`ToValidCSymbolString[matrix] <> "(" <> CConversion`CreateDefaultValue[type] <> ")";
-
-InitializeMatrix[matrix_List, type_] :=
-    Module[{result = ""},
-           (result = result <> InitializeMatrix[#, type])& /@ matrix;
-           Return[result];
-          ];
-
-CreateMixingMatrixInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, mixingMatrixSymbol, matrixType},
-           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           matrixType = GetMixingMatrixType[massMatrix];
-           result = InitializeMatrix[mixingMatrixSymbol, matrixType];
            Return[result];
           ];
 

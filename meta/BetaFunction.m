@@ -12,7 +12,6 @@ CreateSetFunction::usage="";
 CreateSetters::usage="";
 CreateGetters::usage="";
 CreateParameterDefinitions::usage="";
-CreateParameterDefaultInitialization::usage="";
 CreateCCtorInitialization::usage="";
 CreateCCtorParameterList::usage="";
 CreateParameterList::usage="";
@@ -406,7 +405,7 @@ CreateParameterEnum[betaFunctions_List] :=
            result = Utils`StringJoinWithSeparator[
                Parameters`CreateParameterEnums[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            If[Length[betaFunctions] > 0, result = result <> ", ";];
-           "enum Parameters : unsigned { " <> result <> "NUMBER_OF_PARAMETERS };\n"
+           "enum Parameters : int { " <> result <> "NUMBER_OF_PARAMETERS };\n"
           ];
 
 (* create setters *)
@@ -453,28 +452,10 @@ CreateGetters[betaFunctions_List] :=
 
 (* create parameter definition in C++ class *)
 CreateParameterDefinitions[betaFunction_BetaFunction] :=
-    Parameters`CreateInitializedParameterDefinition[{GetName[betaFunction], GetType[betaFunction]}];
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[{GetName[betaFunction], GetType[betaFunction]}];
 
 CreateParameterDefinitions[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateParameterDefinitions[#])& /@ betaFunctions;
-           Return[def];
-          ];
-
-(* create parameter default initialization list *)
-CreateParameterDefaultInitialization[betaFunction_BetaFunction] :=
-    Module[{def = "", name = "", dataType = ""},
-           dataType = CConversion`CreateCType[GetType[betaFunction]];
-           name = CConversion`ToValidCSymbolString[GetName[betaFunction]];
-           def  = def <> ", " <> CConversion`CreateDefaultConstructor[name, GetType[betaFunction]];
-           Return[def];
-          ];
-
-CreateParameterDefaultInitialization[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateParameterDefaultInitialization[#])& /@ betaFunctions;
-           Return[def];
-          ];
+    StringJoin[CreateParameterDefinitions /@ betaFunctions];
 
 (* create copy constructor initialization list *)
 CreateCCtorInitialization[betaFunction_BetaFunction] :=

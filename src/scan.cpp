@@ -43,7 +43,7 @@ std::vector<double> float_range(double start, double stop,
    const double step_size = (stop - start) / number_of_steps;
    std::vector<double> result(number_of_steps);
 
-   for (unsigned long i = 0; i < number_of_steps; ++i) {
+   for (std::size_t i = 0; i < number_of_steps; ++i) {
       const double point = start + i * step_size;
       result[i] = point;
    }
@@ -73,7 +73,7 @@ std::vector<double> float_range_log(double start, double stop,
    std::vector<double> result(number_of_steps);
    result[0] = start;
 
-   for (unsigned long i = 1; i < number_of_steps; ++i) {
+   for (std::size_t i = 1; i < number_of_steps; ++i) {
       const double point = exp(step_size + log(result[i-1]));
       result[i] = point;
    }

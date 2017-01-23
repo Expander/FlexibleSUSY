@@ -111,7 +111,7 @@ bool CLASSNAME::do_force_output() const
    return force_output;
 }
 
-void CLASSNAME::set_ewsb_loop_order(unsigned loop_order)
+void CLASSNAME::set_ewsb_loop_order(int loop_order)
 {
    ewsb_loop_order = loop_order;
    if (ewsb_solver) {
@@ -129,14 +129,14 @@ const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
-std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
+int CLASSNAME::get_number_of_ewsb_iterations() const
 {
-   return static_cast<std::size_t>(std::abs(-log10(ewsb_iteration_precision) * 10));
+   return static_cast<int>(std::abs(-log10(ewsb_iteration_precision) * 10));
 }
 
-std::size_t CLASSNAME::get_number_of_mass_iterations() const
+int CLASSNAME::get_number_of_mass_iterations() const
 {
-   return static_cast<std::size_t>(std::abs(-log10(precision) * 10));
+   return static_cast<int>(std::abs(-log10(precision) * 10));
 }
 
 void CLASSNAME::set_precision(double precision_)
@@ -148,12 +148,12 @@ void CLASSNAME::set_precision(double precision_)
    }
 }
 
-void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
+void CLASSNAME::set_pole_mass_loop_order(int loop_order)
 {
    pole_mass_loop_order = loop_order;
 }
 
-unsigned CLASSNAME::get_pole_mass_loop_order() const
+int CLASSNAME::get_pole_mass_loop_order() const
 {
    return pole_mass_loop_order;
 }

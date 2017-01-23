@@ -43,7 +43,7 @@ namespace {
 template <class T>
 class RAII_set_loop_order {
 public:
-   RAII_set_loop_order(T& model_, unsigned loop_order_) noexcept
+   RAII_set_loop_order(T& model_, int loop_order_) noexcept
       : model(model_), loop_order(loop_order_)
    {
       model_pole_mass_order = model.get_pole_mass_loop_order();
@@ -69,13 +69,13 @@ public:
 private:
    T& model;
    Two_loop_corrections tlc;       ///< 2-loop corrections
-   unsigned loop_order;            ///< temporary loop order
-   unsigned model_pole_mass_order; ///< old model pole mass loop order
-   unsigned model_ewsb_order;      ///< old model EWSB loop order
+   int loop_order;            ///< temporary loop order
+   int model_pole_mass_order; ///< old model pole mass loop order
+   int model_ewsb_order;      ///< old model EWSB loop order
 };
 
 template <typename T>
-constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loop_order)
+constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, int loop_order)
 {
    return RAII_set_loop_order<T>(model, loop_order);
 }
@@ -90,7 +90,7 @@ constexpr RAII_set_loop_order<T> make_raii_set_loop_order(T& model, unsigned loo
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, int idx)
 {
    model.calculate_DRbar_masses();
    model.solve_ewsb();
@@ -258,7 +258,7 @@ void match_low_to_high_scale_model(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_tree_level(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned idx)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, int idx)
 {
    model.calculate_DRbar_masses();
    sm.set_Lambdax(Sqr(model.get_M@HiggsBoson(idx)@/sm.get_v()));
@@ -276,7 +276,7 @@ void match_high_to_low_scale_model_tree_level(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model(
-   Standard_model& sm, @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
+   Standard_model& sm, @ModelName@_mass_eigenstates& model, int loop_order, int idx)
 {
    if (loop_order == 0) {
       match_high_to_low_scale_model_tree_level(sm, model, idx);
@@ -332,7 +332,7 @@ void match_low_to_high_scale_model_tree_level(
  * couplings and the SM vev.
  */
 void match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, Standard_model& sm, unsigned loop_order)
+   @ModelName@_mass_eigenstates& model, Standard_model& sm, int loop_order)
 {
    if (loop_order == 0) {
       match_low_to_high_scale_model_tree_level(model, sm);

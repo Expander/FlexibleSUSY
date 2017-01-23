@@ -49,20 +49,20 @@ BOOST_AUTO_TEST_CASE( test_increasing_running_precision )
 
 class Static_convergence_tester : public Convergence_tester {
 public:
-   Static_convergence_tester(unsigned int max_iterations_)
+   Static_convergence_tester(int max_iterations_)
       : iteration(0), maximum_iterations(max_iterations_) {}
    virtual ~Static_convergence_tester() {}
    virtual bool accuracy_goal_reached() {
       return false;
    }
-   virtual unsigned int max_iterations() const {
+   virtual int max_iterations() const {
       return maximum_iterations;
    }
    virtual void restart() {
       iteration = 0;
    }
 private:
-   unsigned int iteration, maximum_iterations;
+   int iteration, maximum_iterations;
 };
 
 class Static_model: public Model {
@@ -95,7 +95,7 @@ class Test_increasing_precision : public Two_scale_running_precision {
 public:
    Test_increasing_precision() : call(0) {}
    virtual ~Test_increasing_precision() {}
-   virtual double get_precision(unsigned it) {
+   virtual double get_precision(int it) {
       // Check that every time this function is called the argument is
       // increased by 1, beginning with 0.
       BOOST_CHECK_EQUAL(call, it);
@@ -103,7 +103,7 @@ public:
       return 1.0e-3;
    }
 private:
-   unsigned call; ///< stores number of calls of get_precision()
+   int call; ///< stores number of calls of get_precision()
 };
 
 BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )

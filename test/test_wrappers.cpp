@@ -174,7 +174,7 @@ std::string ToString_to_string(T a)
 template <typename T>
 std::string ToString_sprintf(T a)
 {
-   static const unsigned buf_length = 20;
+   static const int buf_length = 20;
    char buf[buf_length];
    snprintf(buf, buf_length, "%i", a);
    return std::string(buf);

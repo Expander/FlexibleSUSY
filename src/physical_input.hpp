@@ -35,7 +35,7 @@ namespace flexiblesusy {
 class Physical_input {
 public:
    /// available physical input parameters
-   enum Input : unsigned {
+   enum Input : int {
       alpha_em_0,                ///< [0] alpha_em(0), thompson limit
       mh_pole,                   ///< [1] SM Higgs pole mass
       NUMBER_OF_INPUT_PARAMETERS ///< number of possible input parameters

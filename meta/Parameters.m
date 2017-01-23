@@ -8,7 +8,7 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 FindSymbolDef::usage="";
 
 CreateParameterDefinition::usage="";
-CreateInitializedParameterDefinition::usage="";
+CreateParameterDefinitionAndDefaultInitialize::usage="";
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterSARAHNames::usage="";
@@ -731,14 +731,16 @@ CreateParameterDefinition[{par_, type_}] :=
 CreateParameterDefinition[{par_, block_, type_}] :=
     CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
 
-CreateInitializedParameterDefinition[{par_, type_}] :=
-    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> "{" <> CConversion`CreateDefaultValue[type] <> "};\n";
+CreateParameterDefinitionAndDefaultInitialize[par_] :=
+    CConversion`CreateCType[GetType[par]] <> " " <> CConversion`ToValidCSymbolString[par] <> "{};\n";
 
-CreateInitializedParameterDefinition[par_] :=
-    CreateInitializedParameterDefinition[{par, GetType[par]}];
+CreateParameterDefinitionAndDefaultInitialize[{par_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
 
-CreateInitializedParameterDefinition[{par_, block_, type_}] :=
-    CreateInitializedParameterDefinition[{par, type}];
+CreateParameterDefinitionAndDefaultInitialize[{par_, block_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
 
 CreateSetAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
@@ -952,7 +954,7 @@ CreateInputParameterEnum[inputParameters_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           "enum Input_parameters : unsigned { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
+           "enum Input_parameters : int { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
           ];
 
 CreateInputParameterNames[inputParameters_List] :=

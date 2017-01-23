@@ -61,7 +61,7 @@ bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
    return std::abs((a - b)/a) < prec;
 }
 
-bool is_finite(const double*, std::size_t length);
+bool is_finite(const double*, long length);
 
 template <std::size_t N>
 bool is_finite(const double v[N])

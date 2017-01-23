@@ -34,7 +34,7 @@ namespace @ModelName@_info {
 @particleMixingEnum@
 @inputParameterEnum@
 @gaugeCouplingNormalizationDecls@
-   extern const std::array<unsigned, NUMBER_OF_PARTICLES> particle_multiplicities;
+   extern const std::array<int, NUMBER_OF_PARTICLES> particle_multiplicities;
    extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_names;
    extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names;
    extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;

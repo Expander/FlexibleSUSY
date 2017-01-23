@@ -25,9 +25,17 @@
 
 namespace flexiblesusy {
 
+namespace {
+struct Global_thread_pool_msg {
+   Global_thread_pool_msg() {
+      VERBOSE_MSG("Creating global thread pool ...");
+   }
+};
+} // anonymous namespace
+
 Thread_pool& global_thread_pool()
 {
-   VERBOSE_MSG("Creating global thread pool ...");
+   static Global_thread_pool_msg msg;
    static Thread_pool tp;
    return tp;
 }

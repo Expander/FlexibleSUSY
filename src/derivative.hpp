@@ -195,7 +195,7 @@ auto derivative_central(const F& f, A x, A eps = std::numeric_limits<A>::epsilon
    const A h = std::fabs(x) < eps ? eps : std::sqrt(eps) * x;
    return_type result = 0;
 
-   for (unsigned i = 0; i < Order + 1; i++) {
+   for (int i = 0; i < Order + 1; i++) {
       const double coeff = coeffs[Order][i];
       const A step = (i + 1) * h;
       result += coeff * (f(x + step) - f(x - step));
