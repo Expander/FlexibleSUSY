@@ -1138,7 +1138,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
             ewsbEquationsTreeLevel, independentEwsbEquationsTreeLevel,
             independentEwsbEquations, higgsToEWSBEqAssociation,
             calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
-            ewsbInitialGuess = "", solveEwsbTreeLevel = "", EWSBSolvers = "",
+            ewsbInitialGuess = "", solveEwsbTreeLevel = "", setTreeLevelSolution = "", EWSBSolvers = "",
             setEWSBSolution = "", fillArrayWithEWSBParameters = "",
             solveEwsbWithTadpoles = "", getEWSBParametersFromVector = "",
             setEWSBParametersFromLocalCopies = "", applyEWSBSubstitutions = "",
@@ -1160,8 +1160,8 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
               calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+", "model."];
              ];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
-           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0,
-                                                                         ewsbSubstitutions];
+           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
+           setTreeLevelSolution         = EWSB`SetTreeLevelSolution[#[[1]]& /@ ewsbSolution, ewsbSubstitutions];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solution", "model."];
            fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
@@ -1176,6 +1176,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
                             "@numberOfEWSBEquations@"-> ToString[TreeMasses`GetDimension[SARAH`HiggsBoson]],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
+                            "@setTreeLevelSolution@"         -> IndentText[WrapLines[setTreeLevelSolution]],
                             "@saveEWSBOutputParameters@"     -> IndentText[saveEWSBOutputParameters],
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
                             "@fillArrayWithEWSBParameters@"  -> IndentText[fillArrayWithEWSBParameters],
@@ -1185,6 +1186,69 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             "@applyEWSBSubstitutions@"       -> IndentText[IndentText[WrapLines[applyEWSBSubstitutions]]],
                             "@setModelParametersFromEWSB@"   -> IndentText[WrapLines[setModelParametersFromEWSB]],
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
+WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitialGuessValues_List,
+                                 ewsbSubstitutions_List, ewsbSolution_List, freePhases_List,
+                                 solutions_List, files_List] :=
+    Module[{numberOfIndependentEWSBEquations,
+            ewsbEquationsTreeLevel,
+            independentEwsbEquations, higgsToEWSBEqAssociation,
+            calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
+            ewsbInitialGuess = "", solveEwsbTreeLevel = "", setTreeLevelSolution = "", EWSBSolvers = "",
+            setEWSBSolution = "", fillArrayWithEWSBParameters = "",
+            solveEwsbWithTadpoles = "", getEWSBParametersFromVector = "",
+            setEWSBParametersFromLocalCopies = "", applyEWSBSubstitutions = "",
+            setModelParametersFromEWSB = "", setBoundaryValueParametersFromLocalCopies = ""},
+           independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB,
+                                                                     ewsbSubstitutions];
+           numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
+           ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
+           If[ewsbEquations =!= Table[0, {Length[ewsbEquations]}] &&
+              Length[parametersFixedByEWSB] != numberOfIndependentEWSBEquations,
+              Print["Error: There are ", numberOfIndependentEWSBEquations, " independent EWSB ",
+                    "equations, but you want to fix ", Length[parametersFixedByEWSB],
+                    " parameters: ", parametersFixedByEWSB];
+             ];
+           higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
+           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+", "model."];
+           If[SARAH`UseHiggs2LoopMSSM === True || FlexibleSUSY`UseHiggs2LoopNMSSM === True,
+              calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+", "model."];
+             ];
+           ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
+           solveEwsbTreeLevel = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
+           solveEwsbTreeLevel = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbTreeLevel, solutions];
+           setTreeLevelSolution = SemiAnalytic`SetTreeLevelEWSBSolution[#[[1]]& /@ ewsbSolution, solutions, ewsbSubstitutions];
+           solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution];
+           solveEwsbWithTadpoles        = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbWithTadpoles, solutions];
+           EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
+           setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solution", "model."];
+           fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
+           getEWSBParametersFromVector  = EWSB`GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, "ewsb_pars"];
+           setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model."];
+           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, ewsbSubstitutions, "model."];
+           applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, ewsbSubstitutions];
+           setBoundaryValueParametersFromLocalCopies = SemiAnalytic`SetBoundaryValueParametersFromLocalCopies[parametersFixedByEWSB, solutions];
+           WriteOut`ReplaceInFiles[files,
+                          { "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],
+                            "@calculateTwoLoopTadpolesNoStruct@" -> IndentText[calculateTwoLoopTadpolesNoStruct],
+                            "@numberOfEWSBEquations@"-> ToString[TreeMasses`GetDimension[SARAH`HiggsBoson]],
+                            "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
+                            "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
+                            "@setTreeLevelSolution@"         -> IndentText[WrapLines[setTreeLevelSolution]],
+                            "@saveEWSBOutputParameters@"     -> IndentText[saveEWSBOutputParameters],
+                            "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
+                            "@fillArrayWithEWSBParameters@"  -> IndentText[fillArrayWithEWSBParameters],
+                            "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
+                            "@getEWSBParametersFromVector@"  -> IndentText[IndentText[getEWSBParametersFromVector]],
+                            "@setEWSBParametersFromLocalCopies@" -> IndentText[IndentText[setEWSBParametersFromLocalCopies]],
+                            "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
+                            "@applyEWSBSubstitutions@"       -> IndentText[IndentText[WrapLines[applyEWSBSubstitutions]]],
+                            "@setModelParametersFromEWSB@"   -> IndentText[WrapLines[setModelParametersFromEWSB]],
+                            "@setBoundaryValueParametersFromLocalCopies@" -> IndentText[IndentText[WrapLines[setBoundaryValueParametersFromLocalCopies]]],
+                            "@setBoundaryValueParametersFromSolution@" -> IndentText[WrapLines[setBoundaryValueParametersFromLocalCopies]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -2370,7 +2434,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
-            ewsbEquations, independentEwsbEquations,
+            ewsbEquations, independentEwsbEquations, ewsbSubstitutions,
             massMatrices, phases,
             diagonalizationPrecision,
             allIntermediateOutputParametes = {},
@@ -2386,7 +2450,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
             semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleGuess,
-            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum, semiAnalyticSolnsOutputFile},
+            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum, semiAnalyticSolnsOutputFile,
+            semiAnalyticEWSBSubstitutions = {}},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2761,9 +2826,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`EWSBInitialGuess = EWSB`GetValidEWSBInitialGuesses[FlexibleSUSY`EWSBInitialGuess];
              ];
 
+           ewsbSubstitutions = {};
            If[FlexibleSUSY`EWSBSubstitutions =!= {},
-              FlexibleSUSY`EWSBSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
-              FlexibleSUSY`EWSBSubstitutions = FlexibleSUSY`EWSBSubstitutions /. allIndexReplacementRules;
+              ewsbSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
+              ewsbSubstitutions = (Rule @@ #)& /@ (ewsbSubstitutions /. allIndexReplacementRules);
+             ];
+
+           If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
+              semiAnalyticEWSBSubstitutions = SemiAnalytic`GetSemiAnalyticEWSBSubstitutions[semiAnalyticSolns];
              ];
 
            FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
@@ -2773,13 +2843,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               treeLevelEwsbEqsOutputFile      = FileNameJoin[{FSOutputDir,
                                                               FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
               Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
-              If[Head[FlexibleSUSY`EWSBSubstitutions] === List && FlexibleSUSY`EWSBSubstitutions =!= {},
-                 Put[EWSB`ApplySubstitutionsToEqs[ewsbEquations, FlexibleSUSY`EWSBSubstitutions], treeLevelEwsbEqsOutputFile],
+              If[ewsbSubstitutions =!= {},
+                 Put[Parameters`ReplaceAllRespectingSARAHHeads[ewsbEquations, ewsbSubstitutions], treeLevelEwsbEqsOutputFile],
                  Put[ewsbEquations, treeLevelEwsbEqsOutputFile]
                 ];
 
               {ewsbSolution, freePhases} = SolveEWSBEquations[ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
-                                                              FlexibleSUSY`EWSBSubstitutions, FlexibleSUSY`TreeLevelEWSBSolution,
+                                                              Join[semiAnalyticEWSBSubstitutions, ewsbSubstitutions],
+                                                              FlexibleSUSY`TreeLevelEWSBSolution,
                                                               treeLevelEwsbSolutionOutputFile];
               ,
               Print["Note: There are no EWSB equations."];
@@ -2907,7 +2978,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
-                           FlexibleSUSY`EWSBSubstitutions, nPointFunctions, vertexRules, Parameters`GetPhases[],
+                           Join[semiAnalyticEWSBSubstitutions, ewsbSubstitutions], nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
@@ -3051,7 +3122,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for two-scale EWSB solver ..."];
               WriteEWSBSolverClass[ewsbEquations, FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
-                                   FlexibleSUSY`EWSBSubstitutions, ewsbSolution, freePhases,
+                                   ewsbSubstitutions, ewsbSolution, freePhases,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_ewsb_solver.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_ewsb_solver.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_ewsb_solver.cpp.in"}],
@@ -3203,6 +3274,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_solutions.cpp.in"}],
                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_solutions.cpp"}]}}
                                              ];
+
+              Print["Creating class for semi-analytic EWSB solver ..."];
+              WriteSemiAnalyticEWSBSolverClass[ewsbEquations, FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
+                                               ewsbSubstitutions, ewsbSolution, freePhases, semiAnalyticSolns,
+                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_ewsb_solver.hpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_ewsb_solver.hpp"}]},
+                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_ewsb_solver.cpp.in"}],
+                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_ewsb_solver.cpp"}]}}];
 
               Print["Creating class for semi-analytic model ..."];
               WriteSemiAnalyticModelClass[semiAnalyticBCs, semiAnalyticSolns,

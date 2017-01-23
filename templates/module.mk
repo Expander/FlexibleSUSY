@@ -83,6 +83,8 @@ TWO_SCALE_TEMPLATES := \
 SEMI_ANALYTIC_TEMPLATES := \
 		$(DIR)/semi_analytic_convergence_tester.hpp.in \
 		$(DIR)/semi_analytic_convergence_tester.cpp.in \
+		$(DIR)/semi_analytic_ewsb_solver.hpp.in \
+		$(DIR)/semi_analytic_ewsb_solver.cpp.in \
 		$(DIR)/semi_analytic_high_scale_constraint.hpp.in \
 		$(DIR)/semi_analytic_high_scale_constraint.cpp.in \
 		$(DIR)/semi_analytic_high_scale_initial_guesser.hpp.in \

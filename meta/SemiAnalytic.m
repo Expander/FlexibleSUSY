@@ -1,5 +1,5 @@
 
-BeginPackage["SemiAnalytic`", {"SARAH`", "CConversion`", "Constraint`", "Parameters`",
+BeginPackage["SemiAnalytic`", {"SARAH`", "CConversion`", "Constraint`", "EWSB`", "Parameters`",
                                "TextFormatting`", "Utils`", "WriteOut`"}];
 
 SemiAnalyticSolution::usage="Head of a semi-analytic solution.
@@ -25,6 +25,7 @@ GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
 ExpandSemiAnalyticSolutions::usage="Expands the given solutions
 in terms of the coefficients.";
+GetSemiAnalyticParameterSubstitutions::usage="";
 CreateBoundaryValueParameters::usage="Creates new parameters
 representing the boundary values.";
 CreateCoefficientParameters::usage="Creates new parameters
@@ -47,10 +48,14 @@ CalculateCoefficients::usage="";
 CreateSemiAnalyticCoefficientsCalculation::usage="";
 CreateCoefficientsCalculations::usage="";
 
+SetTreeLevelEWSBSolution::usage="";
+
 ApplySemiAnalyticBoundaryConditions::usage="";
+ReplacePreprocessorMacros::usage="";
+GetSemiAnalyticEWSBSubstitutions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
 SaveBoundaryValueParameters::usage="";
-
+SetBoundaryValueParametersFromLocalCopies::usage="";
 GetModelBoundaryValueParameters::usage="";
 SetModelBoundaryValueParameters::usage="";
 GetModelCoefficients::usage="";
@@ -697,6 +702,62 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_S
            Parameters`CreateLocalConstRefs[parameters] <> StringJoin[setBoundaryValues] <> result
           ];
 
+ReplacePreprocessorMacros[expr_String, solutions_List] :=
+    Module[{boundaryValues, coeffs, semiAnalyticPars},
+           boundaryValues = CreateBoundaryValue /@ (GetBoundaryValueParameters[solutions]);
+           coeffs = Flatten[CreateCoefficients /@ solutions];
+           semiAnalyticPars = Join[boundaryValues, coeffs];
+           macroRules = Flatten[{ Rule["EXTRAPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")",
+                                       "SEMIANALYTICPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")"],
+                                  Rule["MODELPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")",
+                                       "SEMIANALYTICPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")"]
+                                }& /@ semiAnalyticPars];
+           StringReplace[expr, macroRules]
+          ];
+
+GetSubstitutionsWithIndices[{parameter_, replacement_}, basisPars_, coeffs_] :=
+    Module[{type, numIndices, indices, coeffRules, indexedSubs, substitutions},
+           type = Parameters`GetType[parameter];
+           Which[MatchQ[type, CConversion`ScalarType[_]],
+                 numIndices = 0,
+                 MatchQ[type, CConversion`VectorType[_, _]],
+                 numIndices = 1,
+                 MatchQ[type, CConversion`ArrayType[_, _]],
+                 numIndices = 1,
+                 MatchQ[type, CConversion`MatrixType[_, _, _]],
+                 numIndices = 2,
+                 MatchQ[type, CConversion`TensorType[__]],
+                 numIndices = Length[Rest[type]],
+                 True,
+                 Print["Error: unrecognized type: ", type];
+                 Quit[1];
+                ];
+           substitutions = {{parameter, replacement}};
+           If[numIndices =!= 0,
+              indices = Table["i" <> ToString[i], {i, 1, numIndices}];
+              coeffRules = RuleDelayed[#, #[Sequence @@ (Symbol[#] & /@ indices)]]& /@ coeffs;
+              indexedSubs = {parameter[Sequence @@ (Pattern[Evaluate[Symbol[#]], Blank[]]& /@ indices)],
+                             replacement /. coeffRules};
+              substitutions = Append[substitutions, indexedSubs];
+             ];
+           substitutions
+          ];
+
+GetSemiAnalyticEWSBSubstitutions[solution_SemiAnalyticSolution] :=
+    Module[{parameter, basisRules, basisPars, coeffs, replacement, result},
+           parameter = GetName[solution];
+           dim = Parameters`GetParameterDimensions[parameter];
+           basisRules = Rule[#, #]& /@ (GetBoundaryValueParameters[solution]);
+           basisPars = #[[2]]& /@ basisRules;
+           coeffs = CreateCoefficients[solution];
+           replacement = Dot[coeffs, GetBasis[solution]] /. basisRules;
+           result = GetSubstitutionsWithIndices[{parameter, replacement}, basisPars, coeffs];
+          ( Rule @@ #)& /@ result
+          ];
+
+GetSemiAnalyticEWSBSubstitutions[solutions_List] :=
+    Join[Sequence @@ (GetSemiAnalyticEWSBSubstitutions /@ solutions)]
+
 GetDefaultSettings[parameters_List] := {#, 0}& /@ parameters;
 
 (* @note assumes the solution is a polynomial in the boundary value parameters *)
@@ -850,6 +911,13 @@ ExpandSemiAnalyticSolution[solution_SemiAnalyticSolution] :=
 ExpandSemiAnalyticSolutions[solutions_List] :=
     ExpandSemiAnalyticSolution /@ solutions;
 
+GetSemiAnalyticParameterSubstitutions[solutions_List] :=
+    Module[{boundaryValues, expanded},
+           boundaryValueRules = Rule[#, CreateBoundaryValue[#]]& /@ (GetBoundaryValueParameters[solutions]);
+           expanded = ExpandSemiAnalyticSolutions[solutions];
+           {#[[1]], Parameters`ReplaceAllRespectingSARAHHeads[#[[2]], boundaryValueRules]}& /@ expanded
+          ];
+
 EvaluateSemiAnalyticSolution[solution_, class_String] :=
     Module[{parameter, basisRules, coeffs},
            parameter = GetName[solution];
@@ -891,6 +959,55 @@ SaveBoundaryValueParameters[solutions_List] :=
            boundaryValueParameters = GetBoundaryValueParameters[solutions];
            (result = result <> SaveBoundaryValueParameter[#])& /@ boundaryValueParameters;
            Return[result];
+          ];
+
+SetBoundaryValueParametersFromLocalCopies[parameterCopies_List, solutions_List, struct_String:"solutions->"] :=
+    Module[{boundaryValues, parameters, result = ""},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           parameters = Select[parameterCopies, MemberQ[boundaryValues, #]&];
+           (result = result <> Parameters`SetParameter[CreateBoundaryValue[#], CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
+           Return[result];
+          ];
+
+SetTreeLevelEWSBSolution[parametersFixedByEWSB_List, solutions_List, substitutions_List, struct_String:"model."] :=
+    Module[{boundaryValues, i, par, basisPar, parStr, basisSettings = "", body = "", result = ""},
+           boundaryValues = GetBoundaryValueParameters[solutions];
+           result = result <> "const bool is_finite = ";
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par    = parametersFixedByEWSB[[i]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               result = result <> "IsFinite(" <> parStr <> ")";
+               If[i != Length[parametersFixedByEWSB],
+                  result = result <> " && ";
+                 ];
+              ];
+           result = result <> ";\n\n";
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par    = parametersFixedByEWSB[[i]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               body = body <> Parameters`SetParameter[par, parStr, struct, None];
+               If[MemberQ[boundaryValues, par],
+                  basisPar = CreateBoundaryValue[par];
+                  basisSettings = basisSettings <> Parameters`SetParameter[basisPar, parStr, "solutions->", None];
+                 ];
+              ];
+           body = body <> basisSettings <> "solutions->evaluate_solutions(model);\n";
+           If[substitutions === {},
+              result = result <>
+                       "if (is_finite) {\n" <>
+                       IndentText[body] <>
+                       "} else {\n" <>
+                       IndentText["error = 1;\n"] <>
+                       "}";,
+              result = result <>
+                       "if (is_finite) {\n" <>
+                       IndentText[body] <>
+                       IndentText[WrapLines[EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
+                       "} else {\n" <>
+                       IndentText["error = 1;\n"] <>
+                       "}";
+             ];
+           result
           ];
 
 GetAllIndexCombinations[bounds_List] := Tuples[Range[0, #-1]& /@ bounds];
