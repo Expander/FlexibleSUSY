@@ -581,12 +581,12 @@ GetBoundaryValueFromStruct[parameter_, struct_String] :=
            type = Parameters`GetType[parameter];
            parStr = CreateBoundaryValueParameterName[parameter];
            name = CConversion`CreateGetterReturnType[type]
-                  <> " CLASSNAME::get_" <> parStr <> "() const {";
+                  <> " get_" <> parStr <> "() const {";
            body = struct <> "get_" <> parStr <> "();";
            name <> " " <> body <> " }\n"
           ];
 
-SetBoundaryValueFromStruct[parameter_, struct_String] :=
+SetBoundaryValueInStruct[parameter_, struct_String] :=
     Module[{parStr, type, name, body = "", function},
            type = Parameters`GetType[parameter];
            parStr = CreateBoundaryValueParameterName[parameter];
@@ -621,7 +621,7 @@ GetModelBoundaryValueParameters[solutions_List, struct_String:"solutions."] :=
 SetModelBoundaryValueParameters[solutions_List, struct_String:"solutions."] :=
     Module[{boundaryValues, result},
            boundaryValues = GetBoundaryValueParameters[solutions];
-           result = GetBoundaryValueFromStruct[#, struct]& /@ boundaryValues;
+           result = SetBoundaryValueInStruct[#, struct]& /@ boundaryValues;
            StringJoin[result]
           ];
 
