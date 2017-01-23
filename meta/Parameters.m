@@ -148,6 +148,9 @@ StripIndicesRules::usage="removes given indices from a symbol";
 
 StripSARAHIndicesRules::usage="removes SARAH-specific indices from a symbol";
 
+ReplaceAllRespectingSARAHHeads::usage="applies given rules, respecting
+SARAH heads SARAH`B, SARAH`L, SARAH`T and SARAH`Q";
+
 FilterOutLinearDependentEqs::usage="returns linear independent equations";
 
 FilterOutIndependentEqs::usage = "returns equations that depend on the
@@ -363,6 +366,27 @@ FindAllParametersClassified[expr_, exceptions_:{}] :=
                FSDerivedParameters -> depNum,
                FSExtraParameters -> extraPars
            }
+          ];
+
+ReplaceAllRespectingSARAHHeads[expr_, rules_] :=
+    Module[{pars, parsWithoutHeads, removeHeadsRules,
+            uniqueRules, uniqueExpr, uniqueSubs},
+           pars = Parameters`FindAllParameters[(#[[1]])& /@ rules];
+           removeHeadsRules = { SARAH`L[p_][__] :> p, SARAH`L[p_] :> p,
+                                SARAH`B[p_][__] :> p, SARAH`B[p_] :> p,
+                                SARAH`T[p_][__] :> p, SARAH`T[p_] :> p,
+                                SARAH`Q[p_][__] :> p, SARAH`Q[p_] :> p
+                              };
+           parsWithoutHeads = DeleteDuplicates[pars /. removeHeadsRules];
+           uniqueRules = DeleteDuplicates @ Flatten[{
+               Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
+               Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
+               Rule[SARAH`T[#], CConversion`ToValidCSymbol[SARAH`T[#]]],
+               Rule[SARAH`Q[#], CConversion`ToValidCSymbol[SARAH`Q[#]]]
+           }& /@ parsWithoutHeads];
+           uniqueExpr = expr /. uniqueRules;
+           uniqueSubs = rules /. uniqueRules;
+           (uniqueExpr /. uniqueSubs) /. (Reverse /@ uniqueRules)
           ];
 
 IsScalar[sym_] :=
