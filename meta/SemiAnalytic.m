@@ -32,10 +32,8 @@ CreateCoefficientParameters::usage="Creates new parameters
 representing the coefficients in the semi-analytic solutions.";
 
 CreateSemiAnalyticSolutionsDefinitions::usage="";
-CreateSemiAnalyticSolutionsInitialization::usage="";
 CreateBoundaryValuesDefinitions::usage="";
 CreateLocalBoundaryValuesDefinitions::usage="";
-CreateBoundaryValuesInitialization::usage="";
 CreateSemiAnalyticCoefficientGetters::usage="";
 CreateBoundaryValueGetters::usage="";
 CreateBoundaryValueSetters::usage="";
@@ -541,26 +539,13 @@ CreateCoefficientNames[solution_SemiAnalyticSolution] :=
 CreateSemiAnalyticSolutionsDefinitions[solution_SemiAnalyticSolution] :=
     Module[{coeffs, defs = ""},
            coeffs = CreateCoefficientParameters[solution];
-           (defs = defs <> Parameters`CreateInitializedParameterDefinition[#])& /@ coeffs;
+           (defs = defs <> Parameters`CreateParameterDefinitionAndDefaultInitialize[#])& /@ coeffs;
            Return[defs];
           ];
 
 CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
     Module[{def = ""},
            (def = def <> CreateSemiAnalyticSolutionsDefinitions[#])& /@ solutions;
-           Return[def];
-          ];
-
-CreateSemiAnalyticSolutionDefaultInitialization[solution_SemiAnalyticSolution] :=
-    Module[{coeffs, defaults},
-           coeffs = CreateCoefficientParameters[solution];
-           defaults = CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]]& /@ coeffs;
-           "," <> Utils`StringJoinWithSeparator[defaults, ","]
-          ];
-
-CreateSemiAnalyticSolutionsInitialization[solutions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateSemiAnalyticSolutionDefaultInitialization[#])& /@ solutions;
            Return[def];
           ];
 
@@ -658,7 +643,7 @@ PrintModelCoefficients[solutions_List, streamName_String, struct_String:"solutio
 CreateBoundaryValuesDefinitions[solutions_List, createParameters_:CreateBoundaryValueParameters] :=
     Module[{boundaryValues, defns},
            boundaryValues = createParameters[solutions];
-           defns = (Parameters`CreateInitializedParameterDefinition[#])& /@ boundaryValues;
+           defns = (Parameters`CreateParameterDefinitionAndDefaultInitialize[#])& /@ boundaryValues;
            StringJoin[defns] <> "\n"
           ];
 
@@ -666,13 +651,6 @@ CreateLocalBoundaryValuesDefinitions[solutions_List] :=
     Module[{createLocalPars},
            createLocalPars = With[{solns = #}, {#, Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions])]&;
            CreateBoundaryValuesDefinitions[solutions, createLocalPars]
-          ];
-
-CreateBoundaryValuesInitialization[solutions_List] :=
-    Module[{boundaryValues, def = ""},
-           boundaryValues = CreateBoundaryValueParameters[solutions];
-           (def = def <> "," <> CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
-           Return[def];
           ];
 
 ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
