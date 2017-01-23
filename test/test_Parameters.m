@@ -141,6 +141,12 @@ TestEquality[Sort[Parameters`FindAllParameters[expr]],
              Sort[modelParameters]
             ];
 
+expr = 2 * Mu Re[SARAH`B[Mu]] + Im[WOp] SARAH`Q[WOp] + a;
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[modelParameters]
+            ];
+
 expr = 2 * SARAH`B[Mu] + SARAH`Q[WOp];
 
 TestEquality[Sort[Parameters`FindAllParameters[expr]],
