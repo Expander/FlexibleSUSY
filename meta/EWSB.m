@@ -758,7 +758,7 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
            Return[result];
           ];
 
-CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
+CreateTreeLevelEwsbSolver[solution_List] :=
     Module[{result = "",
             i, par, expr, parStr, decls = "", reducedSolution,
             type},
