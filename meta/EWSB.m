@@ -786,7 +786,7 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
 
 CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
     Module[{result = "",
-            i, par, expr, parStr, oldParStr, decls = "", reducedSolution,
+            i, par, expr, parStr, decls = "", reducedSolution,
             type},
            reducedSolution = solution;
            If[reducedSolution =!= {},
@@ -800,13 +800,9 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                   expr = reducedSolution[[i,2]];
                   type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
                   parStr = CConversion`ToValidCSymbolString[par];
-                  oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
-                  result = result <>
-                           "const " <> type <> " " <> oldParStr <> " = " <>
-                           CConversion`RValueToCFormString[Parameters`WrapPreprocessorMacroAround[par]] <> ";\n";
-                  decls = decls <> type <> " " <> parStr <> ";\n";
+                  result = result <> type <> " " <> parStr <> ";\n";
                  ];
-              result = result <> decls <> "\n";
+              result = result <> "\n";
               (* write solution *)
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
@@ -823,7 +819,7 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
           ];
 
 SetTreeLevelSolution[parametersFixedByEWSB_List, substitutions_List:{}, struct_String:"model."] :=
-    Module[{i, par, parStr, oldParStr, successBody = "", failBody = "", result = ""},
+    Module[{i, par, parStr, body = "", result = ""},
            result = result <> "const bool is_finite = ";
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par    = parametersFixedByEWSB[[i]];
@@ -837,24 +833,21 @@ SetTreeLevelSolution[parametersFixedByEWSB_List, substitutions_List:{}, struct_S
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par    = parametersFixedByEWSB[[i]];
                parStr = CConversion`ToValidCSymbolString[par];
-               oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
-               failBody = failBody <> Parameters`SetParameter[par, oldParStr, struct, None];
-               successBody = successBody <> Parameters`SetParameter[par, parStr, struct, None];
+               body = body <> Parameters`SetParameter[par, parStr, struct, None];
               ];
-           failBody = failBody <> "error = 1;\n";
            If[substitutions === {},
               result = result <>
-                       "if (!is_finite) {\n" <>
-                       IndentText[failBody] <>
+                       "if (is_finite) {\n" <>
+                       IndentText[body] <>
                        "} else {\n" <>
-                       IndentText[successBody] <>
+                       IndentText["error = 1;\n"] <>
                        "}";,
               result = result <>
                        "if (is_finite) {\n" <>
-                       IndentText[successBody] <>
+                       IndentText[body] <>
                        IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
                        "} else {\n" <>
-                       IndentText[failBody] <>
+                       IndentText["error = 1;\n"] <>
                        "}";
              ];
            result
