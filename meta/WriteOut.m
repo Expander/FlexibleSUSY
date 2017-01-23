@@ -677,7 +677,7 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
-ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
+ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_}, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
