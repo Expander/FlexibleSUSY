@@ -198,7 +198,7 @@ int @ModelName@_ewsb_solver<Two_scale>::solve_tree_level(@ModelName@_mass_eigens
    int error = 0;
 
 @solveEwsbTreeLevel@
-
+@setTreeLevelSolution@
    return error;
 }
 
