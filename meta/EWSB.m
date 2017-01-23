@@ -1,9 +1,6 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
 
-ApplySubstitutionsToEqs::usage="Makes the given substitutions in the EWSB
-equations, taking into account SARAH heads";
-
 GetLinearlyIndependentEqs::usage="Removes linearly dependent EWSB equations
 from a list of equations";
 
@@ -92,33 +89,10 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
-ApplySubstitutionsToEqs[eqs_List, substitutions_List] :=
-    Module[{pars, removeHeadsRules, parsWithoutHeads, uniqueRules, uniqueEqs, uniqueSubs, result},
-           pars = Parameters`FindAllParameters[(#[[1]])& /@ substitutions];
-           removeHeadsRules = { SARAH`L[p_][__] :> p, SARAH`L[p_] :> p,
-                                SARAH`B[p_][__] :> p, SARAH`B[p_] :> p,
-                                SARAH`T[p_][__] :> p, SARAH`T[p_] :> p,
-                                SARAH`Q[p_][__] :> p, SARAH`Q[p_] :> p,
-                                Re[p_[__]] :> p, Re[p_] :> p,
-                                Im[p_[__]] :> p, Im[p_] :> p
-                              };
-           parsWithoutHeads = DeleteDuplicates[pars /. removeHeadsRules];
-           uniqueRules = DeleteDuplicates @ Flatten[{
-               Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
-               Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
-               Rule[SARAH`T[#], CConversion`ToValidCSymbol[SARAH`T[#]]],
-               Rule[SARAH`Q[#], CConversion`ToValidCSymbol[SARAH`Q[#]]]
-           }& /@ parsWithoutHeads];
-           uniqueEqs = eqs /. uniqueRules;
-           uniqueSubs = substitutions /. uniqueRules;
-           result = uniqueEqs /. (Rule[#[[1]], #[[2]]]& /@ uniqueSubs);
-           result /. (Reverse /@ uniqueRules)
-          ];
-
 GetLinearlyIndependentEqs[eqs_List, parameters_List, substitutions_List:{}] :=
     Module[{eqsToSolve, indepEqsToSolve, eqsToKeep},
            If[substitutions =!= {},
-              eqsToSolve = ApplySubstitutionsToEqs[eqs, substitutions];,
+              eqsToSolve = Parameters`ReplaceAllRespectingSARAHHeads[eqs, substitutions];,
               eqsToSolve = eqs;
              ];
            indepEqsToSolve = Parameters`FilterOutLinearDependentEqs[eqsToSolve, parameters];
@@ -648,7 +622,7 @@ ReduceSolution[solution_List] :=
 FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:"", substitutions_List:{}] :=
     Module[{eqsToSolve, solution, reducedSolution, freePhases},
            If[substitutions =!= {},
-              eqsToSolve = ApplySubstitutionsToEqs[equations, substitutions];,
+              eqsToSolve = Parameters`ReplaceAllRespectingSARAHHeads[equations, substitutions];,
               eqsToSolve = equations;
              ];
            solution = FindSolution[eqsToSolve, parametersFixedByEWSB];
