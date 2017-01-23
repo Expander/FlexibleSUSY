@@ -51,8 +51,9 @@ namespace flexiblesusy {
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
 {
-   assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
-          " @ModelName@<Semi_analytic> must not be zero");
+   if (!model)
+      throw SetupError("@ModelName@_initial_guesser: Error: pointer to model"
+                       " @ModelName@<Semi_analytic> must not be zero");
 }
 
 @ModelName@_initial_guesser<Semi_analytic>::~@ModelName@_initial_guesser()
