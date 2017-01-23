@@ -34,6 +34,9 @@ finders";
 SetEWSBSolution::usage="sets the model parameters to the solution
 provided by the solver";
 
+SetTreeLevelSolution::usage="sets the model parameters to the
+tree-level solution";
+
 FillArrayWithParameters::usage="fill an array with parameters";
 
 DivideTadpolesByVEV::usage="Divides an array of tadpoles by their
@@ -782,10 +785,9 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
           ];
 
 CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
-    Module[{result = "", failBody = "", successBody = "", fixedPars,
+    Module[{result = "",
             i, par, expr, parStr, oldParStr, decls = "", reducedSolution,
             type},
-           fixedPars = GetFixedParameter /@ solution;
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
@@ -814,45 +816,48 @@ CreateTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                            CConversion`CastTo[CConversion`RValueToCFormString[expr], type] <> ";\n";
                  ];
               result = result <> "\n";
-              (* check for errors *)
-              result = result <> "const bool is_finite = ";
-              For[i = 1, i <= Length[reducedSolution], i++,
-                  par    = reducedSolution[[i,1]];
-                  parStr = CConversion`ToValidCSymbolString[par];
-                  result = result <> "IsFinite(" <> parStr <> ")";
-                  If[i != Length[reducedSolution],
-                     result = result <> " && ";
-                    ];
-                 ];
-              result = result <> ";\n\n";
-              For[i = 1, i <= Length[reducedSolution], i++,
-                  par    = reducedSolution[[i,1]];
-                  parStr = CConversion`ToValidCSymbolString[par];
-                  oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
-                  failBody = failBody <> Parameters`SetParameter[par, oldParStr, "model.", None];
-                  successBody = successBody <> Parameters`SetParameter[par, parStr, "model.", None];
-                 ];
-              successBody = successBody;
-              failBody = failBody <> "error = 1;\n";
-              If[substitutions === {},
-                 result = result <>
-                          "if (!is_finite) {\n" <>
-                          IndentText[failBody] <>
-                          "} else {\n" <>
-                          IndentText[successBody] <>
-                          "}";,
-                 result = result <>
-                          "if (is_finite) {\n" <>
-                          IndentText[successBody] <>
-                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions, "model."]]] <>
-                          "} else {\n" <>
-                          IndentText[failBody] <>
-                          "}";
-                ];
               ,
               result = "error = solve_iteratively_at(model, 0);\n";
              ];
            Return[result];
+          ];
+
+SetTreeLevelSolution[parametersFixedByEWSB_List, substitutions_List:{}, struct_String:"model."] :=
+    Module[{i, par, parStr, oldParStr, successBody = "", failBody = "", result = ""},
+           result = result <> "const bool is_finite = ";
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par    = parametersFixedByEWSB[[i]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               result = result <> "IsFinite(" <> parStr <> ")";
+               If[i != Length[parametersFixedByEWSB],
+                  result = result <> " && ";
+                 ];
+              ];
+           result = result <> ";\n\n";
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par    = parametersFixedByEWSB[[i]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
+               failBody = failBody <> Parameters`SetParameter[par, oldParStr, struct, None];
+               successBody = successBody <> Parameters`SetParameter[par, parStr, struct, None];
+              ];
+           failBody = failBody <> "error = 1;\n";
+           If[substitutions === {},
+              result = result <>
+                       "if (!is_finite) {\n" <>
+                       IndentText[failBody] <>
+                       "} else {\n" <>
+                       IndentText[successBody] <>
+                       "}";,
+              result = result <>
+                       "if (is_finite) {\n" <>
+                       IndentText[successBody] <>
+                       IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
+                       "} else {\n" <>
+                       IndentText[failBody] <>
+                       "}";
+             ];
+           result
           ];
 
 CreateNewEWSBRootFinder[] :=
@@ -1003,6 +1008,7 @@ SetEWSBParameter[par_, idx_, array_String] :=
 CreateEWSBParametersInitialization[parameters_List, array_String] :=
     StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
 
+(* @todo handle patterns here *)
 SetModelParametersFromEWSB[parametersFixedByEWSB_List, substitutions_List, class_String] :=
     Module[{subs = substitutions, localPars, result = ""},
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
@@ -1014,6 +1020,7 @@ SetModelParametersFromEWSB[parametersFixedByEWSB_List, substitutions_List, class
            Parameters`CreateLocalConstRefs[localPars] <> result
           ];
 
+(* @todo handle patterns here *)
 ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
     Module[{pars, subs = substitutions, result = ""},
            subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
