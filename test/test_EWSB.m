@@ -342,20 +342,22 @@ TestEquality[Length[solution[[1]]], 5];
 
 Print["testing EWSB substitutions ..."];
 
+Parameters`SetModelParameters[{\[Mu], B[\[Mu]], mHd2, mHu2}];
+
 subEwsbEqs = {
     \[Mu]^2 + x^2 + x y + z + 5,
-    B[\[Mu]]  - x^2 + x y + z + 5
+    B[\[Mu]] - x^2 + x y + z + 5
 };
 
 ewsbSubs = {
-   {\[Mu], Sign[\[Mu]] Sqrt[MuSqr]}
+   Rule[\[Mu], Sign[\[Mu]] Sqrt[MuSqr]]
 };
 
 subEwsbOutputParameters = { MuSqr, B[\[Mu]] };
 
 Parameters`SetRealParameters[subEwsbOutputParameters];
 
-{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
 
 TestEquality[subFreePhases, {}];
 TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
@@ -363,13 +365,13 @@ TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
                                                    B[\[Mu]] -> x^2 - x y - z - 5}]];
 
 ewsbSubs = {
-   {\[Mu], Sign[\[Mu]] Sqrt[MuSqr]},
-   {B[\[Mu]], BMu0}
+   Rule[\[Mu], Sign[\[Mu]] Sqrt[MuSqr]],
+   Rule[B[\[Mu]], BMu0]
 };
 
 subEwsbOutputParameters = { MuSqr, BMu0 };
 
-{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
 
 TestEquality[subFreePhases, {}];
 TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
@@ -384,15 +386,15 @@ subEwsbEqs = {
 };
 
 ewsbSubs = {
-   {mHd2, m0^2 + m12^2},
-   {mHu2, m0^2 + AzeroSqr}
+   Rule[mHd2, m0^2 + m12^2],
+   Rule[mHu2, m0^2 + AzeroSqr]
 };
 
 subEwsbOutputParameters = {m12, AzeroSqr};
 
 Parameters`SetRealParameters[subEwsbOutputParameters];
 
-{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, ewsbSubs];
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
 
 TestEquality[subFreePhases, {Sign[m12]}];
 TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
