@@ -28,7 +28,6 @@
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
 
-#include <cassert>
 #include <cmath>
 
 namespace flexiblesusy {
@@ -65,8 +64,7 @@ namespace flexiblesusy {
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 {
-   assert(model && "Error: @ModelName@_susy_scale_constraint<Semi_analytic>::"
-          "apply():model pointer must not be zero");
+   check_model_ptr();
 
 @temporarySetting@
 
@@ -81,8 +79,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 
    const @ModelName@_input_parameters& @ModelName@_susy_scale_constraint<Semi_analytic>::get_input_parameters() const
 {
-   assert(model && "Error: @ModelName@_susy_scale_constraint<Semi_analytic>::"
-          "get_input_parameters(): model pointer is zero.");
+   check_model_ptr();
 
    return model->get_input();
 }
@@ -103,8 +100,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::clear()
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::initialize()
 {
-   assert(model && "@ModelName@_susy_scale_constraint<Semi_analytic>::"
-          "initialize(): model pointer is zero.");
+   check_model_ptr();
 
 @scaleGuess@
    scale = initial_scale_guess;
@@ -112,12 +108,18 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::initialize()
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::update_scale()
 {
-   assert(model && "@ModelName@_susy_scale_constraint<Semi_analytic>::"
-          "update_scale(): model pointer is zero.");
+   check_model_ptr();
 
 @calculateScale@
 @restrictScale@
 @updateSemiAnalyticConstraint@
+}
+
+void @ModelName@_susy_scale_constraint<Semi_analytic>::check_model_ptr() const
+{
+   if (!model)
+      throw SetupError("@ModelName@_susy_scale_constraint<Semi_analytic>: "
+                       "model pointer is zero!");
 }
 
 } // namespace flexiblesusy

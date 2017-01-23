@@ -30,10 +30,11 @@
 #include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
 
-#include <cassert>
 #include <cmath>
 #include <cerrno>
 #include <cstring>
+
+namespace flexiblesusy {
 
 #define DERIVEDPARAMETER(p) model->p()
 #define EXTRAPARAMETER(p) model->get_##p()
@@ -66,8 +67,7 @@
 
 void @ModelName@_high_scale_constraint<Semi_analytic>::apply()
 {
-   assert(model && "Error: @ModelName@_high_scale_constraint<Semi_analytic>::"
-          "apply():model pointer must not be zero");
+   check_model_ptr();
 
 @temporarySetting@
 
@@ -109,8 +109,7 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::clear()
 
 void @ModelName@_high_scale_constraint<Semi_analytic>::initialize()
 {
-   assert(model && "@ModelName@_high_scale_constraint<Semi_analytic>::"
-          "initialize(): model pointer is zero.");
+   check_model_ptr();
 
 @scaleGuess@
    scale = initial_scale_guess;
@@ -118,8 +117,7 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::initialize()
 
 void @ModelName@_high_scale_constraint<Semi_analytic>::update_scale()
 {
-   assert(model && "@ModelName@_high_scale_constraint<Semi_analytic>::"
-          "update_scale(): model pointer is zero.");
+   check_model_ptr();
 
    const double currentScale = model->get_scale();
    const @ModelName@_soft_parameters beta_functions(model->calc_beta());
@@ -140,4 +138,13 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::update_scale()
 
 @restrictScale@
 @updateSemiAnalyticConstraint@
+   }
+
+void @ModelName@_high_scale_constraint<Semi_analytic>::check_model_ptr() const
+{
+   if (!model)
+      throw SetupError("@ModelName@_high_scale_constraint<Semi_analytic>: "
+                       "model pointer is zero!");
 }
+
+} // namespace flexiblesusy

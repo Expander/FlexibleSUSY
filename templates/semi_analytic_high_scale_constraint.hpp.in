@@ -59,6 +59,8 @@ private:
    double initial_scale_guess{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
 @semiAnalyticConstraint@
+
+   void check_model_ptr() const;
 };
 
 } // namespace flexiblesusy

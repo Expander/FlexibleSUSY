@@ -61,6 +61,8 @@ private:
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
 @semiAnalyticConstraint@
+
+   void check_model_ptr() const;
 };
 
 } // namespace flexiblesusy
