@@ -969,43 +969,46 @@ SetBoundaryValueParametersFromLocalCopies[parameterCopies_List, solutions_List, 
            Return[result];
           ];
 
-SetTreeLevelEWSBSolution[parametersFixedByEWSB_List, solutions_List, substitutions_List, struct_String:"model."] :=
-    Module[{boundaryValues, i, par, basisPar, parStr, basisSettings = "", body = "", result = ""},
-           boundaryValues = GetBoundaryValueParameters[solutions];
-           result = result <> "const bool is_finite = ";
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par    = parametersFixedByEWSB[[i]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               result = result <> "IsFinite(" <> parStr <> ")";
-               If[i != Length[parametersFixedByEWSB],
-                  result = result <> " && ";
+SetTreeLevelEWSBSolution[ewsbSolution_, solutions_List, substitutions_List, struct_String:"model."] :=
+    Module[{parametersFixedByEWSB, boundaryValues, i, par, basisPar, parStr, basisSettings = "", body = "", result = ""},
+           If[ewsbSolution =!= {},
+              parametersFixedByEWSB = #[[1]]& /@ ewsbSolution;
+              boundaryValues = GetBoundaryValueParameters[solutions];
+              result = result <> "const bool is_finite = ";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <> "IsFinite(" <> parStr <> ")";
+                  If[i != Length[parametersFixedByEWSB],
+                     result = result <> " && ";
+                    ];
                  ];
-              ];
-           result = result <> ";\n\n";
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par    = parametersFixedByEWSB[[i]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               body = body <> Parameters`SetParameter[par, parStr, struct, None];
-               If[MemberQ[boundaryValues, par],
-                  basisPar = CreateBoundaryValue[par];
-                  basisSettings = basisSettings <> Parameters`SetParameter[basisPar, parStr, "solutions->", None];
+              result = result <> ";\n\n";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  body = body <> Parameters`SetParameter[par, parStr, struct, None];
+                  If[MemberQ[boundaryValues, par],
+                     basisPar = CreateBoundaryValue[par];
+                     basisSettings = basisSettings <> Parameters`SetParameter[basisPar, parStr, "solutions->", None];
+                    ];
                  ];
-              ];
-           body = body <> basisSettings <> "solutions->evaluate_solutions(model);\n";
-           If[substitutions === {},
-              result = result <>
-                       "if (is_finite) {\n" <>
-                       IndentText[body] <>
-                       "} else {\n" <>
-                       IndentText["error = 1;\n"] <>
-                       "}";,
-              result = result <>
-                       "if (is_finite) {\n" <>
-                       IndentText[body] <>
-                       IndentText[WrapLines[EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
-                       "} else {\n" <>
-                       IndentText["error = 1;\n"] <>
-                       "}";
+              body = body <> basisSettings <> "solutions->evaluate_solutions(model);\n";
+              If[substitutions === {},
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          "} else {\n" <>
+                          IndentText["error = 1;\n"] <>
+                          "}";,
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          IndentText[WrapLines[EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
+                          "} else {\n" <>
+                          IndentText["error = 1;\n"] <>
+                          "}";
+                ];
              ];
            result
           ];

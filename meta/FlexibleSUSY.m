@@ -1161,7 +1161,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
              ];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
-           setTreeLevelSolution         = EWSB`SetTreeLevelSolution[#[[1]]& /@ ewsbSolution, ewsbSubstitutions];
+           setTreeLevelSolution         = EWSB`SetTreeLevelSolution[ewsbSolution, ewsbSubstitutions];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, freePhases, "solution", "model."];
            fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
@@ -1220,7 +1220,7 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
            solveEwsbTreeLevel = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
            solveEwsbTreeLevel = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbTreeLevel, solutions];
-           setTreeLevelSolution = SemiAnalytic`SetTreeLevelEWSBSolution[#[[1]]& /@ ewsbSolution, solutions, ewsbSubstitutions];
+           setTreeLevelSolution = SemiAnalytic`SetTreeLevelEWSBSolution[ewsbSolution, solutions, ewsbSubstitutions];
            solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution];
            solveEwsbWithTadpoles        = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbWithTadpoles, solutions];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];

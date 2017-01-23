@@ -792,37 +792,40 @@ CreateTreeLevelEwsbSolver[solution_List] :=
            Return[result];
           ];
 
-SetTreeLevelSolution[parametersFixedByEWSB_List, substitutions_List:{}, struct_String:"model."] :=
-    Module[{i, par, parStr, body = "", result = ""},
-           result = result <> "const bool is_finite = ";
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par    = parametersFixedByEWSB[[i]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               result = result <> "IsFinite(" <> parStr <> ")";
-               If[i != Length[parametersFixedByEWSB],
-                  result = result <> " && ";
+SetTreeLevelSolution[ewsbSolution_, substitutions_List:{}, struct_String:"model."] :=
+    Module[{i, parametersFixedByEWSB, par, parStr, body = "", result = ""},
+           If[ewsbSolution =!= {},
+              parametersFixedByEWSB = #[[1]]& /@ ewsbSolution;
+              result = result <> "const bool is_finite = ";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <> "IsFinite(" <> parStr <> ")";
+                  If[i != Length[parametersFixedByEWSB],
+                     result = result <> " && ";
+                    ];
                  ];
-              ];
-           result = result <> ";\n\n";
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par    = parametersFixedByEWSB[[i]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               body = body <> Parameters`SetParameter[par, parStr, struct, None];
-              ];
-           If[substitutions === {},
-              result = result <>
-                       "if (is_finite) {\n" <>
-                       IndentText[body] <>
-                       "} else {\n" <>
-                       IndentText["error = 1;\n"] <>
-                       "}";,
-              result = result <>
-                       "if (is_finite) {\n" <>
-                       IndentText[body] <>
-                       IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
-                       "} else {\n" <>
-                       IndentText["error = 1;\n"] <>
-                       "}";
+              result = result <> ";\n\n";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  body = body <> Parameters`SetParameter[par, parStr, struct, None];
+                 ];
+              If[substitutions === {},
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          "} else {\n" <>
+                          IndentText["error = 1;\n"] <>
+                          "}";,
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
+                          "} else {\n" <>
+                          IndentText["error = 1;\n"] <>
+                          "}";
+                ];
              ];
            result
           ];
