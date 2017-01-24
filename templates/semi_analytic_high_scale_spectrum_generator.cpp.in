@@ -19,8 +19,9 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_semi_analytic_spectrum_generator.hpp"
-#include "@ModelName@_semi_analytic_susy_convergence_tester.hpp"
 #include "@ModelName@_semi_analytic_convergence_tester.hpp"
+#include "@ModelName@_semi_analytic_initial_guesser.hpp"
+#include "@ModelName@_semi_analytic_susy_convergence_tester.hpp"
 
 #include "error.hpp"
 #include "lowe.h"
@@ -151,7 +152,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::write_running_couplings(
 void @ModelName@_spectrum_generator<Semi_analytic>::calculate_spectrum()
 {
    this->model.run_to(get_pole_mass_scale());
-   this->model.calculate_coefficients();
+   this->model.calculate_semi_analytic_solutions(get_high_scale());
    this->model.solve_ewsb();
    this->model.calculate_spectrum();
 }
