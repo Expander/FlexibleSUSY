@@ -1019,7 +1019,7 @@ CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
 
            If[numCols === 1,
               body = "rhs(j) = data[j]->model.get_" <> parStr <> "();\n";,
-              body = MapIndexed[("rhs(j, " <> ToString[First[#2]] <> ") = data[j]->model.get_"
+              body = MapIndexed[("rhs(j, " <> ToString[First[#2-1]] <> ") = data[j]->model.get_"
                                  <> parStr <> "(" <> Utils`StringJoinWithSeparator[ToString /@ #1, ", "]
                                  <> ");\n")&, GetAllIndexCombinations[dims]];
               body = StringJoin[body];
@@ -1040,7 +1040,7 @@ CreateCoefficientsCalculation[solution_SemiAnalyticSolution] :=
                               <> StringJoin[MapIndexed[(coeffs[[i]] <> "("
                                                         <> Utils`StringJoinWithSeparator[ToString /@ #1, ", "]
                                                         <> ") = solution(" <> ToString[i-1] <> ", "
-                                                        <> ToString[First[#2]] <> ");\n")&,
+                                                        <> ToString[First[#2-1]] <> ");\n")&,
                                                        GetAllIndexCombinations[dims]]];
                  ];
               ];
