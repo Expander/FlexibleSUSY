@@ -237,7 +237,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    initial_solver.set_running_precision(&precision);
    initial_solver.add(&low_constraint, model);
    initial_solver.add(&high_constraint, model);
-   initial_solver.add(&susy_constraint, model);
    initial_solver.solve();
 }
 
