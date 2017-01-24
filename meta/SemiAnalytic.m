@@ -582,7 +582,7 @@ GetBoundaryValueFromStruct[parameter_, struct_String] :=
            parStr = CreateBoundaryValueParameterName[parameter];
            name = CConversion`CreateGetterReturnType[type]
                   <> " get_" <> parStr <> "() const {";
-           body = struct <> "get_" <> parStr <> "();";
+           body = "return " <> struct <> "get_" <> parStr <> "();";
            name <> " " <> body <> " }\n"
           ];
 
@@ -605,7 +605,7 @@ GetCoefficientsFromStruct[solution_, struct_String] :=
            For[i = 1, i <= Length[coeffStrs], i++,
                name = CConversion`CreateGetterReturnType[type]
                       <> " get_" <> coeffStrs[[i]] <> "() const {";
-               body = struct <> "get_" <> coeffStrs[[i]] <> "();";
+               body = "return " <> struct <> "get_" <> coeffStrs[[i]] <> "();";
                functions = functions <> name <> " " <> body <> " }\n";
               ];
            Return[functions];
