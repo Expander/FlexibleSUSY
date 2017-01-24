@@ -92,7 +92,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   input_scale = 0.;
+   boundary_scale = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
 }
@@ -103,7 +103,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::initialize()
 
 @scaleGuess@
    scale = initial_scale_guess;
-   input_scale = scale;
+   boundary_scale = scale;
 }
 
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::update_scale()
