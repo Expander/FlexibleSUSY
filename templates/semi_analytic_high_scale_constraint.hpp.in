@@ -30,6 +30,7 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
+@semiAnalyticForwardDecls@
 class Semi_analytic;
 
 template<>

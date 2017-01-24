@@ -20,6 +20,7 @@
 
 #include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
 #include "@ModelName@_semi_analytic_model.hpp"
+#include "@ModelName@_semi_analytic_soft_parameters_constraint.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
