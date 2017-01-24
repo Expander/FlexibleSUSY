@@ -634,8 +634,8 @@ GetModelCoefficients[solutions_List, struct_String:"solutions."] :=
 PrintModelCoefficients[solutions_List, streamName_String, struct_String:"solutions."] :=
     Module[{coeffs, result = ""},
            coeffs = CreateCoefficientParameters[solutions];
-           result = streamName <> " << input_scale = " <> struct <> "get_input_scale() << '\\n';\n";
-           result = result <> streamName <> " << output_scale = " <> struct
+           result = streamName <> " << \"input_scale = \" << " <> struct <> "get_input_scale() << '\\n';\n";
+           result = result <> streamName <> " << \"output_scale = \" << " <> struct
                     <> "get_output_scale() << '\\n';\n";
            result <> WriteOut`PrintExtraParameters[coeffs, streamName, "COEFFICIENT"]
           ];

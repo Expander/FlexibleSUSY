@@ -74,9 +74,9 @@ void CLASSNAME::run_to(double scale, double eps)
 void CLASSNAME::print(std::ostream& out) const
 {
    @ModelName@_mass_eigenstates::print(out);
-   ostr << "----------------------------------------\n"
-           "semi-analytic coefficients:\n"
-           "----------------------------------------\n";
+   out << "----------------------------------------\n"
+          "semi-analytic coefficients:\n"
+          "----------------------------------------\n";
 @printSemiAnalyticCoefficients@
 }
 
