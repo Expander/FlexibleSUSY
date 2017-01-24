@@ -62,6 +62,8 @@ public:
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 
+   const @ModelName@_semi_analytic_solutions& get_semi_analytic_solutions() const;
+   @ModelName@_semi_analytic_solutions& get_semi_analytic_solutions();
    void calculate_semi_analytic_solutions(double);
 
 @getBoundaryValueParameters@

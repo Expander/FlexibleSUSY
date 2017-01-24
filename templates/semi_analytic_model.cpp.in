@@ -85,6 +85,16 @@ void CLASSNAME::set_precision(double p)
    @ModelName@_mass_eigenstates::set_precision(p);
 }
 
+const @ModelName@_semi_analytic_solutions& CLASSNAME::get_semi_analytic_solutions() const
+{
+   return solutions;
+}
+
+@ModelName@_semi_analytic_solutions& CLASSNAME::get_semi_analytic_solutions()
+{
+   return solutions;
+}
+
 void CLASSNAME::calculate_semi_analytic_solutions(double input_scale)
 {
    solutions.set_input_scale(input_scale);
