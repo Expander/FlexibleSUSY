@@ -67,11 +67,11 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::apply()
 
 @temporarySetting@
 
-   model->calculate_coefficients(input_scale);
+   model->calculate_semi_analytic_solutions(boundary_scale);
    model->calculate_DRbar_masses();
    update_scale();
 
-   // apply user-defined susy scale constraints
+   // apply user-defined constraints
 @applyConstraint@
 @temporaryResetting@
 }

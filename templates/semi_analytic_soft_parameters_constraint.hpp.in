@@ -22,6 +22,7 @@
 #define @ModelName@_SEMI_ANALYTIC_SOFT_PARAMETERS_CONSTRAINT_H
 
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_soft_parameters_constraint.hpp"
 #include "single_scale_constraint.hpp"
 #include "lowe.h"
 
@@ -45,8 +46,8 @@ public:
 
    void clear();
    double get_initial_scale_guess() const { return initial_scale_guess; }
-   double get_input_scale() const { return input_scale; }
-   void set_input_scale(double s) { input_scale = s; }
+   double get_boundary_scale() const { return boundary_scale; }
+   void set_boundary_scale(double s) { boundary_scale = s; }
    const @ModelName@_input_parameters& get_input_parameters() const;
    @ModelName@<Semi_analytic>* get_model() const { return model; }
    void initialize();
@@ -59,7 +60,7 @@ protected:
 private:
    double scale{0.};
    double initial_scale_guess{0.};
-   double input_scale{0.};
+   double boundary_scale{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
 
