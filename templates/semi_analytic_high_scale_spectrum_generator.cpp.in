@@ -73,13 +73,17 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    high_scale_constraint.set_model(&model);
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
+   soft_constraint.set_model(&model);
 
    susy_scale_constraint.set_sm_parameters(qedqcd);
    low_scale_constraint .set_sm_parameters(qedqcd);
+   soft_constraint      .set_sm_parameters(qedqcd);
 
+@setSemiAnalyticConstraint@
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
+   soft_constraint      .initialize();
 
    @ModelName@_susy_convergence_tester<Semi_analytic> inner_ct(
       &model, this->settings.get(Spectrum_generator_settings::precision));

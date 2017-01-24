@@ -1557,11 +1557,31 @@ WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_
                                             Sequence @@ GeneralReplacementRules[] }];
           ];
 
-WriteSpectrumGeneratorClass[files_List] :=
+WriteTwoScaleSpectrumGeneratorClass[files_List] :=
     Module[{fillSMFermionPoleMasses = ""},
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            WriteOut`ReplaceInFiles[files,
                           { "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
+WriteSemiAnalyticSpectrumGeneratorClass[files_List] :=
+    Module[{setSemiAnalyticConstraint = ".set_soft_parameters_constraint(&soft_constraint);\n",
+            fillSMFermionPoleMasses = ""},
+           fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
+           Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+                 setSemiAnalyticConstraint = "high_scale_constraint" <> setSemiAnalyticConstraint,
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                 setSemiAnalyticConstraint = "susy_scale_constraint" <> setSemiAnalyticConstraint,
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                 setSemiAnalyticConstraint = "low_scale_constraint" <> setSemiAnalyticConstraint,
+                 True,
+                 setSemiAnalyticConstraint = "high_scale_constraint" <> setSemiAnalyticConstraint
+                ];
+           WriteOut`ReplaceInFiles[files,
+                          { "@setSemiAnalyticConstraint@" -> IndentText[WrapLines[setSemiAnalyticConstraint]],
+                            "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -2435,8 +2455,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
-            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleInput,
-            semiAnalyticScaleGuess, semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
+            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale,
+            semiAnalyticScaleInput, semiAnalyticScaleGuess, semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
             semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -3134,11 +3154,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
                 ];
               Print["Creating class for two-scale spectrum generator ..."];
-              WriteSpectrumGeneratorClass[{{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
-                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.hpp"}]},
-                                           {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".cpp.in"}],
-                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.cpp"}]}
-                                          }];
+              WriteTwoScaleSpectrumGeneratorClass[{{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
+                                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.hpp"}]},
+                                                   {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".cpp.in"}],
+                                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_spectrum_generator.cpp"}]}
+                                                   }];
 
               Print["Creating makefile module for two-scale solver ..."];
               WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale.mk.in"}],
@@ -3159,6 +3179,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               (* construct additional semi-analytic constraint from user-defined constraints *)
               Which[SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`HighScaleInput],
+                    Print["found high-scale"];
                     semiAnalyticScale = FlexibleSUSY`HighScale;
                     semiAnalyticScaleGuess = FlexibleSUSY`HighScaleFirstGuess;
                     semiAnalyticScaleMinimum = FlexibleSUSY`HighScaleMinimum;
@@ -3307,11 +3328,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  spectrumGeneratorInputFile = "semi_analytic_low_scale_spectrum_generator";];
               (* @todo support FlexibleEFTHiggs *)
               Print["Creating class for semi-analytic spectrum generator ..."];
-              WriteSpectrumGeneratorClass[{{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
-                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_spectrum_generator.hpp"}]},
-                                           {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".cpp.in"}],
-                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_spectrum_generator.cpp"}]}
-                                          }];
+              WriteSemiAnalyticSpectrumGeneratorClass[{{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
+                                                        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_spectrum_generator.hpp"}]},
+                                                       {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".cpp.in"}],
+                                                        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_spectrum_generator.cpp"}]}
+                                                      }];
 
               Print["Creating makefile module for semi-analytic solver ..."];
               WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic.mk.in"}],
