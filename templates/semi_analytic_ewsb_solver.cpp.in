@@ -262,7 +262,7 @@ CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_step(
    return ewsb_parameters;
 }
 
-void @ModelName_ewsb_solver<Semi_analytic>::set_semi_analytic_solutions(
+void @ModelName@_ewsb_solver<Semi_analytic>::set_semi_analytic_solutions(
    @ModelName@_semi_analytic_solutions* s)
 {
    solutions = s;
