@@ -2435,9 +2435,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
-            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleGuess,
-            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum, semiAnalyticSolnsOutputFile,
-            semiAnalyticEWSBSubstitutions = {}},
+            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale, semiAnalyticScaleInput,
+            semiAnalyticScaleGuess, semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
+            semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -3162,22 +3162,30 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     semiAnalyticScale = FlexibleSUSY`HighScale;
                     semiAnalyticScaleGuess = FlexibleSUSY`HighScaleFirstGuess;
                     semiAnalyticScaleMinimum = FlexibleSUSY`HighScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`HighScaleMaximum;,
+                    semiAnalyticScaleMaximum = FlexibleSUSY`HighScaleMaximum;
+                    semiAnalyticScaleInput = Cases[FlexibleSUSY`HighScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
+                    FlexibleSUSY`HighScaleInput = DeleteCases[FlexibleSUSY`HighScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
                     SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`SUSYScaleInput],
                     semiAnalyticScale = FlexibleSUSY`SUSYScale;
                     semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
                     semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;,
+                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;
+                    semiAnalyticScaleInput = Cases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
+                    FlexibleSUSY`SUSYScaleInput = DeleteCases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
                     SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`LowScaleInput],
                     semiAnalyticScale = FlexibleSUSY`LowScale;
                     semiAnalyticScaleGuess = FlexibleSUSY`LowScaleFirstGuess;
                     semiAnalyticScaleMinimum = FlexibleSUSY`LowScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`LowScaleMaximum;,
+                    semiAnalyticScaleMaximum = FlexibleSUSY`LowScaleMaximum;
+                    semiAnalyticScaleInput = Cases[FlexibleSUSY`LowScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
+                    FlexibleSUSY`LowScaleInput = DeleteCases[FlexibleSUSY`LowScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
                     True,
                     semiAnalyticScale = FlexibleSUSY`SUSYScale;
                     semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
                     semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
                     semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;
+                    semiAnalyticScaleInput = Cases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
+                    FlexibleSUSY`SUSYScaleInput = DeleteCases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
                    ];
 
               Print["Creating classes for convergence testers ..."];
@@ -3244,7 +3252,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                }];
 
               Print["Creating class for semi-analytic constraint ..."];
-              WriteSemiAnalyticConstraintClass[semiAnalyticScale, {},
+              WriteSemiAnalyticConstraintClass[semiAnalyticScale, semiAnalyticScaleInput,
                                                semiAnalyticScaleGuess,
                                                {semiAnalyticScaleMinimum, semiAnalyticScaleMaximum}, False, semiAnalyticSolns,
                                                {{FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters_constraint.hpp.in"}],
