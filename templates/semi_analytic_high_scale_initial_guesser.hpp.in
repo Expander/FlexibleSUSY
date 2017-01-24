@@ -30,7 +30,7 @@
 namespace flexiblesusy {
 
 template <class T>
-class @ModelName@:
+class @ModelName@;
 
 class Semi_analytic;
 
@@ -45,8 +45,8 @@ public:
    @ModelName@_initial_guesser(@ModelName@<Semi_analytic>*,
                                const softsusy::QedQcd&,
                                const @ModelName@_low_scale_constraint<Semi_analytic>&,
-                               const @ModelName@_susy_scale_constraint<Semi_analytic>&.
-                               const @ModelName@_high_scale_constraint<Semi_analytic>&);
+                               const @ModelName@_susy_scale_constraint<Semi_analytic>&,
+                               @ModelName@_high_scale_constraint<Semi_analytic>&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess() override; ///< initial guess
 
@@ -68,6 +68,7 @@ private:
    @ModelName@_low_scale_constraint<Semi_analytic> low_constraint{};
    @ModelName@_susy_scale_constraint<Semi_analytic> susy_constraint{};
    @ModelName@_high_scale_constraint<Semi_analytic> high_constraint{};
+   @ModelName@_high_scale_constraint<Semi_analytic>* main_high_constraint{nullptr};
 
    void initial_guess_low_scale_parameters();
    void initial_guess_high_scale_parameters();
