@@ -3250,6 +3250,22 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.cpp"}]}
                                                }];
 
+              Print["Creating class for initial guesser ..."];
+              If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 initialGuesserInputFile = "semi_analytic_low_scale_initial_guesser";,
+                 initialGuesserInputFile = "semi_analytic_high_scale_initial_guesser";
+                ];
+              (* @todo support EFTHiggs *)
+              WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
+                                       FlexibleSUSY`InitialGuessAtSUSYScale,
+                                       FlexibleSUSY`InitialGuessAtHighScale,
+                                       {{FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.hpp"}]},
+                                        {FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.cpp"}]}
+                                       }
+                                      ];
+
               Print["Creating class for semi-analytic solutions ..."];
               WriteSemiAnalyticSolutionsClass[semiAnalyticBCs, semiAnalyticSolns,
                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_solutions.hpp.in"}],
