@@ -1549,7 +1549,7 @@ WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_
            getBoundaryValueParameters = SemiAnalytic`GetModelBoundaryValueParameters[semiAnalyticSolns];
            setBoundaryValueParameters = SemiAnalytic`SetModelBoundaryValueParameters[semiAnalyticSolns];
            getSemiAnalyticCoefficients = SemiAnalytic`GetModelCoefficients[semiAnalyticSolns];
-           printSemiAnalyticCoefficients = SemiAnalytic`PrintModelCoefficients[semiAnalyticSolns, "ostr"];
+           printSemiAnalyticCoefficients = SemiAnalytic`PrintModelCoefficients[semiAnalyticSolns, "out"];
            WriteOut`ReplaceInFiles[files, { "@getBoundaryValueParameters@"   -> IndentText[WrapLines[getBoundaryValueParameters]],
                                             "@setBoundaryValueParameters@"   -> IndentText[WrapLines[setBoundaryValueParameters]],
                                             "@getSemiAnalyticCoefficients@"  -> IndentText[WrapLines[getSemiAnalyticCoefficients]],
