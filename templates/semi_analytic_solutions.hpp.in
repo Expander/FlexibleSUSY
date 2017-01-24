@@ -64,7 +64,7 @@ public:
 @boundaryValueSetters@
 @coefficientGetters@
    void calculate_coefficients(const @ModelName@_soft_parameters&);
-   void evaluate_solutions(@ModelName@_soft_parameters&);
+   void evaluate_solutions(@ModelName@_soft_parameters&) const;
 
 private:
    struct Boundary_values {

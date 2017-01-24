@@ -99,7 +99,7 @@ void @ModelName@_semi_analytic_solutions::set_to_boundary_values(
 }
 
 void @ModelName@_semi_analytic_solutions::evaluate_solutions(
-   @ModelName@_soft_parameters& model)
+   @ModelName@_soft_parameters& model) const
 {
 @evaluateSemiAnalyticSolns@
 }
