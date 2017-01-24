@@ -4,6 +4,7 @@
 
 #include "numerics2.hpp"
 #include <cmath>
+#include <iostream>
 #include <type_traits>
 #include <Eigen/Core>
 
