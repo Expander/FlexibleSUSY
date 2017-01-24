@@ -1189,7 +1189,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
 WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitialGuessValues_List,
                                  ewsbSubstitutions_List, ewsbSolution_List, freePhases_List,
                                  solutions_List, files_List] :=
-    Module[{numberOfIndependentEWSBEquations,
+    Module[{semiAnalyticSubs, numberOfIndependentEWSBEquations,
             ewsbEquationsTreeLevel,
             independentEwsbEquations, higgsToEWSBEqAssociation,
             calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
@@ -1198,8 +1198,9 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
             solveEwsbWithTadpoles = "", getEWSBParametersFromVector = "",
             setEWSBParametersFromLocalCopies = "", applyEWSBSubstitutions = "",
             setModelParametersFromEWSB = "", setBoundaryValueParametersFromLocalCopies = ""},
+           semiAnalyticSubs = SemiAnalytic`GetSemiAnalyticEWSBSubstitutions[solutions];
            independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB,
-                                                                     ewsbSubstitutions];
+                                                                     Join[semiAnalyticSubs, ewsbSubstitutions]];
            numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            If[ewsbEquations =!= Table[0, {Length[ewsbEquations]}] &&
