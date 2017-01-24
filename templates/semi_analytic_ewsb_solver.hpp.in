@@ -50,7 +50,7 @@ public:
    @ModelName@_ewsb_solver() = default;
    @ModelName@_ewsb_solver(const @ModelName@_ewsb_solver&) = default;
    @ModelName@_ewsb_solver(@ModelName@_ewsb_solver&&) = default;
-   virtual ~@ModelName@_ewsb_solver();
+   virtual ~@ModelName@_ewsb_solver() {}
    @ModelName@_ewsb_solver& operator=(const @ModelName@_ewsb_solver&) = default;
    @ModelName@_ewsb_solver& operator=(@ModelName@_ewsb_solver&&) = default;
 
