@@ -48,12 +48,13 @@ namespace flexiblesusy {
 #define DERIVEDPARAMETER(parameter) model.parameter()
 #define PHASE(p) MODELPARAMETER(p)
 #define SEMIANALYTICPARAMETER(p) solutions->get_##p()
+#define CLASSNAME @ModelName@_ewsb_solver<Semi_analytic>
 
 /**
  * This method solves the EWSB conditions iteratively, trying several
  * root finding methods until a solution is found.
  */
-int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively(@ModelName@_mass_eigenstates& model_to_solve)
+int CLASSNAME::solve_iteratively(@ModelName@_mass_eigenstates& model_to_solve)
 {
    auto model = model_to_solve;
    model.set_ewsb_loop_order(loop_order);
@@ -130,7 +131,7 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively(@ModelName@_mass_e
  *
  * @return status of the EWSB solver
  */
-int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_with(
+int CLASSNAME::solve_iteratively_with(
    @ModelName@_mass_eigenstates& model_to_solve, EWSB_solver* solver, const EWSB_vector_t& x_init)
 {
    const int status = solver->solve(x_init);
@@ -146,7 +147,7 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_with(
  *
  * @param solver solver
  */
-void @ModelName@_ewsb_solver<Semi_analytic>::set_ewsb_solution(@ModelName@_mass_eigenstates& model, const EWSB_solver* solver)
+void CLASSNAME::set_ewsb_solution(@ModelName@_mass_eigenstates& model, const EWSB_solver* solver)
 {
    const auto solution = solver->get_solution();
 
@@ -165,7 +166,7 @@ void @ModelName@_ewsb_solver<Semi_analytic>::set_ewsb_solution(@ModelName@_mass_
  * @param last iterator to last solver
  */
 template <typename It>
-void @ModelName@_ewsb_solver<Semi_analytic>::set_best_ewsb_solution(@ModelName@_mass_eigenstates& model, It first, It last)
+void CLASSNAME::set_best_ewsb_solution(@ModelName@_mass_eigenstates& model, It first, It last)
 {
    auto ma(model), mb(model);
 
@@ -182,7 +183,7 @@ void @ModelName@_ewsb_solver<Semi_analytic>::set_best_ewsb_solution(@ModelName@_
    set_ewsb_solution(model, best_solver->get());
 }
 
-int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, int l)
+int CLASSNAME::solve_iteratively_at(@ModelName@_mass_eigenstates& model_to_solve, int l)
 {
    // temporarily set `ewsb_loop_order' to `loop_order' and do
    // iteration
@@ -192,7 +193,7 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_iteratively_at(@ModelName@_mas
    return solve_iteratively(model_to_solve);
 }
 
-int @ModelName@_ewsb_solver<Semi_analytic>::solve(@ModelName@_mass_eigenstates& model_to_solve)
+int CLASSNAME::solve(@ModelName@_mass_eigenstates& model_to_solve)
 {
    if (!solutions) {
       throw SetupError("@ModelName@_ewsb_solver<Semi_analytic>:solve: "
@@ -205,7 +206,7 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve(@ModelName@_mass_eigenstates& 
    return solve_iteratively_at(model_to_solve, loop_order);
 }
 
-int @ModelName@_ewsb_solver<Semi_analytic>::solve_tree_level(@ModelName@_mass_eigenstates& model)
+int CLASSNAME::solve_tree_level(@ModelName@_mass_eigenstates& model)
 {
    int error = 0;
 
@@ -214,7 +215,8 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_tree_level(@ModelName@_mass_ei
    return error;
 }
 
-@ModelName@_ewsb_solver<Semi_analytic>::EWSB_vector_t @ModelName@_ewsb_solver<Semi_analytic>::initial_guess(const @ModelName@_mass_eigenstates& model) const
+CLASSNAME::EWSB_vector_t CLASSNAME::initial_guess(
+   const @ModelName@_mass_eigenstates& model) const
 {
    EWSB_vector_t x_init(EWSB_vector_t::Zero());
 
@@ -223,7 +225,8 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_tree_level(@ModelName@_mass_ei
    return x_init;
 }
 
-@ModelName@_ewsb_solver<Semi_analytic>::EWSB_vector_t @ModelName@_ewsb_solver<Semi_analytic>::tadpole_equations(const @ModelName@_mass_eigenstates& model) const
+CLASSNAME::EWSB_vector_t CLASSNAME::tadpole_equations(
+   const @ModelName@_mass_eigenstates& model) const
 {
    return model.tadpole_equations();
 }
@@ -236,7 +239,8 @@ int @ModelName@_ewsb_solver<Semi_analytic>::solve_tree_level(@ModelName@_mass_ei
  *
  * @return new set of EWSB output parameters
  */
-@ModelName@_ewsb_solver<Semi_analytic>::EWSB_vector_t @ModelName@_ewsb_solver<Semi_analytic>::ewsb_step(const @ModelName@_mass_eigenstates& model) const
+CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_step(
+   const @ModelName@_mass_eigenstates& model) const
 {
    std::array<double, number_of_ewsb_equations> tadpole{};
    EWSB_vector_t ewsb_parameters(EWSB_vector_t::Zero());
