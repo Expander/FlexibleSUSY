@@ -27,7 +27,6 @@
 #include "two_scale_solver.hpp"
 
 #include <Eigen/Core>
-#include <cassert>
 
 namespace flexiblesusy {
 
@@ -80,22 +79,9 @@ void @ModelName@_initial_guesser<Semi_analytic>::guess()
  */
 void @ModelName@_initial_guesser<Semi_analytic>::guess_susy_parameters()
 {
-   initial_guess_susy_parameters();
-
-   @ModelName@_susy_convergence_tester<Semi_analytic> convergence_tester(
-      &model, running_precision)
-   Two_scale_increasing_precision precision(10.0, running_precision);
-
-   low_constraint.set_model(&model);
-   susy_constraint.set_model(&model);
-   
-   RGFlow<Two_scale> initial_solver;
-   solver.set_convergence_tester(&convergence_tester);
-   initial_solver.set_running_precision(&precision);
-   solver.add(&low_constraint, &model);
-   solver.add(&high_constraint, &model);
-   solver.add(&susy_constraint, &model);
-   solver.solve()
+   initial_guess_low_scale_parameters();
+   initial_guess_high_scale_parameters()
+   solve_susy_parameters();
 }
 
 void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_low_scale_parameters()
@@ -197,8 +183,55 @@ void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_high_scale_parame
 
    // apply user-defined initial guess at the high scale
 @initialGuessAtHighScale@
+}
 
+/**
+ * Performs an initial iteration for the SUSY parameters, ignoring
+ * threshold corrections.
+ */
+void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
+{
    model->run_to(low_scale_guess, running_precision);
+
+   const auto old_thresholds = model->get_thresholds();
+   const auto save_thresholds = make_raii_guard(
+      [model, old_thresholds] () { model->set_thresholds(old_thresholds); });
+   const softsusy::QedQcd old_low_sm_parameters = low_constraint.get_sm_parameters();
+   const auto save_low_sm_parameters = make_raii_guard(
+      [&low_constraint, old_low_sm_parameters] () { low_constraint.set_sm_parameters(old_low_sm_parameters); });
+   const softsusy::QedQcd old_susy_sm_parameters = susy_constraint.get_sm_parameters();
+   const auto save_susy_sm_parameters = make_raii_guard(
+      [&susy_constraint, old_susy_sm_parameters() { susy_constraint.set_sm_parameters(old_susy_sm_parameters); });
+
+   softsusy::QedQcd tmp_sm_parameters(old_sm_parameters);
+
+   tmp_sm_parameters.setMass(softsusy::mUp, mu_guess);
+   tmp_sm_parameters.setMass(softsusy::mCharm, mc_guess);
+   tmp_sm_parameters.setPoleMt(mt_guess);
+   tmp_sm_parameters.setMass(softsusy::mDown, md_guess);
+   tmp_sm_parameters.setMass(softsusy::mStrange, ms_guess);
+   tmp_sm_parameters.setMass(softsusy::mBottom, mb_guess);
+   tmp_sm_parameters.setPoleMel(me_guess);
+   tmp_sm_parameters.setPoleMmuon(mm_guess);
+   tmp_sm_parameters.setPoleMtau(mtau_guess);
+
+   low_constraint.set_sm_parameters(tmp_sm_parameters);
+   susy_constraint.set_sm_parameters(tmp_sm_parameters);
+
+   @ModelName@_susy_convergence_tester<Semi_analytic> convergence_tester(
+      &model, running_precision)
+   Two_scale_increasing_precision precision(10.0, running_precision);
+
+   low_constraint.set_model(&model);
+   susy_constraint.set_model(&model);
+
+   RGFlow<Two_scale> initial_solver;
+   solver.set_convergence_tester(&convergence_tester);
+   initial_solver.set_running_precision(&precision);
+   solver.add(&low_constraint, &model);
+   solver.add(&high_constraint, &model);
+   solver.add(&susy_constraint, &model);
+   solver.solve()
 }
 
 void @ModelName@_initial_guesser<Semi_analytic>::guess_soft_parameters()
@@ -209,7 +242,7 @@ void @ModelName@_initial_guesser<Semi_analytic>::guess_soft_parameters()
    model->run_to(low_scale_guess, running_precision);
 
    // apply EWSB constraint
-   model->calculate_coefficients(high_scale_guess);
+   model->calculate_semi_analytic_solutions(high_scale_guess);
    model->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum

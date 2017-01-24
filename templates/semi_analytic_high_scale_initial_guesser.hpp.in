@@ -71,6 +71,7 @@ private:
 
    void initial_guess_low_scale_parameters();
    void initial_guess_high_scale_parameters();
+   void solve_susy_parameters();
    void guess_susy_parameters();
    void guess_soft_parameters();
    void calculate_DRbar_yukawa_couplings();
