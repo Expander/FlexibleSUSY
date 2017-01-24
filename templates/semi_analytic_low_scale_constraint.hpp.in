@@ -51,7 +51,7 @@ public:
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns() const { return pmns; }
    double get_initial_scale_guess() const { return initial_scale_guess; }
    void initialize();
-   const softsusy::QedQcd& get_sm_parameters() const { return qeqqcd; }
+   const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 @setSemiAnalyticConstraint@
