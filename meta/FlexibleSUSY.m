@@ -824,6 +824,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateThetaW,
            recalculateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
+           semiAnalyticForwardDecls = "",
            semiAnalyticConstraint = "",
            setSemiAnalyticConstraint = "",
            clearSemiAnalyticConstraint = "",
@@ -867,11 +868,12 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  ];
             ];
           If[mustSetSemiAnalyticBCs,
+             semiAnalyticForwardDecls = "template <class T>\nclass " <> FlexibleSUSY`FSModelName <> "_soft_parameters_constraint;\n\n";
              semiAnalyticConstraint = FlexibleSUSY`FSModelName <> "_soft_parameters_constraint<Semi_analytic>* soft_constraint{nullptr};\n";
              setSemiAnalyticConstraint = "void set_soft_parameters_constraint(" <> FlexibleSUSY`FSModelName
-                                         <> "_soft_parameters_constraint* sc) { soft_constraint = sc; }\n";
+                                         <> "_soft_parameters_constraint<Semi_analytic>* sc) { soft_constraint = sc; }\n";
              clearSemiAnalyticConstraint = "soft_constraint = nullptr;\n";
-             updateSemiAnalyticConstraint = "if (soft_constraint) soft_constraint.set_boundary_scale(scale);\n";
+             updateSemiAnalyticConstraint = "if (soft_constraint) soft_constraint->set_boundary_scale(scale);\n";
              saveBoundaryValueParameters = SemiAnalytic`SaveBoundaryValueParameters[semiAnalyticSolns];
             ];
           WriteOut`ReplaceInFiles[files,
@@ -902,6 +904,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
+                   "@semiAnalyticForwardDecls@" -> semiAnalyticForwardDecls,
                    "@semiAnalyticConstraint@" -> IndentText[semiAnalyticConstraint],
                    "@setSemiAnalyticConstraint@" -> IndentText[setSemiAnalyticConstraint],
                    "@clearSemiAnalyticConstraint@" -> IndentText[clearSemiAnalyticConstraint],
