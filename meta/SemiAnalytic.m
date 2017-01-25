@@ -674,9 +674,14 @@ ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_S
            noMacros = DeleteCases[noMacros, {FlexibleSUSY`Temporary[_], _}];
            boundaryValues = GetBoundaryValueParameters[solutions];
            parameters = Select[Parameters`FindAllParameters[#[[2]]& /@ noMacros], !MemberQ[boundaryValues, #]&];
+           (* in SUSY models, boundary values for the dimensionful SUSY parameters should also be set *)
+           If[SARAH`SupersymmetricModel,
+              noMacros = Join[noMacros, {#, #}& /@ (Select[boundaryValues,
+                                                           (Parameters`IsModelParameter[#] && !IsAllowedSemiAnalyticParameter[#])&])];
+             ];
            setBoundaryValues = ("const auto " <> CConversion`ToValidCSymbolString[#]
                                 <> " = BOUNDARYVALUE(" <> CConversion`ToValidCSymbolString[#] <> ");\n")& /@ boundaryValues;
-           (result = result <> ApplySettingLocally[#, modelPrefix])& /@ settings;
+           (result = result <> ApplySettingLocally[#, modelPrefix])& /@ noMacros;
            Parameters`CreateLocalConstRefs[parameters] <> StringJoin[setBoundaryValues] <> result
           ];
 
