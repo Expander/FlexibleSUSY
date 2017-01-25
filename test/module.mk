@@ -51,7 +51,7 @@ TEST_SH := \
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
 TEST_SRC +=
-endif
+endif # ifneq($(findstring lattice,$(SOLVERS)),)
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 TEST_SRC += \
@@ -149,7 +149,25 @@ ifeq ($(WITH_sm) $(WITH_smcw),yes yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_sm_smcw_integration.cpp
 endif
+
+endif # ifneq ($(findstring two_scale,$(SOLVERS)),)
+
+ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+
+ifeq ($(WITH_CMSSMSemiAnalytic), yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.cpp
 endif
+
+ifneq ($(findstring two_scale,$(SOLVERS)),)
+ifeq ($(WITH_CMSSM) $(WITH_CMSSMSemiAnalytic), yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMSemiAnalytic_spectrum.sh
+endif
+endif
+
+endif # ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+
 ifeq ($(WITH_CMSSM) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_NMSSM_linking.cpp
@@ -757,6 +775,8 @@ $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEX
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

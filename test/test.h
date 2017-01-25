@@ -157,6 +157,24 @@ void check_relative_dev(T a, T b, const std::string& testMsg, T max_dev)
    }
 }
 
+template <class Derived>
+void check_relative_dev(const Eigen::MatrixBase<Derived>& a,
+                        const Eigen::MatrixBase<Derived>& b,
+                        const std::string& testMsg,
+                        typename Derived::Scalar max_dev)
+{
+   assert(a.rows() == b.rows());
+   assert(a.cols() == b.cols());
+
+   for (int i = 0; i < a.rows(); ++i) {
+      for (int l = 0; l < a.cols(); ++l) {
+         std::ostringstream element;
+         element << testMsg << " [element " << i << "," << l << "]";
+         check_relative_dev(a(i,l), b(i,l), element.str(), max_dev);
+      }
+   }
+}
+
 } // namespace flexiblesusy
 
 #define S(x) #x
