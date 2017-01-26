@@ -278,7 +278,8 @@ void put_settings(const @ModelName@_data& data, MLINK link)
 
 void put_sm_input_parameters(const @ModelName@_data& data, MLINK link)
 {
-   MLPutFunction(link, "List", 29);
+   MLPutFunction(link, "List",softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
+                              + Physical_input::NUMBER_OF_INPUT_PARAMETERS);
 
    MLPutRuleTo(link, data.qedqcd.displayAlphaEmInput(), "alphaEmMZ");
    MLPutRuleTo(link, data.qedqcd.displayFermiConstant(), "GF");
@@ -405,7 +406,9 @@ void calculate_spectrum(@ModelName@_data& data, MLINK link)
    @ModelName@_data data;
 
    const mint n_settings = Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1,
-      n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+      n_sm_parameters = softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
+                        + Physical_input::NUMBER_OF_INPUT_PARAMETERS,
+      n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (npars != n_total)
