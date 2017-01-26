@@ -64,7 +64,9 @@ remove_mixing_and_input_blocks() {
         | $awk_cmd -f "$remove_block" -v block=SMINPUTS \
         | $awk_cmd -f "$remove_block" -v block=MINPAR \
         | $awk_cmd -f "$remove_block" -v block=EXTPAR \
-        | $awk_cmd -f "$remove_block" -v block=SPINFO
+        | $awk_cmd -f "$remove_block" -v block=SPINFO \
+        | $awk_cmd -f "$remove_block" -v block=MODSEL \
+        | $awk_cmd -f "$remove_block" -v block=FlexibleSUSY
 }
 
 remove_extra_blocks() {
