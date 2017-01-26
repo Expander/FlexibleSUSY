@@ -47,3 +47,99 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_tree_level_solution )
    BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_1(), precision);
    BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_2(), precision);
 }
+
+BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_one_loop_solution )
+{
+   const double precision = 1.0e-5;
+   CMSSMSemiAnalytic_input_parameters input;
+   CMSSMSemiAnalytic_mass_eigenstates model(input);
+   setup_CMSSMSemiAnalytic(model, input);
+
+   const double high_scale = 2.e16;
+   model.run_to(high_scale);
+
+   Boundary_values values;
+   setup_high_scale_CMSSMSemiAnalytic(model, values);
+
+   CMSSMSemiAnalytic_semi_analytic_solutions solns;
+   solns.set_input_scale(high_scale);
+   solns.set_output_scale(Electroweak_constants::MZ);
+   solns.set_AzeroBasis(values.Azero);
+   solns.set_m12Basis(values.m12);
+   solns.set_m0SqBasis(values.m0Sq);
+   solns.set_BMu0Basis(values.BMu0);
+   solns.set_MuBasis(values.Mu);
+
+   solns.calculate_coefficients(model);
+
+   model.run_to(Electroweak_constants::MZ);
+   model.calculate_DRbar_masses();
+
+   CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
+   ewsb_solver.set_loop_order(1);
+   ewsb_solver.set_semi_analytic_solutions(&solns);
+   model.set_ewsb_solver(&ewsb_solver);
+
+   model.set_ewsb_iteration_precision(precision);
+   const int error = model.solve_ewsb_one_loop();
+   BOOST_CHECK_EQUAL(error, 0);
+
+   const std::complex<double> tadpole_hh_1(model.tadpole_hh(0));
+   const std::complex<double> tadpole_hh_2(model.tadpole_hh(1));
+
+   BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
+
+   BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), 5.);
+   BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), 5.);
+}
+
+BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_two_loop_solution )
+{
+   const double precision = 1.0e-5;
+   CMSSMSemiAnalytic_input_parameters input;
+   CMSSMSemiAnalytic_mass_eigenstates model(input);
+   setup_CMSSMSemiAnalytic(model, input);
+
+   const double high_scale = 2.e16;
+   model.run_to(high_scale);
+
+   Boundary_values values;
+   setup_high_scale_CMSSMSemiAnalytic(model, values);
+
+   CMSSMSemiAnalytic_semi_analytic_solutions solns;
+   solns.set_input_scale(high_scale);
+   solns.set_output_scale(Electroweak_constants::MZ);
+   solns.set_AzeroBasis(values.Azero);
+   solns.set_m12Basis(values.m12);
+   solns.set_m0SqBasis(values.m0Sq);
+   solns.set_BMu0Basis(values.BMu0);
+   solns.set_MuBasis(values.Mu);
+
+   solns.calculate_coefficients(model);
+
+   model.run_to(Electroweak_constants::MZ);
+   model.calculate_DRbar_masses();
+
+   CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
+   ewsb_solver.set_loop_order(2);
+   ewsb_solver.set_semi_analytic_solutions(&solns);
+   model.set_ewsb_solver(&ewsb_solver);
+
+   model.set_ewsb_iteration_precision(precision);
+   const int error = model.solve_ewsb();
+   BOOST_CHECK_EQUAL(error, 0);
+
+   const Eigen::Matrix<double,2,1> tadpole_2l(model.tadpole_hh_2loop());
+   
+   const std::complex<double> tadpole_hh_1(
+      model.tadpole_hh(0) + tadpole_2l(0));
+   const std::complex<double> tadpole_hh_2(
+      model.tadpole_hh(1) + tadpole_2l(1));
+
+   BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
+
+   BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), 500.);
+   BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), 500.);
+}

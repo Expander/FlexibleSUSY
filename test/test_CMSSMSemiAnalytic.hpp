@@ -127,7 +127,7 @@ void setup_CMSSMSemiAnalytic(flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& m
    input.m12 = 500.;
    input.Azero = 100.;
    input.TanBeta = 7.0;
-   input.MuInput = 200.;
+   input.MuInput = 500.;
 
    setup_CMSSMSemiAnalytic_const(m, input);
 }
