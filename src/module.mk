@@ -151,6 +151,7 @@ endif
 
 # remove duplicates in case multiple solvers are used
 LIBFLEXI_SRC := $(sort $(LIBFLEXI_SRC))
+LIBFLEXI_HDR := $(sort $(LIBFLEXI_HDR))
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \
