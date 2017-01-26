@@ -67,7 +67,9 @@ const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_inpu
    "Mv1_pole", "Mv2_pole", "Mv3_pole",
    "MElectron_pole", "MMuon_pole", "MTau_pole",
    "MU_2GeV", "MS_2GeV", "MT_pole",
-   "MD_2GeV", "mc_mc", "mb_mb"
+   "MD_2GeV", "mc_mc", "mb_mb",
+   "CKM_theta_12", "CKM_theta_13", "CKM_theta_23", "CKM_delta",
+   "PMNS_theta_12", "PMNS_theta_13", "PMNS_theta_23", "PMNS_delta", "PMNS_alpha_1", "PMNS_alpha_2"
 };
 
 Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
@@ -113,8 +115,6 @@ QedQcd::QedQcd()
   , mf(9)
   , input(static_cast<int>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
   , mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
-  , ckm()
-  , pmns()
 {
   set_number_of_parameters(11);
   mf(0) = flexiblesusy::Electroweak_constants::MUP;
@@ -200,6 +200,46 @@ int QedQcd::flavours(double mu) const {
   if (mu > mf(mBottom - 1)) k++;
   if (mu > mf(mStrange - 1)) k++;
   return k;
+}
+
+void QedQcd::setCKM(const flexiblesusy::CKM_parameters& ckm)
+{
+   input(CKM_theta_12) = ckm.theta_12;
+   input(CKM_theta_13) = ckm.theta_13;
+   input(CKM_theta_23) = ckm.theta_23;
+   input(CKM_delta)    = ckm.delta;
+}
+
+void QedQcd::setPMNS(const flexiblesusy::PMNS_parameters& pmns)
+{
+   input(PMNS_theta_12) = pmns.theta_12;
+   input(PMNS_theta_13) = pmns.theta_13;
+   input(PMNS_theta_23) = pmns.theta_23;
+   input(PMNS_delta)    = pmns.delta;
+   input(PMNS_alpha_1)  = pmns.alpha_1;
+   input(PMNS_alpha_2)  = pmns.alpha_2;
+}
+
+flexiblesusy::CKM_parameters QedQcd::displayCKM() const
+{
+   flexiblesusy::CKM_parameters ckm;
+   ckm.theta_12 = input(CKM_theta_12);
+   ckm.theta_13 = input(CKM_theta_13);
+   ckm.theta_23 = input(CKM_theta_23);
+   ckm.delta    = input(CKM_delta);
+   return ckm;
+}
+
+flexiblesusy::PMNS_parameters QedQcd::displayPMNS() const
+{
+   flexiblesusy::PMNS_parameters pmns;
+   pmns.theta_12 = input(PMNS_theta_12);
+   pmns.theta_13 = input(PMNS_theta_13);
+   pmns.theta_23 = input(PMNS_theta_23);
+   pmns.delta    = input(PMNS_delta);
+   pmns.alpha_1  = input(PMNS_alpha_1);
+   pmns.alpha_2  = input(PMNS_alpha_2);
+   return pmns;
 }
 
 std::ostream& operator<<(std::ostream &left, const QedQcd &m) {

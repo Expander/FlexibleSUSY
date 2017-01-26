@@ -349,7 +349,8 @@ void @ModelName@_data::put_settings(MLINK link) const
 
 void @ModelName@_data::put_sm_input_parameters(MLINK link) const
 {
-   MLPutFunction(link, "List", 29);
+   MLPutFunction(link, "List",softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
+                              + Physical_input::NUMBER_OF_INPUT_PARAMETERS);
 
    MLPutRuleTo(link, qedqcd.displayAlphaEmInput(), "alphaEmMZ");
    MLPutRuleTo(link, qedqcd.displayFermiConstant(), "GF");
@@ -707,8 +708,10 @@ std::unique_ptr<@ModelName@_data> make_@ModelName@_data(const Dynamic_array_view
 {
    using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
 
-   const Index_t n_settings = Spectrum_generator_settings::NUMBER_OF_OPTIONS,
-      n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const Index_t n_settings = Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1,
+      n_sm_parameters = softsusy::NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
+                        + Physical_input::NUMBER_OF_INPUT_PARAMETERS,
+      n_input_pars = @numberOfInputParameters@;
    const Index_t n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (pars.size() != n_total)
