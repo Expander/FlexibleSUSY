@@ -37,6 +37,9 @@ void setup_high_scale_CMSSMSemiAnalytic_const(
 
    model.set_Mu(values.Mu);
    model.set_BMu(values.BMu0);
+
+   model.set_m0Sq(values.m0Sq);
+   model.set_BMu0(values.BMu0);
 }
 
 void setup_high_scale_CMSSMSemiAnalytic(
@@ -124,8 +127,8 @@ void setup_CMSSMSemiAnalytic_const(flexiblesusy::CMSSMSemiAnalytic_mass_eigensta
 void setup_CMSSMSemiAnalytic(flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& m,
                              flexiblesusy::CMSSMSemiAnalytic_input_parameters& input)
 {
-   input.m12 = 500.;
-   input.Azero = 100.;
+   input.m12 = 300.;
+   input.Azero = -200.;
    input.TanBeta = 7.0;
    input.MuInput = 500.;
 
