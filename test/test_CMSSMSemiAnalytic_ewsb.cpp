@@ -40,10 +40,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_tree_level_solution )
    ewsb_solver.set_semi_analytic_solutions(&solns);
    model.set_ewsb_solver(&ewsb_solver);
 
-   std::cout << "initially, m0Sq = " << model.get_m0Sq() << '\n';
    model.set_ewsb_iteration_precision(precision);
    const int error = model.solve_ewsb_tree_level();
-   std::cout << "finally, m0Sq = " << model.get_m0Sq() << '\n';
    BOOST_CHECK_EQUAL(error, 0);
 
    BOOST_CHECK_SMALL(model.get_ewsb_eq_hh_1(), precision);
