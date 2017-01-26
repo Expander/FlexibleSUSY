@@ -245,7 +245,7 @@ void put_message(MLINK link,
 
 void put_settings(const @ModelName@_data& data, MLINK link)
 {
-   MLPutFunction(link, "List", 23);
+   MLPutFunction(link, "List", Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1);
 
    MLPutRuleTo(link, data.settings.get(Spectrum_generator_settings::precision), "precisionGoal");
    MLPutRuleTo(link, (int)data.settings.get(Spectrum_generator_settings::max_iterations), "maxIterations");
@@ -404,7 +404,8 @@ void calculate_spectrum(@ModelName@_data& data, MLINK link)
 {
    @ModelName@_data data;
 
-   const mint n_settings = 23, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const mint n_settings = Spectrum_generator_settings::NUMBER_OF_OPTIONS - 1,
+      n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const mint n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (npars != n_total)
