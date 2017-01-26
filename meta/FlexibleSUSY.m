@@ -773,6 +773,7 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 
 WriteWeinbergAngleClass[massMatrices_List, files_List] :=
    Module[{},
+          WeinbergAngle`InitGenerationOfDiagrams[];
           WriteOut`ReplaceInFiles[files,
                  { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[massMatrices]]]],
                    "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[massMatrices]]]],

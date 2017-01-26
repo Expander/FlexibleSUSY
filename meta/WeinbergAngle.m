@@ -8,6 +8,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 DeltaRhoHat2LoopSM::usage="";
 DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
+InitGenerationOfDiagrams::usage="";
 
 Begin["`Private`"];
 
@@ -158,6 +159,17 @@ RhoHatTree[]:=
            result = result <> "rhohat_tree = ";
            result = result <> CConversion`RValueToCFormString[expr] <> ";";
            Return[result];
+          ];
+
+
+(*functions for creation of wave-function renormalization, vertex and box corrections:*)
+
+InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Module[{},
+           SA`CurrentStates = eigenstates;
+           SARAH`InitVertexCalculation[eigenstates, False];
+           SARAH`ReadVertexList[eigenstates, False, False, True];
+           SARAH`MakeCouplingLists;
           ];
 
 End[];
