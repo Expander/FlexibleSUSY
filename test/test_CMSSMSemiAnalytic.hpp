@@ -7,6 +7,53 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
+struct Boundary_values {
+   double m12{};
+   double Azero{};
+   double m0Sq{};
+   double BMu0{};
+   double Mu{};
+};
+
+void setup_high_scale_CMSSMSemiAnalytic_const(
+   flexiblesusy:: CMSSMSemiAnalytic_mass_eigenstates& model,
+   const Boundary_values& values)
+{
+   model.set_TYu(model.get_Yu() * values.Azero);
+   model.set_TYd(model.get_Yd() * values.Azero);
+   model.set_TYe(model.get_Ye() * values.Azero);
+
+   model.set_mq2(values.m0Sq * UNITMATRIX(3));
+   model.set_mu2(values.m0Sq * UNITMATRIX(3));
+   model.set_md2(values.m0Sq * UNITMATRIX(3));
+   model.set_ml2(values.m0Sq * UNITMATRIX(3));
+   model.set_me2(values.m0Sq * UNITMATRIX(3));
+   model.set_mHd2(values.m0Sq);
+   model.set_mHu2(values.m0Sq);
+
+   model.set_MassB(values.m12);
+   model.set_MassWB(values.m12);
+   model.set_MassG(values.m12);
+
+   model.set_Mu(values.Mu);
+   model.set_BMu(values.BMu0);
+}
+
+void setup_high_scale_CMSSMSemiAnalytic(
+   flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& model,
+   Boundary_values& values)
+{
+   using namespace flexiblesusy;
+
+   values.m12 = 300.0;
+   values.Azero = -200.;
+   values.m0Sq = Sqr(250);
+   values.BMu0 = -1.e4;
+   values.Mu = model.get_Mu();
+
+   setup_high_scale_CMSSMSemiAnalytic_const(model, values);
+}
+
 void setup_CMSSMSemiAnalytic_const(flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& m,
                                    const flexiblesusy::CMSSMSemiAnalytic_input_parameters& input)
 {
@@ -25,7 +72,7 @@ void setup_CMSSMSemiAnalytic_const(flexiblesusy::CMSSMSemiAnalytic_mass_eigensta
    const double cosBeta = cos(atan(tanBeta));
    const double M12 = input.m12;
    const double m0 = input.m12;
-   const double a0 = input.Azero + 100.;
+   const double a0 = input.Azero;
    const double root2 = Sqrt(2.0);
    const double vev = 246.0;
    const double vu = vev * sinBeta;

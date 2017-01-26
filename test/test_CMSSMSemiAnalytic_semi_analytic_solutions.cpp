@@ -9,37 +9,6 @@
 
 using namespace flexiblesusy;
 
-struct Boundary_values {
-   double m12{};
-   double Azero{};
-   double m0Sq{};
-   double BMu0{};
-   double Mu{};
-};
-
-void setup_high_scale_CMSSMSemiAnalytic(
-   CMSSMSemiAnalytic_mass_eigenstates& model, const Boundary_values& values)
-{
-   model.set_TYu(model.get_Yu() * values.Azero);
-   model.set_TYd(model.get_Yd() * values.Azero);
-   model.set_TYe(model.get_Ye() * values.Azero);
-
-   model.set_mq2(values.m0Sq * UNITMATRIX(3));
-   model.set_mu2(values.m0Sq * UNITMATRIX(3));
-   model.set_md2(values.m0Sq * UNITMATRIX(3));
-   model.set_ml2(values.m0Sq * UNITMATRIX(3));
-   model.set_me2(values.m0Sq * UNITMATRIX(3));
-   model.set_mHd2(values.m0Sq);
-   model.set_mHu2(values.m0Sq);
-
-   model.set_MassB(values.m12);
-   model.set_MassWB(values.m12);
-   model.set_MassG(values.m12);
-
-   model.set_Mu(values.Mu);
-   model.set_BMu(values.BMu0);
-}
-
 BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_coefficients )
 {
    CMSSMSemiAnalytic_input_parameters input;
@@ -50,12 +19,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_coefficients )
    model.run_to(high_scale);
 
    Boundary_values values;
-   values.m12 = 300.0;
-   values.Azero = -200.;
-   values.m0Sq = Sqr(250);
-   values.BMu0 = -1.e4;
-   values.Mu = model.get_Mu();
-
    setup_high_scale_CMSSMSemiAnalytic(model, values);
 
    CMSSMSemiAnalytic_semi_analytic_solutions solns;

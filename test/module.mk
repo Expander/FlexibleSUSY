@@ -148,6 +148,7 @@ ifneq ($(findstring semi_analytic,$(SOLVERS)),)
 
 ifeq ($(WITH_CMSSMSemiAnalytic), yes)
 TEST_SRC += \
+		$(DIR)/test_CMSSMSemiAnalytic_ewsb.cpp \
 		$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.cpp
 endif
 
@@ -761,6 +762,8 @@ $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEX
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMSemiAnalytic_ewsb.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
