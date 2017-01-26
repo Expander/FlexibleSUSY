@@ -315,7 +315,7 @@ void put_message(MLINK link,
 
 void @ModelName@_data::put_settings(MLINK link) const
 {
-   MLPutFunction(link, "List", 24);
+   MLPutFunction(link, "List", Spectrum_generator_settings::NUMBER_OF_OPTIONS);
 
    MLPutRuleTo(link, settings.get(Spectrum_generator_settings::precision), "precisionGoal");
    MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::max_iterations)), "maxIterations");
@@ -707,7 +707,8 @@ std::unique_ptr<@ModelName@_data> make_@ModelName@_data(const Dynamic_array_view
 {
    using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
 
-   const Index_t n_settings = 24, n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
+   const Index_t n_settings = Spectrum_generator_settings::NUMBER_OF_OPTIONS,
+      n_sm_parameters = 29, n_input_pars = @numberOfInputParameters@;
    const Index_t n_total = n_settings + n_sm_parameters + n_input_pars;
 
    if (pars.size() != n_total)
