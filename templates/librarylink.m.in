@@ -83,6 +83,9 @@ fs@ModelName@DefaultInputParameters = {
 @setInputParameterDefaultArguments@
 };
 
+CheckIsNumeric[a_?NumericQ] := a;
+CheckIsNumeric[a_] := (Print["Error: ", a, " is not a numeric input value!"]; a);
+
 Options[FS@ModelName@OpenHandle] = {
     Sequence @@ fsDefaultSettings,
     Sequence @@ fsDefaultSMParameters,
@@ -94,7 +97,7 @@ FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fsModelParameters) 
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
     FS@ModelName@OpenHandleLib[
-        {
+        CheckIsNumeric /@ {
             (* spectrum generator settings *)
             OptionValue[precisionGoal],
             OptionValue[maxIterations],
@@ -223,7 +226,7 @@ FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
 
             (* @ModelName@ input parameters *)
 @setInputParameterArguments@
-        }] /. HoldPattern[OptionValue[param_]] :> param /.
+        }] /. HoldPattern[OptionValue[param_]] :> CheckIsNumeric[param] /.
         { p } /.
         FS@ModelName@GetSettings[handle] /.
         FS@ModelName@GetSMInputParameters[handle] /.
