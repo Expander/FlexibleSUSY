@@ -19,7 +19,11 @@ FS@ModelName@CalculateObservables::error = "`1`";
 FS@ModelName@CalculateObservables::warning = "`1`";
 
 FS@ModelName@::info = "`1`";
+FS@ModelName@::nonum = "Error: `1` is not a numeric input value!";
 FS@ModelName@Message[s_] := Message[FS@ModelName@::info, s];
+
+CheckIsNumeric[a_?NumericQ] := a;
+CheckIsNumeric[a_] := (Message[FS@ModelName@::nonum, a]; Abort[]);
 
 fsDefaultSettings = {
       precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
@@ -82,9 +86,6 @@ fsDefaultSMParameters = {
 fs@ModelName@DefaultInputParameters = {
 @setInputParameterDefaultArguments@
 };
-
-CheckIsNumeric[a_?NumericQ] := a;
-CheckIsNumeric[a_] := (Print["Error: ", a, " is not a numeric input value!"]; a);
 
 Options[FS@ModelName@OpenHandle] = {
     Sequence @@ fsDefaultSettings,
