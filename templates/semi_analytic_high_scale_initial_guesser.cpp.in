@@ -52,7 +52,7 @@ namespace flexiblesusy {
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
-   , main_high_constraint(&high_constraint)
+   , main_high_constraint(&high_constraint_)
 {
    if (!model)
       throw SetupError("@ModelName@_initial_guesser: Error: pointer to model"
