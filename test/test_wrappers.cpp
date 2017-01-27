@@ -517,3 +517,33 @@ BOOST_AUTO_TEST_CASE(test_Im_Eigen_Matrix)
    BOOST_CHECK_EQUAL(im2(1,0), 0.);
    BOOST_CHECK_EQUAL(im2(1,1), 10.0);
 }
+
+BOOST_AUTO_TEST_CASE(test_Min)
+{
+   BOOST_CHECK_EQUAL(Min(0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.), 1.);
+   BOOST_CHECK_EQUAL(Min(-1), -1);
+
+   BOOST_CHECK_EQUAL(Min(0.,1.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0), 0.);
+
+   BOOST_CHECK_EQUAL(Min(-1,0,1), -1);
+   BOOST_CHECK_EQUAL(Min(-1.,0.,1.), -1.);
+}
+
+BOOST_AUTO_TEST_CASE(test_Max)
+{
+   BOOST_CHECK_EQUAL(Max(0.), 0.);
+   BOOST_CHECK_EQUAL(Max(1.), 1.);
+   BOOST_CHECK_EQUAL(Max(-1), -1);
+
+   BOOST_CHECK_EQUAL(Max(0.,1.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0), 1.);
+
+   BOOST_CHECK_EQUAL(Max(-1,0,1), 1);
+   BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
+}

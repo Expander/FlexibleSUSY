@@ -28,6 +28,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
@@ -355,6 +356,36 @@ template <class Derived>
 double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
 {
    return x.cwiseAbs().maxCoeff();
+}
+
+template<typename T>
+T Max(T&&t)
+{
+   return std::forward<T>(t);
+}
+
+template<typename T0, typename T1, typename... Ts>
+typename std::common_type<T0, T1, Ts...>::type Max(T0&& val1, T1&& val2, Ts&&... vs)
+{
+   if (val2 < val1)
+      return Max(val1, std::forward<Ts>(vs)...);
+   else
+      return Max(val2, std::forward<Ts>(vs)...);
+}
+
+template<typename T>
+T Min(T&&t)
+{
+   return std::forward<T>(t);
+}
+
+template<typename T0, typename T1, typename... Ts>
+typename std::common_type<T0, T1, Ts...>::type Min(T0&& val1, T1&& val2, Ts&&... vs)
+{
+   if (val2 < val1)
+      return Min(val2, std::forward<Ts>(vs)...);
+   else
+      return Min(val1, std::forward<Ts>(vs)...);
 }
 
 inline int Sign(double x)
