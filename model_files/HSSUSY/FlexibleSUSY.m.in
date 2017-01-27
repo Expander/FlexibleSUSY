@@ -36,11 +36,11 @@ HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
-                + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (
+                + UnitStep[LambdaLoopOrder-1] (
                     + lambda1LReg + lambda1LPhi
                     + lambda1LChi1 + lambda1LChi2
                     + lambda1Lbottom + lambda1Ltau)
-                + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] (
+                + UnitStep[LambdaLoopOrder-2] (
                     Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                           IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
                           IsCloseRel[SCALE,M3Input,0.01],
