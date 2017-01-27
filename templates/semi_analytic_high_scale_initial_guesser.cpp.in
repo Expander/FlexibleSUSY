@@ -203,6 +203,9 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    const auto old_thresholds = model->get_thresholds();
    const auto save_thresholds = make_raii_guard(
       [this, old_thresholds] () { this->model->set_thresholds(old_thresholds); });
+
+   model->set_thresholds(0);
+
    const softsusy::QedQcd old_low_sm_parameters = low_constraint.get_sm_parameters();
    const auto save_low_sm_parameters = make_raii_guard(
       [this, &old_low_sm_parameters] () { this->low_constraint.set_sm_parameters(old_low_sm_parameters); });
