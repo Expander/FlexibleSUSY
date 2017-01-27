@@ -632,3 +632,33 @@ BOOST_AUTO_TEST_CASE(test_Power_benchmark)
    BOOST_CHECK_LT(timed_Power7, timed_Power_7);
    BOOST_CHECK_LT(timed_Power8, timed_Power_8);
 }
+
+BOOST_AUTO_TEST_CASE(test_Min)
+{
+   BOOST_CHECK_EQUAL(Min(0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.), 1.);
+   BOOST_CHECK_EQUAL(Min(-1), -1);
+
+   BOOST_CHECK_EQUAL(Min(0.,1.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0), 0.);
+
+   BOOST_CHECK_EQUAL(Min(-1,0,1), -1);
+   BOOST_CHECK_EQUAL(Min(-1.,0.,1.), -1.);
+}
+
+BOOST_AUTO_TEST_CASE(test_Max)
+{
+   BOOST_CHECK_EQUAL(Max(0.), 0.);
+   BOOST_CHECK_EQUAL(Max(1.), 1.);
+   BOOST_CHECK_EQUAL(Max(-1), -1);
+
+   BOOST_CHECK_EQUAL(Max(0.,1.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0), 1.);
+
+   BOOST_CHECK_EQUAL(Max(-1,0,1), 1);
+   BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
+}
