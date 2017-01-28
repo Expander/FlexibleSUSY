@@ -203,6 +203,27 @@ static double F8_1_x2(double x1, double x2)
       /std::pow(-1. + sqr(x2),6);
 }
 
+// F8(x1,x2) in the limit x1 -> x2
+static double F8_x1_x2(double x1, double x2)
+{
+   return -2. + (2.*(x1 - x2)*(3.*x2 - 4.*cube(x2) + 1.*std::pow(x2,5) +
+        2.*x2*std::log(sqr(x2))))/cube(-1. + sqr(x2)) +
+   (2.*sqr(x2)*(-1. + sqr(x2) - 2.*std::log(sqr(x2)) +
+        sqr(x2)*std::log(sqr(x2))))/sqr(-1. + sqr(x2)) -
+   (0.33333333333333326*sqr(x1 - x2)*
+      (17.000000000000007 - 9.000000000000007*sqr(x2) -
+        9.*quad(x2) + 1.*std::pow(x2,6) +
+        6.000000000000002*std::log(sqr(x2)) +
+        18.000000000000004*sqr(x2)*std::log(sqr(x2))))/
+    quad(-1. + sqr(x2)) -
+   (1.333333333333333*cube(x1 - x2)*
+      (-1. - 9.000000000000002*sqr(x2) +
+        9.000000000000002*quad(x2) + 1.*std::pow(x2,6) -
+        6.*sqr(x2)*std::log(sqr(x2)) -
+        6.000000000000003*quad(x2)*std::log(sqr(x2))))/
+    (x2*std::pow(-1. + sqr(x2),5));
+}
+
 double F8(double x1, double x2)
 {
    if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
@@ -213,6 +234,9 @@ double F8(double x1, double x2)
 
    if (is_equal(x2, 1., 0.01))
       return F8_1_x2(x2, x1);
+
+   if (is_equal(x1, x2, 0.00001))
+      return F8_x1_x2(x1, x2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -267,6 +291,27 @@ static double F9_1_x2(double x1, double x2)
       /std::pow(-1. + sqr(x2),6);
 }
 
+/// F9(x1,x2) in the limit x1 -> x2
+static double F9_x1_x2(double x1, double x2)
+{
+   return (2.*(-1. + 1.*sqr(x2) - 1.*std::log(sqr(x2))))/
+      sqr(-1. + sqr(x2)) -
+      (2.*(x1 - x2)*(-1. + 1.*quad(x2) -
+                     2.*sqr(x2)*std::log(sqr(x2))))/
+      (x2*cube(-1. + sqr(x2))) -
+      (1.3333333333333333*cube(x1 - x2)*
+       (-1.0000000000000002 - 9.*sqr(x2) + 9.*quad(x2) +
+        1.*std::pow(x2,6) - 6.*sqr(x2)*std::log(sqr(x2)) -
+        6.*quad(x2)*std::log(sqr(x2))))/
+      (x2*std::pow(-1. + sqr(x2),5)) +
+      (1.6666666666666665*std::pow(x1 - x2,2)*
+       (0.2000000000000001 - 4.200000000000001*sqr(x2) +
+        3.000000000000001*quad(x2) + 1.*std::pow(x2,6) -
+        1.2000000000000002*sqr(x2)*std::log(sqr(x2)) -
+        3.6000000000000005*quad(x2)*std::log(sqr(x2))))/
+      (sqr(x2)*quad(-1. + sqr(x2)));
+}
+
 double F9(double x1, double x2)
 {
    if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
@@ -277,6 +322,9 @@ double F9(double x1, double x2)
 
    if (is_equal(x2, 1., 0.01))
       return F9_1_x2(x2, x1);
+
+   if (is_equal(x1, x2, 0.00001))
+      return F9_x1_x2(x1, x2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
