@@ -182,6 +182,7 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
                                              Constraint`FindFixedParametersFromConstraint[constraints[[i]]]]];
                If[fixedPars =!= {} && fixedPars =!= sortedPars,
                   Print["Error: all semi-analytic parameters must be set at the same scale."];
+                  Print["   The following parameters are not set: ", Complement[sortedPars, fixedPars]];
                   Return[False];
                  ];
               ];
