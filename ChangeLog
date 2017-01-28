@@ -25,6 +25,9 @@ FlexibleSUSY-1.7.3 [not released yet]
    strings (not symbols).
    Thanks to Joshua Ellis.
 
+ * Bugfix (commit 7b4ab95): Implement missing limits of F8 and F9 for
+   x1 -> x2 from arXiv:1407.4081.
+
 FlexibleSUSY-1.7.2 [December, 15 2016]
 
  * Feature (commit b052e35): New flag FlexibleSUSY[23] to disable the
