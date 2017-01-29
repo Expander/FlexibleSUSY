@@ -2791,6 +2791,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  Print["   supported by the semi-analytic solver."];
                  Print["   Please modify the boundary conditions or disable"];
                  Print["   the semi-analytic solver."];
+                 Print["   Alternatively, please contact the developers to"];
+                 Print["   discuss adding support for these boundary conditions."];
                  Quit[1];
                 ];
 
