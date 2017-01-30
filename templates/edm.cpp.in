@@ -38,6 +38,7 @@
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
 #define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
 
 using namespace flexiblesusy;
 
@@ -269,10 +270,29 @@ template<> struct IndexBounds<0> {
    { return (begin()+1); }
 };
 
-@EDM_Fields@
+struct Field {};
 
-template<class F> struct remove_anti { typedef F type; };
-template<class F> struct remove_anti<anti<F>> { typedef F type; };
+// Anti fields
+template<class F> struct anti : public Field
+{
+   static const unsigned numberOfGenerations = F::numberOfGenerations;
+   using type = anti<F>;
+};
+
+template<class F> struct anti<anti<F>> { using type = F; };
+
+template<class F> struct is_anti { static constexpr bool value = false; };
+template<class F> struct is_anti<anti<F>> { static constexpr bool value = true; };
+
+template<class Field> struct field_indices;
+
+template<class Field>
+struct field_indices<anti<Field>>
+{
+   using type = typename field_indices<Field>::type;
+};
+
+@EDM_Fields@
 
 /**
  * @class EvaluationContext
@@ -290,7 +310,13 @@ struct EvaluationContext {
     * @brief Returns the mass of a field.
     */
    template<class Field>
-   double mass( const typename field_indices<Field>::type & ) const;
+   double mass( const typename std::enable_if<is_anti<Field>::value,
+   typename field_indices<Field>::type>::type &indices ) const
+   { return mass<typename anti<Field>::type>( indices ); }
+
+   template<class Field>
+   double mass( const typename std::enable_if<!is_anti<Field>::value,
+                    typename field_indices<Field>::type>::type &indices ) const;
 
    template<class Field>
    double charge( const typename field_indices<Field>::type & ) const;

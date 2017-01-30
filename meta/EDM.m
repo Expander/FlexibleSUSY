@@ -36,9 +36,7 @@ CreateFields[] :=
 Module[{fields, code},
        fields = TreeMasses`GetParticles[];
        
-       code = ("struct Field {};\n\n" <>
-               
-               StringJoin @ Riffle[("struct " <> CXXNameOfField[#] <>
+       code = (StringJoin @ Riffle[("struct " <> CXXNameOfField[#] <>
                                     ": public Field {\n" <>
                                     TextFormatting`IndentText["static const unsigned numberOfGenerations = " <>
                                                               ToString @ TreeMasses`GetDimension[#] <> ";\n"] <>
@@ -47,23 +45,12 @@ Module[{fields, code},
                "using Photon = " <> CXXNameOfField @ SARAH`Photon <> ";\n" <>
                "using Electron = " <> CXXNameOfField @ SARAH`Electron <> ";\n\n" <>
                
-               "// Anti fields\n" <>
-               "template<class P> struct anti : public Field\n" <>
-               "{\n" <>
-               IndentText @
-               ("static const unsigned numberOfGenerations = P::numberOfGenerations;\n" <>
-                "using type = anti<P>;\n") <>
-               "};\n" <>
-               "template<class P> struct anti<anti<P>> { using type = P; };\n\n" <>
-               
                "// Fields that are their own anti fields\n" <>
                StringJoin @ Riffle[("template<> struct " <>
                                     "anti<" <> CXXNameOfField[#] <> ">" <>
                                     " { using type = " <> CXXNameOfField[#] <> "; };"
                                     &) /@ Select[fields, (# == SARAH`AntiField[#] &)],
                                    "\n"] <> "\n\n" <>
-               
-               "template<class Field> struct field_indices;\n\n" <>
                
                StringJoin @ Riffle[("template<> struct field_indices<" <>
                                     CXXNameOfField[#] <> ">\n" <>
@@ -388,7 +375,7 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[1]], ", "] <> " }, " <>
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };\n"
                             ,
-                            ";/n"
+                            "{};\n"
                             ] <>
                          "static constexpr unsigned fieldIndexStart[" <> ToString @ Length[fieldIndexStart] <>
                          "] = { " <> StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <>
