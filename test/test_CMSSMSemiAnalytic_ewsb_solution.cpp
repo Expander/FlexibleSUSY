@@ -24,7 +24,7 @@ CMSSM_mass_eigenstates match_at_high_scale(
    const auto Yu = model.get_Yu();
    const auto Yd = model.get_Yd();
    const auto Ye = model.get_Ye();
-   
+
    matched.set_Yu(Yu);
    matched.set_Yd(Yd);
    matched.set_Ye(Ye);
