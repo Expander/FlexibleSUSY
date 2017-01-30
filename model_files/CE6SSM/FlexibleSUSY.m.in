@@ -2,6 +2,8 @@ FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = E6SSM;
 
+FSBVPSolvers = { SemiAnalyticSolver };
+
 (* CE6SSM input parameters *)
 
 MINPAR = {
@@ -58,6 +60,9 @@ HighScaleInput = {
    {msI2, UNITMATRIX[2] m0Sq},
    {mHp2, m0Sq},
    {mHpbar2, m0Sq},
+   {mHd2, m0Sq},
+   {mHu2, m0Sq},
+   {ms2, m0Sq},
    {\[Kappa], UNITMATRIX[3] KappaInput},
    {\[Lambda]12, UNITMATRIX[2] Lambda12Input},
    {\[Lambda], LambdaInput},
