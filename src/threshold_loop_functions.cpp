@@ -27,7 +27,7 @@ namespace flexiblesusy {
 namespace threshold_loop_functions {
 
 namespace {
-   double sqr(double x) { return x*x; }
+   template <typename T> T sqr(T x) { return x*x; }
    template <typename T> T cube(T x) { return x*x*x; }
    template <typename T> T quad(T x) { return x*x*x*x; }
    template <typename T> T pow5(T x) { return x*x*x*x*x; }
@@ -472,6 +472,34 @@ static double f5_1_r2(double r1, double r2)
             *lr22))/(pow7(-1. + r2)*sqr(1. + r2));
 }
 
+/// f5(r1,r2) in the limit r1 -> r2
+static double f5_r1_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return ((r1 - r2)*(11*r2 + 3*cube(r2) - 15*pow5(r2) + pow7(r2) +
+        3*r2*lr22 + 18*cube(r2)*lr22 +
+        3*pow5(r2)*lr22))/quad(-1 + r22)\
+    + (sqr(r1 - r2)*(-17 - 116*r22 + 90*quad(r2) +
+        44*pow6(r2) - pow8(r2) - 3*lr22 -
+        75*r22*lr22 -
+        105*quad(r2)*lr22 -
+        9*pow6(r2)*lr22))/
+    (3.*pow5(-1 + r22)) +
+   (-1 - 5*r22 + 5*quad(r2) + pow6(r2) -
+      3*r22*lr22 -
+      6*quad(r2)*lr22 + pow6(r2)*lr22)
+     /cube(-1 + r22) +
+   (cube(r1 - r2)*(3 + 273*r22 + 314*quad(r2) -
+        498*pow6(r2) - 93*pow8(r2) + pow10(r2) +
+        90*r22*lr22 +
+        510*quad(r2)*lr22 +
+        342*pow6(r2)*lr22 +
+        18*pow8(r2)*lr22))/
+    (6.*r2*pow6(-1 + r22));
+}
+
 double f5(double r1, double r2)
 {
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
@@ -483,12 +511,16 @@ double f5(double r1, double r2)
    if (is_equal(r2, 1., 0.01))
       return f5_1_r2(r2, r1);
 
+   if (is_equal(r1, r2, 0.0001))
+      return 0.75 * f5_r1_r2(r2, r1);
+
    const double r12 = sqr(r1);
+   const double r22 = sqr(r2);
 
    const double result
-      = (1+sqr(r1+r2)-r12*sqr(r2))/((r12-1)*(sqr(r2)-1))
+      = (1+sqr(r1+r2)-r12*r22)/((r12-1)*(r22-1))
       + (cube(r1)*(r12+1)*std::log(r12))/(sqr(r12-1)*(r1-r2))
-      - (cube(r2)*(sqr(r2)+1)*std::log(sqr(r2)))/((r1-r2)*sqr(sqr(r2)-1));
+      - (cube(r2)*(r22+1)*std::log(r22))/((r1-r2)*sqr(r22-1));
 
    return 0.75 * result;
 }
@@ -515,28 +547,56 @@ static double f6_1_1(double r1, double r2)
 /// f6(r1,r2) in the limit r1 -> 1
 static double f6_1_r2(double r1, double r2)
 {
-   return ((-1 + sqr(r2))*(
-              -3 + 16*r2 + 33*sqr(r2) - 332*cube(r2)
+   const double r22 = sqr(r2);
+
+   return ((-1 + r22)*(
+              -3 + 16*r2 + 33*r22 - 332*cube(r2)
               + 573*quad(r2) - 584*pow5(r2) + 297*pow6(r2)
               - 60*pow7(r2) - 2*cube(r1)*(
-                 8 - 49*r2 + 121*sqr(r2) - 129*cube(r2)
+                 8 - 49*r2 + 121*r22 - 129*cube(r2)
                  - 99*quad(r2) + 28*pow5(r2))
               + quad(r1)*(
-                 3 - 18*r2 + 43*sqr(r2) - 42*cube(r2)
+                 3 - 18*r2 + 43*r22 - 42*cube(r2)
                  - 47*quad(r2) + pow6(r2))
-              - 2*r1*(-8 + 10*r2 + 106*sqr(r2) - 359*cube(r2)
+              - 2*r1*(-8 + 10*r2 + 106*r22 - 359*cube(r2)
                       + 211*quad(r2) - 101*pow5(r2)
                       + 21*pow6(r2))
-              - 2*sqr(r1)*(-15 + 98*r2 - 264*sqr(r2)
+              - 2*sqr(r1)*(-15 + 98*r2 - 264*r22
                                   + 331*cube(r2) + 106*quad(r2)
                                   - 99*pow5(r2) + 23*pow6(r2)))
            + 60*pow5(r2)*(5 + quad(r1) + cube(r1)*(-5 + r2)
-                                - 10*r2 + 10*sqr(r2) - 5*cube(r2)
+                                - 10*r2 + 10*r22 - 5*cube(r2)
                                 + quad(r2) + sqr(r1)*(
-                                   10 - 5*r2 + sqr(r2))
-                                + r1*(-10 + 10*r2 - 5*sqr(r2)
-                                      + cube(r2)))*std::log(sqr(r2)))
+                                   10 - 5*r2 + r22)
+                                + r1*(-10 + 10*r2 - 5*r22
+                                      + cube(r2)))*std::log(r22))
       /(70.*pow7(-1 + r2)*sqr(1 + r2));
+}
+
+// f6(r1,r2) in the limit r1 -> r2
+static double f6_r1_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return ((r1 - r2)*(3*r2 + 7*cube(r2) - 11*pow5(r2) + pow7(r2) +
+        10*cube(r2)*lr22 +
+        2*pow5(r2)*lr22))/quad(-1 + r22)\
+    + (sqr(r1 - r2)*(-3 - 62*r22 + 36*quad(r2) +
+        30*pow6(r2) - pow8(r2) -
+        30*r22*lr22 -
+        60*quad(r2)*lr22 -
+        6*pow6(r2)*lr22))/
+    (3.*pow5(-1 + r22)) +
+   (-3*r22 + 2*quad(r2) + pow6(r2) -
+      5*quad(r2)*lr22 + pow6(r2)*lr22)
+     /cube(-1 + r22) +
+   (cube(r1 - r2)*(107*r2 + 206*cube(r2) - 252*pow5(r2) -
+        62*pow7(r2) + pow9(r2) + 30*r2*lr22 +
+        240*cube(r2)*lr22 +
+        198*pow5(r2)*lr22 +
+        12*pow7(r2)*lr22))/
+    (6.*pow6(-1 + r22));
 }
 
 double f6(double r1, double r2)
@@ -549,6 +609,9 @@ double f6(double r1, double r2)
 
    if (is_equal(r2, 1., 0.01))
       return f6_1_r2(r2, r1);
+
+   if (is_equal(r1, r2, 0.0001))
+      return 6./7. * f6_r1_r2(r2, r1);
 
    const double r12 = sqr(r1);
    const double r22 = sqr(r2);
@@ -564,15 +627,17 @@ double f6(double r1, double r2)
 /// f7(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f7_1_1(double r1, double r2)
 {
-   return (15700 - 14411*r2 + 7850*sqr(r2) - 2498*cube(r2)
+   const double r22 = sqr(r2);
+
+   return (15700 - 14411*r2 + 7850*r22 - 2498*cube(r2)
            + 355*quad(r2)
-           + sqr(r1)*(7850 - 2558*r2 - 750*sqr(r2) + 940*cube(r2)
+           + sqr(r1)*(7850 - 2558*r2 - 750*r22 + 940*cube(r2)
                       - 235*quad(r2))
-           + quad(r1)*(355 + 65*r2 - 235*sqr(r2) + 142*cube(r2)
+           + quad(r1)*(355 + 65*r2 - 235*r22 + 142*cube(r2)
                              - 30*quad(r2))
-           + r1*(-14411 + 8375*r2 - 2558*sqr(r2) + 180*cube(r2)
+           + r1*(-14411 + 8375*r2 - 2558*r22 + 180*cube(r2)
                  + 65*quad(r2))
-           + cube(r1)*(-2498 + 180*r2 + 940*sqr(r2)
+           + cube(r1)*(-2498 + 180*r2 + 940*r22
                              - 645*cube(r2) + 142*quad(r2)))
       /2310.;
 }
@@ -580,26 +645,54 @@ static double f7_1_1(double r1, double r2)
 /// f7(r1,r2) in the limit r1 -> 1
 static double f7_1_r2(double r1, double r2)
 {
-   const double lr22 = std::log(sqr(r2));
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
 
    return (-10*(-1 + r1)*cube(-1 + r2)*(
-              2 - 5*r2 - 4*sqr(r2) + 4*cube(r2) + 2*quad(r2)
+              2 - 5*r2 - 4*r22 + 4*cube(r2) + 2*quad(r2)
               + pow5(r2) - 6*cube(r2)*lr22)
            - 30*quad(-1 + r2)*(
-              1 - 2*r2 - 2*sqr(r2) + 2*cube(r2) + quad(r2)
+              1 - 2*r2 - 2*r22 + 2*cube(r2) + quad(r2)
               - 2*cube(r2)*lr22)
            + 10*sqr(-1 + r1)*sqr(-1 + r2)*(
-              -1 + 3*r2 + 3*sqr(r2) - 3*quad(r2) - 3*pow5(r2)
+              -1 + 3*r2 + 3*r22 - 3*quad(r2) - 3*pow5(r2)
               + pow6(r2) + 6*cube(r2)*lr22)
            + 2*cube(-1 + r1)*(-1 + r2)*(
-              -2 + 6*r2 + 18*sqr(r2) + 15*cube(r2) - 30*quad(r2)
+              -2 + 6*r2 + 18*r22 + 15*cube(r2) - 30*quad(r2)
               - 18*pow5(r2) + 14*pow6(r2) - 3*pow7(r2)
               + 30*cube(r2)*lr22)
            + quad(-1 + r1)*(
-              -1 + 48*sqr(r2) + 42*cube(r2) - 90*quad(r2)
+              -1 + 48*r22 + 42*cube(r2) - 90*quad(r2)
               - 24*pow5(r2) + 40*pow6(r2) - 18*pow7(r2)
               + 3*pow8(r2) + 60*cube(r2)*lr22))
       /(10.*pow7(-1 + r2)*sqr(1 + r2));
+}
+
+/// f7(r1,r2) in the limit r1 -> r2
+static double f7_r1_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return (-1 - 2*r22 + 3*quad(r2) -
+      3*r22*lr22 - quad(r2)*lr22)
+     /cube(-1 + r22) +
+   ((r1 - r2)*(8*r2 - 4*cube(r2) - 4*pow5(r2) +
+        3*r2*lr22 + 8*cube(r2)*lr22 +
+        pow5(r2)*lr22))/quad(-1 + r22) +
+   (sqr(r1 - r2)*(-14 - 54*r22 + 54*quad(r2) +
+        14*pow6(r2) - 3*lr22 -
+        45*r22*lr22 -
+        45*quad(r2)*lr22 -
+        3*pow6(r2)*lr22))/
+    (3.*pow5(-1 + r22)) +
+   (cube(r1 - r2)*(3 + 166*r22 + 108*quad(r2) -
+        246*pow6(r2) - 31*pow8(r2) +
+        60*r22*lr22 +
+        270*quad(r2)*lr22 +
+        144*pow6(r2)*lr22 +
+        6*pow8(r2)*lr22))/
+    (6.*r2*pow6(-1 + r22));
 }
 
 double f7(double r1, double r2)
@@ -612,6 +705,9 @@ double f7(double r1, double r2)
 
    if (is_equal(r2, 1., 0.01))
       return f7_1_r2(r2, r1);
+
+   if (is_equal(r1, r2, 0.0001))
+      return 6. * f7_r1_r2(r2, r1);
 
    const double r12 = sqr(r1);
    const double r22 = sqr(r2);
@@ -646,28 +742,53 @@ static double f8_1_1(double r1, double r2)
 /// f8(r1,r2) in the limit r1 -> 1
 static double f8_1_r2(double r1, double r2)
 {
-   const double lr22 = std::log(sqr(r2));
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
 
    return (30*quad(-1 + r2)*(
-              -1 + 4*sqr(r2) - 3*quad(r2)
+              -1 + 4*r22 - 3*quad(r2)
               + 2*quad(r2)*lr22)
            + 10*sqr(-1 + r1)*sqr(-1 + r2)*(
-              1 - 4*r2 + 4*sqr(r2) + 8*cube(r2)
+              1 - 4*r2 + 4*r22 + 8*cube(r2)
               - 5*quad(r2) - 4*pow5(r2)
               + 6*quad(r2)*lr22)
            + 10*(-1 + r1)*cube(-1 + r2)*(
-              1 - 4*r2 + 4*sqr(r2) + 8*cube(r2)
+              1 - 4*r2 + 4*r22 + 8*cube(r2)
               - 5*quad(r2) - 4*pow5(r2)
               + 6*quad(r2)*lr22)
            + 2*cube(-1 + r1)*(-1 + r2)*(
-              3 - 14*r2 + 18*sqr(r2) + 30*cube(r2)
+              3 - 14*r2 + 18*r22 + 30*cube(r2)
               - 15*quad(r2) - 18*pow5(r2) - 6*pow6(r2)
               + 2*pow7(r2) + 30*quad(r2)*lr22)
            + quad(-1 + r1)*(
-              3 - 16*r2 + 24*sqr(r2) + 48*cube(r2)
+              3 - 16*r2 + 24*r22 + 48*cube(r2)
               - 48*pow5(r2) - 24*pow6(r2) + 16*pow7(r2)
               - 3*pow8(r2) + 60*quad(r2)*lr22))
       /(40.*pow7(-1 + r2)*sqr(1 + r2));
+}
+
+/// f8(r1,r2) in the limit r1 -> r2
+static double f8_r1_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return (2*(-r2 + pow5(r2) - 2*cube(r2)*lr22))/
+    cube(-1 + r22) +
+   ((r1 - r2)*(1 + 9*r22 - 9*quad(r2) - pow6(r2) +
+        6*r22*lr22 +
+        6*quad(r2)*lr22))/quad(-1 + r22)\
+    + (2*sqr(r1 - r2)*(-19*r2 - 9*cube(r2) +
+        27*pow5(r2) + pow7(r2) - 6*r2*lr22 -
+        30*cube(r2)*lr22 -
+        12*pow5(r2)*lr22))/
+    (3.*pow5(-1 + r22)) +
+   (cube(r1 - r2)*(31 + 246*r22 - 108*quad(r2) -
+        166*pow6(r2) - 3*pow8(r2) + 6*lr22 +
+        144*r22*lr22 +
+        270*quad(r2)*lr22 +
+        60*pow6(r2)*lr22))/
+    (6.*pow6(-1 + r22));
 }
 
 double f8(double r1, double r2)
@@ -680,6 +801,9 @@ double f8(double r1, double r2)
 
    if (is_equal(r2, 1., 0.01))
       return f8_1_r2(r2, r1);
+
+   if (is_equal(r1, r2, 0.0001))
+      return 1.5 * f8_r1_r2(r2, r1);
 
    const double r12 = sqr(r1);
    const double r22 = sqr(r2);
