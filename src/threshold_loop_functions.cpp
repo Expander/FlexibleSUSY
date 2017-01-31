@@ -366,6 +366,9 @@ double g(double r)
 
 double f1(double r)
 {
+   if (is_equal(r, 0., 0.01))
+      return 18./7.*sqr(r);
+
    if (is_equal(r, 1., 0.01))
       return (-81 + 464*r + 270*sqr(r)
               - 208*cube(r) + 45*quad(r))/490.;
@@ -378,6 +381,9 @@ double f1(double r)
 
 double f2(double r)
 {
+   if (is_equal(r, 0., 0.01))
+      return 22./9.*sqr(r);
+
    if (is_equal(r, 1., 0.01))
       return (-285 + 1616*r + 1230*sqr(r)
               - 848*cube(r) + 177*quad(r))/1890.;
@@ -390,6 +396,9 @@ double f2(double r)
 
 double f3(double r)
 {
+   if (is_equal(r, 0., 0.001))
+      return 4./3.;
+
    if (is_equal(r, 1., 0.01))
       return (849 - 1184*r + 1566*sqr(r)
               - 736*cube(r) + 135*quad(r))/630.;
@@ -403,6 +412,9 @@ double f3(double r)
 
 double f4(double r)
 {
+   if (is_equal(r, 0., 0.001))
+      return 12./7.;
+
    const double r2 = sqr(r);
    const double r4 = quad(r);
 
@@ -482,6 +494,24 @@ static double f5_1_r2(double r1, double r2)
             *lr22))/(pow7(-1. + r2)*sqr(1. + r2));
 }
 
+/// f5(r1,r2) in the limit r1 -> 0
+static double f5_0_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return ((1 + r22)*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
+      (r1*r2*(2 - 2*r22 + lr22 +
+              r22*lr22))/sqr(-1 + r22) +
+      sqr(r1)*(-2/(-1 + r22) + ((1 + r22)*lr22)/sqr(-1 + r22));
+}
+
+/// f5(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f5_0_1(double, double r2)
+{
+   return 0.75*(1 + (-1 + r2)/3. + sqr(-1 + r2)/6.);
+}
+
 /// f5(r1,r2) in the limit r1 -> r2
 static double f5_r1_r2(double r1, double r2)
 {
@@ -512,14 +542,31 @@ static double f5_r1_r2(double r1, double r2)
 
 double f5(double r1, double r2)
 {
+   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+      return 1.;
+
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f5_1_1(r1, r2);
 
-   if (is_equal(r1, 1., 0.01))
-      return f5_1_r2(r1, r2);
+   if (is_equal(r1, 1., 0.01)) {
+      if (is_equal(r2, 0., 0.01))
+         return f5_0_1(r2, r1);
 
-   if (is_equal(r2, 1., 0.01))
+      return f5_1_r2(r1, r2);
+   }
+
+   if (is_equal(r2, 1., 0.01)) {
+      if (is_equal(r1, 0., 0.01))
+         return f5_0_1(r1, r2);
+
       return f5_1_r2(r2, r1);
+   }
+
+   if (is_equal(r1, 0., 0.0001))
+      return 0.75 * f5_0_r2(r1, r2);
+
+   if (is_equal(r2, 0., 0.0001))
+      return 0.75 * f5_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
       return 0.75 * f5_r1_r2(r2, r1);
@@ -583,6 +630,17 @@ static double f6_1_r2(double r1, double r2)
       /(70.*pow7(-1 + r2)*sqr(1 + r2));
 }
 
+/// f6(r1,r2) in the limit r1 -> 0
+static double f6_0_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return (sqr(r1)*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
+      (r1*(r2 - cube(r2) + cube(r2)*lr22))/sqr(-1 + r22) +
+      (r22 - quad(r2) + quad(r2)*lr22)/sqr(-1 + r22);
+}
+
 // f6(r1,r2) in the limit r1 -> r2
 static double f6_r1_r2(double r1, double r2)
 {
@@ -609,16 +667,40 @@ static double f6_r1_r2(double r1, double r2)
     (6.*pow6(-1 + r22));
 }
 
+/// f6(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f6_0_1(double, double r2)
+{
+   return 6./7.*(0.5 + (2*(-1 + r2))/3. - cube(-1 + r2)/15.
+                 + quad(-1 + r2)/20.);
+}
+
 double f6(double r1, double r2)
 {
+   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+      return 0.;
+
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f6_1_1(r1, r2);
 
-   if (is_equal(r1, 1., 0.01))
-      return f6_1_r2(r1, r2);
+   if (is_equal(r1, 1., 0.01)) {
+      if (is_equal(r2, 0., 0.0001))
+         return f6_0_1(r2, r1);
 
-   if (is_equal(r2, 1., 0.01))
+      return f6_1_r2(r1, r2);
+   }
+
+   if (is_equal(r2, 1., 0.01)) {
+      if (is_equal(r1, 0., 0.0001))
+         return f6_0_1(r1, r2);
+
       return f6_1_r2(r2, r1);
+   }
+
+   if (is_equal(r1, 0., 0.0001))
+      return 6./7. * f6_0_r2(r1, r2);
+
+   if (is_equal(r2, 0., 0.0001))
+      return 6./7. * f6_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
       return 6./7. * f6_r1_r2(r2, r1);
@@ -678,6 +760,24 @@ static double f7_1_r2(double r1, double r2)
       /(10.*pow7(-1 + r2)*sqr(1 + r2));
 }
 
+/// f7(r1,r2) in the limit r1 -> 0
+static double f7_0_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return -((r1*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
+      (sqr(r1)*(1 - r22 + lr22))/sqr(-1 + r22) +
+      (1 - r22 + r22*lr22)/sqr(-1 + r22);
+}
+
+/// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f7_0_1(double, double r2)
+{
+   return 6.*(0.5 + (1 - r2)/3. + sqr(-1 + r2)/6. - cube(-1 + r2)/15.
+              + quad(-1 + r2)/60.);
+}
+
 /// f7(r1,r2) in the limit r1 -> r2
 static double f7_r1_r2(double r1, double r2)
 {
@@ -707,14 +807,31 @@ static double f7_r1_r2(double r1, double r2)
 
 double f7(double r1, double r2)
 {
+   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+      return 1;
+
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f7_1_1(r1, r2);
 
-   if (is_equal(r1, 1., 0.01))
-      return f7_1_r2(r1, r2);
+   if (is_equal(r1, 1., 0.01)) {
+      if (is_equal(r2, 0., 0.0001))
+         return f7_0_1(r2, r1);
 
-   if (is_equal(r2, 1., 0.01))
+      return f7_1_r2(r1, r2);
+   }
+
+   if (is_equal(r2, 1., 0.01)) {
+      if (is_equal(r1, 0., 0.0001))
+         return f7_0_1(r1, r2);
+
       return f7_1_r2(r2, r1);
+   }
+
+   if (is_equal(r1, 0., 0.0001))
+      return 6. * f7_0_r2(r1, r2);
+
+   if (is_equal(r2, 0., 0.0001))
+      return 6. * f7_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
       return 6. * f7_r1_r2(r2, r1);
@@ -777,6 +894,24 @@ static double f8_1_r2(double r1, double r2)
       /(40.*pow7(-1 + r2)*sqr(1 + r2));
 }
 
+/// f8(r1,r2) in the limit r1 -> 0
+static double f8_0_r2(double r1, double r2)
+{
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   return -((sqr(r1)*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
+      (r1*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
+      (r2 - cube(r2) + cube(r2)*lr22)/sqr(-1 + r22);
+}
+
+/// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f8_0_1(double, double r2)
+{
+   return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
+               - quad(-1 + r2)/20.);
+}
+
 /// f8(r1,r2) in the limit r1 -> r2
 static double f8_r1_r2(double r1, double r2)
 {
@@ -803,14 +938,31 @@ static double f8_r1_r2(double r1, double r2)
 
 double f8(double r1, double r2)
 {
+   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+      return 0.;
+
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f8_1_1(r1, r2);
 
-   if (is_equal(r1, 1., 0.01))
-      return f8_1_r2(r1, r2);
+   if (is_equal(r1, 1., 0.01)) {
+      if (is_equal(r2, 0., 0.0001))
+         return f8_0_1(r2, r1);
 
-   if (is_equal(r2, 1., 0.01))
+      return f8_1_r2(r1, r2);
+   }
+
+   if (is_equal(r2, 1., 0.01)) {
+      if (is_equal(r1, 0., 0.0001))
+         return f8_0_1(r1, r2);
+
       return f8_1_r2(r2, r1);
+   }
+
+   if (is_equal(r1, 0., 0.0001))
+      return 1.5 * f8_0_r2(r1, r2);
+
+   if (is_equal(r2, 0., 0.0001))
+      return 1.5 * f8_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
       return 1.5 * f8_r1_r2(r2, r1);

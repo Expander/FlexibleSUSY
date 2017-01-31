@@ -494,6 +494,14 @@ BOOST_AUTO_TEST_CASE(test_f1)
    x = 1.01;    BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
    x = 1.001;   BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
    x = 1.0001;  BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
+   x = 0.02;    BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
+   x = 0.01;    BOOST_CHECK_CLOSE(f1(x), f1_bare(x), 1e-5);
+   x = 0.001;   BOOST_CHECK_SMALL(f1(x) - f1_bare(x), 1e-5);
+   x = 0.0001;  BOOST_CHECK_SMALL(f1(x) - f1_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(f1(0.)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f2)
@@ -507,6 +515,16 @@ BOOST_AUTO_TEST_CASE(test_f2)
    x = 1.01;    BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
    x = 1.001;   BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
    x = 1.0001;  BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
+   x = 0.02;    BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
+   x = 0.01;    BOOST_CHECK_CLOSE(f2(x), f2_bare(x), 1e-5);
+   x = 0.001;   BOOST_CHECK_SMALL(f2(x) - f2_bare(x), 1e-5);
+   x = 0.0001;  BOOST_CHECK_SMALL(f2(x) - f2_bare(x), 1e-5);
+   x = 0.00001; BOOST_CHECK_SMALL(f2(x) - f2_bare(x), 1e-5);
+   x = 1e-8;    BOOST_CHECK_SMALL(f2(x) - f2_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(f2(0.)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f3)
@@ -520,6 +538,16 @@ BOOST_AUTO_TEST_CASE(test_f3)
    x = 1.01;    BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
    x = 1.001;   BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
    x = 1.0001;  BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
+   x = 0.02;    BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
+   x = 0.01;    BOOST_CHECK_CLOSE(f3(x), f3_bare(x), 1e-5);
+   x = 0.001;   BOOST_CHECK_SMALL(f3(x) - f3_bare(x), 1e-5);
+   x = 0.0001;  BOOST_CHECK_SMALL(f3(x) - f3_bare(x), 1e-5);
+   x = 0.00001; BOOST_CHECK_SMALL(f3(x) - f3_bare(x), 1e-5);
+   x = 1e-8;    BOOST_CHECK_SMALL(f3(x) - f3_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(f3(0.)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f4)
@@ -533,6 +561,16 @@ BOOST_AUTO_TEST_CASE(test_f4)
    x = 1.01;    BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
    x = 1.001;   BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
    x = 1.0001;  BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
+   x = 0.02;    BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
+   x = 0.01;    BOOST_CHECK_CLOSE(f4(x), f4_bare(x), 1e-5);
+   x = 0.001;   BOOST_CHECK_SMALL(f4(x) - f4_bare(x), 1e-5);
+   x = 0.0001;  BOOST_CHECK_SMALL(f4(x) - f4_bare(x), 1e-5);
+   x = 0.00001; BOOST_CHECK_SMALL(f4(x) - f4_bare(x), 1e-5);
+   x = 1e-8;    BOOST_CHECK_SMALL(f4(x) - f4_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(f4(0.)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f5)
@@ -564,6 +602,36 @@ BOOST_AUTO_TEST_CASE(test_f5)
    x = 2.01;    BOOST_CHECK_CLOSE(f5(x,x), f5_bare(x,x + 0.0001), 1e-2);
    x = 2.001;   BOOST_CHECK_CLOSE(f5(x,x), f5_bare(x,x + 0.0001), 1e-2);
    x = 2.0001;  BOOST_CHECK_CLOSE(f5(x,x), f5_bare(x,x + 0.0001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f5(x,0), f5_bare(x,0.00001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f5(x,0), f5_bare(x,0.00001), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f5(x,0), f5_bare(x,0.00001), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f5(x,0), f5_bare(x,0.00001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f5(x,0), f5_bare(x,0.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f5(0,x), f5_bare(0.00001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f5(0,x), f5_bare(0.00001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f5(0,x), f5_bare(0.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f5(0,x), f5_bare(0.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f5(0,x), f5_bare(0.00001,x), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f5(x,1), f5_bare(x,1.00001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f5(x,1), f5_bare(x,1.00001), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f5(x,1), f5_bare(x,1.00001), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f5(x,1), f5_bare(x,1.00001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f5(x,1), f5_bare(x,1.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f5(1,x), f5_bare(1.00001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f5(1,x), f5_bare(1.00001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f5(1,x), f5_bare(1.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f5(1,x), f5_bare(1.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f5(1,x), f5_bare(1.00001,x), 1e-2);
+
+   BOOST_CHECK(!std::isnan(f5(0,0)));
+   BOOST_CHECK(!std::isnan(f5(0,1)));
+   BOOST_CHECK(!std::isnan(f5(1,0)));
+   BOOST_CHECK(!std::isnan(f5(1,1)));
+   BOOST_CHECK(!std::isnan(f5(2,2)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f6)
@@ -595,6 +663,36 @@ BOOST_AUTO_TEST_CASE(test_f6)
    x = 2.01;    BOOST_CHECK_CLOSE(f6(x,x), f6_bare(x,x + 0.0001), 1e-2);
    x = 2.001;   BOOST_CHECK_CLOSE(f6(x,x), f6_bare(x,x + 0.0001), 1e-2);
    x = 2.0001;  BOOST_CHECK_CLOSE(f6(x,x), f6_bare(x,x + 0.0001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f6(x,0), f6_bare(x,0.000001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f6(x,0), f6_bare(x,0.000001), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f6(x,0) - f6_bare(x,0.000001), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f6(x,0) - f6_bare(x,0.000001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f6(x,0) - f6_bare(x,0.000001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f6(0,x), f6_bare(0.000001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f6(0,x), f6_bare(0.000001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f6(0,x) - f6_bare(0.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f6(0,x) - f6_bare(0.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f6(0,x) - f6_bare(0.00001,x), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f6(x,1), f6_bare(x,1.00001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f6(x,1), f6_bare(x,1.00001), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f6(x,1), f6_bare(x,1.00001), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f6(x,1), f6_bare(x,1.00001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f6(x,1), f6_bare(x,1.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f6(1,x), f6_bare(1.00001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f6(1,x), f6_bare(1.00001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f6(1,x), f6_bare(1.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f6(1,x), f6_bare(1.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f6(1,x), f6_bare(1.00001,x), 1e-2);
+
+   BOOST_CHECK(!std::isnan(f6(0,0)));
+   BOOST_CHECK(!std::isnan(f6(0,1)));
+   BOOST_CHECK(!std::isnan(f6(1,0)));
+   BOOST_CHECK(!std::isnan(f6(1,1)));
+   BOOST_CHECK(!std::isnan(f6(2,2)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f7)
@@ -626,6 +724,36 @@ BOOST_AUTO_TEST_CASE(test_f7)
    x = 2.01;    BOOST_CHECK_CLOSE(f7(x,x), f7_bare(x,x + 0.00001), 1e-2);
    x = 2.001;   BOOST_CHECK_CLOSE(f7(x,x), f7_bare(x,x + 0.00001), 1e-2);
    x = 2.0001;  BOOST_CHECK_CLOSE(f7(x,x), f7_bare(x,x + 0.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f7(x,0), f7_bare(x,0.000001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f7(x,0), f7_bare(x,0.000001), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f7(x,0) - f7_bare(x,0.000001), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f7(x,0) - f7_bare(x,0.000001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f7(x,0) - f7_bare(x,0.000001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f7(0,x), f7_bare(0.000001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f7(0,x), f7_bare(0.000001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f7(0,x) - f7_bare(0.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f7(0,x) - f7_bare(0.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f7(0,x) - f7_bare(0.00001,x), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f7(x,1), f7_bare(x,1.00001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f7(x,1), f7_bare(x,1.00001), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f7(x,1), f7_bare(x,1.00001), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f7(x,1), f7_bare(x,1.00001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f7(x,1), f7_bare(x,1.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f7(1,x), f7_bare(1.00001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f7(1,x), f7_bare(1.00001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f7(1,x), f7_bare(1.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f7(1,x), f7_bare(1.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f7(1,x), f7_bare(1.00001,x), 1e-2);
+
+   BOOST_CHECK(!std::isnan(f7(0,0)));
+   BOOST_CHECK(!std::isnan(f7(0,1)));
+   BOOST_CHECK(!std::isnan(f7(1,0)));
+   BOOST_CHECK(!std::isnan(f7(1,1)));
+   BOOST_CHECK(!std::isnan(f7(2,2)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f8)
@@ -657,4 +785,34 @@ BOOST_AUTO_TEST_CASE(test_f8)
    x = 2.01;    BOOST_CHECK_CLOSE(f8(x,x), f8_bare(x,x + 0.0001), 1e-2);
    x = 2.001;   BOOST_CHECK_CLOSE(f8(x,x), f8_bare(x,x + 0.0001), 1e-2);
    x = 2.0001;  BOOST_CHECK_CLOSE(f8(x,x), f8_bare(x,x + 0.0001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f8(x,0), f8_bare(x,0.000001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f8(x,0), f8_bare(x,0.000001), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f8(x,0) - f8_bare(x,0.000001), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f8(x,0) - f8_bare(x,0.000001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f8(x,0) - f8_bare(x,0.000001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f8(0,x), f8_bare(0.000001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f8(0,x), f8_bare(0.000001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_SMALL(f8(0,x) - f8_bare(0.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_SMALL(f8(0,x) - f8_bare(0.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_SMALL(f8(0,x) - f8_bare(0.00001,x), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f8(x,1), f8_bare(x,1.00001), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f8(x,1), f8_bare(x,1.00001), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f8(x,1), f8_bare(x,1.00001), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f8(x,1), f8_bare(x,1.00001), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f8(x,1), f8_bare(x,1.00001), 1e-2);
+
+   x = 0.1;     BOOST_CHECK_CLOSE(f8(1,x), f8_bare(1.00001,x), 1e-2);
+   x = 0.02;    BOOST_CHECK_CLOSE(f8(1,x), f8_bare(1.00001,x), 1e-2);
+   x = 0.01;    BOOST_CHECK_CLOSE(f8(1,x), f8_bare(1.00001,x), 1e-2);
+   x = 0.001;   BOOST_CHECK_CLOSE(f8(1,x), f8_bare(1.00001,x), 1e-2);
+   x = 0.0001;  BOOST_CHECK_CLOSE(f8(1,x), f8_bare(1.00001,x), 1e-2);
+
+   BOOST_CHECK(!std::isnan(f8(0,0)));
+   BOOST_CHECK(!std::isnan(f8(0,1)));
+   BOOST_CHECK(!std::isnan(f8(1,0)));
+   BOOST_CHECK(!std::isnan(f8(1,1)));
+   BOOST_CHECK(!std::isnan(f8(2,2)));
 }
