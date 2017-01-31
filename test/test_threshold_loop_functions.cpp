@@ -69,6 +69,76 @@ namespace {
    template <typename T> T pow10(T x) { return x*x*x*x*x*x*x*x*x*x; }
 }
 
+double F1_bare(double x)
+{
+   const double x2 = sqr(x);
+
+   return x*std::log(x2)/(x2-1);
+}
+
+double F2_bare(double x)
+{
+   const double x2 = sqr(x);
+
+   return 6*x2*(2-2*x2+(1+x2)*std::log(x2))/cube(x2-1);
+}
+
+double F3_bare(double x)
+{
+   const double x2 = sqr(x);
+
+   return 2*x*(5*(1-x2)+(1+4*x2)*std::log(x2))/(3*sqr(x2-1));
+}
+
+double F4_bare(double x)
+{
+   const double x2 = sqr(x);
+
+   return 2*x*(x2-1-std::log(x2))/sqr(x2-1);
+}
+
+double F5_bare(double x)
+{
+   const double x2 = sqr(x);
+   const double x4 = quad(x);
+
+   return 3*x*(1-x4+2*x2*std::log(x2))/cube(1-x2);
+}
+
+double F6_bare(double x)
+{
+   const double x2 = sqr(x);
+
+   return (x2-3)/(4*(1-x2)) + x2*(x2-2)/(2*sqr(1.-x2))*std::log(x2);
+}
+
+double F7_bare(double x)
+{
+   const double x2 = sqr(x);
+   const double x4 = quad(x);
+
+   return (-3*(x4-6*x2+1.))/(2*sqr(x2-1))
+      + (3*x4*(x2-3.))/(cube(x2-1.))*std::log(x2);
+}
+
+double F8_bare(double x1, double x2)
+{
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+
+   return -2. + 2./(x12-x22)
+      *(quad(x1)/(x12-1.)*std::log(x12)
+        -quad(x2)/(x22-1.)*std::log(x22));
+}
+
+double F9_bare(double x1, double x2)
+{
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+
+   return 2./(x12-x22)*(x12/(x12-1.)*std::log(x12)-x22/(x22-1.)*std::log(x22));
+}
+
 double f1_bare(double r)
 {
    const double r2 = sqr(r);
@@ -153,6 +223,179 @@ double f8_bare(double r1, double r2)
       - (quad(r2)*std::log(r22))/((r1-r2)*sqr(r22-1));
 
    return 1.5 * result;
+}
+
+BOOST_AUTO_TEST_CASE(test_F1)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F1(x), F1_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F1(x), F1_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F1(x), F1_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F1(x), F1_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F1(x), F1_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F1(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F2)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F2(x), F2_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F2(x), F2_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F2(x), F2_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F2(x), F2_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F2(x), F2_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F2(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F3)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F3(x), F3_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F3(x), F3_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F3(x), F3_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F3(x), F3_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F3(x), F3_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F3(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F4)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F4(x), F4_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F4(x), F4_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F4(x), F4_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F4(x), F4_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F4(x), F4_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F4(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F5)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F5(x), F5_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F5(x), F5_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F5(x), F5_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F5(x), F5_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F5(x), F5_bare(x), 5e-4);
+
+   BOOST_CHECK(!std::isnan(F5(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F6)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F6(x), F6_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F6(x), F6_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F6(x), F6_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F6(x), F6_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F6(x), F6_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F6(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F7)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F7(x), F7_bare(x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F7(x), F7_bare(x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F7(x), F7_bare(x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F7(x), F7_bare(x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F7(x), F7_bare(x), 1e-5);
+
+   BOOST_CHECK(!std::isnan(F7(1)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F8)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x, y = 2.;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F8(x,y), F8_bare(x,y), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F8(x,y), F8_bare(x,y), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F8(x,y), F8_bare(x,y), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F8(x,y), F8_bare(x,y), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F8(x,y), F8_bare(x,y), 1e-5);
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F8(y,x), F8_bare(y,x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F8(y,x), F8_bare(y,x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F8(y,x), F8_bare(y,x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F8(y,x), F8_bare(y,x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F8(y,x), F8_bare(y,x), 1e-5);
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 2e-2);
+   x = 1.02;    BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 2e-2);
+   x = 1.01;    BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 2e-2);
+   x = 1.001;   BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 2e-2);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 2e-2);
+
+   x = 2.1;     BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 1e-2);
+   x = 2.02;    BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 1e-2);
+   x = 2.01;    BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 1e-2);
+   x = 2.001;   BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 1e-2);
+   x = 2.0001;  BOOST_CHECK_CLOSE(F8(x,x), F8_bare(x,x + 0.0001), 1e-2);
+
+   BOOST_CHECK(!std::isnan(F8(1,1)));
+   BOOST_CHECK(!std::isnan(F8(2,2)));
+}
+
+BOOST_AUTO_TEST_CASE(test_F9)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+
+   double x, y = 2.;
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F9(x,y), F9_bare(x,y), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F9(x,y), F9_bare(x,y), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F9(x,y), F9_bare(x,y), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F9(x,y), F9_bare(x,y), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F9(x,y), F9_bare(x,y), 1e-5);
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F9(y,x), F9_bare(y,x), 1e-5);
+   x = 1.02;    BOOST_CHECK_CLOSE(F9(y,x), F9_bare(y,x), 1e-5);
+   x = 1.01;    BOOST_CHECK_CLOSE(F9(y,x), F9_bare(y,x), 1e-5);
+   x = 1.001;   BOOST_CHECK_CLOSE(F9(y,x), F9_bare(y,x), 1e-5);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F9(y,x), F9_bare(y,x), 1e-5);
+
+   x = 1.1;     BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 1.02;    BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 1.01;    BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 1.001;   BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 1.0001;  BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+
+   x = 2.1;     BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 2.02;    BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 2.01;    BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 2.001;   BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+   x = 2.0001;  BOOST_CHECK_CLOSE(F9(x,x), F9_bare(x,x + 0.0001), 1e-2);
+
+   BOOST_CHECK(!std::isnan(F9(1,1)));
+   BOOST_CHECK(!std::isnan(F9(2,2)));
 }
 
 BOOST_AUTO_TEST_CASE(test_f1)
