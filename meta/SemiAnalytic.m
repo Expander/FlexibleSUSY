@@ -431,8 +431,8 @@ GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSoln
                          {{susyBilinears, 2}, {dimOneSolns, 1}},
                          {{susyBilinears, 1}, {dimOneSolns, 2}},
                          {{susyBilinears, 1}, {scalarMassesSolns, 1}},
-                         {{susyBilinears, 1}, {softBilinears, 1}},
-                         {{softBilinears, 1}, {dimOneSolns, 1}}
+                         {{susyBilinears, 1}, {softBilinearsSolns, 1}},
+                         {{softBilinearsSolns, 1}, {dimOneSolns, 1}}
                         };
            If[diracSolns =!= {},
               extraTerms = Join[extraTerms,
