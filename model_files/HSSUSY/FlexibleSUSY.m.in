@@ -548,7 +548,7 @@ betaLambda = (
    arxiv:1504.05200, Eq. (21) *)
 lambda2LHSSAlphaT2 = With[{
     tan\[Beta] = TanBeta,
-    mst = Sqrt[msq2[3,3]], (* average stop mass *)
+    mst = Sqrt[Sqrt[msq2[3,3]] Sqrt[msu2[3,3]]], (* average stop mass *)
     Q = SCALE,
     \[Mu] = MuInput,
     K = -0.1953256,
