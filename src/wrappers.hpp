@@ -674,7 +674,7 @@ T Which(bool cond, T value)
 }
 
 template<typename T, typename ... Trest>
-T Which(bool cond, T value, Trest... rest)
+typename std::common_type<T, Trest...>::type Which(bool cond, T value, Trest... rest)
 {
    return cond ? value : Which(rest...);
 }

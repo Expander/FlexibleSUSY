@@ -298,6 +298,9 @@ BOOST_AUTO_TEST_CASE(test_Which)
    BOOST_CHECK_EQUAL(std::real(Which(true , std::complex<double>(2.,2.))), 2.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
+
+   BOOST_CHECK_EQUAL(Which(false, 0, true, 0.5), 0.5);
+   BOOST_CHECK_EQUAL(Which(false, 0, false, 0, true, 0.5), 0.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_MaxRelDiff)
