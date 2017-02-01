@@ -749,7 +749,7 @@ constexpr T Which(bool cond, T value) noexcept
 }
 
 template<typename T, typename ... Trest>
-constexpr T Which(bool cond, T value, Trest... rest) noexcept
+constexpr typename std::common_type<T, Trest...>::type Which(bool cond, T value, Trest... rest) noexcept
 {
    return cond ? value : Which(rest...);
 }
