@@ -264,7 +264,7 @@ SetInputParameterDimensions[par_?IsInputParameter, dims_] :=
     Module[{pos, updated},
            pos = Position[allInputParameters, {par, _, _}];
            updated = Extract[allInputParameters, pos];
-           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[2]]],
+           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[3]]],
                                           GetRealTypeFromDimension[dims],
                                           GetComplexTypeFromDimension[dims]]})& /@ updated;
            allInputParameters = ReplacePart[allInputParameters, MapThread[Rule, {pos, updated}]];
@@ -286,6 +286,29 @@ SetExtraParameters[pars_List] :=
      allExtraParameters = {};
      AddExtraParameterInfo /@ pars;
     )
+
+SetExtraParameterType[par_?IsExtraParameter, type_] :=
+    Module[{pos, updated},
+           pos = Position[allExtraParameters, {par, _}];
+           updated = Extract[allExtraParameters, pos] /. {par, oldType_} :> {par, type};
+           allExtraParameters = ReplacePart[allExtraParameters, MapThread[Rule, {pos, updated}]];
+          ];
+
+SetExtraParameterType[par_, type_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
+
+SetExtraParameterDimensions[par_?IsExtraParameter, dims_] :=
+    Module[{pos, updated},
+           pos = Position[allExtraParameters, {par, _}];
+           updated = Extract[allExtraParameters, pos];
+           updated = ({#[[1]], If[CConversion`IsRealType[#[[2]]],
+                                  GetRealTypeFromDimension[dims],
+                                  GetComplexTypeFromDimension[dims]]})& /@ updated;
+           allExtraParameters = ReplacePart[allExtraParameters, MapThread[Rule, {pos, updated}]];
+          ];
+
+SetExtraParameterDimensions[par_, dims_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
 
 AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
 
@@ -334,6 +357,33 @@ ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
                     ];
               ];
           ];
+
+ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
+    Module[{i, property, setting},
+           For[i = 1, i <= Length[properties], i++,
+               property = properties[[i, 1]];
+               setting = properties[[i, 2]];
+               Which[property === Real,
+                     If[setting,
+                        SetExtraParameterType[parameter,
+                                              GetRealTypeFromDimension[GetParameterDimensions[parameter]]],
+                        SetExtraParameterType[parameter,
+                                              GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
+                       ];,
+                     property === Dimensions,
+                     SetExtraParameterDimensions[parameter, setting],
+                     property === MassDimension,
+                     AddMassDimensionInfo[parameter, setting],
+                     True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
+                    ];
+              ];
+          ];
+
+ProcessParameterInfo[{parameter_, properties_List}] :=
+    Block[{},
+          AddExtraParameter[parameter];
+          ProcessParameterInfo[{parameter, properties}];
+         ];
 
 ApplyAuxiliaryParameterInfo[properties_List] :=
     ProcessParameterInfo /@ properties;
