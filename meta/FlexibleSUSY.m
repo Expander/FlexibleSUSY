@@ -2941,7 +2941,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
                Join[allParticles,
-                    Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
+                    Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Parameters`SetOutputParameters[allOutputParameters];
            DebugPrint["output parameters = ", allOutputParameters];
