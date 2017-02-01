@@ -121,7 +121,7 @@ FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
-FSAuxiliaryParameters = {};
+FSAuxiliaryParameterInfo = {};
 IMEXTPAR = {};
 
 (* Standard Model input parameters (SLHA input parameters) *)
@@ -507,13 +507,13 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
-           If[Head[FlexibleSUSY`FSAuxiliaryParameters] =!= List,
-              Print["Error: FSAuxiliaryParameters has to be set to a list!"];
+           If[Head[FlexibleSUSY`FSAuxiliaryParameterInfo] =!= List,
+              Print["Error: FSAuxiliaryParameterInfo has to be set to a list!"];
               Quit[1];
               ,
-              If[!(And @@ (MatchQ[#,{_,_}]& /@ FlexibleSUSY`FSAuxiliaryParameters)),
-                 Print["Error: FSAuxiliaryParameters must be of the form",
-                       " {{par, {dimensions}}, ... }"];
+              If[!(And @@ (MatchQ[#,{_, {__}}]& /@ FlexibleSUSY`FSAuxiliaryParameterInfo)),
+                 Print["Error: FSAuxiliaryParameterInfo must be of the form",
+                       " {{par, {property -> value, ...}}, ... }"];
                 ];
              ];
            CheckEWSBSolvers[FlexibleSUSY`FSEWSBSolvers];
@@ -2587,9 +2587,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Exp[I #]& /@ GetVEVPhases[FlexibleSUSY`FSEigenstates]];
            Parameters`SetPhases[phases];
 
-           (* collect any extra user-defined parameters *)
-           FlexibleSUSY`FSAuxiliaryParameters = {#[[1]], Parameters`GetRealTypeFromDimension[#[[2]]]}& /@ FlexibleSUSY`FSAuxiliaryParameters;
-           Parameters`SetExtraParameters[FlexibleSUSY`FSAuxiliaryParameters];
+           (* collect additional parameter definitions and properties *)
+           Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
            DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
 
            allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
