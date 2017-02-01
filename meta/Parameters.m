@@ -68,7 +68,7 @@ IsOutputParameter::usage="returns True if parameter is a defined output paramete
 IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
 IsDerivedParameter::usage="returns True if parameter is a derived parameter";
-IsExtraParameter::usage="returns True if parameter is an auxiliary parameter";
+IsExtraParameter::usage="returns True if parameter is a defined extra parameter";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
