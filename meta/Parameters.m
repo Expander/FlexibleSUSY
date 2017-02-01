@@ -50,6 +50,7 @@ GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
 GetRealTypeFromDimension::usage="";
+GetComplexTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
 GetThirdGeneration::usage="returns parameter with third generation index";
 
@@ -611,6 +612,24 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
 
 GetRealTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
     CConversion`TensorType[CConversion`realScalarCType, dims];
+
+GetComplexTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+
+GetComplexTypeFromDimension[{0}] :=
+    GetComplexTypeFromDimension[{}];
+
+GetComplexTypeFromDimension[{1}] :=
+    GetComplexTypeFromDimension[{}];
+
+GetComplexTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`complexScalarCType, num];
+
+GetComplexTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`complexScalarCType, num1, num2];
+
+GetComplexTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`complexScalarCType, dims];
 
 GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
