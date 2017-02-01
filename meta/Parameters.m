@@ -81,6 +81,8 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 SetExtraParameters::usage="";
 
+ApplyAuxiliaryParameterInfo::usage="Saves additional parameter properties"
+
 GetInputParameters::usage="";
 GetInputParametersAndTypes::usage="";
 GetModelParameters::usage="";
@@ -286,6 +288,55 @@ SetExtraParameters[pars_List] :=
     )
 
 AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+
+ProcessParameterInfo[{parameter_?IsModelParameter, {__}}] :=
+    Block[{},
+          Print["Warning: the properties of ", parameter, " are set"];
+          Print["   in the SARAH model files and cannot be overridden."];
+          Print["   Ignoring property settings for ", parameter];
+         ];
+
+ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
+    Module[{i, inputBlock, ignored = {}, validProperties = properties, property, setting},
+           If[MatchQ[parameter, Sign[p_] || MatchQ[parameter, FlexibleSUSY`Phase[p_]],
+              ignored = Join[ignored, Select[properties, MemberQ[{Real, Dimensions, MassDimension}, First[#]]&]];
+             ];
+           inputBlock = DeleteDuplicates @ Cases[allInputParameters,
+                                                 {parameter, block_ | {block_, _}, ___} :> block];
+           If[inputBlock =!= {},
+              inputBlock = First[inputBlock];
+             ];
+           If[inputBlock === SARAH`MINPAR || inputBlock === "MINPAR"
+              || inputBlock === SARAH`EXTPAR || inputBlock === "EXTPAR"
+              || inputBlock === FlexibleSUSY`IMEXTPAR || inputBlock === "IMEXTPAR",
+              ignored = Join[ignored, Select[properties, MemberQ[{Real, Dimensions}, First[#]]&]];
+             ];
+           If[ignored =!= {},
+              Print["Warning: the following properties are not applicable for ", parameter, ": "];
+              Print["   ", InputForm[ignored]];
+             ];
+           validProperties = Select[properties, !MemberQ[ignored,#]&];
+           For[i = 1, i <= Length[validProperties], i++,
+               property = validProperties[[i, 1]];
+               setting = validProperties[[i, 2]];
+               Which[property === Real,
+                     If[setting,
+                        SetInputParameterType[parameter,
+                                              GetRealTypeFromDimension[GetParameterDimensions[parameter]]],
+                        SetInputParameterType[parameter,
+                                              GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
+                       ];,
+                     property === Dimensions,
+                     SetInputParameterDimensions[parameter, setting],
+                     property === MassDimension,
+                     AddMassDimensionInfo[parameter, setting],
+                     True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
+                    ];
+              ];
+          ];
+
+ApplyAuxiliaryParameterInfo[properties_List] :=
+    ProcessParameterInfo /@ properties;
 
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
