@@ -231,6 +231,29 @@ SetInputParameters[pars_List] :=
      AddInputParameterInfo /@ pars;
     )
 
+SetInputParameterType[par_?IsInputParameter, type_] :=
+    Module[{pos, updated},
+           pos = Position[allInputParameters, {par, _, _}];
+           updated = Extract[allInputParameters, pos] /. {par, block_, oldType_} :> {par, block, type};
+           allInputParameters = ReplacePart[allInputParameters, MapThread[Rule, {pos, updated}]];
+          ];
+
+SetInputParameterType[par_, type_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetInputParameterDimensions[par_?IsInputParameter, dims_] :=
+    Module[{pos, updated},
+           pos = Position[allInputParameters, {par, _, _}];
+           updated = Extract[allInputParameters, pos];
+           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[2]]],
+                                          GetRealTypeFromDimension[dims],
+                                          GetComplexTypeFromDimension[dims]]})& /@ updated;
+           allInputParameters = ReplacePart[allInputParameters, MapThread[Rule, {pos, updated}]];
+          ];
+
+SetInputParameterDimensions[par_, dims_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
 AddInputParameters[pars_List] := AddInputParameterInfo /@ pars;
 
 AddExtraParameterInfo[{par_, type_}] :=
