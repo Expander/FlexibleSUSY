@@ -17,10 +17,14 @@ SelectSemiAnalyticConstraint::usage="";
 SetSemiAnalyticParameters::usage="";
 GetSemiAnalyticParameters::usage="";
 GetBoundaryValueParameters::usage="";
+AddDimensionlessParameter::usage="Adds a parameter to be treated as
+dimensionless when constructing the semi-analytic solutions.";
 
 IsAllowedSemiAnalyticParameter::usage="";
 IsSemiAnalyticParameter::usage="";
 
+FindAdditionalDimensionlessParameters::usage="Attempts to deduce
+the mass dimensions of user-defined parameters.";
 GetSemiAnalyticSolutions::usage="Constructs the semi-analytic
 solutions implied by the given list of boundary conditions.";
 ExpandSemiAnalyticSolutions::usage="Expands the given solutions
@@ -62,6 +66,7 @@ PrintModelCoefficients::usage="";
 Begin["`Private`"];
 
 allSemiAnalyticParameters = {};
+additionalDimensionlessPars = {};
 
 GetName[SemiAnalyticSolution[name_, basis_List]] := name;
 
@@ -75,7 +80,7 @@ GetBoundaryValueParameters[solutions_List] :=
 
 IsDimensionZero[par_] :=
     Module[{dimZeroPars},
-           dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+           dimZeroPars = Join[Parameters`GetModelParametersWithMassDimension[0], additionalDimensionlessPars];
            MemberQ[Parameters`StripIndices[#]& /@ dimZeroPars, Parameters`StripIndices[par]]
           ];
 
@@ -139,6 +144,8 @@ SetSemiAnalyticParameters[parameters_List] :=
           ];
 
 GetSemiAnalyticParameters[] := allSemiAnalyticParameters;
+
+AddDimensionlessParameter[par_ /; !IsDimensionZero[par]] := AppendTo[additionalDimensionlessPars, par];
 
 IsSemiAnalyticSetting[setting_] :=
     Intersection[Constraint`FindFixedParametersFromConstraint[{setting}],
@@ -354,7 +361,8 @@ GetSolutionBasis[pars_List, subs_List] :=
     Module[{i, dimZeroPars, dimensions, expr,
             monomials = {}, coeff, term, basis = {}},
            If[pars =!= {},
-              dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+              dimZeroPars = Join[Parameters`GetModelParametersWithMassDimension[0],
+                                 additionalDimensionlessPars];
               dimensions = Parameters`GetParameterDimensions[#]& /@ pars;
               expr = Plus @@ (SumOverElements[#]& /@ pars);
               expr = Expand[expr /. subs];
@@ -443,6 +451,33 @@ GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSoln
                                ];
              ];
            GetLinearSystemSolutions[softLinears, boundaryConditionSubs, extraTerms]
+          ];
+
+SelectDimensionlessSettings[settings_List] :=
+    Module[{noMacros, dimZeroPars},
+           noMacros = Cases[settings, {_, value_ /; value =!= Automatic}];
+           dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+           Select[noMacros, MemberQ[dimZeroPars, Parameters`StripIndices[#[[1]]]]&]
+          ];
+
+FindAdditionalDimensionlessParameters[constraints_List] :=
+    Module[{i, dimZeroSettings = {}, knownDimensionPars, unknownDimensionPars,
+            guessedDimZeroPars},
+           For[i = 1, i <= Length[constraints], i++,
+               dimZeroSettings = Join[dimZeroSettings, SelectDimensionlessSettings[constraints[[i]]]];
+              ];
+           knownDimensionPars = Flatten[Table[Parameters`GetModelParametersWithMassDimension[i], {i, 0, 3}]];
+           unknownDimensionPars = Complement[Parameters`FindAllParameters[#[[2]]& /@ dimZeroSettings],
+                                             knownDimensionPars];
+           (* be conservative for now and consider only simplest case: settings of the form parameter = input *)
+           guessedDimZeroPars = DeleteDuplicates[Join[
+               Cases[dimZeroSettings, {_, v_ /; MemberQ[unknownDimensionPars, v]} :> v],
+               Cases[dimZeroSettings, {_, v_ CConversion`UNITMATRIX[n_Integer] /; MemberQ[unknownDimensionPars, v]} :> v],
+               Cases[dimZeroSettings, {_, v_ CConversion`UNITMATRIXCOMPLEX[n_Integer] /; MemberQ[unknownDimensionPars, v]} :> v]
+              ]];
+           Print["Warning: the following parameters will be assumed"];
+           Print["   to be dimensionless: ", InputForm[guessedDimZeroPars]];
+           AddDimensionlessParameter /@ guessedDimZeroPars;
           ];
 
 GetSemiAnalyticSolutions[settings_List] :=

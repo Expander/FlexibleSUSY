@@ -2796,6 +2796,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  Quit[1];
                 ];
 
+              SemiAnalytic`FindAdditionalDimensionlessParameters[{FlexibleSUSY`LowScaleInput,
+                                                                  FlexibleSUSY`SUSYScaleInput,
+                                                                  FlexibleSUSY`HighScaleInput}];
               semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
                                                                            FlexibleSUSY`SUSYScaleInput,
                                                                            FlexibleSUSY`HighScaleInput}];
