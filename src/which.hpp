@@ -21,6 +21,7 @@
 
 #include "pp_map.hpp"
 #include <utility>
+#include <type_traits>
 
 namespace flexiblesusy {
 
@@ -35,7 +36,8 @@ auto lazy_which(If&& cif, Then&& cthen) -> decltype(cthen())
 }
 
 template<typename If, typename Then, typename... Elses>
-auto lazy_which(If&& cif, Then&& cthen, Elses&&... celses) -> decltype(cthen())
+auto lazy_which(If&& cif, Then&& cthen, Elses&&... celses)
+   -> typename std::common_type<decltype(cthen()), decltype(celses())...>::type
 {
     return cif() ? cthen() : lazy_which(std::forward<Elses>(celses)...);
 }
