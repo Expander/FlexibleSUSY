@@ -151,12 +151,6 @@ StripSARAHIndicesRules::usage="removes SARAH-specific indices from a symbol";
 ReplaceAllRespectingSARAHHeads::usage="applies given rules, respecting
 SARAH heads SARAH`B, SARAH`L, SARAH`T and SARAH`Q";
 
-FilterOutLinearDependentEqs::usage="returns linear independent equations";
-
-FilterOutIndependentEqs::usage = "returns equations that depend on the
-given list of parameters.  I.e. equations, that do not depend on the
-given list of parameters are omitted from the output.";
-
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
 
@@ -1399,33 +1393,6 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
                  ];
            ExtractParametersFromSARAHBetaLists[dimPars]
           ];
-
-AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
-    Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
-            pars},
-           (* ignore parameter heads Re[], Im[], Abs[], Phase[] *)
-           pars = parameters /. { Re[p_] :> p, Im[p_] :> p,
-                                  Abs[p_] :> p, FlexibleSUSY`Phase[p_] :> p };
-           And @@ (FreeQ[frac,#]& /@ pars)
-          ];
-
-FilterOutLinearDependentEqs[{}, _List] := {};
-
-FilterOutLinearDependentEqs[{eq_}, _List] := {eq};
-
-FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
-    If[Or @@ (AreLinearDependent[#,parameters]& /@ ({eq,#}& /@ {rest})),
-       (* leave out eq and check rest *)
-       FilterOutLinearDependentEqs[{rest}, parameters],
-       (* keep eq and check rest *)
-       {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
-      ];
-
-FilterOutIndependentEqs[eqs_List, pars_List] :=
-    DeleteDuplicates @ Flatten @ Join[FilterOutIndependentEqs[eqs,#]& /@ pars];
-
-FilterOutIndependentEqs[eqs_List, p_] :=
-    Select[eqs, (!FreeQ[#,p])&];
 
 GetThirdGeneration[par_] :=
     Which[IsScalar[par], par,

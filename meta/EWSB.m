@@ -1,6 +1,12 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
 
+FilterOutLinearDependentEqs::usage="returns linearly independent equations";
+
+FilterOutIndependentEqs::usage = "returns equations that depend on the
+given list of parameters.  I.e. equations, that do not depend on the
+given list of parameters are omitted from the output.";
+
 GetLinearlyIndependentEqs::usage="Removes linearly dependent EWSB equations
 from a list of equations";
 
@@ -89,13 +95,40 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
+AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
+    Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
+            pars},
+           (* ignore parameter heads Re[], Im[], Abs[], Phase[] *)
+           pars = parameters /. { Re[p_] :> p, Im[p_] :> p,
+                                  Abs[p_] :> p, FlexibleSUSY`Phase[p_] :> p };
+           And @@ (FreeQ[frac,#]& /@ pars)
+          ];
+
+FilterOutLinearDependentEqs[{}, _List] := {};
+
+FilterOutLinearDependentEqs[{eq_}, _List] := {eq};
+
+FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
+    If[Or @@ (AreLinearDependent[#,parameters]& /@ ({eq,#}& /@ {rest})),
+       (* leave out eq and check rest *)
+       FilterOutLinearDependentEqs[{rest}, parameters],
+       (* keep eq and check rest *)
+       {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
+      ];
+
+FilterOutIndependentEqs[eqs_List, pars_List] :=
+    DeleteDuplicates @ Flatten @ Join[FilterOutIndependentEqs[eqs,#]& /@ pars];
+
+FilterOutIndependentEqs[eqs_List, p_] :=
+    Select[eqs, (!FreeQ[#,p])&];
+
 GetLinearlyIndependentEqs[eqs_List, parameters_List, substitutions_List:{}] :=
     Module[{eqsToSolve, indepEqsToSolve, eqsToKeep},
            If[substitutions =!= {},
               eqsToSolve = Parameters`ReplaceAllRespectingSARAHHeads[eqs, substitutions];,
               eqsToSolve = eqs;
              ];
-           indepEqsToSolve = Parameters`FilterOutLinearDependentEqs[eqsToSolve, parameters];
+           indepEqsToSolve = FilterOutLinearDependentEqs[eqsToSolve, parameters];
            eqsToKeep = Position[eqsToSolve, p_ /; MemberQ[indepEqsToSolve, p]];
            Extract[eqs, eqsToKeep]
           ];
