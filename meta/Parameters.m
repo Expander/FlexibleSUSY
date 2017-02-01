@@ -169,6 +169,23 @@ allModelParameters = {};
 allOutputParameters = {};
 allPhases = {};
 
+(* list storing mass dimensions for input and extra parameters *)
+extraMassDimensions = {};
+
+AddMassDimensionInfo[par_, dim_?NumberQ] :=
+    Module[{parNames},
+           parNames = #[[1]]& /@ extraMassDimensions;
+           If[!MemberQ[parNames, par],
+              extraMassDimensions = Utils`ForceJoin[extraMassDimensions, {{par, dim}}];,
+              pos = Position[parNames, par, 1];
+              extraMassDimensions = ReplacePart[extraMassDimensions, pos -> {par, dim}];
+             ];
+          ];
+
+AddMassDimensionInfo[par_, dim_] :=
+    Print["Error: mass dimension for parameter ", par,
+          " must be a number"];
+
 GuessInputParameterType[Sign[par_]] :=
     CConversion`ScalarType[CConversion`integerScalarCType];
 GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
