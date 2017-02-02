@@ -2591,15 +2591,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Exp[I #]& /@ GetVEVPhases[FlexibleSUSY`FSEigenstates]];
            Parameters`SetPhases[phases];
 
-           (* collect additional parameter definitions and properties *)
-           Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
-           DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
-
-           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
-            ];
-
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
@@ -2610,6 +2601,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ];
 
            Parameters`SetInputParameters[inputParameters];
+
+
+           (* collect additional parameter definitions and properties *)
+           Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
+           DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
+
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
+            ];
 
            (* backwards compatibility replacements in constraints *)
            backwardsCompatRules = {
