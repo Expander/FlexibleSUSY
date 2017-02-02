@@ -200,10 +200,7 @@ GuessExtraParameterType[Sign[par_]] :=
 GuessExtraParameterType[FlexibleSUSY`Phase[par_]] :=
     CConversion`ScalarType[CConversion`complexScalarCType];
 GuessExtraParameterType[par_] :=
-    If[IsRealParameter[par],
-       CConversion`ScalarType[CConversion`realScalarCType],
-       CConversion`ScalarType[CConversion`complexScalarCType]
-      ];
+    CConversion`ScalarType[CConversion`realScalarCType];
 
 UpdateParameterInfo[currentPars_List, {par_, block_, type_}] :=
     Module[{parNames, pos, updatedPars},
