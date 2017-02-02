@@ -378,7 +378,7 @@ ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
 
 ProcessParameterInfo[{parameter_, properties_List}] :=
     Block[{},
-          AddExtraParameter[parameter];
+          AddExtraParameterInfo[parameter];
           ProcessParameterInfo[{parameter, properties}];
          ];
 
