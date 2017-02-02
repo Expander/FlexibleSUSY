@@ -31,6 +31,7 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_semi_analytic_solutions.hpp"
 #include "error.hpp"
+#include "ew_input.hpp"
 #include "logger.hpp"
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
@@ -48,6 +49,7 @@ namespace flexiblesusy {
 #define DERIVEDPARAMETER(parameter) model.parameter()
 #define PHASE(p) MODELPARAMETER(p)
 #define SEMIANALYTICPARAMETER(p) solutions->get_##p()
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define CLASSNAME @ModelName@_ewsb_solver<Semi_analytic>
 
 /**
@@ -262,7 +264,7 @@ CLASSNAME::EWSB_vector_t CLASSNAME::ewsb_step(
    return ewsb_parameters;
 }
 
-void @ModelName@_ewsb_solver<Semi_analytic>::set_semi_analytic_solutions(
+void CLASSNAME::set_semi_analytic_solutions(
    @ModelName@_semi_analytic_solutions* s)
 {
    solutions = s;
