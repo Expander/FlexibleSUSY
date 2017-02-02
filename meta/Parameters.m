@@ -96,6 +96,8 @@ GetExtraParameters::usage="";
 GetExtraParametersAndTypes::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
+GetParametersWithMassDimension::usage="Returns model, input and extra
+parameters with given mass dimension";
 
 FindMacro::usage="Returns preprocessor macro for parameter";
 WrapPreprocessorMacroAround::usage="Applies preprocessor symbols
@@ -1557,6 +1559,13 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
                   Return[{}];
                  ];
            ExtractParametersFromSARAHBetaLists[dimPars]
+          ];
+
+GetParametersWithMassDimension[dim_?IntegerQ] :=
+    Module[{dimPars},
+           dimPars = GetModelParametersWithMassDimension[dim];
+           dimPars = Join[dimPars, Flatten[Cases[extraMassDimensions, {dim, pars_} :> pars]]];
+           DeleteDuplicates[dimPars]
           ];
 
 GetThirdGeneration[par_] :=
