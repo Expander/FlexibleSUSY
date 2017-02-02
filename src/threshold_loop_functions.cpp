@@ -543,7 +543,7 @@ static double f5_r1_r2(double r1, double r2)
 double f5(double r1, double r2)
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
-      return 1.;
+      return 0.75;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f5_1_1(r1, r2);
@@ -808,7 +808,7 @@ static double f7_r1_r2(double r1, double r2)
 double f7(double r1, double r2)
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
-      return 1;
+      return 6.;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f7_1_1(r1, r2);
