@@ -75,7 +75,7 @@ GetBoundaryValueParameters[solutions_List] :=
 
 IsDimensionZero[par_] :=
     Module[{dimZeroPars},
-           dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+           dimZeroPars = Parameters`GetParametersWithMassDimension[0];
            MemberQ[Parameters`StripIndices[#]& /@ dimZeroPars, Parameters`StripIndices[par]]
           ];
 
@@ -194,7 +194,7 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
 
 SelectParametersWithMassDimension[parameters_List, dim_?IntegerQ] :=
     Module[{allParameters},
-           allParameters = Parameters`GetModelParametersWithMassDimension[dim];
+           allParameters = Parameters`GetParametersWithMassDimension[dim];
            Select[parameters, MemberQ[allParameters, #]&]
           ];
 
@@ -354,7 +354,7 @@ GetSolutionBasis[pars_List, subs_List] :=
     Module[{i, dimZeroPars, dimensions, expr,
             monomials = {}, coeff, term, basis = {}},
            If[pars =!= {},
-              dimZeroPars = Parameters`GetModelParametersWithMassDimension[0];
+              dimZeroPars = Parameters`GetParametersWithMassDimension[0];
               dimensions = Parameters`GetParameterDimensions[#]& /@ pars;
               expr = Plus @@ (SumOverElements[#]& /@ pars);
               expr = Expand[expr /. subs];
