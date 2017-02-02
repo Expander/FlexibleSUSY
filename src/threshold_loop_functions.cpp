@@ -193,6 +193,15 @@ static double F8_1_x2(double x1, double x2)
       /pow6(-1. + sqr(x2));
 }
 
+/// F8(x1,x2) in the limit x1 -> 0
+static double F8_0_x2(double x1, double x2)
+{
+   const double lx22 = std::log(sqr(x2));
+
+   return -2. + (2.*sqr(x1)*lx22)/(-1. + sqr(x2)) +
+      (2.*sqr(x2)*lx22)/(-1. + sqr(x2));
+}
+
 // F8(x1,x2) in the limit x1 -> x2
 static double F8_x1_x2(double x1, double x2)
 {
@@ -244,6 +253,12 @@ double F8(double x1, double x2)
 
       return F8_1_x2(x2, x1);
    }
+
+   if (is_equal(x1, 0., 0.0001))
+      return F8_0_x2(x1, x2);
+
+   if (is_equal(x2, 0., 0.0001))
+      return F8_0_x2(x2, x1);
 
    if (is_equal(x1, x2, 0.00001))
       return F8_x1_x2(x1, x2);
@@ -303,6 +318,12 @@ static double F9_1_x2(double x1, double x2)
       /pow6(-1. + sqr(x2));
 }
 
+/// F9(x1,x2) in the limit x1 -> 0
+static double F9_0_x2(double x1, double x2)
+{
+   return (2.*std::log(sqr(x2)))/(-1. + sqr(x2));
+}
+
 /// F9(x1,x2) in the limit x1 -> x2
 static double F9_x1_x2(double x1, double x2)
 {
@@ -344,6 +365,12 @@ double F9(double x1, double x2)
 
       return F9_1_x2(x2, x1);
    }
+
+   if (is_equal(x1, 0., 0.0001))
+      return F9_0_x2(x1, x2);
+
+   if (is_equal(x2, 0., 0.0001))
+      return F9_0_x2(x2, x1);
 
    if (is_equal(x1, x2, 0.00001))
       return F9_x1_x2(x1, x2);
@@ -543,7 +570,7 @@ static double f5_r1_r2(double r1, double r2)
 double f5(double r1, double r2)
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
-      return 1.;
+      return 0.75;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f5_1_1(r1, r2);
@@ -808,7 +835,7 @@ static double f7_r1_r2(double r1, double r2)
 double f7(double r1, double r2)
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
-      return 1;
+      return 6.;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f7_1_1(r1, r2);
