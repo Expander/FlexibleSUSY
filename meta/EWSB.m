@@ -804,7 +804,6 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               (* save old parameters *)
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
-                  expr = reducedSolution[[i,2]];
                   type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
                   parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> type <> " " <> parStr <> ";\n";
