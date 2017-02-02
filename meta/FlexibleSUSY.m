@@ -2593,7 +2593,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
-               {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSAuxiliaryParameters
+               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
             ];
 
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
