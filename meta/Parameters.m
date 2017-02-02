@@ -176,16 +176,19 @@ allModelParameters = {};
 allOutputParameters = {};
 allPhases = {};
 
-(* list storing mass dimensions for input and extra parameters *)
+(* list storing mass dimensions for input and extra parameters,    *)
+(* in the form {{0, {parameters ...}}, {1, {parameters ...}}, ...} *)
 extraMassDimensions = {};
 
-AddMassDimensionInfo[par_, dim_?NumberQ] :=
-    Module[{parNames},
-           parNames = #[[1]]& /@ extraMassDimensions;
-           If[!MemberQ[parNames, par],
-              extraMassDimensions = Utils`ForceJoin[extraMassDimensions, {{par, dim}}];,
-              pos = Position[parNames, par, 1];
-              extraMassDimensions = ReplacePart[extraMassDimensions, pos -> {par, dim}];
+AddMassDimensionInfo[par_, dim_?IntegerQ] :=
+    Module[{massDimensions, pos, known},
+           massDimensions = #[[1]]& /@ extraMassDimensions;
+           If[!MemberQ[massDimensions, dim],
+              extraMassDimensions = Utils`ForceJoin[extraMassDimensions, {{dim, {par}}}];,
+              pos = Position[massDimensions, dim];
+              known = First[Extract[extraMassDimensions, pos]][[2]];
+              extraMassDimensions = ReplacePart[extraMassDimensions,
+                                                pos -> {dim, DeleteDuplicates[Join[known, {par}]]}];
              ];
           ];
 
