@@ -40,7 +40,7 @@ TreeLevelEWSBSolution = {
                  + (mHd2Coeff2 + mHu2Coeff2) m12Basis^2
                  + (mHd2Coeff3 + mHu2Coeff3) m12Basis AzeroBasis
                  + (mHd2Coeff4 + mHu2Coeff4) AzeroBasis^2 + 2 Abs[\[Mu]]^2
-		 - tadpole[1] / vd - tadpole[2] / vu)
+                 - tadpole[1] / vd - tadpole[2] / vu)
           / (BMuCoeff1 (vd^2 + vu^2)) - BMuCoeff2 MuBasis m12Basis / BMuCoeff1
           - BMuCoeff3 MuBasis AzeroBasis / BMuCoeff1}
 };
