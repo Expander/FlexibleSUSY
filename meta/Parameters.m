@@ -5,6 +5,11 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
   FSPhysicalOutputParameters, FSPhases, FSDerivedParameters,
   FSExtraParameters };
 
+ParameterDimensions::usage="option flag for setting the dimensions of an
+input or extra parameter";
+MassDimension::usage="option flag for setting the mass dimension of an
+input or extra parameter";
+
 FindSymbolDef::usage="";
 
 CreateParameterDefinition::usage="";
@@ -346,7 +351,7 @@ ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
                         SetInputParameterType[parameter,
                                               GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
                        ];,
-                     property === Dimensions,
+                     property === ParameterDimensions,
                      SetInputParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
@@ -367,7 +372,7 @@ ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
                         SetExtraParameterType[parameter,
                                               GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
                        ];,
-                     property === Dimensions,
+                     property === ParameterDimensions,
                      SetExtraParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
