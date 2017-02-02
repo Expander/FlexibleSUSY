@@ -19,10 +19,16 @@ EXTPAR = {
    {66, Lambda12Input}
 };
 
-FSAuxiliaryParameters = {
-   {m0Sq, {1}},
-   {m12, {1}},
-   {Azero, {1}}
+FSAuxiliaryParameterInfo = {
+   {m0Sq, { ParameterDimensions -> {1},
+            MassDimension -> 2,
+            Real -> True } },
+   {m12, { ParameterDimensions -> {1},
+           MassDimension -> 1,
+           Real -> True } },
+   {Azero, { ParameterDimensions -> {1},
+             MassDimension -> 1,
+             Real -> True } }
 };
 
 EWSBOutputParameters = { m0Sq, m12, Azero };

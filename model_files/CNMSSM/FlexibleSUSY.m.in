@@ -18,8 +18,13 @@ EXTPAR = {
    {61, LambdaInput}
 };
 
-FSAuxiliaryParameters = {
-   {m0Sq, {1}}
+FSAuxiliaryParameterInfo = {
+   {m0Sq, { ParameterDimensions -> {1},
+            MassDimension -> 1,
+	    Real -> True} },
+   {LambdaInput, { ParameterDimensions -> {1},
+                   MassDimension -> 0,
+                   Real -> True } }
 };
 
 EWSBOutputParameters = { \[Kappa], vS, m0Sq };

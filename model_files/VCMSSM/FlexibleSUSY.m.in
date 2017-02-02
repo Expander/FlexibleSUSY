@@ -20,10 +20,16 @@ EXTPAR = {
    EWSB.  The extra parameter vMSSM is currently
    required to preserve the magnitude Sqrt[vd^2 + vu^2]
    during the EWSB iteration. *)
-FSAuxiliaryParameters = {
-   {TanBeta, {1}},
-   {MuSq, {1}},
-   {vMSSM, {1}}
+FSAuxiliaryParameterInfo = {
+   {TanBeta, { ParameterDimensions -> {1},
+               MassDimension -> 0,
+               Real -> True } },
+   {MuSq, { ParameterDimensions -> {1},
+            MassDimension -> 2,
+            Real -> True } },
+   {vMSSM, { ParameterDimensions -> {1},
+             MassDimension -> 1,
+             Real -> True } }
 };
 
 (* To allow selecting a particular tree-level solution
