@@ -321,7 +321,7 @@ ProcessParameterInfo[{parameter_?IsModelParameter, {__}}] :=
 
 ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
     Module[{i, inputBlock, ignored = {}, validProperties = properties, property, setting},
-           If[MatchQ[parameter, Sign[p_] || MatchQ[parameter, FlexibleSUSY`Phase[p_]],
+           If[MatchQ[parameter, Sign[p_]] || MatchQ[parameter, FlexibleSUSY`Phase[p_]],
               ignored = Join[ignored, Select[properties, MemberQ[{Real, Dimensions, MassDimension}, First[#]]&]];
              ];
            inputBlock = DeleteDuplicates @ Cases[allInputParameters,
