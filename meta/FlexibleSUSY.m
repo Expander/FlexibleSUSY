@@ -2350,6 +2350,41 @@ StripSARAHIndices[expr_, numToStrip_Integer:4] :=
            result
           ];
 
+EnforceSLHA1Compliance[{parameter_, properties_List}] :=
+    Module[{dims},
+           dims = Select[properties, (First[#] === Parameters`ParameterDimensions)&];
+           dims = Select[dims, And[Last[#] =!= {}, Last[#] =!= {0}, Last[#] =!= {1}]&];
+           If[dims =!= {},
+              Print["Error: the SLHA1 input parameter ", parameter, " must be a scalar!"];
+              Print["   Please define ", parameter, " in a different block,"];
+              Print["   or define it to be a scalar."];
+              Quit[1];
+             ];
+          ];
+
+AddSLHA1InputParameterInfo[parameter_, blockName_String, blockEntry_] :=
+    Module[{i, definedPars, defaultInfo, oldInfo, pos, property},
+           definedPars = First /@ FlexibleSUSY`FSAuxiliaryParameterInfo;
+           defaultInfo = {parameter, { Parameters`ParameterDimensions -> {1},
+                                       SARAH`LesHouches -> {blockName, blockEntry},
+                                       Parameters`InputParameter -> True } };
+           If[!MemberQ[definedPars, parameter],
+              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, defaultInfo];,
+              pos = Position[FlexibleSUSY`FSAuxiliaryParameterInfo, {parameter, {__}}];
+              oldInfo = Extract[FlexibleSUSY`FSAuxiliaryParameterInfo, pos];
+              EnforceSLHA1Compliance /@ oldInfo;
+              For[i = 1, i <= Length[defaultInfo[[2]]], i++,
+                  property = defaultInfo[[2,i]];
+                  oldInfo = {#[[1]], Utils`AppendOrReplaceInList[#[[2]], property, (First[#1] === First[#2])&]}& /@ oldInfo;
+                 ];
+              FlexibleSUSY`FSAuxiliaryParameterInfo = ReplacePart[FlexibleSUSY`FSAuxiliaryParameterInfo,
+                                                                  MapThread[Rule, {pos, oldInfo}]];
+             ];
+          ];
+
+AddSLHA1InputBlockInfo[blockName_String, inputParameters_List] :=
+    AddSLHA1InputParameterInfo[#[[2]], blockName, #[[1]]]& /@ inputParameters;
+
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
 
@@ -2594,6 +2629,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
+           AddSLHA1InputBlockInfo["MINPAR", SARAH`MINPAR];
+           AddSLHA1InputBlockInfo["EXTPAR", SARAH`EXTPAR];
+           AddSLHA1InputBlockInfo["IMEXTPAR", IMEXTPAR];
+
            inputParameters = Join[
                DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
                DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]],
