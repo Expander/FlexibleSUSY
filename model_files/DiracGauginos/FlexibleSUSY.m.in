@@ -30,8 +30,6 @@ EXTPAR = {{1, MDBinput},
 	  {96, LTadInput}
 };
 
-FSExtraInputParameters = {};
-
 EWSBOutputParameters = {mHd2, mHu2, mS2, mT2};
 
 HighScale = mSUSY;
