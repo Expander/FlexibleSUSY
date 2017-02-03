@@ -349,14 +349,7 @@ ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
            For[i = 1, i <= Length[validProperties], i++,
                property = validProperties[[i, 1]];
                setting = validProperties[[i, 2]];
-               Which[property === Real,
-                     If[setting,
-                        SetInputParameterType[parameter,
-                                              GetRealTypeFromDimension[GetParameterDimensions[parameter]]],
-                        SetInputParameterType[parameter,
-                                              GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
-                       ];,
-                     property === ParameterDimensions,
+               Which[property === ParameterDimensions,
                      SetInputParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
@@ -370,14 +363,7 @@ ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
            For[i = 1, i <= Length[properties], i++,
                property = properties[[i, 1]];
                setting = properties[[i, 2]];
-               Which[property === Real,
-                     If[setting,
-                        SetExtraParameterType[parameter,
-                                              GetRealTypeFromDimension[GetParameterDimensions[parameter]]],
-                        SetExtraParameterType[parameter,
-                                              GetComplexTypeFromDimension[GetParameterDimensions[parameter]]]
-                       ];,
-                     property === ParameterDimensions,
+               Which[property === ParameterDimensions,
                      SetExtraParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
