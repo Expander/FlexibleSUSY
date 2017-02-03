@@ -329,7 +329,7 @@ ProcessParameterInfo[{parameter_?IsModelParameter, {__}}] :=
 ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
     Module[{i, inputBlock, ignored = {}, validProperties = properties, property, setting},
            If[MatchQ[parameter, Sign[p_]] || MatchQ[parameter, FlexibleSUSY`Phase[p_]],
-              ignored = Join[ignored, Select[properties, MemberQ[{Real, Dimensions, MassDimension}, First[#]]&]];
+              ignored = Join[ignored, Select[properties, MemberQ[{ParameterDimensions, MassDimension}, First[#]]&]];
              ];
            inputBlock = DeleteDuplicates @ Cases[allInputParameters,
                                                  {parameter, block_ | {block_, _}, ___} :> block];
@@ -339,7 +339,7 @@ ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
            If[inputBlock === SARAH`MINPAR || inputBlock === "MINPAR"
               || inputBlock === SARAH`EXTPAR || inputBlock === "EXTPAR"
               || inputBlock === FlexibleSUSY`IMEXTPAR || inputBlock === "IMEXTPAR",
-              ignored = Join[ignored, Select[properties, MemberQ[{Real, Dimensions}, First[#]]&]];
+              ignored = Join[ignored, Select[properties, MemberQ[{ParameterDimensions}, First[#]]&]];
              ];
            If[ignored =!= {},
               Print["Warning: the following properties are not applicable for ", parameter, ": "];
