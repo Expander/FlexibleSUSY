@@ -9,6 +9,8 @@ ParameterDimensions::usage="option flag for setting the dimensions of an
 input or extra parameter";
 MassDimension::usage="option flag for setting the mass dimension of an
 input or extra parameter";
+InputParameter::usage="option flag for indicating parameter should be
+treated as an input parameter";
 
 FindSymbolDef::usage="";
 
@@ -86,7 +88,9 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 SetExtraParameters::usage="";
 
-ApplyAuxiliaryParameterInfo::usage="Saves additional parameter properties"
+ApplyAuxiliaryParameterInfo::usage="Saves input and extra parameter properties"
+
+CheckInputParameterDefinitions::usage="";
 
 GetInputParameters::usage="";
 GetInputParametersAndTypes::usage="";
@@ -98,6 +102,8 @@ GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 GetParametersWithMassDimension::usage="Returns model, input and extra
 parameters with given mass dimension";
+GetModelParameterMassDimension::usage="Returns mass dimension for given
+model parameter";
 
 FindMacro::usage="Returns preprocessor macro for parameter";
 WrapPreprocessorMacroAround::usage="Applies preprocessor symbols
@@ -242,6 +248,34 @@ UpdateParameterInfo[currentPars_List, {par_, type_}] :=
            Return[updatedPars];
           ];
 
+SetStoredParameterSLHABlock[storedPars_List, par_, block_] :=
+    Module[{pos, updated, updatedPars},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos];
+           If[MatchQ[block, {_, _}],
+              updated = ({#[[1]], {ToString[block[[1]]], block[[2]]}, #[[3]]})& /@ updated,
+              updated = ({#[[1]], ToString[block], #[[3]]})& /@ updated
+             ];
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
+SetStoredParameterType[storedPars_List, par_, type_] :=
+    Module[{pos, updated},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos] /. {par, block_, oldType_} :> {par, block, type};
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
+SetStoredParameterDimensions[storedPars_List, par_, dims_] :=
+    Module[{pos, updated},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos];
+           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[3]]],
+                                          GetRealTypeFromDimension[dims],
+                                          GetComplexTypeFromDimension[dims]]})& /@ updated;
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
 AddInputParameterInfo[{par_, block_, type_}] :=
     allInputParameters = UpdateParameterInfo[allInputParameters, {par, block, type}];
 
@@ -257,36 +291,13 @@ SetInputParameters[pars_List] :=
      AddInputParameterInfo /@ pars;
     )
 
-SetInputParameterType[par_?IsInputParameter, type_] :=
-    Module[{pos, updated},
-           pos = Position[allInputParameters, {par, _, _}];
-           updated = Extract[allInputParameters, pos] /. {par, block_, oldType_} :> {par, block, type};
-           allInputParameters = ReplacePart[allInputParameters, MapThread[Rule, {pos, updated}]];
-          ];
-
-SetInputParameterType[par_, type_] :=
-    Print["Error: ", par, " is not an input parameter!"];
-
-SetInputParameterDimensions[par_?IsInputParameter, dims_] :=
-    Module[{pos, updated},
-           pos = Position[allInputParameters, {par, _, _}];
-           updated = Extract[allInputParameters, pos];
-           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[3]]],
-                                          GetRealTypeFromDimension[dims],
-                                          GetComplexTypeFromDimension[dims]]})& /@ updated;
-           allInputParameters = ReplacePart[allInputParameters, MapThread[Rule, {pos, updated}]];
-          ];
-
-SetInputParameterDimensions[par_, dims_] :=
-    Print["Error: ", par, " is not an input parameter!"];
-
 AddInputParameters[pars_List] := AddInputParameterInfo /@ pars;
 
-AddExtraParameterInfo[{par_, type_}] :=
-    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, type}];
+AddExtraParameterInfo[{par_, block_, type_}] :=
+    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, block, type}];
 
 AddExtraParameterInfo[par_] :=
-    AddExtraParameterInfo[{par, GuessExtraParameterType[par]}];
+    AddExtraParameterInfo[{par, {}, GuessExtraParameterType[par]}];
 
 SetExtraParameters[pars_List] :=
     (
@@ -294,32 +305,45 @@ SetExtraParameters[pars_List] :=
      AddExtraParameterInfo /@ pars;
     )
 
+AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+
+SetInputParameterType[par_?IsInputParameter, type_] :=
+    allInputParameters = SetStoredParameterType[allInputParameters, par, type];
+
+SetInputParameterType[par_, type_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetInputParameterDimensions[par_?IsInputParameter, dims_] :=
+    allInputParameters = SetStoredParameterDimensions[allInputParameters, par, dims];
+
+SetInputParameterDimensions[par_, dims_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetInputParameterSLHABlock[par_?IsInputParameter, block_] :=
+    allInputParameters = SetStoredParameterSLHABlock[allInputParameters, par, block];
+
+SetInputParameterSLHABlock[par_, block_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
 SetExtraParameterType[par_?IsExtraParameter, type_] :=
-    Module[{pos, updated},
-           pos = Position[allExtraParameters, {par, _}];
-           updated = Extract[allExtraParameters, pos] /. {par, oldType_} :> {par, type};
-           allExtraParameters = ReplacePart[allExtraParameters, MapThread[Rule, {pos, updated}]];
-          ];
+    allExtraParameters = SetStoredParameterType[allExtraParameters, par, type];
 
 SetExtraParameterType[par_, type_] :=
     Print["Error: ", par, " is not a defined parameter!"];
 
 SetExtraParameterDimensions[par_?IsExtraParameter, dims_] :=
-    Module[{pos, updated},
-           pos = Position[allExtraParameters, {par, _}];
-           updated = Extract[allExtraParameters, pos];
-           updated = ({#[[1]], If[CConversion`IsRealType[#[[2]]],
-                                  GetRealTypeFromDimension[dims],
-                                  GetComplexTypeFromDimension[dims]]})& /@ updated;
-           allExtraParameters = ReplacePart[allExtraParameters, MapThread[Rule, {pos, updated}]];
-          ];
+    allExtraParameters = SetStoredParameterDimensions[allExtraParameters, par, dims];
 
 SetExtraParameterDimensions[par_, dims_] :=
     Print["Error: ", par, " is not a defined parameter!"];
 
-AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+SetExtraParameterSLHABlock[par_?IsExtraParameter, block_] :=
+    allExtraParameters = SetStoredParameterSLHABlock[allExtraParameters, par, block];
 
-ProcessParameterInfo[{parameter_?IsModelParameter, {__}}] :=
+SetExtraParameterSLHABlock[par_, block_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
+
+ProcessParameterInfo[{parameter_ /; (IsModelParameter[paramater] || IsOutputParameter[parameter]), {__}}] :=
     Block[{},
           Print["Warning: the properties of ", parameter, " are set"];
           Print["   in the SARAH model files and cannot be overridden."];
@@ -328,24 +352,7 @@ ProcessParameterInfo[{parameter_?IsModelParameter, {__}}] :=
 
 ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
     Module[{i, inputBlock, ignored = {}, validProperties = properties, property, setting},
-           If[MatchQ[parameter, Sign[p_]] || MatchQ[parameter, FlexibleSUSY`Phase[p_]],
-              ignored = Join[ignored, Select[properties, MemberQ[{ParameterDimensions, MassDimension}, First[#]]&]];
-             ];
-           inputBlock = DeleteDuplicates @ Cases[allInputParameters,
-                                                 {parameter, block_ | {block_, _}, ___} :> block];
-           If[inputBlock =!= {},
-              inputBlock = First[inputBlock];
-             ];
-           If[inputBlock === SARAH`MINPAR || inputBlock === "MINPAR"
-              || inputBlock === SARAH`EXTPAR || inputBlock === "EXTPAR"
-              || inputBlock === FlexibleSUSY`IMEXTPAR || inputBlock === "IMEXTPAR",
-              ignored = Join[ignored, Select[properties, MemberQ[{ParameterDimensions}, First[#]]&]];
-             ];
-           If[ignored =!= {},
-              Print["Warning: the following properties are not applicable for ", parameter, ": "];
-              Print["   ", InputForm[ignored]];
-             ];
-           validProperties = Select[properties, !MemberQ[ignored,#]&];
+           validProperties = Select[properties, (First[#] =!= InputParameter)&];
            For[i = 1, i <= Length[validProperties], i++,
                property = validProperties[[i, 1]];
                setting = validProperties[[i, 2]];
@@ -353,6 +360,8 @@ ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
                      SetInputParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
+                     property === SARAH`LesHouches,
+                     SetInputParameterSLHABlock[parameter, setting],
                      True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
                     ];
               ];
@@ -367,19 +376,59 @@ ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
                      SetExtraParameterDimensions[parameter, setting],
                      property === MassDimension,
                      AddMassDimensionInfo[parameter, setting],
+                     property === SARAH`LesHouches,
+                     SetExtraParameterSLHABlock[parameter, setting],
+                     property === InputParameter,
+                     Print["Error: ", parameter, " is defined as an input parameter"];
+                     Print["   but is being treated as an extra parameter."];
+                     Quit[1];,
                      True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
                     ];
               ];
           ];
 
 ProcessParameterInfo[{parameter_, properties_List}] :=
-    Block[{},
-          AddExtraParameterInfo[parameter];
+    Block[{inputOptions, isInput = False},
+          inputOptions = Select[properties, (First[#] === InputParameter)&];
+          If[inputOptions =!= {},
+             isInput = Last[Last[inputOptions]];
+            ];
+          If[isInput,
+             AddInputParameterInfo[parameter],
+             AddExtraParameterInfo[parameter]
+            ];
           ProcessParameterInfo[{parameter, properties}];
          ];
 
 ApplyAuxiliaryParameterInfo[properties_List] :=
     ProcessParameterInfo /@ properties;
+
+CheckInputParameterDefinitions[] :=
+    Module[{i, par, blockName, type},
+           For[i = 1, i <= Length[allInputParameters], i++,
+               par = allInputParameters[[i,1]];
+               type = allInputParameters[[i,3]];
+               (* complex input parameters are not currently supported *)
+               If[!CConversion`IsRealType[type],
+                  Print["Error: ", par, " is defined to be complex,"];
+                  Print["   but input parameters must be real."];
+                  Print["   Please define ", par, " to be a real parameter."];
+                  Quit[1];
+                 ];
+               If[MatchQ[allInputParameters[[i,2]], {_, _}],
+                  blockName = allInputParameters[[i,2,1]],
+                  blockName = allInputParameters[[i,2]]
+                 ];
+               blockName = ToString[blockName];
+               If[blockName === "MINPAR" || blockName === "EXTPAR" || blockName === "IMEXTPAR",
+                  If[type =!= CConversion`ScalarType[CConversion`realScalarCType],
+                     Print["Error: ", par, " must be defined as a real scalar"];
+                     Print["   since it is defined in an SLHA1 input block."];
+                     Quit[1];
+                    ];
+                 ];
+              ];
+          ];
 
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
@@ -1553,6 +1602,25 @@ GetParametersWithMassDimension[dim_?IntegerQ] :=
            dimPars = Join[dimPars, Flatten[Cases[extraMassDimensions, {dim, pars_} :> pars]]];
            DeleteDuplicates[dimPars]
           ];
+
+
+GetModelParameterMassDimension[par_?IsModelParameter] :=
+    Module[{i, parsList},
+           For[i = 0, i <= 3, i++,
+               parsList = GetModelParametersWithMassDimension[i];
+               If[MemberQ[parsList, StripIndices[par]],
+                  Return[i]
+                 ];
+              ];
+           Print["Error: mass dimension for ", par, " not found!"];
+           Quit[1];
+          ];
+
+GetModelParameterMassDimension[par_] :=
+    Block[{},
+          Print["Error: GetModelParameterMassDimension:", par, " is not a model parameter!"];
+          Quit[1];
+         ];
 
 GetThirdGeneration[par_] :=
     Which[IsScalar[par], par,

@@ -2427,11 +2427,81 @@ AddSLHA1InputParameterInfo[parameter_, blockName_String, blockEntry_] :=
              ];
           ];
 
+(* @todo handle conflicts if parameters already defined in model file *)
 AddSLHA1InputBlockInfo[blockName_String, inputParameters_List] :=
     AddSLHA1InputParameterInfo[#[[2]], blockName, #[[1]]]& /@ inputParameters;
 
+AddUnfixedParameterInfo[par_, inputPar_, blockList_] :=
+    Module[{definedPars, outputBlock, inputBlock, info},
+           definedPars = First /@ FlexibleSUSY`FSAuxiliaryParameterInfo;
+           If[!MemberQ[definedPars, inputPar],
+              outputBlock = Parameters`FindSLHABlock[blockList, par];
+              inputBlock = WriteOut`CreateInputBlockName[outputBlock];
+              info = {inputPar, { Parameters`InputParameter -> True,
+                                  SARAH`LesHouches -> inputBlock,
+                                  Parameters`ParameterDimensions -> Parameters`GetParameterDimensions[par],
+                                  Parameters`MassDimension -> Parameters`GetModelParameterMassDimension[par]
+                                } };
+              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, info];
+             ];
+          ];
+
+AddUnfixedParameterBlockInfo[unfixedParameters_List, blockList_List] :=
+    AddUnfixedParameterInfo[#[[1]], #[[2]], blockList]& /@ unfixedParameters
+
+FindFixedParameters[] :=
+    If[FlexibleSUSY`FlexibleEFTHiggs === True,
+       Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput],
+            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching],
+            {SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling,
+             SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}]
+       ,
+       Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]]
+      ];
+
 FindUnfixedParameters[parameters_List, fixed_List] :=
     Complement[parameters, DeleteDuplicates[Flatten[fixed]]];
+
+AddLesHouchesInputParameterInfo[par_, inputPar_, blockList_List] :=
+    Module[{definedPars, outputBlock, inputBlock, info},
+           definedPars = First /@ FlexibleSUSY`FSAuxiliaryParameterInfo;
+           If[!MemberQ[definedPars, inputPar],
+              outputBlock = Parameters`FindSLHABlock[blockList, par];
+              inputBlock = WriteOut`CreateInputBlockName[outputBlock];
+              info = {inputPar, { Parameters`InputParameter -> True,
+                                  SARAH`LesHouches -> inputBlock,
+                                  Parameters`ParameterDimensions -> Parameters`GetParameterDimensions[par],
+                                  Parameters`MassDimension -> Parameters`GetModelParameterMassDimension[par]
+                                } };
+              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, info];
+             ];
+          ];
+
+AddLesHouchesInputParameterBlockInfo[inputPars_List, blockList_List] :=
+    AddLesHouchesInputParameterInfo[#[[1]], #[[2]], blockList]& /@ inputPars;
+
+AddExtraInputParameterInfo[par_, block_, dims_] :=
+    Module[{definedPars, info},
+           definedPars = First /@ FlexibleSUSY`FSAuxiliaryParameterInfo;
+           info = {par, { SARAH`LesHouches -> block,
+                          Parameters`ParameterDimensions -> dims,
+                          Parameters`InputParameter -> True
+                        } };
+           If[!MemberQ[definedPars, par],
+              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo];,
+              Print["Error: ", par, " is already defined!"];
+              Print["   Please only define extra input parameters"];
+              Print["   in one of FSExtraInputParameters or"];
+              Print["   FSAuxiliaryParameterInfo."];
+              Quit[1];
+             ];
+          ];
+
+AddExtraInputParameterBlockInfo[extraInputPars_List] :=
+    AddExtraInputParameterInfo /@ extraInputPars;
 
 (* returns beta functions of VEV phases *)
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
@@ -2678,43 +2748,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            AddSLHA1InputBlockInfo["EXTPAR", SARAH`EXTPAR];
            AddSLHA1InputBlockInfo["IMEXTPAR", IMEXTPAR];
 
-           inputParameters = Join[
-               DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
-               DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]],
-               DeleteDuplicates[{#[[2]], {"IMEXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[IMEXTPAR]]
-           ];
-
-           Parameters`SetInputParameters[inputParameters];
-
-
-           (* collect additional parameter definitions and properties *)
-           Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
-           DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
-
-           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
-            ];
-
-           (* backwards compatibility replacements in constraints *)
-           backwardsCompatRules = {
-               Global`topDRbar      -> Global`upQuarksDRbar,
-               Global`bottomDRbar   -> Global`downQuarksDRbar,
-               Global`electronDRbar -> Global`downLeptonsDRbar
-           };
-           FlexibleSUSY`LowScaleInput  = FlexibleSUSY`LowScaleInput  /. backwardsCompatRules;
-           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /. backwardsCompatRules;
-           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /. backwardsCompatRules;
-           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. backwardsCompatRules;
-           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
-
            (* search for unfixed parameters *)
-           Constraint`CheckConstraint[FlexibleSUSY`LowScaleInput, "LowScaleInput"];
-           Constraint`CheckConstraint[FlexibleSUSY`SUSYScaleInput, "SUSYScaleInput"];
-           Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
-           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
-           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
-           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
            Constraint`SanityCheck[Join[If[FlexibleEFTHiggs === True,
                                           FlexibleSUSY`InitialGuessAtSUSYScale,
                                           FlexibleSUSY`InitialGuessAtLowScale],
@@ -2722,77 +2756,31 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   "initial guess"
                                  ];
 
-           (* warn if extra parameters, which do not run, are used at multiple scales *)
-           CheckExtraParametersUsage[Parameters`GetExtraParameters[],
-                                     {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
-
            (* add SM gauge couplings to low-scale constraint if not set anywhere *)
-           If[ValueQ[SARAH`hyperchargeCoupling] &&
-              !Constraint`IsFixed[SARAH`hyperchargeCoupling,
-                                  Join[FlexibleSUSY`LowScaleInput,
-                                       FlexibleSUSY`SUSYScaleInput,
-                                       FlexibleSUSY`HighScaleInput]],
-              AppendTo[FlexibleSUSY`LowScaleInput,
-                       {SARAH`hyperchargeCoupling, "new_g1"}];
-             ];
-           If[ValueQ[SARAH`leftCoupling] &&
-              !Constraint`IsFixed[SARAH`leftCoupling,
-                                  Join[FlexibleSUSY`LowScaleInput,
-                                       FlexibleSUSY`SUSYScaleInput,
-                                       FlexibleSUSY`HighScaleInput]],
-              AppendTo[FlexibleSUSY`LowScaleInput,
-                       {SARAH`leftCoupling, "new_g2"}];
-             ];
-           If[ValueQ[SARAH`strongCoupling] &&
-              !Constraint`IsFixed[SARAH`strongCoupling,
-                                  Join[FlexibleSUSY`LowScaleInput,
-                                       FlexibleSUSY`SUSYScaleInput,
-                                       FlexibleSUSY`HighScaleInput]],
-              AppendTo[FlexibleSUSY`LowScaleInput,
-                       {SARAH`strongCoupling, "new_g3"}];
-             ];
+           EnsureSMGaugeCouplingsSet[];
 
            (* add EWSB constraint to SUSY-scale constraint if not set *)
-           If[FlexibleSUSY`FlexibleEFTHiggs === True,
-              If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
-                       FlexibleSUSY`FSSolveEWSBFor[___]],
-                 AppendTo[FlexibleSUSY`SUSYScaleInput,
-                          FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
-                ];
-              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
-                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput],
-                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching],
-                                     {SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling,
-                                      SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}];
-              ,
-              If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
-                       FlexibleSUSY`FSSolveEWSBFor[___]],
-                 AppendTo[FlexibleSUSY`SUSYScaleInput,
-                          FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
-               ];
-              fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
-                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
-                                     Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]];
-             ];
+           EnsureEWSBConstraintApplied[];
 
+           fixedParameters = FindFixedParameters[];
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[allParameters, fixedParameters];
+
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
               FlexibleSUSY`AutomaticInputAtMSUSY =!= True,
               Print["Warning: the following parameters are not fixed by any constraint:"];
               Print["  ", FlexibleSUSY`FSUnfixedParameters];
              ];
-           (* adding the types and their input names to the parameters *)
-           FlexibleSUSY`FSUnfixedParameters = Select[StripSARAHIndices[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
-                                                                            {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions]],
-                                                     MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
+
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
               FlexibleSUSY`AutomaticInputAtMSUSY,
+              (* adding input names for the parameters *)
+              FlexibleSUSY`FSUnfixedParameters = Select[StripSARAHIndices[Join[{BetaFunction`GetName[#], Symbol[CConversion`ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"]}& /@ susyBetaFunctions,
+                                                                               {BetaFunction`GetName[#], Symbol[CConversion`ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"]}& /@ susyBreakingBetaFunctions]],
+                                                        MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[inputParameters];
+              AddUnfixedParameterBlockInfo[FlexibleSUSY`FSUnfixedParameters, FlexibleSUSY`FSLesHouchesList];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -2814,25 +2802,62 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ];
 
            lesHouchesInputParameters = Select[StripSARAHIndices[{BetaFunction`GetName[#],
-                                                                 Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
-                                                                 Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
-                                                                Join[susyBetaFunctions, susyBreakingBetaFunctions]],
+                                                                 Symbol[CConversion`ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"]
+                                                                }& /@ Join[susyBetaFunctions, susyBreakingBetaFunctions]],
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
-           (* determine type of extra input parameters *)
-           FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
+           AddLesHouchesInputParameterBlockInfo[lesHouchesInputParameters, FlexibleSUSY`FSLesHouchesList];
 
-           FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
+           If[FlexibleSUSY`FSExtraInputParameters =!= {},
+              Print["Warning: the use of FSExtraInputParameters is deprecated."];
+              Print["   Please consider using FSAuxiliaryParameterInfo to"];
+              Print["   define extra input parameters."];
 
-           inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                     FlexibleSUSY`FSExtraInputParameters,
-                                                     {#[[2]], WriteOut`CreateInputBlockName[Parameters`FindSLHABlock[FlexibleSUSY`FSLesHouchesList,#[[1]]]], #[[3]]}& /@ lesHouchesInputParameters];
-           Parameters`AddInputParameters[inputParameters];
+              AddExtraInputParameterBlockInfo[FlexibleSUSY`FSExtraInputParameters];
+              FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
+             ];
+
+           (* collect additional parameter definitions and properties *)
+           Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
+           Parameters`CheckInputParameterDefinitions[];
+
+           inputParameters = Parameters`GetInputParametersAndTypes[];
+
+           DebugPrint["input parameters: ", Parameters`GetInputParameters[]];
+           DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
                (* {parameter, type} *)
                {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
             ];
+
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
+            ];
+
+           (* backwards compatibility replacements in constraints *)
+           backwardsCompatRules = {
+               Global`topDRbar      -> Global`upQuarksDRbar,
+               Global`bottomDRbar   -> Global`downQuarksDRbar,
+               Global`electronDRbar -> Global`downLeptonsDRbar
+           };
+           FlexibleSUSY`LowScaleInput  = FlexibleSUSY`LowScaleInput  /. backwardsCompatRules;
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. backwardsCompatRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. backwardsCompatRules;
+
+           Constraint`CheckConstraint[FlexibleSUSY`LowScaleInput, "LowScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`SUSYScaleInput, "SUSYScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
+
+           (* warn if extra parameters, which do not run, are used at multiple scales *)
+           CheckExtraParametersUsage[Parameters`GetExtraParameters[],
+                                     {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
 
            (* replace all indices in the user-defined model file variables *)
            EvaluateUserInput[];
