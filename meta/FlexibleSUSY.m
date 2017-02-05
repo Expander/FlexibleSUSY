@@ -2350,6 +2350,51 @@ StripSARAHIndices[expr_, numToStrip_Integer:4] :=
            result
           ];
 
+EnsureSMGaugeCouplingsSet[] :=
+    Block[{},
+          If[ValueQ[SARAH`hyperchargeCoupling] &&
+             !Constraint`IsFixed[SARAH`hyperchargeCoupling,
+                                 Join[FlexibleSUSY`LowScaleInput,
+                                      FlexibleSUSY`SUSYScaleInput,
+                                      FlexibleSUSY`HighScaleInput]],
+             AppendTo[FlexibleSUSY`LowScaleInput,
+                      {SARAH`hyperchargeCoupling, "new_g1"}];
+            ];
+          If[ValueQ[SARAH`leftCoupling] &&
+             !Constraint`IsFixed[SARAH`leftCoupling,
+                                 Join[FlexibleSUSY`LowScaleInput,
+                                      FlexibleSUSY`SUSYScaleInput,
+                                      FlexibleSUSY`HighScaleInput]],
+             AppendTo[FlexibleSUSY`LowScaleInput,
+                      {SARAH`leftCoupling, "new_g2"}];
+            ];
+          If[ValueQ[SARAH`strongCoupling] &&
+             !Constraint`IsFixed[SARAH`strongCoupling,
+                                 Join[FlexibleSUSY`LowScaleInput,
+                                      FlexibleSUSY`SUSYScaleInput,
+                                      FlexibleSUSY`HighScaleInput]],
+             AppendTo[FlexibleSUSY`LowScaleInput,
+                      {SARAH`strongCoupling, "new_g3"}];
+            ];
+         ];
+
+EnsureEWSBConstraintApplied[] :=
+    Block[{},
+          If[FlexibleSUSY`FlexibleEFTHiggs === True,
+             If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                      FlexibleSUSY`FSSolveEWSBFor[___]],
+                AppendTo[FlexibleSUSY`SUSYScaleInput,
+                         FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
+                ];
+             ,
+             If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                      FlexibleSUSY`FSSolveEWSBFor[___]],
+                AppendTo[FlexibleSUSY`SUSYScaleInput,
+                         FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
+               ];
+            ];
+         ];
+
 EnforceSLHA1Compliance[{parameter_, properties_List}] :=
     Module[{dims},
            dims = Select[properties, (First[#] === Parameters`ParameterDimensions)&];
