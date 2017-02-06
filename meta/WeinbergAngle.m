@@ -172,6 +172,8 @@ InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
            SARAH`MakeCouplingLists;
           ];
 
+ExcludeDiagrams[diagrs_List, excludeif_:(False &)] := Select[diagrs, !Or @@ (excludeif /@ (Cases[#, Rule[Internal[_], x_] :> x, Infinity])) &];
+
 GenerateDiagramsWave[particle_] :=
     Module[{diagrs},
            diagrs = SARAH`InsFields[{{C[particle, SARAH`FieldToInsert[1], SARAH`AntiField[SARAH`FieldToInsert[2]]]},
