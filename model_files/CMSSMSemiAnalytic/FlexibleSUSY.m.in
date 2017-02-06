@@ -18,12 +18,14 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameterInfo = {
-   {m0Sq, { ParameterDimensions -> {1},
-            MassDimension -> 2,
-            Real -> True } },
-   {BMu0, { ParameterDimensions -> {1},
-            MassDimension -> 2,
-            Real -> True } }
+   {m12,     { MassDimension -> 1} },
+   {TanBeta, { MassDimension -> 0 } },
+   {Azero,   { MassDimension -> 1 } },
+   {MuInput, { MassDimension -> 1 } },
+   {m0Sq,    { ParameterDimensions -> {1},
+               MassDimension -> 2 } },
+   {BMu0,    { ParameterDimensions -> {1},
+               MassDimension -> 2 } }
 };
 
 EWSBOutputParameters = { BMu0, m0Sq };
