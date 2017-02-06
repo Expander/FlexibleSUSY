@@ -45,10 +45,14 @@ double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale(double sus
       this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
 }
 
-double @ModelName@_spectrum_generator<Two_scale>::get_eft_pole_mass_scale(double Mt) const
+double @ModelName@_spectrum_generator<Two_scale>::get_eft_pole_mass_scale(double susy_scale, double Mt) const
 {
-   return this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale) != 0. ?
-          this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale) : Mt;
+   double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
+
+   if (Q_higgs == 0.)
+      Q_higgs = std::min(susy_scale, Mt);
+
+   return Q_higgs;
 }
 
 /**
@@ -127,7 +131,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    const double Mt = qedqcd.displayPoleMt();
    standard_model::Standard_model_convergence_tester<Two_scale> eft_ct(
       &eft, this->settings.get(Spectrum_generator_settings::precision),
-      [this,Mt](){ return get_eft_pole_mass_scale(Mt); });
+      [this,&susy_scale_constraint,Mt](){ return get_eft_pole_mass_scale(susy_scale_constraint.get_scale(), Mt); });
 
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0) {
       model_ct.set_max_iterations(
@@ -201,7 +205,7 @@ void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum(double Mt)
    this->model.solve_ewsb();
    this->model.calculate_spectrum();
 
-   eft.run_to(get_eft_pole_mass_scale(Mt));
+   eft.run_to(get_eft_pole_mass_scale(susy_scale, Mt));
 
    // computation of pole mass spectrum in the SM
    const int eft_pole_loops = eft.get_pole_mass_loop_order();
