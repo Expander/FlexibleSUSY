@@ -823,7 +823,7 @@ GetType[sym_?IsInputParameter] :=
     Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_?IsExtraParameter] :=
-    Cases[GetExtraParametersAndTypes[], {sym, type_} :> type][[1]];
+    Cases[GetExtraParametersAndTypes[], {sym, _, type_} :> type][[1]];
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
