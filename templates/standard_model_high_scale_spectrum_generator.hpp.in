@@ -51,7 +51,6 @@ class @ModelName@_spectrum_generator
 public:
    @ModelName@_spectrum_generator()
       : @ModelName@_spectrum_generator_interface<T>()
-      , solver()
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
@@ -72,7 +71,6 @@ public:
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
 private:
-   RGFlow<T> solver;
    @ModelName@_high_scale_constraint<T> high_scale_constraint;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
@@ -176,7 +174,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    Two_scale_increasing_precision precision(
       10.0, this->settings.get(Spectrum_generator_settings::precision));
 
-   solver.reset();
+   RGFlow<T> solver;
    solver.set_convergence_tester(&cct);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
