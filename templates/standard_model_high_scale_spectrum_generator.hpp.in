@@ -51,10 +51,6 @@ class @ModelName@_spectrum_generator
 public:
    @ModelName@_spectrum_generator()
       : @ModelName@_spectrum_generator_interface<T>()
-      , high_scale_constraint()
-      , susy_scale_constraint()
-      , low_scale_constraint()
-      , matching()
       , eft()
       , high_scale(0.)
       , susy_scale(0.)
@@ -71,10 +67,6 @@ public:
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
 private:
-   @ModelName@_high_scale_constraint<T> high_scale_constraint;
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
-   @ModelName@_standard_model_Matching<T> matching;
    standard_model::StandardModel<T> eft;
    double high_scale, susy_scale, low_scale;
 };
@@ -116,6 +108,10 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    eft.set_number_of_mass_iterations(this->model.get_number_of_mass_iterations());
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
 
+   @ModelName@_high_scale_constraint<T> high_scale_constraint;
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
+   standard_model::Standard_model_low_scale_constraint<T>  low_scale_constraint;
+
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -129,6 +125,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
 
    const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
 
+   @ModelName@_standard_model_Matching<T> matching;
    matching.set_models(&eft, &model);
    matching.set_constraint(&susy_scale_constraint);
    matching.set_scale(this->settings.get(Spectrum_generator_settings::eft_matching_scale));
