@@ -518,7 +518,7 @@ ReplaceImplicitConstraints[settings_List] :=
 CreateBoundaryValue[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
 
 CreateBoundaryValueParameters[solutions_List] :=
-    {CreateBoundaryValue[#], Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
+    {CreateBoundaryValue[#], {}, Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
 
 CreateBoundaryValueParameterName[par_] :=
     CConversion`ToValidCSymbolString[CreateBoundaryValue[par]];
@@ -529,7 +529,7 @@ CreateCoefficients[SemiAnalyticSolution[par_, basis_]] :=
           ];
 
 CreateCoefficientParameters[solution_SemiAnalyticSolution] :=
-    {#, Parameters`GetType[GetName[solution]]}& /@ CreateCoefficients[solution];
+    {#, {}, Parameters`GetType[GetName[solution]]}& /@ CreateCoefficients[solution];
 
 CreateCoefficientParameters[solutions_List] :=
     Join[Sequence @@ (CreateCoefficientParameters /@ solutions)];
@@ -553,7 +553,7 @@ CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
 CreateSemiAnalyticCoefficientGetters[solution_SemiAnalyticSolution] :=
     Module[{getters = "", coeffs},
            coeffs = CreateCoefficientParameters[solution];
-           getters = (CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ coeffs;
+           getters = (CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[3]]])& /@ coeffs;
            StringJoin[getters]
           ];
 
@@ -566,14 +566,14 @@ CreateSemiAnalyticCoefficientGetters[solutions_List] :=
 CreateBoundaryValueGetters[solutions_List] :=
     Module[{boundaryValues, getters = ""},
            boundaryValues = CreateBoundaryValueParameters[solutions];
-           (getters = getters <> CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
+           (getters = getters <> CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[3]]])& /@ boundaryValues;
            Return[getters];
           ];
 
 CreateBoundaryValueSetters[solutions_List] :=
     Module[{boundaryValues, setters = ""},
            boundaryValues = CreateBoundaryValueParameters[solutions];
-           (setters = setters <> CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#[[1]]], #[[2]]])& /@ boundaryValues;
+           (setters = setters <> CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#[[1]]], #[[3]]])& /@ boundaryValues;
            Return[setters];
           ];
 
@@ -638,7 +638,7 @@ PrintModelCoefficients[solutions_List, streamName_String, struct_String:"solutio
            result = streamName <> " << \"input_scale = \" << " <> struct <> "get_input_scale() << '\\n';\n";
            result = result <> streamName <> " << \"output_scale = \" << " <> struct
                     <> "get_output_scale() << '\\n';\n";
-           result <> WriteOut`PrintExtraParameters[coeffs, streamName, "COEFFICIENT"]
+           result <> WriteOut`PrintExtraParameters[{#[[1]], #[[3]]}& /@ coeffs, streamName, "COEFFICIENT"]
           ];
 
 CreateBoundaryValuesDefinitions[solutions_List, createParameters_:CreateBoundaryValueParameters] :=
