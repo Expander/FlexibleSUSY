@@ -53,16 +53,16 @@ using namespace flexiblesusy;
 typedef Two_scale algorithm_type;
 typedef mint Handle_id;
 
-class Redirect_output {
+class Redirect_@ModelName@_output {
 public:
-   explicit Redirect_output(MLINK link_)
+   explicit Redirect_@ModelName@_output(MLINK link_)
       : link(link_)
       , buffer()
       , old_cout(std::cout.rdbuf(buffer.rdbuf()))
       , old_cerr(std::cerr.rdbuf(buffer.rdbuf()))
       {}
 
-   ~Redirect_output() {
+   ~Redirect_@ModelName@_output() {
       std::cout.rdbuf(old_cout);
       std::cerr.rdbuf(old_cerr);
       flush();
@@ -675,7 +675,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
       @ModelName@_data data = find_@ModelName@_data(hid);
 
       {
-         Redirect_output crd(link);
+         Redirect_@ModelName@_output crd(link);
          calculate_spectrum(data, link);
       }
 
@@ -713,7 +713,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
       @ModelName@_observables observables;
 
       {
-         Redirect_output crd(link);
+         Redirect_@ModelName@_output crd(link);
          observables =
             calculate_observables(data.model, data.qedqcd, data.physical_input);
       }
