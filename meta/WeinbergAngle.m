@@ -185,6 +185,19 @@ GenerateDiagramsWave[particle_] :=
            Return[diagrs];
           ];
 
+WaveResult[diagr_List, includeGoldstones_: False] :=
+    Module[{coupl, intparticles, intfermion, intscalar, result, intpartwithindex},
+           coupl = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
+           intparticles = {SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]];
+           intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
+           intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
+           result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
+           intpartwithindex = Cases[intparticles /. {Susyno`LieGroups`conj -> Identity, SARAH`bar -> Identity}, _[{_}]];
+           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
+                 {i, Length[intpartwithindex]}];
+           Return[result];
+          ];
+
 End[];
 
 EndPackage[];
