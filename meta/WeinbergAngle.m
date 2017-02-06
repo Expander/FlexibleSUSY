@@ -9,6 +9,7 @@ DeltaRhoHat2LoopSM::usage="";
 DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
 InitGenerationOfDiagrams::usage="";
+DeltaVBwave::usage="";
 
 Begin["`Private`"];
 
@@ -195,6 +196,14 @@ WaveResult[diagr_List, includeGoldstones_: False] :=
            intpartwithindex = Cases[intparticles /. {Susyno`LieGroups`conj -> Identity, SARAH`bar -> Identity}, _[{_}]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
+           Return[result];
+          ];
+
+DeltaVBwave[] :=
+    Module[{neutrinodiagrs, electrondiagrs, result},
+           neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
+           electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
+           result = 1/2 * (SARAH`sum[SARAH`gO1, 1, 2, Plus @@ WaveResult /@ neutrinodiagrs] + SARAH`sum[SARAH`gO1, 1, 2, Plus @@ WaveResult /@ electrondiagrs]);
            Return[result];
           ];
 
