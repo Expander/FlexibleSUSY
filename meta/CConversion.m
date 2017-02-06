@@ -13,6 +13,7 @@ complexScalarCType::usage="represents a complex scalar C type";
 
 ToRealType::usage="converts a given type to a type with real elements";
 
+IsIntegerType::usage="Returns true if given type has integer elements";
 IsRealType::usage="Returns true if given type has real elements";
 
 GreekQ::usage = "Returns true if the given symbol contains one or more
@@ -182,6 +183,9 @@ ToRealType[CConversion`ArrayType[_,n_]] := CConversion`ArrayType[realScalarCType
 ToRealType[CConversion`VectorType[_,n_]] := CConversion`VectorType[realScalarCType, n];
 ToRealType[CConversion`MatrixType[_,m_,n_]] := CConversion`MatrixType[realScalarCType, m, n];
 ToRealType[CConversion`TensorType[_,n__]] := CConversion`TensorType[realScalarCType, n];
+
+IsIntegerType[_[CConversion`integerScalarCType, ___]] := True;
+IsIntegerType[_] := False;
 
 IsRealType[_[CConversion`realScalarCType, ___]] := True;
 IsRealType[_[CConversion`integerScalarCType, ___]] := True;
