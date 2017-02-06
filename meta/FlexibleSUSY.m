@@ -2404,15 +2404,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                }
                                       ];
 
-           Print["Creating class for calculation of weinberg angle ..."];
-           WriteWeinbergAngleClass[massMatrices,
-               {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
-                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
-                {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
-                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
-               }
-                                  ];
-
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                                inputParameters, extraSLHAOutputBlocks,
@@ -2564,6 +2555,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
+
+           Print["Creating class for calculation of weinberg angle ..."];
+           WriteWeinbergAngleClass[massMatrices,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
+                                   }];
 
             Print["Creating matching class ..."];
             WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
