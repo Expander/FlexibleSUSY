@@ -56,6 +56,7 @@ SaveParameterLocally::usage="Save parameters in local variables";
 GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
+GetIntegerTypeFromDimension::usage="";
 GetRealTypeFromDimension::usage="";
 GetComplexTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
@@ -271,7 +272,10 @@ SetStoredParameterDimensions[storedPars_List, par_, dims_] :=
            pos = Position[storedPars, {par, __}];
            updated = Extract[storedPars, pos];
            updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[3]]],
-                                          GetRealTypeFromDimension[dims],
+                                          If[CConversion`IsIntegerType[#[[3]]],
+                                             GetIntegerTypeFromDimension[dims],
+                                             GetRealTypeFromDimension[dims]
+                                            ],
                                           GetComplexTypeFromDimension[dims]]})& /@ updated;
            ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
           ];
@@ -421,7 +425,8 @@ CheckInputParameterDefinitions[] :=
                  ];
                blockName = ToString[blockName];
                If[blockName === "MINPAR" || blockName === "EXTPAR" || blockName === "IMEXTPAR",
-                  If[type =!= CConversion`ScalarType[CConversion`realScalarCType],
+                  If[type =!= CConversion`ScalarType[CConversion`realScalarCType] &&
+                     type =!= CConversion`ScalarType[CConversion`integerScalarCType],
                      Print["Error: ", par, " must be defined as a real scalar"];
                      Print["   since it is defined in an SLHA1 input block."];
                      Quit[1];
@@ -777,6 +782,24 @@ GetTypeFromDimension[sym_, {dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@
        CConversion`TensorType[CConversion`realScalarCType, dims],
        CConversion`TensorType[CConversion`complexScalarCType, dims]
       ];
+
+GetIntegerTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+
+GetIntegerTypeFromDimension[{0}] :=
+    GetIntegerTypeFromDimension[{}];
+
+GetIntegerTypeFromDimension[{1}] :=
+    GetIntegerTypeFromDimension[{}];
+
+GetIntegerTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`integerScalarCType, num];
+
+GetIntegerTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`integerScalarCType, num1, num2];
+
+GetIntegerTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`integerScalarCType, dims];
 
 GetRealTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
