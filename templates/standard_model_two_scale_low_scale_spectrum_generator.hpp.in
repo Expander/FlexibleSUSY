@@ -25,12 +25,8 @@
 #include "@ModelName@_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_model_slha.hpp"
-#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "@ModelName@_standard_model_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_standard_model_two_scale_matching.hpp"
 #include "standard_model_two_scale_model.hpp"
-#include "standard_model_two_scale_low_scale_constraint.hpp"
 
 #include "two_scale_solver.hpp"
 
@@ -55,10 +51,9 @@ public:
    const standard_model::StandardModel<Two_scale>& get_eft() const { return eft; }
 
    double get_high_scale() const { return 0.; }
-   double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
-   double get_low_scale()  const { return low_scale_constraint.get_scale(); }
-   double get_pole_mass_scale() const;
-   double get_eft_pole_mass_scale() const;
+   double get_susy_scale() const { return susy_scale; }
+   double get_low_scale()  const { return low_scale;  }
+   double get_pole_mass_scale() const { return get_pole_mass_scale(susy_scale); }
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
@@ -66,14 +61,12 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   RGFlow<Two_scale> solver{};
-   @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint{};
-   standard_model::Standard_model_low_scale_constraint<Two_scale>  low_scale_constraint{};
-   @ModelName@_standard_model_matching_up<Two_scale> matching_up{};
-   @ModelName@_standard_model_matching_down<Two_scale> matching_down{};
-   standard_model::StandardModel<Two_scale> eft;
+   standard_model::StandardModel<Two_scale> eft{};
+   double susy_scale{0.}, low_scale{0.};
 
-   void calculate_spectrum();
+   void calculate_spectrum(double);
+   double get_eft_pole_mass_scale(double) const;
+   double get_pole_mass_scale(double) const;
 };
 
 } // namespace flexiblesusy
