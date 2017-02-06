@@ -1319,16 +1319,11 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            typeGoldstone = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimGoldstone]];
            prototype = typeHiggs <> " get_M" <> name <> "() const;\n";
            body =
-               typeHiggs     <> " " <> particleHiggsStr <> ";\n" <>
                typeGoldstone <> " " <> particleGoldstoneStr <> ";\n" <>
-               "\n" <>
                FillGoldstoneMassVector[particleGoldstoneStr, vectorList] <>
                "\n" <>
-               "remove_if_equal(" <> particleStr <> ", " <>
-                                particleGoldstoneStr <> ", " <>
-                                particleHiggsStr <> ");\n" <>
-               "\n" <>
-               "return " <> particleHiggsStr <> ";\n";
+               "return remove_if_equal(" <> particleStr <> ", " <>
+                                       particleGoldstoneStr <> ");\n";
            def = typeHiggs <> " CLASSNAME::get_M" <> name <> "() const\n{\n" <>
                IndentText[body] <>
                "}\n";

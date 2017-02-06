@@ -319,7 +319,7 @@ static double F9_1_x2(double x1, double x2)
 }
 
 /// F9(x1,x2) in the limit x1 -> 0
-static double F9_0_x2(double x1, double x2)
+static double F9_0_x2(double, double x2)
 {
    return (2.*std::log(sqr(x2)))/(-1. + sqr(x2));
 }
