@@ -19,12 +19,10 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameterInfo = {
-   {m0Sq, { ParameterDimensions -> {1},
-            MassDimension -> 1,
-            Real -> True} },
+   {m0Sq,        { ParameterDimensions -> {1},
+                   MassDimension -> 1 } },
    {LambdaInput, { ParameterDimensions -> {1},
-                   MassDimension -> 0,
-                   Real -> True } }
+                   MassDimension -> 0 } }
 };
 
 EWSBOutputParameters = { \[Kappa], vS, m0Sq };

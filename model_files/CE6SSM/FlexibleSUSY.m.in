@@ -20,15 +20,12 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameterInfo = {
-   {m0Sq, { ParameterDimensions -> {1},
-            MassDimension -> 2,
-            Real -> True } },
-   {m12, { ParameterDimensions -> {1},
-           MassDimension -> 1,
-           Real -> True } },
+   {m0Sq,  { ParameterDimensions -> {1},
+             MassDimension -> 2 } },
+   {m12,   { ParameterDimensions -> {1},
+             MassDimension -> 1 } },
    {Azero, { ParameterDimensions -> {1},
-             MassDimension -> 1,
-             Real -> True } }
+             MassDimension -> 1 } }
 };
 
 EWSBOutputParameters = { m0Sq, m12, Azero };
