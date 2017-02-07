@@ -22,14 +22,11 @@ EXTPAR = {
    during the EWSB iteration. *)
 FSAuxiliaryParameterInfo = {
    {TanBeta, { ParameterDimensions -> {1},
-               MassDimension -> 0,
-               Real -> True } },
-   {MuSq, { ParameterDimensions -> {1},
-            MassDimension -> 2,
-            Real -> True } },
-   {vMSSM, { ParameterDimensions -> {1},
-             MassDimension -> 1,
-             Real -> True } }
+               MassDimension -> 0 } },
+   {MuSq,    { ParameterDimensions -> {1},
+               MassDimension -> 2 } },
+   {vMSSM,   { ParameterDimensions -> {1},
+               MassDimension -> 1 } }
 };
 
 (* To allow selecting a particular tree-level solution
