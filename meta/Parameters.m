@@ -412,8 +412,8 @@ CheckInputParameterDefinitions[] :=
            For[i = 1, i <= Length[allInputParameters], i++,
                par = allInputParameters[[i,1]];
                type = allInputParameters[[i,3]];
-               (* complex input parameters are not currently supported *)
-               If[!CConversion`IsRealType[type],
+               (* with the exception of phases, complex input parameters are not currently supported *)
+               If[!CConversion`IsRealType[type] && !MatchQ[par, FlexibleSUSY`Phase[_]],
                   Print["Error: ", par, " is defined to be complex,"];
                   Print["   but input parameters must be real."];
                   Print["   Please define ", par, " to be a real parameter."];
@@ -425,11 +425,23 @@ CheckInputParameterDefinitions[] :=
                  ];
                blockName = ToString[blockName];
                If[blockName === "MINPAR" || blockName === "EXTPAR" || blockName === "IMEXTPAR",
-                  If[type =!= CConversion`ScalarType[CConversion`realScalarCType] &&
-                     type =!= CConversion`ScalarType[CConversion`integerScalarCType],
-                     Print["Error: ", par, " must be defined as a real scalar"];
+                  If[!MatchQ[type, CConversion`ScalarType[_]],
+                     Print["Error: ", par, " must be defined as a scalar"];
                      Print["   since it is defined in an SLHA1 input block."];
                      Quit[1];
+                    ];
+                  If[MatchQ[par, FlexibleSUSY`Phase[_]],
+                     If[type =!= CConversion`ScalarType[CConversion`complexScalarCType],
+                        Print["Error: ", par, " must be defined as a complex scalar"];
+                        Print["   since it is defined in an SLHA1 input block."];
+                        Quit[1];
+                       ];,
+                     If[type =!= CConversion`ScalarType[CConversion`realScalarCType] &&
+                        type =!= CConversion`ScalarType[CConversion`integerScalarCType],
+                        Print["Error: ", par, " must be defined as a real scalar"];
+                        Print["   since it is defined in an SLHA1 input block."];
+                        Quit[1];
+                       ];
                     ];
                  ];
               ];
