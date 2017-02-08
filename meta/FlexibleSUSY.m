@@ -773,7 +773,6 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 
 WriteWeinbergAngleClass[massMatrices_List, files_List] :=
    Module[{},
-          WeinbergAngle`InitGenerationOfDiagrams[];
           WriteOut`ReplaceInFiles[files,
                  { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[massMatrices]]]],
                    "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[massMatrices]]]],
@@ -1894,6 +1893,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+            deltaVBwave,
 	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
@@ -2506,6 +2506,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{LowPoleMassPrecision}],
                FSEigenstates];
 
+           (*prepare Weinberg angle calculation*)
+           WeinbergAngle`InitGenerationOfDiagrams[];
+           deltaVBwave = WeinbergAngle`DeltaVBwave[];
+
 	   vertexRuleFileName =
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
            effectiveCouplingsFileName =
@@ -2517,7 +2521,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, extraVertices], Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, {deltaVBwave}], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
