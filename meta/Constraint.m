@@ -274,8 +274,8 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
 
 CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
              constraintName_String] :=
-    Module[{unknownParameters = Complement[parameters, Join[Parameters`GetModelParameters[],
-                                                            Parameters`GetExtraParameters[]]]},
+    Module[{unknownParameters = Select[parameters, (!Parameters`IsModelParameter[#] &&
+                                                    !Parameters`IsExtraParameter[#])&]},
            If[unknownParameters =!= {},
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt],
                     "   Unknown parameters: ", unknownParameters];
