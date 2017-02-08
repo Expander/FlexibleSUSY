@@ -21,13 +21,8 @@
 #ifndef @ModelName@_SEMI_ANALYTIC_SPECTRUM_GENERATOR_H
 #define @ModelName@_SEMI_ANALYTIC_SPECTRUM_GENERATOR_H
 
-#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
-#include "@ModelName@_semi_analytic_high_scale_constraint.hpp"
-#include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
-#include "@ModelName@_semi_analytic_low_scale_constraint.hpp"
-#include "@ModelName@_semi_analytic_soft_parameters_constraint.hpp"
 #include "@ModelName@_semi_analytic_model.hpp"
 #include "@ModelName@_model_slha.hpp"
 
@@ -49,9 +44,9 @@ public:
    std::tuple<@ModelName@<Semi_analytic> > get_models() const { return std::make_tuple(this->get_model()); }
    std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> > > get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
 
-   double get_high_scale() const { return high_scale_constraint.get_scale(); }
-   double get_susy_scale() const { return susy_scale_constraint.get_scale(); }
-   double get_low_scale()  const { return low_scale_constraint.get_scale(); }
+   double get_high_scale() const { return high_scale; }
+   double get_susy_scale() const { return susy_scale; }
+   double get_low_scale()  const { return low_scale; }
    double get_pole_mass_scale() const;
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
@@ -60,10 +55,7 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   @ModelName@_high_scale_constraint<Semi_analytic> high_scale_constraint{};
-   @ModelName@_susy_scale_constraint<Semi_analytic> susy_scale_constraint{};
-   @ModelName@_low_scale_constraint<Semi_analytic>  low_scale_constraint{};
-   @ModelName@_soft_parameters_constraint<Semi_analytic> soft_constraint{};
+   double high_scale{0.}, susy_scale{0.}, low_scale{0.};
 
    void calculate_spectrum();
 };

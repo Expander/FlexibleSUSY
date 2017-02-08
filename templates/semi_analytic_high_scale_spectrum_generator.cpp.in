@@ -19,10 +19,15 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_semi_analytic_spectrum_generator.hpp"
+#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_semi_analytic_convergence_tester.hpp"
 #include "@ModelName@_semi_analytic_ewsb_solver.hpp"
+#include "@ModelName@_semi_analytic_high_scale_constraint.hpp"
 #include "@ModelName@_semi_analytic_initial_guesser.hpp"
+#include "@ModelName@_semi_analytic_low_scale_constraint.hpp"
+#include "@ModelName@_semi_analytic_soft_parameters_constraint.hpp"
 #include "@ModelName@_semi_analytic_susy_convergence_tester.hpp"
+#include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
 
 #include "error.hpp"
 #include "lowe.h"
@@ -71,6 +76,11 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    @ModelName@_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_semi_analytic_solutions(&solutions);
    model.set_ewsb_solver(&ewsb_solver);
+
+   @ModelName@_high_scale_constraint<Semi_analytic> high_scale_constraint;
+   @ModelName@_susy_scale_constraint<Semi_analytic> susy_scale_constraint;
+   @ModelName@_low_scale_constraint<Semi_analytic>  low_scale_constraint;
+   @ModelName@_soft_parameters_constraint<Semi_analytic> soft_constraint;
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -127,6 +137,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    solver.add_inner(&susy_scale_constraint, &model);
    solver.add_outer(&soft_constraint, &model);
 
+   high_scale = susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
    solver.solve();
@@ -135,6 +146,9 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    model.run_to(low_scale_constraint.get_scale());
    low_scale_constraint.apply();
 
+   high_scale = high_scale_constraint.get_scale();
+   susy_scale = susy_scale_constraint.get_scale();
+   low_scale  = low_scale_constraint.get_scale();
    this->reached_precision = outer_ct.get_current_accuracy();
 
    calculate_spectrum();
