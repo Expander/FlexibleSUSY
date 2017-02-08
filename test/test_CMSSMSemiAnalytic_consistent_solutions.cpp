@@ -110,7 +110,8 @@ CMSSMSemiAnalytic_input_parameters initialize_semi_analytic_input(
 
 CMSSMSemiAnalytic<Semi_analytic> initialize_semi_analytic_model(
    const CMSSM<Two_scale>& two_scale_model,
-   const CMSSM_input_parameters& two_scale_input)
+   const CMSSM_input_parameters& two_scale_input,
+   double Mu0, double BMu0, double high_scale)
 {
    CMSSMSemiAnalytic<Semi_analytic> semi_analytic_model
       = copy_parameters_from_model<CMSSMSemiAnalytic<Semi_analytic> >(two_scale_model);
@@ -119,6 +120,16 @@ CMSSMSemiAnalytic<Semi_analytic> initialize_semi_analytic_model(
       initialize_semi_analytic_input(two_scale_model.get_Mu(),
                                      two_scale_input));
 
+   semi_analytic_model.set_m0Sq(Sqr(two_scale_input.m0));
+   semi_analytic_model.set_BMu0(BMu0);
+
+   semi_analytic_model.set_m0SqBasis(Sqr(two_scale_input.m0));
+   semi_analytic_model.set_m12Basis(two_scale_input.m12);
+   semi_analytic_model.set_AzeroBasis(two_scale_input.Azero);
+   semi_analytic_model.set_BMu0Basis(BMu0);
+   semi_analytic_model.set_MuBasis(Mu0);
+
+   semi_analytic_model.calculate_semi_analytic_solutions(high_scale);
    semi_analytic_model.calculate_DRbar_masses();
 
    return semi_analytic_model;
@@ -134,22 +145,77 @@ double max_susy_parameters_rel_diff(const Model& old_model, const Model& new_mod
    diff[2] = MaxRelDiff(old_model.get_g3(), new_model.get_g3());
    diff[3] = MaxRelDiff(old_model.get_vd(), new_model.get_vd());
    diff[4] = MaxRelDiff(old_model.get_vu(), new_model.get_vu());
-   for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-         diff[i + 3*j + 5] = MaxRelDiff(old_model.get_Yd()(i,j), new_model.get_Yd()(i,j));
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 5] = MaxRelDiff(old_model.get_Yd(i,j), new_model.get_Yd(i,j));
       }
    }
-   for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-         diff[i + 3*j + 14] = MaxRelDiff(old_model.get_Ye()(i,j), new_model.get_Ye()(i,j));
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 14] = MaxRelDiff(old_model.get_Ye(i,j), new_model.get_Ye(i,j));
       }
    }
-   for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-         diff[i + 3*j + 23] = MaxRelDiff(old_model.get_Yu()(i,j), new_model.get_Yu()(i,j));
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 23] = MaxRelDiff(old_model.get_Yu(i,j), new_model.get_Yu(i,j));
       }
    }
    diff[32] = MaxRelDiff(old_model.get_Mu(), new_model.get_Mu());
+
+   return *std::max_element(diff.cbegin(), diff.cend());
+}
+
+template <class Model>
+double max_soft_parameters_rel_diff(const Model& old_model, const Model& new_model)
+{
+   std::array<double,78> diff{};
+
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j] = MaxRelDiff(old_model.get_TYd(i,j), new_model.get_TYd(i,j));
+      }
+   }
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 9] = MaxRelDiff(old_model.get_TYe(i,j), new_model.get_TYe(i,j));
+      }
+   }
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 18] = MaxRelDiff(old_model.get_TYu(i,j), new_model.get_TYu(i,j));
+      }
+   }
+   diff[27] = MaxRelDiff(old_model.get_BMu(), new_model.get_BMu());
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 28] = MaxRelDiff(old_model.get_mq2(i,j), new_model.get_mq2(i,j));
+      }
+   }
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 37] = MaxRelDiff(old_model.get_ml2(i,j), new_model.get_ml2(i,j));
+      }
+   }
+   diff[46] = MaxRelDiff(old_model.get_mHd2(), new_model.get_mHd2());
+   diff[47] = MaxRelDiff(old_model.get_mHu2(), new_model.get_mHu2());
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 48] = MaxRelDiff(old_model.get_md2(i,j), new_model.get_md2(i,j));
+      }
+   }
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 57] = MaxRelDiff(old_model.get_mu2(i,j), new_model.get_mu2(i,j));
+      }
+   }
+   for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+         diff[i + 3*j + 66] = MaxRelDiff(old_model.get_me2(i,j), new_model.get_me2(i,j));
+      }
+   }
+   diff[75] = MaxRelDiff(old_model.get_MassB(), new_model.get_MassB());
+   diff[76] = MaxRelDiff(old_model.get_MassWB(), new_model.get_MassWB());
+   diff[77] = MaxRelDiff(old_model.get_MassG(), new_model.get_MassG());
 
    return *std::max_element(diff.cbegin(), diff.cend());
 }
@@ -160,32 +226,32 @@ double max_mass_rel_diff(const Model& old_model, const Model& new_model)
    std::array<double, 34> diff{};
 
    diff[0] = MaxRelDiff(old_model.get_MGlu(), new_model.get_MGlu());
-   for (int i = 0; i < 6; i++) {
-      diff[i + 1] = MaxRelDiff(old_model.get_MSd()(i), new_model.get_MSd()(i));
+   for (int i = 0; i < 6; ++i) {
+      diff[i + 1] = MaxRelDiff(old_model.get_MSd(i), new_model.get_MSd(i));
    }
-   for (int i = 0; i < 3; i++) {
-      diff[i + 7] = MaxRelDiff(old_model.get_MSv()(i), new_model.get_MSv()(i));
+   for (int i = 0; i < 3; ++i) {
+      diff[i + 7] = MaxRelDiff(old_model.get_MSv(i), new_model.get_MSv(i));
    }
-   for (int i = 0; i < 6; i++) {
-      diff[i + 10] = MaxRelDiff(old_model.get_MSu()(i), new_model.get_MSu()(i));
+   for (int i = 0; i < 6; ++i) {
+      diff[i + 10] = MaxRelDiff(old_model.get_MSu(i), new_model.get_MSu(i));
    }
-   for (int i = 0; i < 6; i++) {
-      diff[i + 16] = MaxRelDiff(old_model.get_MSe()(i), new_model.get_MSe()(i));
+   for (int i = 0; i < 6; ++i) {
+      diff[i + 16] = MaxRelDiff(old_model.get_MSe(i), new_model.get_MSe(i));
    }
-   for (int i = 0; i < 2; i++) {
-      diff[i + 22] = MaxRelDiff(old_model.get_Mhh()(i), new_model.get_Mhh()(i));
+   for (int i = 0; i < 2; ++i) {
+      diff[i + 22] = MaxRelDiff(old_model.get_Mhh(i), new_model.get_Mhh(i));
    }
-   for (int i = 1; i < 2; i++) {
-      diff[i + 24] = MaxRelDiff(old_model.get_MAh()(i), new_model.get_MAh()(i));
+   for (int i = 1; i < 2; ++i) {
+      diff[i + 24] = MaxRelDiff(old_model.get_MAh(i), new_model.get_MAh(i));
    }
-   for (int i = 1; i < 2; i++) {
-      diff[i + 26] = MaxRelDiff(old_model.get_MHpm()(i), new_model.get_MHpm()(i));
+   for (int i = 1; i < 2; ++i) {
+      diff[i + 26] = MaxRelDiff(old_model.get_MHpm(i), new_model.get_MHpm(i));
    }
-   for (int i = 0; i < 4; i++) {
-      diff[i + 28] = MaxRelDiff(old_model.get_MChi()(i), new_model.get_MChi()(i));
+   for (int i = 0; i < 4; ++i) {
+      diff[i + 28] = MaxRelDiff(old_model.get_MChi(i), new_model.get_MChi(i));
    }
-   for (int i = 0; i < 2; i++) {
-      diff[i + 32] = MaxRelDiff(old_model.get_MCha()(i), new_model.get_MCha()(i));
+   for (int i = 0; i < 2; ++i) {
+      diff[i + 32] = MaxRelDiff(old_model.get_MCha(i), new_model.get_MCha(i));
    }
 
    return *std::max_element(diff.cbegin(), diff.cend());
@@ -233,7 +299,10 @@ CMSSM<Two_scale> run_single_two_scale_iteration(const CMSSM<Two_scale>& model, c
    return next_model;
 }
 
-CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(const CMSSMSemiAnalytic<Semi_analytic>& model, const CMSSMSemiAnalytic_scales& scales)
+CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(
+   const CMSSMSemiAnalytic<Semi_analytic>& model,
+   const CMSSMSemiAnalytic_scales& scales,
+   double precision)
 {
    CMSSMSemiAnalytic<Semi_analytic> next_model(model);
 
@@ -274,9 +343,9 @@ CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(const CMSSMS
    soft_constraint.scale = scales.SUSYScale;
 
    CMSSMSemiAnalytic_susy_convergence_tester<Semi_analytic> convergence_tester(
-      &next_model, 1.0e-4);
+      &next_model, precision);
 
-   Two_scale_increasing_precision running_precision(10.0, 1.0e-4);
+   Two_scale_increasing_precision running_precision(10.0, precision);
 
    // apply constraints once
    RGFlow<Two_scale> inner_solver;
@@ -325,13 +394,19 @@ std::vector<CMSSMSemiAnalytic_input_parameters> initialize_semi_analytic_inputs(
 
 std::vector<CMSSM_input_parameters> initialize_two_scale_inputs()
 {
-   std::vector<CMSSM_input_parameters> inputs{1};
+   std::vector<CMSSM_input_parameters> inputs{2};
 
-   inputs[0].m0 = 125.;
-   inputs[0].m12 = 500.;
-   inputs[0].TanBeta = 10.;
+   inputs[0].m0 = 2800.;
+   inputs[0].m12 = 660.;
+   inputs[0].TanBeta = 40.;
    inputs[0].SignMu = 1;
    inputs[0].Azero = 0.;
+
+   inputs[1].m0 = 1000.;
+   inputs[1].m12 = 660.;
+   inputs[1].TanBeta = 40.;
+   inputs[1].SignMu = 1;
+   inputs[1].Azero = 0.;
 
    return inputs;
 }
@@ -378,11 +453,14 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_to_two_scale )
       // fixed point of the two-scale iteration as well
       const double susy_pars_rel_diff = max_susy_parameters_rel_diff(
          two_scale_model, single_iteration_model);
+      const double soft_pars_rel_diff = max_soft_parameters_rel_diff(
+         two_scale_model, single_iteration_model);
       const double mass_rel_diff = max_mass_rel_diff(
          two_scale_model, single_iteration_model);
 
-      const double test_precision = 20. * precision;
+      const double test_precision = 1.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
+      BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
    }
 }
@@ -419,21 +497,29 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       scales.SUSYScale = susy_scale;
       scales.LowScale = low_scale;
 
+      CMSSM<Two_scale> high_scale_model(two_scale_model);
+      high_scale_model.run_to(high_scale);
+
       const CMSSMSemiAnalytic<Semi_analytic> semi_analytic_model(
-         initialize_semi_analytic_model(two_scale_model, two_scale_input));
+         initialize_semi_analytic_model(two_scale_model, two_scale_input,
+                                        high_scale_model.get_Mu(),
+                                        high_scale_model.get_BMu(), high_scale));
 
       const CMSSMSemiAnalytic<Semi_analytic> single_iteration_model =
-         run_single_semi_analytic_iteration(semi_analytic_model, scales);
+         run_single_semi_analytic_iteration(semi_analytic_model, scales, precision);
 
       // check that the originally found solution is an (approximate)
       // fixed point of the semi-analytic iteration as well
       const double susy_pars_rel_diff = max_susy_parameters_rel_diff(
          semi_analytic_model, single_iteration_model);
+      const double soft_pars_rel_diff = max_soft_parameters_rel_diff(
+         semi_analytic_model, single_iteration_model);
       const double mass_rel_diff = max_mass_rel_diff(
          semi_analytic_model, single_iteration_model);
 
-      const double test_precision = 20. * precision;
+      const double test_precision = 1.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
+      BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
    }
 }
