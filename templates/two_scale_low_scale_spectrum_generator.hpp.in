@@ -21,11 +21,8 @@
 #ifndef @ModelName@_TWO_SCALE_SPECTRUM_GENERATOR_H
 #define @ModelName@_TWO_SCALE_SPECTRUM_GENERATOR_H
 
-#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
-#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_model_slha.hpp"
 
