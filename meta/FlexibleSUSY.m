@@ -2491,7 +2491,7 @@ AddExtraInputParameterInfo[par_, block_, dims_] :=
                           Parameters`InputParameter -> True
                         } };
            If[!MemberQ[definedPars, par],
-              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo];,
+              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, info];,
               Print["Error: ", par, " is already defined!"];
               Print["   Please only define extra input parameters"];
               Print["   in one of FSExtraInputParameters or"];
@@ -2501,7 +2501,7 @@ AddExtraInputParameterInfo[par_, block_, dims_] :=
           ];
 
 AddExtraInputParameterBlockInfo[extraInputPars_List] :=
-    AddExtraInputParameterInfo /@ extraInputPars;
+    AddExtraInputParameterInfo[#[[1]], #[[2]], #[[3]]]& /@ extraInputPars;
 
 (* returns beta functions of VEV phases *)
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
