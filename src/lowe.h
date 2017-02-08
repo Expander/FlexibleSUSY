@@ -52,6 +52,8 @@ enum QedQcd_input_parmeters : int {
    MElectron_pole, MMuon_pole, MTau_pole,
    MU_2GeV, MS_2GeV, MT_pole,
    MD_2GeV, mc_mc, mb_mb,
+   CKM_theta_12, CKM_theta_13, CKM_theta_23, CKM_delta,
+   PMNS_theta_12, PMNS_theta_13, PMNS_theta_23, PMNS_delta, PMNS_alpha_1, PMNS_alpha_2,
    NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS
 };
 
@@ -65,8 +67,6 @@ private:
   Eigen::ArrayXd mf; ///< fermion running masses
   Eigen::ArrayXd input; ///< SLHA input parmeters
   double mbPole;    ///< pole masses of third family quarks
-  flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
-  flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
@@ -119,9 +119,9 @@ public:
   /// set input value of alpha_s(MZ)
   void setAlphaSInput(double a) { input(alpha_s_MSbar_at_MZ) = a; }
   /// sets CKM parameters (in the MS-bar scheme at MZ)
-  void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
+  void setCKM(const flexiblesusy::CKM_parameters&);
   /// sets PMNS parameters (in the MS-bar scheme at MZ)
-  void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
+  void setPMNS(const flexiblesusy::PMNS_parameters&);
   /// sets Fermi constant
   void setFermiConstant(double gf) { input(GFermi) = gf; }
   /// sets all input parameters
@@ -175,17 +175,17 @@ public:
   /// Returns ms(2 GeV)
   double displayMs2GeV() const { return input(MS_2GeV); }
   /// returns CKM parameters
-  flexiblesusy::CKM_parameters displayCKM() const { return ckm; }
+  flexiblesusy::CKM_parameters displayCKM() const;
   /// Returns real CKM matrix
-  Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
+  Eigen::Matrix<double,3,3> get_real_ckm() const { return displayCKM().get_real_ckm(); }
   /// Returns complex CKM matrix
-  Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return ckm.get_complex_ckm(); }
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return displayCKM().get_complex_ckm(); }
   /// returns PMNS parameters
-  flexiblesusy::PMNS_parameters displayPMNS() const { return pmns; }
+  flexiblesusy::PMNS_parameters displayPMNS() const;
   /// Returns real PMNS matrix
-  Eigen::Matrix<double,3,3> get_real_pmns() const { return pmns.get_real_pmns(); }
+  Eigen::Matrix<double,3,3> get_real_pmns() const { return displayPMNS().get_real_pmns(); }
   /// Returns complex PMNS matrix
-  Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return displayPMNS().get_complex_pmns(); }
 
   /// Evolves object to MZ
   void toMz();

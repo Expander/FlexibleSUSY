@@ -37,7 +37,7 @@ double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale() const
 {
    return
       this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
-      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : get_susy_scale();
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
 }
 
 /**
@@ -66,6 +66,10 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
 
    @ModelName@_ewsb_solver<Two_scale> ewsb_solver;
    model.set_ewsb_solver(&ewsb_solver);
+
+   @ModelName@_high_scale_constraint<Two_scale> high_scale_constraint;
+   @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint;
+   @ModelName@_low_scale_constraint<Two_scale>  low_scale_constraint;
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -110,6 +114,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    solver.add(&high_scale_constraint, &model);
    solver.add(&susy_scale_constraint, &model);
 
+   high_scale = susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
    solver.solve();
@@ -118,6 +123,9 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    model.run_to(low_scale_constraint.get_scale());
    low_scale_constraint.apply();
 
+   high_scale = high_scale_constraint.get_scale();
+   susy_scale = susy_scale_constraint.get_scale();
+   low_scale  = low_scale_constraint.get_scale();
    this->reached_precision = convergence_tester.get_current_accuracy();
 
    calculate_spectrum();

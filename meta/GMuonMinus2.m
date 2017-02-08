@@ -618,7 +618,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
            indexBounds = (With[{particleIndex = #},
                                (If[#[[1]] === SARAH`generation,
                                    {particleInfo[[particleIndex, 2]]-1, particleInfo[[particleIndex, 3]]},
-                                   {1, #[[2]]}]
+                                   {0, #[[2]]}]
                                 &) /@ particleInfo[[particleIndex, 5]]]
                           &) /@ Table[i, {i, Length[particles]}];
            indexBounds = Cases[Flatten[indexBounds, 1], Except[{}]];
