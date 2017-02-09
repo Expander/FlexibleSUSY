@@ -12,6 +12,9 @@ own format: SelfEnergies`FSSelfEnergy[particle, expression]";
 ConvertSarahTadpoles::usage="converts SARAH's tadpoles to our own
 format: SelfEnergies`Tadpole[particle, expression]";
 
+CreateVertexExpressions::usage="creates C/C++ functions for the
+given list of vertices";
+
 CreateNPointFunctions::usage="creates C/C++ functions for the
 given list of self-energies and tadpoles";
 
