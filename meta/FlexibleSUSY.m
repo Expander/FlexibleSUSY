@@ -1926,7 +1926,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             gaugeCouplingNormalizationDefs = "",
             numberOfDRbarBlocks, drBarBlockNames
            },
-           particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
+           particles = DeleteDuplicates @ Flatten[TreeMasses`GetMassEigenstate /@ massMatrices];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
            minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
@@ -2625,7 +2625,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
             massMatrices, phases,
             diagonalizationPrecision,
-            allIntermediateOutputParametes = {},
+            allIntermediateOutputParameters = {},
             allIntermediateOutputParameterIndexReplacementRules = {},
             allInputParameterIndexReplacementRules = {},
             allExtraParameterIndexReplacementRules = {},
@@ -2849,6 +2849,49 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            DebugPrint["input parameters: ", Parameters`GetInputParameters[]];
            DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
 
+           allIndexReplacementRules = Join[
+               Parameters`CreateIndexReplacementRules[allParameters],
+               {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
+                Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
+                Global`downLeptonsDRbar[i_,j_] :> Global`downLeptonsDRbar[i-1,j-1]}
+           ];
+
+           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
+            ];
+
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
+            ];
+
+           On[Assert];
+
+           Lat$massMatrices = TreeMasses`ConvertSarahMassMatrices[] /.
+                              Parameters`ApplyGUTNormalization[] //.
+                              { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
+           massMatrices = Lat$massMatrices /. allIndexReplacementRules;
+           Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
+
+           allIntermediateOutputParameters =
+               Parameters`GetIntermediateOutputParameterDependencies[TreeMasses`GetMassMatrix /@ massMatrices];
+           DebugPrint["intermediate output parameters = ", allIntermediateOutputParameters];
+
+           (* decrease index literals of intermediate output parameters in mass matrices *)
+           allIntermediateOutputParameterIndexReplacementRules =
+               Parameters`CreateIndexReplacementRules[allIntermediateOutputParameters];
+
+           massMatrices = massMatrices /. allIntermediateOutputParameterIndexReplacementRules;
+
+           allParticles = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           allOutputParameters = DeleteCases[DeleteDuplicates[
+               Join[allParticles,
+                    Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
+
+           Parameters`SetOutputParameters[allOutputParameters];
+           DebugPrint["output parameters = ", allOutputParameters];
+
            (* backwards compatibility replacements in constraints *)
            backwardsCompatRules = {
                Global`topDRbar      -> Global`upQuarksDRbar,
@@ -2873,23 +2916,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
 
            (* replace all indices in the user-defined model file variables *)
-           allIndexReplacementRules = Join[
-               Parameters`CreateIndexReplacementRules[allParameters],
-               {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
-                Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
-                Global`downLeptonsDRbar[i_,j_] :> Global`downLeptonsDRbar[i-1,j-1]}
-           ];
-
-           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
-            ];
-
-           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
-            ];
-
            EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
            ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
@@ -3027,32 +3053,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.cpp"}]}
                                     }
                                    ];
-
-           On[Assert];
-
-           Lat$massMatrices = ConvertSarahMassMatrices[] /.
-                          Parameters`ApplyGUTNormalization[] //.
-                          { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
-           massMatrices = Lat$massMatrices /. allIndexReplacementRules;
-           Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
-
-           allIntermediateOutputParametes =
-               Parameters`GetIntermediateOutputParameterDependencies[GetMassMatrix /@ massMatrices];
-           DebugPrint["intermediate output parameters = ", allIntermediateOutputParametes];
-
-           (* decrease index literals of intermediate output parameters in mass matrices *)
-           allIntermediateOutputParameterIndexReplacementRules =
-               Parameters`CreateIndexReplacementRules[allIntermediateOutputParametes];
-
-           massMatrices = massMatrices /. allIntermediateOutputParameterIndexReplacementRules;
-
-           allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
-           allOutputParameters = DeleteCases[DeleteDuplicates[
-               Join[allParticles,
-                    Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
-
-           Parameters`SetOutputParameters[allOutputParameters];
-           DebugPrint["output parameters = ", allOutputParameters];
 
            extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
                FlexibleSUSY`ExtraSLHAOutputBlocks,
