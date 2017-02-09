@@ -256,7 +256,7 @@ TestEquality[Sort[solution],
 Print["testing MSSM/CPV EWSB for mHu2, mHd2"];
 
 solution = EWSB`Private`TimeConstrainedSolve[
-    Parameters`FilterOutIndependentEqs[
+    EWSB`FilterOutIndependentEqs[
         {mHd2*vd + x - (E^(I*eta)*vu*B[Mu])/2 - (vu*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
          mHu2*vu - y - (E^(I*eta)*vd*B[Mu])/2 - (vd*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
          -I/2*E^(I*eta)*vd*B[Mu] + (I/2*vd*Susyno`LieGroups`conj[B[Mu]])/E^(I*eta) == 0},
@@ -332,7 +332,7 @@ nmssmcpvEWSBOutputParameters = { mHd2, mHu2, ms2, Im[T[\[Kappa]]], Im[T[\[Lambda
 
 Parameters`AddRealParameter[{mHd2, mHu2, ms2}];
 
-nmssmcpvEWSBEqs = Parameters`FilterOutLinearDependentEqs[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+nmssmcpvEWSBEqs = EWSB`FilterOutLinearDependentEqs[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 solution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 
 TestNonEquality[solution, {}];
