@@ -27,10 +27,6 @@ FSAuxiliaryParameterInfo = {
 
 EWSBOutputParameters = { \[Kappa], vS, m0Sq };
 
-EWSBInitialGuess = {
-   {m0Sq, LowEnergyConstant[MZ]^2}
-};
-
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[14 m12^2 - 3 m12 Azero + Azero^2];
@@ -79,6 +75,7 @@ InitialGuessAtLowScale = {
    {\[Lambda], LambdaInput},
    {\[Kappa], 0.1},
    {vS, 1000},
+   {m0Sq, LowEnergyConstant[MZ]^2},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
