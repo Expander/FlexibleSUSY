@@ -186,7 +186,7 @@ GenerateDiagramsWave[particle_] :=
            Return[diagrs];
           ];
 
-WaveResult[diagr_List, includeGoldstones_: False] :=
+WaveResult[diagr_List, includeGoldstones_] :=
     Module[{coupl, intparticles, intfermion, intscalar, result, intpartwithindex},
            coupl = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
            intparticles = {SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]];
@@ -199,11 +199,11 @@ WaveResult[diagr_List, includeGoldstones_: False] :=
            Return[result];
           ];
 
-DeltaVBwave[] :=
+DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinodiagrs, electrondiagrs, result},
            neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
            electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
-           result = 1/2 * (SARAH`sum[SARAH`gO1, 1, 2, Plus @@ WaveResult /@ neutrinodiagrs] + SARAH`sum[SARAH`gO1, 1, 2, Plus @@ WaveResult /@ electrondiagrs]);
+           result = 1/2 * (SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs] + SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]);
            Return[result];
           ];
 
