@@ -2631,11 +2631,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             allExtraParameterIndexReplacementRules = {},
             allParticles, allParameters,
             ewsbEquations, ewsbSubstitutions,
-            freePhases = {}, ewsbSolution = {},
+            freePhases = {}, ewsbSolution = {}, missingPhases,
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             fixedParameters,
             lesHouchesInputParameters,
-            extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+            extraSLHAOutputBlocks, effectiveCouplings = {}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
             semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale,
@@ -2982,20 +2982,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Note: There are no EWSB equations."];
              ];
            If[freePhases =!= {},
-              Print["Note: adding free phases: ", freePhases];
-              FindPhaseInInputParameters[inputPars_List, phase_] :=
-                  Module[{foundBlock},
-                         foundBlock = Cases[inputPars, {phase, block_, ___} :> block];
-                         If[foundBlock === {},
-                            Print["Error: ", phase, " is not defined as an input parameter!"];
-                            Print["   Please add ", phase, " to the MINPAR or EXTPAR input parameter list."];
-                            Quit[1];
-                           ];
-                         foundBlock[[1]]
-                        ];
-              inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#, FindPhaseInInputParameters[inputParameters,#], Parameters`GuessInputParameterType[#]}& /@ freePhases];
-              Parameters`AddInputParameters[inputParameters];
+              Print["Note: the following phases are free: ", freePhases];
+              missingPhases = Select[freePhases, !MemberQ[#[[1]]& /@ inputParameters, #]&];
+              If[missingPhases =!= {},
+                 Print["Error: the following phases are not defined as input parameters: ", InputForm[missingPhases]];
+                 Print["   Please add them to the MINPAR or EXTPAR input parameter lists."];
+                 Quit[1];
+                ];
              ];
 
            If[ewsbSolution === {},
