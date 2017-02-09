@@ -2581,6 +2581,35 @@ SelectRenormalizationScheme[renormalizationScheme_] :=
               Quit[1];
           ];
 
+RenameSLHAInputParametersInUserInput[lesHouchesInputParameters_] :=
+    Module[{lesHouchesInputParameterReplacementRules},
+           lesHouchesInputParameterReplacementRules = Flatten[{
+               Rule[SARAH`LHInput[#[[1]]], #[[2]]],
+               Rule[SARAH`LHInput[#[[1]][p__]], #[[2]][p]]
+           }& /@ lesHouchesInputParameters];
+
+           FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
+               lesHouchesInputParameterReplacementRules;
+
+           FlexibleSUSY`InitialGuessAtLowScale = FlexibleSUSY`InitialGuessAtLowScale /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`InitialGuessAtSUSYScale = FlexibleSUSY`InitialGuessAtSUSYScale /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /.
+               lesHouchesInputParameterReplacementRules;
+
+           FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`LowScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`SUSYScaleFirstGuess = FlexibleSUSY`SUSYScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
+          ];
+
 Options[MakeFlexibleSUSY] :=
     {
         InputFile -> "FlexibleSUSY.m",
@@ -2712,12 +2741,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* store all model parameters *)
            allParameters = StripSARAHIndices[((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions])];
-           allIndexReplacementRules = Join[
-               Parameters`CreateIndexReplacementRules[allParameters],
-               {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
-                Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
-                Global`downLeptonsDRbar[i_,j_] :> Global`downLeptonsDRbar[i-1,j-1]}
-           ];
            Parameters`SetModelParameters[allParameters];
            DebugPrint["model parameters: ", allParameters];
 
@@ -2817,7 +2840,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
              ];
 
-           (* collect additional parameter definitions and properties *)
+           (* apply parameter definitions and properties *)
            Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
            Parameters`CheckInputParameterDefinitions[];
 
@@ -2825,16 +2848,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            DebugPrint["input parameters: ", Parameters`GetInputParameters[]];
            DebugPrint["auxiliary parameters: ", Parameters`GetExtraParameters[]];
-
-           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
-            ];
-
-           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
-            ];
 
            (* backwards compatibility replacements in constraints *)
            backwardsCompatRules = {
@@ -2860,38 +2873,30 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
 
            (* replace all indices in the user-defined model file variables *)
+           allIndexReplacementRules = Join[
+               Parameters`CreateIndexReplacementRules[allParameters],
+               {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
+                Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
+                Global`downLeptonsDRbar[i_,j_] :> Global`downLeptonsDRbar[i-1,j-1]}
+           ];
+
+           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
+            ];
+
+           allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
+            ];
+
            EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
            ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
            ReplaceIndicesInUserInput[allExtraParameterIndexReplacementRules];
 
            (* replace LHInput[p] by pInput in the constraints *)
-
-           lesHouchesInputParameterReplacementRules = Flatten[{
-               Rule[SARAH`LHInput[#[[1]]], #[[2]]],
-               Rule[SARAH`LHInput[#[[1]][p__]], #[[2]][p]]
-           }& /@ lesHouchesInputParameters];
-
-           FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
-               lesHouchesInputParameterReplacementRules;
-
-           FlexibleSUSY`InitialGuessAtLowScale = FlexibleSUSY`InitialGuessAtLowScale /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`InitialGuessAtSUSYScale = FlexibleSUSY`InitialGuessAtSUSYScale /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /.
-               lesHouchesInputParameterReplacementRules;
-
-           FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`LowScaleFirstGuess /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`SUSYScaleFirstGuess = FlexibleSUSY`SUSYScaleFirstGuess /.
-               lesHouchesInputParameterReplacementRules;
-           FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
-               lesHouchesInputParameterReplacementRules;
+           RenameSLHAInputParametersInUserInput[lesHouchesInputParameters];
 
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
               SemiAnalytic`SetSemiAnalyticParameters[BetaFunction`GetName[#]& /@ susyBreakingBetaFunctions];
