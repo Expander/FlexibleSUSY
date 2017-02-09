@@ -2634,7 +2634,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             freePhases = {}, ewsbSolution = {},
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             fixedParameters,
-            lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
+            lesHouchesInputParameters,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
