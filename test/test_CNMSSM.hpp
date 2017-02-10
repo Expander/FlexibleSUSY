@@ -69,7 +69,7 @@ void setup_CNMSSM_const(flexiblesusy::CNMSSM_mass_eigenstates& m,
    const double g2 = Sqrt(4.0 * Pi * alpha2);
    const double g3 = Sqrt(4.0 * Pi * ALPHASMZ);
    const double lambda = input.LambdaInput;
-   const double kappa = 0.01;
+   const double kappa = 0.0297;
    const double tanBeta = input.TanBeta;
    const double sinBeta = Sin(ArcTan(tanBeta));
    const double cosBeta = Cos(ArcTan(tanBeta));
@@ -80,7 +80,7 @@ void setup_CNMSSM_const(flexiblesusy::CNMSSM_mass_eigenstates& m,
    const double vev = 246.0;
    const double vu = vev * sinBeta;
    const double vd = vev * cosBeta;
-   const double vS = 1000.;
+   const double vS = 7000.;
    const double scale = Electroweak_constants::MZ;
 
    Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero());
