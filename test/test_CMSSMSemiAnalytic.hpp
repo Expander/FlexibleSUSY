@@ -16,7 +16,7 @@ struct Boundary_values {
 };
 
 void setup_high_scale_CMSSMSemiAnalytic_const(
-   flexiblesusy:: CMSSMSemiAnalytic_mass_eigenstates& model,
+   flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& model,
    const Boundary_values& values)
 {
    model.set_TYu(model.get_Yu() * values.Azero);
@@ -71,8 +71,8 @@ void setup_CMSSMSemiAnalytic_const(flexiblesusy::CMSSMSemiAnalytic_mass_eigensta
    const double g2 = Sqrt(4.0 * Pi * alpha2);
    const double g3 = Sqrt(4.0 * Pi * ALPHASMZ);
    const double tanBeta = input.TanBeta;
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
+   const double sinBeta = Sin(ArcTan(tanBeta));
+   const double cosBeta = Cos(ArcTan(tanBeta));
    const double M12 = input.m12;
    const double m0 = input.m12;
    const double a0 = input.Azero;
