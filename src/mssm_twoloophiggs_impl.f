@@ -41,6 +41,8 @@ c
      $     ,FAp
       double precision, parameter :: eps_st = 1d-5
       double precision, parameter :: eps_t1 = 1d-5
+      double precision, parameter :: eps_sb = 1d-5
+      double precision, parameter :: eps_b1 = 1d-5
       
       pi = 3.14159265897d0
       
@@ -64,6 +66,27 @@ c     ADDED by ALEX: guards against NANs when T1 == T2
             T1 = T2 / (1d0 - eps_t1)
          else
             T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(sb).lt.eps_sb) then
+         if (sb.ge.0.0d0) then
+            sb = eps_sb
+         else
+            sb = -eps_sb
+         endif
+      endif
+      cb = sqrt(1.d0-sb*sb)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == B2
+      if (dabs((B1-B2)/B1).lt.eps_b1) then
+         if (B1.gt.B2) then
+            B1 = B2 / (1d0 - eps_b1)
+         else
+            B1 = B2 / (1d0 + eps_b1)
          endif
       endif
 c     end of addition by ALEX
@@ -129,6 +152,8 @@ c     end of addition by ALEX
      $     ,FAp
       double precision, parameter :: eps_st = 1d-5
       double precision, parameter :: eps_t1 = 1d-5
+      double precision, parameter :: eps_sb = 1d-5
+      double precision, parameter :: eps_b1 = 1d-5
       
       pi = 3.14159265897d0
       
@@ -152,6 +177,27 @@ c     ADDED by ALEX: guards against NANs when T1 == T2
             T1 = T2 / (1d0 - eps_t1)
          else
             T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(sb).lt.eps_sb) then
+         if (sb.ge.0.0d0) then
+            sb = eps_sb
+         else
+            sb = -eps_sb
+         endif
+      endif
+      cb = sqrt(1.d0-sb*sb)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == B2
+      if (dabs((B1-B2)/B1).lt.eps_b1) then
+         if (B1.gt.B2) then
+            B1 = B2 / (1d0 - eps_b1)
+         else
+            B1 = B2 / (1d0 + eps_b1)
          endif
       endif
 c     end of addition by ALEX
@@ -202,6 +248,8 @@ c     end of addition by ALEX
       double precision v1,v2,S1,S2
       double precision, parameter :: eps_st = 1d-10
       double precision, parameter :: eps_t1 = 1d-8
+      double precision, parameter :: eps_sb = 1d-10
+      double precision, parameter :: eps_b1 = 1d-8
       
       pi = 3.14159265897d0
       
@@ -225,6 +273,27 @@ c     ADDED by ALEX: guards against NANs when T1 == T2
             T1 = T2 / (1d0 - eps_t1)
          else
             T1 = T2 / (1d0 + eps_t1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when sin theta is zero!
+      if (dabs(sb).lt.eps_sb) then
+         if (sb.ge.0.0d0) then
+            sb = eps_sb
+         else
+            sb = -eps_sb
+         endif
+      endif
+      cb = sqrt(1.d0-sb*sb)
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == B2
+      if (dabs((B1-B2)/B1).lt.eps_b1) then
+         if (B1.gt.B2) then
+            B1 = B2 / (1d0 - eps_b1)
+         else
+            B1 = B2 / (1d0 + eps_b1)
          endif
       endif
 c     end of addition by ALEX
@@ -308,7 +377,7 @@ c     end of addition by ALEX
       DB1c2b = DT1c2t
       DB2c2b = DT2c2t
       Dtc2b = Dbc2t
-      
+
       call makederiv(t,b,A0,T1,T2,B1,B2,s2t,c2t,s2b,c2b,q,mu,vv,tanb)
       
       F1t = Dtt + DT1T1 + DT2T2 + 2d0*(DT1t + DT2t + DT1T2)
