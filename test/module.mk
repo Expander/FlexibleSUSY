@@ -161,6 +161,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMSemiAnalytic_consistent_solutions.cpp \
 		$(DIR)/test_CMSSMSemiAnalytic_ewsb_solution.cpp
 endif
+
+ifeq ($(WITH_NMSSM) $(WITH_CNMSSM), yes yes)
+TEST_SH += \
+		$(DIR)/test_CNMSSM_spectrum.sh
+endif
 endif
 
 endif # ifneq ($(findstring semi_analytic,$(SOLVERS)),)
