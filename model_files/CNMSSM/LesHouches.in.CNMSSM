@@ -50,6 +50,7 @@ Block SMINPUTS               # Standard Model inputs
 Block MINPAR                 # Input parameters
     2   133.33               # m12
     3   10                   # TanBeta
+    4   1                    # SignvS
     5  -300                  # Azero
 Block EXTPAR                 # Input parameters
    61   -0.05                # LambdaInput
