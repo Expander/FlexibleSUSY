@@ -48,6 +48,8 @@
 #define PHYSICALPARAMETER(p) model.get_physical().p
 #define OBSERVABLE(o) observables.o
 
+namespace @ModelName@_librarylink {
+
 using namespace flexiblesusy;
 
 typedef Two_scale algorithm_type;
@@ -84,7 +86,6 @@ private:
    }
 };
 
-namespace flexiblesusy {
 class EUnknownHandle : public Error {
 public:
    explicit EUnknownHandle(Handle_id hid_) : hid(hid_) {}
@@ -125,8 +126,6 @@ public:
    virtual ~EInvalidSpectrum() {}
    virtual std::string what() const { return "Invalid spectrum"; }
 };
-
-} // namespace flexiblesusy
 
 struct @ModelName@_data {
    @ModelName@_data()
@@ -500,6 +499,8 @@ void calculate_spectrum(@ModelName@_data& data, MLINK link)
    return data;
 }
 
+} // namespace @ModelName@_librarylink
+
 extern "C" {
 
 /******************************************************************/
@@ -520,6 +521,8 @@ DLLEXPORT int WolframLibrary_initialize(WolframLibraryData /* libData */)
 
 DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK link)
 {
+   using namespace @ModelName@_librarylink;
+
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSettings"))
       return LIBRARY_TYPE_ERROR;
 
@@ -540,6 +543,8 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
 
 DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
+   using namespace @ModelName@_librarylink;
+
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSMInputParameters"))
       return LIBRARY_TYPE_ERROR;
 
@@ -560,6 +565,8 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
 
 DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
+   using namespace @ModelName@_librarylink;
+
    if (!check_number_of_args(link, 1, "FS@ModelName@GetInputParameters"))
       return LIBRARY_TYPE_ERROR;
 
@@ -581,6 +588,8 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
 DLLEXPORT int FS@ModelName@OpenHandle(
    WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
 {
+   using namespace @ModelName@_librarylink;
+
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
 
@@ -613,6 +622,8 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 DLLEXPORT int FS@ModelName@CloseHandle(
    WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument /* Res */)
 {
+   using namespace @ModelName@_librarylink;
+
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
 
@@ -631,6 +642,8 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 DLLEXPORT int FS@ModelName@Set(
    WolframLibraryData libData, mint Argc, MArgument* Args, MArgument /* Res */)
 {
+   using namespace @ModelName@_librarylink;
+
    if (Argc != 2)
       return LIBRARY_TYPE_ERROR;
 
@@ -666,6 +679,8 @@ DLLEXPORT int FS@ModelName@Set(
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
    WolframLibraryData /* libData */, MLINK link)
 {
+   using namespace @ModelName@_librarylink;
+
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateSpectrum"))
       return LIBRARY_TYPE_ERROR;
 
@@ -695,6 +710,8 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 DLLEXPORT int FS@ModelName@CalculateObservables(
    WolframLibraryData /* libData */, MLINK link)
 {
+   using namespace @ModelName@_librarylink;
+
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateObservables"))
       return LIBRARY_TYPE_ERROR;
 
