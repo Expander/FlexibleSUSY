@@ -89,6 +89,7 @@ void setup_CNMSSM_const(flexiblesusy::CNMSSM_mass_eigenstates& m,
 
    Eigen::Matrix<double,3,3> mm0(Sqr(m0) * Eigen::Matrix<double,3,3>::Identity());
 
+   m.set_input_parameters(input);
    m.set_scale(scale);
    m.set_loops(1);
    m.set_g1(g1);
@@ -126,7 +127,7 @@ void setup_CNMSSM(flexiblesusy::CNMSSM_mass_eigenstates& m,
    input.m12 = 133.33;
    input.TanBeta = 10.;
    input.Azero = -300.;
-   input.LambdaInput = 0.05;
+   input.LambdaInput = -0.05;
    input.SignvS = 1;
 
    setup_CNMSSM_const(m, input);
