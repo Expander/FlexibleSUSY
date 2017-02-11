@@ -90,6 +90,46 @@ c     ADDED by ALEX: guards against NANs when B1 == B2
          endif
       endif
 c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == T1
+      if (dabs((B1-T1)/B1).lt.eps_b1) then
+         if (B1.gt.T1) then
+            B1 = T1 / (1d0 - eps_b1)
+         else
+            B1 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == T2
+      if (dabs((B1-T2)/B1).lt.eps_b1) then
+         if (B1.gt.T2) then
+            B1 = T2 / (1d0 - eps_b1)
+         else
+            B1 = T2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T1
+      if (dabs((B2-T1)/B2).lt.eps_b1) then
+         if (B2.gt.T1) then
+            B2 = T1 / (1d0 - eps_b1)
+         else
+            B2 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T2
+      if (dabs((B2-T2)/B2).lt.eps_b1) then
+         if (B2.gt.T2) then
+            B2 = T2 / (1d0 - eps_b1)
+         else
+            B2 = T2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
       
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
@@ -202,6 +242,46 @@ c     ADDED by ALEX: guards against NANs when B1 == B2
       endif
 c     end of addition by ALEX
 
+c     ADDED by ALEX: guards against NANs when B1 == T1
+      if (dabs((B1-T1)/B1).lt.eps_b1) then
+         if (B1.gt.T1) then
+            B1 = T1 / (1d0 - eps_b1)
+         else
+            B1 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == T2
+      if (dabs((B1-T2)/B1).lt.eps_b1) then
+         if (B1.gt.T2) then
+            B1 = T2 / (1d0 - eps_b1)
+         else
+            B1 = T2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T1
+      if (dabs((B2-T1)/B2).lt.eps_b1) then
+         if (B2.gt.T1) then
+            B2 = T1 / (1d0 - eps_b1)
+         else
+            B2 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T2
+      if (dabs((B2-T2)/B2).lt.eps_b1) then
+         if (B2.gt.T2) then
+            B2 = T2 / (1d0 - eps_b1)
+         else
+            B2 = T2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
       s2t = 2d0*ct*st
       s2b = 2d0*cb*sb
       c2t = ct**2 - st**2
@@ -294,6 +374,46 @@ c     ADDED by ALEX: guards against NANs when B1 == B2
             B1 = B2 / (1d0 - eps_b1)
          else
             B1 = B2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == T1
+      if (dabs((B1-T1)/B1).lt.eps_b1) then
+         if (B1.gt.T1) then
+            B1 = T1 / (1d0 - eps_b1)
+         else
+            B1 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B1 == T2
+      if (dabs((B1-T2)/B1).lt.eps_b1) then
+         if (B1.gt.T2) then
+            B1 = T2 / (1d0 - eps_b1)
+         else
+            B1 = T2 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T1
+      if (dabs((B2-T1)/B2).lt.eps_b1) then
+         if (B2.gt.T1) then
+            B2 = T1 / (1d0 - eps_b1)
+         else
+            B2 = T1 / (1d0 + eps_b1)
+         endif
+      endif
+c     end of addition by ALEX
+
+c     ADDED by ALEX: guards against NANs when B2 == T2
+      if (dabs((B2-T2)/B2).lt.eps_b1) then
+         if (B2.gt.T2) then
+            B2 = T2 / (1d0 - eps_b1)
+         else
+            B2 = T2 / (1d0 + eps_b1)
          endif
       endif
 c     end of addition by ALEX
