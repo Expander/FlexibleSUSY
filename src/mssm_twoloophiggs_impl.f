@@ -41,7 +41,7 @@ c
      $     ,FAp
       double precision, parameter :: eps_st = 1d-5
       double precision, parameter :: eps_t1 = 1d-5
-      double precision, parameter :: eps_sb = 1d-5
+      double precision, parameter :: eps_sb = 1d-8
       double precision, parameter :: eps_b1 = 1d-5
       
       pi = 3.14159265897d0
@@ -192,7 +192,7 @@ c     end of addition by ALEX
      $     ,FAp
       double precision, parameter :: eps_st = 1d-5
       double precision, parameter :: eps_t1 = 1d-5
-      double precision, parameter :: eps_sb = 1d-5
+      double precision, parameter :: eps_sb = 1d-8
       double precision, parameter :: eps_b1 = 1d-5
       
       pi = 3.14159265897d0
