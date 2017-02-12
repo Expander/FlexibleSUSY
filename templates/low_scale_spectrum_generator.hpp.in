@@ -86,18 +86,8 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    model.set_thresholds(this->settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
    model.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
 
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint;
-
-   susy_scale_constraint.clear();
-   low_scale_constraint .clear();
-
-   // needed for constraint::initialize()
-   susy_scale_constraint.set_model(&model);
-   low_scale_constraint .set_model(&model);
-
-   susy_scale_constraint.set_sm_parameters(qedqcd);
-   low_scale_constraint .set_sm_parameters(qedqcd);
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint(&model, qedqcd);
+   @ModelName@_low_scale_constraint<T>  low_scale_constraint(&model, qedqcd);
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
