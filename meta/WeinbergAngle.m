@@ -203,7 +203,8 @@ DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinodiagrs, electrondiagrs, result},
            neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
            electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
-           result = 1/2 * (SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs] + SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]);
+           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`wave, SARAH`Neutrino}, 1/2 * SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs]],
+                     WeinbergAngle`DeltaVB[{WeinbergAngle`wave, SARAH`Electron}, 1/2 * SARAH`sum[SARAH`gO1, 1, 2, Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]]};
            Return[result];
           ];
 

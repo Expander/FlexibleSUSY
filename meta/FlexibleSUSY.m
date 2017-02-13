@@ -2521,7 +2521,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, {deltaVBwave}], Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, deltaVBwave], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
