@@ -38,6 +38,7 @@
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
+#define PHASE(p) context.model.get_##p()
 #define DERIVEDPARAMETER(p) context.model.p()
 
 using namespace flexiblesusy;
