@@ -71,18 +71,8 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    @ModelName@_ewsb_solver<Two_scale> ewsb_solver;
    model.set_ewsb_solver(&ewsb_solver);
 
-   @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint;
-   @ModelName@_low_scale_constraint<Two_scale>  low_scale_constraint;
-
-   susy_scale_constraint.clear();
-   low_scale_constraint .clear();
-
-   // needed for constraint::initialize()
-   susy_scale_constraint.set_model(&model);
-   low_scale_constraint .set_model(&model);
-
-   susy_scale_constraint.set_sm_parameters(qedqcd);
-   low_scale_constraint .set_sm_parameters(qedqcd);
+   @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);
+   @ModelName@_low_scale_constraint<Two_scale>  low_scale_constraint(&model, qedqcd);
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
