@@ -210,7 +210,7 @@ int CLASSNAME::solve(@ModelName@_mass_eigenstates& model_to_solve)
 
 int CLASSNAME::solve_tree_level(@ModelName@_mass_eigenstates& model)
 {
-   int error = 0;
+   int error = EWSB_solver::SUCCESS;
 
 @solveEwsbTreeLevel@
 @setTreeLevelSolution@

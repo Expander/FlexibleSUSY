@@ -772,7 +772,7 @@ CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   body = body <> Parameters`SetParameter[par, oldParStr, None];
                  ];
-              body = body <> "error = 1;\n";
+              body = body <> "error = EWSB_solver::FAIL;\n";
               If[substitutions === {},
                  result = result <>
                           "if (!is_finite) {\n" <>
@@ -848,14 +848,14 @@ SetTreeLevelSolution[ewsbSolution_, substitutions_List:{}, struct_String:"model.
                           "if (is_finite) {\n" <>
                           IndentText[body] <>
                           "} else {\n" <>
-                          IndentText["error = 1;\n"] <>
+                          IndentText["error = EWSB_solver::FAIL;\n"] <>
                           "}";,
                  result = result <>
                           "if (is_finite) {\n" <>
                           IndentText[body] <>
                           IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
                           "} else {\n" <>
-                          IndentText["error = 1;\n"] <>
+                          IndentText["error = EWSB_solver::FAIL;\n"] <>
                           "}";
                 ];
              ];

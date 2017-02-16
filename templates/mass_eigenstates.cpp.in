@@ -261,7 +261,7 @@ Eigen::Matrix<double,CLASSNAME::number_of_ewsb_equations,1> CLASSNAME::tadpole_e
 
 int CLASSNAME::solve_ewsb_tree_level_custom()
 {
-   int error = 0;
+   int error = EWSB_solver::SUCCESS;
 
 @solveTreeLevelEWSBviaSoftHiggsMasses@
 
