@@ -86,26 +86,26 @@ HighScaleInput = {
     {g2u    , g2          },
     {g2up   , GUTNormalization[g1] g1 (* gY *)},
     {Lambda1, 1/2 (deltaLambda0L[[1]]
-                   + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[1]]
-                   + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda1th2L)},
+                   + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[1]]
+                   + UnitStep[LambdaLoopOrder-2] deltaLambda1th2L)},
     {Lambda2, 1/2 (deltaLambda0L[[2]]
-                   + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[2]]
-                   + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda2th2L)},
+                   + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[2]]
+                   + UnitStep[LambdaLoopOrder-2] deltaLambda2th2L)},
     {Lambda3, deltaLambda0L[[3]]
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[3]]
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda3th2L},
+              + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[3]]
+              + UnitStep[LambdaLoopOrder-2] deltaLambda3th2L},
     {Lambda4, deltaLambda0L[[4]]
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[4]]
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
+              + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[4]]
+              + UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
     {Lambda5, deltaLambda0L[[5]]
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[5]]
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
+              + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[5]]
+              + UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
     {Lambda6, deltaLambda0L[[6]]
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[6]]
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda6th2L},
+              + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[6]]
+              + UnitStep[LambdaLoopOrder-2] deltaLambda6th2L},
     {Lambda7, deltaLambda0L[[7]]
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] deltaLambda1L[[7]]
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda7th2L}
+              + UnitStep[LambdaLoopOrder-1] deltaLambda1L[[7]]
+              + UnitStep[LambdaLoopOrder-2] deltaLambda7th2L}
 };
 
 (* The scale where we impose the EWSB conditions

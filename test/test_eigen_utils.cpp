@@ -88,9 +88,7 @@ BOOST_AUTO_TEST_CASE(test_remove_if_equal)
    Eigen::Array<double,2,1> cmp; // to be removed from src
    cmp << 2, 4;
 
-   Eigen::Array<double,3,1> dst;
-
-   remove_if_equal(src, cmp, dst);
+   const Eigen::Array<double,3,1> dst = remove_if_equal(src, cmp);
 
    BOOST_CHECK_EQUAL(dst(0), 1);
    BOOST_CHECK_EQUAL(dst(1), 3);
@@ -105,9 +103,7 @@ BOOST_AUTO_TEST_CASE(test_remove_if_equal_double_indices)
    Eigen::Array<double,2,1> cmp; // to be removed from src
    cmp << 2, 2.1;
 
-   Eigen::Array<double,3,1> dst;
-
-   remove_if_equal(src, cmp, dst);
+   const Eigen::Array<double,3,1> dst = remove_if_equal(src, cmp);
 
    BOOST_CHECK_EQUAL(dst(0), 1);
    BOOST_CHECK_EQUAL(dst(1), 4);

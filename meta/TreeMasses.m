@@ -201,6 +201,8 @@ CallSVDFunction::usage="";
 CallDiagonalizeSymmetricFunction::usage="";
 CallDiagonalizeHermitianFunction::usage="";
 
+FlagTachyon::usage = "";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -1286,7 +1288,7 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
            If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
            " < 0.) " <>
-           "problems.flag_tachyon(" <> particleName <> ");\n"
+           FlagTachyon[particleName]
           ];
 
 CheckPoleMassesForTachyons[macro_String] :=
@@ -1358,24 +1360,19 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            typeGoldstone = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimGoldstone]];
            prototype = typeHiggs <> " get_M" <> name <> "() const;\n";
            body =
-               typeHiggs     <> " " <> particleHiggsStr <> ";\n" <>
                typeGoldstone <> " " <> particleGoldstoneStr <> ";\n" <>
-               "\n" <>
                FillGoldstoneMassVector[particleGoldstoneStr, vectorList] <>
                "\n" <>
-               "remove_if_equal(" <> particleStr <> ", " <>
-                                particleGoldstoneStr <> ", " <>
-                                particleHiggsStr <> ");\n" <>
-               "\n" <>
-               "return " <> particleHiggsStr <> ";\n";
+               "return remove_if_equal(" <> particleStr <> ", " <>
+                                       particleGoldstoneStr <> ");\n";
            def = typeHiggs <> " CLASSNAME::get_M" <> name <> "() const\n{\n" <>
                IndentText[body] <>
                "}\n";
            {prototype, def}
           ];
 
-FlagTachyon[particle_String] :=
-    "problems.flag_tachyon(" <>
+FlagTachyon[particle_String, problems_String:"problems."] :=
+    problems <> "flag_tachyon(" <>
     FlexibleSUSY`FSModelName <> "_info::" <> particle <>
     ");\n";
 

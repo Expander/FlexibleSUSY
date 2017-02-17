@@ -246,6 +246,10 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
+indexCount = 0;
+MakeUniqueIdx[] :=
+    Symbol["id" <> ToString[indexCount++]];
+
 (* creates a C++ function that calculates a coupling
  *
  * Return: {prototypes_String, definitions_String, rules_List}
@@ -329,7 +333,7 @@ CreateVertexExpressions[vertexRules_List] :=
             p, d, r},
            rules = Table[0, {Length[vertexRules]}];
            For[k = 1, k <= Length[vertexRules], k++,
-               coupling = Vertices`ToCp[vertexRules[[k,1]]];
+               coupling = Vertices`ToCp[vertexRules[[k,1]]] /. {_Integer} :> {MakeUniqueIdx[]};
                expr = vertexRules[[k,2]];
                WriteString["stdout", "."];
                If[Mod[k, 50] == 0, WriteString["stdout","\n"]];

@@ -19,7 +19,11 @@ FS@ModelName@CalculateObservables::error = "`1`";
 FS@ModelName@CalculateObservables::warning = "`1`";
 
 FS@ModelName@::info = "`1`";
+FS@ModelName@::nonum = "Error: `1` is not a numeric input value!";
 FS@ModelName@Message[s_] := Message[FS@ModelName@::info, s];
+
+FS@ModelName@CheckIsNumeric[a_?NumericQ] := a;
+FS@ModelName@CheckIsNumeric[a_] := (Message[FS@ModelName@::nonum, a]; Abort[]);
 
 fsDefaultSettings = {
       precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
@@ -94,7 +98,7 @@ FS@ModelName@OpenHandle[a___, (fsSettings | fsSMParameters | fsModelParameters) 
 
 FS@ModelName@OpenHandle[OptionsPattern[]] :=
     FS@ModelName@OpenHandleLib[
-        {
+        FS@ModelName@CheckIsNumeric /@ {
             (* spectrum generator settings *)
             OptionValue[precisionGoal],
             OptionValue[maxIterations],
@@ -223,7 +227,7 @@ FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
 
             (* @ModelName@ input parameters *)
 @setInputParameterArguments@
-        }] /. HoldPattern[OptionValue[param_]] :> param /.
+        }] /. HoldPattern[OptionValue[param_]] :> FS@ModelName@CheckIsNumeric[param] /.
         { p } /.
         FS@ModelName@GetSettings[handle] /.
         FS@ModelName@GetSMInputParameters[handle] /.
