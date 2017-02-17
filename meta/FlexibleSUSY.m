@@ -1563,7 +1563,7 @@ InitialiseEnabledModelType[solver_] :=
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
-           body = "data.reset(new " <> FlexibleSUSY`FSModelName <> "_model_data<" <> class <> ">());\nbreak;\n";
+           body = "data.reset(new Model_data_impl<" <> class <> ">());\nbreak;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
