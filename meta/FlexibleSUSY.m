@@ -2670,7 +2670,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
 
-           DebugPrint["particles (mass eigenstates): ", GetParticles[]];
+           DebugPrint["particles (mass eigenstates): ", TreeMasses`GetParticles[]];
 
            FlexibleSUSY`FSRenormalizationScheme = GetRenormalizationScheme[];
 
