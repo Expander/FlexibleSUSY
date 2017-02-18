@@ -509,34 +509,6 @@ CreateNPointFunctionMatrix[nPointFunction_] :=
            { prototype, def }
           ];
 
-PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
-    "heavy " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
-
-PrintNPointFunctionName[SelfEnergies`FSHeavyRotatedSelfEnergy[field_,expr__]] :=
-    "heavy, rotated " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_][projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_,__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_[idx_],__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}_{" <> RValueToCFormString[idx] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}";
-
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
     Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d,
             relevantVertexRules},
@@ -549,7 +521,6 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            Print["Converting self energies ..."];
            Utils`StartProgressBar[Dynamic[k], Length[nPointFunctions]];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               (* Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]]; *)
                Utils`UpdateProgressBar[k, Length[nPointFunctions]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
