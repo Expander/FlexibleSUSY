@@ -50,6 +50,10 @@ CreateFormattedSLHABlocks::usage = "";
 
 Begin["`Private`"];
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<WriteOut>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 (*
  * @brief Replaces tokens in files.
  *
@@ -72,7 +76,7 @@ ReplaceInFiles[files_List, replacementList_List] :=
               cppTemplateFileName = files[[f,2]];
               cppFile             = Import[cppFileName, "String"];
               modifiedCppFile     = StringReplace[cppFile, replacementList];
-              Print["   Writing file ", cppTemplateFileName];
+              DebugPrint["writing file ", cppTemplateFileName];
               Export[cppTemplateFileName, modifiedCppFile, "String"];
              ];
           ];
