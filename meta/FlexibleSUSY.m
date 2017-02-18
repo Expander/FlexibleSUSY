@@ -272,9 +272,9 @@ HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
 PrintHeadline[text_] :=
     Block[{},
           Print[""];
-          Print["---------------------------------"];
-          Print[text];
-          Print["---------------------------------"];
+          Print[Style["---------------------------------", Bold]];
+          Print[Style[text, Blue]];
+          Print[Style["---------------------------------", Bold]];
          ];
 
 DecomposeVersionString[version_String] :=
