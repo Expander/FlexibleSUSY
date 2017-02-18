@@ -1,5 +1,5 @@
 
-BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`"}];
+BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`", "Utils`"}];
 
 FSSelfEnergy::usage="self-energy head";
 Tadpole::usage="tadpole head";
@@ -341,19 +341,18 @@ CreateVertexExpressions[vertexRules_List] :=
            MakeIndex[i_Integer] := MakeUniqueIdx[];
            MakeIndex[i_] := i;
            rules = Table[0, {Length[vertexRules]}];
+           Utils`StartProgressBar[Dynamic[k], Length[vertexRules]];
            For[k = 1, k <= Length[vertexRules], k++,
                coupling = Vertices`ToCp[vertexRules[[k,1]]] /. p_[{idx__}] :> p[MakeIndex /@ {idx}];
                expr = vertexRules[[k,2]];
-               WriteString["stdout", "."];
-               If[Mod[k, 50] == 0, WriteString["stdout","\n"]];
+               Utils`UpdateProgressBar[k, Length[vertexRules]];
                {p,d,r} = CreateCouplingFunction[coupling, expr];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
               ];
-           WriteString["stdout","\n"];
-           Print["All vertices finished."];
-           Return[{prototypes, defs, Flatten[rules]}];
+           Utils`StopProgressBar[Length[vertexRules]];
+           {prototypes, defs, Flatten[rules]}
           ];
 
 ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
@@ -547,9 +546,11 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[nPointFunctions,a]) :> r];
            {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[relevantVertexRules];
            (* creating n-point functions *)
-           Print["Generating C++ code for ..."];
+           Print["Converting self energies ..."];
+           Utils`StartProgressBar[Dynamic[k], Length[nPointFunctions]];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
+               (* Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]]; *)
+               Utils`UpdateProgressBar[k, Length[nPointFunctions]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
                defs = defs <> d;
@@ -557,7 +558,8 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
                prototypes = prototypes <> p;
                defs = defs <> d;
               ];
-           Return[{prototypes, defs}];
+           Utils`StopProgressBar[Length[nPointFunctions]];
+           {prototypes, defs}
           ];
 
 FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
