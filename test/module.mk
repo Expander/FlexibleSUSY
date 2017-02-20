@@ -346,6 +346,11 @@ TEST_META += \
 		$(DIR)/test_THDM_threshold_corrections_scale_invariance.m
 endif
 
+ifeq ($(WITH_THDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBC),yes yes)
+TEST_META += \
+		$(DIR)/test_HGTHDM_THDM_threshold_corrections_scale_invariance.m
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
