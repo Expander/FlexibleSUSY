@@ -94,7 +94,9 @@ InitialGuessAtLowScale = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {\[Mu], MuInput}
+   {\[Mu], MuInput},
+   {m0Sq, m12^2},
+   {BMu0, m12^2}
 };
 
 InitialGuessAtHighScale = {};
