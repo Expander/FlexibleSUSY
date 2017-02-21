@@ -10,6 +10,7 @@ DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
 InitGenerationOfDiagrams::usage="";
 DeltaVBwave::usage="";
+CreateDeltaVBContributions::usage="";
 
 Begin["`Private`"];
 
@@ -206,6 +207,55 @@ DeltaVBwave[includeGoldstones_:False] :=
            result = {WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {SARAH`gO1}, SARAH`Neutrino}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
                      WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {SARAH`gO1}, SARAH`Electron}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
            Return[result];
+          ];
+
+AddIndices[{}] := "";
+
+AddIndices[{ind_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind];
+
+AddIndices[{ind1_, ind2_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind1] <> ", unsigned " <> CConversion`ToValidCSymbolString[ind2];
+
+CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" <> CConversion`ToValidCSymbolString[type];
+
+CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec_}, _]] := "delta_vb_" <> CConversion`ToValidCSymbolString[type] <> "_" <> CConversion`ToValidCSymbolString[spec];
+
+CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] := CreateContributionName[deltaVBcontri] <> "(" <> AddIndices[deltaVBcontri[[1, 2]]] <> ") const";
+
+(*based on CreateNPointFunction from SelfEnergies.m*)
+CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List] :=
+    Module[{expr, functionName, type, prototype, decl, body},
+           expr = deltaVBcontri[[2]];
+           functionName = CreateContributionPrototype[deltaVBcontri];
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           prototype = type <> " " <> functionName <> ";\n";
+           decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
+           body = type <> " result;\n\n" <>
+                  CConversion`ExpandSums[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
+                                         vertexRules /.
+                                         a_[List[i__]] :> a[i], "result"] <>
+                  "\nreturn result * oneOver16PiSqr;";
+           body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
+           decl = decl <> body <> "\n}\n";
+           Return[{prototype, decl}];
+          ];
+
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {idx_}, part_}, _]] :=
+    "deltaVB wave-function contribution for field " <> CConversion`ToValidCSymbolString[part] <> "[" <> CConversion`ToValidCSymbolString[idx] <> "]";
+
+(*based on CreateNPointFunctions from SelfEnergies.m*)
+CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
+    Module[{relevantVertexRules, prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
+           Print["Converting vertex functions ..."];
+           relevantVertexRules = Cases[vertexRules, r:(Rule[a_, b_] /; !FreeQ[deltaVBcontris, a])];
+           {prototypes, defs, vertexFunctionNames} = SelfEnergies`CreateVertexExpressions[relevantVertexRules];
+           Print["Generating C++ code for ..."];
+           For[k = 1, k <= Length[deltaVBcontris], k++,
+               Print["   ", PrintDeltaVBContributionName[deltaVBcontris[[k]]]];
+               {p, d} = CreateDeltaVBContribution[deltaVBcontris[[k]], vertexFunctionNames];
+               prototypes = prototypes <> p;
+               defs = defs <> d;
+              ];
+           Return[{prototypes, defs}];
           ];
 
 End[];
