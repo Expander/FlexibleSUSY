@@ -204,8 +204,8 @@ DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinodiagrs, electrondiagrs, result},
            neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
            electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
-           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {SARAH`gO1}, SARAH`Neutrino}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
-                     WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {SARAH`gO1}, SARAH`Electron}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
+           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Neutrino}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
+                     WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Electron}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
            Return[result];
           ];
 
@@ -215,9 +215,9 @@ AddIndices[{ind_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind];
 
 AddIndices[{ind1_, ind2_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind1] <> ", unsigned " <> CConversion`ToValidCSymbolString[ind2];
 
-CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" <> CConversion`ToValidCSymbolString[type];
+CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest];
 
-CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec_}, _]] := "delta_vb_" <> CConversion`ToValidCSymbolString[type] <> "_" <> CConversion`ToValidCSymbolString[spec];
+CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec_}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest] <> "_" <> CConversion`ToValidCSymbolString[spec];
 
 CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] := CreateContributionName[deltaVBcontri] <> "(" <> AddIndices[deltaVBcontri[[1, 2]]] <> ") const";
 
@@ -239,7 +239,7 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
            Return[{prototype, decl}];
           ];
 
-PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`wave, {idx_}, part_}, _]] :=
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {idx_}, part_}, _]] :=
     "deltaVB wave-function contribution for field " <> CConversion`ToValidCSymbolString[part] <> "[" <> CConversion`ToValidCSymbolString[idx] <> "]";
 
 (*based on CreateNPointFunctions from SelfEnergies.m*)
