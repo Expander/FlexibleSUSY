@@ -1,4 +1,30 @@
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`", "EffectiveCouplings`", "FlexibleEFTHiggsMatching`", "FSMathLink`", "WeinbergAngle`"}];
+BeginPackage["FlexibleSUSY`",
+             {"SARAH`",
+              "AnomalousDimension`",
+              "BetaFunction`",
+              "Parameters`",
+              "TextFormatting`",
+              "CConversion`",
+              "TreeMasses`",
+              "EWSB`",
+              "Traces`",
+              "SelfEnergies`",
+              "Vertices`",
+              "Phases`",
+              "LatticeUtils`",
+              "LoopMasses`",
+              "WriteOut`",
+              "Constraint`",
+              "ThresholdCorrections`",
+              "ConvergenceTester`",
+              "Utils`",
+              "ThreeLoopSM`",
+              "ThreeLoopMSSM`",
+              "Observables`",
+              "EffectiveCouplings`",
+              "FlexibleEFTHiggsMatching`",
+              "FSMathLink`",
+              "WeinbergAngle`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
