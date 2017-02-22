@@ -339,14 +339,19 @@ TEST_SH += \
 endif
 
 
-ifeq ($(shell $(FSCONFIG) --with-HGTHDMIIMSSMBC --with-MSSM),yes yes)
+ifeq ($(WITH_HGTHDMIIMSSMBC) $(WITH_MSSM),yes yes)
 TEST_META += \
 		$(DIR)/test_HGTHDM_threshold_corrections_scale_invariance.m
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-THDMIIMSSMBC --with-MSSM),yes yes)
+ifeq ($(WITH_THDMIIMSSMBC) $(WITH_MSSM),yes yes)
 TEST_META += \
 		$(DIR)/test_THDM_threshold_corrections_scale_invariance.m
+endif
+
+ifeq ($(WITH_THDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBC),yes yes)
+TEST_META += \
+		$(DIR)/test_HGTHDM_THDM_threshold_corrections_scale_invariance.m
 endif
 
 TEST_META := \

@@ -330,10 +330,12 @@ ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
 
 CreateVertexExpressions[vertexRules_List] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
-            p, d, r},
+            p, d, r, MakeIndex},
+           MakeIndex[i_Integer] := MakeUniqueIdx[];
+           MakeIndex[i_] := i;
            rules = Table[0, {Length[vertexRules]}];
            For[k = 1, k <= Length[vertexRules], k++,
-               coupling = Vertices`ToCp[vertexRules[[k,1]]] /. {_Integer} :> {MakeUniqueIdx[]};
+               coupling = Vertices`ToCp[vertexRules[[k,1]]] /. p_[{idx__}] :> p[MakeIndex /@ {idx}];
                expr = vertexRules[[k,2]];
                WriteString["stdout", "."];
                If[Mod[k, 50] == 0, WriteString["stdout","\n"]];

@@ -10,7 +10,7 @@ EndPackage[];
 {B0, DB0, C0, D0, D2tilde, D4tilde, W};
 
 (* flags *)
-{ flagSferm, flagIno, flagZdd, flagZud, flagZuu, flagdg };
+{ flagSferm, flagIno, flagZdd, flagZud, flagZuu, flagdg, flagMSDR };
 
 (* options *)
 { coefficients, flags, loopFunctions, loopOrder, sumHead };
@@ -71,7 +71,8 @@ GetTHDMThresholds1LFlags[] := {
     flagZdd      ->  1, (* Enable/disable field renormalization Zdd *)
     flagZud      ->  0, (* Enable/disable field renormalization Zud *)
     flagZuu      ->  1, (* Enable/disable field renormalization Zuu *)
-    flagdg       ->  1  (* Enable/disable gauge coupling renormalization *)
+    flagdg       ->  1, (* Enable/disable gauge coupling renormalization *)
+    flagMSDR     ->  1  (* Enable/disable DREG <-> DRED conversion of g2 *)
 };
 
 lamBar = lamHat = lamTree = lamIno = lamSferm = Table[Undef, {i, 1, 7}];
@@ -486,7 +487,7 @@ dZuu := flagSferm flagZuu dZuuSferm + flagIno flagZuu dZuuIno;
 (* Eq. (117) *)
 dZW := Module[{i},
     g2^2 kappa/6 (
-    - 4 (* MS-bar/DR-bar conversion term *)
+    - 4 flagMSDR (* MS-bar/DR-bar conversion term *)
     + flagIno (4 Log[Abs[Mu]^2/Q^2] + 8 Log[M2^2/Q^2])
     + flagSferm (
         Summation[
