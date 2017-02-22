@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.h"
+#include "test.hpp"
 #include "test_NMSSMCPV.hpp"
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSMCPV_two_scale_model.hpp"

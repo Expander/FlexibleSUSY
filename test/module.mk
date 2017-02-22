@@ -3,6 +3,7 @@ MODNAME  := test
 WITH_$(MODNAME) := yes
 
 LIBTEST_SRC := \
+		$(DIR)/error_count.cpp \
 		$(DIR)/run_cmd.cpp \
 		$(DIR)/stopwatch.cpp
 
@@ -544,7 +545,7 @@ $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 $(DIR)/test_cast_model.x: $(DIR)/test_cast_model.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
-$(DIR)/test_ckm.x: $(DIR)/test_ckm.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_ckm.x: $(DIR)/test_ckm.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -615,7 +616,7 @@ $(DIR)/test_sum.x: $(DIR)/test_sum.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)
 $(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS)
 
-$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS)
 
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -648,10 +649,10 @@ $(DIR)/test_loopfunctions.x: $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCL
 
 $(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSM_database.x: $(DIR)/test_CMSSM_database.o $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSM_database.x: $(DIR)/test_CMSSM_database.o $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(THREADLIBS)
 
-$(DIR)/test_CMSSM_model.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSM_model.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_info.x: $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -663,7 +664,7 @@ $(DIR)/test_CMSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) 
 
 $(DIR)/test_CMSSM_higgs_iteration.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -686,7 +687,7 @@ $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
 $(DIR)/test_CMSSMCKM_high_scale_constraint.x \
 $(DIR)/test_CMSSMCKM_low_scale_constraint.x \
 $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
-	$(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+	$(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -696,19 +697,19 @@ $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LI
 
 $(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSMCPV_tree_level_spectrum.x: $(LIBNMSSM) $(LIBNMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_NMSSMCPV_tree_level_spectrum.x: $(LIBNMSSM) $(LIBNMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 
 $(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -729,7 +730,7 @@ $(DIR)/test_NMSSM_benchmark.x: $(DIR)/test_NMSSM_benchmark.cpp $(RUN_NMSSM_EXE) 
 $(DIR)/test_NMSSM_slha_output.x: $(DIR)/test_NMSSM_slha_output.o $(LIBNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(EXAMPLES_EXE) $(DIR)/test_NMSSM_slha_output.in.spc
 		$(CXX) -o $@ $(call abspathx,$< $(LIBNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
-$(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -739,9 +740,9 @@ $(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) 
 
 $(DIR)/test_NUTNMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNUTNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI)
+$(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
-$(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI)
+$(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
 $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI)
 
@@ -784,11 +785,11 @@ $(DIR)/test_CMSSMSemiAnalytic_consistent_solutions.x: $(LIBCMSSMSemiAnalytic) $(
 
 $(DIR)/test_CMSSMSemiAnalytic_ewsb_solution.x: $(LIBCMSSMSemiAnalytic) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CNMSSM_ewsb.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CNMSSM_semi_analytic_solutions.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CNMSSM_semi_analytic_solutions.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

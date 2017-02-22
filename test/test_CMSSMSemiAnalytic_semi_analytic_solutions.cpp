@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.h"
+#include "test.hpp"
 #include "test_CMSSMSemiAnalytic.hpp"
 #include "CMSSMSemiAnalytic_semi_analytic_solutions.hpp"
 

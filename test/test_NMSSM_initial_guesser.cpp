@@ -3,7 +3,7 @@
 #define BOOST_TEST_MODULE test_NMSSM_initial_guesser
 
 #include <boost/test/unit_test.hpp>
-#include "test.h"
+#include "test_legacy.hpp"
 #include "test_NMSSM.hpp"
 
 #include "NMSSM_two_scale_model.hpp"

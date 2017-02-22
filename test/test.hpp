@@ -2,6 +2,7 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include "error_count.hpp"
 #include "numerics2.hpp"
 #include <cmath>
 #include <iostream>
@@ -11,11 +12,6 @@
 namespace flexiblesusy {
 
 static const double max_dev = 1.0e-12;
-static int gErrors = 0;
-
-int get_errors() {
-   return gErrors;
-}
 
 template <class DerivedA, class DerivedB>
 bool is_equal(const Eigen::MatrixBase<DerivedA>& a,

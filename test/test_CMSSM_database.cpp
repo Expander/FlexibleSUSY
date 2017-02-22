@@ -9,7 +9,7 @@
 #include "ew_input.hpp"
 #include "CMSSM_observables.hpp"
 #include "physical_input.hpp"
-#include "test.h"
+#include "test.hpp"
 #include "lowe.h"
 
 using namespace flexiblesusy;

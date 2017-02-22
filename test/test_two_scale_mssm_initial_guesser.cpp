@@ -6,7 +6,7 @@
 #include "SoftsusyMSSM_two_scale_low_scale_constraint.hpp"
 #include "softsusy.h"
 #include "logger.hpp"
-#include "test.h"
+#include "test_legacy.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_mssm_initial_guesser

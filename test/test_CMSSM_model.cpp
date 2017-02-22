@@ -2,7 +2,7 @@
 #define private public
 
 #include "CMSSM_two_scale_model.hpp"
-#include "test.h"
+#include "test_legacy.hpp"
 #include "test_CMSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"

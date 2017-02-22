@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.h"
+#include "test.hpp"
 #include "ckm.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
