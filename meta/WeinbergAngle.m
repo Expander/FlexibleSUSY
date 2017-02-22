@@ -1,5 +1,5 @@
 
-BeginPackage["WeinbergAngle`", {"SARAH`", "CConversion`", "Parameters`", "TreeMasses`"}];
+BeginPackage["WeinbergAngle`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TextFormatting`", "ThresholdCorrections`", "TreeMasses`", "Vertices`"}];
 
 GetBottomMass::usage="";
 GetTopMass::usage="";
