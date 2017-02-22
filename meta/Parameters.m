@@ -300,6 +300,9 @@ AddInputParameters[pars_List] := AddInputParameterInfo /@ pars;
 AddExtraParameterInfo[{par_, block_, type_}] :=
     allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, block, type}];
 
+AddExtraParameterInfo[{par_, type_}] :=
+    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, {}, type}];
+
 AddExtraParameterInfo[par_] :=
     AddExtraParameterInfo[{par, {}, GuessExtraParameterType[par]}];
 
