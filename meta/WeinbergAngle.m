@@ -103,9 +103,9 @@ Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Lengt
 (*returns coefficients of Higgs-top-top vertices*)
 HiggsTopVertices[higgsName_] :=
     Module[{indexRange, indexList, topQuark, higgsVertices, rule},
-           If[FreeQ[TreeMasses`GetParticles[], higgsName] || TreeMasses`GetDimensionWithoutGoldstones[higgsName] == 0, Return[{}]];
+           If[FreeQ[TreeMasses`GetParticles[], higgsName] || TreeMasses`GetDimensionWithoutGoldstones[higgsName] == 0, Return[{}];];
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
-           If[indexRange === {}, indexRange = {1}];
+           If[indexRange === {}, indexRange = {1};];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
            topQuark = Level[TreeMasses`GetUpQuark[{3}], {Boole[ListQ[TreeMasses`GetUpQuark[{3}]]]}][[1]];
            higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[topQuark], topQuark, higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]];
@@ -124,7 +124,7 @@ HiggsContributions2LoopSM[massMatrices_List] :=
            If[!(And @@ Parameters`IsRealParameter /@ Parameters`FindAllParameters[higgsMatrices]) || (Parameters`FSPhases /. Parameters`FindAllParametersClassified[higgsMatrices]) =!= {},
               Print["Warning: CP violation in Higgs sector"]; Return[0];];
            higgsVEVlist = Cases[Parameters`GetDependenceSPhenoRules[], RuleDelayed[SARAH`VEVSM, repr_] :> repr];
-           If[higgsVEVlist === {}, higgsVEVlist = {SARAH`VEVSM}];
+           If[higgsVEVlist === {}, higgsVEVlist = {SARAH`VEVSM};];
            higgsDep = Abs[#[[2]]]^2 RHO2[FlexibleSUSY`M[#[[1]]]/MT] &;
            Return[Simplify[3 (GFERMI MT higgsVEVlist[[1]] / (8 Pi^2 Sqrt[2]))^2 (Plus @@ (higgsDep /@ HiggsTopVertices[SARAH`HiggsBoson]) - Plus @@ (higgsDep /@ HiggsTopVertices[SARAH`PseudoScalar]))]];
           ];
