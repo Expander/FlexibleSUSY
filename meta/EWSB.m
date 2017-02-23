@@ -392,7 +392,13 @@ TimeConstrainedSolve[eq_, par_] :=
                                         And @@ (Function[p,FreeQ[e,p]] /@ par),
                                         FreeQ[e,par]
                                        ]];
-              independentEq = Select[eq, (!Selector[#])&];
+              independentEq = Select[eq, (!Selector[#])&];,
+              If[Head[par] =!= List,
+                 If[FreeQ[eq, par],
+                    Print["Error: parameter ", par, " does not appear in the equation"];
+                    Return[{}];
+                   ];
+                ];
              ];
            result = TimeConstrained[Solve[independentEq, par],
                                     FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
