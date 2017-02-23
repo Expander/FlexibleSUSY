@@ -229,11 +229,12 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
-           body = type <> " result;\n\n" <>
-                  CConversion`ExpandSums[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
-                                         vertexRules /.
-                                         a_[List[i__]] :> a[i], "result"] <>
-                  "\nreturn result * oneOver16PiSqr;";
+           body = Parameters`CreateLocalConstRefs[expr] <> "\n";
+           body = body <> type <> " result;\n\n";
+           body = body <> CConversion`ExpandSums[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
+                                                 vertexRules /.
+                                                 a_[List[i__]] :> a[i], "result"];
+           body = body <> "\nreturn result * oneOver16PiSqr;";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];
