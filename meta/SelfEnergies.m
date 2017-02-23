@@ -264,7 +264,7 @@ MakeUniqueIdx[] :=
  *   ...
  * }
  *)
-CreateCouplingFunction[coupling_, expr_] :=
+CreateCouplingFunction[coupling_, expr_, inModelClass_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
             type, typeStr, initalValue},
@@ -287,8 +287,9 @@ CreateCouplingFunction[coupling_, expr_] :=
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
-                  typeStr <> " result" <> initalValue <> ";\n\n";
+           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n";
+           If[!inModelClass, body = body <> Parameters`CreateLocalConstRefs[expr] <> "\n";];
+           body = body <> typeStr <> " result" <> initalValue <> ";\n\n";
            body = body <> TreeMasses`ExpressionToString[expr, "result"];
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
@@ -328,7 +329,7 @@ ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
 ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
-CreateVertexExpressions[vertexRules_List] :=
+CreateVertexExpressions[vertexRules_List, inModelClass_:True] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
             p, d, r, MakeIndex},
            MakeIndex[i_Integer] := MakeUniqueIdx[];
@@ -339,7 +340,7 @@ CreateVertexExpressions[vertexRules_List] :=
                expr = vertexRules[[k,2]];
                WriteString["stdout", "."];
                If[Mod[k, 50] == 0, WriteString["stdout","\n"]];
-               {p,d,r} = CreateCouplingFunction[coupling, expr];
+               {p,d,r} = CreateCouplingFunction[coupling, expr, inModelClass];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
