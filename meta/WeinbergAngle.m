@@ -236,7 +236,7 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
                                                  a_[List[i__]] :> a[i], "result"];
            body = body <> "\nreturn result * oneOver16PiSqr;";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
-           decl = decl <> body <> "\n}\n";
+           decl = decl <> body <> "}\n";
            Return[{prototype, decl}];
           ];
 
