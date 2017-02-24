@@ -74,6 +74,9 @@ private:
    double calculate_delta_vb(double, double);
    double calculate_delta_vb_sm(double, double);
    double calculate_delta_vb_susy(double);
+
+@deltaVBprototypes@
+   double B1(double, double, double) const;
    static double rho_2(double);
 
    double calculate_self_energy_@VectorZ@(double);

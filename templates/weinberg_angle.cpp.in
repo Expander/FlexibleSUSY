@@ -26,11 +26,14 @@
 #include "config.h"
 #include "numerics.h"
 #include "error.hpp"
+#include "pv.hpp"
 
 #include <limits>
 #include <cmath>
 
 namespace flexiblesusy {
+
+#define CLASSNAME @ModelName@_weinberg_angle
 
 #define MODEL model
 #define MODELPARAMETER(p) model->get_##p()
@@ -358,184 +361,36 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
  */
 double @ModelName@_weinberg_angle::calculate_delta_vb_susy(double sinThetaW)
 {
-   const double q          = model->get_scale();
    const double mz         = sm_parameters.mz_pole;
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
-   const double hmu        = Re(model->get_@ElectronYukawa@(1,1));
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
 
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
-   double msel  = 0.;
-   double msmul = 0.;
-   double msve  = 0.;
-   double msvm  = 0.;
-   const auto MSe = model->get_M@Selectron@();
-   const auto ZE  = model->get_ZE();
-   const auto MSv = model->get_M@Sneutrino@();
-   const auto ZV  = model->get_ZV();
-   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
-      msel  += AbsSqr(ZE(i,0))*MSe(i);
-      msmul += AbsSqr(ZE(i,1))*MSe(i);
-   }
-   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
-      msve += AbsSqr(ZV(i,0))*MSv(i);
-      msvm += AbsSqr(ZV(i,1))*MSv(i);
-   }
-
-   const Eigen::ArrayXd& mneut(model->get_MChi());
-   const Eigen::ArrayXd& mch(model->get_MCha());
-   const Eigen::MatrixXcd& n(model->get_ZN());
-   const Eigen::MatrixXcd& u(model->get_UM());
-   const Eigen::MatrixXcd& v(model->get_UP());
-
-   const int dimN = mneut.rows();
-   const int dimC = mch.rows();
-
-   Eigen::VectorXd bPsi0NuSnul(Eigen::VectorXd::Zero(dimN)),
-      bPsicNuSell(Eigen::VectorXd::Zero(dimC));
-   Eigen::VectorXd bPsi0ESell(Eigen::VectorXd::Zero(dimN)),
-      aPsicESnul(Eigen::VectorXd::Zero(dimC));
-   Eigen::VectorXcd bChi0NuSnul, bChicNuSell;
-   Eigen::VectorXcd bChi0ESell, aChicESnul;
-
-   bPsi0NuSnul(0) = - gY / ROOT2;
-   bPsi0NuSnul(1) =   g2 * ROOT2 * 0.5;
-   bPsicNuSell(0) =   g2;
-   bPsi0ESell(0)  = - gY / ROOT2;
-   bPsi0ESell(1)  = - g2 * ROOT2 * 0.5;
-   aPsicESnul(0)  =   g2;
-
-   bChi0NuSnul = n * bPsi0NuSnul;
-   bChicNuSell = u * bPsicNuSell;
-   bChi0ESell  = n * bPsi0ESell;
-   aChicESnul  = v.conjugate() * aPsicESnul;
-
-   double deltaZnue = 0.0, deltaZe = 0.0;
-   for (int i = 0; i < dimN; i++) {
-      deltaZnue += - Sqr(Abs(bChi0NuSnul(i))) * b1(0.0, mneut(i), msve, q);
-      deltaZe   += - Sqr(Abs(bChi0ESell(i)))  * b1(0.0, mneut(i), msel, q);
-   }
-   for (int i = 0; i < dimC; i++) {
-      deltaZnue += - Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), msel, q);
-      deltaZe   += - Sqr(Abs(aChicESnul(i)))  * b1(0.0, mch(i), msve, q);
-   }
-
-   Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(dimC));
-   Eigen::VectorXd bPsi0MuSmul(Eigen::VectorXd::Zero(dimN)),
-      aPsicMuSnul(Eigen::VectorXd::Zero(dimC));
-   Eigen::VectorXcd bChicNuSmul;
-   Eigen::VectorXcd bChi0MuSmul, aChicMuSnul;
-
-   bPsicNuSmul(0) =   g2;
-   bPsicNuSmul(1) = - hmu;
-   bPsi0MuSmul(0) = - gY / ROOT2;
-   bPsi0MuSmul(1) = - g2  * ROOT2 * 0.5;
-   aPsicMuSnul(0) =   g2;
-   aPsicMuSnul(1) = - hmu;
-
-   bChicNuSmul = u * bPsicNuSmul;
-   bChi0MuSmul = n * bPsi0MuSmul;
-   aChicMuSnul = v.conjugate() * aPsicMuSnul;
-
-   double deltaZnumu = 0.0, deltaZmu = 0.0;
-   for (int i = 0; i < dimN; i++) {
-      deltaZnumu += - Sqr(Abs(bChi0NuSnul(i))) * b1(0.0, mneut(i), msvm, q);
-      deltaZmu   += - Sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmul, q);
-   }
-   for (int i = 0; i < dimC; i++) {
-      deltaZnumu += - Sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmul, q);
-      deltaZmu   += - Sqr(Abs(aChicMuSnul(i))) * b1(0.0, mch(i), msvm, q);
-   }
-
-   Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
-      bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC));
-   Eigen::MatrixXcd aChi0ChicW, bChi0ChicW;
-
-   aPsi0PsicW(1, 0) = - g2;
-   aPsi0PsicW(3, 1) =   g2 / ROOT2;
-   bPsi0PsicW(1, 0) = - g2;
-   bPsi0PsicW(2, 1) = - g2 / ROOT2;
-
-   aChi0ChicW = n.conjugate() * aPsi0PsicW * v.transpose();
-   bChi0ChicW = n * bPsi0PsicW * u.adjoint();
-
-   const double b0_0_msel_msve  = b0(0.0, msel, msve, q);
-   const double b0_0_msmul_msvm = b0(0.0, msmul, msvm, q);
-
-   std::complex<double> deltaVE;
-   for (int i = 0; i < dimC; i++) {
-      for (int j = 0; j < dimN; j++) {
-         const double c0_msel_mch_mneut = c0(msel, mch(i), mneut(j));
-         const double c0_msve_mch_mneut = c0(msve, mch(i), mneut(j));
-         const double b0_0_mch_mneut    = b0(0.0, mch(i), mneut(j), q);
-
-         deltaVE += bChicNuSell(i) * Conj(bChi0ESell(j)) *
-            (- ROOT2 / g2 * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msel_mch_mneut + 1.0 / (ROOT2 * g2) * bChi0ChicW(j, i) *
-             (b0_0_mch_mneut + Sqr(msel) * c0_msel_mch_mneut - 0.5));
-         deltaVE += - aChicESnul(i) * bChi0NuSnul(j) *
-            (- ROOT2 / g2 * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msve_mch_mneut + 1.0 / (ROOT2 * g2) * aChi0ChicW(j, i) *
-             (b0_0_mch_mneut + Sqr(msve) * c0_msve_mch_mneut - 0.5));
-      }
-   }
-
-   for (int j = 0; j < dimN; j++) {
-      deltaVE += 0.5 * Conj(bChi0ESell(j)) * bChi0NuSnul(j) *
-         (b0_0_msel_msve + Sqr(mneut(j)) * c0(mneut(j), msel, msve) + 0.5);
-   }
-
-   std::complex<double> deltaVMu;
-   for (int i = 0; i < dimC; i++) {
-      for (int j = 0; j < dimN; j++) {
-         const double c0_msmul_mch_mneut = c0(msmul, mch(i), mneut(j));
-         const double c0_msvm_mch_mneut  = c0(msvm, mch(i), mneut(j));
-         const double b0_0_mch_mneut     = b0(0.0, mch(i), mneut(j), q);
-
-         deltaVMu += bChicNuSmul(i) * Conj(bChi0MuSmul(j)) *
-            (- ROOT2 / g2 * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msmul_mch_mneut + 1.0 / (ROOT2 * g2) * bChi0ChicW(j, i) *
-             (b0_0_mch_mneut + Sqr(msmul) * c0_msmul_mch_mneut - 0.5));
-         deltaVMu += - aChicMuSnul(i) * bChi0NuSnul(j) *
-            (- ROOT2 / g2 * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msvm_mch_mneut + 1.0 / (ROOT2 * g2) * aChi0ChicW(j, i) *
-             (b0_0_mch_mneut + Sqr(msvm) * c0_msvm_mch_mneut - 0.5));
-      }
-   }
-
-   for (int j = 0; j < dimN; j++) {
-      deltaVMu += 0.5 * Conj(bChi0MuSmul(j)) * bChi0NuSnul(j) *
-         (b0_0_msmul_msvm + Sqr(mneut(j)) * c0(mneut(j), msmul, msvm) + 0.5);
-   }
-
-   std::complex<double> a1;
-   for(int i = 0; i < dimC; i++) {
-      for(int j = 0; j < dimN; j++) {
-         a1 += 0.5 * aChicMuSnul(i) * Conj(bChicNuSell(i)) *
-            bChi0NuSnul(j) * bChi0ESell(j) * mch(i) * mneut(j) *
-            d0(msel, msvm, mch(i), mneut(j));
-         a1 += 0.5 * Conj(aChicESnul(i)) * bChicNuSmul(i) *
-            Conj(bChi0NuSnul(j)) * Conj(bChi0MuSmul(j)) * mch(i) * mneut(j) *
-            d0(msmul, msve, mch(i), mneut(j));
-         a1 += bChicNuSmul(i) * Conj(bChicNuSell(i)) *
-            Conj(bChi0MuSmul(j)) * bChi0ESell(j) *
-            d27(msmul, msel, mch(i), mneut(j));
-         a1 += Conj(aChicMuSnul(i)) * aChicESnul(i) *
-            bChi0NuSnul(j) * Conj(bChi0NuSnul(j)) *
-            d27(msvm, msve, mch(i), mneut(j));
-      }
-   }
+   const std::complex<double> a1 = (0., 0.); // delta_vb_box();
+   const std::complex<double> deltaVE = (0., 0.); // delta_vb_vertex(0);
+   const std::complex<double> deltaVMu = (0., 0.); // delta_vb_vertex(1);
+   const std::complex<double> deltaZe = delta_vb_wave_@Electron@(0);
+   const std::complex<double> deltaZmu = delta_vb_wave_@Electron@(1);
+   const std::complex<double> deltaZnue = delta_vb_wave_@Neutrino@(0);
+   const std::complex<double> deltaZnumu = delta_vb_wave_@Neutrino@(1);
 
    const double deltaVbSusy = oneOver16PiSqr *
       (- sinThetaW2 * outcos2 / (2.0 * Pi * alphaDRbar) * Sqr(mz) * a1.real() +
        deltaVE.real() + deltaVMu.real() +
-       0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu));
+       0.5 * (deltaZe.real() + deltaZnue.real() + deltaZmu.real() + deltaZnumu.real()));
 
    return deltaVbSusy;
+}
+
+@deltaVBfunctions@
+
+double CLASSNAME::B1(double p, double m1, double m2) const
+{
+   return -1. * passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(model->get_scale()));
 }
 
 /**
