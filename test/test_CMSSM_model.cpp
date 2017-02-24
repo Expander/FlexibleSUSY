@@ -1,4 +1,10 @@
 
+#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <limits>
+#include <string>
+
 #define private public
 
 #include "CMSSM_two_scale_model.hpp"
@@ -9,11 +15,6 @@
 #include "conversion.hpp"
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
-
-#include <cmath>
-#include <iostream>
-#include <limits>
-#include <string>
 
 void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
 {
