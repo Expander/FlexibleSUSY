@@ -204,8 +204,8 @@ DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinodiagrs, electrondiagrs, result},
            neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
            electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
-           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Neutrino}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
-                     WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Electron}, 1/2 * Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
+           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Neutrino}, Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
+                     WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Electron}, Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
            Return[result];
           ];
 
@@ -234,7 +234,7 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
            body = body <> CConversion`ExpandSums[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
                                                  vertexRules /.
                                                  a_[List[i__]] :> a[i], "result"];
-           body = body <> "\nreturn result * oneOver16PiSqr;";
+           body = body <> "\nreturn result;";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            decl = decl <> body <> "}\n";
            Return[{prototype, decl}];
