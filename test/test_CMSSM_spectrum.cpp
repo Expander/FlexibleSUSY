@@ -17,6 +17,7 @@
 #include "weinberg_angle.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_input_parameters.hpp"
 #include "CMSSM_two_scale_high_scale_constraint.hpp"
@@ -133,6 +134,9 @@ public:
       setup_default_constaints(pp, qedqcd);
 
       const double precision_goal = softsusy::TOLERANCE;
+
+      CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+      mssm.set_ewsb_solver(&ewsb_solver);
 
       mssm.clear();
       mssm.set_loops(2);

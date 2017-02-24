@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 #include "test_CMSSM.hpp"
 
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_two_scale_initial_guesser.hpp"
 #include "SoftsusyMSSM_parameter_point.hpp"
@@ -25,6 +26,8 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    QedQcd qedqcd;
    softsusy::TOLERANCE = 1.0e-3;
    CMSSM<Two_scale> m(input);
+   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
    m.set_loops(2);
    m.set_thresholds(2);
    SoftsusyMSSM<Two_scale> smssm;
