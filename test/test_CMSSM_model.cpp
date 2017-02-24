@@ -22,28 +22,28 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    const int size = rows * cols;
 
    if (cols != 3) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 2 columns" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 2 columns" << std::endl;
       return;
    }
    if (rows != 2) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 3 rows" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 3 rows" << std::endl;
       return;
    }
    if (m.displayStart() != 1) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not begin"
-         " at index 1" << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not begin"
+         " at index 1" << std::endl;
       return;
    }
    if (m.displayEnd() != size) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not end"
-         " at index " << size << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not end"
+         " at index " << size << std::endl;
       return;
    }
    if (z.displayCols() != size || z.displayCols() != size) {
-      cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
-         " " << size << " rows or cols" << endl;
+      std::cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
+         " " << size << " rows or cols" << std::endl;
       return;
    }
 
