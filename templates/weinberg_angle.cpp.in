@@ -50,7 +50,7 @@ namespace flexiblesusy {
 #define PIZZTMZ pizzt_MZ
 const double ROOT2 = Sqrt(2.0);
 
-@ModelName@_weinberg_angle::Sm_parameters::Sm_parameters()
+CLASSNAME::Sm_parameters::Sm_parameters()
    : fermi_constant(0.)
    , mw_pole(0.)
    , mz_pole(0.)
@@ -66,7 +66,7 @@ const double ROOT2 = Sqrt(2.0);
  * @param model_ pointer to the model for which the calculation shall be done
  * @param sm_parameters_ struct containing the required SM parameters
  */
-@ModelName@_weinberg_angle::@ModelName@_weinberg_angle(
+CLASSNAME::@ModelName@_weinberg_angle(
    const @ModelName@_mass_eigenstates* model_,
    const Sm_parameters& sm_parameters_)
    : number_of_iterations(20)
@@ -81,41 +81,41 @@ const double ROOT2 = Sqrt(2.0);
 {
 }
 
-@ModelName@_weinberg_angle::~@ModelName@_weinberg_angle()
+CLASSNAME::~@ModelName@_weinberg_angle()
 {
 }
 
-void @ModelName@_weinberg_angle::set_number_of_iterations(unsigned n)
+void CLASSNAME::set_number_of_iterations(unsigned n)
 {
    number_of_iterations = n;
 }
 
-void @ModelName@_weinberg_angle::set_number_of_loops(unsigned n)
+void CLASSNAME::set_number_of_loops(unsigned n)
 {
    number_of_loops = n;
 }
 
-void @ModelName@_weinberg_angle::set_precision_goal(double p)
+void CLASSNAME::set_precision_goal(double p)
 {
    precision_goal = p;
 }
 
-void @ModelName@_weinberg_angle::enable_dvbsusy()
+void CLASSNAME::enable_dvbsusy()
 {
    include_dvbsusy = true;
 }
 
-void @ModelName@_weinberg_angle::disable_dvbsusy()
+void CLASSNAME::disable_dvbsusy()
 {
    include_dvbsusy = false;
 }
 
-void @ModelName@_weinberg_angle::set_model(const @ModelName@_mass_eigenstates* model_)
+void CLASSNAME::set_model(const @ModelName@_mass_eigenstates* model_)
 {
    model = model_;
 }
 
-void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_parameters_)
+void CLASSNAME::set_sm_parameters(const Sm_parameters& sm_parameters_)
 {
    sm_parameters = sm_parameters_;
 }
@@ -133,7 +133,7 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  *
  * @return sine of the DR-bar weak mixing angle
  */
-double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
+double CLASSNAME::calculate(double sinThetaW_start)
 {
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
@@ -232,7 +232,7 @@ double @ModelName@_weinberg_angle::calculate(double sinThetaW_start)
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.4) and (C.6) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
+double CLASSNAME::calculate_delta_rho_hat(double sinThetaW)
 {
    const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
@@ -264,7 +264,7 @@ double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double sinThetaW)
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.3) and (C.5) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
+double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
 {
    const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
@@ -300,7 +300,7 @@ double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat_ratio, do
  *
  * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
+double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
 {
    const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
 
@@ -325,7 +325,7 @@ double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat_ratio, doubl
  * @return \f$\delta_{\text{VB}}^{\text{SM}}\f$ as defined in (C.12)
  * from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
+double CLASSNAME::calculate_delta_vb_sm(
    double rhohat_ratio, double sinThetaW)
 {
    const double mz  = sm_parameters.mz_pole;
@@ -359,7 +359,7 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
  * @return \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as defined in (C.13)
  * from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_vb_susy(double sinThetaW)
+double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
 {
    const double mz         = sm_parameters.mz_pole;
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
@@ -401,7 +401,7 @@ double CLASSNAME::B1(double p, double m1, double m2) const
  *
  * @return \f$\rho^{(2)}(r)\f$
  */
-double @ModelName@_weinberg_angle::rho_2(double r)
+double CLASSNAME::rho_2(double r)
 {
    const double Pi2 = Pi * Pi;
 
@@ -440,7 +440,7 @@ double @ModelName@_weinberg_angle::rho_2(double r)
  *
  * @return 1-loop transverse Z boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@(double p)
+double CLASSNAME::calculate_self_energy_@VectorZ@(double p)
 {
    const double mt      = sm_parameters.mt_pole;
    const double mtDRbar = @GetTopMass@;
@@ -464,7 +464,7 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@(double p)
  *
  * @return 1-loop transverse W boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@(double p)
+double CLASSNAME::calculate_self_energy_@VectorW@(double p)
 {
    const double mt      = sm_parameters.mt_pole;
    const double mtDRbar = @GetTopMass@;
@@ -488,7 +488,7 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@(double p)
  *
  * @return 1-loop top-quark contribution to Z boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_top(double p, double mt)
+double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt)
 {
    const double q   = model->get_scale();
    const double Nc  = 3.0;
@@ -517,7 +517,7 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_top(double p,
  *
  * @return 1-loop top-quark contribution to W boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@_top(double p, double mt)
+double CLASSNAME::calculate_self_energy_@VectorW@_top(double p, double mt)
 {
    const double q  = model->get_scale();
    const double mb = @GetBottomMass@;
