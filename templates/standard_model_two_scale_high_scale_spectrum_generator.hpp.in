@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_STANDARD_MODEL_SPECTRUM_GENERATOR_H
-#define @ModelName@_STANDARD_MODEL_SPECTRUM_GENERATOR_H
+#ifndef @ModelName@_STANDARD_MODEL_TWO_SCALE_SPECTRUM_GENERATOR_H
+#define @ModelName@_STANDARD_MODEL_TWO_SCALE_SPECTRUM_GENERATOR_H
 
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
