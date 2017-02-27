@@ -691,15 +691,15 @@ $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSMCPV_tree_level_spectrum.x: $(LIBNMSSM) $(LIBNMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -744,9 +744,9 @@ $(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) 
 
 $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
-$(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI)
+$(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
-$(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI)
+$(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
 $(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI)
 
