@@ -7,6 +7,7 @@ ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
+WriteSLHAImMinparBlock::usage="";
 WriteSLHAImExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -218,6 +219,14 @@ WriteSLHAExtparBlock[extpar_List] :=
     "extpar << \"Block EXTPAR\\n\";\n" <>
     StringJoin[WriteParameterTuple[#, "extpar"]& /@ extpar] <>
     "slha_io.set_block(extpar);\n";
+
+WriteSLHAImMinparBlock[{}] := "";
+
+WriteSLHAImMinparBlock[imminpar_List] :=
+    "std::ostringstream imminpar;\n\n" <>
+    "imminpar << \"Block IMMINPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "imminpar"]& /@ imminpar] <>
+    "slha_io.set_block(imminpar);\n";
 
 WriteSLHAImExtparBlock[{}] := "";
 

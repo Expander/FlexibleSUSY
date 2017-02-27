@@ -124,6 +124,7 @@ PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
 FSAuxiliaryParameters = {};
+IMMINPAR = {};
 IMEXTPAR = {};
 
 (* Standard Model input parameters (SLHA input parameters) *)
@@ -478,6 +479,9 @@ CheckModelFileSettings[] :=
              ];
            If[Head[SARAH`EXTPAR] =!= List,
               SARAH`EXTPAR = {};
+             ];
+           If[Head[IMMINPAR] =!= List,
+              IMMINPAR = {};
              ];
            If[Head[IMEXTPAR] =!= List,
               IMEXTPAR = {};
@@ -1664,7 +1668,7 @@ WriteBVPSolverMakefile[files_List] :=
 WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                     extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
-            minpar, extpar, imextpar, extraSLHAInputParameters,
+            minpar, extpar, imminpar, imextpar, extraSLHAInputParameters,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
@@ -1676,11 +1680,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             isSupersymmetricModel = "false",
             isFlexibleEFTHiggs = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
+            fillInputParametersFromIMMINPAR = "",
             fillInputParametersFromIMEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
             writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
-            writeSLHAImExtparBlock = "", writeSLHAInputParameterBlocks = "",
+            writeSLHAImMinparBlock = "", writeSLHAImExtparBlock = "",
+            writeSLHAInputParameterBlocks = "",
             readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
@@ -1692,11 +1698,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            smParticles   = Complement[particles, susyParticles];
            minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
            extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
+           imminpar = Cases[inputParameters, {p_, {"IMMINPAR", idx_}, ___} :> {idx, p}];
            imextpar = Cases[inputParameters, {p_, {"IMEXTPAR", idx_}, ___} :> {idx, p}];
            extraSLHAInputParameters = Complement[
                inputParameters,
                Cases[inputParameters, {_, {"MINPAR", _}, ___}],
                Cases[inputParameters, {_, {"EXTPAR", _}, ___}],
+               Cases[inputParameters, {_, {"IMMINPAR", _}, ___}],
                Cases[inputParameters, {_, {"IMEXTPAR", _}, ___}]
            ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
@@ -1718,6 +1726,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            isFlexibleEFTHiggs = If[FlexibleSUSY`FlexibleEFTHiggs === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
+           fillInputParametersFromIMMINPAR = Parameters`FillInputParametersFromTuples[imminpar, "IMMINPAR"];
            fillInputParametersFromIMEXTPAR = Parameters`FillInputParametersFromTuples[imextpar, "IMEXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
@@ -1728,6 +1737,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
+           writeSLHAImMinparBlock = WriteOut`WriteSLHAImMinparBlock[imminpar];
            writeSLHAImExtparBlock = WriteOut`WriteSLHAImExtparBlock[imextpar];
            writeSLHAInputParameterBlocks = WriteSLHAInputParameterBlocks[extraSLHAInputParameters];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
@@ -1754,6 +1764,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@isFlexibleEFTHiggs@" -> isFlexibleEFTHiggs,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
+                            "@fillInputParametersFromIMMINPAR@" -> IndentText[fillInputParametersFromIMMINPAR],
                             "@fillInputParametersFromIMEXTPAR@" -> IndentText[fillInputParametersFromIMEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
@@ -1764,6 +1775,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
+                            "@writeSLHAImMinparBlock@"         -> IndentText[writeSLHAImMinparBlock],
                             "@writeSLHAImExtparBlock@"         -> IndentText[writeSLHAImExtparBlock],
                             "@writeSLHAInputParameterBlocks@"  -> IndentText[writeSLHAInputParameterBlocks],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
@@ -2311,6 +2323,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            inputParameters = Join[
                DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
                DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]],
+               DeleteDuplicates[{#[[2]], {"IMMINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[IMMINPAR]],
                DeleteDuplicates[{#[[2]], {"IMEXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[IMEXTPAR]]
            ];
 

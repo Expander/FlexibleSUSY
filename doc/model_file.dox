@@ -142,6 +142,40 @@ _Note_: Unspecified parameters are assumed to be zero.
 
 _____________________________________________________________________
 
+__Symbol__: `IMMINPAR`
+
+__Default value__: `{}`
+
+__Description__:
+
+The `IMMINPAR` variable is a list of input parameters for the spectrum
+generator, which is read of the `IMMINPAR` block of the SLHA input
+file.  The list assigned to the `IMMINPAR` variable must have the same
+form as the `MINPAR` variable.
+
+__Example__: In the CP-violating MSSM (`CMSSMCPV`) the `IMMINPAR` block
+has the form
+
+~~~~~~~~~~~~~~~~~~~~{.m}
+IMMINPAR = {
+    {2, Imm12},
+    {5, ImAzero}
+};
+~~~~~~~~~~~~~~~~~~~~
+
+In this case the input parameters can be given in the SLHA input file
+as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block IMMINPAR
+    2   10                   # Imm12
+    5   10                   # ImAzero
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_Note_: Unspecified parameters are assumed to be zero.
+
+_____________________________________________________________________
+
 __Symbol__: `IMEXTPAR`
 
 __Default value__: `{}`
