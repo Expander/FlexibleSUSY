@@ -8,12 +8,15 @@ FSDefaultSARAHModel = MSSM/CPV;
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
-           {4, Phase[\[Mu]]},
-           {5, Azero} };
+           {4, CosPhiMu},
+           {5, Azero},
+           {100, Phase[\[Mu]]} };
+
+IMMINPAR = { {2, Imm12},
+             {5, ImAzero} };
 
 EXTPAR = {
-    {100, etaInput},
-    {101, PhiMu}
+    {100, etaInput}
 };
 
 RealParameters = {};
@@ -26,7 +29,7 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
     {eta, etaInput},
-    {Phase[\[Mu]], Exp[I PhiMu]}
+    {Phase[\[Mu]], Exp[I ArcCos[CosPhiMu]]}
 };
 
 HighScale = g1 == g2;
@@ -34,9 +37,9 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput = {
-   {T[Ye], Azero*Ye},
-   {T[Yd], Azero*Yd},
-   {T[Yu], Azero*Yu},
+   {T[Ye], (Azero + I ImAzero) Ye},
+   {T[Yd], (Azero + I ImAzero) Yd},
+   {T[Yu], (Azero + I ImAzero) Yu},
    {mq2, UNITMATRIX[3] m0^2},
    {ml2, UNITMATRIX[3] m0^2},
    {md2, UNITMATRIX[3] m0^2},
@@ -44,9 +47,9 @@ HighScaleInput = {
    {me2, UNITMATRIX[3] m0^2},
    {mHu2, m0^2},
    {mHd2, m0^2},
-   {MassB, m12},
-   {MassWB,m12},
-   {MassG, m12}
+   {MassB, m12 + I Imm12},
+   {MassWB,m12 + I Imm12},
+   {MassG, m12 + I Imm12}
 };
 
 LowScale = LowEnergyConstant[MZ];

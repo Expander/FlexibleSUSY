@@ -8,6 +8,7 @@ PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
 PrintExtraParameters::usage="Creates extra parameter printout statements";
 WriteSLHAExtparBlock::usage="";
+WriteSLHAImMinparBlock::usage="";
 WriteSLHAImExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -51,6 +52,10 @@ CreateFormattedSLHABlocks::usage = "";
 
 Begin["`Private`"];
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<WriteOut>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 (*
  * @brief Replaces tokens in files.
  *
@@ -73,7 +78,7 @@ ReplaceInFiles[files_List, replacementList_List] :=
               cppTemplateFileName = files[[f,2]];
               cppFile             = Import[cppFileName, "String"];
               modifiedCppFile     = StringReplace[cppFile, replacementList];
-              Print["   Writing file ", cppTemplateFileName];
+              DebugPrint["writing file ", cppTemplateFileName];
               Export[cppTemplateFileName, modifiedCppFile, "String"];
              ];
           ];
@@ -231,6 +236,14 @@ WriteSLHAExtparBlock[extpar_List] :=
     "extpar << \"Block EXTPAR\\n\";\n" <>
     StringJoin[WriteParameterTuple[#, "extpar"]& /@ extpar] <>
     "slha_io.set_block(extpar);\n";
+
+WriteSLHAImMinparBlock[{}] := "";
+
+WriteSLHAImMinparBlock[imminpar_List] :=
+    "std::ostringstream imminpar;\n\n" <>
+    "imminpar << \"Block IMMINPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "imminpar"]& /@ imminpar] <>
+    "slha_io.set_block(imminpar);\n";
 
 WriteSLHAImExtparBlock[{}] := "";
 

@@ -90,6 +90,9 @@ GetDimensionStartSkippingSMGoldstones::usage="return first index,
 GetParticleIndices::usage = "returns list of particle indices with
  names";
 
+ParticleQ::usage = "returns True if argument is a particle, False
+ otherwise."
+
 FindMixingMatrixSymbolFor::usage="returns the mixing matrix symbol for
 a given field";
 
@@ -226,6 +229,9 @@ GetSusyParticles[states_:FlexibleSUSY`FSEigenstates] :=
 
 GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Select[GetParticles[states], (SARAH`SMQ[#])&];
+
+ParticleQ[p_, states_:FlexibleSUSY`FSEigenstates] :=
+    MemberQ[GetParticles[states], p];
 
 IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getType[sym, False, states] === type;
