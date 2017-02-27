@@ -14,7 +14,7 @@ GetModelTypes[] :=
     Utils`StringJoinWithSeparator[
         Which[FlexibleSUSY`FlexibleEFTHiggs === True,
               { GetSLHAModelType[FlexibleSUSY`FSModelName, "Solver_type"],
-                GetModelType["standard_model::StandardModel", "Solver_type"] },
+                GetModelType["standard_model::StandardModel", "Two_scale"] },
               True,
               { GetSLHAModelType[FlexibleSUSY`FSModelName, "Solver_type"] }
              ],
