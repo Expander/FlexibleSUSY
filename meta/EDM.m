@@ -206,8 +206,8 @@ StripLorentzIndices[p_] := Module[{remainingIndices},
                                      Head[p][remainingIndices]]
                                   ];
 
-CleanFieldInfo[field_] := Module[{fieldInfo = FirstCase[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-                                                        {SARAH`getParticleName @ field, ___}]},
+CleanFieldInfo[field_] := Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
+                                                        {SARAH`getParticleName @ field, ___}][[1]]},
                                  fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
                                  DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}]
                                  ];
