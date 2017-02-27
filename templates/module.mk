@@ -104,6 +104,12 @@ SEMI_ANALYTIC_TEMPLATES := \
 		$(DIR)/semi_analytic_susy_scale_constraint.hpp.in \
 		$(DIR)/semi_analytic_susy_scale_constraint.cpp.in \
 		$(DIR)/soft_parameters_constraint.hpp.in \
+		$(DIR)/standard_model_semi_analytic_high_scale_initial_guesser.hpp.in \
+		$(DIR)/standard_model_semi_analytic_high_scale_initial_guesser.cpp.in \
+		$(DIR)/standard_model_semi_analytic_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/standard_model_semi_analytic_high_scale_spectrum_generator.cpp.in \
+		$(DIR)/standard_model_semi_analytic_matching.hpp.in \
+		$(DIR)/standard_model_semi_analytic_matching.cpp.in \
 		$(DIR)/susy_convergence_tester.hpp.in
 
 TEMPLATES    := \

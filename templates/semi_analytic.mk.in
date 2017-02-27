@@ -29,7 +29,8 @@ LIB@ModelName@_SRC += \
 		$(DIR)/@ModelName@_semi_analytic_solutions.cpp \
 		$(DIR)/@ModelName@_semi_analytic_spectrum_generator.cpp \
 		$(DIR)/@ModelName@_semi_analytic_susy_convergence_tester.cpp \
-		$(DIR)/@ModelName@_semi_analytic_susy_scale_constraint.cpp
+		$(DIR)/@ModelName@_semi_analytic_susy_scale_constraint.cpp \
+		$(DIR)/@ModelName@_standard_model_semi_analytic_matching.cpp
 LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_semi_analytic_convergence_tester.hpp \
 		$(DIR)/@ModelName@_semi_analytic_ewsb_solver.hpp \
@@ -43,4 +44,5 @@ LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_semi_analytic_susy_convergence_tester.hpp \
 		$(DIR)/@ModelName@_semi_analytic_susy_scale_constraint.hpp \
 		$(DIR)/@ModelName@_soft_parameters_constraint.hpp \
+		$(DIR)/@ModelName@_standard_model_semi_analytic_matching.hpp \
 		$(DIR)/@ModelName@_susy_convergence_tester.hpp

@@ -1501,7 +1501,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 WriteBVPSolverTemplates[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
-WriteTwoScaleMatchingClass[files_List] :=
+WriteMatchingClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
 WriteTwoScaleModelClass[files_List] :=
@@ -3254,15 +3254,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]}}];
 
               Print["Creating two-scale matching class ..."];
-              WriteTwoScaleMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
-                                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
-                                          {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
-                                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
-                                         }];
+              WriteMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
+                                 }];
 
               spectrumGeneratorInputFile = "two_scale_high_scale_spectrum_generator";
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
-                 spectrumGeneratorInputFile = "two_scale_low_scale_spectrum_generator";];
+                 spectrumGeneratorInputFile = "two_scale_low_scale_spectrum_generator";
+                ];
               If[FlexibleSUSY`FlexibleEFTHiggs === True,
                  spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
                 ];
@@ -3402,7 +3403,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  initialGuesserInputFile = "semi_analytic_low_scale_initial_guesser";,
                  initialGuesserInputFile = "semi_analytic_high_scale_initial_guesser";
                 ];
-              (* @todo support EFTHiggs *)
+              If[FlexibleSUSY`FlexibleEFTHiggs === True,
+                 initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
+                ];
               WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
                                        FlexibleSUSY`InitialGuessAtSUSYScale,
                                        FlexibleSUSY`InitialGuessAtHighScale,
@@ -3436,10 +3439,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                            {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_model.cpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.cpp"}]}}];
 
+              Print["Creating semi-analytic matching class ..."];
+              WriteMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.hpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}]},
+                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.cpp.in"}],
+                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}]}
+                                 }];
+
               spectrumGeneratorInputFile = "semi_analytic_high_scale_spectrum_generator";
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
-                 spectrumGeneratorInputFile = "semi_analytic_low_scale_spectrum_generator";];
-              (* @todo support FlexibleEFTHiggs *)
+                 spectrumGeneratorInputFile = "semi_analytic_low_scale_spectrum_generator";
+                ];
+              If[FlexibleSUSY`FlexibleEFTHiggs === True,
+                 spectrumGeneratorInputFile = "standard_model_" <> spectrumGeneratorInputFile;
+                ];
               Print["Creating class for semi-analytic spectrum generator ..."];
               WriteSemiAnalyticSpectrumGeneratorClass[{{FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInputFile <> ".hpp.in"}],
                                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_spectrum_generator.hpp"}]},
