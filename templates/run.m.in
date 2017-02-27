@@ -4,7 +4,7 @@ handle = FS@ModelName@OpenHandle[
     fsSettings -> {
         precisionGoal -> 1.*^-4,           (* FlexibleSUSY[0] *)
         maxIterations -> 0,                (* FlexibleSUSY[1] *)
-        solver -> @defaultSolverType@      (* FlexibleSUSY[2] *)    
+        solver -> @defaultSolverType@,     (* FlexibleSUSY[2] *)
         calculateStandardModelMasses -> 0, (* FlexibleSUSY[3] *)
         poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
         ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
