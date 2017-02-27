@@ -24,6 +24,7 @@
 #include "logger.hpp"
 #include "model.hpp"
 #include "single_scale_constraint.hpp"
+#include "single_scale_matching.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 
@@ -47,6 +48,25 @@ void RGFlow<Semi_analytic>::add_inner(Single_scale_constraint* c, Model* m)
    if (!c) throw SetupError("constraint pointer is NULL");
    if (!m) throw SetupError("model pointer is NULL");
    inner_sliders.push_back(std::make_shared<Constraint_slider>(m, c));
+}
+
+/**
+ * Adds a matching condition for the inner iteration.  This matching
+ * condition matches the two models by calling match().  The two
+ * models are passed to the set_models() function of the matching
+ * condition.
+ *
+ * @param mc matching condition
+ * @param m1 model 1
+ * @param m2 model 2
+ */
+void RGFlow<Semi_analytic>::add_inner(Single_scale_matching* mc, Model* m1, Model* m2)
+{
+   if (!mc) throw SetupError("matching condition pointer is NULL");
+   if (!m1) throw SetupError("model pointer 1 is NULL");
+   if (!m2) throw SetupError("model pointer 2 is NULL");
+   mc->set_models(m1, m2);
+   inner_sliders.push_back(std::make_shared<Matching_slider>(m1, m2, mc));
 }
 
 /**
@@ -142,7 +162,7 @@ void RGFlow<Semi_analytic>::prepare_inner_iteration(RGFlow<Two_scale>& solver) c
 
    for (auto& s: inner_sliders) {
       s->clear_problems();
-      solver.add(s->get_constraint(), s->get_model());
+      s->add_constraint_to_solver(solver);
    }
 }
 
@@ -266,7 +286,7 @@ Model* RGFlow<Semi_analytic>::get_model(double scale) const
               std::back_inserter(sorted_sliders),
               [](const std::shared_ptr<Slider>& s1,
                  const std::shared_ptr<Slider>& s2)
-              { return s1->get_scale() < s2->get_scale(); });  
+              { return s1->get_scale() < s2->get_scale(); });
 
    auto it = std::lower_bound(sorted_sliders.begin(), sorted_sliders.end(),
                               scale,
@@ -350,8 +370,9 @@ Model* RGFlow<Semi_analytic>::Constraint_slider::get_model() {
    return model;
 }
 
-Single_scale_constraint* RGFlow<Semi_analytic>::Constraint_slider::get_constraint() {
-   return constraint;
+void RGFlow<Semi_analytic>::Constraint_slider::add_constraint_to_solver(
+   RGFlow<Two_scale>& solver) {
+   solver.add(constraint, model);
 }
 
 double RGFlow<Semi_analytic>::Constraint_slider::get_scale() {
@@ -367,6 +388,38 @@ void RGFlow<Semi_analytic>::Constraint_slider::slide() {
 
 void RGFlow<Semi_analytic>::Constraint_slider::set_precision(double p) {
    model->set_precision(p);
+}
+
+void RGFlow<Semi_analytic>::Matching_slider::clear_problems() {
+   m1->clear_problems();
+   m2->clear_problems();
+}
+
+Model* RGFlow<Semi_analytic>::Matching_slider::get_model() {
+   return m1;
+}
+
+void RGFlow<Semi_analytic>::Matching_slider::add_constraint_to_solver(
+   RGFlow<Two_scale>& solver) {
+   solver.add(matching, m1, m2);
+}
+
+double RGFlow<Semi_analytic>::Matching_slider::get_scale() {
+   return matching->get_scale();
+}
+
+void RGFlow<Semi_analytic>::Matching_slider::slide() {
+   VERBOSE_MSG("> \trunning " << m1->name() << " to scale " << matching->get_scale() << " GeV");
+   m1->run_to(matching->get_scale());
+   VERBOSE_MSG("> \trunning " << m2->name() << " to scale " << matching->get_scale() << " GeV");
+   m2->run_to(matching->get_scale());
+   VERBOSE_MSG("> \tmatching " << m1->name() << " -> " << m2->name());
+   matching->match();
+}
+
+void RGFlow<Semi_analytic>::Matching_slider::set_precision(double p) {
+   m1->set_precision(p);
+   m2->set_precision(p);
 }
 
 } // namespace flexiblesusy

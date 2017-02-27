@@ -35,6 +35,8 @@ class Convergence_tester;
 class Initial_guesser;
 class Model;
 class Single_scale_constraint;
+class Single_scale_matching;
+
 class Semi_analytic;
 class Two_scale;
 class Two_scale_running_precision;
@@ -65,6 +67,8 @@ public:
 
    /// add inner constraint
    void add_inner(Single_scale_constraint*, Model*);
+   /// add inner matching condition
+   void add_inner(Single_scale_matching*, Model*, Model*);
    /// add outer constraint
    void add_outer(Single_scale_constraint*, Model*);
    /// get model at current scale
@@ -92,7 +96,7 @@ private:
       virtual ~Slider() {}
       virtual void clear_problems() {}
       virtual Model* get_model() = 0;
-      virtual Single_scale_constraint* get_constraint() = 0;
+      virtual void add_constraint_to_solver(RGFlow<Two_scale>&) = 0;
       virtual double get_scale() = 0;
       virtual void slide() {}
       virtual void set_precision(double) {}
@@ -105,13 +109,29 @@ private:
       virtual ~Constraint_slider() {}
       virtual void clear_problems() override;
       virtual Model* get_model() override;
-      virtual Single_scale_constraint* get_constraint() override;
+      virtual void add_constraint_to_solver(RGFlow<Two_scale>&) override;
       virtual double get_scale() override;
       virtual void slide() override;
       virtual void set_precision(double) override;
    private:
       Model* model;
       Single_scale_constraint* constraint;
+   };
+
+   struct Matching_slider : public Slider {
+   public:
+      Matching_slider(Model* m1_, Model* m2_, Single_scale_matching* mc)
+         : m1(m1_), m2(m2_), matching(mc) {}
+      virtual ~Matching_slider() {}
+      virtual void clear_problems() override;
+      virtual Model* get_model() override;
+      virtual void add_constraint_to_solver(RGFlow<Two_scale>&) override;
+      virtual double get_scale() override;
+      virtual void slide() override;
+      virtual void set_precision(double) override;
+   private:
+      Model *m1, *m2;
+      Single_scale_matching* matching;
    };
 
    std::vector<std::shared_ptr<Slider> > inner_sliders{}; ///< sliders to be used in the inner iteration
