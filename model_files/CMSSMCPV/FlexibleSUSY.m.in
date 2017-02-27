@@ -8,12 +8,12 @@ FSDefaultSARAHModel = MSSM/CPV;
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
-           {4, Phase[\[Mu]]},
-           {5, Azero} };
+           {4, CosPhiMu},
+           {5, Azero},
+           {100, Phase[\[Mu]]} };
 
 EXTPAR = {
-    {100, etaInput},
-    {101, PhiMu}
+    {100, etaInput}
 };
 
 RealParameters = {};
@@ -26,7 +26,7 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
     {eta, etaInput},
-    {Phase[\[Mu]], Exp[I PhiMu]}
+    {Phase[\[Mu]], Exp[I ArcCos[CosPhiMu]]}
 };
 
 HighScale = g1 == g2;
