@@ -13,6 +13,9 @@
 #include "CMSSMNoFV_two_scale_low_scale_constraint.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
+#include "lowe.h"
+
+using namespace softsusy;
 
 template <class T>
 double calculate_delta_alpha_em(T& model)
