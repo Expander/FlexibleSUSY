@@ -6,6 +6,7 @@
 #include "test_legacy.hpp"
 #include "test_NMSSM.hpp"
 
+#include "NMSSM_two_scale_ewsb_solver.hpp"
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_two_scale_initial_guesser.hpp"
 #include "SoftsusyNMSSM_parameter_point.hpp"
@@ -23,6 +24,9 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    m.set_loops(2);
    m.set_thresholds(2);
    SoftsusyNMSSM<Two_scale> snmssm;
+
+   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
 
    // create NMSSM initial guesser
    NMSSM_input_parameters input;
