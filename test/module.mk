@@ -244,11 +244,15 @@ TEST_SH += \
 		$(DIR)/test_CMSSM_QedQcd_exception.sh \
 		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh
 TEST_SRC += \
-		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_slha.cpp \
 		$(DIR)/test_CMSSM_slha_input.cpp \
 		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
 		$(DIR)/test_CMSSM_info.cpp
+
+ifeq ($(ENABLE_SQLITE),yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSM_database.cpp
+endif
 endif
 
 ifeq ($(WITH_NMSSM),yes)
