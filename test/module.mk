@@ -730,13 +730,13 @@ $(DIR)/test_NMSSM_benchmark.x: $(DIR)/test_NMSSM_benchmark.cpp $(RUN_NMSSM_EXE) 
 $(DIR)/test_NMSSM_slha_output.x: $(DIR)/test_NMSSM_slha_output.o $(LIBNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(EXAMPLES_EXE) $(DIR)/test_NMSSM_slha_output.in.spc
 		$(CXX) -o $@ $(call abspathx,$< $(LIBNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
-$(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SMSSM_beta_functions.x: $(LIBSMSSM) $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SMSSM_ewsb.x: $(LIBSMSSM) $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSMSSM) $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSMSSM) $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NUTNMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNUTNMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
