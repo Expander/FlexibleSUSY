@@ -181,20 +181,20 @@ template<unsigned N> struct IndexBounds;
  * Incrementing the iterator results in a new index combination.
  */
 template<unsigned N> struct IndexIterator
-: public std::iterator<
-std::input_iterator_tag,
-const std::array<unsigned, N>>
 {
+   using difference_type = typename std::array<unsigned, N>::difference_type;
+   using value_type = unsigned;
+   using pointer = unsigned *;
+   using reference = unsigned &;
+   using iterator_category = std::input_iterator_tag;
+
    friend class IndexBounds<N>;
 private:
-   const IndexBounds<N> *bounds;
+   const IndexBounds<N> &bounds;
    std::array<unsigned, N> indices;
 
-   IndexIterator(const IndexBounds<N> &b, const unsigned *i)
-      : bounds(&b)
-   {
-      std::memcpy(indices.data(), i, N * sizeof(unsigned));
-   }
+   IndexIterator(const IndexBounds<N> &b, std::array<unsigned, N> &&i )
+   : bounds(b), indices( std::move(i) ) {}
 public:
    const std::array<unsigned, N> &operator*() const {
       return indices;
@@ -207,15 +207,15 @@ public:
    IndexIterator &operator++() {
       for (unsigned i = 0; i != N; i++) {
          indices[i]++;
-         if (indices[i] == bounds->indexEnd[i]) {
-            indices[i] = bounds->indexBegin[i];
+         if (indices[i] == bounds.indexEnd[i]) {
+            indices[i] = bounds.indexBegin[i];
             continue;
          }
 
          return *this;
       }
 
-      std::memcpy(indices.data(), bounds->indexEnd, N * sizeof(unsigned));
+      indices = make_array<N>::iterate( bounds.indexEnd );
       return *this;
    }
 
@@ -250,11 +250,11 @@ template<unsigned N> struct IndexBounds {
    typedef IndexIterator<N> const_iterator;
 
    const_iterator begin() const {
-      return const_iterator(*this, indexBegin);
+      return const_iterator(*this, make_array<N>::iterate( indexBegin ));
    }
 
    const_iterator end() const {
-      return const_iterator(*this, indexEnd);
+      return const_iterator(*this, make_array<N>::iterate( indexEnd ));
    }
 };
 
@@ -262,13 +262,14 @@ template<> struct IndexBounds<0> {
    using indices_type = const std::array<unsigned, 0>;
    using const_iterator = indices_type *;
 
-   static constexpr indices_type dummyIndex{};
+   static constexpr indices_type dummyIndex = {};
 
    const_iterator begin() const
    { return &dummyIndex; }
    const_iterator end() const
    { return (begin()+1); }
 };
+constexpr IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex;
 
 struct Field {};
 
