@@ -2,16 +2,16 @@ BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "
 
 (* This module generates c++ code that calculates electric dipole moments of fields *)
 
-Initialize::usage="Initialize the EDM module.";
+EDMInitialize::usage="EDMInitialize the EDM module.";
 
-SetEDMFields::usage="Set the fields for which the EDMs shall be calculated.";
-CreateFields::usage="Returns the c++ code that contains all field fields";
-CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
-CreateInterfaceFunctions::usage="Returns the c++ code containing the interface functions {prototypeCode, definitionCode}."
-CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
-CreateDefinitions::usage="Returns the c++ that contains all function definitions"
+EDMSetEDMFields::usage="Set the fields for which the EDMs shall be calculated.";
+EDMCreateFields::usage="Returns the c++ code that contains all field fields";
+EDMCreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
+EDMCreateInterfaceFunctions::usage="Returns the c++ code containing the interface functions {prototypeCode, definitionCode}."
+EDMCreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
+EDMCreateDefinitions::usage="Returns the c++ that contains all function definitions"
 
-NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
+EDMNPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
 
 (******** TODO: IMPORTANT NOTES:
  If you add new kinds of vertices (e.g for new diagram types):
@@ -27,12 +27,12 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
 
 (************* Begin public interface *******************)
 
-Initialize[] := (subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);)
+EDMInitialize[] := (subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);)
 
 edmFields = Null;
-SetEDMFields[fields_List] := (edmFields = fields;)
+EDMSetEDMFields[fields_List] := (edmFields = fields;)
 
-CreateFields[] :=
+EDMCreateFields[] :=
 Module[{fields, code},
        fields = TreeMasses`GetParticles[];
        
@@ -66,7 +66,7 @@ Module[{fields, code},
        Return[code];
        ];
 
-CreateDiagrams[] :=
+EDMCreateDiagrams[] :=
 Module[{code},
        code = StringJoin @ Riffle[(Module[{diagramType = #},
                                   "template<unsigned> class " <> SymbolName[diagramType] <> ";\n" <>
@@ -89,7 +89,7 @@ Module[{code},
        Return[code];
        ];
 
-CreateInterfaceFunctions[] :=
+EDMCreateInterfaceFunctions[] :=
 Module[{prototypes, definitions, evaluators},
        evaluators = ConcreteDiagramEvaluators[];
        
@@ -146,13 +146,13 @@ Module[{prototypes, definitions, evaluators},
        Return[{prototypes, definitions}];
        ];
 
-CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
+EDMCreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
-CreateDefinitions[vertexRules_List] :=
+EDMCreateDefinitions[vertexRules_List] :=
 (CreateVertices[vertexRules][[2]] <> "\n\n" <>
  CreateEvaluationContextSpecializations[]);
 
-NPointFunctions[] :=
+EDMNPointFunctions[] :=
 Module[{contributingDiagrams, vertices},
        contributingDiagrams = ContributingDiagrams[];
        

@@ -1431,12 +1431,12 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
         definitions, calculationCode},
-           particles = GMuonMinus2`CreateParticles[];
-           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
-           diagrams = GMuonMinus2`CreateDiagrams[];
-           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
-           definitions = GMuonMinus2`CreateDefinitions[vertexRules];
-           calculationCode = GMuonMinus2`CreateCalculation[];
+           particles = GMuonMinus2`GMuonMinus2CreateParticles[];
+           muonFunctionPrototypes = GMuonMinus2`GMuonMinus2CreateMuonFunctions[vertexRules][[1]];
+           diagrams = GMuonMinus2`GMuonMinus2CreateDiagrams[];
+           vertexFunctionData = GMuonMinus2`GMuonMinus2CreateVertexFunctionData[vertexRules];
+           definitions = GMuonMinus2`GMuonMinus2CreateDefinitions[vertexRules];
+           calculationCode = GMuonMinus2`GMuonMinus2CreateCalculation[];
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -1453,12 +1453,12 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
 WriteEDMClass[vertexRules_List, files_List] :=
 Module[{fields, diagrams, interfaceFunctions,
     vertexFunctionData, definitions},
-       fields = EDM`CreateFields[];
-       diagrams = EDM`CreateDiagrams[];
+       fields = EDM`EDMCreateFields[];
+       diagrams = EDM`EDMCreateDiagrams[];
        
-       interfaceFunctions = EDM`CreateInterfaceFunctions[];
-       vertexFunctionData = EDM`CreateVertexFunctionData[vertexRules];
-       definitions = EDM`CreateDefinitions[vertexRules];
+       interfaceFunctions = EDM`EDMCreateInterfaceFunctions[];
+       vertexFunctionData = EDM`EDMCreateVertexFunctionData[vertexRules];
+       definitions = EDM`EDMCreateDefinitions[vertexRules];
        
        WriteOut`ReplaceInFiles[files,
                                { "@EDM_Fields@"                    -> fields,
@@ -2031,7 +2031,7 @@ PrepareTadpoles[eigenstates_] :=
           ];
 
 (* Get all nPointFunctions that GMM2 needs *)
-PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
+PrepareGMuonMinus2[] := GMuonMinus2`GMuonMinus2NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
@@ -2944,10 +2944,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
            Print["Creating class EDM"];
-           EDM`Initialize[];
-           EDM`SetEDMFields[{SARAH`Electron}];
+           EDM`EDMInitialize[];
+           EDM`EDMSetEDMFields[{SARAH`Electron}];
            
-           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`NPointFunctions[], Lat$massMatrices]],
+           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`EDMNPointFunctions[], Lat$massMatrices]],
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
