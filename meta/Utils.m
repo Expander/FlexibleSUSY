@@ -86,6 +86,22 @@ FSImportString::usage = "Returns the content of a file in form of a string.  If 
 
 FSStringPadLeft::usage = "StringPadLeft[] for Mathematica 9 and below.";
 
+StartProgressBar::usage = "Starts progress indicator.
+
+Example:
+
+   StartProgressBar[Dynamic[k], 100];
+   For[k = 1, k <= 100, k++,
+       UpdateProgressBar[k, 100];
+       DoSomething[];
+      ];
+   StopProgressBar[100];
+";
+
+UpdateProgressBar::usage = "updates progress indicator.";
+
+StopProgressBar::usage = "stops progress bar.";
+
 Begin["`Private`"];
 
 ApplyAndConcatenate[Func_, l_List] :=
@@ -173,6 +189,28 @@ MaxRelDiff[{a_, b_}, underflow_:10^(-16)] :=
 
 MaxRelDiff[numbers_List, underflow_:10^(-16)] :=
     Max[MaxRelDiff[#,underflow]& /@ Tuples[numbers, 2]];
+
+StartProgressBar[dyn:Dynamic[x_], total_, len_:50] :=
+    If[$Notebooks,
+       PrintTemporary @ Row[{ProgressIndicator[dyn, {0, total}], " Total: ", total}]
+      ];
+
+UpdateProgressBar[x_, total_, len_:50] :=
+    Module[{i},
+           If[!$Notebooks,
+              WriteString["stdout", "[" <> StringJoin[
+                  Join[Table[".",{i,Round[len*x/total]}],
+                       Table[" ",{i,Round[len*(1-x/total)]}]]
+                 ] <> "] " <> ToString[x] <> "/" <> ToString[total] <> "\r"];
+             ];
+          ];
+
+StopProgressBar[total_, len_:50] :=
+    If[!$Notebooks,
+       WriteString["stdout", "[" <> StringJoin[
+           Table[".",{i,Round[len]}]
+       ] <> "] " <> ToString[total] <> "/" <> ToString[total] <> "\n"];
+      ];
 
 End[];
 

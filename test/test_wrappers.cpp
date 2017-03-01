@@ -298,6 +298,9 @@ BOOST_AUTO_TEST_CASE(test_Which)
    BOOST_CHECK_EQUAL(std::real(Which(true , std::complex<double>(2.,2.))), 2.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
    BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
+
+   BOOST_CHECK_EQUAL(Which(false, 0, true, 0.5), 0.5);
+   BOOST_CHECK_EQUAL(Which(false, 0, false, 0, true, 0.5), 0.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_MaxRelDiff)
@@ -631,4 +634,34 @@ BOOST_AUTO_TEST_CASE(test_Power_benchmark)
    BOOST_CHECK_LT(timed_Power6, timed_Power_6);
    BOOST_CHECK_LT(timed_Power7, timed_Power_7);
    BOOST_CHECK_LT(timed_Power8, timed_Power_8);
+}
+
+BOOST_AUTO_TEST_CASE(test_Min)
+{
+   BOOST_CHECK_EQUAL(Min(0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.), 1.);
+   BOOST_CHECK_EQUAL(Min(-1), -1);
+
+   BOOST_CHECK_EQUAL(Min(0.,1.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1,0.), 0.);
+   BOOST_CHECK_EQUAL(Min(1.,0), 0.);
+
+   BOOST_CHECK_EQUAL(Min(-1,0,1), -1);
+   BOOST_CHECK_EQUAL(Min(-1.,0.,1.), -1.);
+}
+
+BOOST_AUTO_TEST_CASE(test_Max)
+{
+   BOOST_CHECK_EQUAL(Max(0.), 0.);
+   BOOST_CHECK_EQUAL(Max(1.), 1.);
+   BOOST_CHECK_EQUAL(Max(-1), -1);
+
+   BOOST_CHECK_EQUAL(Max(0.,1.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1,0.), 1.);
+   BOOST_CHECK_EQUAL(Max(1.,0), 1.);
+
+   BOOST_CHECK_EQUAL(Max(-1,0,1), 1);
+   BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
 }

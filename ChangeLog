@@ -92,6 +92,9 @@ FlexibleSUSY-1.7.3 [not released yet]
    constraint.  (Before this commit, FlexibleSUSY did only print a
    warning.)
 
+ * Change (commit cff40dd): Catch non-numeric user input to the
+   LibraryLink interface functions.
+
  * Bugfix (commit 4a5ada7): Adding missing return statement in
    function recalculate_mw_pole().  This bug was only present if the W
    pole mass is used as input (not GF).
@@ -108,6 +111,12 @@ FlexibleSUSY-1.7.3 [not released yet]
  * Bugfix (commit beb4683): Accept SLHA output blocks specified as
    strings (not symbols).
    Thanks to Joshua Ellis.
+
+ * Bugfix: Implement missing limits of threshold correction functions
+   from arXiv:1407.4081.
+
+ * Bugfix (commit 581080f): Catch further NaNs from inside the MSSM 2L
+   Higgs mass routines of Pietro Slavich.
 
 FlexibleSUSY-1.7.2 [December, 15 2016]
 

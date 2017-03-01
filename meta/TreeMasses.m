@@ -90,6 +90,9 @@ GetDimensionStartSkippingSMGoldstones::usage="return first index,
 GetParticleIndices::usage = "returns list of particle indices with
  names";
 
+ParticleQ::usage = "returns True if argument is a particle, False
+ otherwise."
+
 FindMixingMatrixSymbolFor::usage="returns the mixing matrix symbol for
 a given field";
 
@@ -225,6 +228,9 @@ GetSusyParticles[states_:FlexibleSUSY`FSEigenstates] :=
 
 GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Select[GetParticles[states], (SARAH`SMQ[#])&];
+
+ParticleQ[p_, states_:FlexibleSUSY`FSEigenstates] :=
+    MemberQ[GetParticles[states], p];
 
 IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getType[sym, False, states] === type;
@@ -1319,16 +1325,11 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            typeGoldstone = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimGoldstone]];
            prototype = typeHiggs <> " get_M" <> name <> "() const;\n";
            body =
-               typeHiggs     <> " " <> particleHiggsStr <> ";\n" <>
                typeGoldstone <> " " <> particleGoldstoneStr <> ";\n" <>
-               "\n" <>
                FillGoldstoneMassVector[particleGoldstoneStr, vectorList] <>
                "\n" <>
-               "remove_if_equal(" <> particleStr <> ", " <>
-                                particleGoldstoneStr <> ", " <>
-                                particleHiggsStr <> ");\n" <>
-               "\n" <>
-               "return " <> particleHiggsStr <> ";\n";
+               "return remove_if_equal(" <> particleStr <> ", " <>
+                                       particleGoldstoneStr <> ");\n";
            def = typeHiggs <> " CLASSNAME::get_M" <> name <> "() const\n{\n" <>
                IndentText[body] <>
                "}\n";
