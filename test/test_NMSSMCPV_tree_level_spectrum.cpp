@@ -7,6 +7,7 @@
 #include "test.hpp"
 #include "test_NMSSMCPV.hpp"
 #include "NMSSM_two_scale_model.hpp"
+#include "NMSSMCPV_two_scale_ewsb_solver.hpp"
 #include "NMSSMCPV_two_scale_model.hpp"
 
 #define COMPARE_MASS(p,dev) TEST_CLOSE(a.get_##p(), b.get_##p(), dev);
@@ -96,6 +97,11 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_tree_level_spectrum )
    NMSSM<Two_scale> m2;
 
    setup_NMSSMCPV(m1, input);
+
+   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m1.set_ewsb_solver(
+      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
+
    m1.solve_ewsb_tree_level();
    copy_parameters(m1, m2);
    m1.calculate_DRbar_masses();
@@ -114,6 +120,10 @@ void check_goldstone_masses(const NMSSMCPV_input_parameters& input)
 {
    NMSSMCPV<Two_scale> m;
    setup_NMSSMCPV(m, input);
+
+   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(
+      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    m.solve_ewsb_tree_level();
    m.calculate_DRbar_masses();
