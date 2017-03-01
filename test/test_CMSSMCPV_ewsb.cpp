@@ -8,6 +8,7 @@
 #include "test_CMSSMCPV.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
+#include "CMSSMCPV_two_scale_ewsb_solver.hpp"
 #include "CMSSMCPV_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -32,6 +33,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_tree_level )
    CMSSMCPV<Two_scale> m;
    const double precision = 1.0e-5;
    setup_CMSSMCPV(m, input);
+
+   CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
@@ -67,6 +71,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_one_loop )
    CMSSMCPV<Two_scale> m;
    const double precision = 1.0e-5;
    setup_CMSSMCPV(m, input);
+
+   CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
@@ -184,6 +191,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles_real_limit )
    const double precision = 1.0e-5;
    setup_CMSSMCPV(m, input);
 
+   CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
+
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
    m.set_mHd2(Sqr(input.m0));
@@ -216,6 +226,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
    CMSSMCPV<Two_scale> m;
    const double precision = 1.0e-5;
    setup_CMSSMCPV(m, input);
+
+   CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(&ewsb_solver);
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
