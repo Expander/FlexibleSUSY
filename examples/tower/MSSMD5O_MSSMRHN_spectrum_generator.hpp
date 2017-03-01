@@ -19,6 +19,7 @@
 #ifndef MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 #define MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 
+#include "MSSMD5O_two_scale_ewsb_solver.hpp"
 #include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMD5O_two_scale_susy_scale_constraint.hpp"
 #include "MSSMD5O_two_scale_low_scale_constraint.hpp"
@@ -27,6 +28,7 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
 
+#include "MSSMRHN_two_scale_ewsb_solver.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_high_scale_constraint.hpp"
 #include "MSSMRHN_two_scale_convergence_tester.hpp"
