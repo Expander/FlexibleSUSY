@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
    SM<Two_scale> m;
    setup_SM_const(m, input);
    SM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // set mu2 which is not in agreement with EWSB
    const double mu2 = 100.;

@@ -90,7 +90,8 @@ BOOST_AUTO_TEST_CASE( test_tree_level_ewsb_solutions )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> sa_ewsb;
    sa_ewsb.set_loop_order(0);
    sa_ewsb.set_semi_analytic_solutions(&solns);
-   sa_model.set_ewsb_solver(&sa_ewsb);
+   sa_model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(sa_ewsb));
 
    sa_model.set_ewsb_loop_order(0);
    sa_model.set_ewsb_iteration_precision(precision);
@@ -111,7 +112,8 @@ BOOST_AUTO_TEST_CASE( test_tree_level_ewsb_solutions )
 
    CMSSM_ewsb_solver<Two_scale> ts_ewsb;
    ts_ewsb.set_loop_order(0);
-   ts_model.set_ewsb_solver(&ts_ewsb);
+   ts_model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
 
    ts_model.set_ewsb_loop_order(0);
    ts_model.set_ewsb_iteration_precision(precision);
@@ -162,7 +164,8 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> sa_ewsb;
    sa_ewsb.set_loop_order(1);
    sa_ewsb.set_semi_analytic_solutions(&solns);
-   sa_model.set_ewsb_solver(&sa_ewsb);
+   sa_model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(sa_ewsb));
 
    sa_model.set_ewsb_loop_order(1);
    sa_model.set_ewsb_iteration_precision(precision);
@@ -190,7 +193,8 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
 
    CMSSM_ewsb_solver<Two_scale> ts_ewsb;
    ts_ewsb.set_loop_order(1);
-   ts_model.set_ewsb_solver(&ts_ewsb);
+   ts_model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
 
    ts_model.set_ewsb_loop_order(1);
    ts_model.set_ewsb_iteration_precision(precision);
@@ -247,7 +251,8 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> sa_ewsb;
    sa_ewsb.set_loop_order(2);
    sa_ewsb.set_semi_analytic_solutions(&solns);
-   sa_model.set_ewsb_solver(&sa_ewsb);
+   sa_model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(sa_ewsb));
 
    sa_model.set_ewsb_loop_order(2);
    sa_model.set_ewsb_iteration_precision(precision);
@@ -279,7 +284,8 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
 
    CMSSM_ewsb_solver<Two_scale> ts_ewsb;
    ts_ewsb.set_loop_order(2);
-   ts_model.set_ewsb_solver(&ts_ewsb);
+   ts_model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
 
    ts_model.set_ewsb_loop_order(2);
    ts_model.set_ewsb_iteration_precision(precision);

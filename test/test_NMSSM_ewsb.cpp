@@ -25,7 +25,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level )
    setup_NMSSM(m, s, input);
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);
@@ -125,7 +126,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
    setup_NMSSM_const(m, s, input);
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);
@@ -247,7 +249,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    setup_NMSSM_const(m, s, input);
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);

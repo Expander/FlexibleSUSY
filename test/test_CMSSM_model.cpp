@@ -1621,7 +1621,8 @@ void compare_models(int loopLevel)
    MssmSoftsusy softSusy;
 
    CMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    setup_models(m, softSusy, input, loopLevel);
 

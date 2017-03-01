@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( test_LO_effective_couplings )
 
    SM_mass_eigenstates model;
    SM_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
    set_test_model_parameters(model, qedqcd);
 
    Standard_model_tester sm_tester(model, qedqcd, physical_inputs);

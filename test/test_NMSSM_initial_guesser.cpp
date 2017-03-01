@@ -26,7 +26,8 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    SoftsusyNMSSM<Two_scale> snmssm;
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // create NMSSM initial guesser
    NMSSM_input_parameters input;

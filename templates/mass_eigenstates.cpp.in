@@ -206,7 +206,7 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARA
    return problems;
 }
 
-void CLASSNAME::set_ewsb_solver(@ModelName@_ewsb_solver_interface* solver)
+void CLASSNAME::set_ewsb_solver(const std::shared_ptr<@ModelName@_ewsb_solver_interface>& solver)
 {
    ewsb_solver = solver;
 }

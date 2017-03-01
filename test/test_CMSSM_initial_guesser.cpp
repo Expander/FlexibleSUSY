@@ -27,7 +27,8 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    softsusy::TOLERANCE = 1.0e-3;
    CMSSM<Two_scale> m(input);
    CMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
    m.set_loops(2);
    m.set_thresholds(2);
    SoftsusyMSSM<Two_scale> smssm;

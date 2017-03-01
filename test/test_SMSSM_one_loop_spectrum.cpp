@@ -105,7 +105,8 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    setup_SMSSM_const(m, s, input);
 
    SMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    softsusy::Z3 = false;
    ensure_tree_level_ewsb(m, s, input);
@@ -258,7 +259,8 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
    setup_SMSSM_const(m, s, input);
 
    SMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    softsusy::Z3 = false;
    softsusy::numHiggsMassLoops = 1;

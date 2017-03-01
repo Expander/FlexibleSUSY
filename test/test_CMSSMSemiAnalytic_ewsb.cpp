@@ -39,7 +39,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_tree_level_solution )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(0);
    ewsb_solver.set_semi_analytic_solutions(&solns);
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    model.set_ewsb_loop_order(0);
    model.set_ewsb_iteration_precision(precision);
@@ -80,7 +81,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_one_loop_solution )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(1);
    ewsb_solver.set_semi_analytic_solutions(&solns);
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    model.set_ewsb_loop_order(1);
    model.set_ewsb_iteration_precision(precision);
@@ -127,7 +129,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_two_loop_solution )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(2);
    ewsb_solver.set_semi_analytic_solutions(&solns);
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    model.set_ewsb_loop_order(2);
    model.set_ewsb_iteration_precision(precision);
@@ -273,7 +276,8 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_ewsb_tree_level )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(0);
    ewsb_solver.set_semi_analytic_solutions(&solns);
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    model.set_ewsb_iteration_precision(precision);
    const int error = model.solve_ewsb_tree_level();
@@ -333,7 +337,8 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_ewsb_one_loop )
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(1);
    ewsb_solver.set_semi_analytic_solutions(&solns);
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    model.set_ewsb_iteration_precision(precision);
    const int error = model.solve_ewsb_one_loop();

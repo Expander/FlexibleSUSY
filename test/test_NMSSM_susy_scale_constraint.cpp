@@ -30,7 +30,8 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    setup_NMSSM(m, s, input);
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);

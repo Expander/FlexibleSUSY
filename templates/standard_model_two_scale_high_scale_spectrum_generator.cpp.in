@@ -92,7 +92,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
 
    @ModelName@_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(std::make_shared<@ModelName@_ewsb_solver<Two_scale> >(ewsb_solver));
 
    @ModelName@_high_scale_constraint<Two_scale> high_scale_constraint(&model);
    @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);

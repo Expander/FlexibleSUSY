@@ -69,7 +69,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    model.set_zero_threshold(this->settings.get(Spectrum_generator_settings::beta_zero_threshold));
 
    @ModelName@_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(std::make_shared<@ModelName@_ewsb_solver<Two_scale> >(ewsb_solver));
 
    @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);
    @ModelName@_low_scale_constraint<Two_scale>  low_scale_constraint(&model, qedqcd);

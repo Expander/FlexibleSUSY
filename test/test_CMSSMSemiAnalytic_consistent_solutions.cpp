@@ -269,7 +269,8 @@ CMSSM<Two_scale> run_single_two_scale_iteration(const CMSSM<Two_scale>& model, c
    CMSSM<Two_scale> next_model(model);
 
    CMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(&ewsb_solver);
+   next_model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    CMSSM_high_scale_constraint<Two_scale> high_scale_constraint;
    CMSSM_susy_scale_constraint<Two_scale> susy_scale_constraint;
@@ -318,7 +319,8 @@ CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(
 
    CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_semi_analytic_solutions(&solutions);
-   next_model.set_ewsb_solver(&ewsb_solver);
+   next_model.set_ewsb_solver(
+      std::make_shared<CMSSMSemiAnalytic_ewsb_solver<Semi_analytic> >(ewsb_solver));
 
    CMSSMSemiAnalytic_high_scale_constraint<Semi_analytic> high_scale_constraint;
    CMSSMSemiAnalytic_susy_scale_constraint<Semi_analytic> susy_scale_constraint;

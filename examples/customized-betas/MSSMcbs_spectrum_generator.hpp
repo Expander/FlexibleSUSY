@@ -113,7 +113,8 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    model.set_thresholds(threshold_corrections_loop_order);
 
    CMSSM_ewsb_solver<T> ewsb_solver;
-   model.set_ewsb_solver(&ewsb_solver);
+   model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<T> >(ewsb_solver));
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();

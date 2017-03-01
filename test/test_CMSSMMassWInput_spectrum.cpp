@@ -555,7 +555,8 @@ public:
       const double precision_goal = softsusy::TOLERANCE;
 
       CMSSMMassWInput_ewsb_solver<Two_scale> ewsb_solver;
-      mssm.set_ewsb_solver(&ewsb_solver);
+      mssm.set_ewsb_solver(
+         std::make_shared<CMSSMMassWInput_ewsb_solver<Two_scale> >(ewsb_solver));
 
       mssm.clear();
       mssm.set_loops(2);

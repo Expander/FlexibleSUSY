@@ -89,7 +89,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_spectrum )
    setup_CMSSMCPV(m1, input);
 
    CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m1.set_ewsb_solver(&ewsb_solver);
+   m1.set_ewsb_solver(
+      std::make_shared<CMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m1.set_mHu2(-Sqr(input.m0));
@@ -130,7 +131,8 @@ void check_goldstone_masses(const CMSSMCPV_input_parameters& input)
    setup_CMSSMCPV(m, input);
 
    CMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<CMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));

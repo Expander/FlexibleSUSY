@@ -95,7 +95,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    setup_NMSSM_const(m, s, input);
 
    NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(&ewsb_solver);
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    ensure_tree_level_ewsb(m, s, input);
 
