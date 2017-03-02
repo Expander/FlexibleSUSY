@@ -2872,13 +2872,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ];
 
            allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
+               Parameters`GetInputParameters[]
             ];
 
            allExtraParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
-               (* {parameter, type} *)
-               {#, Parameters`GetType[#]}& /@ Parameters`GetExtraParameters[]
+               Parameters`GetExtraParameters[]
             ];
 
            On[Assert];
