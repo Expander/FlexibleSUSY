@@ -54,13 +54,13 @@ public:
    @ModelName@_ewsb_solver& operator=(const @ModelName@_ewsb_solver&) = default;
    @ModelName@_ewsb_solver& operator=(@ModelName@_ewsb_solver&&) = default;
 
-   int get_loop_order() const { return loop_order; }
-   int get_number_of_iterations() const { return number_of_iterations; }
-   double get_precision() const { return precision; }
-
    virtual void set_loop_order(int l) override { loop_order = l; }
    virtual void set_number_of_iterations(int n) override { number_of_iterations = n; }
    virtual void set_precision(double p) override { precision = p; }
+
+   virtual int get_loop_order() const override { return loop_order; }
+   virtual int get_number_of_iterations() const override { return number_of_iterations; }
+   virtual double get_precision() const override { return precision; }
 
    void set_semi_analytic_solutions(@ModelName@_semi_analytic_solutions*);
 

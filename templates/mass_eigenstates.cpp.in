@@ -278,6 +278,24 @@ int CLASSNAME::solve_ewsb_tree_level()
       return EWSB_solver::FAIL;
    }
 
+   const int old_loop_order = ewsb_solver->get_loop_order();
+   const auto save_loop_order = make_raii_guard(
+      [this, old_loop_order] () {
+         this->ewsb_solver->set_loop_order(old_loop_order);
+      });
+
+   const int old_iterations = ewsb_solver->get_number_of_iterations();
+   const auto save_iterations = make_raii_guard(
+      [this, old_iterations] () {
+         this->ewsb_solver->set_number_of_iterations(old_iterations);
+      });
+
+   const double old_precision = ewsb_solver->get_precision();
+   const auto save_precision = make_raii_guard(
+      [this, old_precision] () {
+         this->ewsb_solver->set_precision(old_precision);
+      });
+
    ewsb_solver->set_loop_order(0);
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
    ewsb_solver->set_precision(ewsb_iteration_precision);
@@ -294,6 +312,24 @@ int CLASSNAME::solve_ewsb_one_loop()
 #endif
       return EWSB_solver::FAIL;
    }
+
+   const int old_loop_order = ewsb_solver->get_loop_order();
+   const auto save_loop_order = make_raii_guard(
+      [this, old_loop_order] () {
+         this->ewsb_solver->set_loop_order(old_loop_order);
+      });
+
+   const int old_iterations = ewsb_solver->get_number_of_iterations();
+   const auto save_iterations = make_raii_guard(
+      [this, old_iterations] () {
+         this->ewsb_solver->set_number_of_iterations(old_iterations);
+      });
+
+   const double old_precision = ewsb_solver->get_precision();
+   const auto save_precision = make_raii_guard(
+      [this, old_precision] () {
+         this->ewsb_solver->set_precision(old_precision);
+      });
 
    ewsb_solver->set_loop_order(1);
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
@@ -313,6 +349,24 @@ int CLASSNAME::solve_ewsb()
    }
 
    VERBOSE_MSG("\t\tSolving @ModelName@ EWSB at " << ewsb_loop_order << "-loop order");
+
+   const int old_loop_order = ewsb_solver->get_loop_order();
+   const auto save_loop_order = make_raii_guard(
+      [this, old_loop_order] () {
+         this->ewsb_solver->set_loop_order(old_loop_order);
+      });
+
+   const int old_iterations = ewsb_solver->get_number_of_iterations();
+   const auto save_iterations = make_raii_guard(
+      [this, old_iterations] () {
+         this->ewsb_solver->set_number_of_iterations(old_iterations);
+      });
+
+   const double old_precision = ewsb_solver->get_precision();
+   const auto save_precision = make_raii_guard(
+      [this, old_precision] () {
+         this->ewsb_solver->set_precision(old_precision);
+      });
 
    ewsb_solver->set_loop_order(ewsb_loop_order);
    ewsb_solver->set_number_of_iterations(get_number_of_ewsb_iterations());
