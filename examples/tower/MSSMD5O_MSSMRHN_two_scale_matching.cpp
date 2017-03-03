@@ -265,13 +265,11 @@ void MSSMD5O_MSSMRHN_matching::update_scale()
 }
 
 MSSMD5O_MSSMRHN_matching_up<Two_scale>::MSSMD5O_MSSMRHN_matching_up()
-   : Matching()
-   , matching()
+   : matching()
 {}
 
 MSSMD5O_MSSMRHN_matching_up<Two_scale>::MSSMD5O_MSSMRHN_matching_up(const MSSMD5O_input_parameters& input)
-   : Matching()
-   , matching(input)
+   : matching(input)
 {}
 
 void MSSMD5O_MSSMRHN_matching_up<Two_scale>::match()
@@ -312,13 +310,11 @@ void MSSMD5O_MSSMRHN_matching_up<Two_scale>::reset()
 }
 
 MSSMD5O_MSSMRHN_matching_down<Two_scale>::MSSMD5O_MSSMRHN_matching_down()
-   : Matching()
-   , matching()
+   : matching()
 {}
 
 MSSMD5O_MSSMRHN_matching_down<Two_scale>::MSSMD5O_MSSMRHN_matching_down(const MSSMD5O_input_parameters& input)
-   : Matching()
-   , matching(input)
+   : matching(input)
 {}
 
 void MSSMD5O_MSSMRHN_matching_down<Two_scale>::match()
