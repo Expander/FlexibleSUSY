@@ -116,7 +116,6 @@ public:
    static const int number_of_ewsb_equations = 1;
 
    void calculate_DRbar_masses();
-   void calculate_DRbar_parameters();
    void calculate_pole_masses();
    void check_pole_masses_for_tachyons();
    void do_force_output(bool);

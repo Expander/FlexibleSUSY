@@ -567,15 +567,6 @@ void Standard_model::calculate_DRbar_masses()
 }
 
 /**
- * Backward compatibility routine which finds the DRbar mass
- * eigenstates and mixings.
- */
-void Standard_model::calculate_DRbar_parameters()
-{
-   calculate_DRbar_masses();
-}
-
-/**
  * routine which finds the pole mass eigenstates and mixings.
  */
 void Standard_model::calculate_pole_masses()
