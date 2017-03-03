@@ -388,7 +388,7 @@ void SLHA_io::set_modsel(const Modsel& modsel_)
    std::ostringstream ss;
    ss << "Block MODSEL\n";
    ss << FORMAT_ELEMENT(6 , qfv | lfv, "quark/lepton flavour violation");
-   ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "DRbar parameter output scale (GeV)");
+   ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "running parameter output scale (GeV)");
 
    set_block(ss);
 }

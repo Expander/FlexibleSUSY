@@ -22,7 +22,7 @@
  * @brief implementation of the SM model class
  *
  * Contains the definition of the SM model class methods
- * which solve EWSB and calculate pole masses and mixings from DRbar
+ * which solve EWSB and calculate pole masses and mixings from MSbar
  * parameters.
  *
  */
