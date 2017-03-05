@@ -705,6 +705,7 @@ TransformSymbolsIn[expr_, symbols_List, Transformator_, protectedHeads_:{SARAH`L
                symbols
            ];
            protectionRules = Rule[#, Unique[CConversion`ToValidCSymbolString[#]]]& /@ protectedSymbols;
+           transformationRules = transformationRules /. protectionRules;
            expr /. protectionRules /. transformationRules /. (Reverse /@ protectionRules)
           ];
 
