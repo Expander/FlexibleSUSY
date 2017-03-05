@@ -649,6 +649,7 @@ GeneralReplacementRules[] :=
                  ]
              ]]
             ],
+      "@RenScheme@"           -> ToString[FlexibleSUSY`FSRenormalizationScheme],
       "@ModelTypes@"          -> FlexibleTower`GetModelTypes[],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,

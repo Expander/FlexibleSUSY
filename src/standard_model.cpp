@@ -470,7 +470,7 @@ void Standard_model::print(std::ostream& ostr) const
    ostr << "mu2 = " << mu2 << '\n';
    ostr << "v = " << v << '\n';
    ostr << "----------------------------------------\n"
-           "tree-level DRbar masses:\n"
+           "tree-level MSbar masses:\n"
            "----------------------------------------\n";
    ostr << "MVG = " << MVG << '\n';
    ostr << "MHp = " << MHp << '\n';
@@ -485,7 +485,7 @@ void Standard_model::print(std::ostream& ostr) const
    ostr << "MVWp = " << MVWp << '\n';
 
    ostr << "----------------------------------------\n"
-           "tree-level DRbar mixing matrices:\n"
+           "tree-level MSbar mixing matrices:\n"
            "----------------------------------------\n";
    ostr << "Vd = " << Vd << '\n';
    ostr << "Ud = " << Ud << '\n';
@@ -543,7 +543,7 @@ double Standard_model::G0(double p, double m1, double m2) const
 }
 
 /**
- * routine which finds the DRbar mass eigenstates and mixings.
+ * routine which finds the MSbar mass eigenstates and mixings.
  */
 void Standard_model::calculate_DRbar_masses()
 {
@@ -563,15 +563,6 @@ void Standard_model::calculate_DRbar_masses()
    calculate_MFv();
    calculate_MHp();
    calculate_MVG();
-}
-
-/**
- * Backward compatibility routine which finds the DRbar mass
- * eigenstates and mixings.
- */
-void Standard_model::calculate_DRbar_parameters()
-{
-   calculate_DRbar_masses();
 }
 
 /**
@@ -641,7 +632,7 @@ void Standard_model::check_pole_masses_for_tachyons()
 }
 
 /**
- * calculates spectrum for model once the DRbar parameters at
+ * calculates spectrum for model once the MSbar parameters at
  * at low energies are known
  */
 void Standard_model::calculate_spectrum()
