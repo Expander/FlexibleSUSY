@@ -1,4 +1,4 @@
-FlexibleSUSY-1.7.3 [not released yet]
+FlexibleSUSY-1.7.3 [February, 27 2017]
 
  * Change (commit 43bb03a): FlexibleSUSY now aborts the code
    generation if the user tries to fix an unknown parameter in a
