@@ -193,7 +193,7 @@ WaveResult[diagr_List, includeGoldstones_] :=
            intparticles = ({SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
-           result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, FlexibleSUSY`M[intfermion], FlexibleSUSY`M[intscalar]];
+           result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
            intpartwithindex = Cases[intparticles, _[{_}]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
