@@ -12,12 +12,12 @@ EXTPAR = {
     {1, QEWSB},
     {2, Lambdainput},
     {3, LambdaSinput},
-    {4, MSinput},
+    {4, Kappainput},
     {5, K1input},
     {6, K2input}
 };
 
-EWSBOutputParameters = { mu2 };
+EWSBOutputParameters = { mu2, MS };
 
 HighScale = Qin;
 
@@ -28,7 +28,7 @@ HighScaleInput = {
     {LambdaS, LambdaSinput},
     {K1, K1input},
     {K2, K2input},
-    {MS, MSinput}
+    {\[Kappa], Kappainput}
 };
 
 SUSYScale = QEWSB;
