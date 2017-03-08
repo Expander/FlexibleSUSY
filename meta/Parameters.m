@@ -1206,7 +1206,9 @@ RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
 RemoveProtectedHeads[expr_] :=
     expr /. { FlexibleSUSY`LowEnergyConstant[__] -> FlexibleSUSY`LowEnergyConstant[],
               FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[],
-              FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[]};
+              FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[],
+              SARAH`Mass  -> FlexibleSUSY`M,
+              SARAH`Mass2 -> FlexibleSUSY`M };
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
