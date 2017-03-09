@@ -113,13 +113,13 @@ ThetaWDRbar;
 SCALE;
 THRESHOLD;
 VEV::usage = "running SM-like VEV in the full model";
-UseHiggs2LoopNMSSM;
+UseHiggs2LoopNMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
-UseHiggs2LoopSM;
-UseHiggs3LoopSplit;
+UseHiggs2LoopSM = False;
+UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
