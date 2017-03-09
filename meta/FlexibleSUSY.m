@@ -561,11 +561,11 @@ GUTNormalization[coupling_] :=
     Parameters`GetGUTNormalization[coupling];
 
 ParticleIndexRule[par_, name_String] := {
-    "@" <> name <> "@" -> ToValidCSymbolString[par],
+    "@" <> name <> "@" -> CConversion`ToValidCSymbolString[par],
     "@" <> name <> "_" ~~ num___ ~~ "@" /; StringFreeQ[num, "@"] :>
-    ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", ""],
+    CConversion`ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", ""],
     "@" <> name <> "(" ~~ num___ ~~ ")@" /; StringFreeQ[num, "@"] :>
-    ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", "()"]
+    CConversion`ToValidCSymbolString[par] <> If[TreeMasses`GetDimension[par] > 1, "(" <> num <> ")", "()"]
 };
 
 GenerationIndexRule[par_, name_String] :=
@@ -608,20 +608,20 @@ GeneralReplacementRules[] :=
         GenerationIndexRule[SARAH`Selectron, "Selectron"],
         GenerationIndexRule[SARAH`Gluino, "Gluino"]
     },
-    { "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
-      "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
-      "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
-      "@LeftUpMixingMatrix@"   -> ToValidCSymbolString[SARAH`UpMatrixL],
-      "@LeftDownMixingMatrix@" -> ToValidCSymbolString[SARAH`DownMatrixL],
-      "@RightUpMixingMatrix@"  -> ToValidCSymbolString[SARAH`UpMatrixR],
-      "@RightDownMixingMatrix@"-> ToValidCSymbolString[SARAH`DownMatrixR],
-      "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
-      "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
-      "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling],
-      "@hyperchargeCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
-      "@leftCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]],
-      "@hyperchargeCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
-      "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
+    { "@UpYukawa@"       -> CConversion`ToValidCSymbolString[SARAH`UpYukawa],
+      "@DownYukawa@"     -> CConversion`ToValidCSymbolString[SARAH`DownYukawa],
+      "@ElectronYukawa@" -> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa],
+      "@LeftUpMixingMatrix@"   -> CConversion`ToValidCSymbolString[SARAH`UpMatrixL],
+      "@LeftDownMixingMatrix@" -> CConversion`ToValidCSymbolString[SARAH`DownMatrixL],
+      "@RightUpMixingMatrix@"  -> CConversion`ToValidCSymbolString[SARAH`UpMatrixR],
+      "@RightDownMixingMatrix@"-> CConversion`ToValidCSymbolString[SARAH`DownMatrixR],
+      "@hyperchargeCoupling@" -> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling],
+      "@leftCoupling@"        -> CConversion`ToValidCSymbolString[SARAH`leftCoupling],
+      "@strongCoupling@"      -> CConversion`ToValidCSymbolString[SARAH`strongCoupling],
+      "@hyperchargeCouplingGutNormalization@"  -> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
+      "@leftCouplingGutNormalization@"  -> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]],
+      "@hyperchargeCouplingInverseGutNormalization@" -> CConversion`RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
+      "@leftCouplingInverseGutNormalization@" -> CConversion`RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@perturbativityThreshold@" -> ToString[N[FlexibleSUSY`FSPerturbativityThreshold]],
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
