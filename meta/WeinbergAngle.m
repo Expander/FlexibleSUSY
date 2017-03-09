@@ -209,11 +209,13 @@ DeltaVBwave[includeGoldstones_:False] :=
            Return[result];
           ];
 
+indextype = CConversion`CreateCType[CConversion`ScalarType[CConversion`integerScalarCType]];
+
 AddIndices[{}] := "";
 
-AddIndices[{ind_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind];
+AddIndices[{ind_}] := indextype <> " " <> CConversion`ToValidCSymbolString[ind];
 
-AddIndices[{ind1_, ind2_}] := "unsigned " <> CConversion`ToValidCSymbolString[ind1] <> ", unsigned " <> CConversion`ToValidCSymbolString[ind2];
+AddIndices[{ind1_, ind2_}] := indextype <> " " <> CConversion`ToValidCSymbolString[ind1] <> ", " <> indextype <> " " <> CConversion`ToValidCSymbolString[ind2];
 
 CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest];
 
