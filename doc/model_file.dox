@@ -54,6 +54,18 @@ model `MSSM` together with the sub-model `CPV` is used:
 FSDefaultSARAHModel = MSSM/CPV;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+_____________________________________________________________________
+
+__Symbol__: `FSBVPSolvers`
+
+__Default value__: `{ TwoScaleSolver }`
+
+__Description__:
+
+A list of algorithms to use for solving the boundary value problem.
+One or more of `TwoScaleSolver`, `LatticeSolver` or
+`SemiAnalyticSolver` may be specified in the list.
+
 \section input_parameters Input parameters
 
 _____________________________________________________________________
@@ -695,6 +707,50 @@ In a model with complex parameters, as in the CMSSMCPV for example,
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `EWSBInitialGuess`
+
+__Default value__: `{}`
+
+__Description__:
+
+In the `EWSBInitialGuess` variable initial guesses for some or all
+of the EWSB output parameters can be specified.
+
+Example: In the VCMSSM `EWSBInitialGuess` is defined as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWSBInitialGuess = {
+   {TanBeta, vu / vd},
+   {MuSq, \[Mu]^2}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____________________________________________________________________
+
+__Symbol__: `EWSBSubstitutions`
+
+__Default value__: `{}`
+
+__Description__:
+
+In the `EWSBSubstitutions` variable, substitutions for model
+parameters in terms of other parameters can be given.
+`EWSBSubstitutions` should be a list of two-component lists, in which
+the first element is the parameter to be substituted for, and the
+second element is the expression to be substituted in its place.
+
+Example: In the VCMSSM `EWSBSubstitutions` is defined as
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWSBSubstitutions = {
+   {vd, vMSSM Cos[ArcTan[TanBeta]]},
+   {vu, vMSSM Sin[ArcTan[TanBeta]]},
+   {\[Mu], Sign[\[Mu]] Sqrt[MuSq]}
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 _____________________________________________________________________
 
