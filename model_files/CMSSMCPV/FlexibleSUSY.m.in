@@ -13,6 +13,7 @@ MINPAR = { {1, m0},
            {100, Phase[\[Mu]]} };
 
 IMMINPAR = { {2, Imm12},
+             {4, SinPhiMu},
              {5, ImAzero} };
 
 EXTPAR = {
@@ -29,7 +30,7 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
     {eta, etaInput},
-    {Phase[\[Mu]], Exp[I ArcCos[CosPhiMu]]}
+    {Phase[\[Mu]], CosPhiMu + I SinPhiMu}
 };
 
 HighScale = g1 == g2;
