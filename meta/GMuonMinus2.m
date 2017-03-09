@@ -27,16 +27,16 @@ Begin["`Private`"];
 
 (************* Begin public interface *******************)
 
-IsSMParticle[particle_] :=
-    SARAH`SMQ[particle] || TreeMasses`IsSMGoldstone[particle];
+GMuonMinus2IsSMParticle[particle_] :=
+    TreeMasses`IsSMParticle[particle] || TreeMasses`IsSMGoldstone[particle];
 
 CreateSMParticleFlags[particle_] :=
     Module[{result = "", i,
             numberOfGenerations = TreeMasses`GetDimension[particle]},
            For[i = 1, i <= numberOfGenerations, i++,
                If[i > 1, result = result <> ", ";];
-               If[IsSMParticle[particle[i]] === True ||
-                  IsSMParticle[particle] === True,
+               If[GMuonMinus2IsSMParticle[particle[i]] === True ||
+                  GMuonMinus2IsSMParticle[particle] === True,
                   result = result <> "true";,
                   result = result <> "false";
                  ];

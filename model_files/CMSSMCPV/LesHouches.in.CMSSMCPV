@@ -51,6 +51,7 @@ Block MINPAR                 # Input parameters
     5   0                    # Azero
 Block IMMINPAR
     2   0                    # Imm12
+    4   0                    # SinPhiMu
     5   0                    # ImAzero
 Block EXTPAR
   100   0.1                  # etaInput

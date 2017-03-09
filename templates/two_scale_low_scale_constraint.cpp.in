@@ -53,6 +53,10 @@ namespace flexiblesusy {
 #define SCALE model->get_scale()
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define MWMSbar mWrun
+#define MWDRbar mWrun
+#define MZMSbar mZrun
+#define MZDRbar mZrun
 #define CKM ckm
 #define PMNS pmns
 #define THETAW theta_w
@@ -135,8 +139,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    ckm.setIdentity();
    pmns.setIdentity();
    neutrinoDRbar.setZero();
-   MWDRbar = 0.;
-   MZDRbar = 0.;
+   mWrun = 0.;
+   mZrun = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
    ThetaWDRbar = 0.;
@@ -156,8 +160,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
    neutrinoDRbar = Eigen::Matrix<double,3,3>::Zero();
-   MWDRbar = 0.;
-   MZDRbar = 0.;
+   mWrun = 0.;
+   mZrun = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
    ThetaWDRbar = 0.;
@@ -203,12 +207,12 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = mz_pole;
-   MWDRbar = mw_pole;
+   mZrun = mz_pole;
+   mWrun = mw_pole;
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_M@VectorZ@_DRbar(mz_pole);
-      MWDRbar = model->calculate_M@VectorW@_DRbar(mw_pole);
+      mZrun = model->calculate_M@VectorZ@_DRbar(mz_pole);
+      mWrun = model->calculate_M@VectorW@_DRbar(mw_pole);
    }
 
    AlphaS = alpha_s_drbar;
