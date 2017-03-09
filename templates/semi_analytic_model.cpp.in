@@ -95,6 +95,13 @@ const @ModelName@_semi_analytic_solutions& CLASSNAME::get_semi_analytic_solution
    return solutions;
 }
 
+/**
+ * Calculates the semi-analytic coefficients at the current scale,
+ * assuming that the boundary conditions are imposed at the scale
+ * \c input_scale.  The soft parameters are then set to the values
+ * obtained using these coefficients and the current values of the
+ * boundary value parameters.
+ */
 void CLASSNAME::calculate_semi_analytic_solutions(double input_scale)
 {
    solutions.set_input_scale(input_scale);

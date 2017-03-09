@@ -79,6 +79,17 @@ std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_sem
    return datasets;
 }
 
+/**
+ * Calculates the coefficients in the semi-analytic solutions
+ * by varying the boundary value parameters and running to the
+ * output scale.  For each term in the semi-analytic solutions,
+ * the boundary value parameters are chosen to make that term
+ * non-zero.  The boundary conditions are applied at the
+ * defined input scale, and the parameters run to the output scale.
+ * The estimates for the soft parameters obtained in this way for
+ * each term defines a linear system, which is solved for the
+ * coefficients.
+ */
 void @ModelName@_semi_analytic_solutions::calculate_coefficients(const @ModelName@_soft_parameters& model_)
 {
    @ModelName@_soft_parameters model(model_);
@@ -98,6 +109,12 @@ void @ModelName@_semi_analytic_solutions::set_to_boundary_values(
 @applyBoundaryConditions@
 }
 
+/**
+ * Sets the soft parameters in the given model to the values
+ * obtained by evaluating the semi-analytic solutions with the
+ * current values of the coefficients and the basis parameters
+ * appearing in the boundary conditions.
+ */
 void @ModelName@_semi_analytic_solutions::evaluate_solutions(
    @ModelName@_soft_parameters& model) const
 {

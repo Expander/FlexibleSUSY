@@ -62,14 +62,32 @@ public:
    virtual void print(std::ostream& out = std::cout) const;
    virtual void set_precision(double);
 
+   /**
+    * @brief returns the current values of the semi-analytic coefficients
+    *
+    * @return the current set of semi-analytic solutions
+    */
    const @ModelName@_semi_analytic_solutions& get_semi_analytic_solutions() const;
+
+   /**
+    * @brief returns the current values of the semi-analytic coefficients
+    *
+    * @return the current set of semi-analytic solutions
+    */
    @ModelName@_semi_analytic_solutions& get_semi_analytic_solutions();
+
+   /**
+    * @brief calculates the semi-analytic solutions for the soft parameters
+    *
+    * @param[in] input_scale the scale where the boundary conditions hold
+    */
    void calculate_semi_analytic_solutions(double);
 
 @getBoundaryValueParameters@
 @setBoundaryValueParameters@
 @getSemiAnalyticCoefficients@
 private:
+   /// semi-analytic solutions for the model soft parameters
    @ModelName@_semi_analytic_solutions solutions{};
 };
 
