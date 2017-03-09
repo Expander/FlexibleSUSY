@@ -790,7 +790,7 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy,
             callSM, result},
            particles = GetLoopCorrectedParticles[states];
-           smParticles = Select[particles, SARAH`SMQ[#]&];
+           smParticles = Select[particles, TreeMasses`IsSMParticle];
            susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
               callSusy = StringJoin[CallPoleMassFunction /@ susyParticles];

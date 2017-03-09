@@ -224,10 +224,10 @@ GetParticles[states_:FlexibleSUSY`FSEigenstates] :=
           ];
 
 GetSusyParticles[states_:FlexibleSUSY`FSEigenstates] :=
-    Select[GetParticles[states], (!SARAH`SMQ[#] && !IsGhost[#])&];
+    Select[GetParticles[states], (!IsSMParticle[#] && !IsGhost[#])&];
 
 GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
-    Select[GetParticles[states], (SARAH`SMQ[#])&];
+    Select[GetParticles[states], IsSMParticle];
 
 ParticleQ[p_, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[GetParticles[states], p];
@@ -272,7 +272,7 @@ IsGoldstone[sym_] := MemberQ[
 IsGoldstone[sym_List] := And @@ (IsGoldstone /@ sym);
 
 GetSMGoldstones[] :=
-    Cases[SARAH`GoldstoneGhost /. a_[{idx__}] :> a[idx], {v_?SARAH`SMQ, goldstone_} :> goldstone];
+    Cases[SARAH`GoldstoneGhost /. a_[{idx__}] :> a[idx], {v_?IsSMParticle, goldstone_} :> goldstone];
 
 IsSMGoldstone[Susyno`LieGroups`conj[sym_]] := IsSMGoldstone[sym];
 IsSMGoldstone[SARAH`bar[sym_]] := IsSMGoldstone[sym];
@@ -352,7 +352,7 @@ IsLepton[Susyno`LieGroups`conj[sym_]] := IsLepton[sym];
 IsLepton[SARAH`bar[sym_]] := IsLepton[sym];
 IsLepton[sym_[___]] := IsLepton[sym];
 IsLepton[sym_Symbol] :=
-    MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
+    MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && IsSMParticle[sym];
 
 IsSMChargedLepton[Susyno`LieGroups`conj[sym_]] := IsSMChargedLepton[sym];
 IsSMChargedLepton[SARAH`bar[sym_]] := IsSMChargedLepton[sym];
@@ -465,7 +465,7 @@ GetGoldstoneBosons[] :=
     Transpose[SARAH`GoldstoneGhost][[2]];
 
 GetSMGoldstoneBosons[] :=
-    Cases[SARAH`GoldstoneGhost, {vector_?SARAH`SMQ, goldstone_} :> goldstone];
+    Cases[SARAH`GoldstoneGhost, {vector_?IsSMParticle, goldstone_} :> goldstone];
 
 GetDimension[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     Plus @@ (GetDimension[#, states]& /@ sym);
@@ -496,7 +496,7 @@ GetDimensionStartSkippingGoldstones[sym_] :=
     GetDimensionStartSkippingGoldstones[sym, SARAH`GoldstoneGhost];
 
 GetDimensionStartSkippingSMGoldstones[sym_] :=
-    GetDimensionStartSkippingGoldstones[sym, Cases[SARAH`GoldstoneGhost, {_?SARAH`SMQ, _}]];
+    GetDimensionStartSkippingGoldstones[sym, Cases[SARAH`GoldstoneGhost, {_?IsSMParticle, _}]];
 
 GetDimensionWithoutGoldstones[sym_[__], states_:FlexibleSUSY`FSEigenstates] :=
     GetDimensionWithoutGoldstones[sym, states];

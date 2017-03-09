@@ -628,9 +628,9 @@ GeneralReplacementRules[] :=
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@numberOfParticles@"    -> ToString[Length @ GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates]],
-      "@numberOfSMParticles@"  -> ToString[Length @ Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], SARAH`SMQ]],
+      "@numberOfSMParticles@"  -> ToString[Length @ Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], TreeMasses`IsSMParticle]],
       "@numberOfBSMParticles@" -> ToString[Length @ Complement[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates],
-                                                               Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], SARAH`SMQ]]],
+                                                               Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], TreeMasses`IsSMParticle]]],
       "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[
           If[Parameters`GetInputParameters[] === {},
              "",
@@ -1695,7 +1695,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             numberOfDRbarBlocks, drBarBlockNames
            },
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
-           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
+           susyParticles = Select[particles, (!TreeMasses`IsSMParticle[#])&];
            smParticles   = Complement[particles, susyParticles];
            minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
            extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
