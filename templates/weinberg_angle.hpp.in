@@ -45,7 +45,6 @@ public:
    };
 
    @ModelName@_weinberg_angle(const @ModelName@_mass_eigenstates*, const Sm_parameters&);
-   ~@ModelName@_weinberg_angle();
 
    void set_number_of_iterations(unsigned);  ///< maximum number of iterations
    void set_number_of_loops(unsigned);       ///< set number of loops

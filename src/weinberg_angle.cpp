@@ -98,10 +98,6 @@ Weinberg_angle::Weinberg_angle()
 {
 }
 
-Weinberg_angle::~Weinberg_angle()
-{
-}
-
 void Weinberg_angle::enable_susy_contributions()
 {
    susy_contributions = true;

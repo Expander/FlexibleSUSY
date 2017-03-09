@@ -81,10 +81,6 @@ CLASSNAME::@ModelName@_weinberg_angle(
 {
 }
 
-CLASSNAME::~@ModelName@_weinberg_angle()
-{
-}
-
 void CLASSNAME::set_number_of_iterations(unsigned n)
 {
    number_of_iterations = n;
