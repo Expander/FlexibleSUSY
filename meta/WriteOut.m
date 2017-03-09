@@ -269,23 +269,23 @@ WriteSLHAInputParameterBlocks[pars_List] :=
            StringJoin[WriteSLHABlock[#, ""]& /@ blocks]
           ];
 
-GetSLHAMixinMatrices[] :=
-    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+GetSLHAMixingMatrices[lesHouchesParameters_List] :=
+    DeleteCases[Select[lesHouchesParameters,
                        MemberQ[Parameters`GetOutputParameters[],#[[1]]]&],
                 {_,None}];
 
-GetSLHAModelParameters[] :=
-    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+GetSLHAModelParameters[lesHouchesParameters_List] :=
+    DeleteCases[Select[lesHouchesParameters,
                        MemberQ[Parameters`GetModelParameters[],#[[1]]]&],
                 {_,None}];
 
-GetSLHAInputParameters[] :=
-    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+GetSLHAInputParameters[lesHouchesParameters_List] :=
+    DeleteCases[Select[lesHouchesParameters,
                        MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
-GetSLHAPhases[] :=
-    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+GetSLHAPhases[lesHouchesParameters_List] :=
+    DeleteCases[Select[lesHouchesParameters,
                        MemberQ[Parameters`GetPhases[],#[[1]]]&],
                 {_,None}];
 
@@ -326,10 +326,10 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String, set
            "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 
-WriteSLHAMixingMatricesBlocks[] :=
+WriteSLHAMixingMatricesBlocks[lesHouchesParameters_List] :=
     Module[{result, mixingMatrices, smMix, susyMix, majoranaMix,
             smMixStr = "", susyMixStr = "", majoranaMixStr = ""},
-           mixingMatrices = GetSLHAMixinMatrices[];
+           mixingMatrices = GetSLHAMixingMatrices[lesHouchesParameters];
            smMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@ SARAH`SMParticles];
            smMix = Select[mixingMatrices, MemberQ[smMix,#[[1]]]&];
            majoranaMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@
@@ -566,16 +566,16 @@ WriteSLHABlock[{blockName_, parameter_}, scale_String:"model.get_scale()"] :=
 WriteSLHABlock[{blockName_, {parameter_ /; Head[parameter] =!= List}}, scale_String:"model.get_scale()"] :=
     WriteSLHABlock[{blockName, parameter}, scale];
 
-WriteSLHAModelParametersBlocks[] :=
+WriteSLHAModelParametersBlocks[lesHouchesParameters_List] :=
     Module[{modelParameters, blocks},
-           modelParameters = GetSLHAModelParameters[];
+           modelParameters = GetSLHAModelParameters[lesHouchesParameters];
            blocks = SortBlocks[modelParameters];
            StringJoin[WriteSLHABlock /@ blocks]
           ];
 
-WriteSLHAPhasesBlocks[] :=
+WriteSLHAPhasesBlocks[lesHouchesParameters_List] :=
     Module[{phases, blocks},
-           phases = GetSLHAPhases[];
+           phases = GetSLHAPhases[lesHouchesParameters];
            blocks = SortBlocks[phases];
            StringJoin[WriteSLHABlock /@ blocks]
           ];
@@ -726,35 +726,35 @@ ReadSLHAPhysicalMassBlock[struct_String:"PHYSICAL"] :=
            Return[result];
           ];
 
-ReadLesHouchesOutputParameters[] :=
+ReadLesHouchesOutputParameters[lesHouchesParameters_List] :=
     Module[{result = "", modelParameters},
-           modelParameters = GetSLHAModelParameters[];
+           modelParameters = GetSLHAModelParameters[lesHouchesParameters];
            (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
            Return[result];
           ];
 
-ReadLesHouchesPhysicalParameters[struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
+ReadLesHouchesPhysicalParameters[lesHouchesParameters_List, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
     Module[{result = "", physicalParameters},
-           physicalParameters = GetSLHAMixinMatrices[];
+           physicalParameters = GetSLHAMixingMatrices[lesHouchesParameters];
            (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#,struct,defMacro])& /@ physicalParameters;
            result = result <> "\n" <> ReadSLHAPhysicalMassBlock[struct];
            Return[result];
           ];
 
-GetDRbarBlocks[] :=
+GetDRbarBlocks[lesHouchesParameters_List] :=
     Module[{modelParameters},
-           modelParameters = GetSLHAModelParameters[];
+           modelParameters = GetSLHAModelParameters[lesHouchesParameters];
            DeleteDuplicates[Cases[modelParameters, {_, blockName_Symbol} | {_, {blockName_Symbol, _?NumberQ}} :> blockName]]
           ];
 
-GetDRbarBlockNames[] :=
+GetDRbarBlockNames[lesHouchesParameters_List] :=
     Module[{blocks, transformer},
-           blocks = GetDRbarBlocks[];
+           blocks = GetDRbarBlocks[lesHouchesParameters];
            transformer = ("\"" <> ToString[#] <> "\"")&;
            "{ " <> Utils`StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
           ];
 
-GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
+GetNumberOfDRbarBlocks[lesHouchesParameters_List] := Length[GetDRbarBlocks[lesHouchesParameters]];
 
 ConvertMixingsToSLHAConvention[massMatrices_List] :=
     ConvertMixingsToConvention[massMatrices, "slha"];

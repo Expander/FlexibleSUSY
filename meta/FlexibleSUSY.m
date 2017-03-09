@@ -1908,7 +1908,7 @@ WriteBVPSolverMakefile[files_List] :=
                           } ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
-                    extraSLHAOutputBlocks_List, files_List] :=
+                    lesHouchesParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             minpar, extpar, imminpar, imextpar, extraSLHAInputParameters,
             fillSpectrumVectorWithSusyParticles = "",
@@ -1971,20 +1971,21 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            fillInputParametersFromIMMINPAR = Parameters`FillInputParametersFromTuples[imminpar, "IMMINPAR"];
            fillInputParametersFromIMEXTPAR = Parameters`FillInputParametersFromTuples[imextpar, "IMEXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
-           readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
-           readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
+           readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[lesHouchesParameters];
+           readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters[lesHouchesParameters, "LOCALPHYSICAL",
+                                                                                        "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
-           writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
-           writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
-           writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
+           writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[lesHouchesParameters];
+           writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[lesHouchesParameters];
+           writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[lesHouchesParameters];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
            writeSLHAImMinparBlock = WriteOut`WriteSLHAImMinparBlock[imminpar];
            writeSLHAImExtparBlock = WriteOut`WriteSLHAImExtparBlock[imextpar];
            writeSLHAInputParameterBlocks = WriteSLHAInputParameterBlocks[extraSLHAInputParameters];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
-           numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
-           drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
+           numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[lesHouchesParameters];
+           drBarBlockNames      = WriteOut`GetDRbarBlockNames[lesHouchesParameters];
            gaugeCouplingNormalizationDecls = WriteOut`GetGaugeCouplingNormalizationsDecls[SARAH`Gauge];
            gaugeCouplingNormalizationDefs  = WriteOut`GetGaugeCouplingNormalizationsDefs[SARAH`Gauge];
            WriteOut`ReplaceInFiles[files,
@@ -3133,7 +3134,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating utilities"];
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               inputParameters, extraSLHAOutputBlocks,
+                               inputParameters, FlexibleSUSY`FSLesHouchesList, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],
