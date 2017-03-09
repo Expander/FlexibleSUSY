@@ -20,13 +20,31 @@ EXTPAR = {
     {300, ImMassGIN}
 };
 
-FSExtraInputParameters = {
-    {Aeij, AeijIN, {3,3}},     (* 3x3 matrix *)
-    {Adij, AdijIN, {3,3}},     (* 3x3 matrix *)
-    {Auij, AuijIN, {3,3}},     (* 3x3 matrix *)
-    {ImAeij, ImAeijIN, {3,3}}, (* 3x3 matrix *)
-    {ImAdij, ImAdijIN, {3,3}}, (* 3x3 matrix *)
-    {ImAuij, ImAuijIN, {3,3}}  (* 3x3 matrix *)
+FSAuxiliaryParameterInfo = {
+    {Aeij,   { LesHouches -> AeijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } },
+    {Adij,   { LesHouches -> AdijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } },
+    {Auij,   { LesHouches -> AuijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } },
+    {ImAeij, { LesHouches -> ImAeijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } },
+    {ImAdij, { LesHouches -> ImAdijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } },
+    {ImAuij, { LesHouches -> ImAuijIN,
+               ParameterDimensions -> {3,3},
+               InputParameter -> True
+             } }
 };
 
 RealParameters = { B[\[Mu]] };

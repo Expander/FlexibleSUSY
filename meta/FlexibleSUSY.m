@@ -122,7 +122,7 @@ UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
-FSExtraInputParameters = {};
+FSExtraInputParameters;
 FSAuxiliaryParameterInfo = {};
 IMMINPAR = {};
 IMEXTPAR = {};
@@ -504,14 +504,11 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`EWSBSubstitutions] =!= List,
               FlexibleSUSY`EWSBSubstitutions = {};
              ];
-           If[Head[FlexibleSUSY`FSExtraInputParameters] =!= List,
-              Print["Error: FSExtraInputParameters has to be set to a list!"];
+           If[ValueQ[FlexibleSUSY`FSExtraInputParameters],
+              Print["Error: the use of FSExtraInputParameters is no longer supported!"];
+              Print["   Please add the entries in FSExtraInputParameters to"];
+              Print["   the parameters defined in FSAuxiliaryParameterInfo."];
               Quit[1];
-              ,
-              If[!(And @@ (MatchQ[#,{_,_,_}]& /@ FlexibleSUSY`FSExtraInputParameters)),
-                 Print["Error: FSExtraInputParameters must be of the form",
-                       " {{A, AInput, {3,3}}, ... }"];
-                ];
              ];
            If[Head[FlexibleSUSY`FSAuxiliaryParameterInfo] =!= List,
               Print["Error: FSAuxiliaryParameterInfo has to be set to a list!"];
@@ -2499,25 +2496,19 @@ AddLesHouchesInputParameterInfo[par_, inputPar_, blockList_List] :=
 AddLesHouchesInputParameterBlockInfo[inputPars_List, blockList_List] :=
     AddLesHouchesInputParameterInfo[#[[1]], #[[2]], blockList]& /@ inputPars;
 
-AddExtraInputParameterInfo[par_, block_, dims_] :=
-    Module[{definedPars, info},
-           definedPars = First /@ FlexibleSUSY`FSAuxiliaryParameterInfo;
-           info = {par, { SARAH`LesHouches -> block,
-                          Parameters`ParameterDimensions -> dims,
-                          Parameters`InputParameter -> True
-                        } };
-           If[!MemberQ[definedPars, par],
-              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, info];,
-              Print["Error: ", par, " is already defined!"];
-              Print["   Please only define extra input parameters"];
-              Print["   in one of FSExtraInputParameters or"];
-              Print["   FSAuxiliaryParameterInfo."];
-              Quit[1];
-             ];
+AppendLesHouchesInfo[lesHouchesList_List, auxiliaryInfo_List] :=
+    Module[{getSLHAInfo},
+           getSLHAInfo[{parameter_, properties_List}] :=
+               Module[{block},
+                      block = Cases[properties, (SARAH`LesHouches -> value_) :> value];
+                      If[block === {},
+                         block = None,
+                         block = Last[block]
+                        ];
+                      {parameter, block}
+                     ];
+           Join[lesHouchesList, getSLHAInfo /@ auxiliaryInfo]
           ];
-
-AddExtraInputParameterBlockInfo[extraInputPars_List] :=
-    AddExtraInputParameterInfo[#[[1]], #[[2]], #[[3]]]& /@ extraInputPars;
 
 (* returns beta functions of VEV phases *)
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
@@ -2848,18 +2839,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            AddLesHouchesInputParameterBlockInfo[lesHouchesInputParameters, FlexibleSUSY`FSLesHouchesList];
 
-           If[FlexibleSUSY`FSExtraInputParameters =!= {},
-              Print["Warning: the use of FSExtraInputParameters is deprecated."];
-              Print["   Please consider using FSAuxiliaryParameterInfo to"];
-              Print["   define extra input parameters."];
-
-              AddExtraInputParameterBlockInfo[FlexibleSUSY`FSExtraInputParameters];
-              FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
-             ];
-
            (* apply parameter definitions and properties *)
            Parameters`ApplyAuxiliaryParameterInfo[FlexibleSUSY`FSAuxiliaryParameterInfo];
            Parameters`CheckInputParameterDefinitions[];
+
+           FlexibleSUSY`FSLesHouchesList = AppendLesHouchesInfo[FlexibleSUSY`FSLesHouchesList, FlexibleSUSY`FSAuxiliaryParameterInfo];
 
            inputParameters = Parameters`GetInputParametersAndTypes[];
 
