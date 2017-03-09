@@ -214,37 +214,56 @@ _Note_: Unspecified parameters are assumed to be zero.
 
 _____________________________________________________________________
 
-__Symbol__: `FSExtraInputParameters`
+__Symbol__: `FSAuxiliaryParameterInfo`
 
 __Default value__: `{}`
 
 __Description__:
 
-In the `FSExtraInputParameters` variable vector- or matrix-like input
-parameters can be given.  `FSExtraInputParameters` is contains a list,
-whose elements are three-component lists.  The first element of this
-list is a symbol, which represents the input parameter.  The second
-element is the name of the block, from which the input parameter is
-read.  The third element is a list specifying the vector- or
-matrix-type of the input parameter.  A list of the form `{N,M}` with
-`N` and `M` being integer numbers defines a NxM matrix.  A list of the
-form `{N}`, with `N` > 1 defines a vector with `N` rows.  A list of
-the form `{1}` or `{}` defines a scalar.
+In the `FSAuxiliaryParameterInfo` variable additional input or extra
+parameters can be defined, and extra information provided can be
+provided about existing input parameters.  `FSAuxiliaryParameterInfo`
+is expected to be a list, whose element are two-component lists.  The
+first element of this list is a symbol representing the parameter.
+The second element is a list of properties for that parameter,
+specified as replacement rules.  The supported properties are
 
-__Example__: In the MSSM the `FSExtraInputParameters` block has the
-form
+ - `InputParameter`: A value of `True` or `False` indicating if the
+   parameter is an input parameter.
+ - `LesHouches`: The name of the SLHA block from which the
+   parameter should be read, if it is an input parameter.
+ - `MassDimension`: A number specifying the mass dimension of the
+   parameter.
+ - `ParameterDimensions`: A list specifying the vector- or
+   matrix-type of the input parameter.  A list of the form `{N,M}`
+   with `N` and `M` being integer numbers defines a NxM matrix.  A
+   list of the form `{N}`, with `N` > 1 defines a vector with `N`
+   rows.  A list of the form `{1}` or `{}` defines a scalar.
+
+__Example__: In the MSSM the `FSAuxiliaryParameterInfo` variable has
+the form
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-FSExtraInputParameters = {
-    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
-    {Adij, AdijIN, {3,3}}, (* 3x3 matrix *)
-    {Auij, AuijIN, {3,3}}  (* 3x3 matrix *)
+FSAuxiliaryParameterInfo = {
+    {Aeij, { LesHouches -> AeijIN,
+             ParameterDimensions -> {3,3},
+             InputParameter -> True
+           } },
+    {Adij, { LesHouches -> AdijIN,
+             ParameterDimensions -> {3,3},
+             InputParameter -> True
+           } },
+    {Auij, { LesHouches -> AuijIN,
+             ParameterDimensions -> {3,3},
+             InputParameter -> True
+           } }
 };
 ~~~~~~~~~~~~~~~~~~~~
 
-Here, three 3x3 matrix-valued input parameters are specified: `Aeij`,
-`Adij` and `Auij`.  These matrices are read from the blocks `AeijIN`,
-`AdijIN` and `AuijIN`, respectively.
+Here, three 3x3 matrix-valued parameters are specified: `Aeij`,
+`Adij` and `Auij`.  They are defined as input parameters.  These
+matrices are read from the blocks `AeijIN`, `AdijIN` and `AuijIN`,
+respectively.
 
 These input parameters can be given in the SLHA input file as
 
