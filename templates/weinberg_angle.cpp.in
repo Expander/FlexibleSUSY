@@ -143,9 +143,7 @@ double CLASSNAME::calculate(double sinThetaW_start)
    piwwt_MW = calculate_self_energy_@VectorW@(mw);
    piwwt_0  = calculate_self_energy_@VectorW@(0.);
 
-   double rhohat_tree = 1.;
-   {
-@RhoHatTree@   }
+   const double rhohat_tree = calculate_rho_hat_tree();
 
    unsigned iteration = 0;
    bool not_converged = true;
@@ -217,6 +215,13 @@ double CLASSNAME::calculate(double sinThetaW_start)
       throw NoSinThetaWConvergenceError(number_of_iterations, sinThetaW_new);
 
    return sinThetaW_new;
+}
+
+double CLASSNAME::calculate_rho_hat_tree()
+{
+   double rhohat_tree = 1.;
+@RhoHatTree@
+   return rhohat_tree;
 }
 
 /**

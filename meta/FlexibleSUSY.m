@@ -805,7 +805,7 @@ WriteWeinbergAngleClass[massMatrices_List, deltaVBcontributions_List, vertexRule
           WriteOut`ReplaceInFiles[files,
                  { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[massMatrices]]]],
                    "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[massMatrices]]]],
-                   "@RhoHatTree@"         -> IndentText[IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]]],
+                   "@RhoHatTree@"         -> IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]],
                    "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
                    "@deltaVBprototypes@"  -> IndentText[deltaVBprototypes],

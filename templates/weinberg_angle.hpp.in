@@ -68,6 +68,7 @@ private:
    double piwwt_MW;               ///< transverse W self-energy at p^2 = MW^2
    double piwwt_0;                ///< transverse W self-energy at p^2 = 0
 
+   double calculate_rho_hat_tree();
    double calculate_delta_rho_hat(double);
    double calculate_delta_r_hat(double, double);
    double calculate_delta_vb(double, double);
