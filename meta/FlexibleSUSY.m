@@ -2427,7 +2427,7 @@ AddSLHA1InputParameterInfo[parameter_, blockName_String, blockEntry_] :=
                                        SARAH`LesHouches -> {blockName, blockEntry},
                                        Parameters`InputParameter -> True } };
            If[!MemberQ[definedPars, parameter],
-              AppendTo[FlexibleSUSY`FSAuxiliaryParameterInfo, defaultInfo];,
+              PrependTo[FlexibleSUSY`FSAuxiliaryParameterInfo, defaultInfo];,
               pos = Position[FlexibleSUSY`FSAuxiliaryParameterInfo, {parameter, {__}}];
               oldInfo = Extract[FlexibleSUSY`FSAuxiliaryParameterInfo, pos];
               EnforceSLHA1Compliance /@ oldInfo;
@@ -2440,7 +2440,6 @@ AddSLHA1InputParameterInfo[parameter_, blockName_String, blockEntry_] :=
              ];
           ];
 
-(* @todo handle conflicts if parameters already defined in model file *)
 AddSLHA1InputBlockInfo[blockName_String, inputParameters_List] :=
     AddSLHA1InputParameterInfo[#[[2]], blockName, #[[1]]]& /@ inputParameters;
 
