@@ -173,6 +173,11 @@ ifeq ($(WITH_NMSSM) $(WITH_CNMSSM), yes yes)
 TEST_SH += \
 		$(DIR)/test_CNMSSM_spectrum.sh
 endif
+
+ifeq ($(WITH_E6SSM) $(WITH_CE6SSM), yes yes)
+TEST_SH += \
+		$(DIR)/test_CE6SSM_spectrum.sh
+endif
 endif
 
 endif # ifneq ($(findstring semi_analytic,$(SOLVERS)),)
