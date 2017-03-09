@@ -20,6 +20,7 @@
 
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_weinberg_angle.hpp"
+#include "@ModelName@_info.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "numerics2.hpp"
@@ -131,8 +132,8 @@ void CLASSNAME::set_sm_parameters(const Sm_parameters& sm_parameters_)
  */
 double CLASSNAME::calculate(double sinThetaW_start)
 {
-   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double gY         = model->get_@hyperchargeCoupling@() * @ModelName@_info::normalization_@hyperchargeCoupling@;
+   const double g2         = model->get_@leftCoupling@() * @ModelName@_info::normalization_@leftCoupling@;
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
    const double mw         = sm_parameters.mw_pole;
@@ -337,8 +338,8 @@ double CLASSNAME::calculate_delta_vb_sm(
    const double outcos2    = 1.0 - sinThetaW2;
    const double q   = model->get_scale();
 
-   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double gY         = model->get_@hyperchargeCoupling@() * @ModelName@_info::normalization_@hyperchargeCoupling@;
+   const double g2         = model->get_@leftCoupling@() * @ModelName@_info::normalization_@leftCoupling@;
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
@@ -363,8 +364,8 @@ double CLASSNAME::calculate_delta_vb_sm(
 double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
 {
    const double mz         = sm_parameters.mz_pole;
-   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double gY         = model->get_@hyperchargeCoupling@() * @ModelName@_info::normalization_@hyperchargeCoupling@;
+   const double g2         = model->get_@leftCoupling@() * @ModelName@_info::normalization_@leftCoupling@;
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
 
@@ -493,8 +494,8 @@ double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt)
 {
    const double q   = model->get_scale();
    const double Nc  = 3.0;
-   const double gY  = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2  = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double gY  = model->get_@hyperchargeCoupling@() * @ModelName@_info::normalization_@hyperchargeCoupling@;
+   const double g2  = model->get_@leftCoupling@() * @ModelName@_info::normalization_@leftCoupling@;
    const double gY2 = Sqr(gY);
    const double g22 = Sqr(g2);
    const double sw2 = gY2 / (gY2 + g22);
@@ -523,7 +524,7 @@ double CLASSNAME::calculate_self_energy_@VectorW@_top(double p, double mt)
    const double q  = model->get_scale();
    const double mb = @GetBottomMass@;
    const double Nc = 3.0;
-   const double g2 = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double g2 = model->get_@leftCoupling@() * @ModelName@_info::normalization_@leftCoupling@;
 
    const double self_energy_w_top =
       0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;
