@@ -78,7 +78,7 @@ LowScaleInput = {
    {MassB , M1Input},
    {MassWB, M2Input},
    {MassG , M3Input},
-   {v, Sqrt[2] MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+   {v, Sqrt[2] MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

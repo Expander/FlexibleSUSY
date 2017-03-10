@@ -61,8 +61,8 @@ private:
    Eigen::Matrix<std::complex<double>,3,3> ckm{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
    Eigen::Matrix<std::complex<double>,3,3> pmns{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
    Eigen::Matrix<double,3,3> neutrinoDRbar{Eigen::Matrix<double,3,3>::Zero()};
-   double MWDRbar{0.};
-   double MZDRbar{0.};
+   double mWrun{0.};
+   double mZrun{0.};
    double AlphaS{0.};
    double EDRbar{0.};
    double ThetaWDRbar{0.};

@@ -10,7 +10,7 @@ Begin["`Private`"];
 
 CallSMPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, result, Selector},
-           Selector[p_] := SARAH`SMQ[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
+           Selector[p_] := TreeMasses`IsSMParticle[p] && !IsMassless[p] && (IsVector[p] || IsFermion[p]);
            particles = Select[LoopMasses`GetLoopCorrectedParticles[states], Selector];
            If[enablePoleMassThreads =!= True,
               result = StringJoin[LoopMasses`CallPoleMassFunction[#,"model."]& /@ particles];
