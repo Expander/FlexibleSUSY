@@ -159,6 +159,12 @@ TEST_SRC += \
 		$(DIR)/test_CNMSSM_semi_analytic_solutions.cpp
 endif
 
+ifeq ($(WITH_CE6SSM), yes)
+TEST_SRC += \
+		$(DIR)/test_CE6SSM_ewsb.cpp \
+		$(DIR)/test_CE6SSM_semi_analytic_solutions.cpp
+endif
+
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 ifeq ($(WITH_CMSSM) $(WITH_CMSSMSemiAnalytic), yes yes)
 TEST_SH += \
@@ -799,6 +805,10 @@ $(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic)
 $(DIR)/test_CNMSSM_ewsb.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CNMSSM_semi_analytic_solutions.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CE6SSM_ewsb.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CE6SSM_semi_analytic_solutions.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
