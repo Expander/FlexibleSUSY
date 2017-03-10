@@ -19,6 +19,7 @@ LIBTEST     := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 TEST_SRC := \
 		$(DIR)/test_array_view.cpp \
 		$(DIR)/test_cast_model.cpp \
+		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_derivative.cpp \
 		$(DIR)/test_effective_couplings.cpp \
@@ -43,6 +44,7 @@ TEST_SRC := \
 		$(DIR)/test_thread_pool.cpp \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_which.cpp \
+		$(DIR)/test_wrappers.cpp
 
 TEST_SH := \
 		$(DIR)/test_depgen.sh \
@@ -62,13 +64,12 @@ TEST_SRC += \
 ifeq ($(WITH_SoftsusyMSSM),yes)
 TEST_SRC += \
 		$(DIR)/test_betafunction.cpp \
-		$(DIR)/test_ckm.cpp \
+		$(DIR)/test_legacy_diagonalization.cpp \
 		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_QedQcd.cpp \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
-		$(DIR)/test_two_scale_mssm_initial_guesser.cpp \
-		$(DIR)/test_wrappers.cpp
+		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
 
 ifeq ($(WITH_SM) $(WITH_SoftsusyMSSM),yes yes)
@@ -622,7 +623,10 @@ $(DIR)/test_thread_pool.x: $(DIR)/test_thread_pool.o $(LIBFLEXI) $(filter-out -%
 $(DIR)/test_threshold_loop_functions.x: $(DIR)/test_threshold_loop_functions.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS) $(LIBTEST)
 
-$(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+$(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS) $(LIBTEST)
+
+$(DIR)/test_legacy_diagonalization.x: $(DIR)/test_legacy_diagonalization.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS) $(LIBTEST)
 
 $(DIR)/test_sum.x: $(DIR)/test_sum.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
