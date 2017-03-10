@@ -1,151 +1,29 @@
 #include "convergence_tester.hpp"
-#include "model.hpp"
 #include "single_scale_constraint.hpp"
 #include "single_scale_matching.hpp"
 #include "two_scale_solver.hpp"
 #include "linalg.h"
 #include "error.hpp"
 
+#include "mock_convergence_testers.hpp"
+#include "mock_models.hpp"
+#include "mock_single_scale_constraints.hpp"
+#include "mock_single_scale_matchings.hpp"
+
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_solver
 
 #include <boost/test/unit_test.hpp>
 
+#include <Eigen/Core>
+
 using namespace flexiblesusy;
-using namespace softsusy;
-
-class Static_model: public Model {
-public:
-   Static_model() : parameters(1) {}
-   Static_model(const DoubleVector& pars) : parameters(pars) {}
-   virtual ~Static_model() {}
-   virtual void calculate_spectrum() {}
-   virtual void clear_problems() {}
-   virtual std::string name() const { return "Static_model"; }
-   virtual void print(std::ostream& out = std::cout) const {
-      out << "Model: " << name() << '\n';
-   }
-   virtual void run_to(double, double) {}
-   virtual void set_parameters(const DoubleVector& v) { parameters = v; }
-   virtual DoubleVector get_parameters() const { return parameters; }
-   virtual void set_precision(double) {}
-private:
-   DoubleVector parameters;
-};
-
-class Trivial_matching_condition: public Single_scale_matching {
-public:
-   Trivial_matching_condition(double scale_ = 100.)
-      : mLow(0)
-      , mHigh(0)
-      , scale(scale_)
-      {}
-   virtual ~Trivial_matching_condition() {}
-   virtual void match() {
-      mHigh->set_parameters(mLow->get_parameters());
-   }
-   virtual double get_scale() const {
-      return scale;
-   }
-   virtual void set_models(Model* mLow_, Model* mHigh_) {
-      mLow = cast_model<Static_model*>(mLow_);
-      mHigh = cast_model<Static_model*>(mHigh_);
-   }
-private:
-   Static_model *mLow, *mHigh;
-   double scale;
-};
-
-class Counting_model: public Model {
-public:
-   Counting_model() : number_of_runs(0) {}
-   virtual ~Counting_model() {}
-   virtual void calculate_spectrum() {}
-   virtual void clear_problems() {}
-   virtual std::string name() const { return "Counting_model"; }
-   virtual void print(std::ostream& out = std::cout) const {
-      out << "Model: " << name() << '\n';
-   }
-   virtual void run_to(double, double) { ++number_of_runs; }
-   virtual void set_precision(double) {}
-   int get_number_of_runs() const {
-      return number_of_runs;
-   }
-private:
-   int number_of_runs;
-};
-
-class Counting_constraint : public Single_scale_constraint {
-public:
-   Counting_constraint(double scale_)
-      : scale(scale_)
-      , number_of_apply_calls(0) {}
-   virtual ~Counting_constraint() {}
-   virtual void apply() { ++number_of_apply_calls; }
-   virtual double get_scale() const { return scale; }
-   virtual void set_model(Model*) {}
-
-   int get_number_of_apply_calls() const {
-      return number_of_apply_calls;
-   }
-
-private:
-   double   scale;
-   int number_of_apply_calls;
-};
-
-class Counting_matching_condition: public Single_scale_matching {
-public:
-   Counting_matching_condition(double scale_)
-      : scale(scale_)
-      , number_of_matches(0)
-      , number_of_get_scale(0)
-      {}
-   virtual ~Counting_matching_condition() {}
-   virtual void match() {
-      ++number_of_matches;
-   }
-   virtual double get_scale() const {
-      ++number_of_get_scale;
-      return scale;
-   }
-   virtual void set_models(Model*, Model*) {
-   }
-   int get_number_of_matches() const {
-      return number_of_matches;
-   }
-   int get_number_of_get_scale() const {
-      return number_of_get_scale;
-   }
-private:
-   double   scale;
-   int number_of_matches;
-   mutable int number_of_get_scale;
-};
-
-class Counting_convergence_tester : public Convergence_tester {
-public:
-   Counting_convergence_tester(int max_iterations_)
-      : iteration(0), maximum_iterations(max_iterations_) {}
-   virtual ~Counting_convergence_tester() {}
-   virtual bool accuracy_goal_reached() {
-      return false;
-   }
-   virtual int max_iterations() const {
-      return maximum_iterations;
-   }
-   virtual void restart() {
-      iteration = 0;
-   }
-private:
-   int iteration, maximum_iterations;
-};
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
 {
-   DoubleVector parameters(10);
-   const DoubleVector zeros(10);
-   for (int i = 1; i <= 10; ++i)
+   Eigen::VectorXd parameters(10);
+   const Eigen::VectorXd zeros(10);
+   for (int i = 0; i < 10; ++i)
       parameters(i) = i;
 
    Counting_convergence_tester ccc(10);
@@ -241,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_zero_models )
 
 BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
 {
-   Static_model model(DoubleVector(10));
+   Static_model model(Eigen::VectorXd(10));
    Counting_constraint cc(1000);
    RGFlow<Two_scale> solver;
    solver.add(&cc, &model);
@@ -255,7 +133,7 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
 
 BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
 {
-   Static_model model1(DoubleVector(10)), model2(DoubleVector(10));
+   Static_model model1(Eigen::VectorXd(10)), model2(Eigen::VectorXd(10));
    Counting_constraint c1(50), c2(200);
    Trivial_matching_condition mc(100);
    const double mc_scale = mc.get_scale();

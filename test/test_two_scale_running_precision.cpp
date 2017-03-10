@@ -6,6 +6,10 @@
 #include "two_scale_running_precision.hpp"
 #include "error.hpp"
 
+#include "mock_convergence_testers.hpp"
+#include "mock_models.hpp"
+#include "mock_single_scale_constraints.hpp"
+
 #include <cmath>
 
 #define BOOST_TEST_DYN_LINK
@@ -46,50 +50,6 @@ BOOST_AUTO_TEST_CASE( test_increasing_running_precision )
       }
    }
 }
-
-class Static_convergence_tester : public Convergence_tester {
-public:
-   Static_convergence_tester(int max_iterations_)
-      : iteration(0), maximum_iterations(max_iterations_) {}
-   virtual ~Static_convergence_tester() {}
-   virtual bool accuracy_goal_reached() {
-      return false;
-   }
-   virtual int max_iterations() const {
-      return maximum_iterations;
-   }
-   virtual void restart() {
-      iteration = 0;
-   }
-private:
-   int iteration, maximum_iterations;
-};
-
-class Static_model: public Model {
-public:
-   Static_model() {}
-   virtual ~Static_model() {}
-   virtual void calculate_spectrum() {}
-   virtual void clear_problems() {}
-   virtual std::string name() const { return "Static_model"; }
-   virtual void print(std::ostream& out = std::cout) const {
-      out << "Model: " << name() << '\n';
-   }
-   virtual void run_to(double, double) {}
-   virtual void set_precision(double) {}
-};
-
-class Static_constraint : public Single_scale_constraint {
-public:
-   Static_constraint(double scale_)
-      : scale(scale_) {}
-   virtual ~Static_constraint() {}
-   virtual void apply() {}
-   virtual double get_scale() const { return scale; }
-   virtual void set_model(Model*) {}
-private:
-   double scale;
-};
 
 class Test_increasing_precision : public Two_scale_running_precision {
 public:
