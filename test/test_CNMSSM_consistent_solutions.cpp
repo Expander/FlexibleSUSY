@@ -385,11 +385,11 @@ std::vector<CNMSSM_input_parameters> initialize_semi_analytic_inputs()
 {
    std::vector<CNMSSM_input_parameters> inputs{1};
 
-   inputs[0].Azero = 0.;
+   inputs[0].Azero = -300.;
    inputs[0].SignvS = 1;
-   inputs[0].TanBeta = 40.;
-   inputs[0].m12 = 660.;
-   inputs[0].LambdaInput = 0.1;
+   inputs[0].TanBeta = 10.;
+   inputs[0].m12 = 133.333;
+   inputs[0].LambdaInput = -0.05;
 
    return inputs;
 }
@@ -398,12 +398,12 @@ std::vector<NMSSM_input_parameters> initialize_two_scale_inputs()
 {
    std::vector<NMSSM_input_parameters> inputs{1};
 
-   inputs[0].LambdaInput = 0.1;
-   inputs[0].Azero = 0.;
+   inputs[0].LambdaInput = -0.05;
+   inputs[0].Azero = -300.;
    inputs[0].SignvS = 1;
    inputs[0].TanBeta = 10.;
-   inputs[0].m12 = 660.;
-   inputs[0].m0 = 2800.;
+   inputs[0].m12 = 133.333;
+   inputs[0].m0 = 38.25761388272928;
 
    return inputs;
 }
