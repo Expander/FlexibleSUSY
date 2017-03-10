@@ -179,11 +179,17 @@ endif
 ifeq ($(WITH_NMSSM) $(WITH_CNMSSM), yes yes)
 TEST_SH += \
 		$(DIR)/test_CNMSSM_spectrum.sh
+
+TEST_SRC += \
+		$(DIR)/test_CNMSSM_consistent_solutions.cpp
 endif
 
 ifeq ($(WITH_E6SSM) $(WITH_CE6SSM), yes yes)
 TEST_SH += \
 		$(DIR)/test_CE6SSM_spectrum.sh
+
+TEST_SRC += \
+		$(DIR)/test_CE6SSM_consistent_solutions.cpp
 endif
 endif
 
@@ -810,9 +816,13 @@ $(DIR)/test_CNMSSM_ewsb.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%
 
 $(DIR)/test_CNMSSM_semi_analytic_solutions.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_CNMSSM_consistent_solutions.x: $(LIBCNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
 $(DIR)/test_CE6SSM_ewsb.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CE6SSM_semi_analytic_solutions.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CE6SSM_consistent_solutions.x: $(LIBCE6SSM) $(LIBE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
