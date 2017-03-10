@@ -47,7 +47,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
-		$(DIR)/weinberg_angle_pointer.cpp \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
@@ -122,7 +121,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
-		$(DIR)/weinberg_angle_pointer.hpp \
 		$(DIR)/wrappers.hpp \
 		$(DIR)/xpr-base.h \
 		$(DIR)/xpr-matrix.h \
