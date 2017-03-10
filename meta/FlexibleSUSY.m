@@ -109,6 +109,7 @@ MWDRbar;
 MZMSbar;
 MWMSbar;
 EDRbar;
+EMSbar;
 ThetaWDRbar;
 SCALE;
 THRESHOLD;
