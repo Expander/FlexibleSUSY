@@ -63,8 +63,8 @@ __Default value__: `{ TwoScaleSolver }`
 __Description__:
 
 A list of algorithms to use for solving the boundary value problem.
-One or more of `TwoScaleSolver`, `LatticeSolver` or
-`SemiAnalyticSolver` may be specified in the list.
+One or both of `TwoScaleSolver` or `SemiAnalyticSolver` may be
+specified in the list.
 
 \section input_parameters Input parameters
 
