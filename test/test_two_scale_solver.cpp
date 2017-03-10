@@ -2,7 +2,6 @@
 #include "single_scale_constraint.hpp"
 #include "single_scale_matching.hpp"
 #include "two_scale_solver.hpp"
-#include "linalg.h"
 #include "error.hpp"
 
 #include "mock_convergence_testers.hpp"

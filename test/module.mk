@@ -56,7 +56,8 @@ endif # ifneq($(findstring lattice,$(SOLVERS)),)
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 TEST_SRC += \
-		$(DIR)/test_two_scale_running_precision.cpp
+		$(DIR)/test_two_scale_running_precision.cpp \
+		$(DIR)/test_two_scale_solver.cpp
 
 ifeq ($(WITH_SoftsusyMSSM),yes)
 TEST_SRC += \
@@ -67,7 +68,6 @@ TEST_SRC += \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp \
-		$(DIR)/test_two_scale_solver.cpp \
 		$(DIR)/test_wrappers.cpp
 endif
 
