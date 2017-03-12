@@ -698,11 +698,7 @@ void Model_data_impl<Solver_type>::calculate_spectrum()
 template <typename Solver_type>
 void Model_data_impl<Solver_type>::calculate_model_observables()
 {
-   // run model to pole mass scale
-   auto model = std::get<0>(models);
-   model.run_to(scales.pole_mass_scale);
-
-   observables = calculate_observables(model, qedqcd, physical_input);
+   observables = calculate_observables(std::get<0>(models), qedqcd, physical_input, scales.pole_mass_scale);
 }
 
 /******************************************************************/
