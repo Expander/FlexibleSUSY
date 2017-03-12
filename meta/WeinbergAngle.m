@@ -11,6 +11,7 @@ RhoHatTree::usage="";
 InitGenerationOfDiagrams::usage="";
 DeltaVBwave::usage="";
 CreateDeltaVBContributions::usage="";
+CreateDeltaVBCalculation::usage="";
 
 Begin["`Private`"];
 
@@ -259,6 +260,20 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
                defs = defs <> d;
               ];
            {prototypes, defs}
+          ];
+
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, _}, _]]] := CreateContributionName[deltaVBcontri] <> "(0) + " <> CreateContributionName[deltaVBcontri] <> "(1)";
+
+CreateDeltaVBCalculation[deltaVBcontris_List] :=
+    Module[{type, result = "", wavecontris},
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           wavecontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, __}, _]];
+           result = result <> "const " <> type <> " deltaZ =\n";
+           For[k = 1, k <= Length[wavecontris], k++,
+               If[k > 1, result = result <> " + ";];
+               result = result <> CreateContributionCall[wavecontris[[k]]];
+              ];
+           result <> ";"
           ];
 
 End[];

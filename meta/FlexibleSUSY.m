@@ -800,8 +800,9 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
           ];
 
 WriteWeinbergAngleClass[massMatrices_List, deltaVBcontributions_List, vertexRules_List, files_List] :=
-   Module[{deltaVBprototypes = "", deltaVBfunctions = ""},
+   Module[{deltaVBprototypes = "", deltaVBfunctions = "", deltaVBcalculation = ""},
           {deltaVBprototypes, deltaVBfunctions} = WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
+          deltaVBcalculation = WeinbergAngle`CreateDeltaVBCalculation[deltaVBcontributions];
           WriteOut`ReplaceInFiles[files,
                  { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[massMatrices]]]],
                    "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[massMatrices]]]],
@@ -810,6 +811,7 @@ WriteWeinbergAngleClass[massMatrices_List, deltaVBcontributions_List, vertexRule
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
                    "@deltaVBprototypes@"  -> IndentText[deltaVBprototypes],
                    "@deltaVBfunctions@"   -> deltaVBfunctions,
+                   "@deltaVBcalculation@" -> IndentText[deltaVBcalculation],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];

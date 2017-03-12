@@ -375,15 +375,11 @@ double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
    const std::complex<double> a1 = (0., 0.); // delta_vb_box();
    const std::complex<double> deltaVE = (0., 0.); // delta_vb_vertex(0);
    const std::complex<double> deltaVMu = (0., 0.); // delta_vb_vertex(1);
-   const std::complex<double> deltaZe = delta_vb_wave_@Electron@(0);
-   const std::complex<double> deltaZmu = delta_vb_wave_@Electron@(1);
-   const std::complex<double> deltaZnue = delta_vb_wave_@Neutrino@(0);
-   const std::complex<double> deltaZnumu = delta_vb_wave_@Neutrino@(1);
+@deltaVBcalculation@
 
    const double deltaVbSusy = oneOver16PiSqr *
       (- sinThetaW2 * outcos2 / (2.0 * Pi * alphaDRbar) * Sqr(mz) * a1.real() +
-       deltaVE.real() + deltaVMu.real() +
-       0.5 * (deltaZe.real() + deltaZnue.real() + deltaZmu.real() + deltaZnumu.real()));
+       deltaVE.real() + deltaVMu.real() + 0.5 * deltaZ.real());
 
    return deltaVbSusy;
 }
