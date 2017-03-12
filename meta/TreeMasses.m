@@ -478,6 +478,9 @@ GetSMGoldstoneBosons[] :=
 GetDimension[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     Plus @@ (GetDimension[#, states]& /@ sym);
 
+GetDimension[(SARAH`bar|Susyno`LieGroups`conj)[sym_], states_:FlexibleSUSY`FSEigenstates] :=
+    GetDimension[sym, states];
+
 GetDimension[sym_[__], states_:FlexibleSUSY`FSEigenstates] := GetDimension[sym, states];
 
 GetDimension[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
