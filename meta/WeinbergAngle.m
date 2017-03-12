@@ -201,13 +201,24 @@ WaveResult[diagr_List, includeGoldstones_] :=
            result
           ];
 
+CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsWave[particle], TreeMasses`IsVector];
+
 DeltaVBwave[includeGoldstones_:False] :=
-    Module[{neutrinodiagrs, electrondiagrs, result},
-           neutrinodiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Neutrino], TreeMasses`IsVector];
-           electrondiagrs = ExcludeDiagrams[GenerateDiagramsWave[SARAH`Electron], TreeMasses`IsVector];
-           result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Neutrino}, Plus @@ (WaveResult[#, includeGoldstones] &) /@ neutrinodiagrs],
-                     WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, SARAH`Electron}, Plus @@ (WaveResult[#, includeGoldstones] &) /@ electrondiagrs]};
-           result
+    Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult, result},
+           (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
+           neutrinofields = TreeMasses`GetSMNeutralLeptons[];
+           If[Length[neutrinofields] == 1,
+              neutrinoresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, neutrinofields[[1]]}, CompleteWaveResult[neutrinofields[[1]], includeGoldstones]]},
+              If[Length[neutrinofields] != 3, Print["Error: DeltaVBwave does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              neutrinoresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[1]]}, CompleteWaveResult[neutrinofields[[1]], includeGoldstones]],
+                                WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[2]]}, CompleteWaveResult[neutrinofields[[2]], includeGoldstones]]};];
+           chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
+           If[Length[chargedleptonfields] == 1,
+              chargedleptonresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, chargedleptonfields[[1]]}, CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]]},
+              If[Length[chargedleptonfields] != 3, Print["Error: DeltaVBwave does not work because there are neither 1 nor 3 charged lepton fields"]; Return[{}];];
+              chargedleptonresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[1]]}, CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]],
+                                     WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[2]]}, CompleteWaveResult[chargedleptonfields[[2]], includeGoldstones]]};];
+           Join[neutrinoresult, chargedleptonresult]
           ];
 
 indextype = CConversion`CreateCType[CConversion`ScalarType[CConversion`integerScalarCType]];
@@ -243,6 +254,9 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
            {prototype, decl}
           ];
 
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, part_}, _]] :=
+    "deltaVB wave-function contribution for field " <> CConversion`ToValidCSymbolString[part];
+
 PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {idx_}, part_}, _]] :=
     "deltaVB wave-function contribution for field " <> CConversion`ToValidCSymbolString[part] <> "[" <> CConversion`ToValidCSymbolString[idx] <> "]";
 
@@ -261,6 +275,8 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
               ];
            {prototypes, defs}
           ];
+
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {}, _}, _]]] := CreateContributionName[deltaVBcontri] <> "()";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, _}, _]]] := CreateContributionName[deltaVBcontri] <> "(0) + " <> CreateContributionName[deltaVBcontri] <> "(1)";
 
