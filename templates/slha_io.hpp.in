@@ -61,6 +61,7 @@ class @ModelName@;
 
 struct @ModelName@_scales {
    double HighScale{0.}, SUSYScale{0.}, LowScale{0.};
+   double pole_mass_scale{0.};
 };
 
 class @ModelName@_slha_io {
