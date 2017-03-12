@@ -60,8 +60,7 @@ template <class T>
 class @ModelName@;
 
 struct @ModelName@_scales {
-   @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
-   double HighScale, SUSYScale, LowScale;
+   double HighScale{0.}, SUSYScale{0.}, LowScale{0.};
 };
 
 class @ModelName@_slha_io {
