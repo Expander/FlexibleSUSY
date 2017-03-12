@@ -86,8 +86,11 @@ int run_solver(flexiblesusy::@ModelName@_slha_io& slha_io,
    scales.pole_mass_scale = spectrum_generator.get_pole_mass_scale();
 
    @ModelName@_observables observables;
-   if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables))
-      observables = calculate_observables(std::get<0>(models), qedqcd, physical_input);
+   if (spectrum_generator_settings.get(Spectrum_generator_settings::calculate_observables)) {
+      auto model = std::get<0>(models);
+      model.run_to(scales.pole_mass_scale);
+      observables = calculate_observables(model, qedqcd, physical_input);
+   }
 
    const bool show_result = !problems.have_problem() ||
       spectrum_generator_settings.get(Spectrum_generator_settings::force_output);
