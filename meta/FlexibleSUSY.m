@@ -1434,13 +1434,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
-        definitions, calculationCode},
+        definitions, calculationCode, getMSUSY, getQED2L},
            particles = GMuonMinus2`CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
            vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`CreateCalculation[];
+           getMSUSY = GMuonMinus2`GetMSUSY[];
+           getQED2L = GMuonMinus2`GetQED2L[];
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -1449,6 +1451,8 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                      "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
                                      "@GMuonMinus2_Definitions@"             -> definitions,
                                      "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
+                                     "@GMuonMinus2_GetMSUSY@"                -> IndentText[WrapLines[getMSUSY]],
+                                     "@GMuonMinus2_QED_2L@"                  -> IndentText[WrapLines[getQED2L]],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
