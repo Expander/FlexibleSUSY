@@ -72,9 +72,9 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
 
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+   model->set_vd((2*mZ_run)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
       )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+   model->set_vu((2*mZ_run*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
       TanBeta))));
 
    calculate_DRbar_yukawa_couplings();
@@ -180,9 +180,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+   model->set_vd((2*mZ_run)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
       )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+   model->set_vu((2*mZ_run*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
       TanBeta))));
 
    // Now calculate the gauge couplings using
@@ -243,12 +243,12 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = qedqcd.displayPoleMZ();
-   double MWDRbar = qedqcd.displayPoleMW();
+   mZ_run = qedqcd.displayPoleMZ();
+   double mW_run = qedqcd.displayPoleMW();
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_MVZ_DRbar(qedqcd.displayPoleMZ());
-      MWDRbar = model->calculate_MVWm_DRbar(qedqcd.displayPoleMW());
+      mZ_run = model->calculate_MVZ_DRbar(qedqcd.displayPoleMZ());
+      mW_run = model->calculate_MVWm_DRbar(qedqcd.displayPoleMW());
    }
 
    const double AlphaS = alpha_s_drbar;
