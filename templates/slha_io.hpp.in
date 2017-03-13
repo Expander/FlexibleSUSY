@@ -60,8 +60,8 @@ template <class T>
 class @ModelName@;
 
 struct @ModelName@_scales {
-   @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
-   double HighScale, SUSYScale, LowScale;
+   double HighScale{0.}, SUSYScale{0.}, LowScale{0.};
+   double pole_mass_scale{0.};
 };
 
 class @ModelName@_slha_io {
@@ -102,6 +102,7 @@ public:
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
+   static void fill_imminpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_imextpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class Model>
@@ -115,6 +116,7 @@ private:
    bool print_imaginary_parts_of_majorana_mixings;
 
    void set_extpar(const @ModelName@_input_parameters&);
+   void set_imminpar(const @ModelName@_input_parameters&);
    void set_imextpar(const @ModelName@_input_parameters&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_mass(const @ModelName@_physical&, bool);

@@ -284,7 +284,7 @@ class MSSM_convergence_tester<Lattice> : public Convergence_tester<Lattice> {
 public:
    MSSM_convergence_tester(MSSM<Lattice>*, double accuracy_goal) {}
    virtual ~MSSM_convergence_tester();
-   void set_max_iterations(unsigned) {}; ///< set maximum number of iterations
+   void set_max_iterations(int) {}; ///< set maximum number of iterations
 };
 
 template<class T>
@@ -309,7 +309,7 @@ public:
       return model.get_problems();
    }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_max_iterations(int n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
    void run(const QedQcd& qedqcd, const MSSM_input_parameters& input);
@@ -324,7 +324,7 @@ private:
    MSSM_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
+   int max_iterations; ///< maximum number of iterations
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
@@ -425,7 +425,7 @@ void MSSM_runner<T>::write_running_couplings(const std::string& filename) const
    // by itself would be stateless unless linked to an RGFlow
    // POSSIBLE SOLUTION: duplicate entire RGFlow
    MSSM<T> tmp_model(model);
-   const unsigned error = tmp_model.run_to(low_scale);
+   const int error = tmp_model.run_to(low_scale);
    if (error) {
       ERROR("MSSM_runner::write_running_couplings: run to scale "
             << low_scale << " failed");

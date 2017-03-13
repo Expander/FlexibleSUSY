@@ -21,8 +21,12 @@
 #include "@ModelName@_two_scale_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
+#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
+#include "@ModelName@_standard_model_matching.hpp"
+#include "@ModelName@_standard_model_two_scale_matching.hpp"
 #include "standard_model_two_scale_convergence_tester.hpp"
 #include "two_scale_composite_convergence_tester.hpp"
+#include "standard_model_two_scale_low_scale_constraint.hpp"
 
 #include "error.hpp"
 #include "lowe.h"
@@ -34,21 +38,19 @@
 
 namespace flexiblesusy {
 
-double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale() const
+double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale(double susy_scale) const
 {
    return
       this->settings.get(Spectrum_generator_settings::pole_mass_scale) != 0. ?
-      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : get_susy_scale();
+      this->settings.get(Spectrum_generator_settings::pole_mass_scale) : susy_scale;
 }
 
-double @ModelName@_spectrum_generator<Two_scale>::get_eft_pole_mass_scale() const
+double @ModelName@_spectrum_generator<Two_scale>::get_eft_pole_mass_scale(double susy_scale, double Mt) const
 {
    double Q_higgs = this->settings.get(Spectrum_generator_settings::eft_pole_mass_scale);
 
-   if (Q_higgs == 0.) {
-      const double Mt = low_scale_constraint.get_sm_parameters().displayPoleMt();
-      Q_higgs = std::min(get_susy_scale(), Mt);
-   }
+   if (Q_higgs == 0.)
+      Q_higgs = std::min(susy_scale, Mt);
 
    return Q_higgs;
 }
@@ -87,17 +89,14 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
 
-   susy_scale_constraint.clear();
-   low_scale_constraint .clear();
+   @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);
+   standard_model::Standard_model_low_scale_constraint<Two_scale>  low_scale_constraint(&eft, qedqcd);
 
-   // needed for constraint::initialize()
-   susy_scale_constraint.set_model(&model);
-   low_scale_constraint .set_model(&eft);
+   const int index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
+   const auto scale_getter = [this,&susy_scale_constraint] () { return susy_scale_constraint.get_scale(); };
 
-   low_scale_constraint .set_sm_parameters(qedqcd);
-
-   const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
-   const auto scale_getter = [this] () { return susy_scale_constraint.get_scale(); };
+   @ModelName@_standard_model_matching_up<Two_scale> matching_up;
+   @ModelName@_standard_model_matching_down<Two_scale> matching_down;
 
    matching_up.set_models(&eft, &model);
    matching_up.set_scale(scale_getter);
@@ -117,12 +116,13 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    // convergence tester for @ModelName@
    @ModelName@_convergence_tester<Two_scale> model_ct(
       &model, this->settings.get(Spectrum_generator_settings::precision),
-      [this](){ return get_pole_mass_scale(); });
+      [this,&susy_scale_constraint](){ return get_pole_mass_scale(susy_scale_constraint.get_scale()); });
 
    // convergence tester for Standard Model
+   const double Mt = qedqcd.displayPoleMt();
    standard_model::Standard_model_convergence_tester<Two_scale> eft_ct(
       &eft, this->settings.get(Spectrum_generator_settings::precision),
-      [this](){ return get_eft_pole_mass_scale(); });
+      [this,&susy_scale_constraint,Mt](){ return get_eft_pole_mass_scale(susy_scale_constraint.get_scale(), Mt); });
 
    if (this->settings.get(Spectrum_generator_settings::max_iterations) > 0) {
       model_ct.set_max_iterations(
@@ -141,7 +141,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    Two_scale_increasing_precision precision(
       10.0, this->settings.get(Spectrum_generator_settings::precision));
 
-   solver.reset();
+   RGFlow<Two_scale> solver;
    solver.set_convergence_tester(&cct);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
@@ -150,6 +150,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    solver.add(&susy_scale_constraint, &model);
    solver.add(&matching_down, &model, &eft);
 
+   susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
    solver.solve();
@@ -158,10 +159,12 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.run_to(low_scale_constraint.get_scale());
    low_scale_constraint.apply();
 
+   susy_scale = susy_scale_constraint.get_scale();
+   low_scale  = low_scale_constraint.get_scale();
    this->reached_precision = std::max(model_ct.get_current_accuracy(),
                                       eft_ct.get_current_accuracy());
 
-   calculate_spectrum();
+   calculate_spectrum(Mt);
 
    // copy calculated W pole mass
    model.get_physical().M@VectorW@
@@ -187,17 +190,17 @@ void @ModelName@_spectrum_generator<Two_scale>::write_running_couplings(
       filename, get_low_scale(), get_susy_scale());
 }
 
-void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum()
+void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum(double Mt)
 {
-   this->model.run_to(get_pole_mass_scale());
+   this->model.run_to(get_pole_mass_scale(susy_scale));
    this->model.solve_ewsb();
    this->model.calculate_spectrum();
 
-   eft.run_to(get_eft_pole_mass_scale());
+   eft.run_to(get_eft_pole_mass_scale(susy_scale, Mt));
 
    // computation of pole mass spectrum in the SM
-   const unsigned eft_pole_loops = eft.get_pole_mass_loop_order();
-   const unsigned eft_ewsb_loops = eft.get_ewsb_loop_order();
+   const int eft_pole_loops = eft.get_pole_mass_loop_order();
+   const int eft_ewsb_loops = eft.get_ewsb_loop_order();
 
    if (eft_pole_loops > 1) {
       WARNING("Pole mass loop order " << eft_pole_loops
@@ -217,7 +220,7 @@ void @ModelName@_spectrum_generator<Two_scale>::calculate_spectrum()
    eft.set_pole_mass_loop_order(eft_pole_loops);
    eft.set_ewsb_loop_order(eft_ewsb_loops);
 
-   const unsigned index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
+   const int index = this->settings.get(Spectrum_generator_settings::eft_higgs_index);
 
    this->model.get_physical().M@HiggsBoson_index@ = eft.get_physical().Mhh;
    this->model.get_physical().M@VectorZ_0@ = eft.get_physical().MVZ;

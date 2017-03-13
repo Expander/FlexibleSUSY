@@ -601,8 +601,7 @@ const double mw_drbar    = MODEL->get_" <> mwStr <> "();
 const double mw_pole_sqr = Sqr(mw_drbar) - self_energy_w_at_mw;
 
 if (mw_pole_sqr < 0.)
-   MODEL->get_problems().flag_pole_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> wStr <> ");
-
+   " <> TreeMasses`FlagPoleTachyon[wStr, "MODEL->get_problems()."] <> "
 return AbsSqrt(mw_pole_sqr);"
           ];
 

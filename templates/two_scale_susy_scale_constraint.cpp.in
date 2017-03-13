@@ -26,6 +26,7 @@
 #include "ew_input.hpp"
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
+#include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
 
@@ -74,7 +75,6 @@ void @ModelName@_susy_scale_constraint<Two_scale>::apply()
 
    // apply user-defined susy scale constraints
 @applyConstraint@
-@temporaryResetting@
 }
 
 double @ModelName@_susy_scale_constraint<Two_scale>::get_scale() const

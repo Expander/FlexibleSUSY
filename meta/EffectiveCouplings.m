@@ -158,7 +158,7 @@ CalculatePartialWidths[couplings_List] :=
                functionName = "get_" <> particlesStr <> "_partial_width(";
                If[dim == 1,
                   functionName = functionName <> ") const";,
-                  functionName = functionName <> "unsigned gO1) const";
+                  functionName = functionName <> "int gO1) const";
                  ];
                couplingName = "eff_Cp" <> particlesStr;
                massStr = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -348,7 +348,7 @@ CreateEffectiveCouplingsGetters[couplings_List] :=
                getters = getters <> type <> " get_" <> couplingName;
                If[dim == 1,
                   getters = getters <> "() const { return " <> couplingName <> "; }\n";,
-                  getters = getters <> "(unsigned gO1) const { return " <> couplingName <> "(gO1); }\n";
+                  getters = getters <> "(int gO1) const { return " <> couplingName <> "(gO1); }\n";
                  ];
               ];
            getters
@@ -467,7 +467,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                                     <> "copy_mixing_matrices_from_model();\n";
                        ];
                      result = result <> savedMass
-                                     <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                                     <> "for (int gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                      body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
@@ -496,7 +496,7 @@ CreateEffectiveCouplingPrototype[coupling_] :=
            If[particle =!= Null && vectorBoson =!= Null,
               dim = TreeMasses`GetDimension[particle];
               name = CreateEffectiveCouplingName[particle, vectorBoson];
-              result = "void calculate_" <> name <> If[dim == 1, "();\n", "(unsigned gO1);\n"];
+              result = "void calculate_" <> name <> If[dim == 1, "();\n", "(int gO1);\n"];
              ];
            result
           ];
@@ -565,7 +565,7 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
            functionName = functionName <> "(";
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, functionName = functionName <> ", ";];
-               functionName = functionName <> "unsigned ";
+               functionName = functionName <> "int ";
                If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   functionName = functionName <> CConversion`ToValidCSymbolString[indices[[i]]];
                  ];
@@ -680,7 +680,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
            If[dim == 1,
               result = body <> "\n";,
               start = TreeMasses`GetDimensionStartSkippingGoldstones[internal];
-              result = "for (unsigned gI1 = " <> ToString[start - 1] <> "; gI1 < " <> ToString[dim] <> "; ++gI1) {\n";
+              result = "for (int gI1 = " <> ToString[start - 1] <> "; gI1 < " <> ToString[dim] <> "; ++gI1) {\n";
               result = result <> TextFormatting`IndentText[body] <> "\n}\n";
              ];
            {result, parameters}
@@ -698,7 +698,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
                        <> "_effective_couplings::calculate_" <> name <> "(";
               If[dim == 1,
                  result = result <> ")\n{\n";,
-                 result = result <> "unsigned gO1)\n{\n";
+                 result = result <> "int gO1)\n{\n";
                 ];
 
               mass = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];

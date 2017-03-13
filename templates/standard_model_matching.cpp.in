@@ -53,7 +53,7 @@ namespace {
 Standard_model calculate_SM_tree_level(
    const Standard_model& sm,
    const @ModelName@_mass_eigenstates& model_0l,
-   unsigned idx)
+   int idx)
 {
    auto sm_0l = sm;
    sm_0l.get_problems().clear();
@@ -85,7 +85,7 @@ Standard_model calculate_SM_tree_level(
    model_0l.set_pole_mass_loop_order(0);
    model_0l.set_ewsb_loop_order(0);
    model_0l.solve_ewsb_tree_level();
-   model_0l.calculate_DRbar_parameters();
+   model_0l.calculate_DRbar_masses();
 
    match_low_to_high_scale_model_tree_level(model_0l, sm);
 
@@ -120,7 +120,7 @@ double calculate_Mh2_pole(const Standard_model& sm_0l)
  * @return tadpole at loop order
  */
 @ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(
-   @ModelName@_mass_eigenstates model, unsigned loop_order)
+   @ModelName@_mass_eigenstates model, int loop_order)
 {
    if (loop_order == 0) {
       model.set_ewsb_loop_order(loop_order);
@@ -164,7 +164,7 @@ auto calculate_mh2_tree_level(@ModelName@_mass_eigenstates model) -> decltype(mo
 double calculate_Mh2_pole(
    const @ModelName@_mass_eigenstates& model_0l,
    const @ModelName@_mass_eigenstates& model_1l,
-   unsigned idx)
+   int idx)
 {
    // calculate tree-level mass matrix
    const auto mh2_tree = calculate_mh2_tree_level(model_1l);
@@ -195,7 +195,7 @@ double calculate_Mh2_pole(
 void match_high_to_low_scale_model_1loop(
    Standard_model& sm,
    const @ModelName@_mass_eigenstates& model_1l,
-   unsigned idx)
+   int idx)
 {
    // tree-level @ModelName@ parameters
    const auto model_0l = calculate_@ModelName@_tree_level(model_1l, sm);
@@ -256,7 +256,7 @@ Eigen::Matrix<double,3,3> calculate_MFe_DRbar_tree_level(const @ModelName@_mass_
 }
 
 double calculate_MFu_pole_1loop(
-   unsigned i,
+   int i,
    const Standard_model& sm_0l)
 {
    const double p = sm_0l.get_MFu(i);
@@ -274,7 +274,7 @@ double calculate_MFu_pole_1loop(
 }
 
 double calculate_MFd_pole_1loop(
-   unsigned i,
+   int i,
    const Standard_model& sm_0l)
 {
    const double p = sm_0l.get_MFd(i);
@@ -292,7 +292,7 @@ double calculate_MFd_pole_1loop(
 }
 
 double calculate_MFe_pole_1loop(
-   unsigned i,
+   int i,
    const Standard_model& sm_0l)
 {
    const double p = sm_0l.get_MFe(i);
@@ -310,7 +310,7 @@ double calculate_MFe_pole_1loop(
 }
 
 double calculate_MFu_pole_1loop(
-   unsigned i,
+   int i,
    const @ModelName@_mass_eigenstates& model_0l)
 {
    double m_pole = 0.;
@@ -321,7 +321,7 @@ double calculate_MFu_pole_1loop(
 }
 
 double calculate_MFd_pole_1loop(
-   unsigned i,
+   int i,
    const @ModelName@_mass_eigenstates& model_0l)
 {
    double m_pole = 0.;
@@ -332,7 +332,7 @@ double calculate_MFd_pole_1loop(
 }
 
 double calculate_MFe_pole_1loop(
-   unsigned i,
+   int i,
    const @ModelName@_mass_eigenstates& model_0l)
 {
    double m_pole = 0.;
@@ -630,7 +630,7 @@ double calculate_MZ_DRbar_1loop(
 void match_low_to_high_scale_model_1loop(
    @ModelName@_mass_eigenstates& model,
    const Standard_model& sm,
-   unsigned idx)
+   int idx)
 {
    // tree-level @ModelName@ parameters
    const auto model_0l = calculate_@ModelName@_tree_level(model, sm);
@@ -653,7 +653,7 @@ void match_low_to_high_scale_model_1loop(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model_tree_level(
-   Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned idx)
+   Standard_model& sm, const @ModelName@_mass_eigenstates& model, int idx)
 {
    auto model_tmp = model;
    model_tmp.calculate_DRbar_masses();
@@ -702,7 +702,7 @@ void match_low_to_high_scale_model_tree_level(
  * couplings and the SM vev.
  */
 void match_low_to_high_scale_model(
-   @ModelName@_mass_eigenstates& model, const Standard_model& sm, unsigned loop_order, unsigned idx)
+   @ModelName@_mass_eigenstates& model, const Standard_model& sm, int loop_order, int idx)
 {
    if (loop_order == 0) {
       match_low_to_high_scale_model_tree_level(model, sm);
@@ -723,7 +723,7 @@ void match_low_to_high_scale_model(
  * @param idx Higgs index (in mass ordered Higgs multiplet)
  */
 void match_high_to_low_scale_model(
-   Standard_model& sm, const @ModelName@_mass_eigenstates& model, unsigned loop_order, unsigned idx)
+   Standard_model& sm, const @ModelName@_mass_eigenstates& model, int loop_order, int idx)
 {
    if (loop_order == 0) {
       match_high_to_low_scale_model_tree_level(sm, model, idx);

@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    BOOST_CHECK_CLOSE_FRACTION(root(1), 1.0, 1.0e-5);
 }
 
-static unsigned number_of_calls = 0;
+static int number_of_calls = 0;
 
 auto parabola = [](const EV2_t& x) -> EV2_t {
    number_of_calls++;

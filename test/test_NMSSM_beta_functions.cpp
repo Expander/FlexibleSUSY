@@ -193,18 +193,18 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_beta_functions_benchmark )
    NmssmSoftsusy s;
    setup_NMSSM(m, s, input);
 
-   const unsigned N_calls = 10000;
+   const int N_calls = 10000;
 
    Stopwatch stopwatch;
    stopwatch.start();
-   for (unsigned i = 0; i < N_calls; i++) {
+   for (int i = 0; i < N_calls; i++) {
       volatile SoftParsNmssm beta(s.beta2());
    }
    stopwatch.stop();
    const double ss_time = stopwatch.get_time_in_seconds();
 
    stopwatch.start();
-   for (unsigned i = 0; i < N_calls; i++) {
+   for (int i = 0; i < N_calls; i++) {
       volatile NMSSM_soft_parameters beta(m.calc_beta());
    }
    stopwatch.stop();

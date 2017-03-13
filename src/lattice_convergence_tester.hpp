@@ -29,7 +29,7 @@ template<>
 class Convergence_tester<Lattice> {
 public:
    virtual ~Convergence_tester() {}
-   virtual unsigned int max_iterations() { return 0; }
+   virtual int max_iterations() { return 0; }
 };
 
 }

@@ -8,6 +8,7 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 FindSymbolDef::usage="";
 
 CreateParameterDefinition::usage="";
+CreateParameterDefinitionAndDefaultInitialize::usage="";
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterSARAHNames::usage="";
@@ -695,6 +696,17 @@ CreateParameterDefinition[{par_, type_}] :=
 CreateParameterDefinition[{par_, block_, type_}] :=
     CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
 
+CreateParameterDefinitionAndDefaultInitialize[par_] :=
+    CConversion`CreateCType[GetType[par]] <> " " <> CConversion`ToValidCSymbolString[par] <> "{};\n";
+
+CreateParameterDefinitionAndDefaultInitialize[{par_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
+
+CreateParameterDefinitionAndDefaultInitialize[{par_, block_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
+
 CreateSetAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
           Print["Error: CreateSetAssignment: unknown parameter type: ", ToString[parameterType]];
@@ -907,7 +919,7 @@ CreateInputParameterEnum[inputParameters_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           "enum Input_parameters : unsigned { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
+           "enum Input_parameters : int { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
           ];
 
 CreateInputParameterNames[inputParameters_List] :=
@@ -1125,12 +1137,11 @@ IncreaseIndexLiterals[expr_, num_Integer] :=
                                           allModelParameters, allOutputParameters]];
 
 IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
-    Module[{indexedSymbols, rules, decrExpr, allHeads},
+    Module[{indexedSymbols, rules, allHeads},
            allHeads = Join[heads /. FlexibleSUSY`M -> Identity, {SARAH`Delta, SARAH`ThetaStep}];
-           indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
+           indexedSymbols = Extract[{expr}, Position[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity]];
            rules = Rule[#, IncreaseIndices[#,num]] & /@ indexedSymbols;
-           decrExpr = expr /. rules;
-           Return[decrExpr]
+           expr /. rules
           ];
 
 DecreaseIndexLiterals[expr_] :=

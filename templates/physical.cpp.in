@@ -27,13 +27,6 @@
 
 namespace flexiblesusy {
 
-@ModelName@_physical::@ModelName@_physical()
-   :
-@physicalMassesInitNoLeadingComma@
-@mixingMatricesInit@
-{
-}
-
 void @ModelName@_physical::clear()
 {
 @clearOutputParameters@

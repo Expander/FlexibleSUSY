@@ -29,9 +29,9 @@
 namespace flexiblesusy {
 
 template <typename Derived>
-unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
+int closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 {
-   unsigned pos;
+   int pos;
    typename Derived::PlainObject tmp;
    tmp.setConstant(mass);
 
@@ -112,22 +112,21 @@ struct Is_not_finite {
 } // anonymous namespace
 
 /**
- * Copies all elements from src to dst which are not close to the
- * elements in cmp.
+ * Returns all elements from src, which are not close to the elements
+ * in cmp.  The returned vector will have the length (src.size() -
+ * cmp.size()).
  *
  * @param src source vector
  * @param cmp vector with elements to compare against
- * @param dst destination vector
+ * @return vector with elements of src not close to cmp
  */
-template<class Real, int Nsrc, int Ncmp, int Ndst>
-void remove_if_equal(const Eigen::Array<Real,Nsrc,1>& src,
-                     const Eigen::Array<Real,Ncmp,1>& cmp,
-                     Eigen::Array<Real,Ndst,1>& dst)
+template<class Real, int Nsrc, int Ncmp>
+Eigen::Array<Real,Nsrc - Ncmp,1> remove_if_equal(
+   const Eigen::Array<Real,Nsrc,1>& src,
+   const Eigen::Array<Real,Ncmp,1>& cmp)
 {
-   static_assert(Nsrc == Ncmp + Ndst,
-                 "Error: remove_if_equal: vectors have incompatible length!");
-
    Eigen::Array<Real,Nsrc,1> non_equal(src);
+   Eigen::Array<Real,Nsrc - Ncmp,1> dst;
 
    for (int i = 0; i < Ncmp; i++) {
       const int idx = closest_index(cmp(i), non_equal);
@@ -136,6 +135,8 @@ void remove_if_equal(const Eigen::Array<Real,Nsrc,1>& src,
 
    std::remove_copy_if(non_equal.data(), non_equal.data() + Nsrc,
                        dst.data(), Is_not_finite<Real>());
+
+   return dst;
 }
 
 /**
@@ -175,12 +176,12 @@ void reorder_vector(
 
 template<class Derived>
 std::string print_scientific(const Eigen::DenseBase<Derived>& v,
-                             unsigned number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
+                             int number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
 {
    std::ostringstream sstr;
 
-   for (std::size_t k = 0; k < v.cols(); k++) {
-      for (std::size_t i = 0; i < v.rows(); i++) {
+   for (int k = 0; k < v.cols(); k++) {
+      for (int i = 0; i < v.rows(); i++) {
          sstr << std::setprecision(number_of_digits)
               << std::scientific << v(i,k) << ' ';
       }

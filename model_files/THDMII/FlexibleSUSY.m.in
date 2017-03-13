@@ -45,8 +45,8 @@ LowScale = LowEnergyConstant[MZ];
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
-   {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
-   {v2, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
+   {v1, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {v2, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

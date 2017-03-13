@@ -51,6 +51,12 @@ BOOST_AUTO_TEST_CASE(test_WHICH_4)
    BOOST_CHECK_EQUAL(WHICH(i < 1, 0, true, (fail(true), 1)), 0);
 }
 
+BOOST_AUTO_TEST_CASE(test_WHICH_type)
+{
+   BOOST_CHECK_EQUAL(WHICH(false, 0, true, 0.5), 0.5);
+   BOOST_CHECK_EQUAL(WHICH(false, 0, false, 0, true, 0.5), 0.5);
+}
+
 BOOST_AUTO_TEST_CASE(test_WHICH_10)
 {
    const int i = 0;

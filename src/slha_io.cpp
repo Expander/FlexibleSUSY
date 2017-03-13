@@ -388,7 +388,7 @@ void SLHA_io::set_modsel(const Modsel& modsel_)
    std::ostringstream ss;
    ss << "Block MODSEL\n";
    ss << FORMAT_ELEMENT(6 , qfv | lfv, "quark/lepton flavour violation");
-   ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "DRbar parameter output scale (GeV)");
+   ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "running parameter output scale (GeV)");
 
    set_block(ss);
 }
@@ -400,7 +400,7 @@ void SLHA_io::set_physical_input(const Physical_input& input)
    std::ostringstream ss;
    ss << "Block FlexibleSUSYInput\n";
 
-   for (unsigned i = 0; i < names.size(); i++) {
+   for (std::size_t i = 0; i < names.size(); i++) {
       ss << FORMAT_ELEMENT(i, input.get(static_cast<Physical_input::Input>(i)),
                            names[i]);
    }
@@ -413,7 +413,7 @@ void SLHA_io::set_settings(const Spectrum_generator_settings& settings)
    std::ostringstream ss;
    ss << "Block FlexibleSUSY\n";
 
-   for (unsigned i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
+   for (int i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
       ss << FORMAT_ELEMENT(i, settings.get(static_cast<Spectrum_generator_settings::Settings>(i)),
                            settings.get_description(static_cast<Spectrum_generator_settings::Settings>(i)));
    }

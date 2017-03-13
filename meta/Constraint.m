@@ -4,7 +4,6 @@ BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "Te
 ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
-InitializeInputParameters::usage="";
 InitialGuessAtLowScaleGaugeCouplings::usage="";
 IsFixed::usage="returns true if given parameter is fixed in given constraint";
 
@@ -25,8 +24,6 @@ GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
 
 SetTemporarily::usage="set temporary variables";
 
-ResetTemporarily::usage="set temporary variables";
-
 Begin["`Private`"];
 
 allBetaFunctions = {};
@@ -43,7 +40,9 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           Parameters`IsExtraParameter[parameter],
           Parameters`SetParameter[parameter, value, modelName <> "->"],
           True,
-          Print["Error: ", parameter, " is neither a model nor an input parameter!"];
+          Print["Error: ", parameter, " cannot be set in the constraint,",
+                " because it is neither a model nor an input parameter!"];
+          Quit[1];
           ""
          ];
 
@@ -473,39 +472,19 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
 CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
+DefineAndDefaultInitialize[{t:FlexibleSUSY`Phase[_], _}] :=
+    CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
+    ToValidCSymbolString[t] <> "{1.,0.};\n";
+
+DefineAndDefaultInitialize[{t:Sign[_], _}] :=
+    CConversion`CreateCType[GuessExtraParameterType[t]] <> " " <>
+    ToValidCSymbolString[t] <> "{1};\n";
+
+DefineAndDefaultInitialize[p:{_,_}] :=
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[p];
+
 DefineInputParameters[inputParameters_List] :=
-    Module[{result = ""},
-           (result = result <> Parameters`CreateParameterDefinition[#])& /@ inputParameters;
-           Return[result];
-          ];
-
-InitializeInputParameter[{FlexibleSUSY`Phase[phase_], _}] :=
-    ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> "(1.,.0)";
-
-InitializeInputParameter[{Sign[phase_], _}] :=
-    ToValidCSymbolString[Sign[phase]] <> "(1)";
-
-InitializeInputParameter[{parameter_, type_}] :=
-    CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[parameter],type];
-
-InitializeInputParameter[pars__] :=
-    Module[{},
-           Print["Error: Default values for parameters must be given in the",
-                 " form {parameter, value} where value is a number."];
-           Return[""];
-          ];
-
-InitializeInputParameters[defaultValues_List] :=
-    Module[{result = "", i},
-           For[i = 1, i <= Length[defaultValues], i++,
-               If[i == 1,
-                  result = ": ";,
-                  result = result <> ", ";
-                 ];
-               result = result <> InitializeInputParameter[defaultValues[[i]]];
-              ];
-           Return[result];
-          ];
+    StringJoin[DefineAndDefaultInitialize /@ inputParameters];
 
 InitialGuessAtLowScaleGaugeCouplings[] :=
     Module[{result = ""},
@@ -599,30 +578,30 @@ CheckPerturbativityForParameters[pars_List, thresh_] :=
     Parameters`CreateLocalConstRefs[pars] <> "\n" <>
     StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
 
-SaveValue[par_[idx__], prefix_String] :=
+SaveValue[par_[idx__]] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par],
-            parStrIdx = CConversion`ToValidCSymbolString[par[idx]]},
-           "const auto " <> prefix <> parStrIdx <> " = MODELPARAMETER(" <> parStr <> ")" <>
-           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");"
+            parStrIdx = CConversion`ToValidCSymbolString[par[idx]], oldVal},
+           oldVal = "old_" <> parStrIdx;
+           "const auto " <> oldVal <> " = MODELPARAMETER(" <> parStr <> ")" <>
+           "(" <> Utils`StringJoinWithSeparator[ToString /@ {idx},","] <> ");\n" <>
+           "const auto save_" <> parStrIdx <> " = make_raii_guard([this," <> oldVal <> "]{ " <>
+           Parameters`SetParameter[par[idx], oldVal, "MODEL->"] <> " });\n"
           ];
 
-SaveValue[par_, prefix_String] :=
-    Module[{parStr = CConversion`ToValidCSymbolString[par]},
-           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <> parStr <> ");"
+SaveValue[par_] :=
+    Module[{parStr = CConversion`ToValidCSymbolString[par], oldVal},
+           oldVal = "old_" <> parStr;
+           "const auto " <> oldVal <> " = MODELPARAMETER(" <> parStr <> ");\n" <>
+           "const auto save_" <> parStr <> " = make_raii_guard([this," <> oldVal <> "]{ " <>
+           Parameters`SetParameter[par, oldVal, "MODEL->"] <> " });\n"
           ];
-
-RestoreValue[par_, prefix_String] :=
-    Parameters`SetParameter[
-        par,
-        prefix <> CConversion`ToValidCSymbolString[par],
-        "MODEL->"];
 
 SetTemporarily[settings_List] :=
     Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}],
             set, savedVals},
            If[tempSettings === {}, Return[""];];
            set = ApplyConstraints[tempSettings];
-           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]], "old_"]& /@ tempSettings, "\n"];
+           savedVals = Utils`StringJoinWithSeparator[SaveValue[#[[1]]]& /@ tempSettings, "\n"];
            "// temporary parameter re-definitons\n" <>
            savedVals <> "\n{\n" <> IndentText[set] <> "}"
           ];

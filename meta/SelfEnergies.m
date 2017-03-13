@@ -1,5 +1,5 @@
 
-BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`"}];
+BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`", "Utils`"}];
 
 FSSelfEnergy::usage="self-energy head";
 Tadpole::usage="tadpole head";
@@ -253,6 +253,10 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
+indexCount = 0;
+MakeUniqueIdx[] :=
+    Symbol["id" <> ToString[indexCount++]];
+
 (* creates a C++ function that calculates a coupling
  *
  * Return: {prototypes_String, definitions_String, rules_List}
@@ -277,7 +281,7 @@ CreateCouplingFunction[coupling_, expr_] :=
            cFunctionName = cFunctionName <> "(";
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, cFunctionName = cFunctionName <> ", ";];
-               cFunctionName = cFunctionName <> "unsigned ";
+               cFunctionName = cFunctionName <> "int ";
                (* variable names must not be integers *)
                If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   cFunctionName = cFunctionName <> ToValidCSymbolString[indices[[i]]];
@@ -333,21 +337,22 @@ ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
 
 CreateVertexExpressions[vertexRules_List] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
-            p, d, r},
+            p, d, r, MakeIndex},
+           MakeIndex[i_Integer] := MakeUniqueIdx[];
+           MakeIndex[i_] := i;
            rules = Table[0, {Length[vertexRules]}];
+           Utils`StartProgressBar[Dynamic[k], Length[vertexRules]];
            For[k = 1, k <= Length[vertexRules], k++,
-               coupling = Vertices`ToCp[vertexRules[[k,1]]];
+               coupling = Vertices`ToCp[vertexRules[[k,1]]] /. p_[{idx__}] :> p[MakeIndex /@ {idx}];
                expr = vertexRules[[k,2]];
-               WriteString["stdout", "."];
-               If[Mod[k, 50] == 0, WriteString["stdout","\n"]];
+               Utils`UpdateProgressBar[k, Length[vertexRules]];
                {p,d,r} = CreateCouplingFunction[coupling, expr];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
               ];
-           WriteString["stdout","\n"];
-           Print["All vertices finished."];
-           Return[{prototypes, defs, Flatten[rules]}];
+           Utils`StopProgressBar[Length[vertexRules]];
+           {prototypes, defs, Flatten[rules]}
           ];
 
 ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
@@ -367,14 +372,14 @@ ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
 DeclareFieldIndices[field_Symbol] := "";
 
 DeclareFieldIndices[field_[ind1_, ind2_]] :=
-    ", unsigned " <> ToValidCSymbolString[ind1] <>
-    ", unsigned " <> ToValidCSymbolString[ind2];
+    ", int " <> ToValidCSymbolString[ind1] <>
+    ", int " <> ToValidCSymbolString[ind2];
 
 DeclareFieldIndices[field_[PL]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[PR]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[1]]  := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[ind_]] :=
-    "unsigned " <> ToValidCSymbolString[ind];
+    "int " <> ToValidCSymbolString[ind];
 
 CreateFunctionNamePrefix[field_[idx1_,idx2_]] := CreateFunctionNamePrefix[field];
 CreateFunctionNamePrefix[field_[PL]]          := CreateFunctionNamePrefix[field] <> "_PL";
@@ -457,8 +462,8 @@ FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
            dim = GetDimension[field];
            name = CreateSelfEnergyFunctionName[field];
            "\
-for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
-   for (unsigned k = i; k < " <> ToString[dim] <> "; k++)
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = i; k < " <> ToString[dim] <> "; k++)
       " <> sym <> "(i, k) = " <> name <> "(p, i, k);
 
 Hermitianize(" <> sym <> ");
@@ -470,8 +475,8 @@ FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
            dim = GetDimension[field];
            name = CreateSelfEnergyFunctionName[field];
            "\
-for (unsigned i = 0; i < " <> ToString[dim] <> "; i++)
-   for (unsigned k = 0; k < " <> ToString[dim] <> "; k++)
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = 0; k < " <> ToString[dim] <> "; k++)
       " <> sym <> "(i, k) = " <> name <> "(p, i, k);
 "
           ];
@@ -504,34 +509,6 @@ CreateNPointFunctionMatrix[nPointFunction_] :=
            { prototype, def }
           ];
 
-PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
-    "heavy " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
-
-PrintNPointFunctionName[SelfEnergies`FSHeavyRotatedSelfEnergy[field_,expr__]] :=
-    "heavy, rotated " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_][projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_,__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_[idx_],__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}_{" <> RValueToCFormString[idx] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}";
-
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
     Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d,
             relevantVertexRules},
@@ -541,9 +518,10 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[nPointFunctions,a]) :> r];
            {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[relevantVertexRules];
            (* creating n-point functions *)
-           Print["Generating C++ code for ..."];
+           Print["Converting self energies ..."];
+           Utils`StartProgressBar[Dynamic[k], Length[nPointFunctions]];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
+               Utils`UpdateProgressBar[k, Length[nPointFunctions]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
                defs = defs <> d;
@@ -551,7 +529,8 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
                prototypes = prototypes <> p;
                defs = defs <> d;
               ];
-           Return[{prototypes, defs}];
+           Utils`StopProgressBar[Length[nPointFunctions]];
+           {prototypes, defs}
           ];
 
 FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
@@ -589,8 +568,12 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", str
 DivideTadpoleByVEV[higgsAndVEV_List, arrayName_String] :=
     Module[{body = "", v, vev},
            For[v = 1, v <= Length[higgsAndVEV], v++,
-               vev = CConversion`RValueToCFormString[higgsAndVEV[[v,3]]];
-               body = body <> arrayName <> "[" <> ToString[v-1] <> "] /= " <> vev <> ";\n";
+               vev = higgsAndVEV[[v,3]];
+               If[vev === 0,
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] = 0.;\n";,
+                  vev = CConversion`RValueToCFormString[vev];
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] /= " <> vev <> ";\n";
+                 ];
               ];
            body
           ];

@@ -387,8 +387,8 @@ void compare_neutralino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    TEST_EQUALITY(softsusy_tree, softsusy_tree.transpose());
 
    ComplexMatrix sarah_sigma_L(4,4), sarah_sigma_R(4,4), sarah_sigma_S(4,4);
-   for (unsigned i = 1; i <= 4; ++i) {
-      for (unsigned k = 1; k <= 4; ++k) {
+   for (int i = 1; i <= 4; ++i) {
+      for (int k = 1; k <= 4; ++k) {
          sarah_sigma_L(i,k) = m.self_energy_Chi_PL(p,i-1,k-1);
          sarah_sigma_R(i,k) = m.self_energy_Chi_PR(p,i-1,k-1);
          sarah_sigma_S(i,k) = m.self_energy_Chi_1(p,i-1,k-1);
@@ -438,8 +438,8 @@ void compare_chargino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    softsusy_tree(2, 2) = smu;
 
    ComplexMatrix sarah_sigma_L(2,2), sarah_sigma_R(2,2), sarah_sigma_S(2,2);
-   for (unsigned i = 1; i <= 2; ++i) {
-      for (unsigned k = 1; k <= 2; ++k) {
+   for (int i = 1; i <= 2; ++i) {
+      for (int k = 1; k <= 2; ++k) {
          sarah_sigma_L(i,k) = m.self_energy_Cha_PL(p,i-1,k-1);
          sarah_sigma_R(i,k) = m.self_energy_Cha_PR(p,i-1,k-1);
          sarah_sigma_S(i,k) = m.self_energy_Cha_1(p,i-1,k-1);
@@ -483,9 +483,9 @@ void compare_sneutrino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doSnu(0.0, 1);
    const DoubleVector Snu_softsusy_1loop(s.displayPhys().msnu);
    ComplexMatrix Snu_sarah_se(3,3);
-   for (unsigned i1 = 1; i1 <= 3; ++i1) {
+   for (int i1 = 1; i1 <= 3; ++i1) {
       const double p = Snu_sarah_tree(i1);
-      for (unsigned i2 = 1; i2 <= 3; ++i2) {
+      for (int i2 = 1; i2 <= 3; ++i2) {
          Snu_sarah_se(i1, i2) = m.self_energy_Sv(p, i1-1, i2-1);
       }
    }
@@ -499,7 +499,7 @@ void compare_sneutrino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    TEST_CLOSE(Snu_sarah_se(2,3), Complex(0,0), 1.0e-10);
 
    DoubleVector Snu_sarah_1loop(3);
-   for (unsigned i = 1; i <= 3; ++i) {
+   for (int i = 1; i <= 3; ++i) {
       Snu_sarah_1loop(i) = zeroSqrt(sqr(Snu_sarah_tree(i))
                                      - Snu_sarah_se(i,i).real());
    }
@@ -530,15 +530,15 @@ void compare_selectron_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doChargedSleptons(mtau, 0.0, sinthDRbar, 1);
    const DoubleMatrix Se_softsusy_1loop(s.displayPhys().me);
    ComplexMatrix Se_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
       const double p = Se_sarah_tree(i1);
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
+      for (int i2 = 1; i2 <= 6; ++i2) {
          Se_sarah_se(i1, i2) = m.self_energy_Se(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Se_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSlepCorrection(mat, i);
       Se_softsusy_se(i,i)     = -mat(1,1);
@@ -594,15 +594,15 @@ void compare_sup_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doUpSquarks(mt, 0.0, sinthDRbar, 1);
    const DoubleMatrix Su_softsusy_1loop(s.displayPhys().mu);
    ComplexMatrix Su_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
+      for (int i2 = 1; i2 <= 6; ++i2) {
          const double p = sqrt(Su_sarah_tree(i1) * Su_sarah_tree(i2));
          Su_sarah_se(i1, i2) = m.self_energy_Su(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Su_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSupCorrection(mat, i);
       Su_softsusy_se(i,i)     = -mat(1,1);
@@ -669,15 +669,15 @@ void compare_sdown_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doDownSquarks(mb, 0.0, sinthDRbar, 1, mt);
    const DoubleMatrix Sd_softsusy_1loop(s.displayPhys().md);
    ComplexMatrix Sd_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
+      for (int i2 = 1; i2 <= 6; ++i2) {
          const double p = sqrt(Sd_sarah_tree(i1) * Sd_sarah_tree(i2));
          Sd_sarah_se(i1, i2) = m.self_energy_Sd(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Sd_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSdownCorrection(mat, i);
       Sd_softsusy_se(i,i)     = -mat(1,1);
@@ -751,8 +751,8 @@ void compare_CP_even_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    softsusy_sigma_heavy(2,2) = s.pis2s2(mH0, scale);
 
    ComplexMatrix sarah_sigma_light(2,2), sarah_sigma_heavy(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
          sarah_sigma_light(i1,i2) = m.self_energy_hh(mh0,i1-1,i2-1);
          sarah_sigma_heavy(i1,i2) = m.self_energy_hh(mH0,i1-1,i2-1);
       }
@@ -792,8 +792,8 @@ void compare_CP_odd_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double softsusy_sigma_AA = s.piAA(mA0, scale);
 
    ComplexMatrix sarah_sigma_AA(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
          sarah_sigma_AA(i1,i2) = m.self_energy_Ah(p,i1-1,i2-1);
       }
    }
@@ -841,8 +841,8 @@ void compare_charged_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double softsusy_sigma_HpHm = s.piHpHm(mHpm, scale);
 
    ComplexMatrix sarah_sigma_Hpm(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
          sarah_sigma_Hpm(i1,i2) = m.self_energy_Hpm(p,i1-1,i2-1);
       }
    }

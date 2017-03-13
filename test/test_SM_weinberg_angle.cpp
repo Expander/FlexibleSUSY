@@ -490,7 +490,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_precision_goal(1.0e-8);
    weinberg.set_data(data);
 
-   for (unsigned loops = 0; loops < 3; loops++) {
+   for (int loops = 0; loops < 3; loops++) {
       weinberg.set_number_of_loops(loops);
       const int error = weinberg.calculate();
       const double fs_sin = weinberg.get_sin_theta();

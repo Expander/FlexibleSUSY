@@ -28,9 +28,6 @@ namespace flexiblesusy {
 
 struct @ModelName@_input_parameters {
 @defineInputParameters@
-   @ModelName@_input_parameters()
-      @defaultInputParametersInit@
-   {}
 
    Eigen::ArrayXd get() const;
    void set(const Eigen::ArrayXd&);

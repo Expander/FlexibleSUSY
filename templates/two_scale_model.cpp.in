@@ -23,7 +23,7 @@
  * @brief implementation of the @ModelName@ model class
  *
  * Contains the definition of the @ModelName@ model class methods
- * which solve EWSB and calculate pole masses and mixings from DRbar
+ * which solve EWSB and calculate pole masses and mixings from @RenScheme@
  * parameters.
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
@@ -33,8 +33,6 @@
 #include "@ModelName@_two_scale_model.hpp"
 
 namespace flexiblesusy {
-
-using namespace @ModelName@_info;
 
 #define CLASSNAME @ModelName@<Two_scale>
 

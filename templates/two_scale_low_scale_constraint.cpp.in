@@ -27,6 +27,7 @@
 #include "ew_input.hpp"
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
+#include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
 #include "weinberg_angle.hpp"
@@ -52,6 +53,12 @@ namespace flexiblesusy {
 #define SCALE model->get_scale()
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define MWMSbar mW_run
+#define MWDRbar mW_run
+#define MZMSbar mZ_run
+#define MZDRbar mZ_run
+#define EDRbar e_run
+#define EMSbar e_run
 #define CKM ckm
 #define PMNS pmns
 #define THETAW theta_w
@@ -87,8 +94,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
 
    if (model->get_thresholds())
       qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
-
-@temporaryResetting@
 }
 
 const Eigen::Matrix<std::complex<double>,3,3>& @ModelName@_low_scale_constraint<Two_scale>::get_ckm()
@@ -136,10 +141,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    ckm.setIdentity();
    pmns.setIdentity();
    neutrinoDRbar.setZero();
-   MWDRbar = 0.;
-   MZDRbar = 0.;
+   mW_run = 0.;
+   mZ_run = 0.;
    AlphaS = 0.;
-   EDRbar = 0.;
+   e_run = 0.;
    ThetaWDRbar = 0.;
    new_g1 = 0.;
    new_g2 = 0.;
@@ -157,10 +162,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
    neutrinoDRbar = Eigen::Matrix<double,3,3>::Zero();
-   MWDRbar = 0.;
-   MZDRbar = 0.;
+   mW_run = 0.;
+   mZ_run = 0.;
    AlphaS = 0.;
-   EDRbar = 0.;
+   e_run = 0.;
    ThetaWDRbar = 0.;
    new_g1 = 0.;
    new_g2 = 0.;
@@ -204,16 +209,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = mz_pole;
-   MWDRbar = mw_pole;
+   mZ_run = mz_pole;
+   mW_run = mw_pole;
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_M@VectorZ@_DRbar(mz_pole);
-      MWDRbar = model->calculate_M@VectorW@_DRbar(mw_pole);
+      mZ_run = model->calculate_M@VectorZ@_DRbar(mz_pole);
+      mW_run = model->calculate_M@VectorW@_DRbar(mw_pole);
    }
 
    AlphaS = alpha_s_drbar;
-   EDRbar = e_drbar;
+   e_run = e_drbar;
    ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
 }
 

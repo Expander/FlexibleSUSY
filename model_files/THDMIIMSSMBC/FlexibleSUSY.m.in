@@ -29,26 +29,26 @@ HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
     {Lambda1, 1/2 (1/4 ( (GUTNormalization[g1] g1)^2 + g2^2)
-                   + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda1th1L + deltaLambda1Phi1L)
-                   + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda1th2L)},
+                   + UnitStep[LambdaLoopOrder-1] (deltaLambda1th1L + deltaLambda1Phi1L)
+                   + UnitStep[LambdaLoopOrder-2] deltaLambda1th2L)},
     {Lambda2, 1/2 (1/4 ( (GUTNormalization[g1] g1)^2 + g2^2)
-                   + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda2th1L + deltaLambda2Phi1L)
-                   + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda2th2L)},
+                   + UnitStep[LambdaLoopOrder-1] (deltaLambda2th1L + deltaLambda2Phi1L)
+                   + UnitStep[LambdaLoopOrder-2] deltaLambda2th2L)},
     {Lambda3, 1/4 (-(GUTNormalization[g1] g1)^2 + g2^2)
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda3th1L + deltaLambda3Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda3th2L},
+              + UnitStep[LambdaLoopOrder-1] (deltaLambda3th1L + deltaLambda3Phi1L)
+              + UnitStep[LambdaLoopOrder-2] deltaLambda3th2L},
     {Lambda4, -1/2 g2^2
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda4th1L + deltaLambda4Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
+              + UnitStep[LambdaLoopOrder-1] (deltaLambda4th1L + deltaLambda4Phi1L)
+              + UnitStep[LambdaLoopOrder-2] deltaLambda4th2L},
     {Lambda5, 0
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda5th1L + deltaLambda5Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
+              + UnitStep[LambdaLoopOrder-1] (deltaLambda5th1L + deltaLambda5Phi1L)
+              + UnitStep[LambdaLoopOrder-2] deltaLambda5th2L},
     {Lambda6, 0
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda6th1L + deltaLambda6Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda6th2L},
+              + UnitStep[LambdaLoopOrder-1] (deltaLambda6th1L + deltaLambda6Phi1L)
+              + UnitStep[LambdaLoopOrder-2] deltaLambda6th2L},
     {Lambda7, 0
-              + UnitStep[THRESHOLD-1] UnitStep[LambdaLoopOrder-1] (deltaLambda7th1L + deltaLambda7Phi1L)
-              + UnitStep[THRESHOLD-2] UnitStep[LambdaLoopOrder-2] deltaLambda7th2L}
+              + UnitStep[LambdaLoopOrder-1] (deltaLambda7th1L + deltaLambda7Phi1L)
+              + UnitStep[LambdaLoopOrder-2] deltaLambda7th2L}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -69,8 +69,8 @@ LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
-   {v2, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+   {v1, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {v2, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtLowScale = {

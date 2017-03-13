@@ -7,6 +7,7 @@ ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
+WriteSLHAImMinparBlock::usage="";
 WriteSLHAImExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -50,6 +51,10 @@ CreateFormattedSLHABlocks::usage = "";
 
 Begin["`Private`"];
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<WriteOut>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 (*
  * @brief Replaces tokens in files.
  *
@@ -72,7 +77,7 @@ ReplaceInFiles[files_List, replacementList_List] :=
               cppTemplateFileName = files[[f,2]];
               cppFile             = Import[cppFileName, "String"];
               modifiedCppFile     = StringReplace[cppFile, replacementList];
-              Print["   Writing file ", cppTemplateFileName];
+              DebugPrint["writing file ", cppTemplateFileName];
               Export[cppTemplateFileName, modifiedCppFile, "String"];
              ];
           ];
@@ -214,6 +219,14 @@ WriteSLHAExtparBlock[extpar_List] :=
     "extpar << \"Block EXTPAR\\n\";\n" <>
     StringJoin[WriteParameterTuple[#, "extpar"]& /@ extpar] <>
     "slha_io.set_block(extpar);\n";
+
+WriteSLHAImMinparBlock[{}] := "";
+
+WriteSLHAImMinparBlock[imminpar_List] :=
+    "std::ostringstream imminpar;\n\n" <>
+    "imminpar << \"Block IMMINPAR\\n\";\n" <>
+    StringJoin[WriteParameterTuple[#, "imminpar"]& /@ imminpar] <>
+    "slha_io.set_block(imminpar);\n";
 
 WriteSLHAImExtparBlock[{}] := "";
 
@@ -680,7 +693,7 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
-ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
+ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_}, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
@@ -883,15 +896,9 @@ GetSLHASoftSquaredMassType[c_] :=
     CConversion`ToRealType[Parameters`GetType[c]];
 
 CreateSLHAYukawaDefinition[] :=
-    Module[{result = "", yuks},
-           yuks = GetYukawas[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHAYukawaType[#]] <>
-                        " " <> CreateSLHAYukawaName[#] <> ";\n";
-           ]& /@ yuks;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHAYukawaName[#], GetSLHAYukawaType[#]}
+    ]& /@ GetYukawas[]];
 
 CreateSLHAYukawaGetters[] :=
     Module[{result = "", yuks},
@@ -939,26 +946,14 @@ ConvertYukawaCouplingsToSLHA[] :=
 (* SLHA fermion mixing matrices *)
 
 CreateSLHAFermionMixingMatricesDef[] :=
-    Module[{result = "", yuks},
-           yuks = GetFermionMixingMatrices[];
-           Block[{},
-                 result = result <>
-                          CConversion`CreateCType[GetSLHAFermionMixingMatrixType[#]] <>
-                          " " <> CreateSLHAFermionMixingMatrixName[#] <> ";\n";
-           ]& /@ yuks;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHAFermionMixingMatrixName[#], GetSLHAFermionMixingMatrixType[#]}
+    ]& /@ GetFermionMixingMatrices[]];
 
 CreateSLHATrilinearCouplingDefinition[] :=
-    Module[{result = "", tril},
-           tril = GetTrilinearCouplings[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHATrilinearCouplingType[#]] <>
-                        " " <> CreateSLHATrilinearCouplingName[#] <> ";\n";
-           ]& /@ tril;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHATrilinearCouplingName[#], GetSLHATrilinearCouplingType[#]}
+    ]& /@ GetTrilinearCouplings[]];
 
 CreateSLHATrilinearCouplingGetters[] :=
     Module[{result = "", tril},
@@ -1017,15 +1012,9 @@ CreateSLHAFermionMixingMatricesGetters[] :=
           ];
 
 CreateSLHASoftSquaredMassesDefinition[] :=
-    Module[{result = "", massSq},
-           massSq = GetSoftSquaredMasses[];
-           Block[{},
-               result = result <>
-                        CConversion`CreateCType[GetSLHASoftSquaredMassType[#]] <>
-                        " " <> CreateSLHASoftSquaredMassName[#] <> ";\n";
-           ]& /@ massSq;
-           result
-          ];
+    StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
+        {CreateSLHASoftSquaredMassName[#], GetSLHASoftSquaredMassType[#]}
+    ]& /@ GetSoftSquaredMasses[]];
 
 CreateSLHASoftSquaredMassesGetters[] :=
     Module[{result = "", massSq},

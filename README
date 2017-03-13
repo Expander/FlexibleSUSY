@@ -19,7 +19,7 @@ Requirements
  * C++ compiler (g++ >= 4.7.2 or clang++ >= 3.1 or icpc >= 12.1)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
- * SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
+ * SARAH (version 4.10.2 or higher)   http://sarah.hepforge.org
  * Boost (version 1.37.0 or higher)   http://www.boost.org
  * Eigen 3 (version 3.1 or higher)    http://eigen.tuxfamily.org
  * GNU scientific library             http://www.gnu.org/software/gsl/
@@ -39,8 +39,8 @@ following setup:
 
    $ cd ~/.Mathematica/Applications/
    $ wget https://www.hepforge.org/archive/sarah/SARAH-4.7.0.tar.gz
-   $ tar -xf SARAH-4.9.1.tar.gz
-   $ ln -s $PWD/SARAH-4.9.1/ SARAH
+   $ tar -xf SARAH-4.9.3.tar.gz
+   $ ln -s $PWD/SARAH-4.9.3/ SARAH
 
    $ cd ~/.Mathematica/Kernel/
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \

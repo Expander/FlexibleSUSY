@@ -535,8 +535,8 @@ public:
    CMSSMMassWInput_physical get_physical() const { return mssm.get_physical(); }
    const Problems<CMSSMMassWInput_info::NUMBER_OF_PARTICLES, CMSSMMassWInput_info::NUMBER_OF_PARAMETERS>& get_problems() const { return mssm.get_problems(); }
    CMSSMMassWInput<Two_scale> get_model() const { return mssm; }
-   void set_ewsb_loop_order(unsigned l) { ewsb_loop_order = l; }
-   void set_pole_mass_loop_order(unsigned l) { pole_mass_loop_order = l; }
+   void set_ewsb_loop_order(int l) { ewsb_loop_order = l; }
+   void set_pole_mass_loop_order(int l) { pole_mass_loop_order = l; }
    void set_low_scale_constraint(CMSSMMassWInput_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(CMSSMMassWInput_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(CMSSMMassWInput_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -601,7 +601,7 @@ private:
    CMSSMMassWInput_high_scale_constraint<Two_scale>* high_constraint;
    CMSSMMassWInput_susy_scale_constraint<Two_scale>* susy_constraint;
    CMSSMMassWInput_low_scale_constraint<Two_scale>*  low_constraint;
-   unsigned ewsb_loop_order, pole_mass_loop_order;
+   int ewsb_loop_order, pole_mass_loop_order;
 };
 
 BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum )

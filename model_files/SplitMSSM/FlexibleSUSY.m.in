@@ -15,7 +15,8 @@ EXTPAR = {
     {5, mAInput},
     {6, MEWSB},
     {7, AtInput},
-    {25, TanBeta}
+    {25, TanBeta},
+    {100, LambdaLoopOrder}
 };
 
 FSExtraInputParameters = {
@@ -35,14 +36,14 @@ HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
-                + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi)
-                + UnitStep[THRESHOLD-2] (
+                + UnitStep[LambdaLoopOrder-1] (lambda1LReg + lambda1LPhi)
+                + UnitStep[LambdaLoopOrder-2] (
                   If[IsCloseRel[msq2[3,3],msu2[3,3],0.01],
                      lambda2LPhiMSqMSuDegenerate, lambda2LPhiFull])},
-    {gYu      , gYuTree + UnitStep[THRESHOLD-1] gYu1L},
-    {gYd      , gYdTree + UnitStep[THRESHOLD-1] gYd1L},
-    {g2u      , g2uTree + UnitStep[THRESHOLD-1] g2u1L},
-    {g2d      , g2dTree + UnitStep[THRESHOLD-1] g2d1L}
+    {gYu      , gYuTree + UnitStep[LambdaLoopOrder-1] gYu1L},
+    {gYd      , gYdTree + UnitStep[LambdaLoopOrder-1] gYd1L},
+    {g2u      , g2uTree + UnitStep[LambdaLoopOrder-1] g2u1L},
+    {g2d      , g2dTree + UnitStep[LambdaLoopOrder-1] g2d1L}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -62,7 +63,7 @@ LowScaleInput = {
    {MassB , M1Input},
    {MassWB, M2Input},
    {MassG , M3Input},
-   {v, Sqrt[2] MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+   {v, Sqrt[2] MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

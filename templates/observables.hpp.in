@@ -35,7 +35,7 @@ class @ModelName@_mass_eigenstates;
 class Physical_input;
 
 struct @ModelName@_observables {
-   static const unsigned NUMBER_OF_OBSERVABLES = @numberOfObservables@;
+   static const int NUMBER_OF_OBSERVABLES = @numberOfObservables@;
 
    @ModelName@_observables();
    Eigen::ArrayXd get() const; ///< returns vector of all observables
@@ -46,7 +46,13 @@ struct @ModelName@_observables {
 @observablesDef@
 };
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&, const Physical_input&);
+@ModelName@_observables calculate_observables(
+   const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
+   const Physical_input&);
+
+@ModelName@_observables calculate_observables(
+   const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
+   const Physical_input&, double scale);
 
 } // namespace flexiblesusy
 

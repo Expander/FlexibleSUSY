@@ -29,7 +29,11 @@ template <typename T>
 class RAII_save {
 public:
    RAII_save(T& var_) noexcept : var(var_), value(var_) {}
+   RAII_save(const RAII_save&) = delete;
+   RAII_save(RAII_save&&) = default;
    ~RAII_save() { var = value; }
+   RAII_save& operator=(const RAII_save&) = delete;
+   RAII_save& operator=(RAII_save&& other) = default;
 
 private:
    T& var;
@@ -40,6 +44,32 @@ template <typename T>
 constexpr RAII_save<T> make_raii_save(T& var)
 {
    return RAII_save<T>(var);
+}
+
+/**
+ * @class RAII_guard
+ * @brief Carries out provided clean-up actions at destruction
+ */
+template <typename F>
+class RAII_guard {
+public:
+   RAII_guard(F f_) : clean_up(std::move(f_)) {}
+   RAII_guard(const RAII_guard&) = delete;
+   RAII_guard(RAII_guard&& other) : clean_up(std::move(other.clean_up)) {}
+   ~RAII_guard() { clean_up(); }
+   RAII_guard& operator=(const RAII_guard&) = delete;
+   RAII_guard& operator=(RAII_guard&& other) {
+      clean_up = std::move(other.clean_up);
+      return *this;
+   }
+private:
+   F clean_up;
+};
+
+template <typename F>
+constexpr RAII_guard<F> make_raii_guard(F f)
+{
+   return RAII_guard<F>(std::move(f));
 }
 
 } // namespace flexiblesusy

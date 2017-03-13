@@ -85,7 +85,7 @@ void RGFlow<Two_scale>::solve()
 {
    check_setup();
 
-   const unsigned max_iterations = get_max_iterations();
+   const int max_iterations = get_max_iterations();
    if (sliders.empty() || max_iterations == 0)
       return;
 
@@ -207,7 +207,7 @@ void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
  * Returns the number of performed iterations
  * @return number of performed iterations
  */
-unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
+int RGFlow<Two_scale>::number_of_iterations_done() const
 {
    return iteration;
 }
@@ -216,7 +216,7 @@ unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
  * Returns the maximum number of iterations set in the convergence
  * tester.
  */
-unsigned int RGFlow<Two_scale>::get_max_iterations() const
+int RGFlow<Two_scale>::get_max_iterations() const
 {
    return convergence_tester->max_iterations();
 }

@@ -59,7 +59,7 @@ namespace flexiblesusy {
  *
  * const double start_scale = 100.;
  * const double stop_scale = 1.0e12;
- * const unsigned number_of_points = 50;
+ * const int number_of_points = 50;
  * const bool include_endpoint = true;
  *
  * cm.run(start_scale, stop_scale, number_of_points, include_endpoint);
@@ -74,7 +74,7 @@ public:
    Coupling_monitor(const Model&, const DataGetter&);
 
    /// get couplings at all scales
-   void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
+   void run(double, double, int number_of_steps = 20, bool include_endpoint = false);
    /// get maximum scale
    TTouple get_max_scale() const;
    /// delete all saved couplings
@@ -93,7 +93,7 @@ private:
    TData couplings;        ///< all couplings at all scales
    Model model;            ///< the model
    DataGetter data_getter; ///< hepler class which extracts the model parameters
-   unsigned width;         ///< width of columns in output table
+   int width;         ///< width of columns in output table
 
    /// write line with parameter names
    void write_parameter_names_line(std::ofstream&) const;
@@ -244,7 +244,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
  */
 template <class Model, class DataGetter>
 void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
-                                             unsigned int number_of_steps, bool include_endpoint)
+                                             int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
       ERROR("negative scales are not allowed: q1=" << q1 << ", q2=" << q2);
@@ -257,10 +257,10 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
    // if the endpoint should be included, the scale loop must run from
    // (n == 0) to (n == number_of_steps); otherwise it runs from (n == 0) to (n
    // == number_of_steps - 1)
-   const unsigned int endpoint_offset = include_endpoint ? 1 : 0;
+   const int endpoint_offset = include_endpoint ? 1 : 0;
 
    // run from q1 to q2
-   for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
+   for (int n = 0; n < number_of_steps + endpoint_offset; ++n) {
       const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
       try {
          model.run_to(scale);

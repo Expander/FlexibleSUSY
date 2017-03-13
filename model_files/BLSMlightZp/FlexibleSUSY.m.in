@@ -40,7 +40,7 @@ LowScaleInput = {
     {Yv, LHInput[Yv]},
     {Yx, LHInput[Yx]},
     {vX, vXinput},
-    {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {vH, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
     {Ye, Automatic},
     {Yd, Automatic},
     {Yu, Automatic}

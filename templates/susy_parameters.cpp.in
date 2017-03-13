@@ -38,14 +38,13 @@ const int @ModelName@_susy_parameters::numberOfParameters;
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()
-   @parameterDefaultInit@
    , input(input_)
 {
    set_number_of_parameters(numberOfParameters);
 }
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(
-   double scale_, unsigned loops_, unsigned thresholds_,
+   double scale_, int loops_, int thresholds_,
    const @ModelName@_input_parameters& input_
    @cCtorParameterList@
 )
@@ -64,7 +63,7 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
    return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
-@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(unsigned loops) const
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta(int loops) const
 {
 @beta@
 
@@ -120,7 +119,7 @@ void @ModelName@_susy_parameters::set_input_parameters(const @ModelName@_input_p
    input = input_;
 }
 
-@ModelName@_susy_parameters::Susy_traces @ModelName@_susy_parameters::calc_susy_traces(unsigned loops) const
+@ModelName@_susy_parameters::Susy_traces @ModelName@_susy_parameters::calc_susy_traces(int loops) const
 {
    Susy_traces susy_traces;
 

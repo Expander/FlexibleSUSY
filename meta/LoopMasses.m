@@ -143,7 +143,7 @@ Do1DimVector[particleName_String, massName_String, massMatrixName_String,
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy;\n\n" <>
     "if (mass_sqr < 0.)\n" <>
-    IndentText["problems.flag_pole_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+    IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 
@@ -179,8 +179,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
               result = reorderMasses <> "\n" <>
                        tadpoleMatrix <>
                        selfEnergyMatrixCType <> " self_energy;\n" <>
-                       "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
-                       IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
+                       "for (int i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                       IndentText["for (int i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <>
                                              massNameReordered <> "(i2));\n" <>
@@ -251,8 +251,8 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        selfEnergyMatrixCType <> " self_energy_1;\n" <>
                        selfEnergyMatrixCType <> " self_energy_PL;\n" <>
                        selfEnergyMatrixCType <> " self_energy_PR;\n" <>
-                       "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
-                       IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
+                       "for (int i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                       IndentText["for (int i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <>
                                              massNameReordered <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = " <> CastIfReal[
@@ -407,8 +407,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
 if (pole_mass_loop_order > 1) {
 " <> IndentText["\
 self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
-for (unsigned i = 0; i < " <> dimStr <> "; i++) {
-   for (unsigned k = 0; k < " <> dimStr <> "; k++) {
+for (int i = 0; i < " <> dimStr <> "; i++) {
+   for (int k = 0; k < " <> dimStr <> "; k++) {
       if (!std::isfinite(self_energy_2l(i,k))) {
          self_energy_2l(i,k) = 0.;
          problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
@@ -422,7 +422,7 @@ for (unsigned i = 0; i < " <> dimStr <> "; i++) {
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        calcTwoLoopHiggsContributions <> "\n" <>
-                       "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
+                       "for (int es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   selfEnergyMatrixCType <> " self_energy = " <> CastIfReal[selfEnergyFunction <> "(p)", selfEnergyMatrixType] <> ";\n" <>
                                   addTwoLoopHiggsContributions <>
@@ -490,14 +490,14 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            If[dim > 1,
               result = qcdCorrections <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
+                       "for (int es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   If[topTwoLoop,
                                      selfEnergyMatrixCType <> " self_energy_1;\n" <>
                                      selfEnergyMatrixCType <> " self_energy_PL;\n" <>
                                      selfEnergyMatrixCType <> " self_energy_PR;\n" <>
-                                     "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
-                                     IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
+                                     "for (int i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                                     IndentText["for (int i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                                 IndentText[
                                                     "if (i1 == 2 && i2 == 2) {\n" <>
                                                     IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[topSelfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
@@ -644,7 +644,7 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                   inputMomenta <> " = " <> outputMomenta <> ";\n" <>
                   "iteration++;\n";
            result = "const auto number_of_mass_iterations = get_number_of_mass_iterations();\n" <>
-                    "unsigned iteration = 0;\n" <>
+                    "int iteration = 0;\n" <>
                     "double diff = 0.0;\n" <>
                     "decltype(" <> massName <> ") " <>
                     inputMomenta  <> "(" <> massName <> "), " <>
@@ -686,7 +686,7 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            If[!IsFermion[particle] &&
               !(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (!force_output && problems.is_running_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+              body = "if (!force_output && problems.is_running_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> ToValidCSymbolString[particle] <> "))\n" <>
                      IndentText["return;"] <> "\n\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
@@ -715,7 +715,7 @@ Create1DimPoleMassFunction[particle_Symbol] :=
               Return[""];
              ];
            If[!(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (!force_output && problems.is_running_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+              body = "if (!force_output && problems.is_running_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> ToValidCSymbolString[particle] <> "))\n" <>
                      IndentText["return 0.;"] <> "\n\n";
              ];
            If[!IsMassless[particle],
@@ -734,7 +734,7 @@ Create1DimPoleMassFunction[particle_Symbol] :=
                       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
                       "const double mass_sqr = " <> mTree <> " - self_energy;\n\n" <>
                       "if (mass_sqr < 0.)\n" <>
-                      IndentText["problems.flag_pole_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                      IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
                       "return AbsSqrt(mass_sqr);\n";
               ,
               body = "return 0.;\n";
@@ -790,7 +790,7 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy,
             callSM, result},
            particles = GetLoopCorrectedParticles[states];
-           smParticles = Select[particles, SARAH`SMQ[#]&];
+           smParticles = Select[particles, TreeMasses`IsSMParticle];
            susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
               callSusy = StringJoin[CallPoleMassFunction /@ susyParticles];
@@ -1085,7 +1085,7 @@ CreateRunningDRbarMassFunction[particle_, _] :=
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
               "if (mass_sqr < 0.) {\n" <>
-              IndentText["problems.flag_running_tachyon(" <> particleName <> ");\n" <>
+              IndentText[TreeMasses`FlagPoleTachyon[particleName] <>
                          "return m_pole;"] <> "\n}\n\n" <>
               "return AbsSqrt(mass_sqr);\n";
              ];

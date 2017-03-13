@@ -16,20 +16,22 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
 FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
-FS`Years   = "2013-2015";
+FS`Contributors = {"D. Harries", "T. Steudtner"};
+FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
-Print["==================================================================="];
+Print[Style["===================================================================", Bold]];
 Print[Style["FlexibleSUSY " <> FS`Version, Larger, Bold, Blue]];
 Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
+Print["  contributions by " <> Utils`StringJoinWithSeparator[FS`Contributors, ", "]];
 Print[""];
 Print[Style["References:", Blue]];
 Print["  " <> #]& /@ FS`References;
 Print[""];
 Print[Style["Download and Documentation:", Blue]];
 Print["  https://flexiblesusy.hepforge.org"];
-Print["==================================================================="];
+Print[Style["===================================================================", Bold]];
 Print[""];
 
 Print["meta code directory: ", $flexiblesusyMetaDir];
@@ -104,24 +106,28 @@ MZ;
 MT;
 MZDRbar;
 MWDRbar;
+MZMSbar;
+MWMSbar;
 EDRbar;
+EMSbar;
 ThetaWDRbar;
 SCALE;
 THRESHOLD;
 VEV::usage = "running SM-like VEV in the full model";
-UseHiggs2LoopNMSSM;
+UseHiggs2LoopNMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
-UseHiggs2LoopSM;
-UseHiggs3LoopSplit;
+UseHiggs2LoopSM = False;
+UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
 FSAuxiliaryParameters = {};
+IMMINPAR = {};
 IMEXTPAR = {};
 
 (* Standard Model input parameters (SLHA input parameters) *)
@@ -270,9 +276,9 @@ HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
 PrintHeadline[text_] :=
     Block[{},
           Print[""];
-          Print["---------------------------------"];
-          Print[text];
-          Print["---------------------------------"];
+          Print[Style["---------------------------------", Bold]];
+          Print[Style[text, Blue]];
+          Print[Style["---------------------------------", Bold]];
          ];
 
 DecomposeVersionString[version_String] :=
@@ -477,6 +483,9 @@ CheckModelFileSettings[] :=
            If[Head[SARAH`EXTPAR] =!= List,
               SARAH`EXTPAR = {};
              ];
+           If[Head[IMMINPAR] =!= List,
+              IMMINPAR = {};
+             ];
            If[Head[IMEXTPAR] =!= List,
               IMEXTPAR = {};
              ];
@@ -622,9 +631,9 @@ GeneralReplacementRules[] :=
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@numberOfParticles@"    -> ToString[Length @ GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates]],
-      "@numberOfSMParticles@"  -> ToString[Length @ Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], SARAH`SMQ]],
+      "@numberOfSMParticles@"  -> ToString[Length @ Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], TreeMasses`IsSMParticle]],
       "@numberOfBSMParticles@" -> ToString[Length @ Complement[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates],
-                                                               Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], SARAH`SMQ]]],
+                                                               Select[GetLoopCorrectedParticles[FlexibleSUSY`FSEigenstates], TreeMasses`IsSMParticle]]],
       "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[
           If[Parameters`GetInputParameters[] === {},
              "",
@@ -642,6 +651,7 @@ GeneralReplacementRules[] :=
                  ]
              ]]
             ],
+      "@RenScheme@"           -> ToString[FlexibleSUSY`FSRenormalizationScheme],
       "@ModelTypes@"          -> FlexibleTower`GetModelTypes[],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
@@ -655,7 +665,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
               templateFile_String, makefileModuleTemplates_List,
               additionalTraces_List:{}, numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
-           display, parameterDefaultInit,
+           display,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters,
@@ -673,7 +683,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];
           set                  = BetaFunction`CreateSetFunction[betaFun, numberOfBaseClassParameters];
           display              = BetaFunction`CreateDisplayFunction[betaFun, numberOfBaseClassParameters];
-          parameterDefaultInit = BetaFunction`CreateParameterDefaultInitialization[betaFun];
           cCtorParameterList   = BetaFunction`CreateCCtorParameterList[betaFun];
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
@@ -689,7 +698,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
-                   "@parameterDefaultInit@" -> WrapLines[parameterDefaultInit],
                    "@display@"              -> IndentText[display],
                    "@set@"                  -> IndentText[set],
                    "@cCtorParameterList@"   -> WrapLines[cCtorParameterList],
@@ -717,16 +725,14 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
          ];
 
 WriteInputParameterClass[inputParameters_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters, get, set, inputPars},
+   Module[{defineInputParameters, printInputParameters, get, set, inputPars},
           inputPars = {First[#], #[[3]]}& /@ inputParameters;
           defineInputParameters = Constraint`DefineInputParameters[inputPars];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[inputPars];
           printInputParameters = WriteOut`PrintInputParameters[inputPars,"ostr"];
           get = Parameters`CreateInputParameterArrayGetter[inputPars];
           set = Parameters`CreateInputParameterArraySetter[inputPars];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
-                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            "@printInputParameters@"       -> IndentText[printInputParameters],
                            "@get@"                        -> IndentText[get],
                            "@set@"                        -> IndentText[set],
@@ -738,7 +744,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
-           temporarySetting = "", temporaryResetting = "",
+           temporarySetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -752,7 +758,6 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           temporarySetting   = Constraint`SetTemporarily[settings];
-          temporaryResetting = Constraint`ResetTemporarily[settings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
@@ -790,7 +795,6 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
                    "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
-                   "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
@@ -1061,7 +1065,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             numberOfIndependentEWSBEquations,
             calculateTreeLevelTadpoles = "", divideTadpoleByVEV = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
-            physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
@@ -1072,7 +1075,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
-            phasesInit = "", extraParameterDefs = "", extraParametersInit = "",
+            extraParameterDefs = "",
             extraParameterSetters = "", extraParameterGetters = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
@@ -1122,9 +1125,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
-               physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
-               physicalMassesInitNoLeadingComma = StringTrim[physicalMassesInit, StartOfString ~~ ","];
-               mixingMatricesInit   = mixingMatricesInit <> TreeMasses`CreateMixingMatrixInitialization[massMatrices[[k]]];
                clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
@@ -1183,9 +1183,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
-           phasesInit                   = Phases`CreatePhasesInitialization[phases];
            If[Parameters`GetExtraParameters[] =!= {},
-              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinition[#]&
+              extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
@@ -1193,10 +1192,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
-              extraParametersInit
-                  = ", " <> Utils`StringJoinWithSeparator[CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[#],
-                                                                                               Parameters`GetType[#]]& /@
-                                                          Parameters`GetExtraParameters[], ", "];
               clearExtraParameters         = StringJoin[CConversion`SetToDefault[CConversion`ToValidCSymbolString[#],
                                                                                  Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
@@ -1296,9 +1291,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
-                            "@physicalMassesInit@"     -> IndentText[WrapLines[physicalMassesInit]],
-                            "@physicalMassesInitNoLeadingComma@" -> IndentText[WrapLines[physicalMassesInitNoLeadingComma]],
-                            "@mixingMatricesInit@"     -> IndentText[WrapLines[mixingMatricesInit]],
                             "@massCalculationPrototypes@" -> IndentText[massCalculationPrototypes],
                             "@massCalculationFunctions@"  -> WrapLines[massCalculationFunctions],
                             "@calculateAllMasses@"        -> IndentText[calculateAllMasses],
@@ -1316,11 +1308,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
                             "@phasesGetterSetters@"          -> IndentText[phasesGetterSetters],
-                            "@phasesInit@"                   -> IndentText[WrapLines[phasesInit]],
                             "@extraParameterDefs@"           -> IndentText[extraParameterDefs],
                             "@extraParameterGetters@"        -> IndentText[extraParameterGetters],
                             "@extraParameterSetters@"        -> IndentText[extraParameterSetters],
-                            "@extraParametersInit@"          -> IndentText[WrapLines[extraParametersInit]],
                             "@clearExtraParameters@"         -> IndentText[clearExtraParameters],
                             "@loopMassesPrototypes@"         -> IndentText[WrapLines[loopMassesPrototypes]],
                             "@loopMassesFunctions@"          -> WrapLines[loopMassesFunctions],
@@ -1457,13 +1447,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
-        definitions, calculationCode},
+        definitions, calculationCode, getMSUSY, getQED2L},
            particles = GMuonMinus2`CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
            vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`CreateCalculation[];
+           getMSUSY = GMuonMinus2`GetMSUSY[];
+           getQED2L = GMuonMinus2`GetQED2L[];
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -1472,6 +1464,8 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                      "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
                                      "@GMuonMinus2_Definitions@"             -> definitions,
                                      "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
+                                     "@GMuonMinus2_GetMSUSY@"                -> IndentText[WrapLines[getMSUSY]],
+                                     "@GMuonMinus2_QED_2L@"                  -> IndentText[WrapLines[getQED2L]],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -1596,7 +1590,7 @@ InitialiseEnabledModelType[solver_] :=
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
-           body = "data.reset(new " <> FlexibleSUSY`FSModelName <> "_model_data<" <> class <> ">());\nbreak;\n";
+           body = "data.reset(new Model_data_impl<" <> class <> ">());\nbreak;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
@@ -1695,7 +1689,7 @@ WriteBVPSolverMakefile[files_List] :=
 WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                     extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
-            minpar, extpar, imextpar, extraSLHAInputParameters,
+            minpar, extpar, imminpar, imextpar, extraSLHAInputParameters,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
@@ -1707,11 +1701,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             isSupersymmetricModel = "false",
             isFlexibleEFTHiggs = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
+            fillInputParametersFromIMMINPAR = "",
             fillInputParametersFromIMEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAPhasesBlocks = "",
             writeSLHAMinparBlock = "", writeSLHAExtparBlock = "",
-            writeSLHAImExtparBlock = "", writeSLHAInputParameterBlocks = "",
+            writeSLHAImMinparBlock = "", writeSLHAImExtparBlock = "",
+            writeSLHAInputParameterBlocks = "",
             readLesHouchesInputParameters, writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
@@ -1719,15 +1715,17 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             numberOfDRbarBlocks, drBarBlockNames
            },
            particles = DeleteDuplicates @ Flatten[GetMassEigenstate /@ massMatrices];
-           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
+           susyParticles = Select[particles, (!TreeMasses`IsSMParticle[#])&];
            smParticles   = Complement[particles, susyParticles];
            minpar = Cases[inputParameters, {p_, {"MINPAR", idx_}, ___} :> {idx, p}];
            extpar = Cases[inputParameters, {p_, {"EXTPAR", idx_}, ___} :> {idx, p}];
+           imminpar = Cases[inputParameters, {p_, {"IMMINPAR", idx_}, ___} :> {idx, p}];
            imextpar = Cases[inputParameters, {p_, {"IMEXTPAR", idx_}, ___} :> {idx, p}];
            extraSLHAInputParameters = Complement[
                inputParameters,
                Cases[inputParameters, {_, {"MINPAR", _}, ___}],
                Cases[inputParameters, {_, {"EXTPAR", _}, ___}],
+               Cases[inputParameters, {_, {"IMMINPAR", _}, ___}],
                Cases[inputParameters, {_, {"IMEXTPAR", _}, ___}]
            ];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
@@ -1749,6 +1747,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            isFlexibleEFTHiggs = If[FlexibleSUSY`FlexibleEFTHiggs === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
+           fillInputParametersFromIMMINPAR = Parameters`FillInputParametersFromTuples[imminpar, "IMMINPAR"];
            fillInputParametersFromIMEXTPAR = Parameters`FillInputParametersFromTuples[imextpar, "IMEXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[{First[#], #[[2]]}& /@ extraSLHAInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
@@ -1759,6 +1758,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            writeSLHAPhasesBlocks = WriteOut`WriteSLHAPhasesBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
+           writeSLHAImMinparBlock = WriteOut`WriteSLHAImMinparBlock[imminpar];
            writeSLHAImExtparBlock = WriteOut`WriteSLHAImExtparBlock[imextpar];
            writeSLHAInputParameterBlocks = WriteSLHAInputParameterBlocks[extraSLHAInputParameters];
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
@@ -1785,6 +1785,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@isFlexibleEFTHiggs@" -> isFlexibleEFTHiggs,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
+                            "@fillInputParametersFromIMMINPAR@" -> IndentText[fillInputParametersFromIMMINPAR],
                             "@fillInputParametersFromIMEXTPAR@" -> IndentText[fillInputParametersFromIMEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
@@ -1795,6 +1796,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@writeSLHAPhasesBlocks@"          -> IndentText[writeSLHAPhasesBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
+                            "@writeSLHAImMinparBlock@"         -> IndentText[writeSLHAImMinparBlock],
                             "@writeSLHAImExtparBlock@"         -> IndentText[writeSLHAImExtparBlock],
                             "@writeSLHAInputParameterBlocks@"  -> IndentText[writeSLHAInputParameterBlocks],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
@@ -2342,6 +2344,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            inputParameters = Join[
                DeleteDuplicates[{#[[2]], {"MINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`MINPAR]],
                DeleteDuplicates[{#[[2]], {"EXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[SARAH`EXTPAR]],
+               DeleteDuplicates[{#[[2]], {"IMMINPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[IMMINPAR]],
                DeleteDuplicates[{#[[2]], {"IMEXTPAR", #[[1]]}, Parameters`GuessInputParameterType[#[[2]]]}& /@ Utils`ForceJoin[IMEXTPAR]]
            ];
 
