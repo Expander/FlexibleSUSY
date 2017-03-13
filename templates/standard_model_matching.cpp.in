@@ -122,6 +122,11 @@ double calculate_Mh2_pole(const Standard_model& sm_0l)
 @ModelName@_mass_eigenstates::EWSB_vector_t calculate_tadpole_over_vevs(
    @ModelName@_mass_eigenstates model, unsigned loop_order)
 {
+   if (loop_order == 0) {
+      model.set_ewsb_loop_order(loop_order);
+      return model.tadpole_equations_over_vevs();
+   }
+
    model.set_ewsb_loop_order(loop_order);
    const auto tadpole_lo = model.tadpole_equations_over_vevs(); // nL
 
