@@ -155,6 +155,7 @@ IsSMUpQuark::usage="";
 IsSMDownQuark::usage="";
 IsSMQuark::usage="";
 IsSMParticle::usage="";
+IsElectricallyCharged::usage="";
 ContainsGoldstone::usage="";
 
 GetSMChargedLeptons::usage="";
@@ -172,6 +173,8 @@ GetUpLepton::usage="";
 GetDownLepton::usage="";
 
 GetMass::usage="wraps M[] head around particle";
+
+GetElectricCharge::usage="Returns electric charge";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -283,6 +286,8 @@ IsChargino[Susyno`LieGroups`conj[p_]] := IsChargino[p];
 IsChargino[SARAH`bar[p_]] := IsChargino[p];
 IsChargino[p_] :=
     p === Parameters`GetParticleFromDescription["Charginos"];
+
+IsElectricallyCharged[par_] := GetElectricCharge[par] != 0;
 
 ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
@@ -440,6 +445,8 @@ GetDownLepton[gen_, cConvention_:False] :=
 
 GetMass[particle_[idx__]] := GetMass[particle][idx];
 GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
+
+GetElectricCharge[par_] := SARAH`getElectricCharge[par];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.
