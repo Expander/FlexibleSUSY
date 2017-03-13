@@ -197,8 +197,3 @@ SMParticles = {
     Fu, Fd, Fc, Fs, Ft, Fb, Fe, Fm, Ftau, Fve, Fvm, Fvt,
     gG, gP, gZ, gWm, gWmC
 };
-
-SA`Casimir[Ss, SARAH`color] = 4/3;
-SA`Casimir[Sc, SARAH`color] = 4/3;
-SA`Casimir[Sb, SARAH`color] = 4/3;
-SA`Casimir[St, SARAH`color] = 4/3;

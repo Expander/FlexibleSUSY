@@ -107,9 +107,9 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters
    // guess gauge couplings at mt
    const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   eft->set_g1(sqrt(4.0 * M_PI * alpha_sm(0)));
-   eft->set_g2(sqrt(4.0 * M_PI * alpha_sm(1)));
-   eft->set_g3(sqrt(4.0 * M_PI * alpha_sm(2)));
+   eft->set_g1(sqrt(4.0 * Pi * alpha_sm(0)));
+   eft->set_g2(sqrt(4.0 * Pi * alpha_sm(1)));
+   eft->set_g3(sqrt(4.0 * Pi * alpha_sm(2)));
    eft->set_scale(mtpole);
 
    eft->set_v(246.22);
