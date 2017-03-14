@@ -235,7 +235,7 @@ error=0
 MS=91.1876
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.003" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
 
 MS=173.34
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
