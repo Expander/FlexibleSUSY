@@ -102,6 +102,12 @@ UpdateProgressBar::usage = "updates progress indicator.";
 
 StopProgressBar::usage = "stops progress bar.";
 
+FSColor::usage = "Default FlexibleSUSY color";
+
+FSFancyPrint::usage = "Print text in fancy headline style";
+
+FSFancyLine::usage = "Print separator line in command line mode";
+
 Begin["`Private`"];
 
 ApplyAndConcatenate[Func_, l_List] :=
@@ -211,6 +217,14 @@ StopProgressBar[total_, len_:50] :=
            Table[".",{i,Round[len]}]
        ] <> "] " <> ToString[total] <> "/" <> ToString[total] <> "\n"];
       ];
+
+FSColor = Blue;
+
+FSFancyPrint[text_, level_:1] :=
+    Print[Style[text, "Section", FontSize->14 - 2 level, FSColor]]
+
+FSFancyLine[type_:"-", style__:Bold] :=
+    If[!$Notebooks, Print[Style[StringJoin[Array[type&, 70]], style]]];
 
 End[];
 

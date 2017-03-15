@@ -38,23 +38,20 @@ FS`Contributors = {"D. Harries", "T. Steudtner", "J. Ziebell"};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
-Print[Style["===================================================================", Bold]];
-Print[Style["FlexibleSUSY " <> FS`Version, Larger, Bold, Blue]];
+Print[""];
+Utils`FSFancyLine["="];
+Utils`FSFancyPrint["FlexibleSUSY " <> FS`Version, 0];
 Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
 Print["  contributions by " <> Utils`StringJoinWithSeparator[FS`Contributors, ", "]];
 Print[""];
-Print[Style["References:", Blue]];
+Utils`FSFancyPrint["References:"];
 Print["  " <> #]& /@ FS`References;
 Print[""];
-Print[Style["Download and Documentation:", Blue]];
+Utils`FSFancyPrint["Download and Documentation:"];
 Print["  https://flexiblesusy.hepforge.org"];
-Print[Style["===================================================================", Bold]];
+Utils`FSFancyLine["="];
 Print[""];
-
-Print["meta code directory: ", $flexiblesusyMetaDir];
-Print["config directory   : ", $flexiblesusyConfigDir];
-Print["templates directory: ", $flexiblesusyTemplateDir];
 
 MakeFlexibleSUSY::usage="Creates a spectrum generator given a
  FlexibleSUSY model file (FlexibleSUSY.m).
@@ -294,9 +291,9 @@ HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
 PrintHeadline[text__] :=
     Block[{},
           Print[""];
-          Print[Style["---------------------------------", Bold]];
-          Print[Style[text, Blue]];
-          Print[Style["---------------------------------", Bold]];
+          Utils`FSFancyLine[];
+          Utils`FSFancyPrint[text];
+          Utils`FSFancyLine[];
          ];
 
 DecomposeVersionString[version_String] :=
@@ -2088,8 +2085,8 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
 
 LoadModelFile[file_String] :=
     Module[{},
+           PrintHeadline["Loading FlexibleSUSY model file"];
            If[FileExists[file],
-              PrintHeadline["Loading FlexibleSUSY model file ", file];
               Get[file];
               CheckModelFileSettings[];
               ,
@@ -2217,7 +2214,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile},
+
            PrintHeadline["Starting FlexibleSUSY"];
+           FSDebugOutput["meta code directory: ", $flexiblesusyMetaDir];
+           FSDebugOutput["config directory   : ", $flexiblesusyConfigDir];
+           FSDebugOutput["templates directory: ", $flexiblesusyTemplateDir];
+
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2233,7 +2235,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
-           Print["  Model: ", Style[FlexibleSUSY`FSModelName, Blue]];
+           Print["  Model: ", Style[FlexibleSUSY`FSModelName, FSColor]];
            Print["  Model file: ", OptionValue[InputFile]];
            Print["  Model output directory: ", FSOutputDir];
 
