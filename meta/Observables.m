@@ -20,11 +20,13 @@ IsObservable::usage = "Returns true if given symbol is an observable.";
 
 Begin["`Private`"];
 
-IsObservable[sym_] := MemberQ[FlexibleSUSYObservable`FSObservables, sym];
+IsObservable[sym_] :=
+    MemberQ[FlexibleSUSYObservable`FSObservables, sym] || \
+    (Or @@ (MatchQ[sym, #[__]]& /@ FlexibleSUSYObservable`FSObservables));
 
 GetRequestedObservables[blocks_] :=
     Module[{observables, dim},
-           observables = DeleteDuplicates[Cases[blocks, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}]];
+           observables = DeleteDuplicates[Cases[blocks, a_?IsObservable :> a, {0, Infinity}]];
            If[MemberQ[observables, FlexibleSUSYObservable`CpHiggsPhotonPhoton] ||
               MemberQ[observables, FlexibleSUSYObservable`CpHiggsGluonGluon],
               dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson]
@@ -114,7 +116,7 @@ GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluo
 CountNumberOfObservables[observables_List] :=
     Module[{i, number = 0},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   number += BetaFunction`CountNumberOfParameters[GetObservableType[observables[[i]]]];,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
                  ];
@@ -125,7 +127,7 @@ CountNumberOfObservables[observables_List] :=
 CreateObservablesDefinitions[observables_List] :=
     Module[{i, type, name, description, definitions = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   description = GetObservableDescription[observables[[i]]];
                   type = CConversion`CreateCType[GetObservableType[observables[[i]]]];
@@ -139,7 +141,7 @@ CreateObservablesDefinitions[observables_List] :=
 CreateObservablesInitialization[observables_List] :=
     Module[{i, name, type, init = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   type = GetObservableType[observables[[i]]];
                   If[init == "",
@@ -165,7 +167,7 @@ CreateSetAndDisplayObservablesFunctions[observables_List] :=
               set = "assert(vec.rows() == " <> FlexibleSUSY`FSModelName
                     <> "_observables::NUMBER_OF_OBSERVABLES);\n\n";
               For[i = 1, i <= Length[observables], i++,
-                  If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+                  If[IsObservable[observables[[i]]],
                      name = GetObservableName[observables[[i]]];
                      type = GetObservableType[observables[[i]]];
                      {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type, "vec"];
@@ -189,7 +191,7 @@ CreateSetAndDisplayObservablesFunctions[observables_List] :=
 CreateClearObservablesFunction[observables_List] :=
     Module[{i, name, type, result = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   type = GetObservableType[observables[[i]]];
                   result = result <> CConversion`SetToDefault[name, type];,
@@ -425,7 +427,7 @@ FillInterfaceData[obs_List] :=
 
 CalculateObservables[something_, structName_String] :=
     Module[{observables},
-           observables = Cases[something, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}];
+           observables = Cases[something, a_?IsObservable :> a, {0, Infinity}];
            FillInterfaceData[observables] <> "\n" <>
            Utils`StringJoinWithSeparator[CalculateObservable[#,structName]& /@ observables, "\n"]
           ];
