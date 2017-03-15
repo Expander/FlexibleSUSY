@@ -4,7 +4,8 @@ BeginPackage["Observables`", {"FlexibleSUSY`", "SARAH`", "BetaFunction`", "Param
 Begin["FlexibleSUSYObservable`"];
 FSObservables = { aMuon, aMuonGM2Calc, aMuonGM2CalcUncertainty,
                   CpHiggsPhotonPhoton, CpHiggsGluonGluon,
-                  CpPseudoScalarPhotonPhoton, CpPseudoScalarGluonGluon };
+                  CpPseudoScalarPhotonPhoton, CpPseudoScalarGluonGluon,
+                  EDM };
 End[];
 
 GetRequestedObservables::usage="";
@@ -16,6 +17,7 @@ CreateClearObservablesFunction::usage="";
 CalculateObservables::usage="";
 GetObservableName::usage="returns name of observable in Observables struct";
 GetObservableType::usage="returns type of observable";
+GetObservableDescription::usage="returns description of observable.";
 IsObservable::usage = "Returns true if given symbol is an observable.";
 
 Begin["`Private`"];
@@ -60,6 +62,8 @@ GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] :=
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "eff_cp_higgs_gluon_gluon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "eff_cp_pseudoscalar_photon_photon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "eff_cp_pseudoscalar_gluon_gluon";
+GetObservableName[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableName[FlexibleSUSYObservable`EDM[p]] <> "_" <> ToString[idx];
+GetObservableName[FlexibleSUSYObservable`EDM[p_]]       := "edm_" <> CConversion`ToValidCSymbolString[p];
 
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY at 1L)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon = (g-2)/2 of the muon (calculated with GM2Calc)";
@@ -68,10 +72,13 @@ GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPho
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "effective H-Gluon-Gluon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "effective A-Photon-Photon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "effective A-Gluon-Gluon coupling";
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableDescription[FlexibleSUSYObservable`EDM[p]] <> "(" <> ToString[idx] <> ")";
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p];
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
+GetObservableType[FlexibleSUSYObservable`EDM[p_]] := CConversion`ScalarType[CConversion`realScalarCType];
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] :=
     Module[{dim, type},
@@ -332,6 +339,19 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGl
                 ];
              ];
            result
+          ];
+
+CalculateObservable[FlexibleSUSYObservable`EDM[p_[idx_]], structName_String] :=
+    Module[{pStr = CConversion`ToValidCSymbolString[p]},
+           structName <> ".EDM0(" <> pStr <> ") = " <>
+           FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> pStr <> "(MODEL);"
+          ];
+
+CalculateObservable[FlexibleSUSYObservable`EDM[p_[idx_]], structName_String] :=
+    Module[{pStr = CConversion`ToValidCSymbolString[p],
+            idxStr = ToString[idx]},
+           structName <> ".EDM1(" <> pStr <> ", " <> idxStr <> ") = " <>
+           FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> pStr <> "(" <> idxStr <> ", MODEL);"
           ];
 
 FillGM2CalcInterfaceData[struct_String] :=

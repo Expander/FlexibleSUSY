@@ -488,6 +488,9 @@ WriteSLHABlockEntry[{par_?IsObservable, idx___}, comment_String:""] :=
                       result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorP],
                   FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
                       result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorG],
+                  FlexibleSUSYObservable`EDM[_],
+                      result = WriteSLHABlockEntry[{"OBSERVABLES." <> Observables`GetObservableName[par], idx},
+                                                   Observables`GetObservableDescription[par]],
                   _,
                      result = WriteSLHABlockEntry[{"", idx}, ""]
                  ];
