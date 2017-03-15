@@ -136,14 +136,14 @@ lambdaTree = 1/4 (g2^2 + 3/5 g1^2) Cos[2 ArcTan[TanBeta]]^2;
 
 (* arXiv:1407.4081, Eq. (9) *)
 lambda1LReg = 1/(4 Pi)^2 (
-    - 0.09 g1^4 - 0.3 g1^2 g2^2
-    - (0.75 - Cos[2 ArcTan[TanBeta]]^2/6) * g2^4
+    - 9/100 g1^4 - 3/10 g1^2 g2^2
+    - (3/4 - Cos[2 ArcTan[TanBeta]]^2/6) * g2^4
     );
 
 (* arXiv:1407.4081, Eq. (10) *)
 lambda1LPhi = 1/(4 Pi)^2 (
-    3 Yu[3,3]^2 (Yu[3,3]^2 + 0.5 (g2^2-g1^2/5) Cos[2 ArcTan[TanBeta]]) Log[msq2[3,3]/SCALE^2]
-    + 3 Yu[3,3]^2 (Yu[3,3]^2 + 0.4 g1^2 Cos[2 ArcTan[TanBeta]]) Log[msu2[3,3]/SCALE^2]
+    3 Yu[3,3]^2 (Yu[3,3]^2 + 1/2 (g2^2-g1^2/5) Cos[2 ArcTan[TanBeta]]) Log[msq2[3,3]/SCALE^2]
+    + 3 Yu[3,3]^2 (Yu[3,3]^2 + 2/5 g1^2 Cos[2 ArcTan[TanBeta]]) Log[msu2[3,3]/SCALE^2]
     + Cos[2 ArcTan[TanBeta]]^2/300 (
         3 (g1^4 + 25 g2^4) (
             + Log[msq2[1,1]/SCALE^2]
@@ -177,7 +177,7 @@ lambda1LPhi = 1/(4 Pi)^2 (
     - 3/16 (3/5 g1^2 + g2^2)^2 Sin[4 ArcTan[TanBeta]]^2
     + 6 Yu[3,3]^4 xtt (TCF[1][xQU] - xtt/12 TCF[2][xQU])
     + 3/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]] (3/5 g1^2 TCF[3][xQU] + g2^2 TCF[4][xQU])
-    - 0.25 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]]^2 (3/5 g1^2 + g2^2) TCF[5][xQU]
+    - 1/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]]^2 (3/5 g1^2 + g2^2) TCF[5][xQU]
     );
 
 (* arXiv:1407.4081, Eq. (11) *)
