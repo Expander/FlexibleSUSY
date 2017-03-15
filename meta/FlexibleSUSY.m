@@ -1823,37 +1823,20 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                           } ];
           ];
 
-FileExists[fileName_String] := FileExistsQ[fileName];
-
-FileExists[path_String, fileName_String] :=
-    Module[{fileExists},
-           fileExists = FileExists[FileNameJoin[{path, fileName}]];
-           If[!fileExists,
-              Print["File not found: ", fileName, " in directory ", path];
-             ];
-           fileExists
-          ];
-
-FilesExist[path_String, fileNames_List] :=
-    And @@ (FileExists[path,#]& /@ fileNames);
-
 FilesExist[fileNames_List] :=
-    And @@ (FileExists /@ fileNames);
+    And @@ (FileExistsQ /@ fileNames);
 
 LatestModificationTimeInSeconds[file_String] :=
-    If[FileExists[file],
+    If[FileExistsQ[file],
        AbsoluteTime[FileDate[file, "Modification"]], 0];
 
 LatestModificationTimeInSeconds[files_List] :=
     Max[LatestModificationTimeInSeconds /@ files];
 
 SARAHModelFileModificationTimeInSeconds[] :=
-    Module[{files},
-           files = Join[{SARAH`ModelFile},
-                        FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}
-                       ];
-           Return[LatestModificationTimeInSeconds[files]];
-          ];
+    LatestModificationTimeInSeconds @ \
+    Join[{SARAH`ModelFile},
+         FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}];
 
 GetRGEFileNames[outputDir_String] :=
     Module[{rgeDir, fileNames},
@@ -1874,21 +1857,9 @@ GetRGEFileNames[outputDir_String] :=
            FileNameJoin[{rgeDir, #}]& /@ fileNames
           ];
 
-RGEFilesExist[outputDir_String] :=
-    FilesExist[GetRGEFileNames[outputDir]];
-
-RGEsModificationTimeInSeconds[outputDir_String] :=
-    LatestModificationTimeInSeconds[GetRGEFileNames[outputDir]];
-
 GetSelfEnergyFileNames[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "SelfEnergy.m"}];
-
-SelfEnergyFilesExist[outputDir_String, eigenstates_] :=
-    FileExists[GetSelfEnergyFileNames[outputDir, eigenstates]];
-
-SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetSelfEnergyFileNames[outputDir, eigenstates]];
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
     NeedToUpdateTarget[
@@ -1899,12 +1870,6 @@ GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "Tadpoles1Loop.m"}];
 
-TadpoleFileExists[outputDir_String, eigenstates_] :=
-    FileExists[GetTadpoleFileName[outputDir, eigenstates]];
-
-TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetTadpoleFileName[outputDir, eigenstates]];
-
 NeedToCalculateTadpoles[eigenstates_] :=
     NeedToUpdateTarget[
         "tadpole",
@@ -1914,34 +1879,10 @@ GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "UnrotatedParticles.m"}];
 
-UnrotatedParticlesFilesExist[outputDir_String, eigenstates_] :=
-    FileExists[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
-
-UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
-
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
     NeedToUpdateTarget[
         "unrotated particle",
         GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
-
-SearchSelfEnergies[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetSelfEnergyFileNames[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
-
-SearchUnrotatedParticles[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetUnrotatedParticlesFileName[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
-
-SearchTadpoles[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetTadpoleFileName[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
 
 NeedToCalculateRGEs[] :=
     NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
@@ -2020,8 +1961,8 @@ FSCheckLoopCorrections[eigenstates_] :=
 
 PrepareSelfEnergies[eigenstates_] :=
     Module[{selfEnergies = {}, selfEnergiesFile},
-           selfEnergiesFile = SearchSelfEnergies[$sarahCurrentOutputMainDir, eigenstates];
-           If[selfEnergiesFile == "",
+           selfEnergiesFile = GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FileExistsQ[selfEnergiesFile],
               Print["Error: self-energy files not found: ", selfEnergiesFile];
               Quit[1];
              ];
@@ -2033,8 +1974,8 @@ PrepareSelfEnergies[eigenstates_] :=
 
 PrepareTadpoles[eigenstates_] :=
     Module[{tadpoles = {}, tadpolesFile},
-           tadpolesFile = SearchTadpoles[$sarahCurrentOutputMainDir, eigenstates];
-           If[tadpolesFile == "",
+           tadpolesFile = GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FilesExist[tadpolesFile],
               Print["Error: tadpole file not found: ", tadpolesFile];
               Quit[1];
              ];
@@ -2049,8 +1990,8 @@ PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
-           nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
-           If[nonMixedParticlesFile == "",
+           nonMixedParticlesFile = GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FilesExist[nonMixedParticlesFile],
               Print["Error: file with unrotated fields not found: ", nonMixedParticlesFile];
               Quit[1];
              ];
@@ -2086,7 +2027,7 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
 LoadModelFile[file_String] :=
     Module[{},
            PrintHeadline["Loading FlexibleSUSY model file"];
-           If[FileExists[file],
+           If[FileExistsQ[file],
               Get[file];
               CheckModelFileSettings[];
               ,
