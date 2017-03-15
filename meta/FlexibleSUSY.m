@@ -1466,25 +1466,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
-<<<<<<< HEAD
-        definitions, calculationCode},
+        definitions, calculationCode, getMSUSY, getQED2L},
            particles = GMuonMinus2`GMuonMinus2CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`GMuonMinus2CreateMuonFunctions[vertexRules][[1]];
            diagrams = GMuonMinus2`GMuonMinus2CreateDiagrams[];
            vertexFunctionData = GMuonMinus2`GMuonMinus2CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`GMuonMinus2CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`GMuonMinus2CreateCalculation[];
-=======
-        definitions, calculationCode, getMSUSY, getQED2L},
-           particles = GMuonMinus2`CreateParticles[];
-           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
-           diagrams = GMuonMinus2`CreateDiagrams[];
-           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
-           definitions = GMuonMinus2`CreateDefinitions[vertexRules];
-           calculationCode = GMuonMinus2`CreateCalculation[];
            getMSUSY = GMuonMinus2`GetMSUSY[];
            getQED2L = GMuonMinus2`GetQED2L[];
->>>>>>> feature-2.0
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -2230,7 +2220,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            gmm2Vertices = {},
+            gmm2Vertices = {}, edmFields,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -2994,8 +2984,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
            Print["Creating class EDM"];
+           edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            EDM`EDMInitialize[];
-           EDM`EDMSetEDMFields[{SARAH`Electron}];
+           EDM`EDMSetEDMFields[edmFields];
            
            WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`EDMNPointFunctions[], Lat$massMatrices]],
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
