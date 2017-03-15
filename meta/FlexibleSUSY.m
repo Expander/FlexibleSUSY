@@ -291,7 +291,7 @@ HaveEWSBSolver[solver_] := MemberQ[FlexibleSUSY`FSEWSBSolvers, solver];
 
 HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
 
-PrintHeadline[text_] :=
+PrintHeadline[text__] :=
     Block[{},
           Print[""];
           Print[Style["---------------------------------", Bold]];
