@@ -63,15 +63,15 @@ Block EXTPAR
     0   1.9422e+16            # unification scale
    21   15625                # mHd2
    22   15625                # mHu2
-Block AeijIN
+Block AEIN
     1   1   0.0
     2   2   0.0
     3   3   0.0
-Block AdijIN
+Block ADIN
     1   1   0.0
     2   2   0.0
     3   3   0.0
-Block AuijIN
+Block AUIN
     1   1   0.0
     2   2   0.0
     3   3   0.0

@@ -53,27 +53,27 @@ Block EXTPAR
   100   0                    # ImMassBIN
   200   0                    # ImMassWBIN
   300   0                    # ImMassGIN
-Block AeijIN
+Block AEIN
     1   1   0
     2   2   0
     3   3   100
-Block AdijIN
+Block ADIN
     1   1   0
     2   2   0
     3   3   100
-Block AuijIN
+Block AUIN
     1   1   0
     2   2   0
     3   3   100
-Block ImAeijIN
+Block IMAEIN
     1   1   0
     2   2   0
     3   3   0.1
-Block ImAdijIN
+Block IMADIN
     1   1   0
     2   2   0
     3   3   0.1
-Block ImAuijIN
+Block IMAUIN
     1   1   0
     2   2   0
     3   3   0.1

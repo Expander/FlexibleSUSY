@@ -10,7 +10,7 @@ MINPAR = { {1, m0},
            {5, Azero} };
 
 FSExtraInputParameters = {
-    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
+    {Aeij, AEIN  , {3,3}}, (* 3x3 matrix *)
     {Vei , VeiIN , {3}  }, (* 3 vector *)
     {S1  , S1IN  , {1}  }, (* scalar *)
     {S2  , S2IN  , {}   }  (* scalar *)
