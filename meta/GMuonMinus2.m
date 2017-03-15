@@ -11,6 +11,10 @@ GMuonMinus2CreateDefinitions::usage="Returns the c++ that contains all function 
 
 GMuonMinus2NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
 
+GetMSUSY::usage="returns minimum charged BSM mass";
+
+GetQED2L::usage="Returns 2-loop QED contribution";
+
 (******** IMPORTANT NOTES:
  If you add new kinds of vertices (e.g for new diagram types):
  - Add the new types to vertexTypes
@@ -171,6 +175,35 @@ CreateDiagramEvaluatorClass[type_OneLoopDiagram] :=
      ">, PhotonEmitter, ExchangeParticle>\n" <>
      "{ static double value(EvaluationContext& context); };");
 
+GetMinMass[particle_] :=
+    Module[{dim = TreeMasses`GetDimension[particle],
+            mStr = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],
+            tail},
+           If[dim == 1,
+              "model.get_" <> mStr <> "()",
+              tail = ToString[GetDimension[particle] - GetDimensionStartSkippingGoldstones[particle] + 1];
+              "model.get_" <> mStr <> "().tail<" <> tail <> ">().minCoeff()"
+             ]
+          ];
+
+GetMSUSY[] :=
+    Module[{susyParticles},
+           susyParticles = Select[TreeMasses`GetSusyParticles[], IsElectricallyCharged];
+           If[susyParticles === {},
+              "return 0.;",
+              "return Min(" <>
+                 StringJoin[Riffle[GetMinMass /@ susyParticles, ", "]] <>
+              ");"
+             ]
+          ];
+
+GetQED2L[] :=
+    "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
+    "const double m_muon = MuonFamily::numberOfGenerations == 1 ? context.mass<MuonFamily>() : context.mass<MuonFamily>(muonIndex());\n" <>
+    "const double alpha_em = Sqr(muonCharge(context))/(4*Pi);\n" <>
+    "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
+    "return qed_2L;";
+
 calculationCode = Null;
 GMuonMinus2CreateCalculation[] :=
     Module[{code},
@@ -185,6 +218,8 @@ GMuonMinus2CreateCalculation[] :=
                    "double val = 0.0;\n\n" <>
                    StringJoin @ Riffle[("val += " <> # <> "::value(context);" &) /@ ConcreteDiagramEvaluators[],
                                        "\n"] <> "\n\n" <>
+                   "// add 2-loop QED logarithms\n" <>
+                   "val *= 1. + get_QED_2L(context);\n\n" <>
                    "return val;"
                   );
 

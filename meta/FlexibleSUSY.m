@@ -1,13 +1,32 @@
 BeginPackage["FlexibleSUSY`",
-             {"SARAH`", "AnomalousDimension`", "BetaFunction`",
-             "TextFormatting`", "CConversion`", "TreeMasses`",
-             "EWSB`", "Traces`", "SelfEnergies`", "Vertices`",
-             "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
-             "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
-             "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
-             "GMuonMinus2`", "EDM`", "EffectiveCouplings`",
-             "FlexibleEFTHiggsMatching`", "FSMathLink`",
-             "FlexibleTower`"}];
+             {"SARAH`",
+              "AnomalousDimension`",
+              "BetaFunction`",
+              "Parameters`",
+              "TextFormatting`",
+              "CConversion`",
+              "TreeMasses`",
+              "EWSB`",
+              "Traces`",
+              "SelfEnergies`",
+              "Vertices`",
+              "Phases`",
+              "LatticeUtils`",
+              "LoopMasses`",
+              "WriteOut`",
+              "Constraint`",
+              "ThresholdCorrections`",
+              "ConvergenceTester`",
+              "Utils`",
+              "ThreeLoopSM`",
+              "ThreeLoopMSSM`",
+              "Observables`",
+              "GMuonMinus2`",
+              "EDM`",
+              "EffectiveCouplings`",
+              "FlexibleEFTHiggsMatching`",
+              "FSMathLink`",
+              "FlexibleTower`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -16,7 +35,7 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
 FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
-FS`Contributors = {"D. Harries", "T. Steudtner"};
+FS`Contributors = {"D. Harries", "T. Steudtner", "J. Ziebell"};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
@@ -109,6 +128,7 @@ MWDRbar;
 MZMSbar;
 MWMSbar;
 EDRbar;
+EMSbar;
 ThetaWDRbar;
 SCALE;
 THRESHOLD;
@@ -997,13 +1017,15 @@ CreateVEVToTadpoleAssociation[] :=
 GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
-WriteMatchingClass[susyScaleMatching_List, files_List] :=
+WriteMatchingClass[susyScaleMatching_List, massMatrices_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
             alphaS1Lmatching = "", alphaEM1Lmatching = "",
+            setBSMParameters = "", higgsMassMatrix,
             setRunningUpQuarkMasses = "", setRunningDownQuarkMasses = "",
             setRunningDownLeptonMasses = "", setYukawas = "",
-            callAllSMPoleMassFunctions = "",
-            callAllSMPoleMassFunctionsThreads = ""},
+            calculateMUpQuarkPole1L = "", calculateMDownQuarkPole1L = "",
+            calculateMDownLeptonPole1L = "",
+            calculateMHiggsPoleOneMomentumIteration = ""},
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               If[Head[susyScaleMatching] === List,
                  userMatching = Constraint`ApplyConstraints[susyScaleMatching];
@@ -1014,23 +1036,34 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               alphaEM1Lmatching = Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> "\n" <>
                                   "delta_alpha_em += alpha_em/(2.*Pi)*(" <>
                                   CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n";
+              higgsMassMatrix = Select[massMatrices, (TreeMasses`GetMassEigenstate[#] === SARAH`HiggsBoson)&];
+              If[higgsMassMatrix === {},
+                 Print["Error: Could not find mass matrix for ", SARAH`HiggsBoson];
+                 Quit[1];
+                ];
+              setBSMParameters                  = FlexibleEFTHiggsMatching`SetBSMParameters[susyScaleMatching, GetMassMatrix[higgsMassMatrix[[1]]], "model."];
               setRunningUpQuarkMasses           = FlexibleEFTHiggsMatching`CalculateRunningUpQuarkMasses[];
               setRunningDownQuarkMasses         = FlexibleEFTHiggsMatching`CalculateRunningDownQuarkMasses[];
               setRunningDownLeptonMasses        = FlexibleEFTHiggsMatching`CalculateRunningDownLeptonMasses[];
               setYukawas                        = ThresholdCorrections`SetDRbarYukawaCouplings[];
-              callAllSMPoleMassFunctions        = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
-              callAllSMPoleMassFunctionsThreads = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
+              calculateMHiggsPoleOneMomentumIteration = FlexibleEFTHiggsMatching`CalculateMHiggsPoleOneMomentumIteration[SARAH`HiggsBoson];
+              calculateMUpQuarkPole1L    = FlexibleEFTHiggsMatching`CalculateMUpQuarkPole1L[];
+              calculateMDownQuarkPole1L  = FlexibleEFTHiggsMatching`CalculateMDownQuarkPole1L[];
+              calculateMDownLeptonPole1L = FlexibleEFTHiggsMatching`CalculateMDownLeptonPole1L[];
              ];
            WriteOut`ReplaceInFiles[files,
                        { "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
                          "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
+                         "@setBSMParameters@"        -> IndentText[setBSMParameters],
                          "@setRunningUpQuarkMasses@" -> IndentText[setRunningUpQuarkMasses],
                          "@setRunningDownQuarkMasses@" -> IndentText[setRunningDownQuarkMasses],
                          "@setRunningDownLeptonMasses@" -> IndentText[setRunningDownLeptonMasses],
+                         "@calculateMUpQuarkPole1L@"    -> IndentText[calculateMUpQuarkPole1L],
+                         "@calculateMDownQuarkPole1L@"  -> IndentText[calculateMDownQuarkPole1L],
+                         "@calculateMDownLeptonPole1L@" -> IndentText[calculateMDownLeptonPole1L],
                          "@setYukawas@"              -> IndentText[WrapLines[setYukawas]],
                          "@applyUserMatching@"       -> IndentText[IndentText[WrapLines[userMatching]]],
-                         "@callAllSMPoleMassFunctions@" -> IndentText[callAllSMPoleMassFunctions],
-                         "@callAllSMPoleMassFunctionsThreads@" -> IndentText[callAllSMPoleMassFunctionsThreads],
+                         "@calculateMHiggsPoleOneMomentumIteration@" -> IndentText[calculateMHiggsPoleOneMomentumIteration],
                          Sequence @@ GeneralReplacementRules[]
                        } ];
         ];
@@ -1433,6 +1466,7 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
+<<<<<<< HEAD
         definitions, calculationCode},
            particles = GMuonMinus2`GMuonMinus2CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`GMuonMinus2CreateMuonFunctions[vertexRules][[1]];
@@ -1440,6 +1474,17 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
            vertexFunctionData = GMuonMinus2`GMuonMinus2CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`GMuonMinus2CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`GMuonMinus2CreateCalculation[];
+=======
+        definitions, calculationCode, getMSUSY, getQED2L},
+           particles = GMuonMinus2`CreateParticles[];
+           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
+           diagrams = GMuonMinus2`CreateDiagrams[];
+           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
+           definitions = GMuonMinus2`CreateDefinitions[vertexRules];
+           calculationCode = GMuonMinus2`CreateCalculation[];
+           getMSUSY = GMuonMinus2`GetMSUSY[];
+           getQED2L = GMuonMinus2`GetQED2L[];
+>>>>>>> feature-2.0
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -1448,6 +1493,8 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                      "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
                                      "@GMuonMinus2_Definitions@"             -> definitions,
                                      "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
+                                     "@GMuonMinus2_GetMSUSY@"                -> IndentText[WrapLines[getMSUSY]],
+                                     "@GMuonMinus2_QED_2L@"                  -> IndentText[WrapLines[getQED2L]],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -2790,7 +2837,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               ];
 
            Print["Creating matching class ..."];
-           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching, massMatrices,
                               {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],

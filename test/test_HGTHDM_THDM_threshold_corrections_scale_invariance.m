@@ -1,9 +1,10 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["THDMThresholds1L`", FileNameJoin[{Directory[], "meta", "THDM", "Thresholds_1L_full.m"}]];
 
-mssmGaugeRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.m"}];
-thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "HGTHDM-II", "RGEs", "BetaLijkl.m"}];
-thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "HGTHDM-II", "RGEs", "BetaGauge.m"}];
+hgthdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "HGTHDM-II", "RGEs", "BetaLijkl.m"}];
+hgthdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "HGTHDM-II", "RGEs", "BetaGauge.m"}];
+thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
+thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
 
 gRules = {g1 -> Sqrt[5/3] gY};
 
@@ -22,9 +23,9 @@ expandTraces = {
     trace[Yd, Adj[Yu], Yu, Adj[Yd]] -> Tr[YdMat.ConjugateTranspose[YuMat].YuMat.ConjugateTranspose[YdMat]]
 };
 
-betag1MSSM = Cases[Get[mssmGaugeRGEs], {g1, b_, __} :> b][[1]];
-betagYMSSM = (Sqrt[3/5] betag1MSSM /. gRules);
-betag2MSSM = Cases[Get[mssmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
+betag1HGTHDM = Cases[Get[hgthdmGaugeRGEs], {g1, b_, __} :> b][[1]];
+betagYHGTHDM = (Sqrt[3/5] betag1HGTHDM /. gRules);
+betag2HGTHDM = Cases[Get[hgthdmGaugeRGEs], {g2, b_, __} :> b][[1]] /. gRules;
 
 betag1THDM = Cases[Get[thdmGaugeRGEs], {g1, b_, __} :> b][[1]];
 betagYTHDM = (Sqrt[3/5] betag1THDM /. gRules);
@@ -53,18 +54,23 @@ treeRules = {
     g2up    -> gY
 };
 
-(* beta functions of lambda_i in the MSSM *)
-betaLambdaMSSM = (Dt[#] & /@ lambdaTree) /. {
-    Dt[gY] -> betagYMSSM,
-    Dt[g2] -> betag2MSSM
-} // Simplify;
-
 (* change in scale dependence since threshold corrections are
    expressed in terms of THDM gauge couplings *)
 betaLambdaGaugeDiff = (Dt[#] & /@ lambdaTree) /. {
-    Dt[gY] -> betagYMSSM - betagYTHDM,
-    Dt[g2] -> betag2MSSM - betag2THDM
+    Dt[gY] -> betagYHGTHDM - betagYTHDM,
+    Dt[g2] -> betag2HGTHDM - betag2THDM
 } // Simplify;
+
+(* beta functions of lambda_i in the HGTHDM *)
+betaLambdaHGTHDM = {
+    Cases[Get[hgthdmLambdaRGEs], {Lambda1, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda2, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda3, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda4, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda5, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda6, b_, __} :> b][[1]],
+    Cases[Get[hgthdmLambdaRGEs], {Lambda7, b_, __} :> b][[1]]
+} /. gRules;
 
 (* beta functions of lambda_i in the THDM *)
 betaLambdaTHDM = {
@@ -79,10 +85,10 @@ betaLambdaTHDM = {
 
 (* difference of the beta functions in the two models *)
 betaDiff =
-  Expand[(betaLambdaTHDM - betaLambdaMSSM + betaLambdaGaugeDiff) /. treeRules //. expandTraces];
+  Expand[(betaLambdaTHDM - betaLambdaHGTHDM + betaLambdaGaugeDiff) /. treeRules //. expandTraces];
 
 (* disable Higgsino and gaugino contributions *)
-hgthmdFlags = Join[{flagIno -> 0}, GetTHDMThresholds1LFlags[]];
+hgthmdFlags = Join[{flagIno -> 1, flagSferm -> 0, flagMSDR -> 0}, GetTHDMThresholds1LFlags[]];
 
 (* convert to SARAH convention *)
 lamSARAH = GetTHDMThresholds1L[flags -> hgthmdFlags];

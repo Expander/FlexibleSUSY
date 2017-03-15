@@ -49,28 +49,12 @@ EOF
     exit 1
 }
 
-amu_gm2calc_1L=$({ cat <<EOF
-Block GM2CalcConfig
-     0  0  # minimal output
-     1  1  # loop order (0, 1 or 2)
-     2  0  # disable/enable tan(beta) resummation (0 or 1)
-     4  0  # verbose output
-EOF
-  cat "${SLHA_OUT}";
-      } | "${GM2CALC_EXE}" --slha-input-file=-)
-
-[ $? = 0 ] || {
-    echo "Error: ${GM2CALC_EXE} failed!"
-    exit 1
-}
-
 # convert scientific notation to bc friendly notation
 amu_fs=$(echo "${amu_fs}" | sed -e 's/[eE]/\*10\^/')
 amu_gm2calc_fs=$(echo "${amu_gm2calc_fs}" | sed -e 's/[eE]/\*10\^/')
 amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
-amu_gm2calc_1L=$(echo "${amu_gm2calc_1L}" | sed -e 's/[eE]/\*10\^/')
 
-### test GM2Calc vs. FlexibleSUSY's embedded GM2Calc
+### test GM2Calc vs. embedded GM2Calc
 
 # Note: The agreement between vanilla GM2Calc and the GM2Calc version
 # embedded in FlexibleSUSY is not 100% perfect.  The reason is, that
@@ -101,25 +85,9 @@ if test $diff -ne 1 ; then
     errors=1
 fi
 
-### test FlexibleSUSY 1L vs. GM2Calc 1L w/o tan(beta) resummation
+### test FlexibleSUSY vs. embedded GM2Calc
 
-rel_error=0.03
-
-diff=$(cat <<EOF | bc $BASEDIR/abs.bc
-scale=100
-abs((abs($amu_fs) - abs($amu_gm2calc_1L)) / ($amu_fs)) < $rel_error
-EOF
-    )
-
-if test $diff -ne 1 ; then
-    echo "Error: relative difference between"
-    echo " $amu_fs and $amu_gm2calc_1L is larger than $rel_error"
-    errors=1
-fi
-
-### test FlexibleSUSY 1L vs. FlexibleSUSY's embedded GM2Calc
-
-rel_error=0.12
+rel_error=0.008
 
 diff=$(cat <<EOF | bc $BASEDIR/abs.bc
 scale=100
@@ -133,10 +101,9 @@ if test $diff -ne 1 ; then
     errors=1
 fi
 
-echo "FlexibleSUSY 1L                                : amu = $amu_fs"
+echo "FlexibleSUSY 1L + 2L QED                       : amu = $amu_fs"
 echo "embedded GM2Calc                               : amu = $amu_gm2calc_fs"
 echo "original GM2Calc                               : amu = $amu_gm2calc"
-echo "original GM2Calc (1L, no tan(beta) resummation): amu = $amu_gm2calc_1L"
 
 if test $errors -eq 0 ; then
     echo "Test status: OK"

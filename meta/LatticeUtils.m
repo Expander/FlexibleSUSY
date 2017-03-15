@@ -52,18 +52,18 @@ FixDiagonalization[fsMassMatrices_List] := FixDiagonalization/@fsMassMatrices;
 
    This leads to the following amendment:
  *)
-FixDiagonalization[FSMassMatrix[m_, f_, z_Symbol]?MajoranaMassMatrixQ] :=
-    FSMassMatrix[m, f, {z, z}];
+FixDiagonalization[TreeMasses`FSMassMatrix[m_, f_, z_Symbol]?MajoranaMassMatrixQ] :=
+    TreeMasses`FSMassMatrix[m, f, {z, z}];
 
-FixDiagonalization[m_FSMassMatrix] := m;
+FixDiagonalization[m_TreeMasses`FSMassMatrix] := m;
 
-MajoranaMassMatrixQ[FSMassMatrix[_?MatrixQ, _, _]?MajoranaMassQ] := True;
+MajoranaMassMatrixQ[TreeMasses`FSMassMatrix[_?MatrixQ, _, _]?MajoranaMassQ] := True;
 
-MajoranaMassMatrixQ[_FSMassMatrix] := False;
+MajoranaMassMatrixQ[_TreeMasses`FSMassMatrix] := False;
 
-MajoranaMassQ[FSMassMatrix[_, _?MajoranaQ, _]] := True;
+MajoranaMassQ[TreeMasses`FSMassMatrix[_, _?MajoranaQ, _]] := True;
 
-MajoranaMassQ[_FSMassMatrix] := False;
+MajoranaMassQ[_TreeMasses`FSMassMatrix] := False;
 
 MajoranaQ[field_] := MemberQ[SARAH`MajoranaPart, field];
 

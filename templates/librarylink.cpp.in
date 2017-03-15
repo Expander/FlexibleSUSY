@@ -690,6 +690,7 @@ void Model_data_impl<Solver_type>::calculate_spectrum()
    scales.HighScale = spectrum_generator.get_high_scale();
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();
+   scales.pole_mass_scale = spectrum_generator.get_pole_mass_scale();
 }
 
 /******************************************************************/
@@ -697,7 +698,7 @@ void Model_data_impl<Solver_type>::calculate_spectrum()
 template <typename Solver_type>
 void Model_data_impl<Solver_type>::calculate_model_observables()
 {
-   observables = calculate_observables(std::get<0>(models), qedqcd, physical_input);
+   observables = calculate_observables(std::get<0>(models), qedqcd, physical_input, scales.pole_mass_scale);
 }
 
 /******************************************************************/

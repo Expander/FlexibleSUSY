@@ -73,7 +73,7 @@ void CLASSNAME::match()
    model->run_to(get_scale());
 
    if (model->get_thresholds() && loop_order)
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order);
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
@@ -207,13 +207,6 @@ void CLASSNAME::set_higgs_index(int idx)
 
 void CLASSNAME::set_loop_order(int loop_order_)
 {
-   if (loop_order_ > 1) {
-      WARNING("Matching loop order " << loop_order_
-              << " for downwards matching currently not"
-              " supported!  I'm using 1-loop matching.");
-      loop_order_ = 1;
-   }
-
    loop_order = loop_order_;
 }
 

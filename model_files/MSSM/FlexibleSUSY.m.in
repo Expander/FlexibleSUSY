@@ -17,9 +17,9 @@ EXTPAR = {
 };
 
 FSExtraInputParameters = {
-    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
-    {Adij, AdijIN, {3,3}}, (* 3x3 matrix *)
-    {Auij, AuijIN, {3,3}}  (* 3x3 matrix *)
+    {Aeij, AEIN, {3,3}}, (* 3x3 matrix *)
+    {Adij, ADIN, {3,3}}, (* 3x3 matrix *)
+    {Auij, AUIN, {3,3}}  (* 3x3 matrix *)
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };

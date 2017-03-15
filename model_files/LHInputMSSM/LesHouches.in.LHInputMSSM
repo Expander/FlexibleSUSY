@@ -57,7 +57,7 @@ Block MSQ2IN
 Block MSOFTIN
     3   600                  # MassG
    21   1.1e+05              # mHd2
-Block AeijIN
+Block AEIN
     1   1   1000
     2   2   1000
     3   3   1000
