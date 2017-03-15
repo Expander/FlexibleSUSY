@@ -2089,7 +2089,7 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
 LoadModelFile[file_String] :=
     Module[{},
            If[FileExists[file],
-              Print["Loading model file ", file];
+              PrintHeadline["Loading FlexibleSUSY model file ", file];
               Get[file];
               CheckModelFileSettings[];
               ,
@@ -2217,6 +2217,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile},
+           PrintHeadline["Starting FlexibleSUSY"];
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2232,7 +2233,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
-           Print["  Model: ", FlexibleSUSY`FSModelName];
+           Print["  Model: ", Style[FlexibleSUSY`FSModelName, Blue]];
            Print["  Model file: ", OptionValue[InputFile]];
            Print["  Model output directory: ", FSOutputDir];
 
