@@ -299,6 +299,8 @@ CreateVertices[vertexRules_List] :=
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
            
+           If[vertices === {}, Return[{"",""}];];
+           
            {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
 
