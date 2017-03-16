@@ -98,7 +98,7 @@ RemoveParticle[head_[p_,expr_], particle_] :=
                SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]][_] -> 0,
                SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]] -> 0
                                    };
-           Return[head[p,strippedExpr]];
+           head[p,strippedExpr]
           ];
 
 RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__], _] :=
@@ -133,7 +133,7 @@ RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
                   SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingSMGoldstones[g],endIdx,expression];
                  ];
              ];
-           Return[head[p,strippedExpr]];
+           head[p,strippedExpr]
           ];
 
 ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr_]] :=
@@ -148,18 +148,22 @@ ReplaceUnrotatedFields[SelfEnergies`FSHeavyRotatedSelfEnergy[p_,expr__]] :=
                SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
                SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
                             };
-           Return[SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]]
+           SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]
           ];
 
 ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
     ConvertSarahTadpoles[tadpoles];
 
+CreateMassEigenstateReplacements[] :=
+    Cases[Join[
+             Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
+             Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]
+          ],
+          HoldPattern[Except[0] -> _]
+    ];
+
 ConvertSarahTadpoles[tadpoles_List] :=
-    Module[{result = {}, k, massESReplacements},
-           massESReplacements = Join[
-               Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
-               Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
-           massESReplacements = Cases[massESReplacements, HoldPattern[Except[0] -> _]];
+    Module[{result = {}, k, massESReplacements = CreateMassEigenstateReplacements[]},
            result = (SelfEnergies`Tadpole @@ #)& /@ tadpoles /. massESReplacements;
            (* append mass eigenstate indices *)
            For[k = 1, k <= Length[result], k++,
@@ -168,16 +172,12 @@ ConvertSarahTadpoles[tadpoles_List] :=
                   result[[k,1]] = field[SARAH`gO1];
                  ];
               ];
-           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
+           result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
     Module[{result = {}, k, field, fermionSE, left, right, scalar, expr,
-            massESReplacements, heavySE},
-           massESReplacements = Join[
-               Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
-               Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
-           massESReplacements = Cases[massESReplacements, HoldPattern[Except[0] -> _]];
+            massESReplacements = CreateMassEigenstateReplacements[], heavySE},
            result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
            (* append mass eigenstate indices *)
            For[k = 1, k <= Length[result], k++,
@@ -239,7 +239,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveParticle[#,SARAH`VectorG]& /@ heavySE];
-           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
+           result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
 GetParticleIndices[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
@@ -300,8 +300,8 @@ CreateCouplingFunction[coupling_, expr_] :=
                   "return result;\n";
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
-           Return[{prototype, definition,
-                   RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}];
+           {prototype, definition,
+            RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}
           ];
 
 GetParticleList[Cp[a__]] := {a};
