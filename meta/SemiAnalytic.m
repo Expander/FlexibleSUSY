@@ -502,20 +502,6 @@ GetSemiAnalyticSolutions[settings_List] :=
            result
           ];
 
-ReplaceImplicitConstraints[settings_List] :=
-    Module[{macroPosns, macros, fixedPars, values, replacements},
-           macroPosns = Position[settings, FlexibleSUSY`FSMinimize[__] | \
-                                           FlexibleSUSY`FSFindRoot[__] | \
-                                           FlexibleSUSY`FSSolveEWSBFor[__]];
-           macros = Extract[settings, macroPosns];
-           fixedPars = Select[Constraint`FindFixedParametersFromConstraint[{#}],
-                              IsSemiAnalyticParameter]& /@ macros;
-           values = GetPlaceholders[#]& /@ macros;
-           replacements = MapIndexed[(Utils`Zip[#1, values[[#2[[1]]]]])&, fixedPars];
-           replacements = MapThread[Rule, {macroPosns, replacements}];
-           ReplacePart[settings, Rule[#[[1]], Sequence @@ #[[2]]] & /@ replacements]
-          ];
-
 CreateBoundaryValue[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
 
 CreateBoundaryValueParameters[solutions_List] :=
@@ -667,6 +653,20 @@ ApplySettingLocally[{parameter_, value_}, modelPrefix_String] :=
           ""
          ];
 
+ReplaceImplicitConstraints[settings_List] :=
+    Module[{macroPosns, macros, fixedPars, values, replacements},
+           macroPosns = Position[settings, FlexibleSUSY`FSMinimize[__] | \
+                                           FlexibleSUSY`FSFindRoot[__] | \
+                                           FlexibleSUSY`FSSolveEWSBFor[__]];
+           macros = Extract[settings, macroPosns];
+           fixedPars = Select[Constraint`FindFixedParametersFromConstraint[{#}],
+                              IsSemiAnalyticParameter]& /@ macros;
+           values = GetPlaceholders[#]& /@ macros;
+           replacements = MapIndexed[(Utils`Zip[#1, values[[#2[[1]]]]])&, fixedPars];
+           replacements = MapThread[Rule, {macroPosns, replacements}];
+           ReplacePart[settings, Rule[#[[1]], Sequence @@ #[[2]]] & /@ replacements]
+          ];
+
 ApplySemiAnalyticBoundaryConditions[settings_List, solutions_List, modelPrefix_String:"model."] :=
     Module[{noMacros, boundaryValues, parameters, i,
             setBoundaryValues = "", result = ""},
@@ -737,7 +737,7 @@ GetSemiAnalyticEWSBSubstitutions[solution_SemiAnalyticSolution] :=
            coeffs = CreateCoefficients[solution];
            replacement = Dot[coeffs, GetBasis[solution]] /. basisRules;
            result = GetSubstitutionsWithIndices[{parameter, replacement}, basisPars, coeffs];
-          ( Rule @@ #)& /@ result
+           (Rule @@ #)& /@ result
           ];
 
 GetSemiAnalyticEWSBSubstitutions[solutions_List] :=
@@ -871,7 +871,6 @@ CreateLinearSystemSolvers[datasets_List, solutions_List] :=
            (result = result <> CreateLinearSystemSolver[#, solutions])& /@ datasets;
            Return[result];
           ];
-
 
 CalculateCoefficients[datasets_List] :=
     Module[{i, result = ""},
