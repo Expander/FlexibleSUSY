@@ -191,7 +191,7 @@ Remove1DimensionalFieldIndices[lst_List] :=
 
 (* decompose fermionic self-energies into L,R,S parts *)
 SplitFermionSelfEnergies[lst_List] :=
-    Module[{result = lst, k, field, fermionSE},
+    Module[{result = lst, k, field, expr, fermionSE},
            (* filter out all fermionic self-energies *)
            fermionSE = Cases[result, SelfEnergies`FSSelfEnergy[_, List[__]]];
            result = Select[result, (Head[GetExpression[#]] =!= List)&];
@@ -221,8 +221,7 @@ ConvertSarahTadpoles[tadpoles_List] :=
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
-    Module[{result, left, right, scalar, expr,
-            massESReplacements = CreateMassEigenstateReplacements[], heavySE},
+    Module[{result, heavySE, massESReplacements = CreateMassEigenstateReplacements[]},
            result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
            result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
            result = SplitFermionSelfEnergies[result];
