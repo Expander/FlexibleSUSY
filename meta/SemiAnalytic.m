@@ -446,7 +446,6 @@ GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSoln
            GetLinearSystemSolutions[softLinears, boundaryConditionSubs, extraTerms]
           ];
 
-(* @todo add missing complex conjugates for complex soft parameters *)
 GetSemiAnalyticSolutions[settings_List] :=
     Module[{boundaryValSubs, dimOnePars, dimOneBCs, dimOneSolns = {},
             diracPars, diracBCs, diracSolns = {}, scalarMasses, scalarMassesBCs,
