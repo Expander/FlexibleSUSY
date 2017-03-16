@@ -1295,7 +1295,9 @@ SaveParameterLocally[parameter_] :=
 RemoveProtectedHeads[expr_] :=
     expr /. { FlexibleSUSY`LowEnergyConstant[__] -> FlexibleSUSY`LowEnergyConstant[],
               FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[],
-              FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[]};
+              FlexibleSUSY`BETA[__] -> FlexibleSUSY`BETA[],
+              SARAH`Mass  -> FlexibleSUSY`M,
+              SARAH`Mass2 -> FlexibleSUSY`M };
 
 CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
     Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];

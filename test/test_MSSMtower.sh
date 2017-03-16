@@ -114,6 +114,7 @@ run_sg() {
     local SG="$1"
     local type="$2"
     local calcBSM=$(test "x$type" = xtower ; echo $?)
+    local loops=$(if [ "x$type" = xtower ] ; then echo 1; else echo 2; fi)
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
     local Au=$(echo "scale=10; (1./${TB} + 0) * ${MS}" | bc)
@@ -141,6 +142,8 @@ Block EXTPAR                 # Input parameters
    14   ${Xt}                # Xt / Ms
    25   ${TB}                # TanBeta(MSUSY)
 Block FlexibleSUSY
+    4   ${loops}             # pole mass loop order
+    5   ${loops}             # EWSB loop order
    23   ${calcBSM}           # calculate BSM pole masses
 Block MSQ2IN
   1  1     ${MS2}   # mq2(1,1)
@@ -235,7 +238,7 @@ error=0
 MS=91.1876
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.003" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
 
 MS=173.34
 MhMSSMtower=$(run_sg "$MODELDIR/MSSMtower/run_MSSMtower.x" tower)

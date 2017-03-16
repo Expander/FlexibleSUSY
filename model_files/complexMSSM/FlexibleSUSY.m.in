@@ -21,28 +21,28 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameterInfo = {
-    {Aeij,   { LesHouches -> AeijIN,
-               ParameterDimensions -> {3,3},
+    {Aeij,   { LesHouches -> AEIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } },
-    {Adij,   { LesHouches -> AdijIN,
-               ParameterDimensions -> {3,3},
+    {Adij,   { LesHouches -> ADIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } },
-    {Auij,   { LesHouches -> AuijIN,
-               ParameterDimensions -> {3,3},
+    {Auij,   { LesHouches -> AUIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } },
-    {ImAeij, { LesHouches -> ImAeijIN,
-               ParameterDimensions -> {3,3},
+    {ImAeij, { LesHouches -> IMAEIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } },
-    {ImAdij, { LesHouches -> ImAdijIN,
-               ParameterDimensions -> {3,3},
+    {ImAdij, { LesHouches -> IMADIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } },
-    {ImAuij, { LesHouches -> ImAuijIN,
-               ParameterDimensions -> {3,3},
+    {ImAuij, { LesHouches -> IMAUIN,
+               ParameterDimensions -> {3,3}, (* 3x3 matrix *)
                InputParameter -> True
              } }
 };

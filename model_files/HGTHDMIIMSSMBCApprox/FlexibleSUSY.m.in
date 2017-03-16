@@ -82,8 +82,7 @@ translate = {
 };
 
 (* flags to disable Higgsino + gaugino contributions *)
-hgthmdFlags = Join[{flagIno -> 0, flagInoZdd -> 0, flagInoZud -> 0, flagInoZuu -> 0},
-                   GetTHDMThresholds1LFlags[]];
+hgthmdFlags = Join[{flagIno -> 0}, GetTHDMThresholds1LFlags[]];
 
 deltaLambda0L = GetTHDMThresholds1L[loopOrder -> {1,0}, flags -> hgthmdFlags] //. translate;
 deltaLambda1L = GetTHDMThresholds1L[loopOrder -> {0,1}, flags -> hgthmdFlags] //. translate;

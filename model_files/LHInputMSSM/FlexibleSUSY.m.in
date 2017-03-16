@@ -10,20 +10,20 @@ MINPAR = { {1, m0},
            {5, Azero} };
 
 FSAuxiliaryParameterInfo = {
-    {Aeij, { LesHouches -> AeijIN,
-             ParameterDimensions -> {3,3},
+    {Aeij, { LesHouches -> AEIN,
+             ParameterDimensions -> {3,3}, (* 3x3 matrix *)
              InputParameter -> True
            } },
     {Vei,  { LesHouches -> VeiIN,
-             ParameterDimensions -> {3},
+             ParameterDimensions -> {3},   (* 3 vector *)
              InputParameter -> True
            } },
     {S1,   { LesHouches -> S1IN,
-             ParameterDimensions -> {1},
+             ParameterDimensions -> {1},   (* scalar *)
              InputParameter -> True
            } },
     {S2,   { LesHouches -> S2IN,
-             ParameterDimensions -> {},
+             ParameterDimensions -> {},    (* scalar *)
              InputParameter -> True
            } }
 };

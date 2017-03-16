@@ -1,13 +1,32 @@
 BeginPackage["FlexibleSUSY`",
-             {"SARAH`", "AnomalousDimension`", "BetaFunction`",
-             "TextFormatting`", "CConversion`", "TreeMasses`",
-             "EWSB`", "Traces`", "SelfEnergies`", "Vertices`",
-             "Phases`", "LoopMasses`", "WriteOut`", "Constraint`",
-             "ThresholdCorrections`", "ConvergenceTester`", "Utils`",
-             "ThreeLoopSM`", "ThreeLoopMSSM`", "Observables`",
-             "GMuonMinus2`", "EffectiveCouplings`", "SemiAnalytic`",
-             "FlexibleEFTHiggsMatching`", "FSMathLink`",
-             "FlexibleTower`"}];
+             {"SARAH`",
+              "AnomalousDimension`",
+              "BetaFunction`",
+              "Parameters`",
+              "TextFormatting`",
+              "CConversion`",
+              "TreeMasses`",
+              "EWSB`",
+              "Traces`",
+              "SelfEnergies`",
+              "Vertices`",
+              "Phases`",
+              "LatticeUtils`",
+              "LoopMasses`",
+              "WriteOut`",
+              "Constraint`",
+              "ThresholdCorrections`",
+              "ConvergenceTester`",
+              "Utils`",
+              "SemiAnalytic`",
+              "ThreeLoopSM`",
+              "ThreeLoopMSSM`",
+              "Observables`",
+              "GMuonMinus2`",
+              "EffectiveCouplings`",
+              "FlexibleEFTHiggsMatching`",
+              "FSMathLink`",
+              "FlexibleTower`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -16,27 +35,24 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
 FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
-FS`Contributors = {"D. Harries", "T. Steudtner"};
+FS`Contributors = {"D. Harries", "T. Steudtner", "J. Ziebell"};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
-Print[Style["===================================================================", Bold]];
-Print[Style["FlexibleSUSY " <> FS`Version, Larger, Bold, Blue]];
+Print[""];
+Utils`FSFancyLine["="];
+Utils`FSFancyPrint["FlexibleSUSY " <> FS`Version, 0];
 Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
 Print["  contributions by " <> Utils`StringJoinWithSeparator[FS`Contributors, ", "]];
 Print[""];
-Print[Style["References:", Blue]];
+Utils`FSFancyPrint["References:"];
 Print["  " <> #]& /@ FS`References;
 Print[""];
-Print[Style["Download and Documentation:", Blue]];
+Utils`FSFancyPrint["Download and Documentation:"];
 Print["  https://flexiblesusy.hepforge.org"];
-Print[Style["===================================================================", Bold]];
+Utils`FSFancyLine["="];
 Print[""];
-
-Print["meta code directory: ", $flexiblesusyMetaDir];
-Print["config directory   : ", $flexiblesusyConfigDir];
-Print["templates directory: ", $flexiblesusyTemplateDir];
 
 MakeFlexibleSUSY::usage="Creates a spectrum generator given a
  FlexibleSUSY model file (FlexibleSUSY.m).
@@ -274,12 +290,12 @@ HaveEWSBSolver[solver_] := MemberQ[FlexibleSUSY`FSEWSBSolvers, solver];
 
 HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
 
-PrintHeadline[text_] :=
+PrintHeadline[text__] :=
     Block[{},
           Print[""];
-          Print[Style["---------------------------------", Bold]];
-          Print[Style[text, Blue]];
-          Print[Style["---------------------------------", Bold]];
+          Utils`FSFancyLine[];
+          Utils`FSFancyPrint[text];
+          Utils`FSFancyLine[];
          ];
 
 DecomposeVersionString[version_String] :=
@@ -1099,13 +1115,15 @@ CreateVEVToTadpoleAssociation[] :=
 GetRenormalizationScheme[] :=
     If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 
-WriteMatchingClass[susyScaleMatching_List, files_List] :=
+WriteMatchingClass[susyScaleMatching_List, massMatrices_List, files_List] :=
     Module[{scheme = GetRenormalizationScheme[], userMatching = "",
             alphaS1Lmatching = "", alphaEM1Lmatching = "",
+            setBSMParameters = "", higgsMassMatrix,
             setRunningUpQuarkMasses = "", setRunningDownQuarkMasses = "",
             setRunningDownLeptonMasses = "", setYukawas = "",
-            callAllSMPoleMassFunctions = "",
-            callAllSMPoleMassFunctionsThreads = ""},
+            calculateMUpQuarkPole1L = "", calculateMDownQuarkPole1L = "",
+            calculateMDownLeptonPole1L = "",
+            calculateMHiggsPoleOneMomentumIteration = ""},
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               If[Head[susyScaleMatching] === List,
                  userMatching = Constraint`ApplyConstraints[susyScaleMatching];
@@ -1116,23 +1134,34 @@ WriteMatchingClass[susyScaleMatching_List, files_List] :=
               alphaEM1Lmatching = Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> "\n" <>
                                   "delta_alpha_em += alpha_em/(2.*Pi)*(" <>
                                   CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n";
+              higgsMassMatrix = Select[massMatrices, (TreeMasses`GetMassEigenstate[#] === SARAH`HiggsBoson)&];
+              If[higgsMassMatrix === {},
+                 Print["Error: Could not find mass matrix for ", SARAH`HiggsBoson];
+                 Quit[1];
+                ];
+              setBSMParameters                  = FlexibleEFTHiggsMatching`SetBSMParameters[susyScaleMatching, GetMassMatrix[higgsMassMatrix[[1]]], "model."];
               setRunningUpQuarkMasses           = FlexibleEFTHiggsMatching`CalculateRunningUpQuarkMasses[];
               setRunningDownQuarkMasses         = FlexibleEFTHiggsMatching`CalculateRunningDownQuarkMasses[];
               setRunningDownLeptonMasses        = FlexibleEFTHiggsMatching`CalculateRunningDownLeptonMasses[];
               setYukawas                        = ThresholdCorrections`SetDRbarYukawaCouplings[];
-              callAllSMPoleMassFunctions        = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, False];
-              callAllSMPoleMassFunctionsThreads = FlexibleEFTHiggsMatching`CallSMPoleMassFunctions[FlexibleSUSY`FSEigenstates, True];
+              calculateMHiggsPoleOneMomentumIteration = FlexibleEFTHiggsMatching`CalculateMHiggsPoleOneMomentumIteration[SARAH`HiggsBoson];
+              calculateMUpQuarkPole1L    = FlexibleEFTHiggsMatching`CalculateMUpQuarkPole1L[];
+              calculateMDownQuarkPole1L  = FlexibleEFTHiggsMatching`CalculateMDownQuarkPole1L[];
+              calculateMDownLeptonPole1L = FlexibleEFTHiggsMatching`CalculateMDownLeptonPole1L[];
              ];
            WriteOut`ReplaceInFiles[files,
                        { "@alphaS1Lmatching@"        -> IndentText[WrapLines[alphaS1Lmatching]],
                          "@alphaEM1Lmatching@"       -> IndentText[WrapLines[alphaEM1Lmatching]],
+                         "@setBSMParameters@"        -> IndentText[setBSMParameters],
                          "@setRunningUpQuarkMasses@" -> IndentText[setRunningUpQuarkMasses],
                          "@setRunningDownQuarkMasses@" -> IndentText[setRunningDownQuarkMasses],
                          "@setRunningDownLeptonMasses@" -> IndentText[setRunningDownLeptonMasses],
+                         "@calculateMUpQuarkPole1L@"    -> IndentText[calculateMUpQuarkPole1L],
+                         "@calculateMDownQuarkPole1L@"  -> IndentText[calculateMDownQuarkPole1L],
+                         "@calculateMDownLeptonPole1L@" -> IndentText[calculateMDownLeptonPole1L],
                          "@setYukawas@"              -> IndentText[WrapLines[setYukawas]],
                          "@applyUserMatching@"       -> IndentText[IndentText[WrapLines[userMatching]]],
-                         "@callAllSMPoleMassFunctions@" -> IndentText[callAllSMPoleMassFunctions],
-                         "@callAllSMPoleMassFunctionsThreads@" -> IndentText[callAllSMPoleMassFunctionsThreads],
+                         "@calculateMHiggsPoleOneMomentumIteration@" -> IndentText[calculateMHiggsPoleOneMomentumIteration],
                          Sequence @@ GeneralReplacementRules[]
                        } ];
         ];
@@ -1679,13 +1708,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
-        definitions, calculationCode},
+        definitions, calculationCode, getMSUSY, getQED2L},
            particles = GMuonMinus2`CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
            vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
            definitions = GMuonMinus2`CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`CreateCalculation[];
+           getMSUSY = GMuonMinus2`GetMSUSY[];
+           getQED2L = GMuonMinus2`GetQED2L[];
 
            WriteOut`ReplaceInFiles[files,
                                    { "@GMuonMinus2_Particles@"               -> particles,
@@ -1694,6 +1725,8 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
                                      "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
                                      "@GMuonMinus2_Definitions@"             -> definitions,
                                      "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
+                                     "@GMuonMinus2_GetMSUSY@"                -> IndentText[WrapLines[getMSUSY]],
+                                     "@GMuonMinus2_QED_2L@"                  -> IndentText[WrapLines[getQED2L]],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -2030,37 +2063,20 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                           } ];
           ];
 
-FileExists[fileName_String] := FileExistsQ[fileName];
-
-FileExists[path_String, fileName_String] :=
-    Module[{fileExists},
-           fileExists = FileExists[FileNameJoin[{path, fileName}]];
-           If[!fileExists,
-              Print["File not found: ", fileName, " in directory ", path];
-             ];
-           fileExists
-          ];
-
-FilesExist[path_String, fileNames_List] :=
-    And @@ (FileExists[path,#]& /@ fileNames);
-
 FilesExist[fileNames_List] :=
-    And @@ (FileExists /@ fileNames);
+    And @@ (FileExistsQ /@ fileNames);
 
 LatestModificationTimeInSeconds[file_String] :=
-    If[FileExists[file],
+    If[FileExistsQ[file],
        AbsoluteTime[FileDate[file, "Modification"]], 0];
 
 LatestModificationTimeInSeconds[files_List] :=
     Max[LatestModificationTimeInSeconds /@ files];
 
 SARAHModelFileModificationTimeInSeconds[] :=
-    Module[{files},
-           files = Join[{SARAH`ModelFile},
-                        FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}
-                       ];
-           Return[LatestModificationTimeInSeconds[files]];
-          ];
+    LatestModificationTimeInSeconds @ \
+    Join[{SARAH`ModelFile},
+         FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}];
 
 GetRGEFileNames[outputDir_String] :=
     Module[{rgeDir, fileNames},
@@ -2081,21 +2097,9 @@ GetRGEFileNames[outputDir_String] :=
            FileNameJoin[{rgeDir, #}]& /@ fileNames
           ];
 
-RGEFilesExist[outputDir_String] :=
-    FilesExist[GetRGEFileNames[outputDir]];
-
-RGEsModificationTimeInSeconds[outputDir_String] :=
-    LatestModificationTimeInSeconds[GetRGEFileNames[outputDir]];
-
 GetSelfEnergyFileNames[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "SelfEnergy.m"}];
-
-SelfEnergyFilesExist[outputDir_String, eigenstates_] :=
-    FileExists[GetSelfEnergyFileNames[outputDir, eigenstates]];
-
-SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetSelfEnergyFileNames[outputDir, eigenstates]];
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
     NeedToUpdateTarget[
@@ -2106,12 +2110,6 @@ GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "Tadpoles1Loop.m"}];
 
-TadpoleFileExists[outputDir_String, eigenstates_] :=
-    FileExists[GetTadpoleFileName[outputDir, eigenstates]];
-
-TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetTadpoleFileName[outputDir, eigenstates]];
-
 NeedToCalculateTadpoles[eigenstates_] :=
     NeedToUpdateTarget[
         "tadpole",
@@ -2121,34 +2119,10 @@ GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
                   "One-Loop", "UnrotatedParticles.m"}];
 
-UnrotatedParticlesFilesExist[outputDir_String, eigenstates_] :=
-    FileExists[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
-
-UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
-    LatestModificationTimeInSeconds[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
-
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
     NeedToUpdateTarget[
         "unrotated particle",
         GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
-
-SearchSelfEnergies[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetSelfEnergyFileNames[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
-
-SearchUnrotatedParticles[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetUnrotatedParticlesFileName[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
-
-SearchTadpoles[outputDir_String, eigenstates_] :=
-    Module[{fileName},
-           fileName = GetTadpoleFileName[outputDir, eigenstates];
-           If[FileExists[fileName], fileName, ""]
-          ];
 
 NeedToCalculateRGEs[] :=
     NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
@@ -2227,8 +2201,8 @@ FSCheckLoopCorrections[eigenstates_] :=
 
 PrepareSelfEnergies[eigenstates_] :=
     Module[{selfEnergies = {}, selfEnergiesFile},
-           selfEnergiesFile = SearchSelfEnergies[$sarahCurrentOutputMainDir, eigenstates];
-           If[selfEnergiesFile == "",
+           selfEnergiesFile = GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FileExistsQ[selfEnergiesFile],
               Print["Error: self-energy files not found: ", selfEnergiesFile];
               Quit[1];
              ];
@@ -2240,8 +2214,8 @@ PrepareSelfEnergies[eigenstates_] :=
 
 PrepareTadpoles[eigenstates_] :=
     Module[{tadpoles = {}, tadpolesFile},
-           tadpolesFile = SearchTadpoles[$sarahCurrentOutputMainDir, eigenstates];
-           If[tadpolesFile == "",
+           tadpolesFile = GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FilesExist[tadpolesFile],
               Print["Error: tadpole file not found: ", tadpolesFile];
               Quit[1];
              ];
@@ -2256,8 +2230,8 @@ PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
-           nonMixedParticlesFile = SearchUnrotatedParticles[$sarahCurrentOutputMainDir, eigenstates];
-           If[nonMixedParticlesFile == "",
+           nonMixedParticlesFile = GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir, eigenstates];
+           If[!FilesExist[nonMixedParticlesFile],
               Print["Error: file with unrotated fields not found: ", nonMixedParticlesFile];
               Quit[1];
              ];
@@ -2347,8 +2321,8 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
 
 LoadModelFile[file_String] :=
     Module[{},
-           If[FileExists[file],
-              Print["Loading model file ", file];
+           PrintHeadline["Loading FlexibleSUSY model file"];
+           If[FileExistsQ[file],
               Get[file];
               CheckModelFileSettings[];
               ,
@@ -2648,8 +2622,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
             semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale,
-            semiAnalyticScaleInput, semiAnalyticScaleGuess, semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
+            semiAnalyticScaleInput, semiAnalyticScaleGuess,
+            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
             semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}},
+
+           PrintHeadline["Starting FlexibleSUSY"];
+           FSDebugOutput["meta code directory: ", $flexiblesusyMetaDir];
+           FSDebugOutput["config directory   : ", $flexiblesusyConfigDir];
+           FSDebugOutput["templates directory: ", $flexiblesusyTemplateDir];
+
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -2665,7 +2646,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
-           Print["  Model: ", FlexibleSUSY`FSModelName];
+           Print["  Model: ", Style[FlexibleSUSY`FSModelName, FSColor]];
            Print["  Model file: ", OptionValue[InputFile]];
            Print["  Model output directory: ", FSOutputDir];
 
@@ -3137,7 +3118,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               ];
 
            Print["Creating matching class ..."];
-           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+           WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching, massMatrices,
                               {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
                                {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],

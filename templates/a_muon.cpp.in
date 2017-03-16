@@ -208,6 +208,8 @@ double OneLoopFunctionF2C(double);
 double OneLoopFunctionF1N(double);
 double OneLoopFunctionF2N(double);
 
+double get_QED_2L(EvaluationContext& context);
+
 @GMuonMinus2_MuonFunctionPrototypes@
 
 @GMuonMinus2_Diagrams@
@@ -398,6 +400,11 @@ public:
 };
 
 @GMuonMinus2_VertexFunctionData@
+
+double get_MSUSY(const @ModelName@_mass_eigenstates& model)
+{
+@GMuonMinus2_GetMSUSY@
+}
 } // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
@@ -531,6 +538,11 @@ double OneLoopFunctionF2N(double x)
 }
 
 @GMuonMinus2_Definitions@
+
+double get_QED_2L(EvaluationContext& context)
+{
+@GMuonMinus2_QED_2L@
+}
 
 template<class PhotonEmitter, class ExchangeParticle>
 double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
