@@ -49,5 +49,5 @@ Block EXTPAR                 # Input parameters
     2   0.19                 # Lambda(Qin)
     3   0.1                  # LambdaS(Qin)
     4   100                  # Kappa(Qin)
-    5   0.1                  # K1(Qin)
+    5  -100                  # K1(Qin)
     6   0.1                  # K2(Qin)
