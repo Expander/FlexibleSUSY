@@ -151,9 +151,6 @@ ReplaceUnrotatedFields[SelfEnergies`FSHeavyRotatedSelfEnergy[p_,expr__]] :=
            SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]
           ];
 
-ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
-    ConvertSarahTadpoles[tadpoles];
-
 CreateMassEigenstateReplacements[] :=
     Cases[Join[
              Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
@@ -162,30 +159,39 @@ CreateMassEigenstateReplacements[] :=
           HoldPattern[Except[0] -> _]
     ];
 
-ConvertSarahTadpoles[tadpoles_List] :=
-    Module[{result = {}, k, massESReplacements = CreateMassEigenstateReplacements[]},
-           result = (SelfEnergies`Tadpole @@ #)& /@ tadpoles /. massESReplacements;
-           (* append mass eigenstate indices *)
+AppendFieldIndices[lst_List, idx__] :=
+    Module[{k, field, result = lst},
            For[k = 1, k <= Length[result], k++,
                field = GetField[result[[k]]];
                If[GetDimension[field] > 1,
-                  result[[k,1]] = field[SARAH`gO1];
+                  result[[k,1]] = field[idx];
                  ];
               ];
-           result /. SARAH`Mass -> FlexibleSUSY`M
+           result
           ];
 
-ConvertSarahSelfEnergies[selfEnergies_List] :=
-    Module[{result = {}, k, field, fermionSE, left, right, scalar, expr,
-            massESReplacements = CreateMassEigenstateReplacements[], heavySE},
-           result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
-           (* append mass eigenstate indices *)
+(* If the external field has dimension 1, remove it's indices.  For
+   example in the Glu self-energy, terms appear of the form
+
+      Cp[Glu[{gO2}], conj[Sd[{gI1}]], Fd[{gI2}]]
+
+   Since Glu has dimension 1, the C variables Glu is a double and must
+   therefore not be accessed in the form Glu(gO2).
+ *)
+Remove1DimensionalFieldIndices[lst_List] :=
+    Module[{k, field, result = lst},
            For[k = 1, k <= Length[result], k++,
-               field = GetField[result[[k]]];
-               If[GetDimension[field] > 1,
-                  result[[k,1]] = field[SARAH`gO1, SARAH`gO2];
+               field = GetHead[GetField[result[[k]]]];
+               If[GetDimension[field] == 1,
+                  result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
                  ];
               ];
+           result
+          ];
+
+(* decompose fermionic self-energies into L,R,S parts *)
+SplitFermionSelfEnergies[lst_List] :=
+    Module[{result = lst, k, field, fermionSE},
            (* filter out all fermionic self-energies *)
            fermionSE = Cases[result, SelfEnergies`FSSelfEnergy[_, List[__]]];
            result = Select[result, (Head[GetExpression[#]] =!= List)&];
@@ -201,22 +207,26 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PR], expr[[2]]]];
                AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PL], expr[[3]]]];
               ];
-           (* If the external field has dimension 1, remove it's
-              indices.  For example in the Glu self-energy, terms
-              appear of the form
+           result
+          ];
 
-                 Cp[Glu[{gO2}], conj[Sd[{gI1}]], Fd[{gI2}]]
+ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
+    ConvertSarahTadpoles[tadpoles];
 
-              Since Glu has dimension 1, the C variables Glu is a
-              double and must therefore not be accessed in the form
-              Glu(gO2).
-              *)
-           For[k = 1, k <= Length[result], k++,
-               field = GetHead[GetField[result[[k]]]];
-               If[GetDimension[field] == 1,
-                  result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
-                 ];
-              ];
+ConvertSarahTadpoles[tadpoles_List] :=
+    Module[{result, massESReplacements = CreateMassEigenstateReplacements[]},
+           result = (SelfEnergies`Tadpole @@ #)& /@ tadpoles /. massESReplacements;
+           result = AppendFieldIndices[result, SARAH`gO1];
+           result /. SARAH`Mass -> FlexibleSUSY`M
+          ];
+
+ConvertSarahSelfEnergies[selfEnergies_List] :=
+    Module[{result, left, right, scalar, expr,
+            massESReplacements = CreateMassEigenstateReplacements[], heavySE},
+           result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
+           result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
+           result = SplitFermionSelfEnergies[result];
+           result = Remove1DimensionalFieldIndices[result];
            (* Create W, Z self-energy with only SUSY particles in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
