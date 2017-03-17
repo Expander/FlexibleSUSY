@@ -73,7 +73,7 @@ void CLASSNAME::match()
    model->run_to(get_scale());
 
    if (model->get_thresholds() && loop_order)
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order);
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
