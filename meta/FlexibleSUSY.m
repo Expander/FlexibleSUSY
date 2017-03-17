@@ -1537,7 +1537,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 WriteBVPSolverTemplates[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
-WriteMatchingClass[files_List] :=
+WriteSolverMatchingClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
 WriteTwoScaleModelClass[files_List] :=
@@ -3236,11 +3236,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]}}];
 
               Print["Creating two-scale matching class ..."];
-              WriteMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
-                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
-                                 }];
+              WriteSolverMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
+                                        {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
+                                       }];
 
               spectrumGeneratorInputFile = "two_scale_high_scale_spectrum_generator";
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
@@ -3422,11 +3422,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_model.cpp"}]}}];
 
               Print["Creating semi-analytic matching class ..."];
-              WriteMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.hpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}]},
-                                  {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.cpp.in"}],
-                                   FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}]}
-                                 }];
+              WriteSolverMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.hpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}]},
+                                        {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.cpp.in"}],
+                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}]}
+                                       }];
 
               spectrumGeneratorInputFile = "semi_analytic_high_scale_spectrum_generator";
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
