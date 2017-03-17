@@ -372,8 +372,6 @@ GetSolutionBasis[pars_List, subs_List] :=
                      Quit[1];
                     ];
                  ];
-              (* append complex conjugates for complex boundary values *)
-              basis = Join[basis, Conjugate /@ Select[basis, !Parameters`IsRealExpression[#]&]];
              ];
            DeleteDuplicates[basis]
           ];
