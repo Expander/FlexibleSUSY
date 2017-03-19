@@ -317,7 +317,7 @@ GetParticleList[Cp[a__]] := {a};
 
 GetParticleList[Cp[a__][_]] := {a};
 
-IsUnrotated[bar[field_]] := IsUnrotated[field];
+IsUnrotated[SARAH`bar[field_]] := IsUnrotated[field];
 
 IsUnrotated[Susyno`LieGroups`conj[field_]] := IsUnrotated[field];
 

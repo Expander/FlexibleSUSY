@@ -805,7 +805,7 @@ RValueToCFormString[expr_] :=
                     SARAH`Mass2[a_?NumberQ]  :> Sqr[a] /.
                     SARAH`Mass2[a_]          :> Sqr[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`M[a_?NumberQ]   :> a /.
-                    FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
+                    FlexibleSUSY`M[SARAH`bar[a_]] :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
