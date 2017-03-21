@@ -32,7 +32,7 @@ class EWSB_solver {
 public:
    enum Status : int { SUCCESS = 0, FAIL = 1 };
 
-   virtual ~EWSB_solver() {}
+   virtual ~EWSB_solver() = default;
    virtual std::string name() const = 0;
    virtual int solve(const Eigen::VectorXd&) = 0;
    virtual Eigen::VectorXd get_solution() const = 0;
