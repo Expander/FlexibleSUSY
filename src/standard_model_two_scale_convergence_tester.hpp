@@ -38,10 +38,10 @@ public:
    using Scale_getter = Convergence_tester_DRbar<StandardModel<Two_scale>>::Scale_getter;
 
    Standard_model_convergence_tester(StandardModel<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
-   virtual ~Standard_model_convergence_tester();
+   virtual ~Standard_model_convergence_tester() = default;
 
 protected:
-   virtual double max_rel_diff() const;
+   virtual double max_rel_diff() const override;
 };
 
 } // namespace standard_model

@@ -168,10 +168,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    set_thresholds(thresholds_);
 }
 
-   Standard_model::~Standard_model()
-{
-}
-
 void Standard_model::do_force_output(bool flag)
 {
    force_output = flag;

@@ -21,7 +21,6 @@
 namespace flexiblesusy {
 
 Convergence_tester<Two_scale>::~Convergence_tester()
-{
-}
+= default;
 
 } // namespace flexiblesusy

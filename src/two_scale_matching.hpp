@@ -12,7 +12,7 @@ class Two_scale_model;
 template<>
 class Matching<Two_scale> {
 public:
-   virtual ~Matching() {}
+   virtual ~Matching() = default;
    virtual void match() = 0;
    virtual double get_scale() const = 0;
    virtual void set_models(Two_scale_model*, Two_scale_model*) = 0;

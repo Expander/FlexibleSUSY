@@ -39,7 +39,7 @@ public:
    using Scale_getter = std::function<double()>;
 
    Convergence_tester_DRbar(const Model<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
-   virtual ~Convergence_tester_DRbar() {}
+   virtual ~Convergence_tester_DRbar() = default;
 
    virtual bool accuracy_goal_reached() override;
    virtual double get_accuracy_goal() const { return accuracy_goal; }

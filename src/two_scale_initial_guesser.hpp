@@ -28,7 +28,7 @@ class Two_scale;
 template<>
 class Initial_guesser<Two_scale> {
 public:
-   virtual ~Initial_guesser() {}
+   virtual ~Initial_guesser() = default;
    virtual void guess() = 0;
 };
 

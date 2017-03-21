@@ -39,7 +39,7 @@ class Standard_model_low_scale_constraint<Two_scale> : public Constraint<Two_sca
 public:
    Standard_model_low_scale_constraint() = default;
    Standard_model_low_scale_constraint(StandardModel<Two_scale>*, const softsusy::QedQcd&);
-   virtual ~Standard_model_low_scale_constraint();
+   virtual ~Standard_model_low_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override;
    virtual std::string name() const override { return "Standard model low-scale constraint"; }

@@ -26,7 +26,7 @@ namespace flexiblesusy {
 
 class Two_scale_model {
 public:
-   virtual ~Two_scale_model() {}
+   virtual ~Two_scale_model() = default;
    virtual void calculate_spectrum() = 0;
    virtual void clear_problems() {}
    virtual std::string name() const { return "unnamed"; }

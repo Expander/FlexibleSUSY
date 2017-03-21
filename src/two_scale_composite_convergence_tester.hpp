@@ -39,7 +39,7 @@ template<>
 class Composite_convergence_tester<Two_scale> : public Convergence_tester<Two_scale> {
 public:
    Composite_convergence_tester();
-   virtual ~Composite_convergence_tester();
+   virtual ~Composite_convergence_tester() = default;
 
    virtual bool accuracy_goal_reached() override;
    virtual int max_iterations() const override;

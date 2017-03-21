@@ -23,7 +23,7 @@ namespace flexiblesusy {
 
 class Two_scale_running_precision {
 public:
-   virtual ~Two_scale_running_precision() {}
+   virtual ~Two_scale_running_precision() = default;
    virtual double get_precision(int) = 0;
 };
 

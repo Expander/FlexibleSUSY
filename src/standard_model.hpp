@@ -107,7 +107,7 @@ public:
    Standard_model(const Standard_model&) = default;
    Standard_model(Standard_model&&) = default;
 
-   virtual ~Standard_model();
+   virtual ~Standard_model() = default;
 
    Standard_model& operator=(const Standard_model&) = default;
    Standard_model& operator=(Standard_model&&) = default;
@@ -137,10 +137,10 @@ public:
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
 
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
+   virtual Eigen::ArrayXd beta() const override;
+   virtual Eigen::ArrayXd get() const override;
    void print(std::ostream& out = std::cout) const;
-   virtual void set(const Eigen::ArrayXd&);
+   virtual void set(const Eigen::ArrayXd&) override;
 
    Standard_model calc_beta() const;
    void clear();
@@ -569,8 +569,8 @@ private:
 
    class EEWSBStepFailed : public Error {
    public:
-      virtual ~EEWSBStepFailed() {}
-      virtual std::string what() const { return "Could not perform EWSB step."; }
+      virtual ~EEWSBStepFailed() = default;
+      virtual std::string what() const override { return "Could not perform EWSB step."; }
    };
 
    int ewsb_loop_order{2};
