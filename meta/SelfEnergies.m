@@ -214,15 +214,15 @@ ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
     ConvertSarahTadpoles[tadpoles];
 
 ConvertSarahTadpoles[tadpoles_List] :=
-    Module[{result, massESReplacements = CreateMassEigenstateReplacements[]},
-           result = (SelfEnergies`Tadpole @@ #)& /@ tadpoles /. massESReplacements;
+    Module[{result},
+           result = (SelfEnergies`Tadpole @@@ tadpoles) /. CreateMassEigenstateReplacements[];
            result = AppendFieldIndices[result, SARAH`gO1];
            result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
-    Module[{result, heavySE, massESReplacements = CreateMassEigenstateReplacements[]},
-           result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
+    Module[{result, heavySE},
+           result = (SelfEnergies`FSSelfEnergy @@@ selfEnergies) /. CreateMassEigenstateReplacements[];
            result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
            result = SplitFermionSelfEnergies[result];
            result = Remove1DimensionalFieldIndices[result];
