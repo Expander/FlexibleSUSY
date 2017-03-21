@@ -19,6 +19,8 @@
 #ifndef RAII_H
 #define RAII_H
 
+#include <utility>
+
 namespace flexiblesusy {
 
 /**
