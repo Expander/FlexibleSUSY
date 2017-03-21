@@ -45,18 +45,18 @@ private:
 
    class DisabledSQLiteError : Error {
    public:
-      explicit DisabledSQLiteError(std::string msg_) : msg(msg_) {}
-      virtual ~DisabledSQLiteError() {}
-      virtual std::string what() const { return msg; }
+      explicit DisabledSQLiteError(const std::string& msg_) : msg(msg_) {}
+      virtual ~DisabledSQLiteError() = default;
+      std::string what() const override { return msg; }
    private:
       std::string msg;
    };
 
    class SQLiteReadError : Error {
    public:
-      explicit SQLiteReadError(std::string msg_) : msg(msg_) {}
-      virtual ~SQLiteReadError() {}
-      virtual std::string what() const { return msg; }
+      explicit SQLiteReadError(const std::string& msg_) : msg(msg_) {}
+      virtual ~SQLiteReadError() = default;
+      std::string what() const override { return msg; }
    private:
       std::string msg;
    };
