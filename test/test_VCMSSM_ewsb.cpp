@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
 
    BOOST_CHECK_EQUAL(vcmssm_error, 0);
 
-   const std::complex<double> vcmssm_tadpole_hh_1(vcmssm.tadpole_hh(0));
-   const std::complex<double> vcmssm_tadpole_hh_2(vcmssm.tadpole_hh(1));
+   const std::complex<double> vcmssm_tadpole_hh_1(vcmssm.tadpole_hh_1loop(0));
+   const std::complex<double> vcmssm_tadpole_hh_2(vcmssm.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_2), 1.0e-12);
@@ -166,8 +166,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
 
    BOOST_CHECK_EQUAL(cmssm_error, 0);
 
-   const std::complex<double> cmssm_tadpole_hh_1(cmssm.tadpole_hh(0));
-   const std::complex<double> cmssm_tadpole_hh_2(cmssm.tadpole_hh(1));
+   const std::complex<double> cmssm_tadpole_hh_1(cmssm.tadpole_hh_1loop(0));
+   const std::complex<double> cmssm_tadpole_hh_2(cmssm.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_2), 1.0e-12);
@@ -205,8 +205,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop_negative_Mu )
 
    BOOST_CHECK_EQUAL(vcmssm_error, 0);
 
-   const std::complex<double> vcmssm_tadpole_hh_1(vcmssm.tadpole_hh(0));
-   const std::complex<double> vcmssm_tadpole_hh_2(vcmssm.tadpole_hh(1));
+   const std::complex<double> vcmssm_tadpole_hh_1(vcmssm.tadpole_hh_1loop(0));
+   const std::complex<double> vcmssm_tadpole_hh_2(vcmssm.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(vcmssm_tadpole_hh_2), 1.0e-12);
@@ -241,8 +241,8 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop_negative_Mu )
 
    BOOST_CHECK_EQUAL(cmssm_error, 0);
 
-   const std::complex<double> cmssm_tadpole_hh_1(cmssm.tadpole_hh(0));
-   const std::complex<double> cmssm_tadpole_hh_2(cmssm.tadpole_hh(1));
+   const std::complex<double> cmssm_tadpole_hh_1(cmssm.tadpole_hh_1loop(0));
+   const std::complex<double> cmssm_tadpole_hh_2(cmssm.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(cmssm_tadpole_hh_2), 1.0e-12);

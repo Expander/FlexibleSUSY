@@ -391,53 +391,54 @@ DeclareFieldIndices[field_[1]]  := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[ind_]] :=
     "int " <> ToValidCSymbolString[ind];
 
-CreateFunctionNamePrefix[field_[idx1_,idx2_]] := CreateFunctionNamePrefix[field];
-CreateFunctionNamePrefix[field_[PL]]          := CreateFunctionNamePrefix[field] <> "_PL";
-CreateFunctionNamePrefix[field_[PR]]          := CreateFunctionNamePrefix[field] <> "_PR";
-CreateFunctionNamePrefix[field_[1]]           := CreateFunctionNamePrefix[field] <> "_1";
-CreateFunctionNamePrefix[field_[idx_]]        := CreateFunctionNamePrefix[field];
-CreateFunctionNamePrefix[field_]              := ToValidCSymbolString[field];
+ExtractChiraility[field_[idx1_,idx2_]] := ExtractChiraility[field];
+ExtractChiraility[field_[PL]]          := "_PL";
+ExtractChiraility[field_[PR]]          := "_PR";
+ExtractChiraility[field_[1]]           := "_1";
+ExtractChiraility[field_[idx_]]        := ExtractChiraility[field];
+ExtractChiraility[field_]              := "";
 
-CreateSelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field];
+ExtractFieldName[field_[idx1_,idx2_]] := ExtractFieldName[field];
+ExtractFieldName[field_[PL]]          := ExtractFieldName[field];
+ExtractFieldName[field_[PR]]          := ExtractFieldName[field];
+ExtractFieldName[field_[1]]           := ExtractFieldName[field];
+ExtractFieldName[field_[idx_]]        := ExtractFieldName[field];
+ExtractFieldName[field_]              := ToValidCSymbolString[field];
 
-CreateHeavySelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy";
+CreateSelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field];
 
-CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy_rotated";
+CreateHeavySelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field] <> "_heavy";
 
-CreateTadpoleFunctionName[field_] :=
-    "tadpole_" <> CreateFunctionNamePrefix[field];
+CreateHeavyRotatedSelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field] <> "_heavy_rotated";
 
-CreateNLoopTadpoleFunctionName[field_, loop_] :=
-    CreateTadpoleFunctionName[field] <> "_" <> ToString[loop] <> "loop";
+CreateTadpoleFunctionName[field_, loops_] :=
+    "tadpole_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field];
 
-CreateNLoopSelfEnergyFunctionName[field_, loop_] :=
-    CreateSelfEnergyFunctionName[field] <> "_" <> ToString[loop] <> "loop";
+CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy, loops_] :=
+    CreateSelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
-    CreateSelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy, loops_] :=
+    CreateHeavySelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
-    CreateHeavySelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy, loops_] :=
+    CreateHeavyRotatedSelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
-    CreateHeavyRotatedSelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[tadpole_SelfEnergies`Tadpole, loops_] :=
+    CreateTadpoleFunctionName[GetField[tadpole], loops];
 
-CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
-    CreateTadpoleFunctionName[GetField[tadpole]];
-
-CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
-    CreateFunctionName[tadpole] <>
+CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole, loops_] :=
+    CreateFunctionName[tadpole, loops] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
 
-CreateFunctionPrototype[selfEnergy_] :=
-    CreateFunctionName[selfEnergy] <>
+CreateFunctionPrototype[selfEnergy_, loops_] :=
+    CreateFunctionName[selfEnergy, loops] <>
     "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
-CreateFunctionPrototypeMatrix[s_] :=
-    CreateFunctionName[s] <> "(double p) const";
+CreateFunctionPrototypeMatrix[s_, loops_] :=
+    CreateFunctionName[s, loops] <> "(double p) const";
 
 ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
     StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
@@ -448,7 +449,7 @@ ExpressionToStringSequentially[expr_, heads_, result_String] :=
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
     Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
-           functionName = CreateFunctionPrototype[nPointFunction];
+           functionName = CreateFunctionPrototype[nPointFunction, 1];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
@@ -470,7 +471,7 @@ CreateNPointFunctionMatrix[_SelfEnergies`Tadpole] := { "", "" };
 FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
     Module[{field = GetField[nPointFunction], dim, name},
            dim = GetDimension[field];
-           name = CreateSelfEnergyFunctionName[field];
+           name = CreateSelfEnergyFunctionName[field, 1];
            "\
 for (int i = 0; i < " <> ToString[dim] <> "; i++)
    for (int k = i; k < " <> ToString[dim] <> "; k++)
@@ -483,7 +484,7 @@ Hermitianize(" <> sym <> ");
 FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
     Module[{field = GetField[nPointFunction], dim, name},
            dim = GetDimension[field];
-           name = CreateSelfEnergyFunctionName[field];
+           name = CreateSelfEnergyFunctionName[field, 1];
            "\
 for (int i = 0; i < " <> ToString[dim] <> "; i++)
    for (int k = 0; k < " <> ToString[dim] <> "; k++)
@@ -504,7 +505,7 @@ CreateNPointFunctionMatrix[nPointFunction_] :=
     Module[{dim, functionName, type, prototype, def},
            dim = GetDimension[GetField[nPointFunction]];
            If[dim == 1, Return[{ "", "" }]];
-           functionName = CreateFunctionPrototypeMatrix[nPointFunction];
+           functionName = CreateFunctionPrototypeMatrix[nPointFunction, 1];
            type = CConversion`CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]];
            prototype = type <> " " <> functionName <> ";\n";
            def = "
@@ -549,7 +550,7 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-"
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                head = CConversion`ToValidCSymbolString[higgsAndIdx[[v,3]]];
-               functionName = CreateTadpoleFunctionName[field];
+               functionName = CreateTadpoleFunctionName[field, 1];
                If[TreeMasses`GetDimension[field] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          head <> "(" <> struct <> functionName <> "());\n";
@@ -564,7 +565,7 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-"
 
 FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
-           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
+           functionName = CreateTadpoleFunctionName[higgsBoson,2];
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
            body = "const auto tadpole_2l(" <> struct <> functionName <> "());\n";
@@ -793,7 +794,7 @@ CreateTwoLoopTadpoles[higgsBoson_, model_String] :=
     Module[{prototype, function, functionName, dim, dimStr, cType},
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
-           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
+           functionName = CreateTadpoleFunctionName[higgsBoson,2];
            cType = GetTadpoleVectorCType[dim];
            prototype = cType <> " " <> functionName <> "() const;\n";
            body = GetTwoLoopTadpoleCorrections[model];
@@ -1240,7 +1241,7 @@ CreateNLoopSelfEnergy[particle_, model_String, loop_] :=
     Module[{prototype, function, functionName, dim, dimStr, cType},
            dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
            dimStr = ToString[dim];
-           functionName = CreateNLoopSelfEnergyFunctionName[particle,loop];
+           functionName = CreateSelfEnergyFunctionName[particle,loop];
            cType = CConversion`CreateCType[TreeMasses`GetMassMatrixType[particle]];
            prototype = cType <> " " <> functionName <> "() const;\n";
            body = GetNLoopSelfEnergyCorrections[particle, model, loop];

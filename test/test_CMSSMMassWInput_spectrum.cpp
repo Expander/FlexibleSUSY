@@ -71,9 +71,9 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
 
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+   model->set_vd((2*mZ_run)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
       )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+   model->set_vu((2*mZ_run*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
       TanBeta))));
 
    calculate_DRbar_yukawa_couplings();
@@ -179,9 +179,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+   model->set_vd((2*mZ_run)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
       )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+   model->set_vu((2*mZ_run*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
       TanBeta))));
 
    // Now calculate the gauge couplings using
@@ -242,12 +242,12 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = qedqcd.displayPoleMZ();
-   double MWDRbar = qedqcd.displayPoleMW();
+   mZ_run = qedqcd.displayPoleMZ();
+   mW_run = qedqcd.displayPoleMW();
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_MVZ_DRbar(qedqcd.displayPoleMZ());
-      MWDRbar = model->calculate_MVWm_DRbar(qedqcd.displayPoleMW());
+      mZ_run = model->calculate_MVZ_DRbar(qedqcd.displayPoleMZ());
+      mW_run = model->calculate_MVWm_DRbar(qedqcd.displayPoleMW());
    }
 
    const double AlphaS = alpha_s_drbar;
@@ -324,9 +324,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
    BOOST_REQUIRE(mz_pole > 0.);
    BOOST_CHECK_EQUAL(scale, mz_pole);
 
-   const double pizztMZ = Re(model->self_energy_VZ(mz_pole));
-   const double piwwt0  = Re(model->self_energy_VWm(0));
-   const double piwwtMW = Re(model->self_energy_VWm(mw_pole));
+   const double pizztMZ = Re(model->self_energy_VZ_1loop(mz_pole));
+   const double piwwt0  = Re(model->self_energy_VWm_1loop(0));
+   const double piwwtMW = Re(model->self_energy_VWm_1loop(mw_pole));
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale = scale;
@@ -348,9 +348,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
    // check corrected self-energies
    {
       model->MFu(2) = mt_pole;
-      const double pizztMZ_check = Re(model->self_energy_VZ(mz_pole));
-      const double piwwt0_check  = Re(model->self_energy_VWm(0));
-      const double piwwtMW_check = Re(model->self_energy_VWm(mw_pole));
+      const double pizztMZ_check = Re(model->self_energy_VZ_1loop(mz_pole));
+      const double piwwt0_check  = Re(model->self_energy_VWm_1loop(0));
+      const double piwwtMW_check = Re(model->self_energy_VWm_1loop(mw_pole));
       model->MFu(2) = mt_drbar;
 
       BOOST_CHECK_CLOSE_FRACTION(pizztMZ_check, pizztMZ_corrected, 1.0e-10);

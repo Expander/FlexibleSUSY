@@ -197,10 +197,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles_real_limit )
 
    m.calculate_DRbar_masses();
 
-   BOOST_CHECK_GT(Abs(m.tadpole_hh(0)), precision);
-   BOOST_CHECK_GT(Abs(m.tadpole_hh(1)), precision);
-   BOOST_CHECK_SMALL(Abs(m.tadpole_hh(2)), precision);
-   BOOST_CHECK_SMALL(Abs(m.tadpole_hh(3)), precision);
+   BOOST_CHECK_GT(Abs(m.tadpole_hh_1loop(0)), precision);
+   BOOST_CHECK_GT(Abs(m.tadpole_hh_1loop(1)), precision);
+   BOOST_CHECK_SMALL(Abs(m.tadpole_hh_1loop(2)), precision);
+   BOOST_CHECK_SMALL(Abs(m.tadpole_hh_1loop(3)), precision);
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
@@ -230,19 +230,19 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
 
    m.calculate_DRbar_masses();
 
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(0))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(1))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(2))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(3))), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(0)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(1)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(2)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(3)), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(0))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(1))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(2))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(3))), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(0)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(1)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(2)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(3)), precision);
 
    const double vu = m.get_vu(), vd = m.get_vd();
 
    // check relation between one-loop tadpoles 3 and 4
-   BOOST_CHECK_CLOSE_FRACTION(Re(m.tadpole_hh(2)), (vu/vd) * Re(m.tadpole_hh(3)), 1e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.tadpole_hh_1loop(2)), (vu/vd) * Re(m.tadpole_hh_1loop(3)), 1e-10);
 
    const int neq = CMSSMCPV<Two_scale>::number_of_ewsb_equations;
    double tadpole[neq] = { 0. };
