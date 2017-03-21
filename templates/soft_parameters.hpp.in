@@ -38,7 +38,7 @@ public:
    @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
    @ModelName@_soft_parameters(const @ModelName@_soft_parameters&) = default;
    @ModelName@_soft_parameters(@ModelName@_soft_parameters&&) = default;
-   virtual ~@ModelName@_soft_parameters() {}
+   virtual ~@ModelName@_soft_parameters() = default;
    @ModelName@_soft_parameters& operator=(const @ModelName@_soft_parameters&) = default;
    @ModelName@_soft_parameters& operator=(@ModelName@_soft_parameters&&) = default;
 
