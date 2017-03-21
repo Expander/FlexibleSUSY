@@ -140,16 +140,15 @@ std::complex<double> pseudoscalar_diphoton_fermion_loop(
 std::complex<double> linear_interpolation(
    double x, const std::map<double,std::complex<double> >& data)
 {
-   std::map<double,std::complex<double> >::const_iterator right
-      = data.upper_bound(x);
+   auto right = data.upper_bound(x);
 
    if (right == data.begin()) {
       ++right;
    } else if (right == data.end()) {
       --right;
    }
-   std::map<double,std::complex<double> >::const_iterator left
-      = right;
+
+   auto left = right;
    --left;
 
    const double x_left = (x - right->first) / (left->first - right->first);
@@ -161,11 +160,9 @@ std::complex<double> linear_interpolation(
 std::complex<double> quadratic_interpolation(
    double x, const std::map<double,std::complex<double> >& data)
 {
-   std::map<double,std::complex<double> >::const_iterator right
-      = data.upper_bound(x);
+   auto right = data.upper_bound(x);
+   auto begin = data.begin();
 
-   std::map<double,std::complex<double> >::const_iterator begin
-      = data.begin();
    if (right == begin) {
       ++right;
       ++right;
@@ -175,11 +172,9 @@ std::complex<double> quadratic_interpolation(
       --right;
    }
 
-   std::map<double,std::complex<double> >::const_iterator center
-      = right;
+   auto center = right;
    --center;
-   std::map<double,std::complex<double> >::const_iterator left
-      = center;
+   auto left = center;
    --left;
 
    const double x_left = (x - center->first) * (x - right->first)
