@@ -2,6 +2,8 @@
 BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`", "Utils`"}];
 
 FSSelfEnergy::usage="self-energy head";
+FSHeavySelfEnergy::usage="head for self-energy w/o BSM particles";
+FSHeavyRotatedSelfEnergy::usage="head for self-energy w/o BSM particles in mass eigenstate basis";
 Tadpole::usage="tadpole head";
 
 GetField::usage="Returns field in self-energy or tadpole";
@@ -136,20 +138,19 @@ RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
            head[p,strippedExpr]
           ];
 
-ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr_]] :=
+ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr__]] :=
     SelfEnergies`FSSelfEnergy[p,expr];
 
-ReplaceUnrotatedFields[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
+ReplaceUnrotatedFields[SelfEnergies`FSHeavySelfEnergy[p_,expr__]] :=
     SelfEnergies`FSHeavySelfEnergy[p,expr];
 
 ReplaceUnrotatedFields[SelfEnergies`FSHeavyRotatedSelfEnergy[p_,expr__]] :=
-    Module[{result},
-           result = expr /. {
-               SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
-               SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
-                            };
-           SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]
-          ];
+    SelfEnergies`FSHeavyRotatedSelfEnergy[p, Sequence @@ (
+        { expr } /. {
+            SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
+            SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
+        }
+    )];
 
 CreateMassEigenstateReplacements[] :=
     Cases[Join[
