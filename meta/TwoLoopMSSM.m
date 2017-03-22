@@ -562,9 +562,7 @@ resmt = Get[FileNameJoin[{"meta", "MSSM", "mt.m"}]];
 
 GetDeltaMPoleOverMRunningMSSMSQCDDRbar2L[] :=
     With[{as = g3^2/(4 Pi)},
-         (as/(4 Pi))^2 resmt /. {
-             Log[x_] :> Log[x/Q^2] (* TODO: Is this correct? *)
-         } //. {
+         (as/(4 Pi))^2 resmt //. {
              zt2 -> Zeta[2], zt3 -> Zeta[3],
              mmt -> mt^2, mmb -> mb^2,
              mgl -> mg, mmgl -> mgl^2,
