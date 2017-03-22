@@ -11,7 +11,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/composite_convergence_tester.cpp \
-		$(DIR)/convergence_tester.cpp \
 		$(DIR)/database.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \

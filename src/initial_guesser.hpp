@@ -23,7 +23,7 @@ namespace flexiblesusy {
 
 class Initial_guesser {
 public:
-   virtual ~Initial_guesser() {}
+   virtual ~Initial_guesser() = default;
    virtual void guess() = 0;
 };
 
