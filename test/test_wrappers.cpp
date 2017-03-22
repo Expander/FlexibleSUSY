@@ -678,8 +678,21 @@ BOOST_AUTO_TEST_CASE(test_Unit)
    BOOST_CHECK_EQUAL((Unit<3,1>())(1), 1.);
    BOOST_CHECK_EQUAL((Unit<3,1>())(2), 0.);
 
+   BOOST_CHECK_EQUAL(Unit(2,0)(0), 1.);
+   BOOST_CHECK_EQUAL(Unit(2,0)(1), 0.);
+   BOOST_CHECK_EQUAL(Unit(2,1)(0), 0.);
+   BOOST_CHECK_EQUAL(Unit(2,1)(1), 1.);
+   BOOST_CHECK_EQUAL(Unit(3,1)(0), 0.);
+   BOOST_CHECK_EQUAL(Unit(3,1)(1), 1.);
+   BOOST_CHECK_EQUAL(Unit(3,1)(2), 0.);
+
    BOOST_CHECK_EQUAL((Unit<2,2,0,0>())(0,0), 1.);
    BOOST_CHECK_EQUAL((Unit<2,2,0,0>())(1,0), 0.);
    BOOST_CHECK_EQUAL((Unit<2,2,0,0>())(0,1), 0.);
    BOOST_CHECK_EQUAL((Unit<2,2,0,0>())(1,1), 0.);
+
+   BOOST_CHECK_EQUAL(Unit(2,2,0,0)(0,0), 1.);
+   BOOST_CHECK_EQUAL(Unit(2,2,0,0)(1,0), 0.);
+   BOOST_CHECK_EQUAL(Unit(2,2,0,0)(0,1), 0.);
+   BOOST_CHECK_EQUAL(Unit(2,2,0,0)(1,1), 0.);
 }

@@ -742,6 +742,15 @@ constexpr Eigen::Matrix<double,N,1> Unit()
    return Eigen::Matrix<double,N,1>::Unit(i);
 }
 
+/// unit vector of length N into direction i
+inline Eigen::VectorXd Unit(int N, int i)
+{
+   Eigen::VectorXd v = Eigen::VectorXd::Zero(N);
+   v(i) = 1;
+
+   return v;
+}
+
 /// unit matrix projector of size MxN into direction i, j
 template <int M, int N, int i, int j>
 constexpr Eigen::Matrix<double,M,N> Unit()
@@ -750,6 +759,15 @@ constexpr Eigen::Matrix<double,M,N> Unit()
    proj(i,j) = 1;
 
    return proj;
+}
+
+/// unit matrix projector of size MxN into direction i, j
+inline Eigen::MatrixXd Unit(int M, int N, int i, int j)
+{
+   Eigen::MatrixXd m = Eigen::MatrixXd::Zero(M,N);
+   m(i,j) = 1;
+
+   return m;
 }
 
 /// step function (0 for x < 0, 1 otherwise)
