@@ -1164,8 +1164,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-"];
-           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+"];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithLoopTadpoles[1, higgsToEWSBEqAssociation, "tadpole", "-"];
+           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithLoopTadpoles[1, higgsToEWSBEqAssociation, "tadpole", "+"];
            divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,

@@ -26,7 +26,7 @@ function name for a given field";
 CreateHeavyRotatedSelfEnergyFunctionName::usage="creates heavy rotated
 self-energy function name for a given field";
 
-FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
+FillArrayWithLoopTadpoles::usage="add loop tadpoles to array"
 
 FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
 
@@ -544,13 +544,13 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            {prototypes, defs}
           ];
 
-FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
+FillArrayWithLoopTadpoles[loopLevel_, higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body = "", v, field, idx, head, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                head = CConversion`ToValidCSymbolString[higgsAndIdx[[v,3]]];
-               functionName = CreateTadpoleFunctionName[field, 1];
+               functionName = CreateTadpoleFunctionName[field, loopLevel];
                If[TreeMasses`GetDimension[field] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          head <> "(" <> struct <> functionName <> "());\n";
