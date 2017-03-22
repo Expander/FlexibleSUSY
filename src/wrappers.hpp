@@ -737,13 +737,20 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
 
 /// unit vector of length N into direction i
 template <int N, int i>
-constexpr Eigen::Matrix<double,N,1> Unit()
+constexpr Eigen::Matrix<double,N,1> UnitVector()
 {
    return Eigen::Matrix<double,N,1>::Unit(i);
 }
 
 /// unit vector of length N into direction i
-inline Eigen::VectorXd Unit(int N, int i)
+template <int N>
+constexpr Eigen::Matrix<double,N,1> UnitVector(int i)
+{
+   return Eigen::Matrix<double,N,1>::Unit(i);
+}
+
+/// unit vector of length N into direction i
+inline Eigen::VectorXd UnitVector(int N, int i)
 {
    Eigen::VectorXd v = Eigen::VectorXd::Zero(N);
    v(i) = 1;
@@ -751,9 +758,19 @@ inline Eigen::VectorXd Unit(int N, int i)
    return v;
 }
 
-/// unit matrix projector of size MxN into direction i, j
+/// matrix projector of size MxN into direction i, j
 template <int M, int N, int i, int j>
-constexpr Eigen::Matrix<double,M,N> Unit()
+constexpr Eigen::Matrix<double,M,N> MatrixProjector()
+{
+   Eigen::Matrix<double,M,N> proj(Eigen::Matrix<double,M,N>::Zero());
+   proj(i,j) = 1;
+
+   return proj;
+}
+
+/// matrix projector of size MxN into direction i, j
+template <int M, int N>
+constexpr Eigen::Matrix<double,M,N> MatrixProjector(int i, int j)
 {
    Eigen::Matrix<double,M,N> proj(Eigen::Matrix<double,M,N>::Zero());
    proj(i,j) = 1;
@@ -762,7 +779,7 @@ constexpr Eigen::Matrix<double,M,N> Unit()
 }
 
 /// unit matrix projector of size MxN into direction i, j
-inline Eigen::MatrixXd Unit(int M, int N, int i, int j)
+inline Eigen::MatrixXd MatrixProjector(int M, int N, int i, int j)
 {
    Eigen::MatrixXd m = Eigen::MatrixXd::Zero(M,N);
    m(i,j) = 1;
