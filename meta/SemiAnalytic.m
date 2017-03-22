@@ -414,12 +414,17 @@ GetScalarMassesSolutions[scalarMasses_List, boundaryConditionSubs_List, dimOneSo
            GetLinearSystemSolutions[scalarMasses, boundaryConditionSubs, extraTerms]
           ];
 
+(* dimensionful SUSY parameters have trivial semi-analytic solutions *)
+GetSUSYSemiAnalyticSolutions[susyBetas_List] :=
+    Module[{pars},
+           pars = Parameters`StripIndices[#[[1]]]& /@ susyBetas;
+           pars = Flatten[(# /. GetParameterExpansionRules[#])& /@ pars];
+           SemiAnalyticSolution[#, pars]& /@ pars
+          ];
+
 GetSoftBilinearsSolutions[softBilinears_List, boundaryConditionSubs_List, dimOneSolns_List] :=
     Module[{susyBilinears, extraTerms},
-           susyBilinears = Parameters`StripIndices[#[[1]]]& /@ SARAH`BetaMuij;
-           susyBilinears = Flatten[(# /. GetParameterExpansionRules[#])& /@ susyBilinears];
-           (* dimensionful SUSY parameters have trivial semi-analytic solutions *)
-           susyBilinears = SemiAnalyticSolution[#, {#}]& /@ susyBilinears;
+           susyBilinears = GetSUSYSemiAnalyticSolutions[SARAH`BetaMuij];
            extraTerms = {{{dimOneSolns, 1}, {susyBilinears, 1}}};
            GetLinearSystemSolutions[softBilinears, boundaryConditionSubs, extraTerms]
           ];
@@ -427,12 +432,8 @@ GetSoftBilinearsSolutions[softBilinears_List, boundaryConditionSubs_List, dimOne
 GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSolns_List,
                         diracSolns_List, scalarMassesSolns_List, softBilinearsSolns_List] :=
     Module[{susyBilinears, susyLinears, extraTerms},
-           susyBilinears = Parameters`StripIndices[#[[1]]]& /@ SARAH`BetaMuij;
-           susyBilinears = Flatten[(# /. GetParameterExpansionRules[#])& /@ susyBilinears];
-           susyBilinears = SemiAnalyticSolution[#, {#}]& /@ susyBilinears;
-           susyLinears = Parameters`StripIndices[#[[1]]]& /@ SARAH`BetaLi;
-           susyLinears = Flatten[(# /. GetParameterExpansionRules[#])& /@ susyLinears];
-           susyLinears = SemiAnalyticSolution[#, {#}]& /@ susyLinears;
+           susyBilinears = GetSUSYSemiAnalyticSolutions[SARAH`BetaMuij];
+           susyLinears = GetSUSYSemiAnalyticSolutions[SARAH`BetaLi];
            extraTerms = {{{susyLinears, 1}, {dimOneSolns, 1}},
                          {{susyBilinears, 2}, {dimOneSolns, 1}},
                          {{susyBilinears, 1}, {softBilinearsSolns, 1}},
