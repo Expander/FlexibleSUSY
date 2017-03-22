@@ -669,7 +669,7 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define PROJECTOR Proj
 #define DEFINE_PROJECTOR(M,N,X,Y)                                       \
    Eigen::Matrix<double,M,N> Proj(Eigen::Matrix<double,M,N>::Zero());   \
-   Proj(X-1,Y-1) = 1;
+   Proj((X)-1,(Y)-1) = 1;
 
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
