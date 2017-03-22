@@ -510,7 +510,7 @@ void SLHA_io::set_mixing_matrices(const standard_model::Standard_model_physical&
 
 void SLHA_io::set_spectrum(const standard_model::Standard_model& model)
 {
-   const auto physical = model.get_physical();
+   const auto& physical = model.get_physical();
 
    set_model_parameters(model);
    set_mass(physical);
