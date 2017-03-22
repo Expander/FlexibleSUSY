@@ -376,6 +376,9 @@ GetSolutionBasis[pars_List, subs_List] :=
            DeleteDuplicates[basis]
           ];
 
+GetComplexConjugateBasis[SemiAnalyticSolution[par_, basis_List]] :=
+    SemiAnalyticSolution[par, (If[Parameters`IsRealExpression[#], #, Conjugate[#]])& /@ basis];
+
 ListAllTermsOfForm[termTypes_List] :=
     Module[{i, sets = {}, possibleTerms, terms = {}},
            For[i = 1, i <= Length[termTypes], i++,
@@ -403,7 +406,11 @@ GetBoundaryConditionsFor[pars_List, subs_List] := Select[subs, MemberQ[pars, Par
 
 GetScalarMassesSolutions[scalarMasses_List, boundaryConditionSubs_List, dimOneSolns_List] :=
     Module[{extraTerms},
-           extraTerms = {{{dimOneSolns, 2}}};
+           If[SARAH`SupersymmetricModel,
+              extraTerms = {{{dimOneSolns, 1}, {GetComplexConjugateBasis /@ dimOneSolns, 1}}};,
+              extraTerms = {{{dimOneSolns, 2}}, {{GetComplexConjugateBasis /@ dimOneSolns, 2}},
+                            {{dimOneSolns, 1}, {GetComplexConjugateBasis /@ dimOneSolns, 1}}};
+             ];
            GetLinearSystemSolutions[scalarMasses, boundaryConditionSubs, extraTerms]
           ];
 
@@ -428,15 +435,16 @@ GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSoln
            susyLinears = SemiAnalyticSolution[#, {#}]& /@ susyLinears;
            extraTerms = {{{susyLinears, 1}, {dimOneSolns, 1}},
                          {{susyBilinears, 2}, {dimOneSolns, 1}},
-                         {{susyBilinears, 1}, {dimOneSolns, 2}},
-                         {{susyBilinears, 1}, {scalarMassesSolns, 1}},
                          {{susyBilinears, 1}, {softBilinearsSolns, 1}},
-                         {{softBilinearsSolns, 1}, {dimOneSolns, 1}}
+                         {{GetComplexConjugateBasis /@ susyBilinears, 1},
+                          {dimOneSolns, 1}, {GetComplexConjugateBasis /@ dimOneSolns, 1}},
+                         {{GetComplexConjugateBasis /@ susyBilinears, 1}, {scalarMassesSolns, 1}},
+                         {{GetComplexConjugateBasis /@ softBilinearsSolns, 1}, {dimOneSolns, 1}}
                         };
            If[diracSolns =!= {},
               extraTerms = Join[extraTerms,
                                 {{{diracSolns, 1}, {scalarMassesSolns, 1}},
-                                 {{diracSolns, 2}, {dimOneSolns, 1}},
+                                 {{GetComplexConjugateBasis /@ diracSolns, 2}, {dimOneSolns, 1}},
                                  {{diracSolns, 2}, {susyBilinears, 1}}
                                 }
                                ];
