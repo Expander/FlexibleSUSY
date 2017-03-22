@@ -178,13 +178,15 @@ InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
 ExcludeDiagrams[diagrs_List, excludeif_:(False &)] := Select[diagrs, !Or @@ (excludeif /@ (Cases[#, Rule[Internal[_], x_] :> x, Infinity])) &];
 
 GenerateDiagramsWave[particle_] :=
-    Module[{diagrs},
-           diagrs = SARAH`InsFields[{{C[particle, SARAH`FieldToInsert[1], SARAH`AntiField[SARAH`FieldToInsert[2]]]},
-                                    {SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2], SARAH`External[1] -> particle}}];
+    Module[{couplings, insertrules, topo, diagrs},
+           couplings = {C[SARAH`External[1], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]]};
+           insertrules = {SARAH`External[1] -> particle, SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2]};
+           topo = {couplings /. insertrules, insertrules};
+           diagrs = SARAH`InsFields[topo];
            (*add indices for later summation*)
            diagrs = diagrs /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
            diagrs = diagrs /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
-           diagrs = ({{C[SARAH`External[1], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]]} /. #[[2]], #[[2]]}) & /@ diagrs;
+           diagrs = ({couplings /. #[[2]], #[[2]]}) & /@ diagrs;
            diagrs
           ];
 
