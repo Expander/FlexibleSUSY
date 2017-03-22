@@ -21,6 +21,7 @@
 
 #include "error.hpp"
 #include <cstddef>
+#include <ostream>
 #include <string>
 
 namespace flexiblesusy {
