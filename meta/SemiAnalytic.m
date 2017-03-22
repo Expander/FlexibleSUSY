@@ -350,7 +350,7 @@ GetCoefficientAndTerm[monomial_, dimZeroPars_List] :=
            {coeff, term}
           ];
 
-GetSolutionBasis[pars_List, subs_List] :=
+GetSolutionBasis[pars_List, subs_List, addConjugateTerms_:False] :=
     Module[{i, dimZeroPars, dimensions, expr,
             monomials = {}, coeff, term, basis = {}},
            If[pars =!= {},
@@ -372,6 +372,9 @@ GetSolutionBasis[pars_List, subs_List] :=
                      Quit[1];
                     ];
                  ];
+              If[addConjugateTerms,
+                 basis = Join[basis, Conjugate /@ Select[basis, !Parameters`IsRealExpression[#]&]];
+                ];
              ];
            DeleteDuplicates[basis]
           ];
@@ -392,9 +395,9 @@ ListAllTermsOfForm[termTypes_List] :=
            DeleteDuplicates[terms]
           ];
 
-GetLinearSystemSolutions[pars_List, subs_List, nonHomogeneousTerms_List:{}] :=
+GetLinearSystemSolutions[pars_List, subs_List, nonHomogeneousTerms_List:{}, addConjugateTerms_:False] :=
     Module[{basis, solns = {}},
-           basis = GetSolutionBasis[pars, subs];
+           basis = GetSolutionBasis[pars, subs, addConjugateTerms];
            solns = SemiAnalyticSolution[#, basis]& /@ pars;
            If[nonHomogeneousTerms =!= {},
               solns = SemiAnalyticSolution[#[[1]], Join[#[[2]], ListAllTermsOfForm[nonHomogeneousTerms]]]& /@ solns;
@@ -471,7 +474,7 @@ GetSemiAnalyticSolutions[settings_List] :=
               dimOnePars = Complement[dimOnePars, diracPars];
              ];
            dimOneBCs = GetBoundaryConditionsFor[dimOnePars, boundaryValSubs];
-           dimOneSolns = GetLinearSystemSolutions[dimOnePars, dimOneBCs];
+           dimOneSolns = GetLinearSystemSolutions[dimOnePars, dimOneBCs, !SARAH`SupersymmetricModel];
            result = Join[result, dimOneSolns];
 
            If[diracPars =!= {},
