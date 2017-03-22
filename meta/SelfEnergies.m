@@ -560,7 +560,7 @@ FillArrayWithLoopTadpoles[loopLevel_, higgsAndIdx_List, arrayName_String, sign_S
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
               ];
-           Return[IndentText[body]];
+           body
           ];
 
 FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
@@ -573,7 +573,7 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", str
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                       "tadpole_2l(" <> ToString[v-1] <> ");\n";
               ];
-           Return[IndentText[IndentText[body]]];
+           body
           ];
 
 DivideTadpoleByVEV[higgsAndVEV_List, arrayName_String] :=
