@@ -1099,7 +1099,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             printMasses = "", printMixingMatrices = "",
             getPhysical = "", setPhysical = "",
             getMasses = "", setMasses = "",
-            masses, mixingMatrices, oneLoopTadpoles,
+            masses, mixingMatrices,
             dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
             clearPhases = "", clearExtraParameters = "",
@@ -1163,7 +1163,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                     " parameters: ", parametersFixedByEWSB];
              ];
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
-           oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithLoopTadpoles[1, higgsToEWSBEqAssociation, "tadpole", "-"];
            calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithLoopTadpoles[1, higgsToEWSBEqAssociation, "tadpole", "+"];
            divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
@@ -1213,7 +1212,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            loopMassesPrototypes         = LoopMasses`CreateOneLoopPoleMassPrototypes[];
            (* If you want to add tadpoles, call the following routine like this:
-              CreateOneLoopPoleMassFunctions[diagonalizationPrecision, oneLoopTadpoles, vevs];
+              CreateOneLoopPoleMassFunctions[diagonalizationPrecision, Cases[nPointFunctions, SelfEnergies`Tadpole[___]], vevs];
               *)
            loopMassesFunctions          = LoopMasses`CreateOneLoopPoleMassFunctions[diagonalizationPrecision, {}, {}];
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
