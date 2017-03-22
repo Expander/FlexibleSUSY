@@ -711,7 +711,7 @@ IsRealExpression[Conjugate[expr_]]  := IsRealExpression[expr];
 IsRealExpression[Transpose[expr_]]  := IsRealExpression[expr];
 IsRealExpression[SARAH`Tp[expr_]]   := IsRealExpression[expr];
 IsRealExpression[SARAH`Adj[expr_]]  := IsRealExpression[expr];
-IsRealExpression[bar[expr_]]        := IsRealExpression[expr];
+IsRealExpression[SARAH`bar[expr_]]  := IsRealExpression[expr];
 
 IsRealExpression[expr_Symbol] := IsRealParameter[expr];
 

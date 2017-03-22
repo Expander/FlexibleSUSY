@@ -21,10 +21,6 @@
 
 namespace flexiblesusy {
 
-Composite_convergence_tester::~Composite_convergence_tester()
-{
-}
-
 /**
  * Calls the Convergence_tester::accuracy_goal_reached()
  * functions of all convergence testers.  If at least one of them

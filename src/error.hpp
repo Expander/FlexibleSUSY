@@ -145,7 +145,7 @@ private:
 
 class NonPerturbativeRunningQedQcdError : public Error {
 public:
-   explicit NonPerturbativeRunningQedQcdError(std::string msg_)
+   explicit NonPerturbativeRunningQedQcdError(const std::string& msg_)
       : msg(msg_)
       {}
    virtual ~NonPerturbativeRunningQedQcdError() {}
@@ -160,7 +160,7 @@ private:
  */
 class OutOfMemoryError : public Error {
 public:
-   explicit OutOfMemoryError(std::string msg_)
+   explicit OutOfMemoryError(const std::string& msg_)
       : msg(msg_)
       {}
    virtual ~OutOfMemoryError() {}
@@ -179,7 +179,7 @@ private:
  */
 class OutOfBoundsError : public Error {
 public:
-   OutOfBoundsError(std::string msg_)
+   OutOfBoundsError(const std::string& msg_)
       : msg(msg_)
       {}
    virtual ~OutOfBoundsError() {}

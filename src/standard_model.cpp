@@ -167,10 +167,6 @@ Standard_model::Standard_model(double scale_, double loops_, double thresholds_
    set_thresholds(thresholds_);
 }
 
-   Standard_model::~Standard_model()
-{
-}
-
 void Standard_model::do_force_output(bool flag)
 {
    force_output = flag;
@@ -280,7 +276,7 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
    tadpole[0] = get_ewsb_eq_hh_1();
 
    if (ewsb_loop_order > 0) {
-      tadpole[0] -= Re(tadpole_hh());
+      tadpole[0] -= Re(tadpole_hh_1loop());
    }
 
    return tadpole;
@@ -435,7 +431,7 @@ Eigen::Matrix<double, Standard_model::number_of_ewsb_equations, 1> Standard_mode
    Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_parameters(Eigen::Matrix<double, number_of_ewsb_equations, 1>::Zero());
 
    if (ewsb_loop_order > 0) {
-      tadpole[0] += Re(tadpole_hh());
+      tadpole[0] += Re(tadpole_hh_1loop());
    }
 
    double mu2;
@@ -880,9 +876,9 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
    const double mh_drbar            = Mhh;
    const double gY                  = g1 * 0.7745966692414834;
    const double ymu                 = Re(Ye(1,1));
-   const double pizztMZ             = Re(self_energy_VZ(mz_pole));
-   const double piwwt0              = Re(self_energy_VWp(0.));
-   const double self_energy_w_at_mw = Re(self_energy_VWp(mw_pole));
+   const double pizztMZ             = Re(self_energy_VZ_1loop(mz_pole));
+   const double piwwt0              = Re(self_energy_VWp_1loop(0.));
+   const double self_energy_w_at_mw = Re(self_energy_VWp_1loop(mw_pole));
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale    = scale;
@@ -1001,7 +997,7 @@ double Standard_model::recalculate_mw_pole(double mw_pole)
    calculate_MVWp();
 
    const double mw_drbar    = MVWp;
-   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp(mw_pole));
+   const double mw_pole_sqr = Sqr(mw_drbar) - Re(self_energy_VWp_1loop(mw_pole));
 
    if (mw_pole_sqr < 0.)
       problems.flag_pole_tachyon(standard_model_info::VWp);
@@ -3355,7 +3351,7 @@ double Standard_model::CpbarFuVZFuPL(int gO1, int gI2) const
 }
 
 
-std::complex<double> Standard_model::self_energy_Hp(double p ) const
+std::complex<double> Standard_model::self_energy_Hp_1loop(double p ) const
 {
    std::complex<double> result;
 
@@ -3389,7 +3385,7 @@ std::complex<double> Standard_model::self_energy_Hp(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_Ah(double p ) const
+std::complex<double> Standard_model::self_energy_Ah_1loop(double p ) const
 {
    std::complex<double> result;
 
@@ -3423,7 +3419,7 @@ std::complex<double> Standard_model::self_energy_Ah(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_hh(double p ) const
+std::complex<double> Standard_model::self_energy_hh_1loop(double p ) const
 {
    std::complex<double> result;
 
@@ -3462,7 +3458,7 @@ std::complex<double> Standard_model::self_energy_hh(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_VZ(double p ) const
+std::complex<double> Standard_model::self_energy_VZ_1loop(double p ) const
 {
    std::complex<double> result;
 
@@ -3502,7 +3498,7 @@ std::complex<double> Standard_model::self_energy_VZ(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_VWp(double p ) const
+std::complex<double> Standard_model::self_energy_VWp_1loop(double p ) const
 {
    std::complex<double> result;
 
@@ -3542,7 +3538,7 @@ std::complex<double> Standard_model::self_energy_VWp(double p ) const
 
 }
 
-std::complex<double> Standard_model::self_energy_Fd_1(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_1(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3565,18 +3561,18 @@ std::complex<double> Standard_model::self_energy_Fd_1(double p , int gO1, int gO
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_1(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_1loop_1(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fd_1(p, i, k);
+         self_energy(i, k) = self_energy_Fd_1loop_1(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fd_PR(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_PR(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3599,18 +3595,18 @@ std::complex<double> Standard_model::self_energy_Fd_PR(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_PR(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_1loop_PR(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fd_PR(p, i, k);
+         self_energy(i, k) = self_energy_Fd_1loop_PR(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fd_PL(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_PL(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3633,18 +3629,18 @@ std::complex<double> Standard_model::self_energy_Fd_PL(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_PL(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fd_1loop_PL(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fd_PL(p, i, k);
+         self_energy(i, k) = self_energy_Fd_1loop_PL(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fu_1(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_1(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3667,18 +3663,18 @@ std::complex<double> Standard_model::self_energy_Fu_1(double p , int gO1, int gO
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_1(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_1loop_1(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fu_1(p, i, k);
+         self_energy(i, k) = self_energy_Fu_1loop_1(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PR(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PR(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3701,18 +3697,18 @@ std::complex<double> Standard_model::self_energy_Fu_PR(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_PR(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_1loop_PR(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fu_PR(p, i, k);
+         self_energy(i, k) = self_energy_Fu_1loop_PR(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PL(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PL(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3735,18 +3731,18 @@ std::complex<double> Standard_model::self_energy_Fu_PL(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_PL(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fu_1loop_PL(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fu_PL(p, i, k);
+         self_energy(i, k) = self_energy_Fu_1loop_PL(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fe_1(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_1(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3767,18 +3763,18 @@ std::complex<double> Standard_model::self_energy_Fe_1(double p , int gO1, int gO
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1loop_1(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fe_1(p, i, k);
+         self_energy(i, k) = self_energy_Fe_1loop_1(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fe_PR(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_PR(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3799,18 +3795,18 @@ std::complex<double> Standard_model::self_energy_Fe_PR(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_PR(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1loop_PR(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fe_PR(p, i, k);
+         self_energy(i, k) = self_energy_Fe_1loop_PR(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_Fe_PL(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_PL(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3831,28 +3827,28 @@ std::complex<double> Standard_model::self_energy_Fe_PL(double p , int gO1, int g
 
 }
 
-Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_PL(double p) const
+Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1loop_PL(double p) const
 {
    Eigen::Matrix<std::complex<double>,3,3> self_energy;
 
    for (int i = 0; i < 3; i++)
       for (int k = 0; k < 3; k++)
-         self_energy(i, k) = self_energy_Fe_PL(p, i, k);
+         self_energy(i, k) = self_energy_Fe_1loop_PL(p, i, k);
 
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_VZ_heavy(double) const
+std::complex<double> Standard_model::self_energy_VZ_1loop_heavy(double) const
 {
    return 0.;
 }
 
-std::complex<double> Standard_model::self_energy_VWp_heavy(double) const
+std::complex<double> Standard_model::self_energy_VWp_1loop_heavy(double) const
 {
    return 0.;
 }
 
-std::complex<double> Standard_model::self_energy_Fd_1_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_1_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3871,7 +3867,7 @@ std::complex<double> Standard_model::self_energy_Fd_1_heavy_rotated(double p , i
 
 }
 
-std::complex<double> Standard_model::self_energy_Fd_PR_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3890,7 +3886,7 @@ std::complex<double> Standard_model::self_energy_Fd_PR_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fd_PL_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fd_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3909,7 +3905,7 @@ std::complex<double> Standard_model::self_energy_Fd_PL_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fe_1_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_1_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3928,7 +3924,7 @@ std::complex<double> Standard_model::self_energy_Fe_1_heavy_rotated(double p , i
 
 }
 
-std::complex<double> Standard_model::self_energy_Fe_PR_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3947,7 +3943,7 @@ std::complex<double> Standard_model::self_energy_Fe_PR_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fe_PL_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fe_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3966,7 +3962,7 @@ std::complex<double> Standard_model::self_energy_Fe_PL_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_1_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_1_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -3987,7 +3983,7 @@ std::complex<double> Standard_model::self_energy_Fu_1_heavy_rotated(double p , i
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PR_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -4008,7 +4004,7 @@ std::complex<double> Standard_model::self_energy_Fu_PR_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PL_heavy_rotated(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -4029,7 +4025,7 @@ std::complex<double> Standard_model::self_energy_Fu_PL_heavy_rotated(double p , 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_1_heavy(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_1_heavy(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -4050,7 +4046,7 @@ std::complex<double> Standard_model::self_energy_Fu_1_heavy(double p , int gO1, 
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PR_heavy(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PR_heavy(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -4071,7 +4067,7 @@ std::complex<double> Standard_model::self_energy_Fu_PR_heavy(double p , int gO1,
 
 }
 
-std::complex<double> Standard_model::self_energy_Fu_PL_heavy(double p , int gO1, int gO2) const
+std::complex<double> Standard_model::self_energy_Fu_1loop_PL_heavy(double p , int gO1, int gO2) const
 {
    std::complex<double> result;
 
@@ -4092,7 +4088,7 @@ std::complex<double> Standard_model::self_energy_Fu_PL_heavy(double p , int gO1,
 
 }
 
-std::complex<double> Standard_model::tadpole_hh() const
+std::complex<double> Standard_model::tadpole_hh_1loop() const
 {
    std::complex<double> result;
 
@@ -4169,7 +4165,7 @@ void Standard_model::calculate_Mhh_pole()
    do {
       const double M_tree(get_mass_matrix_hh());
       const double p = old_Mhh;
-      double self_energy = Re(self_energy_hh(p));
+      double self_energy = Re(self_energy_hh_1loop(p));
       if (pole_mass_loop_order > 1)
          self_energy += self_energy_hh_2loop();
       const double mass_sqr = M_tree - self_energy;
@@ -4203,7 +4199,7 @@ void Standard_model::calculate_MVZ_pole()
    // diagonalization with medium precision
    const double M_tree(get_mass_matrix_VZ());
    const double p = MVZ;
-   const double self_energy = Re(self_energy_VZ(p));
+   const double self_energy = Re(self_energy_VZ_1loop(p));
    const double mass_sqr = M_tree - self_energy;
 
    if (mass_sqr < 0.)
@@ -4218,9 +4214,9 @@ void Standard_model::calculate_MFd_pole()
    const Eigen::Matrix<double,3,3> M_tree(get_mass_matrix_Fd());
    for (int es = 0; es < 3; ++es) {
       const double p = Abs(MFd(es));
-      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fd_1(p));
-      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fd_PL(p));
-      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fd_PR(p));
+      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fd_1loop_1(p));
+      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fd_1loop_PL(p));
+      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fd_1loop_PR(p));
       const Eigen::Matrix<double,3,3> delta_M(- self_energy_PR *
          M_tree - M_tree * self_energy_PL - self_energy_1);
       const Eigen::Matrix<double,3,3> M_1loop(M_tree + delta_M);
@@ -4283,17 +4279,17 @@ void Standard_model::calculate_MFu_pole()
          for (int i2 = 0; i2 < 3; ++i2) {
             if (i1 == 2 && i2 == 2) {
                self_energy_1(i1,i2)  = Re(
-                  self_energy_Fu_1_heavy(p,i1,i2));
+                  self_energy_Fu_1loop_1_heavy(p,i1,i2));
                self_energy_PL(i1,i2) = Re(
-                  self_energy_Fu_PL_heavy(p,i1,i2));
+                  self_energy_Fu_1loop_PL_heavy(p,i1,i2));
                self_energy_PR(i1,i2) = Re(
-                  self_energy_Fu_PR_heavy(p,i1,i2));
+                  self_energy_Fu_1loop_PR_heavy(p,i1,i2));
             } else {
-               self_energy_1(i1,i2)  = Re(self_energy_Fu_1(p,
+               self_energy_1(i1,i2)  = Re(self_energy_Fu_1loop_1(p,
                   i1,i2));
-               self_energy_PL(i1,i2) = Re(self_energy_Fu_PL(p
+               self_energy_PL(i1,i2) = Re(self_energy_Fu_1loop_PL(p
                   ,i1,i2));
-               self_energy_PR(i1,i2) = Re(self_energy_Fu_PR(p
+               self_energy_PR(i1,i2) = Re(self_energy_Fu_1loop_PR(p
                   ,i1,i2));
             }
          }
@@ -4327,9 +4323,9 @@ void Standard_model::calculate_MFe_pole()
    const Eigen::Matrix<double,3,3> M_tree(get_mass_matrix_Fe());
    for (int es = 0; es < 3; ++es) {
       const double p = Abs(MFe(es));
-      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fe_1(p));
-      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fe_PL(p));
-      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fe_PR(p));
+      const Eigen::Matrix<double,3,3> self_energy_1  = Re(self_energy_Fe_1loop_1(p));
+      const Eigen::Matrix<double,3,3> self_energy_PL = Re(self_energy_Fe_1loop_PL(p));
+      const Eigen::Matrix<double,3,3> self_energy_PR = Re(self_energy_Fe_1loop_PR(p));
       const Eigen::Matrix<double,3,3> delta_M(- self_energy_PR *
          M_tree - M_tree * self_energy_PL - self_energy_1);
       const Eigen::Matrix<double,3,3> M_1loop(M_tree + delta_M);
@@ -4360,7 +4356,7 @@ void Standard_model::calculate_MVWp_pole()
    // diagonalization with medium precision
    const double M_tree(get_mass_matrix_VWp());
    const double p = MVWp;
-   const double self_energy = Re(self_energy_VWp(p));
+   const double self_energy = Re(self_energy_VWp_1loop(p));
    const double mass_sqr = M_tree - self_energy;
 
    if (mass_sqr < 0.)
@@ -4374,7 +4370,7 @@ double Standard_model::calculate_MVWp_pole(double p)
    if (!force_output && problems.is_running_tachyon(standard_model_info::VWp))
       return 0.;
 
-   const double self_energy = Re(self_energy_VWp(p));
+   const double self_energy = Re(self_energy_VWp_1loop(p));
    const double mass_sqr = get_mass_matrix_VWp() - self_energy;
 
    if (mass_sqr < 0.)
@@ -4388,7 +4384,7 @@ double Standard_model::calculate_MVZ_pole(double p)
    if (!force_output && problems.is_running_tachyon(standard_model_info::VZ))
       return 0.;
 
-   const double self_energy = Re(self_energy_VZ(p));
+   const double self_energy = Re(self_energy_VZ_1loop(p));
    const double mass_sqr = get_mass_matrix_VZ() - self_energy;
 
    if (mass_sqr < 0.)
@@ -4406,11 +4402,11 @@ double Standard_model::calculate_MFv_DRbar(double, int) const
 double Standard_model::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
 {
    const double p = m_sm_msbar;
-   const double self_energy_1  = Re(self_energy_Fe_1_heavy_rotated(p, idx
+   const double self_energy_1  = Re(self_energy_Fe_1loop_1_heavy_rotated(p, idx
       , idx));
-   const double self_energy_PL = Re(self_energy_Fe_PL_heavy_rotated(p,
+   const double self_energy_PL = Re(self_energy_Fe_1loop_PL_heavy_rotated(p,
       idx, idx));
-   const double self_energy_PR = Re(self_energy_Fe_PR_heavy_rotated(p,
+   const double self_energy_PR = Re(self_energy_Fe_1loop_PR_heavy_rotated(p,
       idx, idx));
    const double drbar_conversion = 1;
    const double m_sm_drbar = m_sm_msbar * drbar_conversion;
@@ -4424,11 +4420,11 @@ double Standard_model::calculate_MFe_DRbar(double m_sm_msbar, int idx) const
 double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
 {
    const double p = m_pole;
-   const double self_energy_1  = Re(self_energy_Fu_1_heavy_rotated(p, idx
+   const double self_energy_1  = Re(self_energy_Fu_1loop_1_heavy_rotated(p, idx
       , idx));
-   const double self_energy_PL = Re(self_energy_Fu_PL_heavy_rotated(p,
+   const double self_energy_PL = Re(self_energy_Fu_1loop_PL_heavy_rotated(p,
       idx, idx));
-   const double self_energy_PR = Re(self_energy_Fu_PR_heavy_rotated(p,
+   const double self_energy_PR = Re(self_energy_Fu_1loop_PR_heavy_rotated(p,
       idx, idx));
 
    const double currentScale = get_scale();
@@ -4462,11 +4458,11 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
 double Standard_model::calculate_MFd_DRbar(double m_sm_msbar, int idx) const
 {
    const double p = m_sm_msbar;
-   const double self_energy_1  = Re(self_energy_Fd_1_heavy_rotated(p, idx
+   const double self_energy_1  = Re(self_energy_Fd_1loop_1_heavy_rotated(p, idx
       , idx));
-   const double self_energy_PL = Re(self_energy_Fd_PL_heavy_rotated(p,
+   const double self_energy_PL = Re(self_energy_Fd_1loop_PL_heavy_rotated(p,
       idx, idx));
-   const double self_energy_PR = Re(self_energy_Fd_PR_heavy_rotated(p,
+   const double self_energy_PR = Re(self_energy_Fd_1loop_PR_heavy_rotated(p,
       idx, idx));
    const double m_tree = MFd(idx);
    const double drbar_conversion = 1;
@@ -4486,7 +4482,7 @@ double Standard_model::calculate_MVP_DRbar(double)
 double Standard_model::calculate_MVZ_DRbar(double m_pole)
 {
    const double p = m_pole;
-   const double self_energy = Re(self_energy_VZ(p));
+   const double self_energy = Re(self_energy_VZ_1loop(p));
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
    if (mass_sqr < 0.) {
@@ -4500,7 +4496,7 @@ double Standard_model::calculate_MVZ_DRbar(double m_pole)
 double Standard_model::calculate_MVWp_DRbar(double m_pole)
 {
    const double p = m_pole;
-   const double self_energy = Re(self_energy_VWp(p));
+   const double self_energy = Re(self_energy_VWp_1loop(p));
    const double mass_sqr = Sqr(m_pole) + self_energy;
 
    if (mass_sqr < 0.) {
@@ -4514,8 +4510,8 @@ double Standard_model::calculate_MVWp_DRbar(double m_pole)
 double Standard_model::calculate_Mhh_DRbar(double m_pole)
 {
    const double p = m_pole;
-   const double self_energy = Re(self_energy_hh(p));
-   const double tadpole = Re(tadpole_hh());
+   const double self_energy = Re(self_energy_hh_1loop(p));
+   const double tadpole = Re(tadpole_hh_1loop());
    const double mass_sqr = Sqr(m_pole) + self_energy - tadpole/v;
 
    if (mass_sqr < 0.) {

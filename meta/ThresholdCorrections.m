@@ -388,9 +388,9 @@ const double mselL         = " <> mseStr <> ";
 const double msmuL         = " <> msmStr <> ";
 const double msnue         = " <> msveStr <> ";
 const double msnumu        = " <> msvmStr <> ";
-const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
-const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
-self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "_1loop(mz_pole));
+const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "_1loop(0.));
+self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "_1loop(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -493,9 +493,9 @@ const double gY            = " <> g1Str <> ";
 const double g2            = " <> g2Str <> ";
 const double g3            = " <> g3Str <> ";
 const double ymu           = Re(" <> ymStr <> ");
-const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
-const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
-self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "_1loop(mz_pole));
+const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "_1loop(0.));
+self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "_1loop(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;

@@ -42,7 +42,7 @@ public:
    @ModelName@_susy_parameters(double scale_, int loops_, int thresholds_, const @ModelName@_input_parameters& input_@cCtorParameterList@);
    @ModelName@_susy_parameters(const @ModelName@_susy_parameters&) = default;
    @ModelName@_susy_parameters(@ModelName@_susy_parameters&&) = default;
-   virtual ~@ModelName@_susy_parameters() {}
+   virtual ~@ModelName@_susy_parameters() = default;
    @ModelName@_susy_parameters& operator=(const @ModelName@_susy_parameters&) = default;
    @ModelName@_susy_parameters& operator=(@ModelName@_susy_parameters&&) = default;
 

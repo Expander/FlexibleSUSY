@@ -125,7 +125,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
    }
 
    // find gauge couplings at the greatest scale
-   TData::const_iterator maxScale
+   auto maxScale
       = max_element(couplings.begin(), couplings.end(), TScaleComp());
 
    return *maxScale;

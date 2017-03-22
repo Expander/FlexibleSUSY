@@ -140,8 +140,8 @@ void Database::create_table(
  */
 void Database::execute(const std::string& cmd)
 {
-   char* zErrMsg = 0;
-   const int rc = sqlite3_exec(db, cmd.c_str(), 0, 0, &zErrMsg);
+   char* zErrMsg = nullptr;
+   const int rc = sqlite3_exec(db, cmd.c_str(), nullptr, nullptr, &zErrMsg);
 
    if (rc != SQLITE_OK) {
       ERROR("SQL error while executing command \"" << cmd << "\": " << zErrMsg);
@@ -160,7 +160,7 @@ void Database::execute(const std::string& cmd)
  */
 void Database::execute(const std::string& cmd, TCallback callback, void* data)
 {
-   char* zErrMsg = 0;
+   char* zErrMsg = nullptr;
    const int rc = sqlite3_exec(db, cmd.c_str(), callback, data, &zErrMsg);
 
    if (rc != SQLITE_OK) {

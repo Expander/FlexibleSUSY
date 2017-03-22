@@ -58,7 +58,7 @@ public:
    explicit @ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@_mass_eigenstates(const @ModelName@_mass_eigenstates&) = default;
    @ModelName@_mass_eigenstates(@ModelName@_mass_eigenstates&&) = default;
-   virtual ~@ModelName@_mass_eigenstates();
+   virtual ~@ModelName@_mass_eigenstates() = default;
    @ModelName@_mass_eigenstates& operator=(const @ModelName@_mass_eigenstates&) = default;
    @ModelName@_mass_eigenstates& operator=(@ModelName@_mass_eigenstates&&) = default;
 
@@ -68,7 +68,7 @@ public:
    void calculate_DRbar_masses();
    void calculate_pole_masses();
    void check_pole_masses_for_tachyons();
-   virtual void clear();
+   virtual void clear() override;
    void clear_DRbar_parameters();
    Eigen::ArrayXd get_DRbar_masses() const;
    void do_calculate_sm_pole_masses(bool);

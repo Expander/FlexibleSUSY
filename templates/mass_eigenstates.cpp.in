@@ -77,10 +77,6 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
 {
 }
 
-CLASSNAME::~@ModelName@_mass_eigenstates()
-{
-}
-
 void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 {
    calculate_sm_pole_masses = flag;

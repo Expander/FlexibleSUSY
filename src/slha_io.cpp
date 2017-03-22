@@ -222,25 +222,22 @@ void SLHA_io::fill(Spectrum_generator_settings& settings) const
  */
 double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
-
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
    double scale = 0.;
 
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
+      for (const auto& line: *block) {
+         if (!line.is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
+            if (line.size() > 3 &&
+                to_lower(line[0]) == "block" && line[2] == "Q=")
+               scale = convert_to<double>(line[3]);
             continue;
          }
 
-         if (line->size() >= 2) {
-            const int key = convert_to<int>((*line)[0]);
-            const double value = convert_to<double>((*line)[1]);
+         if (line.size() >= 2) {
+            const int key = convert_to<int>(line[0]);
+            const double value = convert_to<double>(line[1]);
             processor(key, value);
          }
       }
@@ -262,24 +259,21 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
  */
 double SLHA_io::read_block(const std::string& block_name, double& entry) const
 {
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
-
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
    double scale = 0.;
 
    while (block != data.cend()) {
-      for (SLHAea::Block::const_iterator line = block->cbegin(),
-              end = block->cend(); line != end; ++line) {
-         if (!line->is_data_line()) {
+      for (const auto& line: *block) {
+         if (!line.is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 &&
-                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-               scale = convert_to<double>((*line)[3]);
+            if (line.size() > 3 &&
+                to_lower(line[0]) == "block" && line[2] == "Q=")
+               scale = convert_to<double>(line[3]);
             continue;
          }
 
-         if (line->size() >= 1)
-            entry = convert_to<double>((*line)[0]);
+         if (line.size() >= 1)
+            entry = convert_to<double>(line[0]);
       }
 
       ++block;
@@ -291,9 +285,7 @@ double SLHA_io::read_block(const std::string& block_name, double& entry) const
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
-
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
    double entry = 0.;
    const SLHAea::Block::key_type keys(1, ToString(key));
    SLHAea::Block::const_iterator line;
@@ -325,12 +317,11 @@ double SLHA_io::read_scale(const std::string& block_name) const
 
    double scale = 0.;
 
-   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
-        end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line()) {
-         if (line->size() > 3 &&
-             to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
-            scale = convert_to<double>((*line)[3]);
+   for (const auto& line: data.at(block_name)) {
+      if (!line.is_data_line()) {
+         if (line.size() > 3 &&
+             to_lower(line[0]) == "block" && line[2] == "Q=")
+            scale = convert_to<double>(line[3]);
          break;
       }
    }
@@ -356,9 +347,8 @@ void SLHA_io::set_block(const std::string& lines, Position position)
 
 void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
 {
-   for (std::vector<std::string>::const_iterator it = blocks.begin(),
-           end = blocks.end(); it != end; it++)
-      set_block(*it, position);
+   for (const auto& block: blocks)
+      set_block(block, position);
 }
 
 /**

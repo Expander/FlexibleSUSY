@@ -107,7 +107,7 @@ public:
    Standard_model(const Standard_model&) = default;
    Standard_model(Standard_model&&) = default;
 
-   virtual ~Standard_model();
+   virtual ~Standard_model() = default;
 
    Standard_model& operator=(const Standard_model&) = default;
    Standard_model& operator=(Standard_model&&) = default;
@@ -137,10 +137,10 @@ public:
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
 
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
+   virtual Eigen::ArrayXd beta() const override;
+   virtual Eigen::ArrayXd get() const override;
    void print(std::ostream& out = std::cout) const;
-   virtual void set(const Eigen::ArrayXd&);
+   virtual void set(const Eigen::ArrayXd&) override;
 
    Standard_model calc_beta() const;
    void clear();
@@ -423,46 +423,46 @@ public:
    std::complex<double> CpbarFuVWpFdPL(int gO1, int gI2) const;
    double CpbarFuVZFuPR(int gO2, int gI2) const;
    double CpbarFuVZFuPL(int gO1, int gI2) const;
-   std::complex<double> self_energy_Hp(double p ) const;
-   std::complex<double> self_energy_Ah(double p ) const;
-   std::complex<double> self_energy_hh(double p ) const;
-   std::complex<double> self_energy_VZ(double p ) const;
-   std::complex<double> self_energy_VWp(double p ) const;
-   std::complex<double> self_energy_Fd_1(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fd_PR(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fd_PL(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_1(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PR(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PL(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_1(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_PR(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_PL(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_VZ_heavy(double p ) const;
-   std::complex<double> self_energy_VWp_heavy(double p ) const;
-   std::complex<double> self_energy_Fd_1_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fd_PR_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fd_PL_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_1_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_PR_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fe_PL_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_1_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PR_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PL_heavy_rotated(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_1_heavy(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PR_heavy(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_Fu_PL_heavy(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Hp_1loop(double p ) const;
+   std::complex<double> self_energy_Ah_1loop(double p ) const;
+   std::complex<double> self_energy_hh_1loop(double p ) const;
+   std::complex<double> self_energy_VZ_1loop(double p ) const;
+   std::complex<double> self_energy_VWp_1loop(double p ) const;
+   std::complex<double> self_energy_Fd_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_VZ_1loop_heavy(double p ) const;
+   std::complex<double> self_energy_VWp_1loop_heavy(double p ) const;
+   std::complex<double> self_energy_Fd_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1_heavy(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR_heavy(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL_heavy(double p , int gO1, int gO2) const;
 
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PR(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_PL(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PR(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_PL(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PR(double p) const;
-   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_PL(double p) const;
 
-   std::complex<double> tadpole_hh() const;
+   std::complex<double> tadpole_hh_1loop() const;
 
    /// calculates the tadpoles at current loop order
    Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
@@ -569,8 +569,8 @@ private:
 
    class EEWSBStepFailed : public Error {
    public:
-      virtual ~EEWSBStepFailed() {}
-      virtual std::string what() const { return "Could not perform EWSB step."; }
+      virtual ~EEWSBStepFailed() = default;
+      virtual std::string what() const override { return "Could not perform EWSB step."; }
    };
 
    int ewsb_loop_order{2};

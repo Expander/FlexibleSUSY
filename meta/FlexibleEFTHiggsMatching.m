@@ -70,9 +70,9 @@ CalculateMFermionPole1L[name_String, GetList_, GetEntry_] :=
 "\
 if (i == " <> iStr <> ") {
    const double p = model_0l.get_M" <> mq <> "();
-   const auto self_energy_1  = Re(model_0l.self_energy_" <> mq <> "_1(p));
-   const auto self_energy_PL = Re(model_0l.self_energy_" <> mq <> "_PL(p));
-   const auto self_energy_PR = Re(model_0l.self_energy_" <> mq <> "_PR(p));
+   const auto self_energy_1  = Re(model_0l.self_energy_" <> mq <> "_1loop_1(p));
+   const auto self_energy_PL = Re(model_0l.self_energy_" <> mq <> "_1loop_PL(p));
+   const auto self_energy_PR = Re(model_0l.self_energy_" <> mq <> "_1loop_PR(p));
    const auto M_tree = model_0l.get_mass_matrix_" <> mq <> "();
    const auto M_loop = M_tree - self_energy_1 - M_tree * (self_energy_PR + self_energy_PL);
 
@@ -85,9 +85,9 @@ if (i == " <> iStr <> ") {
               result =
 "\
 const double p = model_0l.get_M" <> mq <> "(i);
-const auto self_energy_1  = Re(model_0l.self_energy_" <> mq <> "_1(p));
-const auto self_energy_PL = Re(model_0l.self_energy_" <> mq <> "_PL(p));
-const auto self_energy_PR = Re(model_0l.self_energy_" <> mq <> "_PR(p));
+const auto self_energy_1  = Re(model_0l.self_energy_" <> mq <> "_1loop_1(p));
+const auto self_energy_PL = Re(model_0l.self_energy_" <> mq <> "_1loop_PL(p));
+const auto self_energy_PR = Re(model_0l.self_energy_" <> mq <> "_1loop_PR(p));
 const auto M_tree = model_0l.get_mass_matrix_" <> mq <> "();
 const auto M_loop = (M_tree - self_energy_PR * M_tree
                      - M_tree * self_energy_PL - self_energy_1).eval();

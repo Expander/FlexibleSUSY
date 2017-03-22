@@ -172,8 +172,8 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
    const int sa_error = sa_model.solve_ewsb_one_loop();
    BOOST_CHECK_EQUAL(sa_error, 0);
 
-   const std::complex<double> sa_tadpole_hh_1(sa_model.tadpole_hh(0));
-   const std::complex<double> sa_tadpole_hh_2(sa_model.tadpole_hh(1));
+   const std::complex<double> sa_tadpole_hh_1(sa_model.tadpole_hh_1loop(0));
+   const std::complex<double> sa_tadpole_hh_2(sa_model.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(sa_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(sa_tadpole_hh_2), 1.0e-12);
@@ -201,8 +201,8 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
    const int ts_error = ts_model.solve_ewsb_one_loop();
    BOOST_CHECK_EQUAL(ts_error, 0);
 
-   const std::complex<double> ts_tadpole_hh_1(ts_model.tadpole_hh(0));
-   const std::complex<double> ts_tadpole_hh_2(ts_model.tadpole_hh(1));
+   const std::complex<double> ts_tadpole_hh_1(ts_model.tadpole_hh_1loop(0));
+   const std::complex<double> ts_tadpole_hh_2(ts_model.tadpole_hh_1loop(1));
 
    BOOST_CHECK_SMALL(Im(ts_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(ts_tadpole_hh_2), 1.0e-12);
@@ -262,9 +262,9 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
    const Eigen::Matrix<double,2,1> sa_tadpole_2l(sa_model.tadpole_hh_2loop());
 
    const std::complex<double> sa_tadpole_hh_1(
-      sa_model.tadpole_hh(0) + sa_tadpole_2l(0));
+      sa_model.tadpole_hh_1loop(0) + sa_tadpole_2l(0));
    const std::complex<double> sa_tadpole_hh_2(
-      sa_model.tadpole_hh(1) + sa_tadpole_2l(1));
+      sa_model.tadpole_hh_1loop(1) + sa_tadpole_2l(1));
 
    BOOST_CHECK_SMALL(Im(sa_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(sa_tadpole_hh_2), 1.0e-12);
@@ -295,9 +295,9 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
    const Eigen::Matrix<double,2,1> ts_tadpole_2l(ts_model.tadpole_hh_2loop());
 
    const std::complex<double> ts_tadpole_hh_1(
-      ts_model.tadpole_hh(0) + ts_tadpole_2l(0));
+      ts_model.tadpole_hh_1loop(0) + ts_tadpole_2l(0));
    const std::complex<double> ts_tadpole_hh_2(
-      ts_model.tadpole_hh(1) + ts_tadpole_2l(1));
+      ts_model.tadpole_hh_1loop(1) + ts_tadpole_2l(1));
 
    BOOST_CHECK_SMALL(Im(ts_tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(ts_tadpole_hh_2), 1.0e-12);

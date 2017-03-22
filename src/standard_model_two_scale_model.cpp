@@ -42,10 +42,6 @@ StandardModel<Two_scale>::StandardModel()
 {
 }
 
-StandardModel<Two_scale>::~StandardModel()
-{
-}
-
 void StandardModel<Two_scale>::calculate_spectrum()
 {
    Standard_model::calculate_spectrum();

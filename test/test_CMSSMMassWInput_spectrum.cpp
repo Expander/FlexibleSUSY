@@ -244,7 +244,7 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_
 
    // interface variables
    mZ_run = qedqcd.displayPoleMZ();
-   double mW_run = qedqcd.displayPoleMW();
+   mW_run = qedqcd.displayPoleMW();
 
    if (model->get_thresholds()) {
       mZ_run = model->calculate_MVZ_DRbar(qedqcd.displayPoleMZ());
@@ -325,9 +325,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
    BOOST_REQUIRE(mz_pole > 0.);
    BOOST_CHECK_EQUAL(scale, mz_pole);
 
-   const double pizztMZ = Re(model->self_energy_VZ(mz_pole));
-   const double piwwt0  = Re(model->self_energy_VWm(0));
-   const double piwwtMW = Re(model->self_energy_VWm(mw_pole));
+   const double pizztMZ = Re(model->self_energy_VZ_1loop(mz_pole));
+   const double piwwt0  = Re(model->self_energy_VWm_1loop(0));
+   const double piwwtMW = Re(model->self_energy_VWm_1loop(mw_pole));
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale = scale;
@@ -349,9 +349,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
    // check corrected self-energies
    {
       model->MFu(2) = mt_pole;
-      const double pizztMZ_check = Re(model->self_energy_VZ(mz_pole));
-      const double piwwt0_check  = Re(model->self_energy_VWm(0));
-      const double piwwtMW_check = Re(model->self_energy_VWm(mw_pole));
+      const double pizztMZ_check = Re(model->self_energy_VZ_1loop(mz_pole));
+      const double piwwt0_check  = Re(model->self_energy_VWm_1loop(0));
+      const double piwwtMW_check = Re(model->self_energy_VWm_1loop(mw_pole));
       model->MFu(2) = mt_drbar;
 
       BOOST_CHECK_CLOSE_FRACTION(pizztMZ_check, pizztMZ_corrected, 1.0e-10);

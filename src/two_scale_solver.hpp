@@ -92,7 +92,7 @@ public:
 private:
    struct Slider {
    public:
-      virtual ~Slider() {}
+      virtual ~Slider() = default;
       virtual void clear_problems() {}
       virtual Model* get_model() = 0;
       virtual double get_scale() = 0;
@@ -104,7 +104,7 @@ private:
    public:
       Constraint_slider(Model* m, Single_scale_constraint* c)
          : model(m), constraint(c) {}
-      virtual ~Constraint_slider() {}
+      virtual ~Constraint_slider() = default;
       virtual void clear_problems() override;
       virtual Model* get_model() override;
       virtual double get_scale() override;
@@ -119,7 +119,7 @@ private:
    public:
       Matching_slider(Model* m1_, Model* m2_, Single_scale_matching* mc)
          : m1(m1_), m2(m2_), matching(mc) {}
-      virtual ~Matching_slider() {}
+      virtual ~Matching_slider() = default;
       virtual void clear_problems() override;
       virtual Model* get_model() override;
       virtual double get_scale() override;

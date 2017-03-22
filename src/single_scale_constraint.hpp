@@ -28,7 +28,7 @@ class Model;
 
 class Single_scale_constraint {
 public:
-   virtual ~Single_scale_constraint() {}
+   virtual ~Single_scale_constraint() = default;
    virtual void apply() = 0;                    ///< apply constraint
    virtual double get_scale() const = 0;        ///< get scale where to apply
    virtual std::string name() const { return "unknown constraint"; } ///< name of constraint

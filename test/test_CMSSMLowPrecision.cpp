@@ -38,8 +38,8 @@ void ensure_n_loop_ewsb(CMSSMLowPrecision<Two_scale>& m, int loop_level)
    m.solve_ewsb();
 
    if (loop_level == 1) {
-      BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_1() - m.tadpole_hh(0).real(), 0.0, precision);
-      BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), 0.0, precision);
+      BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_1() - m.tadpole_hh_1loop(0).real(), 0.0, precision);
+      BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_2() - m.tadpole_hh_1loop(1).real(), 0.0, precision);
    }
 }
 

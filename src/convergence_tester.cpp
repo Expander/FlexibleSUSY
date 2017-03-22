@@ -20,8 +20,6 @@
 
 namespace flexiblesusy {
 
-Convergence_tester::~Convergence_tester()
-{
-}
+Convergence_tester::~Convergence_tester() = default;
 
 } // namespace flexiblesusy

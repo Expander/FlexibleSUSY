@@ -7,6 +7,7 @@
 #include "standard_model.hpp"
 #include "splitmssm_thresholds.hpp"
 #include "models/MSSMtower/MSSMtower_standard_model_matching.hpp"
+#include "models/MSSMtower/MSSMtower_two_scale_ewsb_solver.hpp"
 
 using namespace flexiblesusy;
 using namespace flexiblesusy::standard_model;
@@ -78,6 +79,10 @@ MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q
    mssm.set_MassWB(MS);
    mssm.set_MassG(MS);
 
+   MSSMtower_ewsb_solver<Two_scale> ewsb_solver;
+   mssm.set_ewsb_solver(
+      std::make_shared<MSSMtower_ewsb_solver<Two_scale> >(ewsb_solver));
+   
    mssm.calculate_DRbar_masses();
    mssm.solve_ewsb();
 

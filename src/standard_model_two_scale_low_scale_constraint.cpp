@@ -43,10 +43,6 @@ Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constra
    initialize();
 }
 
-Standard_model_low_scale_constraint<Two_scale>::~Standard_model_low_scale_constraint()
-{
-}
-
 void Standard_model_low_scale_constraint<Two_scale>::apply()
 {
    if (!model)

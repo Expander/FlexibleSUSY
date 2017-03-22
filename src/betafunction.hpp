@@ -43,7 +43,7 @@ public:
    Beta_function() = default;
    Beta_function(const Beta_function&) = default;
    Beta_function(Beta_function&&) = default;
-   virtual ~Beta_function() {}
+   virtual ~Beta_function() = default;
    Beta_function& operator=(const Beta_function&) = default;
    Beta_function& operator=(Beta_function&&) = default;
 

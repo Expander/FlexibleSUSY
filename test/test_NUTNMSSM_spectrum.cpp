@@ -373,9 +373,9 @@ void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    ss.calcTadpole2Ms1loop(mt, sinthDRbar);
    ss.calcTadpoleSMs1loop(mt, sinthDRbar);
 
-   const double td = Re(fs.tadpole_hh(0));
-   const double tu = Re(fs.tadpole_hh(1));
-   const double ts = Re(fs.tadpole_hh(2));
+   const double td = Re(fs.tadpole_hh_1loop(0));
+   const double tu = Re(fs.tadpole_hh_1loop(1));
+   const double ts = Re(fs.tadpole_hh_1loop(2));
 
    const double vd = fs.get_vd();
    const double vu = fs.get_vu();
@@ -406,9 +406,9 @@ void compare_tadpoles_2loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    const double vu = fs.get_vu();
    const double vs = fs.get_vS();
 
-   const double td_fs = fs.tadpole_hh(0).real();
-   const double tu_fs = fs.tadpole_hh(1).real();
-   const double ts_fs = fs.tadpole_hh(2).real();
+   const double td_fs = fs.tadpole_hh_1loop(0).real();
+   const double tu_fs = fs.tadpole_hh_1loop(1).real();
+   const double ts_fs = fs.tadpole_hh_1loop(2).real();
 
    double td_ss = ss.doCalcTadpole1oneLoop(mt, sinthDRbar);
    double tu_ss = ss.doCalcTadpole2oneLoop(mt, sinthDRbar);

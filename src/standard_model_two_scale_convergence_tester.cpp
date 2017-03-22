@@ -32,10 +32,6 @@ Standard_model_convergence_tester<Two_scale>::Standard_model_convergence_tester(
 {
 }
 
-Standard_model_convergence_tester<Two_scale>::~Standard_model_convergence_tester()
-{
-}
-
 double Standard_model_convergence_tester<Two_scale>::max_rel_diff() const
 {
    const StandardModel<Two_scale>& ol = get_last_iteration_model();

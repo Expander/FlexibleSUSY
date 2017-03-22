@@ -270,8 +270,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
 {
    if (matrix.cols() <= 1) throw SetupError("Matrix has less than 2 columns");
 
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
    double scale = 0.;
@@ -316,8 +315,7 @@ double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Der
 {
    if (vector.cols() != 1) throw SetupError("Vector has more than 1 column");
 
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
 
    const int rows = vector.rows();
    double scale = 0.;

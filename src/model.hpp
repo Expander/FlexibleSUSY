@@ -27,7 +27,7 @@ namespace flexiblesusy {
 
 class Model {
 public:
-   virtual ~Model() {}
+   virtual ~Model() = default;
    virtual void calculate_spectrum() = 0;
    virtual void clear_problems() = 0;
    virtual std::string name() const = 0;

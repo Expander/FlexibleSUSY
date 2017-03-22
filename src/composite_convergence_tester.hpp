@@ -35,7 +35,7 @@ namespace flexiblesusy {
 class Composite_convergence_tester : public Convergence_tester {
 public:
    Composite_convergence_tester() = default;
-   virtual ~Composite_convergence_tester();
+   virtual ~Composite_convergence_tester() = default;
 
    virtual bool accuracy_goal_reached() override;
    virtual int max_iterations() const override;
