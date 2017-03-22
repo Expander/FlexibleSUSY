@@ -400,7 +400,8 @@ GetLinearSystemSolutions[pars_List, subs_List, nonHomogeneousTerms_List:{}, addC
            basis = GetSolutionBasis[pars, subs, addConjugateTerms];
            solns = SemiAnalyticSolution[#, basis]& /@ pars;
            If[nonHomogeneousTerms =!= {},
-              solns = SemiAnalyticSolution[#[[1]], Join[#[[2]], ListAllTermsOfForm[nonHomogeneousTerms]]]& /@ solns;
+              solns = SemiAnalyticSolution[#[[1]],
+                                           DeleteDuplicates[Join[#[[2]], ListAllTermsOfForm[nonHomogeneousTerms]]]]& /@ solns;
              ];
            solns
           ];
