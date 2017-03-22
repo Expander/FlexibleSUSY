@@ -43,7 +43,7 @@ class @ModelName@_spectrum_generator<Two_scale>
    : public @ModelName@_spectrum_generator_interface<Two_scale> {
 public:
    @ModelName@_spectrum_generator() = default;
-   virtual ~@ModelName@_spectrum_generator() {}
+   virtual ~@ModelName@_spectrum_generator() = default;
 
    std::tuple<@ModelName@<Two_scale> > get_models() const { return std::make_tuple(this->get_model()); }
    std::tuple<@ModelName@_slha<@ModelName@<Two_scale> > > get_models_slha() const { return std::make_tuple(this->get_model_slha()); }

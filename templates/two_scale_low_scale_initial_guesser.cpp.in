@@ -53,10 +53,6 @@ namespace flexiblesusy {
                        " @ModelName@<Two_scale> must not be zero");
 }
 
-@ModelName@_initial_guesser<Two_scale>::~@ModelName@_initial_guesser()
-{
-}
-
 /**
  * Guesses the DR-bar model parameters by calling
  * guess_susy_parameters() and guess_soft_parameters() .

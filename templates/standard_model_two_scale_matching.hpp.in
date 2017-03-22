@@ -48,7 +48,7 @@ public:
                                           const Scale_getter&,
                                           int, int);
 
-   virtual ~@ModelName@_standard_model_matching_up();
+   virtual ~@ModelName@_standard_model_matching_up() = default;
 
    virtual double get_scale() const override;
    virtual void set_models(Two_scale_model*, Two_scale_model*) override;
@@ -85,7 +85,7 @@ public:
                                             const Scale_getter&,
                                             int, int);
 
-   virtual ~@ModelName@_standard_model_matching_down();
+   virtual ~@ModelName@_standard_model_matching_down() = default;
 
    virtual double get_scale() const override;
    virtual void set_models(Two_scale_model*, Two_scale_model*) override;

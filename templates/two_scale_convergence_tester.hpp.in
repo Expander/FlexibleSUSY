@@ -35,7 +35,7 @@ public:
    using Scale_getter = Convergence_tester_DRbar<@ModelName@<Two_scale>>::Scale_getter;
 
    @ModelName@_convergence_tester(@ModelName@<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
-   virtual ~@ModelName@_convergence_tester();
+   virtual ~@ModelName@_convergence_tester() = default;
 
 protected:
    virtual double max_rel_diff() const;

@@ -44,9 +44,6 @@ CLASSNAME::@ModelName@_standard_model_matching_up(
    set_loop_order(loop_order_);
 }
 
-CLASSNAME::~@ModelName@_standard_model_matching_up()
-{}
-
 double CLASSNAME::get_scale() const
 {
    if (scale != 0.)
@@ -144,9 +141,6 @@ CLASSNAME::@ModelName@_standard_model_matching_down(
 {
    set_loop_order(loop_order_);
 }
-
-CLASSNAME::~@ModelName@_standard_model_matching_down()
-{}
 
 double CLASSNAME::get_scale() const
 {

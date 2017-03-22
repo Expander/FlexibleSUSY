@@ -49,8 +49,8 @@ public:
                                const @ModelName@_low_scale_constraint<Two_scale>&,
                                const @ModelName@_susy_scale_constraint<Two_scale>&,
                                const @ModelName@_high_scale_constraint<Two_scale>&);
-   virtual ~@ModelName@_initial_guesser();
-   virtual void guess(); ///< initial guess
+   virtual ~@ModelName@_initial_guesser() = default;
+   virtual void guess() override; ///< initial guess
 
    void set_running_precision(double p) { running_precision = p; }
 

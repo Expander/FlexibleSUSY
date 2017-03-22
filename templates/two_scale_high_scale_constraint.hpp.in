@@ -37,7 +37,7 @@ class @ModelName@_high_scale_constraint<Two_scale> : public Constraint<Two_scale
 public:
    @ModelName@_high_scale_constraint() = default;
    @ModelName@_high_scale_constraint(@ModelName@<Two_scale>*);
-   virtual ~@ModelName@_high_scale_constraint();
+   virtual ~@ModelName@_high_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override;
    virtual std::string name() const override { return "@ModelName@ high-scale constraint"; }

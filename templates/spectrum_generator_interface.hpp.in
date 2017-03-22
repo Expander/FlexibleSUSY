@@ -48,7 +48,7 @@ public:
       , parameter_output_scale(0.)
       , reached_precision(std::numeric_limits<double>::infinity())
    {}
-   virtual ~@ModelName@_spectrum_generator_interface() {}
+   virtual ~@ModelName@_spectrum_generator_interface() = default;
 
    const @ModelName@<T>& get_model() const { return model; }
    @ModelName@<T>& get_model() { return model; }
