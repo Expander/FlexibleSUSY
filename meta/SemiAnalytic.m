@@ -376,7 +376,7 @@ GetSolutionBasis[pars_List, subs_List] :=
            DeleteDuplicates[basis]
           ];
 
-ListAllTermsOfForm[par_, termTypes_List] :=
+ListAllTermsOfForm[termTypes_List] :=
     Module[{i, sets = {}, possibleTerms, terms = {}},
            For[i = 1, i <= Length[termTypes], i++,
                sets = termTypes[[i]] /. {f_, n_Integer?Positive} :> Sequence @@ ConstantArray[f, n];
@@ -394,7 +394,7 @@ GetLinearSystemSolutions[pars_List, subs_List, nonHomogeneousTerms_List:{}] :=
            basis = GetSolutionBasis[pars, subs];
            solns = SemiAnalyticSolution[#, basis]& /@ pars;
            If[nonHomogeneousTerms =!= {},
-              solns = SemiAnalyticSolution[#[[1]], Join[#[[2]], ListAllTermsOfForm[#[[1]], nonHomogeneousTerms]]]& /@ solns;
+              solns = SemiAnalyticSolution[#[[1]], Join[#[[2]], ListAllTermsOfForm[nonHomogeneousTerms]]]& /@ solns;
              ];
            solns
           ];
