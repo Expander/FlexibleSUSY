@@ -735,6 +735,23 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
    return result;
 }
 
+/// unit vector of length N into direction i
+template <int N, int i>
+constexpr Eigen::Matrix<double,N,1> Unit()
+{
+   return Eigen::Matrix<double,N,1>::Unit(i);
+}
+
+/// unit matrix projector of size MxN into direction i, j
+template <int M, int N, int i, int j>
+constexpr Eigen::Matrix<double,M,N> Unit()
+{
+   Eigen::Matrix<double,M,N> proj(Eigen::Matrix<double,M,N>::Zero());
+   proj(i,j) = 1;
+
+   return proj;
+}
+
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
 constexpr int UnitStep(T x) noexcept
