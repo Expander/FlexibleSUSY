@@ -368,7 +368,7 @@ GetSolutionBasis[pars_List, subs_List, addConjugateTerms_:False] :=
                   If[term =!= Null,
                      basis = Append[basis, term];,
                      Print["Error: cannot interpret settings for parameters ", InputForm[pars]];
-                     Print["   because a boundary value cannot be detemined."];
+                     Print["   because a boundary value cannot be determined."];
                      Quit[1];
                     ];
                  ];
