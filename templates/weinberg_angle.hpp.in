@@ -76,7 +76,11 @@ private:
    double calculate_delta_vb_susy(double);
 
 @deltaVBprototypes@
+   double B0(double, double, double) const;
    double B1(double, double, double) const;
+   double C0(double, double, double) const;
+   double D0(double, double, double, double) const;
+   double D27(double, double, double, double) const;
    static double rho_2(double);
 
    double calculate_self_energy_@VectorZ@(double);

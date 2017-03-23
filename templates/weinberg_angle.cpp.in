@@ -386,9 +386,29 @@ double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
 
 @deltaVBfunctions@
 
+double CLASSNAME::B0(double p, double m1, double m2) const
+{
+   return passarino_veltman::ReB0(p*p, m1*m1, m2*m2, Sqr(model->get_scale()));
+}
+
 double CLASSNAME::B1(double p, double m1, double m2) const
 {
    return -1. * passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(model->get_scale()));
+}
+
+double CLASSNAME::C0(double m1, double m2, double m3) const
+{
+   return c0(m1, m2, m3);
+}
+
+double CLASSNAME::D0(double m1, double m2, double m3, double m4) const
+{
+   return d0(m1, m2, m3, m4);
+}
+
+double CLASSNAME::D27(double m1, double m2, double m3, double m4) const
+{
+   return d27(m1, m2, m3, m4);
 }
 
 /**
