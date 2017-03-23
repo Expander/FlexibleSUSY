@@ -794,6 +794,9 @@ RValueToCFormString[expr_] :=
                     SARAH`B1[a___, SARAH`Mass2[b_], c___]  :> SARAH`B1[a,FlexibleSUSY`M[b],c],
                     SARAH`B00[a___, SARAH`Mass2[b_], c___] :> SARAH`B00[a,FlexibleSUSY`M[b],c],
                     SARAH`B22[a___, SARAH`Mass2[b_], c___] :> SARAH`B22[a,FlexibleSUSY`M[b],c],
+                    SARAH`C0[a___, SARAH`Mass2[b_], c___]  :> SARAH`C0[a,FlexibleSUSY`M[b],c],
+                    SARAH`D0[a___, SARAH`Mass2[b_], c___]  :> SARAH`D0[a,FlexibleSUSY`M[b],c],
+                    SARAH`D27[a___, SARAH`Mass2[b_], c___] :> SARAH`D27[a,FlexibleSUSY`M[b],c],
                     SARAH`F0[a___, SARAH`Mass2[b_], c___]  :> SARAH`F0[a,FlexibleSUSY`M[b],c],
                     SARAH`G0[a___, SARAH`Mass2[b_], c___]  :> SARAH`G0[a,FlexibleSUSY`M[b],c],
                     SARAH`H0[a___, SARAH`Mass2[b_], c___]  :> SARAH`H0[a,FlexibleSUSY`M[b],c] } /. {
