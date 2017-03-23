@@ -775,7 +775,23 @@ GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List, tria
                              Sow[defaultSettings /. settings];
                             ];
                         ];
-           {par, Flatten[Last[inputs],1]}
+           inputs = Flatten[Last[inputs], 1];
+           CheckLinearlyIndependentInputs[solution, inputs];
+           {par, inputs}
+          ];
+
+IsLinearlyDependentSet[vectors_List] := MatrixRank[vectors] < Length[vectors];
+
+CheckLinearlyIndependentInputs[SemiAnalyticSolution[par_, basis_], inputs_List] :=
+    Module[{inputsRules, basisValues},
+           inputsRules = (Rule[#[[1]], #[[2]]]& /@ #)& /@ inputs;
+           basisValues = (basis /. #)& /@ inputsRules;
+           If[IsLinearlyDependentSet[basisValues],
+              Print["Error: a linearly independent set of trial values could not be found!"];
+              Print["   The semi-analytic coefficients for ", par,
+                    " cannot be determined."];
+              Quit[1];
+             ];
           ];
 
 AreEquivalentInputSets[inputSetOne_, inputSetTwo_] :=
