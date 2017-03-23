@@ -758,7 +758,7 @@ GetDefaultSettings[parameters_List] := {#, 0}& /@ parameters;
 
 (* @note assumes the solution is a polynomial in the boundary value parameters *)
 GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List, trialValues_List:{}] :=
-    Module[{i, par, basis, trialValueRules = {},
+    Module[{i, par, basis, trialInput = 1, trialValueRules = {},
             termPars, settings, inputs},
            par = GetName[solution];
            basis = GetBasis[solution];
@@ -767,7 +767,7 @@ GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List, tria
              ];
            inputs = Reap[For[i = 1, i <= Length[basis], i++,
                              termPars = Parameters`FindAllParameters[basis[[i]]];
-                             settings = {#, 1} & /@ termPars;
+                             settings = {#, trialInput} & /@ termPars;
                              If[trialValueRules =!= {},
                                 settings = settings /. trialValueRules;
                                ];
