@@ -85,9 +85,9 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_one_loop_solution )
    const int error = model.solve_ewsb_one_loop();
    BOOST_CHECK_EQUAL(error, 0);
 
-   const std::complex<double> tadpole_hh_1(model.tadpole_hh(0));
-   const std::complex<double> tadpole_hh_2(model.tadpole_hh(1));
-   const std::complex<double> tadpole_hh_3(model.tadpole_hh(2));
+   const std::complex<double> tadpole_hh_1(model.tadpole_hh_1loop(0));
+   const std::complex<double> tadpole_hh_2(model.tadpole_hh_1loop(1));
+   const std::complex<double> tadpole_hh_3(model.tadpole_hh_1loop(2));
 
    BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
@@ -137,11 +137,11 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_two_loop_solution )
    const Eigen::Matrix<double,3,1> tadpole_2l(model.tadpole_hh_2loop());
 
    const std::complex<double> tadpole_hh_1(
-      model.tadpole_hh(0) + tadpole_2l(0));
+      model.tadpole_hh_1loop(0) + tadpole_2l(0));
    const std::complex<double> tadpole_hh_2(
-      model.tadpole_hh(1) + tadpole_2l(1));
+      model.tadpole_hh_1loop(1) + tadpole_2l(1));
    const std::complex<double> tadpole_hh_3(
-      model.tadpole_hh(2) + tadpole_2l(2));
+      model.tadpole_hh_1loop(2) + tadpole_2l(2));
 
    BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
