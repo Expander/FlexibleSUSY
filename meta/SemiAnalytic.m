@@ -756,26 +756,44 @@ GetSemiAnalyticEWSBSubstitutions[solutions_List] :=
 
 GetDefaultSettings[parameters_List] := {#, 0}& /@ parameters;
 
+HaveEquivalentZeroSet[monomialOne_, monomialTwo_] :=
+    Sort[Parameters`FindAllParameters[monomialOne]] === Sort[Parameters`FindAllParameters[monomialTwo]];
+
+RemoveConjugates[expr_] := expr //. (Conjugate | SARAH`Conj | Susyno`LieGroups`conj)[p_] :> p;
+
+GetTrialInputsForSubset[monomials_List, defaultSettings_List] :=
+    Module[{i, j, nEq, pars, equivalentRealTerms, realValues, complexValues, trialValues, evaluateSettings},
+           pars = DeleteDuplicates[Flatten[Parameters`FindAllParameters[monomials]]];
+           incr = 1 / Length[pars];
+           equivalentRealTerms = Gather[monomials, RemoveConjugates[#1] === RemoveConjugates[#2]&];
+           trialValues = Reap[
+                              For[i = 1, i <= Length[equivalentRealTerms], i++,
+                                  nEq = Length[equivalentRealTerms[[i]]];
+                                  realValues = MapIndexed[{#1, i + (First[#2] - 1) incr}&, pars];
+                                  complexValues = Table[MapIndexed[{#1, i + (First[#2] - 1) incr +
+                                                                        If[!Parameters`IsRealParameter[#],
+                                                                           \[ImaginaryI] (j - 1 + (First[#2] - 1) incr),
+                                                                           0
+                                                                          ]}&, pars], {j, 2, nEq}];
+                                  Sow[Join[{realValues}, complexValues]];
+                                 ];
+                             ];
+           trialValues = Flatten[Last[trialValues], 2];
+           evaluateSettings[values_] :=
+               Module[{settings},
+                      settings = Rule[{#[[1]], _}, {#[[1]], #[[2]]}] & /@ values;
+                      defaultSettings /. settings
+                     ];
+           evaluateSettings /@ trialValues
+          ];
+
 (* @note assumes the solution is a polynomial in the boundary value parameters *)
-GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List, trialValues_List:{}] :=
-    Module[{i, par, basis, trialInput = 1, trialValueRules = {},
-            termPars, settings, inputs},
+GetRequiredBasisPoints[solution_SemiAnalyticSolution, defaultSettings_List] :=
+    Module[{par, basis, trialValueRules = {}, independentSets, inputs},
            par = GetName[solution];
            basis = GetBasis[solution];
-           If[trialValues =!= {},
-              trialValueRules = Rule[{#[[1]], _}, {#[[1]], #[[2]]}] & /@ trialValues;
-             ];
-           inputs = Reap[For[i = 1, i <= Length[basis], i++,
-                             termPars = Parameters`FindAllParameters[basis[[i]]];
-                             settings = {#, trialInput} & /@ termPars;
-                             If[trialValueRules =!= {},
-                                settings = settings /. trialValueRules;
-                               ];
-                             settings = Rule[{#[[1]], _}, {#[[1]], #[[2]]}] & /@ settings;
-                             Sow[defaultSettings /. settings];
-                            ];
-                        ];
-           inputs = Flatten[Last[inputs], 1];
+           independentSets = Gather[basis, HaveEquivalentZeroSet];
+           inputs = Flatten[Join[GetTrialInputsForSubset[#, defaultSettings]& /@ independentSets], 1];
            CheckLinearlyIndependentInputs[solution, inputs];
            {par, inputs}
           ];
@@ -812,7 +830,7 @@ ConstructTrialDatasets[solutions_List, trialValues_List:{}] :=
     Module[{boundaryValues, defaultSettings, requiredBases, datasets},
            boundaryValues = GetBoundaryValueParameters[solutions];
            defaultSettings = GetDefaultSettings[boundaryValues];
-           requiredBases = GetRequiredBasisPoints[#, defaultSettings, trialValues]& /@ solutions;
+           requiredBases = GetRequiredBasisPoints[#, defaultSettings]& /@ solutions;
            datasets = Gather[requiredBases, RequireSameInput];
            MapIndexed[{First[#2], (#[[1]]) & /@ #1, First[(#[[2]]) & /@ #1]} &, datasets]
           ];
