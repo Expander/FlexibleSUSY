@@ -1,3 +1,11 @@
+FlexibleSUSY-1.7.4 [not released yet]
+
+ * Feature (commit b180979): Adding complete 1-loop O(alpha_tau +
+   alpha_b) and complete 2-loop O((alpha_t + alpha_b)^2) threshold
+   corrections for lambda(MSUSY) to the HSSUSY model file.
+   Many thanks to Pietro Slavich and Emanuele Bagnaschi for providing
+   the expressions.
+
 FlexibleSUSY-1.7.3 [February, 27 2017]
 
  * Change (commit 43bb03a): FlexibleSUSY now aborts the code
