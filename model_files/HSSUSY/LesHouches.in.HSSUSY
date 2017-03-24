@@ -55,8 +55,18 @@ Block EXTPAR                 # Input parameters
     5   2000                 # mA(MSUSY)
     6   173.34               # MEWSB
     7   200                  # At(MSUSY)
+    8   0                    # Ab(MSUSY)
+    9   0                    # Atau(MSUSY)
    25   10                   # TanBeta(MSUSY)
   100   2                    # LambdaLoopOrder
+  101   1                    # 2-loop at*as
+  102   1                    # 2-loop ab*as
+  103   1                    # 2-loop at*ab
+  104   1                    # 2-loop atau*atau
+  105   1                    # 2-loop at*at
+  106   1                    # 1-loop ab SM
+  107   1                    # 1-loop ab MSSM
+  108   1                    # 1-loop atau
 Block MSQ2IN
   1  1     4.00000000E+06   # mq2(1,1)
   2  2     4.00000000E+06   # mq2(2,2)
