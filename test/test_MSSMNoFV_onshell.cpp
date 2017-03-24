@@ -100,6 +100,7 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
    BOOST_TEST_MESSAGE("MChi = " << osmodel.get_MChi().transpose());
 
    try {
+      osmodel.set_verbose_output(true);
       osmodel.convert_to_onshell();
    } catch (const gm2calc::Error& e) {
       BOOST_TEST_MESSAGE(osmodel);
