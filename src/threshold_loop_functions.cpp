@@ -125,6 +125,9 @@ double F5(double x)
    if (is_equal(x, 1., 0.01))
       return (13 + 165*x - 174*x2 + 81*cube(x) - 15*x4)/70.;
 
+   if (is_equal(x, -1., 0.01))
+     return (-13 + 165*x + 174*x2 + 81*cube(x) + 15*x4)/70.;
+
    return 3*x*(1-x4+2*x2*std::log(x2))/cube(1-x2);
 }
 
@@ -137,6 +140,9 @@ double F6(double x)
 
    if (is_equal(x, 1., 0.01))
       return (-103 + 128*x - 26*x2 + quad(x))/120.;
+
+   if (is_equal(x, -1., 0.01))
+      return (-103 - 128*x - 26*x2 + quad(x))/120.;
 
    return (x2-3)/(4*(1-x2)) + x2*(x2-2)/(2*sqr(1.-x2))*std::log(x2);
 }
@@ -152,6 +158,11 @@ double F7(double x)
    if (is_equal(x, 1., 0.01))
       return -1.8642857142857139 + 2.057142857142856*x
          + 1.7142857142857153*x2 - 1.1428571428571432*cube(x)
+         + 0.2357142857142858*x4;
+
+   if (is_equal(x, -1., 0.01))
+      return -1.8642857142857139 - 2.057142857142856*x
+         + 1.7142857142857153*x2 + 1.1428571428571432*cube(x)
          + 0.2357142857142858*x4;
 
    return (-3*(x4-6*x2+1.))/(2*sqr(x2-1))
@@ -352,6 +363,9 @@ double F9(double x1, double x2)
    if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
       return F9_1_1(x1, x2);
 
+   if (is_equal(x1, -1., 0.01) && is_equal(x2, -1., 0.01))
+     return F9_1_1(-x1, -x2);
+
    if (is_equal(x1, 1., 0.01)) {
       if (is_equal(x2, 0., 0.01))
          return 2. - 2.*(-1 + x1) + 5./3.*sqr(-1 + x1);
@@ -396,9 +410,15 @@ double f1(double r)
    if (is_equal(r, 0., 0.01))
       return 18./7.*sqr(r);
 
+   // The function is even under x-> -x
    if (is_equal(r, 1., 0.01))
       return (-81 + 464*r + 270*sqr(r)
               - 208*cube(r) + 45*quad(r))/490.;
+
+   // Notice the flipped sign for the odd terms
+   if (is_equal(r, -1., 0.01))
+      return (-81 - 464*r + 270*sqr(r)
+              + 208*cube(r) + 45*quad(r))/490.;
 
    const double r2 = sqr(r);
 
@@ -411,9 +431,15 @@ double f2(double r)
    if (is_equal(r, 0., 0.01))
       return 22./9.*sqr(r);
 
+   // The function is even under x -> -x
    if (is_equal(r, 1., 0.01))
       return (-285 + 1616*r + 1230*sqr(r)
               - 848*cube(r) + 177*quad(r))/1890.;
+
+   // Notice the flipped sign for the odd terms
+   if (is_equal(r, -1., 0.01))
+      return (-285 - 1616*r + 1230*sqr(r)
+              + 848*cube(r) + 177*quad(r))/1890.;
 
    const double r2 = sqr(r);
 
@@ -429,6 +455,10 @@ double f3(double r)
    if (is_equal(r, 1., 0.01))
       return (849 - 1184*r + 1566*sqr(r)
               - 736*cube(r) + 135*quad(r))/630.;
+
+   if (is_equal(r, -1., 0.01))
+      return (849 + 1184*r + 1566*sqr(r)
+              + 736*cube(r) + 135*quad(r))/630.;
 
    const double r2 = sqr(r);
    const double r4 = quad(r);
@@ -447,6 +477,9 @@ double f4(double r)
 
    if (is_equal(r, 1., 0.01))
       return (2589 - 3776*r + 4278*r2 - 1984*cube(r) + 363*r4)/1470.;
+
+   if (is_equal(r, -1., 0.01))
+      return (2589 + 3776*r + 4278*r2 + 1984*cube(r) + 363*r4)/1470.;
 
    return (2*(5*r4+25*r2+6))/(7*sqr(r2-1))
       + (2*(r4-19*r2-18)*r2*std::log(r2))/(7*cube(r2-1));
@@ -574,6 +607,9 @@ double f5(double r1, double r2)
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f5_1_1(r1, r2);
+
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f5_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.01))
@@ -709,6 +745,9 @@ double f6(double r1, double r2)
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f6_1_1(r1, r2);
 
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f6_1_1(-r1, -r2);
+
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
          return f6_0_1(r2, r1);
@@ -840,6 +879,9 @@ double f7(double r1, double r2)
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f7_1_1(r1, r2);
 
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f7_1_1(-r1, -r2);
+
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
          return f7_0_1(r2, r1);
@@ -970,6 +1012,9 @@ double f8(double r1, double r2)
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f8_1_1(r1, r2);
+
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return -1.;
 
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
