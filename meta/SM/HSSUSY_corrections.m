@@ -150,28 +150,6 @@ lambda1LbottomMSSM = With[{
       )
 ];
 
-(* lambda 1-loop threshold correction O(alpha_b),
-   taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
-lambda1LbottomSM = With[{
-    mQ3 = Sqrt[msq2[3,3]],
-    mU3 = Sqrt[msu2[3,3]],
-    mD3 = Sqrt[msd2[3,3]],
-    mD32 = msd2[3,3],
-    mQ32 = msq2[3,3],
-    Q2 = SCALE^2,
-    Mu = MuInput,
-    gb = Yd[3,3], (* SM Yukawa coupling *)
-    Xtildeb = xbb,
-    cos2beta = Cos[2*ArcTan[TanBeta]],
-    k = 1/(4*Pi)^2
-    },
-     k*(6 Xtildeb gb^4 (TCF[1][xQD] - 1/12 Xtildeb TCF[2][xQD])
-      + 3/4 Xtildeb gb^2 cos2beta (-(3/10) g1^2 TCF[3][xQD] + (-((3 g1^2)/10) - g2^2) TCF[4][xQD])
-      - 1/4 ((3 g1^2)/5 + g2^2) Xtildeb gb^2 cos2beta^2 TCF[5][xQD]
-      + 3*gb^2*(gb^2-1/2*(g2^2+g1^2/5)*cos2beta)*Log[mQ32/Q2]+ 3 gb^2 (gb^2 - 1/5 g1^2 cos2beta) Log[mD32/Q2]
-      )
-    ];
-
 (* lambda 1-loop threshold correction O(alpha_tau),
    taken from SUSYHD 1.0.2, arxiv:1504.05200 *)
 lambda1Ltau = With[{

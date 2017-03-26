@@ -99,9 +99,8 @@ Block EXTPAR                 # Input parameters
   103   1                    # 2-loop at*ab
   104   1                    # 2-loop atau*atau
   105   1                    # 2-loop at*at
-  106   1                    # 1-loop ab SM
-  107   1                    # 1-loop ab MSSM
-  108   1                    # 1-loop atau
+  106   1                    # 1-loop ab
+  107   1                    # 1-loop atau
 Block MSQ2IN
   1  1     ${MS2}            # mq2(1,1)
   2  2     ${MS2}            # mq2(2,2)

@@ -24,9 +24,8 @@ EXTPAR = {
     {103, TwoLoopatab},
     {104, TwoLooptau},
     {105, TwoLoopatat},
-    {106, OneLoopAbSM},
-    {107, OneLoopAbMSSM},
-    {108, OneLoopAtau}
+    {106, OneLoopAb},
+    {107, OneLoopAtau}
 };
 
 FSExtraInputParameters = {
@@ -49,8 +48,7 @@ HighScaleInput = {
                 + UnitStep[LambdaLoopOrder-1] (
                     + lambda1LReg + lambda1LPhi
                     + lambda1LChi1 + lambda1LChi2
-                    + If[OneLoopAbSM >= 1, lambda1LbottomSM, 0]
-                    + If[OneLoopAbMSSM >= 1, lambda1LbottomMSSM, 0]
+                    + If[OneLoopAb >= 1, lambda1LbottomMSSM, 0]
                     + If[OneLoopAtau >= 1, lambda1Ltau, 0]
                     )
                 + UnitStep[LambdaLoopOrder-2] (
