@@ -688,6 +688,13 @@ double MSSMNoFV_onshell::convert_me2_fpi(
          std::cout << "   Iteration " << it << ": mse(2,2) = "
                    << signed_abs_sqrt(me211) << ", MSm(" << right_index
                    << ") = " << get_MSm(right_index) << '\n';
+         std::cout << "      "
+                   << "ZM = " << ZM.row(0) << ' ' << ZM.row(1)
+                   << ", M = " << M.row(0) << ' ' << M.row(1)
+                   << ", vd2 = " << vd2 << ", vu2 = " << vu2
+                   << ", g12 = " << g12 << ", ymu2 = " << ymu2
+                   << ", me211 = " << me211
+                   << ", MSm = " << get_MSm().transpose() << '\n';
       }
 
       accuracy_goal_reached =
