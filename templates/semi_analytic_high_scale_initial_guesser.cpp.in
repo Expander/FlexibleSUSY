@@ -234,13 +234,14 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
 
 void @ModelName@_initial_guesser<Semi_analytic>::guess_soft_parameters()
 {
-   const double low_scale_guess = low_constraint.get_initial_scale_guess();
+   const double low_scale_guess = low_constraint.get_scale();
    const double high_scale_guess = high_constraint.get_scale();
+   const double input_scale = @inputScaleGuess@;
 
    model->run_to(low_scale_guess, running_precision);
 
    // apply EWSB constraint
-   model->calculate_semi_analytic_solutions(high_scale_guess);
+   model->calculate_semi_analytic_solutions(input_scale);
    model->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum

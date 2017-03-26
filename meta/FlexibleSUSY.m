@@ -963,6 +963,34 @@ WriteInitialGuesserClass[lowScaleGuess_List, susyScaleGuess_List, highScaleGuess
                  } ];
           ];
 
+WriteSemiAnalyticInitialGuesserClass[lowScaleGuess_List, susyScaleGuess_List, highScaleGuess_List,
+                                     solutionsScale_String, files_List] :=
+   Module[{initialGuessAtLowScale, initialGuessAtLowScaleGaugeCouplings = "",
+           initialGuessAtHighScale, setDRbarYukawaCouplings,
+           allSettings},
+          initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
+          initialGuessAtLowScaleGaugeCouplings = Constraint`InitialGuessAtLowScaleGaugeCouplings[];
+          initialGuessAtSUSYScale = Constraint`ApplyConstraints[susyScaleGuess];
+          initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
+          allSettings             = Join[lowScaleGuess, highScaleGuess];
+          setDRbarYukawaCouplings = {
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[allSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[allSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[allSettings]
+          };
+          WriteOut`ReplaceInFiles[files,
+                 { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
+                   "@initialGuessAtLowScaleGaugeCouplings@" -> IndentText[WrapLines[initialGuessAtLowScaleGaugeCouplings]],
+                   "@initialGuessAtSUSYScale@" -> IndentText[WrapLines[initialGuessAtSUSYScale]],
+                   "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
+                   "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
+                   "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
+                   "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
+                   "@inputScaleGuess@" -> solutionsScale,
+                   Sequence @@ GeneralReplacementRules[]
+                 } ];
+          ];
+
 WriteConvergenceTesterClass[parameters_, files_List] :=
    Module[{compareFunction},
           compareFunction = ConvergenceTester`CreateCompareFunction[parameters];
@@ -2625,7 +2653,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale,
             semiAnalyticScaleInput, semiAnalyticScaleGuess,
             semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
-            semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}},
+            semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}, semiAnalyticInputScale = ""},
 
            PrintHeadline["Starting FlexibleSUSY"];
            FSDebugOutput["meta code directory: ", $flexiblesusyMetaDir];
@@ -3389,15 +3417,25 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               If[FlexibleSUSY`FlexibleEFTHiggs === True,
                  initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
                 ];
-              WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
-                                       FlexibleSUSY`InitialGuessAtSUSYScale,
-                                       FlexibleSUSY`InitialGuessAtHighScale,
-                                       {{FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
-                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.hpp"}]},
-                                        {FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
-                                         FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.cpp"}]}
-                                       }
-                                      ];
+              Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+                 semiAnalyticInputScale = "high_scale_guess",
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                 semiAnalyticInputScale = "susy_scale_guess",
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                 semiAnalyticInputScale = "low_scale_guess",
+                 True,
+                 semiAnalyticInputScale = "high_scale_guess"
+                ];
+              WriteSemiAnalyticInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
+                                                   FlexibleSUSY`InitialGuessAtSUSYScale,
+                                                   FlexibleSUSY`InitialGuessAtHighScale,
+                                                   semiAnalyticInputScale,
+                                                   {{FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
+                                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.hpp"}]},
+                                                    {FileNameJoin[{$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
+                                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_initial_guesser.cpp"}]}
+                                                   }
+                                                  ];
 
               Print["Creating class for semi-analytic solutions ..."];
               WriteSemiAnalyticSolutionsClass[semiAnalyticBCs, semiAnalyticSolns,
