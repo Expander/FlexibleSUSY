@@ -86,6 +86,11 @@ void @ModelName@_initial_guesser<Semi_analytic>::guess_susy_parameters()
    initial_guess_low_scale_parameters();
    initial_guess_high_scale_parameters();
    solve_susy_parameters();
+   update_boundary_value_input_scale();
+}
+
+void @ModelName@_initial_guesser<Semi_analytic>::update_boundary_value_input_scale()
+{
    if (main_high_constraint)
       main_high_constraint->set_scale(high_constraint.get_scale());
 }
