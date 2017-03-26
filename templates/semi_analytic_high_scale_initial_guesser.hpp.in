@@ -44,10 +44,10 @@ class @ModelName@_initial_guesser<Semi_analytic> : public Initial_guesser {
 public:
    @ModelName@_initial_guesser(@ModelName@<Semi_analytic>*,
                                const softsusy::QedQcd&,
-                               const @ModelName@_low_scale_constraint<Semi_analytic>&,
-                               const @ModelName@_susy_scale_constraint<Semi_analytic>&,
+                               @ModelName@_low_scale_constraint<Semi_analytic>&,
+                               @ModelName@_susy_scale_constraint<Semi_analytic>&,
                                @ModelName@_high_scale_constraint<Semi_analytic>&);
-   virtual ~@ModelName@_initial_guesser();
+   virtual ~@ModelName@_initial_guesser() = default;
    virtual void guess() override; ///< initial guess
 
    void set_running_precision(double p) { running_precision = p; }
@@ -65,15 +65,13 @@ private:
    double mm_guess{0.}; ///< guessed DR-bar mass of muon
    double mtau_guess{0.}; ///< guessed DR-bar mass of tau
    double running_precision{1.e-3}; ///< Runge-Kutta RG running precision
-   @ModelName@_low_scale_constraint<Semi_analytic> low_constraint{};
-   @ModelName@_susy_scale_constraint<Semi_analytic> susy_constraint{};
-   @ModelName@_high_scale_constraint<Semi_analytic> high_constraint{};
-   @ModelName@_high_scale_constraint<Semi_analytic>* main_high_constraint{nullptr};
+   @ModelName@_low_scale_constraint<Semi_analytic>& low_constraint;
+   @ModelName@_susy_scale_constraint<Semi_analytic>& susy_constraint;
+   @ModelName@_high_scale_constraint<Semi_analytic>& high_constraint;
 
    void initial_guess_low_scale_parameters();
    void initial_guess_high_scale_parameters();
    void solve_susy_parameters();
-   void update_boundary_value_input_scale();
    void guess_susy_parameters();
    void guess_soft_parameters();
    void calculate_DRbar_yukawa_couplings();

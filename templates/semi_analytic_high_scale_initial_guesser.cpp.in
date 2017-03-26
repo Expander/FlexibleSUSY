@@ -43,8 +43,8 @@ namespace flexiblesusy {
 @ModelName@_initial_guesser<Semi_analytic>::@ModelName@_initial_guesser(
    @ModelName@<Semi_analytic>* model_,
    const softsusy::QedQcd& qedqcd_,
-   const @ModelName@_low_scale_constraint<Semi_analytic>& low_constraint_,
-   const @ModelName@_susy_scale_constraint<Semi_analytic>& susy_constraint_,
+   @ModelName@_low_scale_constraint<Semi_analytic>& low_constraint_,
+   @ModelName@_susy_scale_constraint<Semi_analytic>& susy_constraint_,
    @ModelName@_high_scale_constraint<Semi_analytic>& high_constraint_
 )
    : model(model_)
@@ -52,15 +52,10 @@ namespace flexiblesusy {
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
-   , main_high_constraint(&high_constraint_)
 {
    if (!model)
       throw SetupError("@ModelName@_initial_guesser: Error: pointer to model"
                        " @ModelName@<Semi_analytic> must not be zero");
-}
-
-@ModelName@_initial_guesser<Semi_analytic>::~@ModelName@_initial_guesser()
-{
 }
 
 /**
@@ -86,13 +81,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::guess_susy_parameters()
    initial_guess_low_scale_parameters();
    initial_guess_high_scale_parameters();
    solve_susy_parameters();
-   update_boundary_value_input_scale();
-}
-
-void @ModelName@_initial_guesser<Semi_analytic>::update_boundary_value_input_scale()
-{
-   if (main_high_constraint)
-      main_high_constraint->set_scale(high_constraint.get_scale());
 }
 
 void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_low_scale_parameters()
@@ -189,7 +177,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_high_scale_parame
    model->run_to(high_scale_guess, running_precision);
 
    // apply high-scale constraint
-   high_constraint.set_model(model);
    high_constraint.apply();
 
    // apply user-defined initial guess at the high scale
@@ -236,9 +223,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    @ModelName@_susy_convergence_tester<Semi_analytic> convergence_tester(
       model, running_precision);
    Two_scale_increasing_precision precision(10.0, running_precision);
-
-   low_constraint.set_model(model);
-   susy_constraint.set_model(model);
 
    RGFlow<Two_scale> initial_solver;
    initial_solver.set_convergence_tester(&convergence_tester);
