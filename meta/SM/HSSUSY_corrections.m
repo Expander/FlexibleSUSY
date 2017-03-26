@@ -2135,7 +2135,7 @@ k^2*(ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^6*(Nc*(5 + 2*Log[mD]^2 + 3*Log[Q]^2
     ];
 
 
-(* Tay Yukawa lambda 2-loop threshold correction, computation with general masses *)
+(* Tau Yukawa lambda 2-loop threshold correction, computation with general masses *)
 lambda2LHSSTau = With[{
     k = 1/(4*Pi)^2,
     sbe = Sqrt[TanBeta^2/(1+TanBeta^2)],
