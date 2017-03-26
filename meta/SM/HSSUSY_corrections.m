@@ -184,7 +184,7 @@ lambda1Ltau = With[{
     k = 1/(4*Pi)^2
     },
      k*(2*XtildeTau*gtau^4*(TCF[1][xLE] - (XtildeTau*TCF[2][xLE])/12)
-     + (XtildeTau*gtau^2*cos2beta*((9*g1^2*TCF[3][xLE])/10 + ((-3*g1^2)/2 - g2^2)*TCF[4][xLE]))/4
+     + (XtildeTau*gtau^2*cos2beta*((-9*g1^2*TCF[3][xLE])/10 + ((3*g1^2)/10 - g2^2)*TCF[4][xLE]))/4
      -  (((3*g1^2)/5 + g2^2)*XtildeTau*gtau^2*cos2beta^2*TCF[5][xLE])/12
      + gtau^2*(gtau^2 - (3*g1^2*cos2beta)/5)*Log[ME32/Q2] + gtau^2*(gtau^2 - 1/2*(g2^2 - 3/5*g1^2)*cos2beta)*Log[ML32/Q2]
      )
