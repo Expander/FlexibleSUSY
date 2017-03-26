@@ -550,3 +550,13 @@ BOOST_AUTO_TEST_CASE(test_Max)
    BOOST_CHECK_EQUAL(Max(-1,0,1), 1);
    BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
 }
+
+BOOST_AUTO_TEST_CASE(test_Print_functions)
+{
+   PrintDEBUG("A debug message");
+   PrintERROR("An error message");
+   PrintINFO("An info message");
+   PrintWARNING("A warning message");
+
+   BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
+}
