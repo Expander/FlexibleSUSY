@@ -5,6 +5,7 @@
 #include "sum.hpp"
 #include "stopwatch.hpp"
 #include <complex>
+#include <Eigen/Core>
 
 using namespace flexiblesusy;
 
@@ -115,4 +116,20 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
    // If the following test passes, we should use the SUM() macro
    // instead of an explicit sum over Feynman diagrams.
    BOOST_CHECK_LT(10*time_SUM, time_loop);
+}
+
+BOOST_AUTO_TEST_CASE(test_sum_eigen_vector)
+{
+#define UVec(i) Eigen::Matrix<double,2,1>::Unit(i)
+
+   Eigen::Matrix<double,2,1> v;
+   v.setZero();
+
+   // can this also work without calling eval()?
+   v += SUM(i,0,1, (2*(i+1)*UVec(i)).eval());
+
+   BOOST_CHECK_EQUAL(v(0), 2.);
+   BOOST_CHECK_EQUAL(v(1), 4.);
+
+#undef UVec
 }
