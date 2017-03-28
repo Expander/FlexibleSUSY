@@ -2433,7 +2433,6 @@ lambda2LHSSTau = With[{
        (2*(-2*L^2 + 6*L*mu2 - 3*mu2^2 - 2*L*R + R^2)*PolyLog[2, 1 - R/mu2])/
           (L - R)^4))/cbe^2) /. { delta[x_,y_,z_] :> TDelta[x,y,z], phi[x_,y_,z_] :> TPhi[x,y,z] }
           ];
-
 (* Two loop alphas-alphab corrections, computation for general masses *)
 lambda2LPhiHSSAlphaBAlphaSFull = With[{
     k = 1/(4*Pi)^2,
@@ -2446,6 +2445,7 @@ lambda2LPhiHSSAlphaBAlphaSFull = With[{
     mu2 = MuInput^2,
     q2 = SCALE^2, (* renormalization/matching scale *)
     g = M3Input^2,
+    sgn = M3Input/Abs[M3Input],
     gt = Yu[3,3], (* SM Yukawa coupling *)
     gb = Yd[3,3],
     Xt = xt,
@@ -2474,56 +2474,61 @@ lambda2LPhiHSSAlphaBAlphaSFull = With[{
           (gb/(1-deltagsb-(deltagbyL1+deltagbyL2+deltagbyL3+deltagbyL4)))
     ];
 
-    g3^2*(ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb])^4*k^2*((8*(-3*mD^2*Q^2 + 2*g^3*(mD + Q) + 6*mD*g*Q*(mD + Q) -
-    g^2*(2*mD^2 + 9*mD*Q + 2*Q^2)))/(mD*(-mD + g)*(g - Q)*Q) +
-    (24*(mD^2 - 2*mD*g + 2*g^2)*Log[mD])/(-mD + g)^2 -
-    (8*(mD^2 - 2*mD*g + 3*g^2)*Log[mD]^2)/(-mD + g)^2 -
-    (8*(3*g^2 - 2*g*Q + Q^2)*Log[Q]^2)/(g - Q)^2 +
-    ((16*(-3*mD^2*Q^2 + g^3*(mD + Q) + 3*mD*g*Q*(mD + Q) -
-        g^2*(mD^2 + 3*mD*Q + Q^2)))/(mD*(-mD + g)*(g - Q)*Q) +
-      (16*(mD^2 - 2*mD*g + 2*g^2)*Log[mD])/(-mD + g)^2)*Log[q2] - 16*Log[q2]^2 +
-    Log[Q]*((24*(2*g^2 - 2*g*Q + Q^2))/(g - Q)^2 +
-      (16*(2*g^2 - 2*g*Q + Q^2)*Log[q2])/(g - Q)^2) +
-    Log[g]*((-8*g^2*(2*g^3*(mD + Q) + 2*g*(-mD + Q)^2*(mD + Q) +
-        g^2*(-4*mD^2 + 2*mD*Q - 4*Q^2) + mD*Q*(mD^2 + Q^2)))/
-      (mD*(-mD + g)^2*(g - Q)^2*Q) + (16*g^2*Log[mD])/(-mD + g)^2 +
-      (16*g^2*Log[Q])/(g - Q)^2 - (16*g^2*(mD^2 + 2*g^2 + Q^2 - 2*g*(mD + Q))*
-        Log[q2])/((-mD + g)^2*(g - Q)^2)) +
-    Xb^2*((-32*g)/(mD*Q) + (32*(-2*mD + 3*g)*Log[mD])/((-mD + g)*(mD - Q)) +
-      (16*(-3*mD + Q)*Log[mD]^2)/(-mD + Q)^2 + (32*g^2*(-mD + g - Q)*Log[g])/
-      (mD*(-mD + g)*(g - Q)*Q) + (16*(mD - 3*Q)*Log[Q]^2)/(-mD + Q)^2 +
-      ((-32*g)/(mD*Q) - (64*Log[mD])/(-mD + Q))*Log[q2] +
-      Log[Q]*((32*(3*g - 2*Q))/((g - Q)*(-mD + Q)) + (32*(mD + Q)*Log[mD])/
-        (-mD + Q)^2 + (64*Log[q2])/(-mD + Q))) - (32*g^2*PolyLog[2, 1 - g/mD])/
-    (-mD + g)^2 - (32*g^2*PolyLog[2, 1 - g/Q])/(g - Q)^2 +
-    Xb^4*((16*(6*mD*Q + g*(mD + Q)))/(mD*Q*(-mD + Q)^2) +
-      (16*(7*mD + 2*g + 3*Q)*Log[mD])/(-mD + Q)^3 +
-      (16*(g*(mD - Q) + 2*mD*(mD + Q))*Log[mD]^2)/(-mD + Q)^4 -
-      (16*g*(mD + Q)*Log[g])/(mD*Q*(-mD + Q)^2) +
-      (16*(g*(-mD + Q) + 2*Q*(mD + Q))*Log[Q]^2)/(-mD + Q)^4 +
-      ((16*(4*mD*Q + g*(mD + Q)))/(mD*Q*(-mD + Q)^2) + (32*(mD + g + Q)*Log[mD])/
-        (-mD + Q)^3)*Log[q2] + Log[Q]*((-16*(3*mD + 2*g + 7*Q))/(-mD + Q)^3 -
-        (32*(mD + Q)^2*Log[mD])/(-mD + Q)^4 - (32*(mD + g + Q)*Log[q2])/
-        (-mD + Q)^3) + (16*(mD - 2*g + Q)*PolyLog[2, 1 - g/mD])/(-mD + Q)^3 +
-      (16*(-mD + 2*g - Q)*PolyLog[2, 1 - g/Q])/(-mD + Q)^3) +
-    Xb^3*((-256*Sqrt[g])/(-mD + Q)^2 - (64*Sqrt[g]*(3*mD + Q)*Log[mD])/
-      (-mD + Q)^3 + (32*Sqrt[g]*(-mD + 2*g - Q)*Log[mD]^2)/(mD - Q)^3 +
-      (32*Sqrt[g]*(-mD + 2*g - Q)*Log[Q]^2)/(-mD + Q)^3 +
-      Log[g]*((128*g^(3/2)*Log[mD])/(-mD + Q)^3 - (128*g^(3/2)*Log[Q])/
-        (-mD + Q)^3) + ((-128*Sqrt[g])/(-mD + Q)^2 - (64*Sqrt[g]*(mD + Q)*Log[mD])/
-        (-mD + Q)^3)*Log[q2] + Log[Q]*((64*Sqrt[g]*(mD + 3*Q))/(-mD + Q)^3 +
-        (64*Sqrt[g]*(mD + Q)*Log[q2])/(-mD + Q)^3) +
-        (64*Sqrt[g]*(-mD + 2*g - Q)*PolyLog[2, 1 - g/mD])/(mD - Q)^3 +
-      (64*Sqrt[g]*(-mD + 2*g - Q)*PolyLog[2, 1 - g/Q])/(-mD + Q)^3) +
-    Xb*((64*Sqrt[g]*Log[mD])/(-mD + Q) + (64*g^(3/2)*Log[mD]^2)/
-      ((-mD + g)*(mD - Q)) + (64*g^(3/2)*Log[Q]^2)/((g - Q)*(-mD + Q)) -
-      (64*g^(3/2)*Log[mD]*Log[q2])/((-mD + g)*(mD - Q)) +
-      Log[g]*((-64*g^(3/2)*Log[mD])/((-mD + g)*(mD - Q)) -
-        (64*g^(3/2)*Log[Q])/((g - Q)*(-mD + Q)) + (64*g^(3/2)*Log[q2])/
-        ((-mD + g)*(g - Q))) + Log[Q]*((-64*Sqrt[g])/(-mD + Q) -
-        (64*g^(3/2)*Log[q2])/((g - Q)*(-mD + Q))) +
-      (128*g^(3/2)*PolyLog[2, 1 - g/mD])/((-mD + g)*(mD - Q)) +
-      (128*g^(3/2)*PolyLog[2, 1 - g/Q])/((g - Q)*(-mD + Q)))) /. { delta[x_,y_,z_] :> TDelta[x,y,z], phi[x_,y_,z_] :> TPhi[x,y,z] }
+    (
+       g3^2*ybMSSM[mQ3, mU3, mD3, M3, Mu, TanBeta, Xt, Xb]^4*k^2*((8*(-3*mD^2*Q^2 + 2*g^3*(mD + Q) + 6*g*mD*Q*(mD + Q) - 
+            g^2*(2*mD^2 + 9*mD*Q + 2*Q^2)))/((g - mD)*mD*(g - Q)*Q) + 
+         (24*(2*g^2 - 2*g*mD + mD^2)*Log[mD])/(g - mD)^2 - 
+         (8*(3*g^2 - 2*g*mD + mD^2)*Log[mD]^2)/(g - mD)^2 - 
+         (8*(3*g^2 - 2*g*Q + Q^2)*Log[Q]^2)/(g - Q)^2 + 
+         ((16*(-3*mD^2*Q^2 + g^3*(mD + Q) + 3*g*mD*Q*(mD + Q) - 
+              g^2*(mD^2 + 3*mD*Q + Q^2)))/((g - mD)*mD*(g - Q)*Q) + 
+           (16*(2*g^2 - 2*g*mD + mD^2)*Log[mD])/(g - mD)^2)*Log[q2] - 16*Log[q2]^2 + 
+         Log[Q]*((24*(2*g^2 - 2*g*Q + Q^2))/(g - Q)^2 + 
+           (16*(2*g^2 - 2*g*Q + Q^2)*Log[q2])/(g - Q)^2) + 
+         Log[g]*((-8*g^2*(2*g^3*(mD + Q) + 2*g*(-mD + Q)^2*(mD + Q) + 
+              g^2*(-4*mD^2 + 2*mD*Q - 4*Q^2) + mD*Q*(mD^2 + Q^2)))/
+            ((g - mD)^2*mD*(g - Q)^2*Q) + (16*g^2*Log[mD])/(g - mD)^2 + 
+           (16*g^2*Log[Q])/(g - Q)^2 - (16*g^2*(2*g^2 + mD^2 + Q^2 - 2*g*(mD + Q))*
+             Log[q2])/((g - mD)^2*(g - Q)^2)) + 
+         Xb^2*((-32*g)/(mD*Q) + (32*g^2*(g - mD - Q)*Log[g])/
+            ((g - mD)*mD*(g - Q)*Q) + (32*(3*g - 2*mD)*Log[mD])/
+            ((g - mD)*(mD - Q)) + (16*(-3*mD + Q)*Log[mD]^2)/(-mD + Q)^2 + 
+           (16*(mD - 3*Q)*Log[Q]^2)/(-mD + Q)^2 + 
+           ((-32*g)/(mD*Q) - (64*Log[mD])/(-mD + Q))*Log[q2] + 
+           Log[Q]*((32*(3*g - 2*Q))/((g - Q)*(-mD + Q)) + (32*(mD + Q)*Log[mD])/
+              (-mD + Q)^2 + (64*Log[q2])/(-mD + Q))) - 
+         (32*g^2*PolyLog[2, 1 - g/mD])/(g - mD)^2 - (32*g^2*PolyLog[2, 1 - g/Q])/
+          (g - Q)^2 + Xb^4*((16*(6*mD*Q + g*(mD + Q)))/(mD*Q*(-mD + Q)^2) - 
+           (16*g*(mD + Q)*Log[g])/(mD*Q*(-mD + Q)^2) + 
+           (16*(2*g + 7*mD + 3*Q)*Log[mD])/(-mD + Q)^3 + 
+           (16*(g*(mD - Q) + 2*mD*(mD + Q))*Log[mD]^2)/(-mD + Q)^4 + 
+           (16*(g*(-mD + Q) + 2*Q*(mD + Q))*Log[Q]^2)/(-mD + Q)^4 + 
+           ((16*(4*mD*Q + g*(mD + Q)))/(mD*Q*(-mD + Q)^2) + 
+             (32*(g + mD + Q)*Log[mD])/(-mD + Q)^3)*Log[q2] + 
+           Log[Q]*((-16*(2*g + 3*mD + 7*Q))/(-mD + Q)^3 - (32*(mD + Q)^2*Log[mD])/
+              (-mD + Q)^4 - (32*(g + mD + Q)*Log[q2])/(-mD + Q)^3) + 
+           (16*(-2*g + mD + Q)*PolyLog[2, 1 - g/mD])/(-mD + Q)^3 + 
+           (16*(2*g - mD - Q)*PolyLog[2, 1 - g/Q])/(-mD + Q)^3) + 
+         Xb^3*((-256*Sqrt[g]*sgn)/(-mD + Q)^2 - (64*Sqrt[g]*(3*mD + Q)*sgn*Log[mD])/
+            (-mD + Q)^3 + (32*Sqrt[g]*(2*g - mD - Q)*sgn*Log[mD]^2)/(mD - Q)^3 + 
+           (32*Sqrt[g]*(2*g - mD - Q)*sgn*Log[Q]^2)/(-mD + Q)^3 + 
+           Log[g]*((128*g^(3/2)*sgn*Log[mD])/(-mD + Q)^3 - (128*g^(3/2)*sgn*Log[Q])/
+              (-mD + Q)^3) + ((-128*Sqrt[g]*sgn)/(-mD + Q)^2 - 
+             (64*Sqrt[g]*(mD + Q)*sgn*Log[mD])/(-mD + Q)^3)*Log[q2] + 
+           Log[Q]*((64*Sqrt[g]*(mD + 3*Q)*sgn)/(-mD + Q)^3 + 
+             (64*Sqrt[g]*(mD + Q)*sgn*Log[q2])/(-mD + Q)^3) + 
+           (64*Sqrt[g]*(2*g - mD - Q)*sgn*PolyLog[2, 1 - g/mD])/(mD - Q)^3 + 
+           (64*Sqrt[g]*(2*g - mD - Q)*sgn*PolyLog[2, 1 - g/Q])/(-mD + Q)^3) + 
+         Xb*((64*Sqrt[g]*sgn*Log[mD])/(-mD + Q) + (64*g^(3/2)*sgn*Log[mD]^2)/
+            ((g - mD)*(mD - Q)) + (64*g^(3/2)*sgn*Log[Q]^2)/((g - Q)*(-mD + Q)) - 
+           (64*g^(3/2)*sgn*Log[mD]*Log[q2])/((g - mD)*(mD - Q)) + 
+           Log[g]*((-64*g^(3/2)*sgn*Log[mD])/((g - mD)*(mD - Q)) - 
+             (64*g^(3/2)*sgn*Log[Q])/((g - Q)*(-mD + Q)) + (64*g^(3/2)*sgn*Log[q2])/
+              ((g - mD)*(g - Q))) + Log[Q]*((-64*Sqrt[g]*sgn)/(-mD + Q) - 
+             (64*g^(3/2)*sgn*Log[q2])/((g - Q)*(-mD + Q))) + 
+           (128*g^(3/2)*sgn*PolyLog[2, 1 - g/mD])/((g - mD)*(mD - Q)) + 
+           (128*g^(3/2)*sgn*PolyLog[2, 1 - g/Q])/((g - Q)*(-mD + Q))))
+      ) /. { delta[x_,y_,z_] :> TDelta[x,y,z], phi[x_,y_,z_] :> TPhi[x,y,z] }
       ];
 
 (* Two loop alphas-alphab corrections, computation for degenerate masses *)
