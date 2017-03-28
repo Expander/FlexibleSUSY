@@ -222,7 +222,10 @@ ConvertSarahTadpoles[tadpoles_List] :=
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
-    Module[{result, heavySE},
+    Module[{result, heavySE,
+            tQuark = TreeMasses`GetSMTopQuarkMultiplet[],
+            bQuark = TreeMasses`GetSMBottomQuarkMultiplet[]
+           },
            result = (SelfEnergies`FSSelfEnergy @@@ selfEnergies) /. CreateMassEigenstateReplacements[];
            result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
            result = SplitFermionSelfEnergies[result];
@@ -234,19 +237,19 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[
-               p:SARAH`BottomQuark[__][_]|SARAH`BottomQuark[_]|((particle_[__][_]|particle_[_]) /; TreeMasses`IsSMChargedLepton[particle]), expr__] :>
+               p:bQuark[__][_]|bQuark[_]|((particle_[__][_]|particle_[_]) /; TreeMasses`IsSMChargedLepton[particle]), expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`HiggsBoson}]& /@ heavySE)];
            (* Create rotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
            (* Create unrotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveParticle[#,SARAH`VectorG]& /@ heavySE];
            result /. SARAH`Mass -> FlexibleSUSY`M

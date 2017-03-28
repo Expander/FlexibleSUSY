@@ -476,13 +476,13 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
 
            result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n"
                     <> "const double saved_mt = PHYSICAL("
-                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                     <> ");\nPHYSICAL("
-                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                     <> ") = qedqcd.displayPoleMt();\n\n"
                     <> result;
            result = result <> "PHYSICAL("
-                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                            <> ") = saved_mt;\n";
            result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
 

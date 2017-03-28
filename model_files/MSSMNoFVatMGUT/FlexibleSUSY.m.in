@@ -208,8 +208,3 @@ ExtraSLHAOutputBlocks = {
             {     13, Pole[M[Fm]]     },
             {     15, Pole[M[Ftau]]   } } }
 };
-
-TopQuark    = Ft;
-BottomQuark = Fb;
-Neutrino    = Fvt;
-Electron    = Ftau;

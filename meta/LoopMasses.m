@@ -108,7 +108,7 @@ Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
     "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <>
     "calculate_singlet_mass(M_loop);\n";
 
-Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
+Do1DimFermion[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], massMatrixName_String,
               _String, _String, _String, momentum_String, type_] :=
     Module[{massName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
@@ -467,7 +467,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixCType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
-           topTwoLoop = particle === SARAH`TopQuark;
+           topTwoLoop = particle === TreeMasses`GetSMTopQuarkMultiplet[];
            If[topTwoLoop,
               topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1], 1];
               topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL], 1];
@@ -872,7 +872,7 @@ CreateRunningDRbarMassPrototypes[] :=
            Return[result];
           ];
 
-CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, renormalizationScheme_] :=
+CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMBottomQuarkMultiplet[], renormalizationScheme_] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, alphaS, drbarConversion, gPrime,
             dimParticle, treeLevelMass},
@@ -959,7 +959,7 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
-CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
+CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop, qcdThreeLoop = 0,
             dimParticle, treeLevelMass},
