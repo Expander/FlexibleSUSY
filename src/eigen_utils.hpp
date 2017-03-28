@@ -89,15 +89,15 @@ auto Eval(const Eigen::DenseBase<Derived>& expr) -> decltype(expr.eval())
    return expr.eval();
 }
 
-char                 Eval(char                        expr) { return expr; }
-short                Eval(short                       expr) { return expr; }
-int                  Eval(int                         expr) { return expr; }
-long                 Eval(long                        expr) { return expr; }
-unsigned short       Eval(unsigned short              expr) { return expr; }
-unsigned int         Eval(unsigned int                expr) { return expr; }
-unsigned long        Eval(unsigned long               expr) { return expr; }
-double               Eval(double                      expr) { return expr; }
-std::complex<double> Eval(const std::complex<double>& expr) { return expr; }
+inline char                 Eval(char                        expr) { return expr; }
+inline short                Eval(short                       expr) { return expr; }
+inline int                  Eval(int                         expr) { return expr; }
+inline long                 Eval(long                        expr) { return expr; }
+inline unsigned short       Eval(unsigned short              expr) { return expr; }
+inline unsigned int         Eval(unsigned int                expr) { return expr; }
+inline unsigned long        Eval(unsigned long               expr) { return expr; }
+inline double               Eval(double                      expr) { return expr; }
+inline std::complex<double> Eval(const std::complex<double>& expr) { return expr; }
 
 /**
  * The element of v, which is closest to mass, is moved to the
