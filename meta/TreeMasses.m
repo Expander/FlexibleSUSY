@@ -187,7 +187,9 @@ GetSMNeutrino3::usage      = "returns SM neutrino 3, Fv[3] or FvmL";
 
 GetSMTopQuarkMultiplet::usage    = "Returns multiplet containing the top quark, Fu or Ft";
 GetSMBottomQuarkMultiplet::usage = "Returns multiplet containing the bottom quark, Fd or Fb";
-GetSMTauLeptonMultiplet::usage   = "Returns multiplet containing the tau lepton, Fe or Ftau";
+GetSMElectronLeptonMultiplet::usage = "Returns multiplet containing the electron, Fe";
+GetSMMuonLeptonMultiplet::usage     = "Returns multiplet containing the muon, Fe or Fm";
+GetSMTauLeptonMultiplet::usage      = "Returns multiplet containing the tau lepton, Fe or Ftau";
 
 GetMass::usage="wraps M[] head around particle";
 
@@ -473,9 +475,11 @@ GetSMNeutrino1[]      := GetUpLepton[1];
 GetSMNeutrino2[]      := GetUpLepton[2];
 GetSMNeutrino3[]      := GetUpLepton[3];
 
-GetSMTopQuarkMultiplet[]    := GetUpQuark[3]    /. head_[_] :> head;
-GetSMBottomQuarkMultiplet[] := GetDownQuark[3]  /. head_[_] :> head;
-GetSMTauLeptonMultiplet[]   := GetDownLepton[3] /. head_[_] :> head;
+GetSMTopQuarkMultiplet[]       := GetUpQuark[3]    /. head_[_] :> head;
+GetSMBottomQuarkMultiplet[]    := GetDownQuark[3]  /. head_[_] :> head;
+GetSMElectronLeptonMultiplet[] := GetDownLepton[1] /. head_[_] :> head;
+GetSMMuonLeptonMultiplet[]     := GetDownLepton[2] /. head_[_] :> head;
+GetSMTauLeptonMultiplet[]      := GetDownLepton[3] /. head_[_] :> head;
 
 GetMass[particle_[idx__]] := GetMass[particle][idx];
 GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
