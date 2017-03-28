@@ -31,6 +31,8 @@
 #define TCD2t threshold_loop_functions::D2t
 #define TCD4t threshold_loop_functions::D4t
 #define TCW threshold_loop_functions::W
+#define TDelta threshold_loop_functions::deltaxyz
+#define TPhi threshold_loop_functions::phixyz
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
@@ -61,6 +63,12 @@ double f8(double, double);
 
 /// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
 double Iabc(double, double, double);
+
+/// \f$Delta_{xyz}(x,y,z)\f$ (arguments are interpreted as squared)
+double deltaxyz(double, double, double);
+
+/// \f$phi_{xyz}(x,y,z)\f$ (arguments are interpreted as squared)
+double phixyz(double, double, double);
 
 /// \f$B_0(p=0,m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
 double B0(double, double, double);
