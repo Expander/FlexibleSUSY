@@ -243,7 +243,7 @@ IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 
 IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
 IsSMParticle[sym_[__]] := IsSMParticle[sym];
-IsSMParticle[sym_] := SARAH`SMQ[sym];
+IsSMParticle[sym_] := SARAH`SMQ[sym, Higgs -> True];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];

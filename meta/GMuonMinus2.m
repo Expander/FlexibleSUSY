@@ -32,7 +32,7 @@ Begin["`Private`"];
 (************* Begin public interface *******************)
 
 GMuonMinus2IsSMParticle[particle_] :=
-    TreeMasses`IsSMParticle[particle] || TreeMasses`IsSMGoldstone[particle];
+    TreeMasses`IsSMParticle[particle];
 
 CreateSMParticleFlags[particle_] :=
     Module[{result = "", i,

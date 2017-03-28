@@ -50,15 +50,6 @@ InitialGuessAtLowScale = {
    {Yc, YcIN}
 };
 
-SMParticles = {
-    Electron, TopQuark, BottomQuark,
-    VectorP, VectorZ, VectorG, VectorW, Neutrino,
-    gP, gG, gZ, gWm, gWmC,
-    Hp, Ah, (* goldstones *)
-    hh (* Higgs *)
-};
-
-
 DefaultPoleMassPrecision = HighPrecision;
 HighPoleMassPrecision    = {};
 MediumPoleMassPrecision  = {};

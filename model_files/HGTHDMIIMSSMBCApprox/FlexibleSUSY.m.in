@@ -161,12 +161,6 @@ HighPoleMassPrecision    = {hh};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 
-SMParticles = {
-    Electron, TopQuark, BottomQuark,
-    VectorP, VectorZ, VectorG, VectorW, Neutrino,
-    gP, gG, gZ, gWm, gWmC
-};
-
 (* arxiv:1508.00576, Eq. (59) *)
 deltaLambda1th2L = With[{
     kappa = 1/(4 Pi)^2,
