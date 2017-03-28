@@ -28,22 +28,22 @@
 
 /********************* put types *********************/
 
-void MLPut(MLINK link, const std::string& s)
+inline void MLPut(MLINK link, const std::string& s)
 {
    MLPutSymbol(link, s.c_str());
 }
 
-void MLPut(MLINK link, int c)
+inline void MLPut(MLINK link, int c)
 {
    MLPutInteger(link, c);
 }
 
-void MLPut(MLINK link, double c)
+inline void MLPut(MLINK link, double c)
 {
    MLPutReal(link, c);
 }
 
-void MLPut(MLINK link, std::complex<double> c)
+inline void MLPut(MLINK link, std::complex<double> c)
 {
    if (std::imag(c) == 0.) {
       MLPutReal(link, std::real(c));
@@ -110,7 +110,7 @@ void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
 
 /********************* put single heads *********************/
 
-void MLPutHeads(MLINK link, const std::vector<std::string>& heads)
+inline void MLPutHeads(MLINK link, const std::vector<std::string>& heads)
 {
    for (const auto& h: heads)
       MLPutFunction(link, h.c_str(), 1);
@@ -118,7 +118,7 @@ void MLPutHeads(MLINK link, const std::vector<std::string>& heads)
 
 /********************* put rules to types *********************/
 
-void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
+inline void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
 {
    MLPutFunction(link, "Rule", 2);
    MLPutHeads(link, heads);
@@ -134,17 +134,17 @@ void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std
 
 /********************* get types *********************/
 
-void MLGet(MLINK link, int *c)
+inline void MLGet(MLINK link, int *c)
 {
    MLGetInteger(link, c);
 }
 
-void MLGet(MLINK link, long *c)
+inline void MLGet(MLINK link, long *c)
 {
    MLGetLongInteger(link, c);
 }
 
-void MLGet(MLINK link, short *c)
+inline void MLGet(MLINK link, short *c)
 {
    MLGetShortInteger(link, c);
 }

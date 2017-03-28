@@ -47,10 +47,6 @@ namespace flexiblesusy {
 {
 }
 
-@ModelName@_convergence_tester<Two_scale>::~@ModelName@_convergence_tester()
-{
-}
-
 double @ModelName@_convergence_tester<Two_scale>::max_rel_diff() const
 {
    const @ModelName@<Two_scale>& ol = get_last_iteration_model();

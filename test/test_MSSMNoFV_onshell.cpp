@@ -90,6 +90,8 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
 
    MSSMNoFV_onshell osmodel(model);
 
+   BOOST_TEST_MESSAGE(osmodel);
+
    BOOST_CHECK_GT(std::abs(osmodel.get_MCha(0) - osmodel.get_physical().MCha(0)), 0.8);
    BOOST_CHECK_GT(std::abs(osmodel.get_MCha(1) - osmodel.get_physical().MCha(1)), 2.);
    BOOST_CHECK_GT(std::abs(osmodel.get_MChi(0) - osmodel.get_physical().MChi(0)), 1.);
@@ -98,8 +100,11 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
 
    BOOST_TEST_MESSAGE("MChi_pole = " << osmodel.get_physical().MChi.transpose());
    BOOST_TEST_MESSAGE("MChi = " << osmodel.get_MChi().transpose());
+   BOOST_TEST_MESSAGE("MSm_pole = " << osmodel.get_physical().MSm.transpose());
+   BOOST_TEST_MESSAGE("MSm = " << osmodel.get_MSm().transpose());
 
    try {
+      osmodel.set_verbose_output(true);
       osmodel.convert_to_onshell();
    } catch (const gm2calc::Error& e) {
       BOOST_TEST_MESSAGE(osmodel);
@@ -107,6 +112,7 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
    }
 
    BOOST_TEST_MESSAGE("MChi = " << osmodel.get_MChi().transpose());
+   BOOST_TEST_MESSAGE("MSm = " << osmodel.get_MSm().transpose());
 
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MCha(0), osmodel.get_physical().MCha(0), 1e-5);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MCha(1), osmodel.get_physical().MCha(1), 1e-5);

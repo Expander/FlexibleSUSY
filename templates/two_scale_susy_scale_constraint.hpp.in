@@ -38,7 +38,7 @@ class @ModelName@_susy_scale_constraint<Two_scale> : public Single_scale_constra
 public:
    @ModelName@_susy_scale_constraint() = default;
    @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*, const softsusy::QedQcd&);
-   virtual ~@ModelName@_susy_scale_constraint();
+   virtual ~@ModelName@_susy_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override;
    virtual std::string name() const override { return "@ModelName@ SUSY-scale constraint"; }

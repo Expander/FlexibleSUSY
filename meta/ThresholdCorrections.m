@@ -612,8 +612,18 @@ WarnIfFreeQ[coupling_, expr_, sym_] :=
        Message[CalculateGaugeCouplings::MissingRelation, coupling, sym, expr];
       ];
 
+CheckPerturbativityOf[coup_, name_String] :=
+"
+if (IsFinite(new_" <> name <> ")) {
+   model->get_problems().unflag_non_perturbative_parameter(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[coup] <> ");
+} else {
+   model->get_problems().flag_non_perturbative_parameter(
+      " <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[coup] <> ", new_" <> name <> ", get_scale());
+   new_" <> name <> " = Electroweak_constants::" <> name <> ";
+}";
+
 CalculateGaugeCouplings[] :=
-    Module[{subst, g1Def, g2Def, g3Def, result},
+    Module[{subst, g1Def, g2Def, g3Def},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
@@ -632,11 +642,12 @@ CalculateGaugeCouplings[] :=
            g1Def = g1Def /. subst;
            g2Def = g2Def /. subst;
            g3Def = g3Def /. subst;
-           result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
-                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
-           Return[result];
+           Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
+           "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+           "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+           "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n" <>
+           If[ValueQ[SARAH`hyperchargeCoupling], CheckPerturbativityOf[SARAH`hyperchargeCoupling, "g1"], ""] <> "\n" <>
+           If[ValueQ[SARAH`leftCoupling]       , CheckPerturbativityOf[SARAH`leftCoupling, "g2"], ""]
           ];
 
 End[];

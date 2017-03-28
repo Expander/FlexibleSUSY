@@ -150,7 +150,7 @@ public:
 
    void calculate_spectrum();
    std::string name() const;
-   void run_to(double scale, double eps = -1.0);
+   virtual void run_to(double scale, double eps = -1.0) override;
    void set_precision(double);
    double get_precision() const;
 

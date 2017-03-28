@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "def.h"
 #include "error.hpp"
+#include "diagonalization.hpp"
 #include <cmath>
 using std::abs;
 using std::cos;

@@ -98,8 +98,8 @@ private:
 class EUnknownHandle : public Error {
 public:
    explicit EUnknownHandle(Handle hid_) : hid(hid_) {}
-   virtual ~EUnknownHandle() {}
-   virtual std::string what() const {
+   virtual ~EUnknownHandle() = default;
+   virtual std::string what() const override {
       return "Unknown handle: " + ToString(hid);
    }
    Handle hid;
@@ -109,8 +109,8 @@ class ENotEnoughFreeHandles : public Error {
 public:
    explicit ENotEnoughFreeHandles(std::size_t max_handles_)
       : max_handles(max_handles_) {}
-   virtual ~ENotEnoughFreeHandles() {}
-   virtual std::string what() const {
+   virtual ~ENotEnoughFreeHandles() = default;
+   virtual std::string what() const override {
       return "Maximum number of open handles reached: "
          + ToString(max_handles) + ".  Please close some handles!";
    }
@@ -121,8 +121,8 @@ class EWrongNumberOfParameters : public Error {
 public:
    EWrongNumberOfParameters(mint pars_, mint expected_)
       : pars(pars_), expected(expected_) {}
-   virtual ~EWrongNumberOfParameters() {}
-   virtual std::string what() const {
+   virtual ~EWrongNumberOfParameters() = default;
+   virtual std::string what() const override {
       return "Wrong number of arguments: " + ToString(pars)
          + ".  Expected: " + ToString(expected);
    }
@@ -132,8 +132,8 @@ public:
 class EInvalidSpectrum : public Error {
 public:
    EInvalidSpectrum() {}
-   virtual ~EInvalidSpectrum() {}
-   virtual std::string what() const { return "Invalid spectrum"; }
+   virtual ~EInvalidSpectrum() = default;
+   virtual std::string what() const override { return "Invalid spectrum"; }
 };
 
 class Model_data {
@@ -141,7 +141,7 @@ public:
    Model_data() = default;
    Model_data(const Model_data&) = default;
    Model_data(Model_data&&) = default;
-   virtual ~Model_data() {}
+   virtual ~Model_data() = default;
    Model_data& operator=(const Model_data&) = default;
    Model_data& operator=(Model_data&&) = default;
 
@@ -183,7 +183,7 @@ public:
    Model_data_impl() = default;
    Model_data_impl(const Model_data_impl&) = default;
    Model_data_impl(Model_data_impl&&) = default;
-   virtual ~Model_data_impl() {}
+   virtual ~Model_data_impl() = default;
    Model_data_impl& operator=(const Model_data_impl&) = default;
    Model_data_impl& operator=(Model_data_impl&&) = default;
 

@@ -57,11 +57,11 @@ public:
    explicit @ModelName@_slha(const Model&, bool do_convert_masses_to_slha = true);
    @ModelName@_slha(const @ModelName@_slha&) = default;
    @ModelName@_slha(@ModelName@_slha&&) = default;
-   virtual ~@ModelName@_slha() {}
+   virtual ~@ModelName@_slha() = default;
    @ModelName@_slha& operator=(const @ModelName@_slha&) = default;
    @ModelName@_slha& operator=(@ModelName@_slha&&) = default;
 
-   virtual void clear();
+   virtual void clear() override;
    void convert_to_slha(); ///< converts pole masses and couplings to SLHA convention
    const Eigen::Matrix<std::complex<double>,3,3>& get_ckm_matrix() const { return ckm; }
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns_matrix() const { return pmns; }
@@ -70,8 +70,8 @@ public:
    void set_convert_masses_to_slha(bool); ///< allow/disallow for negative majoran fermion masses
 
    // interface functions
-   virtual void calculate_spectrum();
-   virtual void print(std::ostream&) const;
+   virtual void calculate_spectrum() override;
+   virtual void print(std::ostream&) const override;
 
 @slhaPoleMassGetters@
 @slhaPoleMixingMatrixGetters@

@@ -489,8 +489,7 @@ FindSymbolDef[sym_, opt_:DependenceNum] :=
            If[Length[symDef] > 1,
               Print["Warning: ", sym, " defined multiple times"];
              ];
-           symDef = symDef[[1]];
-           Return[symDef];
+           symDef[[1]]
           ];
 
 FindAllParametersFromList[expr_, parameters_List] :=

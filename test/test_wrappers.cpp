@@ -598,3 +598,53 @@ BOOST_AUTO_TEST_CASE(test_Max)
    BOOST_CHECK_EQUAL(Max(-1,0,1), 1);
    BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
 }
+
+BOOST_AUTO_TEST_CASE(test_UnitVector)
+{
+   // 2-vector
+   BOOST_CHECK_EQUAL((UnitVector<2,0>())(0), 1.);
+   BOOST_CHECK_EQUAL((UnitVector<2,0>())(1), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<2,1>())(0), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<2,1>())(1), 1.);
+
+   BOOST_CHECK_EQUAL(UnitVector<2>(0)(0), 1.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(0)(1), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(1)(1), 1.);
+
+   BOOST_CHECK_EQUAL(UnitVector(2,0)(0), 1.);
+   BOOST_CHECK_EQUAL(UnitVector(2,0)(1), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(2,1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(2,1)(1), 1.);
+
+   // 3-vector
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(0), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(1), 1.);
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(2), 0.);
+
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(1), 1.);
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(2), 0.);
+
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(1), 1.);
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(2), 0.);
+}
+
+BOOST_AUTO_TEST_CASE(test_MatrixProjector)
+{
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(0,0), 1.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(1,0), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(0,1), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(1,1), 0.);
+
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(0,0), 1.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(1,0), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(0,1), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(1,1), 0.);
+
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(0,0), 1.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(1,0), 0.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(0,1), 0.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(1,1), 0.);
+}

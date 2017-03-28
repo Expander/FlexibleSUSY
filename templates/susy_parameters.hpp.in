@@ -46,10 +46,10 @@ public:
    @ModelName@_susy_parameters& operator=(const @ModelName@_susy_parameters&) = default;
    @ModelName@_susy_parameters& operator=(@ModelName@_susy_parameters&&) = default;
 
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
+   virtual Eigen::ArrayXd beta() const override;
+   virtual Eigen::ArrayXd get() const override;
    virtual void print(std::ostream&) const;
-   virtual void set(const Eigen::ArrayXd&);
+   virtual void set(const Eigen::ArrayXd&) override;
    const @ModelName@_input_parameters& get_input() const;
    @ModelName@_input_parameters& get_input();
    void set_input_parameters(const @ModelName@_input_parameters&);

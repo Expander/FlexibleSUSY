@@ -656,6 +656,9 @@ double MSSMNoFV_onshell::convert_me2_fpi(
       std::cout << "Converting mse(2,2) to on-shell scheme with FPI ...\n"
                    "   Goal: MSm(" << right_index << ") = "
                 << MSm_goal(right_index) << '\n';
+      std::cout << "      "
+                << "MSm_pole = " << get_physical().MSm.transpose()
+                << ", MSm_pole_sorted = " << MSm_pole_sorted.transpose() << '\n';
    }
 
    bool accuracy_goal_reached =

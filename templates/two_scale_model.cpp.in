@@ -41,10 +41,6 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
 {
 }
 
-CLASSNAME::~@ModelName@()
-{
-}
-
 void CLASSNAME::calculate_spectrum()
 {
    @ModelName@_mass_eigenstates::calculate_spectrum();

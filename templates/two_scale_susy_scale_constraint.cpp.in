@@ -59,10 +59,6 @@ namespace flexiblesusy {
    initialize();
 }
 
-@ModelName@_susy_scale_constraint<Two_scale>::~@ModelName@_susy_scale_constraint()
-{
-}
-
 void @ModelName@_susy_scale_constraint<Two_scale>::apply()
 {
    check_model_ptr();

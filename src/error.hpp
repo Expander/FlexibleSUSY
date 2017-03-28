@@ -20,7 +20,6 @@
 #define ERROR_H
 
 #include <string>
-#include <sstream>
 
 namespace flexiblesusy {
 
@@ -79,12 +78,9 @@ public:
       {}
    virtual ~NoRhoConvergenceError() {}
    virtual std::string what() const {
-      std::stringstream message;
-      message << "NoRhoConvergenceError: no convergence"
-              << " after " << number_of_iterations << " iterations "
-              << " (sin(theta)=" << sin_theta << ", rho-hat=" << rho_hat
-              << ")";
-      return message.str();
+      return "NoRhoConvergenceError: no convergence after "
+         + std::to_string(number_of_iterations) + " iterations (sin(theta)="
+         + std::to_string(sin_theta) + ", rho-hat=" + std::to_string(rho_hat) + ")";
    }
    int get_number_of_iterations() const { return number_of_iterations; }
    double get_sin_theta() const { return sin_theta; }
@@ -117,22 +113,16 @@ public:
       {}
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
-      std::stringstream message;
-
       if (parameter_index == -1)
-         message << "NonPerturbativeRunningError: scale Q = " << value;
-      else
-         message << "NonPerturbativeRunningError: non-perturbative running"
-                    " of parameter " << parameter_index
-                 << " to scale " << scale;
+         return "NonPerturbativeRunningError: scale Q = " + std::to_string(value);
 
-      return message.str();
+      return "NonPerturbativeRunningError: non-perturbative running of parameter "
+         + std::to_string(parameter_index) + " to scale " + std::to_string(scale);
    }
    std::string what(const std::string& parameter_name) const {
-      std::stringstream message;
-      message << "NonPerturbativeRunningError: non-perturbative running"
-         " of " << parameter_name << " = " << value << " to scale " << scale;
-      return message.str();
+      return "NonPerturbativeRunningError: non-perturbative running"
+         " of " + parameter_name + " = " + std::to_string(value)
+         + " to scale " + std::to_string(scale);
    }
    int get_parameter_index() const { return parameter_index; }
    double get_parameter_value() const { return value; }
@@ -165,9 +155,7 @@ public:
       {}
    virtual ~OutOfMemoryError() {}
    virtual std::string what() const {
-      std::stringstream message;
-      message << "OutOfMemoryError: Not enought memory: " << msg;
-      return message.str();
+      return std::string("OutOfMemoryError: Not enought memory: ") + msg;
    }
 private:
    std::string msg;
@@ -188,19 +176,6 @@ private:
    std::string msg;
 };
 
-/**
- * @class DiagonalizationError
- * @brief Diagonalization failed
- */
-class DiagonalizationError : public Error {
-public:
-   explicit DiagonalizationError(const std::string& message_) : message(message_) {}
-   virtual ~DiagonalizationError() {}
-   virtual std::string what() const { return message; }
-private:
-   std::string message;
-};
-
 class ReadError : public Error {
 public:
    explicit ReadError(const std::string& message_) : message(message_) {}
@@ -210,6 +185,6 @@ private:
    std::string message;
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

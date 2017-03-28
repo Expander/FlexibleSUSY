@@ -669,7 +669,7 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define PROJECTOR Proj
 #define DEFINE_PROJECTOR(M,N,X,Y)                                       \
    Eigen::Matrix<double,M,N> Proj(Eigen::Matrix<double,M,N>::Zero());   \
-   Proj(X-1,Y-1) = 1;
+   Proj((X)-1,(Y)-1) = 1;
 
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
@@ -733,6 +733,58 @@ Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
       result += v[i];
 
    return result;
+}
+
+/// unit vector of length N into direction i
+template <int N, int i, typename Scalar = double>
+constexpr auto UnitVector() -> Eigen::Matrix<Scalar,N,1>
+{
+   return Eigen::Matrix<Scalar,N,1>::Unit(i);
+}
+
+/// unit vector of length N into direction i
+template <int N, typename Scalar = double>
+constexpr auto UnitVector(int i) -> Eigen::Matrix<Scalar,N,1>
+{
+   return Eigen::Matrix<Scalar,N,1>::Unit(i);
+}
+
+/// unit vector of length N into direction i
+inline Eigen::VectorXd UnitVector(int N, int i)
+{
+   Eigen::VectorXd v = Eigen::VectorXd::Zero(N);
+   v(i) = 1;
+
+   return v;
+}
+
+/// matrix projector of size MxN into direction i, j
+template <int M, int N, int i, int j, typename Scalar = double>
+constexpr auto MatrixProjector() -> Eigen::Matrix<Scalar,M,N>
+{
+   Eigen::Matrix<Scalar,M,N> proj(Eigen::Matrix<Scalar,M,N>::Zero());
+   proj(i,j) = 1;
+
+   return proj;
+}
+
+/// matrix projector of size MxN into direction i, j
+template <int M, int N, typename Scalar = double>
+constexpr auto MatrixProjector(int i, int j) -> Eigen::Matrix<Scalar,M,N>
+{
+   Eigen::Matrix<Scalar,M,N> proj(Eigen::Matrix<Scalar,M,N>::Zero());
+   proj(i,j) = 1;
+
+   return proj;
+}
+
+/// unit matrix projector of size MxN into direction i, j
+inline Eigen::MatrixXd MatrixProjector(int M, int N, int i, int j)
+{
+   Eigen::MatrixXd m = Eigen::MatrixXd::Zero(M,N);
+   m(i,j) = 1;
+
+   return m;
 }
 
 /// step function (0 for x < 0, 1 otherwise)

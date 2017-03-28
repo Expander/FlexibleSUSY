@@ -116,17 +116,17 @@ namespace @ModelName@_database {
 void to_database(
    const std::string&,
    const @ModelName@_mass_eigenstates&,
-   const softsusy::QedQcd* qedqcd = 0,
-   const Physical_input* physical_input = 0,
-   const @ModelName@_observables* observables = 0);
+   const softsusy::QedQcd* qedqcd = nullptr,
+   const Physical_input* physical_input = nullptr,
+   const @ModelName@_observables* observables = nullptr);
 
 /// fill model from an entry of the database
 @ModelName@_mass_eigenstates from_database(
    const std::string&,
    long long,
-   softsusy::QedQcd* qedqcd = 0,
-   Physical_input* physical_input = 0,
-   @ModelName@_observables* observables = 0);
+   softsusy::QedQcd* qedqcd = nullptr,
+   Physical_input* physical_input = nullptr,
+   @ModelName@_observables* observables = nullptr);
 
 } // namespace @ModelName@_database
 
