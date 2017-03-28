@@ -14,6 +14,8 @@ examples/lattice_numerical_fmssm.cpp        export-ignore
 examples/lattice_numerical_fmssm_fmssmn.cpp export-ignore
 examples/switch_MSSM.cpp                    export-ignore
 
+meta/SM/HSSUSY_corrections.m    export-ignore
+
 model_files/BetaSM              export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
