@@ -43,5 +43,8 @@ BOOST_AUTO_TEST_CASE(test_non_universal)
 
    std::cout << "# non-universal SUSY masses" << std::endl;
    for (const auto p: pars)
-      std::cout << dMt_over_mt_2loop(p) << std::endl;
+      std::cout << dMt_over_mt_1loop_qcd(p) << ' '
+                << dMt_over_mt_1loop(p) << ' '
+                << dMt_over_mt_2loop_qcd(p) << ' '
+                << dMt_over_mt_2loop(p) << std::endl;
 }
