@@ -91,6 +91,9 @@ SelfEnergyIsSymmetric[s_SelfEnergies`FSSelfEnergy] :=
 SelfEnergyIsSymmetric[particle_] :=
     Length[Flatten[{FindMixingMatrixSymbolFor[particle]}]] === 1;
 
+ExprContainsParticle[expr_, particle_List] :=
+    Or @@ (ExprContainsParticle[expr,#]& /@ particle);
+
 ExprContainsParticle[expr_, particle_] :=
     !FreeQ[expr,particle];
 
@@ -246,12 +249,22 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
-                         ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
+                         ReplaceUnrotatedFields /@ (RemoveParticle[#,
+                                                                   If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+                                                                      {SARAH`VectorG,SARAH`Gluino},
+                                                                      SARAH`VectorG
+                                                                     ]
+                                                                  ]& /@ heavySE)];
            (* Create unrotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveParticle[#,SARAH`VectorG]& /@ heavySE];
+           result = Join[result, RemoveParticle[#,
+                                                If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+                                                   {SARAH`VectorG,SARAH`Gluino},
+                                                   SARAH`VectorG
+                                                  ]
+                                               ]& /@ heavySE];
            result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
