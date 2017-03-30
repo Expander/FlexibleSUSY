@@ -71,7 +71,7 @@ Print[N[sqcdexp1 / (4 Pi)^4 //. #]]& /@ {
 
 Print[];
 Print["# non-universal SUSY masses: "];
-Print[N[{ t1lqcd / (4 Pi)^2, t1l / (4 Pi)^2, t2lqcd / (4 Pi)^4, t2l / (4 Pi)^4 } //. loopFunctions //. #]]& /@ {
+Print[N[{ t1lqcd / (4 Pi)^2, (t1l - t1lqcd) / (4 Pi)^2, t2lqcd / (4 Pi)^4, (t2l - t2lqcd) / (4 Pi)^4 } //. loopFunctions //. #]]& /@ {
     MakePoint[1000, 1200, 1300, 1400,               0, 1000],
     MakePoint[1000, 1200, 1300, 1400,               0, 1100],
     MakePoint[1000, 1200, 1300, 1400,  Sqrt[6] * 1300, 1000],
