@@ -45,9 +45,10 @@ Block SMINPUTS               # Standard Model inputs
    24   1.270000000e+00      # mc(mc) MS-bar
 Block EXTPAR                 # Input parameters
     0   1000                 # input scale Qin
-    1   173.34               # EWSB scale
+    1   173.34               # EWSB scale QEWSB
     2   0.19                 # Lambda(Qin)
     3   0.1                  # LambdaS(Qin)
     4   100                  # Kappa(Qin)
     5  -100                  # K1(Qin)
     6   0.1                  # K2(Qin)
+    7   3.                   # vS(QEWSB)
