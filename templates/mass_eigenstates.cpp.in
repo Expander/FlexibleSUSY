@@ -47,6 +47,7 @@
 
 @twoLoopHiggsHeaders@
 @threeLoopHiggsHeaders@
+@twoLoopThresholdHeaders@
 
 #include <array>
 #include <cmath>

@@ -134,6 +134,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
+UseMSSM2LoopYtThreshold = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
@@ -1125,6 +1126,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
+            twoLoopThresholdHeaders = "",
             lspGetters = "", lspFunctions = "",
             EWSBSolvers = "",
             setEWSBSolution = "",
@@ -1202,6 +1204,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mt.hpp\"";
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
@@ -1328,6 +1333,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
+                            "@twoLoopThresholdHeaders@"   -> twoLoopThresholdHeaders,
                             "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
                             "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
                             "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,

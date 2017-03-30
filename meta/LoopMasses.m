@@ -56,23 +56,65 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-AddMtPoleQCDCorrections[1, expr_] := "\
+AddMtPoleQCDCorrections[1, expr_] :=
+    If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+"\
+double qcd_1l = 0.;
+
+{
+   mssm_twoloop_mt::Parameters pars;
+   pars.g3 = 0.;
+   pars.mt = 0.;
+   pars.mg = 0.;
+   pars.mst1 = 0.;
+   pars.mst2 = 0.;
+   pars.msusy = 0.;
+   pars.xt = 0.;
+   pars.Q = get_scale();
+
+   qcd_1l = mssm_twoloop_mt::dMt_over_mt_1loop(pars);
+}
+"
+       ,
+"\
 double qcd_1l = 0.;
 
 {
    const double currentScale = get_scale();
    qcd_1l = " <> CConversion`RValueToCFormString[expr] <> ";
 }
-";
+"
+    ];
 
-AddMtPoleQCDCorrections[2, expr_] := "\
+AddMtPoleQCDCorrections[2, expr_] :=
+    If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+"\
+double qcd_2l = 0.;
+
+if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+   mssm_twoloop_mt::Parameters pars;
+   pars.g3 = 0.;
+   pars.mt = 0.;
+   pars.mg = 0.;
+   pars.mst1 = 0.;
+   pars.mst2 = 0.;
+   pars.msusy = 0.;
+   pars.xt = 0.;
+   pars.Q = get_scale();
+
+   qcd_2l = mssm_twoloop_mt::dMt_over_mt_2loop(pars);
+}
+"
+       ,
+ "\
 double qcd_2l = 0.;
 
 if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
    const double currentScale = get_scale();
    qcd_2l = " <> CConversion`RValueToCFormString[expr] <> ";
 }
-";
+"
+    ];
 
 AddMtPoleQCDCorrections[3, expr_] := "\
 double qcd_3l = 0.;
@@ -959,6 +1001,22 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
+CreateMSSM2LoopSQCDContributions[result_:"qcd_2l"] := "\
+mssm_twoloop_mt::Parameters pars;
+pars.g3 = 0.;
+pars.mt = 0.;
+pars.mg = 0.;
+pars.mst1 = 0.;
+pars.mst2 = 0.;
+pars.msusy = 0.;
+pars.xt = 0.;
+pars.Q = get_scale();
+
+const double q_1l = mssm_twoloop_mt::dMt_over_mt_1loop(pars);
+const double q_2l = mssm_twoloop_mt::dMt_over_mt_2loop(pars);
+
+" <> result <> " = -q_2l + q_1l*q_1l;";
+
 CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop, qcdThreeLoop = 0,
@@ -1007,7 +1065,12 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
               "double qcd_2l = 0., qcd_3l = 0.;\n\n" <>
               "if (get_thresholds() > 1) {\n" <>
-              IndentText["qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"] <> "\n" <>
+              IndentText[
+                  If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+                     CreateMSSM2LoopSQCDContributions[],
+                     "qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
+                    ]
+              ] <> "\n" <>
               "}\n\n" <>
               If[qcdThreeLoop =!= 0,
               "if (get_thresholds() > 2) {\n" <>
