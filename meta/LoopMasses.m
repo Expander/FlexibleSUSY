@@ -62,14 +62,18 @@ AddMtPoleQCDCorrections[1, expr_] :=
 double qcd_1l = 0.;
 
 {
+   double mst_1, mst_2, theta_t;
+" <> IndentText[TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"]] <>
+";
+
    mssm_twoloop_mt::Parameters pars;
-   pars.g3 = 0.;
-   pars.mt = 0.;
-   pars.mg = 0.;
-   pars.mst1 = 0.;
-   pars.mst2 = 0.;
-   pars.msusy = 0.;
-   pars.xt = 0.;
+   pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
+   pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+   pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
+   pars.mst1 = mst_1;
+   pars.mst2 = mst_2;
+   pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+   pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
    pars.Q = get_scale();
 
    qcd_1l = mssm_twoloop_mt::dMt_over_mt_1loop(pars);
@@ -92,14 +96,18 @@ AddMtPoleQCDCorrections[2, expr_] :=
 double qcd_2l = 0.;
 
 if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+   double mst_1, mst_2, theta_t;
+" <> IndentText[TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"]] <>
+";
+
    mssm_twoloop_mt::Parameters pars;
-   pars.g3 = 0.;
-   pars.mt = 0.;
-   pars.mg = 0.;
-   pars.mst1 = 0.;
-   pars.mst2 = 0.;
-   pars.msusy = 0.;
-   pars.xt = 0.;
+   pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
+   pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+   pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
+   pars.mst1 = mst_1;
+   pars.mst2 = mst_2;
+   pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+   pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
    pars.Q = get_scale();
 
    qcd_2l = mssm_twoloop_mt::dMt_over_mt_2loop(pars);
@@ -1002,14 +1010,18 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
           ];
 
 CreateMSSM2LoopSQCDContributions[result_:"qcd_2l"] := "\
+double mst_1, mst_2, theta_t;
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+";
+
 mssm_twoloop_mt::Parameters pars;
-pars.g3 = 0.;
-pars.mt = 0.;
-pars.mg = 0.;
-pars.mst1 = 0.;
-pars.mst2 = 0.;
-pars.msusy = 0.;
-pars.xt = 0.;
+pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
+pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
+pars.mst1 = mst_1;
+pars.mst2 = mst_2;
+pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
 pars.Q = get_scale();
 
 const double q_1l = mssm_twoloop_mt::dMt_over_mt_1loop(pars);
