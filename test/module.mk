@@ -28,6 +28,7 @@ TEST_SRC := \
 		$(DIR)/test_gsl_vector.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
+		$(DIR)/test_mssm_twoloop_mt.cpp \
 		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_namespace_collisions.cpp \
 		$(DIR)/test_numerics.cpp \
@@ -375,6 +376,7 @@ TEST_META := \
 		$(DIR)/test_EWSB.m \
 		$(DIR)/test_LoopFunctions.m \
 		$(DIR)/test_MSSM_2L_analytic.m \
+		$(DIR)/test/test_mssm_twoloop_mt.m \
 		$(DIR)/test_Parameters.m \
 		$(DIR)/test_ReadSLHA.m \
 		$(DIR)/test_RGIntegrator.m \
@@ -548,6 +550,9 @@ $(DIR)/test_MSSM_2L_limits.x: $(DIR)/test_MSSM_2L_limits.o $(LIBFLEXI) $(filter-
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
+
+$(DIR)/test_mssm_twoloop_mt.x: $(DIR)/test_mssm_twoloop_mt.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_numerics.x: $(DIR)/test_numerics.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))

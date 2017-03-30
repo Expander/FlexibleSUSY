@@ -91,9 +91,6 @@ double D4t(double, double, double, double, double);
 /// \f$Q(m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
 double W(double, double, double);
 
-// fin[] function from arXiv:hep-ph/0210258
-double fin(double, double);
-
 } // namespace threshold_loop_functions
 } // namespace flexiblesusy
 
