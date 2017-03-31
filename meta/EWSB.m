@@ -73,6 +73,9 @@ using the given substitutions";
 ApplyEWSBSubstitutions::usage="Set model parameters according to the
 given list of substitutions";
 
+SolveEWSBIgnoringFailures::usage="Solve EWSB conditions without
+flagging a problem if no solution is found.";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -1042,6 +1045,30 @@ ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_Str
            pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ subs]];
            pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
            Parameters`CreateLocalConstRefs[pars] <> result
+          ];
+
+SolveEWSBIgnoringFailures[loops_Integer] :=
+    Module[{flagEWSB, unflagEWSB, warning, result},
+           flagEWSB = "this->problems.flag_no_ewsb();\n";
+           unflagEWSB = "this->problems.unflag_no_ewsb();\n";
+           body = "if (has_no_ewsb_flag) {\n" <> IndentText[flagEWSB]
+                  <> "} else {\n" <> IndentText[unflagEWSB] <> "}\n";
+           body = "[this, has_no_ewsb_flag] () {\n" <> IndentText[body] <> "}\n";
+           result = "const bool has_no_ewsb_flag = problems.no_ewsb();\n";
+           result = result <> "const auto save_ewsb_flag = make_raii_guard(\n"
+                    <> IndentText[body] <> ");\n";
+           result = result <> "problems.unflag_no_ewsb();\n";
+           If[loops == 0,
+              result = result <> "solve_ewsb_tree_level();\n";,
+              result = result <> "const auto save_ewsb_loop_order = make_raii_save(ewsb_loop_order);\n"
+                       <> "ewsb_loop_order = " <> ToString[loops] <> ";\n"
+                       <> "solve_ewsb();\n";
+             ];
+           warning = "WARNING(\"solving EWSB at " <> ToString[loops]
+                     <> "-loop order failed\");\n";
+           warning = "if (problems.no_ewsb()) {\n" <> IndentText[warning] <> "}\n";
+           warning = "#ifdef ENABLE_VERBOSE\n" <> IndentText[warning] <> "#endif";
+           IndentText[result] <> warning
           ];
 
 End[];

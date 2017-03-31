@@ -1498,11 +1498,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                  Quit[1];
                 ];
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`CreateMemberTreeLevelEwsbSolver[solveTreeLevelEWSBviaSoftHiggsMasses];
-              solveEWSBTemporarily = "solve_ewsb_tree_level_custom();";
+              solveEWSBTemporarily = IndentText["solve_ewsb_tree_level_custom();"];
               ,
               saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersFixedByEWSB];
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
-              solveEWSBTemporarily = "solve_ewsb_tree_level();";
+              solveEWSBTemporarily = EWSB`SolveEWSBIgnoringFailures[0];
              ];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
@@ -1568,7 +1568,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
                             "@saveEWSBOutputParameters@"     -> IndentText[saveEWSBOutputParameters],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
-                            "@solveEWSBTemporarily@"         -> IndentText[solveEWSBTemporarily],
+                            "@solveEWSBTemporarily@"         -> solveEWSBTemporarily,
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             Sequence @@ GeneralReplacementRules[]
