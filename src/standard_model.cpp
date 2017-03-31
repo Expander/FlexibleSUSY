@@ -1850,12 +1850,12 @@ double Standard_model::calc_beta_v_two_loop(const Beta_traces& traces) const
 
    double beta_v;
 
-   beta_v = Re(-0.00125*twoLoop*v*(1257*Power(g1,4) - 8575*Power(g2,4) -
-      5400*traceYdAdjYdYdAdjYd + 1200*traceYdAdjYuYuAdjYd - 1800*
-      traceYeAdjYeYeAdjYe - 5400*traceYuAdjYuYuAdjYu + 2060*traceYuAdjYu*Sqr(g1
-      ) + 6300*traceYuAdjYu*Sqr(g2) - 90*Sqr(g1)*Sqr(g2) + 60*traceYeAdjYe*(27*
-      Sqr(g1) + 35*Sqr(g2)) + 16000*traceYuAdjYu*Sqr(g3) + 20*traceYdAdjYd*(43*
-      Sqr(g1) + 315*Sqr(g2) + 800*Sqr(g3)) + 1200*Sqr(Lambdax)));
+   beta_v = Re(-0.00125*twoLoop*v*(1221*Power(g1,4) + 10*Sqr(g1)*(122*
+      traceYdAdjYd + 174*traceYeAdjYe + 242*traceYuAdjYu - 45*Sqr(g2)) - 25*(
+      379*Power(g2,4) - 108*(3*traceYdAdjYd + traceYeAdjYe + 3*traceYuAdjYu)*
+      Sqr(g2) - 8*(80*(traceYdAdjYd + traceYuAdjYu)*Sqr(g3) - 3*(9*
+      traceYdAdjYdYdAdjYd - 2*traceYdAdjYuYuAdjYd + 3*traceYeAdjYeYeAdjYe + 9*
+      traceYuAdjYuYuAdjYu - 2*Sqr(Lambdax))))));
 
    return beta_v;
 }
