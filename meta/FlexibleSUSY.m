@@ -2813,10 +2813,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* collect input parameters from MINPAR and EXTPAR lists *)
-           AddSLHA1InputBlockInfo["MINPAR", SARAH`MINPAR];
-           AddSLHA1InputBlockInfo["EXTPAR", SARAH`EXTPAR];
-           AddSLHA1InputBlockInfo["IMMINPAR", IMMINPAR];
-           AddSLHA1InputBlockInfo["IMEXTPAR", IMEXTPAR];
+           AddSLHA1InputBlockInfo["IMEXTPAR", Reverse @ IMEXTPAR];
+           AddSLHA1InputBlockInfo["IMMINPAR", Reverse @ IMMINPAR];
+           AddSLHA1InputBlockInfo["EXTPAR", Reverse @ SARAH`EXTPAR];
+           AddSLHA1InputBlockInfo["MINPAR", Reverse @ SARAH`MINPAR];
 
            (* search for unfixed parameters *)
            Constraint`SanityCheck[Join[If[FlexibleEFTHiggs === True,
