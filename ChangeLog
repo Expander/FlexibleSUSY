@@ -35,7 +35,7 @@ FlexibleSUSY 2.0.0 [not released yet]
    Yukawa coupling in the MSSM [arxiv:hep-ph/0210258,
    arxiv:hep-ph/0507139] can be added by setting
 
-     UseMSSM2LoopYtThreshold = True
+     UseMSSMYukawa3LoopSQCD = True
 
    in the model file.
    Thanks to Alexander Bednyakov.

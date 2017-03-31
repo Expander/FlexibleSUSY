@@ -134,7 +134,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
-UseMSSM2LoopYtThreshold = False;
+UseMSSMYukawa3LoopSQCD = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
@@ -1204,12 +1204,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
-           If[FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+           If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
               twoLoopThresholdHeaders = "#include \"mssm_twoloop_mt.hpp\"";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
-              FlexibleSUSY`UseMSSM2LoopYtThreshold === True,
+              FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
