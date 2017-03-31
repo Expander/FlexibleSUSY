@@ -3,7 +3,7 @@ Get[FileNameJoin[{"meta", "TwoLoopMSSM.m"}]];
 
 t2l    = Get[FileNameJoin[{"meta", "MSSM", "tquark_2loop_strong.m"}]];
 t2lqcd = Get[FileNameJoin[{"meta", "MSSM", "tquark_2loop_qcd.m"}]] /. GSY -> GS;
-DmtOverMtSUSYUniversal = GetDeltaMPoleOverMRunningMSSMSQCDDRbar2LUniversalMSUSY[];
+t2lDeg = GetDeltaMPoleOverMRunningMSSMSQCDDRbar2LUniversalMSUSY[];
 
 colorCA = 3; colorCF = 4/3; Tf = 1/2; GS = g3;
 MGl = mgl; MT = mt; SX = 2 mt Xt; s2t = SX / (mmst1 - mmst2);
@@ -22,7 +22,7 @@ loopFunctions = {
 
 (* ******* calculate limit ******* *)
 
-t2lLimitS1S2MSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions //. {
+t2lLimit = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions //. {
     mmst1  -> mmsusy + x * dst1,
     mmst2  -> mmsusy + x * dst2,
     mmgl   -> mmsusy + x * dst3
@@ -31,11 +31,11 @@ t2lLimitS1S2MSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions
 (* ******* check difference ******* *)
 
 diff = 
- Collect[(t2lLimitS1S2MSMG - DmtOverMtSUSYUniversal (4 Pi)^4) //. {
+ Collect[(t2lLimit - t2lDeg (4 Pi)^4) //. {
      mmgl -> mgl^2, mgl -> MSUSY, mmu -> Q^2, mmsusy -> MSUSY^2,
      mmt -> mt^2
    }, {Xt, g3}, 
-   Simplify[# //. Log[x_/y_] :> Log[x] - Log[y], MSUSY > 0 && Q > 0 && mt > 0] &];
+   Simplify[#, MSUSY > 0 && Q > 0 && mt > 0] &];
 
 (* diff still contains power-suppressed terms O(mt^2/MSUSY^2) *)
 
