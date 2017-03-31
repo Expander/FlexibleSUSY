@@ -94,6 +94,11 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Peter Athron and Pat Scott.
 
+FlexibleSUSY-1.7.4 [not released yet]
+
+ * Bugfix (commit f434e30): Rename internal IndexSum symbol which
+   conflicts with SARAH version 4.11.0 and higher.
+
 FlexibleSUSY-1.7.3 [February, 27 2017]
 
  * Change (commit 43bb03a): FlexibleSUSY now aborts the code
