@@ -58,7 +58,7 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
 
 FillMt2LStruct[] := "\
 double mst_1, mst_2, theta_t;
-" <> IndentText[TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"]] <> ";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
 
 mssm_twoloop_mt::Parameters pars;
 pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
