@@ -16,6 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+// This file has been generated at Fri 31 Mar 2017 14:09:29
+// with the script "tquark_to_cpp.m".
+
 #include "mssm_twoloop_mt.hpp"
 #include "dilog.hpp"
 #include <cmath>

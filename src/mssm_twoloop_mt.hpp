@@ -16,6 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+// This file has been generated at Fri 31 Mar 2017 14:09:29
+// with the script "tquark_to_cpp.m".
+
 #ifndef MSSM_TWO_LOOP_SQCD_MT_H
 #define MSSM_TWO_LOOP_SQCD_MT_H
 

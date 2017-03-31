@@ -99,6 +99,9 @@ header = "\
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+// This file has been generated at " <> DateString[] <> "
+// with the script \"tquark_to_cpp.m\".
+
 #ifndef MSSM_TWO_LOOP_SQCD_MT_H
 #define MSSM_TWO_LOOP_SQCD_MT_H
 
@@ -161,6 +164,9 @@ impl = "\
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
+
+// This file has been generated at " <> DateString[] <> "
+// with the script \"tquark_to_cpp.m\".
 
 #include \"" <> headerName <> "\"
 #include \"dilog.hpp\"
