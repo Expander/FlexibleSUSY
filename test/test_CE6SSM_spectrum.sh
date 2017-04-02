@@ -96,6 +96,8 @@ match_input_blocks() {
     _m0_val="$3"
     _m12_val="$4"
     _Azero_val="$5"
+    _mupr_val="$6"
+    _bmupr_val="$7"
 
     $awk_cmd -f "$print_block" -v block=FlexibleSUSY "$_input_file" \
         | $awk_cmd -f "$remove_block" -v block=FlexibleSUSY -v entry=2 \
@@ -111,7 +113,12 @@ match_input_blocks() {
     echo "   5   $_Azero_val" >> "$_output_file"
 
     $awk_cmd -f "$print_block" -v block=EXTPAR "$_input_file" \
-             >> "$_output_file"
+        | $awk_cmd -f "$remove_block" -v block=EXTPAR -v entry=63 \
+        | $awk_cmd -f "$remove_block" -v block=EXTPAR -v entry=64 \
+                   >> "$_output_file"
+
+    echo "  63   $_mupr_val" >> "$_output_file"
+    echo "  64   $_bmupr_val" >> "$_output_file"
 }
 
 # generate point using semi-analytic solver
@@ -140,9 +147,14 @@ m12_sol=$(awk -f "$print_block" -v block=EWSBOutputs "$semi_analytic_output" \
               | awk -f "$print_block_entry" -v entries=2)
 Azero_sol=$(awk -f "$print_block" -v block=EWSBOutputs "$semi_analytic_output" \
                 | awk -f "$print_block_entry" -v entries=3)
+MuPr_susy_scale=$(awk -f "$print_block" -v block=ESIXRUN "$semi_analytic_output" \
+                      | awk -f "$print_block_entry" -v entries=0)
+BMuPr_susy_scale=$(awk -f "$print_block" -v block=ESIXRUN "$semi_analytic_output" \
+                       | awk -f "$print_block_entry" -v entries=101)
 
 match_input_blocks $semi_analytic_input $two_scale_input \
-                   $m0_sol $m12_sol $Azero_sol
+                   $m0_sol $m12_sol $Azero_sol \
+                   $MuPr_susy_scale $BMuPr_susy_scale
 
 # generate point using the two-scale solver
 echo -n "running two-scale solver ..."
