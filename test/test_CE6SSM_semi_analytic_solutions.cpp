@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_coefficients )
    TEST_CLOSE_REL(model.get_TYu(), coeffs_model.get_TYu(), 1.0e-3);
    TEST_CLOSE_REL(model.get_TYd(), coeffs_model.get_TYd(), 1.0e-3);
    TEST_CLOSE_REL(model.get_TYe(), coeffs_model.get_TYe(), 1.0e-3);
-   TEST_CLOSE_REL(model.get_TLambda12(), coeffs_model.get_TLambda12(), 1.0e-3);
+   TEST_CLOSE_REL(model.get_TLambda12(), coeffs_model.get_TLambda12(), 1.0e-2);
    TEST_CLOSE_REL(model.get_TKappa(), coeffs_model.get_TKappa(), 1.0e-2);
 
    TEST_CLOSE_REL(model.get_mq2(), coeffs_model.get_mq2(), 1.0e-2);

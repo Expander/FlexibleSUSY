@@ -67,9 +67,9 @@ void setup_high_scale_CE6SSM(
 {
    using namespace flexiblesusy;
 
-   values.m12 = 345.15;
-   values.Azero = -1338.42;
-   values.m0Sq = 2.77300617e6;
+   values.m12 = 1000;
+   values.Azero = -1000.;
+   values.m0Sq = 6.25e6;
    values.MuPr = 10000.;
    values.BMuPr = 10000.;
    values.Lambda = model.get_input().LambdaInput;
@@ -190,12 +190,12 @@ void setup_CE6SSM(flexiblesusy::CE6SSM_mass_eigenstates& m,
                   flexiblesusy::CE6SSM_input_parameters& input)
 {
    input.TanBeta = 10.;
-   input.LambdaInput = 0.1;
-   input.KappaInput = 0.2;
+   input.LambdaInput = 0.2;
+   input.KappaInput = 0.15;
    input.MuPrimeInput = 10000.;
    input.BMuPrimeInput = 10000.;
-   input.vsInput = 4000.;
-   input.Lambda12Input = 0.1;
+   input.vsInput = 6000.;
+   input.Lambda12Input = 0.2;
 
    setup_CE6SSM_const(m, input);
 }
