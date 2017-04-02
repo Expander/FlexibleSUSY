@@ -32,7 +32,7 @@ Begin["`Private`"];
 (************* Begin public interface *******************)
 
 GMuonMinus2IsSMParticle[particle_] :=
-    TreeMasses`IsSMParticle[particle] || TreeMasses`IsSMGoldstone[particle];
+    TreeMasses`IsSMParticle[particle];
 
 CreateSMParticleFlags[particle_] :=
     Module[{result = "", i,
@@ -273,14 +273,14 @@ Module[{particles, code},
 (************************ Begin helper routines *******************************)
 
 (* Return the name of the SARAH particle family containing the muon *)
-GetMuonFamily[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1,
-                        SARAH`Electron,
+GetMuonFamily[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
+                        TreeMasses`GetSMMuonLeptonMultiplet[],
                         Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
                               {p_, {Description -> "Muon", ___}} -> p, 1][[1]]
                         ];
 (* If the muon has a generation index, return it, otherwise return Null.
  e.g. CMSSMNoFV has no muon generation index *)
-GetMuonIndex[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1, 2, Null];
+GetMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1, 2, Null];
 
 GetPhoton[] := SARAH`Photon;
 

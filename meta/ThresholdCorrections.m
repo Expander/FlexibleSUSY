@@ -240,13 +240,13 @@ InvertMassRelation[fermion_, yukawa_] :=
           ];
 
 SetDRbarYukawaCouplingTop[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`upQuarksDRbar, settings];
+    SetDRbarYukawaCouplingFermion[TreeMasses`GetSMTopQuarkMultiplet[], SARAH`UpYukawa, Global`upQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingBottom[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`downQuarksDRbar, settings];
+    SetDRbarYukawaCouplingFermion[TreeMasses`GetSMBottomQuarkMultiplet[], SARAH`DownYukawa, Global`downQuarksDRbar, settings];
 
 SetDRbarYukawaCouplingElectron[settings_] :=
-    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`downLeptonsDRbar, settings];
+    SetDRbarYukawaCouplingFermion[TreeMasses`GetSMTauLeptonMultiplet[], SARAH`ElectronYukawa, Global`downLeptonsDRbar, settings];
 
 SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
     Module[{y, f = setting},
@@ -262,7 +262,7 @@ SetDRbarYukawaCouplingFermionMatrix[fermion_, yukawa_, mass_, setting_] :=
 
 SetDRbarYukawaCouplings[] :=
     Module[{y, f, fermion, yukawa, mass, term = {0,0,0}, i},
-           fermion = {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron};
+           fermion = {TreeMasses`GetSMTopQuarkMultiplet[], TreeMasses`GetSMBottomQuarkMultiplet[], TreeMasses`GetSMTauLeptonMultiplet[]};
            yukawa  = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
            mass    = {Global`upQuarksDRbar, Global`downQuarksDRbar, Global`downLeptonsDRbar};
            For[i = 1, i <= 3, i++,

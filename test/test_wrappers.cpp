@@ -648,3 +648,13 @@ BOOST_AUTO_TEST_CASE(test_MatrixProjector)
    BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(0,1), 0.);
    BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(1,1), 0.);
 }
+
+BOOST_AUTO_TEST_CASE(test_Print_functions)
+{
+   PrintDEBUG("A debug message");
+   PrintERROR("An error message");
+   PrintINFO("An info message");
+   PrintWARNING("A warning message");
+
+   BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
+}

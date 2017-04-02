@@ -700,6 +700,16 @@ void match_low_to_high_scale_model_tree_level(
  * Calculates the gauge and Yukawa couplings and the SM-like VEV in
  * the @ModelName@ at the 1-loop level from the known Standard Model
  * couplings and the SM vev.
+ *
+ * @note The \a loop_order argument is interpreted to be the loop
+ * order of the "downwards matching".  The functions responsible for
+ * the upwards matching will use the downwards matching loop order to
+ * determine the @ModelName@ at the right loop order to avoid the
+ * appearence of large logarithms.
+ *
+ * @param model @ModelName@ parameters
+ * @param sm Standard Model
+ * @param loop_order downwards matching loop order
  */
 void match_low_to_high_scale_model(
    @ModelName@_mass_eigenstates& model, const Standard_model& sm, int loop_order, int idx)

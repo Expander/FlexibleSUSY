@@ -14,6 +14,8 @@ examples/lattice_numerical_fmssm.cpp        export-ignore
 examples/lattice_numerical_fmssm_fmssmn.cpp export-ignore
 examples/switch_MSSM.cpp                    export-ignore
 
+meta/SM/HSSUSY_corrections.m    export-ignore
+
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore
@@ -31,6 +33,7 @@ model_files/CMSSMMediumPrecision export-ignore
 model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
+model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
 model_files/InertMSSM           export-ignore

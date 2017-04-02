@@ -76,6 +76,30 @@ Derived div_safe(
 }
 
 /**
+ * Calls eval() on any Eigen expression.  If the argument is not an
+ * Eigen expression, the argument is returned.
+ *
+ * @param expr expression
+ *
+ * @return evaluated expression or argument
+ */
+template <class Derived>
+auto Eval(const Eigen::DenseBase<Derived>& expr) -> decltype(expr.eval())
+{
+   return expr.eval();
+}
+
+inline char                 Eval(char                        expr) { return expr; }
+inline short                Eval(short                       expr) { return expr; }
+inline int                  Eval(int                         expr) { return expr; }
+inline long                 Eval(long                        expr) { return expr; }
+inline unsigned short       Eval(unsigned short              expr) { return expr; }
+inline unsigned int         Eval(unsigned int                expr) { return expr; }
+inline unsigned long        Eval(unsigned long               expr) { return expr; }
+inline double               Eval(double                      expr) { return expr; }
+inline std::complex<double> Eval(const std::complex<double>& expr) { return expr; }
+
+/**
  * The element of v, which is closest to mass, is moved to the
  * position idx.
  *

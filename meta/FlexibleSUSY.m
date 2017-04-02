@@ -135,6 +135,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
+UseMSSMYukawa3LoopSQCD = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
@@ -1379,6 +1380,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             reorderDRbarMasses = "", reorderPoleMasses = "",
             checkPoleMassesForTachyons = "",
             twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
+            twoLoopThresholdHeaders = "",
             lspGetters = "", lspFunctions = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
@@ -1417,7 +1419,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            divideTadpoleByVEV           = SelfEnergies`DivideTadpoleByVEV[Parameters`DecreaseIndexLiterals @ CreateVEVToTadpoleAssociation[], "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True || FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
-              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            If[FlexibleSUSY`UseHiggs2LoopSM === True,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
@@ -1436,6 +1437,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mt.hpp\"";
+             ];
+           If[SARAH`UseHiggs2LoopMSSM === True ||
+              FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
+              FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
@@ -1541,6 +1550,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
+                            "@twoLoopThresholdHeaders@"   -> twoLoopThresholdHeaders,
                             "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
                             "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
                             "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,

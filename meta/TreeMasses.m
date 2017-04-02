@@ -172,6 +172,25 @@ GetDownQuark::usage="";
 GetUpLepton::usage="";
 GetDownLepton::usage="";
 
+GetSMUpQuark::usage        = "returns SM up quark, Fu[1] or Fu";
+GetSMCharmQuark::usage     = "returns SM charm quark, Fu[3] or Ft";
+GetSMTopQuark::usage       = "returns SM top quark, Fu[3] or Ft";
+GetSMDownQuark::usage      = "returns SM down quark, Fd[1] or Fd";
+GetSMStrangeQuark::usage   = "returns SM strange quark, Fd[2] or Fs";
+GetSMBottomQuark::usage    = "returns SM bottom quark, Fd[3] or Fb";
+GetSMElectronLepton::usage = "returns SM electon, Fe[1] or Fe";
+GetSMMuonLepton::usage     = "returns SM muon, Fe[2] or Fm";
+GetSMTauLepton::usage      = "returns SM tau, Fe[3] or Ftau";
+GetSMNeutrino1::usage      = "returns SM neutrino 1, Fv[1] or FveL";
+GetSMNeutrino2::usage      = "returns SM neutrino 2, Fv[2] or FvmL";
+GetSMNeutrino3::usage      = "returns SM neutrino 3, Fv[3] or FvmL";
+
+GetSMTopQuarkMultiplet::usage    = "Returns multiplet containing the top quark, Fu or Ft";
+GetSMBottomQuarkMultiplet::usage = "Returns multiplet containing the bottom quark, Fd or Fb";
+GetSMElectronLeptonMultiplet::usage = "Returns multiplet containing the electron, Fe";
+GetSMMuonLeptonMultiplet::usage     = "Returns multiplet containing the muon, Fe or Fm";
+GetSMTauLeptonMultiplet::usage      = "Returns multiplet containing the tau lepton, Fe or Ftau";
+
 GetMass::usage="wraps M[] head around particle";
 
 GetElectricCharge::usage="Returns electric charge";
@@ -244,7 +263,7 @@ IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 
 IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
 IsSMParticle[sym_[__]] := IsSMParticle[sym];
-IsSMParticle[sym_] := SARAH`SMQ[sym];
+IsSMParticle[sym_] := SARAH`SMQ[sym, Higgs -> True];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
@@ -443,6 +462,25 @@ GetDownLepton[gen_, cConvention_:False] :=
                   _, Print["Error: Number of down leptons != 1 and != 3"]; Null
                  ]
           ];
+
+GetSMUpQuark[]        := GetUpQuark[1];
+GetSMCharmQuark[]     := GetUpQuark[2];
+GetSMTopQuark[]       := GetUpQuark[3];
+GetSMDownQuark[]      := GetDownQuark[1];
+GetSMStrangeQuark[]   := GetDownQuark[2];
+GetSMBottomQuark[]    := GetDownQuark[3];
+GetSMElectronLepton[] := GetDownLepton[1];
+GetSMMuonLepton[]     := GetDownLepton[2];
+GetSMTauLepton[]      := GetDownLepton[3];
+GetSMNeutrino1[]      := GetUpLepton[1];
+GetSMNeutrino2[]      := GetUpLepton[2];
+GetSMNeutrino3[]      := GetUpLepton[3];
+
+GetSMTopQuarkMultiplet[]       := GetUpQuark[3]    /. head_[_] :> head;
+GetSMBottomQuarkMultiplet[]    := GetDownQuark[3]  /. head_[_] :> head;
+GetSMElectronLeptonMultiplet[] := GetDownLepton[1] /. head_[_] :> head;
+GetSMMuonLeptonMultiplet[]     := GetDownLepton[2] /. head_[_] :> head;
+GetSMTauLeptonMultiplet[]      := GetDownLepton[3] /. head_[_] :> head;
 
 GetMass[particle_[idx__]] := GetMass[particle][idx];
 GetMass[particle_Symbol] := FlexibleSUSY`M[particle];

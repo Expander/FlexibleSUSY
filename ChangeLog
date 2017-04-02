@@ -31,6 +31,15 @@ FlexibleSUSY 2.0.0 [not released yet]
 
  * Feature: Support for SLHA-2 input block IMEXTPAR.
 
+ * Feature: The full 2-loop O(alpha_s^2) corrections to the DR-bar top
+   Yukawa coupling in the MSSM [arxiv:hep-ph/0210258,
+   arxiv:hep-ph/0507139] can be added by setting
+
+     UseMSSMYukawa3LoopSQCD = True
+
+   in the model file.
+   Thanks to Alexander Bednyakov.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
@@ -84,6 +93,16 @@ FlexibleSUSY 2.0.0 [not released yet]
    solution is hard to find.
 
    Thanks to Peter Athron and Pat Scott.
+
+FlexibleSUSY-1.7.4 [not released yet]
+
+ * Bugfix (commit f434e30): Rename internal IndexSum symbol which
+   conflicts with SARAH version 4.11.0 and higher.
+
+ * Bugfix (commit b8d5dcf): Correcting gauge-dependent term in 2-loop
+   beta function of SM vacuum expectation value after a corresponding
+   bugfix in SARAH 4.11.0.  This bugfix affects the Higgs mass
+   prediction with FlexibleEFTHiggs by around 10 MeV.
 
 FlexibleSUSY-1.7.3 [February, 27 2017]
 

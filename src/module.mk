@@ -22,6 +22,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/gsl_vector.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
+		$(DIR)/mssm_twoloop_mt.cpp \
 		$(DIR)/mssm_twoloophiggs.cpp \
 		$(DIR)/mssm_twoloophiggs_impl.f \
 		$(DIR)/nmssm_twoloophiggs.cpp \
@@ -86,6 +87,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/model.hpp \
+		$(DIR)/mssm_twoloop_mt.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
 		$(DIR)/nmssm_twoloophiggs.hpp \

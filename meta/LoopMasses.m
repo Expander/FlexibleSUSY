@@ -56,23 +56,64 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-AddMtPoleQCDCorrections[1, expr_] := "\
+FillMt2LStruct[] := "\
+double mst_1, mst_2, theta_t;
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
+
+mssm_twoloop_mt::Parameters pars;
+pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
+pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
+pars.mst1 = mst_1;
+pars.mst2 = mst_2;
+pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
+pars.Q = get_scale();";
+
+
+AddMtPoleQCDCorrections[1, expr_] :=
+    If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+"\
+double qcd_1l = 0.;
+
+{
+" <> IndentText[FillMt2LStruct[]] <> "
+
+   qcd_1l = - mssm_twoloop_mt::dMt_over_mt_1loop(pars);
+}
+"
+       ,
+"\
 double qcd_1l = 0.;
 
 {
    const double currentScale = get_scale();
    qcd_1l = " <> CConversion`RValueToCFormString[expr] <> ";
 }
-";
+"
+    ];
 
-AddMtPoleQCDCorrections[2, expr_] := "\
+AddMtPoleQCDCorrections[2, expr_] :=
+    If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+"\
+double qcd_2l = 0.;
+
+if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
+" <> IndentText[FillMt2LStruct[]] <> "
+
+   qcd_2l = - mssm_twoloop_mt::dMt_over_mt_2loop(pars);
+}
+"
+       ,
+ "\
 double qcd_2l = 0.;
 
 if (pole_mass_loop_order > 1 && TOP_POLE_QCD_CORRECTION > 0) {
    const double currentScale = get_scale();
    qcd_2l = " <> CConversion`RValueToCFormString[expr] <> ";
 }
-";
+"
+    ];
 
 AddMtPoleQCDCorrections[3, expr_] := "\
 double qcd_3l = 0.;
@@ -108,7 +149,7 @@ Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
     "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <>
     "calculate_singlet_mass(M_loop);\n";
 
-Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
+Do1DimFermion[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], massMatrixName_String,
               _String, _String, _String, momentum_String, type_] :=
     Module[{massName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
@@ -467,7 +508,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixCType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
-           topTwoLoop = particle === SARAH`TopQuark;
+           topTwoLoop = particle === TreeMasses`GetSMTopQuarkMultiplet[];
            If[topTwoLoop,
               topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1], 1];
               topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL], 1];
@@ -872,7 +913,7 @@ CreateRunningDRbarMassPrototypes[] :=
            Return[result];
           ];
 
-CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, renormalizationScheme_] :=
+CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMBottomQuarkMultiplet[], renormalizationScheme_] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, alphaS, drbarConversion, gPrime,
             dimParticle, treeLevelMass},
@@ -959,7 +1000,21 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
-CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
+CreateMSSM1LoopSQCDContributions[result_:"qcd_1l"] := "\
+{
+" <> IndentText[FillMt2LStruct[]] <> "
+
+   " <> result <> " = - mssm_twoloop_mt::dMt_over_mt_1loop(pars);
+}";
+
+CreateMSSM2LoopSQCDContributions[result_:"qcd_2l"] :=
+    FillMt2LStruct[] <> "
+
+const double q_2l = mssm_twoloop_mt::dMt_over_mt_2loop(pars);
+
+" <> result <> " = -q_2l + qcd_1l * qcd_1l;";
+
+CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop, qcdThreeLoop = 0,
             dimParticle, treeLevelMass},
@@ -1004,10 +1059,19 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark, _] :=
                 ];
               body = body <>
               "const double currentScale = get_scale();\n" <>
-              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n" <>
-              "double qcd_2l = 0., qcd_3l = 0.;\n\n" <>
+              "double qcd_1l = 0., qcd_2l = 0., qcd_3l = 0.;\n\n" <>
+                  If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                     CreateMSSM1LoopSQCDContributions[],
+                     "qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
+                    ] <>
+              "\n\n" <>
               "if (get_thresholds() > 1) {\n" <>
-              IndentText["qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"] <> "\n" <>
+              IndentText[
+                  If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                     CreateMSSM2LoopSQCDContributions[],
+                     "qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
+                    ]
+              ] <> "\n" <>
               "}\n\n" <>
               If[qcdThreeLoop =!= 0,
               "if (get_thresholds() > 2) {\n" <>

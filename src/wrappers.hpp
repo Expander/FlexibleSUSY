@@ -25,7 +25,7 @@
 #include <functional>
 #include <limits>
 #include <numeric>
-#include <sstream>
+#include <iostream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -33,7 +33,9 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
+#include "config.h"
 #include "dilog.hpp"
+#include "error.hpp"
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "if.hpp"
@@ -336,6 +338,81 @@ void Hermitianize(Eigen::MatrixBase<Derived>& m) noexcept
       for (int k = 0; k < i; k++)
          m(i,k) = Conj(m(k,i));
 }
+
+///////////////////////// logger commands /////////////////////////
+
+namespace {
+inline double PrintTo(std::ostream& ostr)
+{
+   ostr << '\n';
+   return 0.;
+}
+} // anonymous namespace
+
+///< print information to cout
+template<typename T0, typename... Ts>
+double PrintTo(std::ostream& ostr, T0&& v, Ts&&... vs)
+{
+   ostr << v;
+   return PrintTo(ostr, std::forward<Ts>(vs)...);
+}
+
+///< print debug information to cout
+template<typename... Ts>
+double PrintDEBUG(Ts&&... vs)
+{
+#ifdef ENABLE_DEBUG
+   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+#else
+   return 0.;
+#endif
+}
+
+///< print error to cerr
+template<typename... Ts>
+double PrintERROR(Ts&&... vs)
+{
+   std::cerr << "ERROR: ";
+   return PrintTo(std::cerr, std::forward<Ts>(vs)...);
+}
+
+///< print error to cerr and stop program
+template<typename... Ts>
+double PrintFATAL(Ts&&... vs)
+{
+   std::cerr << "FATAL: ";
+   PrintTo(std::cerr, std::forward<Ts>(vs)...);
+   throw FatalError();
+   return 0.;
+}
+
+///< print information to cout
+template<typename... Ts>
+double PrintINFO(Ts&&... vs)
+{
+   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+}
+
+///< print verbose information to cout
+template<typename... Ts>
+double PrintVERBOSE(Ts&&... vs)
+{
+#ifdef ENABLE_VERBOSE
+   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+#else
+   return 0.;
+#endif
+}
+
+///< print warning to cerr
+template<typename... Ts>
+double PrintWARNING(Ts&&... vs)
+{
+   std::cerr << "WARNING: ";
+   return PrintTo(std::cerr, std::forward<Ts>(vs)...);
+}
+
+///////////////////////// end of logger commands /////////////////////////
 
 inline double Log(double a) noexcept
 {
