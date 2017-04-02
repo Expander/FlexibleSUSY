@@ -93,14 +93,15 @@ NewModel copy_parameters_from_model(const OldModel& old_model)
 
 E6SSM_input_parameters initialize_two_scale_input(
    double Azero, double m12, double m0Sq,
+   double MuPr, double BMuPr,
    const CE6SSM_input_parameters& semi_analytic_input)
 {
    E6SSM_input_parameters input;
 
    input.Lambda12Input = semi_analytic_input.Lambda12Input;
    input.vSInput = semi_analytic_input.vsInput;
-   input.BmuPrimeInput = semi_analytic_input.BMuPrimeInput;
-   input.muPrimeInput = semi_analytic_input.MuPrimeInput;
+   input.BmuPrimeInput = BMuPr;
+   input.muPrimeInput = MuPr;
    input.KappaInput = semi_analytic_input.KappaInput;
    input.LambdaInput = semi_analytic_input.LambdaInput;
    input.Azero = Azero;
@@ -122,6 +123,8 @@ E6SSM<Two_scale> initialize_two_scale_model(
       initialize_two_scale_input(semi_analytic_model.get_Azero(),
                                  semi_analytic_model.get_m12(),
                                  semi_analytic_model.get_m0Sq(),
+                                 semi_analytic_model.get_MuPr(),
+                                 semi_analytic_model.get_BMuPr(),
                                  semi_analytic_input));
 
    two_scale_model.calculate_DRbar_masses();
@@ -130,15 +133,15 @@ E6SSM<Two_scale> initialize_two_scale_model(
 }
 
 CE6SSM_input_parameters initialize_semi_analytic_input(
-   const E6SSM_input_parameters& two_scale_input)
+   double MuPr, double BMuPr, const E6SSM_input_parameters& two_scale_input)
 {
    CE6SSM_input_parameters input;
 
    input.TanBeta = two_scale_input.TanBeta;
    input.LambdaInput = two_scale_input.LambdaInput;
    input.KappaInput = two_scale_input.KappaInput;
-   input.MuPrimeInput = two_scale_input.muPrimeInput;
-   input.BMuPrimeInput = two_scale_input.BmuPrimeInput;
+   input.MuPrimeInput = MuPr;
+   input.BMuPrimeInput = BMuPr;
    input.vsInput = two_scale_input.vSInput;
    input.Lambda12Input = two_scale_input.Lambda12Input;
 
@@ -148,13 +151,13 @@ CE6SSM_input_parameters initialize_semi_analytic_input(
 CE6SSM<Semi_analytic> initialize_semi_analytic_model(
    const E6SSM<Two_scale>& two_scale_model,
    const E6SSM_input_parameters& two_scale_input,
-   double Azero, double m12, double m0, double high_scale)
+   double Azero, double m12, double m0, double MuPr, double BMuPr, double high_scale)
 {
    CE6SSM<Semi_analytic> semi_analytic_model
       = copy_parameters_from_model<CE6SSM<Semi_analytic> >(two_scale_model);
 
    semi_analytic_model.set_input_parameters(
-      initialize_semi_analytic_input(two_scale_input));
+      initialize_semi_analytic_input(MuPr, BMuPr, two_scale_input));
 
    semi_analytic_model.set_Azero(two_scale_input.Azero);
    semi_analytic_model.set_m12(two_scale_input.m12);
@@ -163,8 +166,8 @@ CE6SSM<Semi_analytic> initialize_semi_analytic_model(
    semi_analytic_model.set_m0SqBasis(Sqr(two_scale_input.m0));
    semi_analytic_model.set_m12Basis(two_scale_input.m12);
    semi_analytic_model.set_AzeroBasis(two_scale_input.Azero);
-   semi_analytic_model.set_BMuPrimeInputBasis(two_scale_input.BmuPrimeInput);
-   semi_analytic_model.set_MuPrBasis(two_scale_input.muPrimeInput);
+   semi_analytic_model.set_BMuPrimeInputBasis(BMuPr);
+   semi_analytic_model.set_MuPrBasis(MuPr);
 
    semi_analytic_model.calculate_semi_analytic_solutions(high_scale);
    semi_analytic_model.calculate_DRbar_masses();
@@ -497,12 +500,12 @@ std::vector<CE6SSM_input_parameters> initialize_semi_analytic_inputs()
    std::vector<CE6SSM_input_parameters> inputs{1};
 
    inputs[0].TanBeta = 10.;
-   inputs[0].LambdaInput = 0.1;
-   inputs[0].KappaInput = 0.1;
+   inputs[0].LambdaInput = 0.2;
+   inputs[0].KappaInput = 0.15;
    inputs[0].MuPrimeInput = 10000.;
    inputs[0].BMuPrimeInput = 10000.;
-   inputs[0].vsInput = 4000.;
-   inputs[0].Lambda12Input = 0.1;
+   inputs[0].vsInput = 6000.;
+   inputs[0].Lambda12Input = 0.2;
 
    return inputs;
 }
@@ -511,12 +514,12 @@ std::vector<E6SSM_input_parameters> initialize_two_scale_inputs()
 {
    std::vector<E6SSM_input_parameters> inputs{1};
 
-   inputs[0].Lambda12Input = 0.1;
-   inputs[0].vSInput = 4000.;
+   inputs[0].Lambda12Input = 0.2;
+   inputs[0].vSInput = 6000.;
    inputs[0].BmuPrimeInput = 10000.;
    inputs[0].muPrimeInput = 10000.;
-   inputs[0].KappaInput = 0.1;
-   inputs[0].LambdaInput = 0.1;
+   inputs[0].KappaInput = 0.15;
+   inputs[0].LambdaInput = 0.2;
    inputs[0].Azero = 1000.;
    inputs[0].TanBeta = 10.;
    inputs[0].m12 = 500.;
@@ -619,6 +622,8 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
                                         two_scale_input.Azero,
                                         two_scale_input.m12,
                                         two_scale_input.m0,
+                                        high_scale_model.get_MuPr(),
+                                        high_scale_model.get_BMuPr(),
                                         high_scale));
 
       const CE6SSM<Semi_analytic> single_iteration_model =
