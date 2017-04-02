@@ -145,6 +145,11 @@ TEST_SRC += \
 		$(DIR)/test_SMSSM_tree_level_spectrum.cpp
 endif
 
+ifeq ($(ENABLE_SQLITE) $(WITH_CMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSM_database.cpp
+endif
+
 endif # ifneq ($(findstring two_scale,$(SOLVERS)),)
 
 ifneq ($(findstring semi_analytic,$(SOLVERS)),)
@@ -267,11 +272,6 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_slha_input.cpp \
 		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
 		$(DIR)/test_CMSSM_info.cpp
-
-ifeq ($(ENABLE_SQLITE),yes)
-TEST_SRC += \
-		$(DIR)/test_CMSSM_database.cpp
-endif
 endif
 
 ifeq ($(WITH_NMSSM),yes)
