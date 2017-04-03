@@ -541,9 +541,9 @@ double DiagramEvaluator<OneLoopDiagram<0>,
    double res = 0.0;
 
    using FermionVertex = VertexFunction<
-      EDMField,
-      typename anti<PhotonEmitter>::type,
-      typename anti<ExchangeField>::type
+      typename anti<EDMField>::type,
+      PhotonEmitter,
+      ExchangeField
    >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
@@ -589,9 +589,9 @@ double DiagramEvaluator<OneLoopDiagram<1>,
    double res = 0.0;
 
    using FermionVertex = VertexFunction<
-      EDMField,
-      typename anti<PhotonEmitter>::type,
-      typename anti<ExchangeField>::type
+      typename anti<EDMField>::type,
+      PhotonEmitter,
+      ExchangeField
    >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;

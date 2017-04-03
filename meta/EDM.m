@@ -311,7 +311,7 @@ CreateVertices[vertexRules_List] :=
  This function should be overloaded for future diagram types. *)
 VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_, exchangeField_]] :=
     Module[{edmVertex, photonVertex},
-           edmVertex = {edmField, SARAH`AntiField[photonEmitter], SARAH`AntiField[exchangeField]};
+           edmVertex = {SARAH`AntiField[edmField], photonEmitter, exchangeField};
            photonVertex = {SARAH`Photon, photonEmitter, SARAH`AntiField[photonEmitter]};
            Return[{edmVertex, photonVertex}];
            ];
