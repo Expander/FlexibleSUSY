@@ -516,14 +516,14 @@ std::vector<E6SSM_input_parameters> initialize_two_scale_inputs()
 
    inputs[0].Lambda12Input = 0.2;
    inputs[0].vSInput = 6000.;
-   inputs[0].BmuPrimeInput = 10000.;
-   inputs[0].muPrimeInput = 10000.;
+   inputs[0].BmuPrimeInput = -1.42595046e7;
+   inputs[0].muPrimeInput = 1.56425576e4;
    inputs[0].KappaInput = 0.15;
    inputs[0].LambdaInput = 0.2;
-   inputs[0].Azero = 1000.;
+   inputs[0].Azero = 3.60559408e3;
    inputs[0].TanBeta = 10.;
-   inputs[0].m12 = 500.;
-   inputs[0].m0 = 2000.;
+   inputs[0].m12 = 1.92911828e3;
+   inputs[0].m0 = Sqrt(1.85970254e7);
 
    return inputs;
 }
@@ -638,7 +638,10 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       const double mass_rel_diff = max_mass_rel_diff(
          semi_analytic_model, single_iteration_model);
 
-      const double test_precision = 1.0e-3;
+      // note: the attainable precision is limited by how precisely
+      // the inputs can be chosen so that the universality constraints end
+      // up being satisfied at the high-scale
+      const double test_precision = 0.5;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
