@@ -403,7 +403,7 @@ std::vector<NMSSM_input_parameters> initialize_two_scale_inputs()
    inputs[0].SignvS = 1;
    inputs[0].TanBeta = 10.;
    inputs[0].m12 = 133.333;
-   inputs[0].m0 = 38.25761388272928;
+   inputs[0].m0 = 36.31420167217364;
 
    return inputs;
 }
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_to_two_scale )
 
       const double test_precision = 1.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
-      BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
+      BOOST_CHECK_LT(soft_pars_rel_diff, 5.0 * test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
    }
 }
@@ -515,7 +515,7 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       const double mass_rel_diff = max_mass_rel_diff(
          semi_analytic_model, single_iteration_model);
 
-      const double test_precision = 1.0e-3;
+      const double test_precision = 1.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
