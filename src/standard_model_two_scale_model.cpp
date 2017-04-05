@@ -18,7 +18,7 @@
 
 
 /**
- * @file Standard_model_two_scale_model.cpp
+ * @file standard_model_two_scale_model.cpp
  * @brief implementation of the SM model class
  *
  * Contains the definition of the SM model class methods
