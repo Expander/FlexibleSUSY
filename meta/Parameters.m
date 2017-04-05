@@ -68,6 +68,7 @@ IsOutputParameter::usage="returns True if parameter is a defined output paramete
 IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
 IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
+IsGaugeCoupling::usage="returns True if parameter is a gauge coupling.";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -1317,6 +1318,8 @@ StripSARAHIndicesRules[numberOfIndices_] :=
 ExtractParametersFromSARAHBetaLists[beta_List] :=
     StripIndices[#[[1]]]& /@ beta;
 
+ExtractParametersFromSARAHBetaLists[_] := {};
+
 GetModelParametersWithMassDimension[dim_?IntegerQ] :=
     Module[{dimPars},
            Switch[dim,
@@ -1331,6 +1334,8 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
                  ];
            ExtractParametersFromSARAHBetaLists[dimPars]
           ];
+
+IsGaugeCoupling[par_] := MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaGauge], par];
 
 AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
     Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
