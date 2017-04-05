@@ -49,6 +49,6 @@ Block EXTPAR
    61   0.12                 # LambdaInput
    62   0.2                  # KappaInput
    63   10000                # MuPrimeInput
-   64   10000                # BMuPrimeInput
+   64   0                    # BMuPrimeInput
    65   4000                 # vsInput
    66   0.1                  # Lambda12Input
