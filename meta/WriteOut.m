@@ -408,7 +408,7 @@ WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH
 
 SetAttributes[WriteSLHABlockEntry, HoldFirst];
 
-WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
+WriteSLHABlockEntry[blockName_, {Hold[par_], idx___}, comment_String:""] :=
     Module[{parStr, commentStr},
            parStr = ToString[Unevaluated[par]];
            commentStr = If[comment == "", parStr, comment];
@@ -417,12 +417,12 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
                                    RegularExpression["\\bHighScale\\b"] -> "SCALES(HighScale)",
                                    RegularExpression["\\bLowScale\\b"]  -> "SCALES(LowScale)"}
                                  ];
-           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+           WriteSLHABlockEntry[blockName, {parStr, idx}, commentStr]
           ];
 
 ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
-WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
+WriteEffectiveCouplingsSLHABlockEntry[blockName_, particle_, vectorBoson_] :=
     Module[{i, dim, dimWithoutGoldstones, start, particlePDG, vectorPDG,
             struct, comment, value, result = ""},
            vectorPDG = Parameters`GetPDGCodesForParticle[vectorBoson][[1]];
@@ -459,45 +459,48 @@ WriteEffectiveCouplingsSLHABlockEntry[particle_, vectorBoson_] :=
            If[dimWithoutGoldstones == 1 || start == dim,
               value = "Abs(" <> struct <> ")";
               result = result
-                        <> WriteSLHABlockEntry[{value, particlePDG[[start]], vectorPDG, vectorPDG},
-                                                comment];,
+                        <> WriteSLHABlockEntry[blockName,
+                                               {value, particlePDG[[start]], vectorPDG, vectorPDG},
+                                               comment];,
               For[i = start, i <= Length[particlePDG], i++,
                   value = "Abs(" <> struct <> "(" <> ToString[i-start] <> "))";
                   result = result
-                           <> WriteSLHABlockEntry[{value, particlePDG[[i]], vectorPDG, vectorPDG},
+                           <> WriteSLHABlockEntry[blockName,
+                                                  {value, particlePDG[[i]], vectorPDG, vectorPDG},
                                                   comment];
                  ];
              ];
            result
           ];
 
-WriteSLHABlockEntry[{par_?IsObservable, idx___}, comment_String:""] :=
+WriteSLHABlockEntry[blockName_, {par_?IsObservable, idx___}, comment_String:""] :=
     Module[{i, dim, scalarPDG, vectorPDG, result = ""},
            Switch[par,
                   FlexibleSUSYObservable`aMuon,
-                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon", idx}, "Delta(g-2)_muon/2 FlexibleSUSY 1L"],
+                      result = WriteSLHABlockEntry[blockName, {"OBSERVABLES.a_muon", idx}, "Delta(g-2)_muon/2 FlexibleSUSY 1L"],
                   FlexibleSUSYObservable`aMuonGM2Calc,
-                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc", idx}, "Delta(g-2)_muon/2 GM2Calc"],
+                      result = WriteSLHABlockEntry[blockName, {"OBSERVABLES.a_muon_gm2calc", idx}, "Delta(g-2)_muon/2 GM2Calc"],
                   FlexibleSUSYObservable`aMuonGM2CalcUncertainty,
-                      result = WriteSLHABlockEntry[{"OBSERVABLES.a_muon_gm2calc_uncertainty", idx}, "Delta(g-2)_muon/2 GM2Calc uncertainty"],
+                      result = WriteSLHABlockEntry[blockName, {"OBSERVABLES.a_muon_gm2calc_uncertainty", idx}, "Delta(g-2)_muon/2 GM2Calc uncertainty"],
                   FlexibleSUSYObservable`CpHiggsPhotonPhoton,
-                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorP],
+                      result = WriteEffectiveCouplingsSLHABlockEntry[blockName, SARAH`HiggsBoson, SARAH`VectorP],
                   FlexibleSUSYObservable`CpHiggsGluonGluon,
-                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`HiggsBoson, SARAH`VectorG],
+                      result = WriteEffectiveCouplingsSLHABlockEntry[blockName, SARAH`HiggsBoson, SARAH`VectorG],
                   FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton,
-                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorP],
+                      result = WriteEffectiveCouplingsSLHABlockEntry[blockName, SARAH`PseudoScalar, SARAH`VectorP],
                   FlexibleSUSYObservable`CpPseudoScalarGluonGluon,
-                      result = WriteEffectiveCouplingsSLHABlockEntry[SARAH`PseudoScalar, SARAH`VectorG],
+                      result = WriteEffectiveCouplingsSLHABlockEntry[blockName, SARAH`PseudoScalar, SARAH`VectorG],
                   FlexibleSUSYObservable`EDM[_],
-                      result = WriteSLHABlockEntry[{"OBSERVABLES." <> Observables`GetObservableName[par], idx},
+                      result = WriteSLHABlockEntry[blockName,
+                                                   {"OBSERVABLES." <> Observables`GetObservableName[par], idx},
                                                    Observables`GetObservableDescription[par]],
                   _,
-                     result = WriteSLHABlockEntry[{"", idx}, ""]
+                     result = WriteSLHABlockEntry[blockName, {"", idx}, ""]
                  ];
            result
           ];
 
-WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment_String:""] :=
+WriteSLHABlockEntry[blockName_, {par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, idx3Str, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
@@ -510,7 +513,7 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ, idx3_?NumberQ}, comment
            <> idx3Str <> ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
+WriteSLHABlockEntry[blockName_, {par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
@@ -522,16 +525,20 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
            ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
+WriteSLHABlockEntry[blockName_, {par_, pdg_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, pdgStr, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
-           (* print unnormalized hypercharge gauge coupling *)
-           If[par === SARAH`hyperchargeCoupling,
+           (* print unnormalized gauge couplings *)
+           If[ToUpperCase[blockName] == "GAUGE" &&
+              Parameters`IsGaugeCoupling[par] &&
+              Parameters`GetGUTNormalization[par] =!= 1,
               parVal = parVal <> " * " <>
-                           CConversion`RValueToCFormString[
-                               Parameters`GetGUTNormalization[par]];
-              parStr = "gY";
+                       CConversion`RValueToCFormString[
+                           Parameters`GetGUTNormalization[par]];
+              parStr = CConversion`RValueToCFormString[par] <> " * " <>
+                       CConversion`RValueToCFormString[
+                           Parameters`GetGUTNormalization[par]];
              ];
            pdgStr = ToString[pdg];
            commentStr = If[comment == "", parStr, comment];
@@ -540,7 +547,7 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
            "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_}, comment_String:""] :=
+WriteSLHABlockEntry[_, {par_}, comment_String:""] :=
     Module[{parStr, parVal, commentStr},
            parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[WrapPreprocessorMacroAround[par]];
@@ -567,7 +574,7 @@ WriteSLHABlock[{blockName_, tuples_List}, scale_String:"model.get_scale()"] :=
                   "\""
                  ] <>
                " << '\\n'\n" <>
-               StringJoin[WriteSLHABlockEntry /@ tuples] <> ";\n" <>
+               StringJoin[WriteSLHABlockEntry[blockNameStr, #]& /@ tuples] <> ";\n" <>
                "slha_io.set_block(block);\n"
            ] <>
            "}\n"
@@ -663,7 +670,9 @@ ReadSLHAOutputBlock[{parameter_, {blockName_String, pdg_?NumberQ}}] :=
     Module[{result, parmStr, pdgStr, gutNorm = ""},
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
-           If[parameter === SARAH`hyperchargeCoupling,
+           If[ToUpperCase[blockName] == "GAUGE" &&
+              Parameters`IsGaugeCoupling[parameter] &&
+              Parameters`GetGUTNormalization[parameter] =!= 1,
               gutNorm = " * " <> CConversion`RValueToCFormString[
                   1/Parameters`GetGUTNormalization[parameter]];
              ];
