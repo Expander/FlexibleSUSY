@@ -25,6 +25,7 @@ HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 IMAGE_DIR       := $(DIR)/images
+IMAGES          := $(IMAGE_DIR)/Mh_Xt.png
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
@@ -64,6 +65,8 @@ install-src::
 		install -m u=rw,g=r,o=r $(DOXYFILE) $(DOC_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(PAPER_SRC) $(DOC_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(PAPER_STY) $(DOC_INSTALL_DIR)
+		install -d $(INSTALL_DIR)/$(IMAGE_DIR)
+		install -m u=rw,g=r,o=r $(IMAGES) $(INSTALL_DIR)/$(IMAGE_DIR)
 endif
 
 clean-$(MODNAME):
