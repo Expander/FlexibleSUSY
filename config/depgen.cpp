@@ -159,7 +159,7 @@ void print_empty_phony_targets(const std::vector<std::string>& dependencies,
       ostr << '\n' << d << ":\n";
 }
 
-/// returns file name from #include "..." statement
+/// returns file name from include "..." statement
 std::string get_filename_from_include(std::string line)
 {
    line = trim_left(line);
