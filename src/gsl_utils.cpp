@@ -45,7 +45,7 @@ bool is_finite(const gsl_vector* x)
  * Returns true if GSL_vector contains only finite elements (neither
  * nan nor inf), false otherwise.
  *
- * @param x GSL vector
+ * @param v GSL vector
  * @return true if vector contains only finite elements, false otherwise.
  */
 bool is_finite(const GSL_vector& v)
