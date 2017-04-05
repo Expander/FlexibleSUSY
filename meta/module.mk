@@ -24,13 +24,21 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/beta_Yd.m \
 		$(DIR)/MSSM/beta_Ye.m \
 		$(DIR)/MSSM/beta_Yu.m \
+		$(DIR)/dmtas2.m \
+		$(DIR)/extract_MSSM_beta_functions_from_hep-ph-0308231.m \
+		$(DIR)/extract_MSSM_Mt_over_mt_from_softsusy.m \
 		$(DIR)/MSSM/gamma_SdR.m \
 		$(DIR)/MSSM/gamma_SeR.m \
 		$(DIR)/MSSM/gamma_SHd.m \
 		$(DIR)/MSSM/gamma_SHu.m \
 		$(DIR)/MSSM/gamma_SlL.m \
 		$(DIR)/MSSM/gamma_SqL.m \
-		$(DIR)/MSSM/gamma_SuR.m
+		$(DIR)/MSSM/gamma_SuR.m \
+		$(DIR)/tquark_1loop_qcd.m \
+		$(DIR)/tquark_1loop_strong.m \
+		$(DIR)/tquark_2loop_qcd.m \
+		$(DIR)/tquark_2loop_strong.m \
+		$(DIR)/tquark_to_cpp.m
 
 META_SM_SRC  := \
 		$(DIR)/SM/beta_g1.m \
@@ -40,7 +48,8 @@ META_SM_SRC  := \
 		$(DIR)/SM/beta_gtau.m \
 		$(DIR)/SM/beta_gt.m \
 		$(DIR)/SM/beta_lambda.m \
-		$(DIR)/SM/beta_m2.m
+		$(DIR)/SM/beta_m2.m \
+		$(DIR)/SM/HSSUSY_corrections.m
 
 META_THDM_SRC:= \
 		$(DIR)/THDM/Thresholds_1L_full.m
@@ -76,6 +85,7 @@ META_SRC     := \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
+		$(DIR)/TwoLoopSM.m \
 		$(DIR)/TwoLoopMSSM.m \
 		$(DIR)/TwoLoopQCD.m \
 		$(DIR)/Utils.m \
