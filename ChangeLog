@@ -86,6 +86,23 @@ FlexibleSUSY 2.0.0 [not released yet]
  * Change: The legacy module and most SOFTSUSY components have been
    removed.
 
+ * Change: All gauge couplings written to the GAUGE block in the SLHA
+   output are now unnormalized.  Before, only the hypercharge gauge
+   coupling was written as unnormalized in the GAUGE block.  Note:
+   Internally, FlexibleSUSY uses normalized gauge couplings only.  In
+   order to write the normalized gauge couplings to the SLHA output, a
+   separate output block should be created.
+
+   Example:
+
+      ExtraSLHAOutputBlocks = {
+         {GAUGENORM, (* contains normalized gauge couplings *)
+                 {{1, g1},
+                  {2, g2},
+                  {3, g3},
+                  {4, gN} } }
+      };
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
