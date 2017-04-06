@@ -70,48 +70,60 @@ void set_command_line_parameters(const Dynamic_array_view<char*>& args,
    }
 }
 
-template <class solver_type>
-void run_scan(
-   @ModelName@_input_parameters& input, const std::vector<double>& range)
-{
-   softsusy::QedQcd qedqcd;
+struct @ModelName@_scan_result {
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES,@ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names};
+   double higgs{0.};
+};
 
+template <class solver_type>
+@ModelName@_scan_result run_parameter_point(const softsusy::QedQcd& qedqcd,
+   @ModelName@_input_parameters& input)
+{
    @ModelName@_spectrum_generator<solver_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
 
-   for (const auto p: range) {
-@setInputParameterTo[1,p]@
+   spectrum_generator.run(qedqcd, input);
 
-      spectrum_generator.run(qedqcd, input);
+   const auto model = spectrum_generator.get_model_slha();
+   const auto& pole_masses = model.get_physical_slha();
 
-      const auto model = spectrum_generator.get_model_slha();
-      const auto& pole_masses = model.get_physical_slha();
-      const auto& problems = spectrum_generator.get_problems();
-      const double higgs = pole_masses.M@HiggsBoson_0@;
-      const bool error = problems.have_problem();
+   @ModelName@_scan_result result;
+   result.problems = spectrum_generator.get_problems();
+   result.higgs = pole_masses.M@HiggsBoson_0@;
 
-      std::cout << "  "
-                << std::setw(12) << std::left << p << ' '
-                << std::setw(12) << std::left << higgs << ' '
-                << std::setw(12) << std::left << error;
-      if (error) {
-         std::cout << "\t# " << problems;
-      }
-      std::cout << '\n';
-   }
+   return result;
 }
 
 void scan(int solver_type, @ModelName@_input_parameters& input,
           const std::vector<double>& range)
 {
-   switch (solver_type) {
+   softsusy::QedQcd qedqcd;
+
+   for (const auto p: range) {
+@setInputParameterTo[1,p]@
+      @ModelName@_scan_result result;
+      switch (solver_type) {
+      case 0:
 @scanEnabledSolvers@
-   default:
-      ERROR("unknown solver type: " << solver_type);
-      exit(EXIT_FAILURE);
+      default:
+         if (solver_type != 0) {
+            ERROR("unknown solver type: " << solver_type);
+            exit(EXIT_FAILURE);
+         }
+      }
+
+      const int error = result.problems.have_problem();
+      std::cout << "  "
+                << std::setw(12) << std::left << p << ' '
+                << std::setw(12) << std::left << result.higgs << ' '
+                << std::setw(12) << std::left << error;
+      if (error) {
+         std::cout << "\t# " << result.problems;
+      }
+      std::cout << '\n';
    }
 }
 

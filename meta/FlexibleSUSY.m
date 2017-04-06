@@ -1793,9 +1793,9 @@ GetBVPSolverHeaderName[solver_] :=
 
 GetBVPSolverSLHAOptionKey[solver_] :=
     Switch[solver,
-           FlexibleSUSY`TwoScaleSolver, "0",
-           FlexibleSUSY`LatticeSolver, "1",
+           FlexibleSUSY`TwoScaleSolver, "1",
            FlexibleSUSY`SemiAnalyticSolver, "2",
+           FlexibleSUSY`LatticeSolver, "3",
            _, Print["Error: invalid BVP solver requested: ", solver];
               Quit[1];
           ];
@@ -1838,7 +1838,7 @@ RunEnabledSpectrumGenerator[solver_] :=
            body = "exit_code = run_solver<" <> class <> ">(\n"
                   <> IndentText["slha_io, spectrum_generator_settings, slha_output_file,\n"]
                   <> IndentText["database_output_file, spectrum_file, rgflow_file);\n"]
-                  <> "break;\n";
+                  <> "if (!exit_code || solver_type != 0) break;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
@@ -1847,16 +1847,18 @@ ScanEnabledSpectrumGenerator[solver_] :=
     Module[{key = "", class = "", macro = "", body = "", result = ""},
            key = GetBVPSolverSLHAOptionKey[solver];
            class = GetBVPSolverTemplateParameter[solver];
-           body = "run_scan<" <> class <> ">(input, range);\nbreak;\n";
+           body = "result = run_parameter_point<" <> class <> ">(qedqcd, input);\n"
+                  <> "if (!result.problems.have_problem() || solver_type != 0) break;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
-           EnableForBVPSolver[solver, IndentText[result]] <> "\n"
+           EnableForBVPSolver[solver, IndentText[IndentText[result]]] <> "\n"
           ];
 
 RunCmdLineEnabledSpectrumGenerator[solver_] :=
     Module[{key = "", class = "", macro = "", body = "", result = ""},
            key = GetBVPSolverSLHAOptionKey[solver];
            class = GetBVPSolverTemplateParameter[solver];
-           body = "exit_code = run_solver<" <> class <> ">(input);\nbreak;\n";
+           body = "exit_code = run_solver<" <> class <> ">(input);\n"
+                  <> "if (!exit_code || solver_type != 0) break;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
@@ -1896,11 +1898,14 @@ EnableMathlinkSpectrumGenerator[solver_] :=
            EnableForBVPSolver[solver, headers] <> "\n"
           ];
 
-InitialiseEnabledModelType[solver_] :=
+RunEnabledModelType[solver_] :=
     Module[{key, class, body, result},
            key = GetBVPSolverSLHAOptionKey[solver];
            class = GetBVPSolverTemplateParameter[solver];
-           body = "data.reset(new Model_data_impl<" <> class <> ">());\nbreak;\n";
+           body = "spectrum.reset(new " <> FlexibleSUSY`FSModelName <>
+                  "_spectrum_impl<" <> class <> ">());\n"
+                  <> "spectrum->calculate_spectrum(settings, modsel, qedqcd, input);\n"
+                  <> "if (!spectrum->get_problems().have_problem() || solver_type != 0) break;\n";
            result = "case " <> key <> ":\n" <> IndentText[body];
            EnableForBVPSolver[solver, IndentText[result]] <> "\n"
           ];
@@ -1914,7 +1919,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
             numberOfObservables, putObservables,
             listOfInputParameters, listOfModelParameters, listOfOutputParameters,
             inputPars, outPars, requestedObservables, defaultSolverType,
-            solverIncludes = "", initialiseDataPointer = ""},
+            solverIncludes = "", runEnabledSolvers = ""},
            inputPars = {#[[1]], #[[3]]}& /@ inputParameters;
            numberOfInputParameters = Total[CConversion`CountNumberOfEntries[#[[2]]]& /@ inputPars];
            numberOfInputParameterRules = FSMathLink`GetNumberOfInputParameterRules[inputPars];
@@ -1935,7 +1940,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
            numberOfObservables = Length[requestedObservables];
            putObservables = FSMathLink`PutObservables[requestedObservables, "link"];
            (solverIncludes = solverIncludes <> EnableMathlinkSpectrumGenerator[#])& /@ FlexibleSUSY`FSBVPSolvers;
-           (initialiseDataPointer = initialiseDataPointer <> InitialiseEnabledModelType[#])& /@ FlexibleSUSY`FSBVPSolvers;
+           (runEnabledSolvers = runEnabledSolvers <> RunEnabledModelType[#])& /@ FlexibleSUSY`FSBVPSolvers;
            If[Length[FlexibleSUSY`FSBVPSolvers] == 0,
               defaultSolverType = "-1",
               defaultSolverType = GetBVPSolverSLHAOptionKey[FlexibleSUSY`FSBVPSolvers[[1]]];
@@ -1956,7 +1961,7 @@ WriteMathLink[inputParameters_List, extraSLHAOutputBlocks_List, files_List] :=
                             "@listOfModelParameters@" -> listOfModelParameters,
                             "@listOfOutputParameters@" -> listOfOutputParameters,
                             "@solverIncludes@" -> solverIncludes,
-                            "@initialiseDataPointer@" -> initialiseDataPointer,
+                            "@runEnabledSolvers@" -> runEnabledSolvers,
                             "@defaultSolverType@" -> defaultSolverType,
                             Sequence @@ GeneralReplacementRules[]
                           } ];

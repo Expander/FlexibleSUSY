@@ -149,4 +149,4 @@ inline void MLGet(MLINK link, short *c)
    MLGetShortInteger(link, c);
 }
 
-#endif // MATHLINK_MACROS_H
+#endif // MATHLINK_UTILS_H

@@ -26,7 +26,7 @@ namespace {
 const std::array<std::string, Spectrum_generator_settings::NUMBER_OF_OPTIONS> descriptions = {
    "precision goal",
    "max. iterations (0 = automatic)",
-   "solver (0 = two_scale)",
+   "solver (0 = all)",
    "calculate SM pole masses",
    "pole mass loop order",
    "EWSB loop order",
@@ -84,7 +84,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * |----------------------------------|-------------------------------------------------|-----------------|
  * | precision                        | any positive double                             | 1.0e-4          |
  * | max_iterations                   | any positive double                             | 0 (= automatic) |
- * | solver                           | 0 (two-scale), 1 (lattice) or 2 (semi-analytic) | 0 (= two-scale) |
+ * | solver                           | 0 (all), 1 (two-scale) or 2 (semi-analytic)     | 0 (= all) |
  * | calculate_sm_masses              | 0 (no) or 1 (yes)                               | 0 (= no)        |
  * | pole_mass_loop_order             | 0, 1, 2                                         | 2 (= 2-loop)    |
  * | ewsb_loop_order                  | 0, 1, 2                                         | 2 (= 2-loop)    |
@@ -111,7 +111,7 @@ void Spectrum_generator_settings::reset()
 {
    values[precision]             = 1.0e-4;
    values[max_iterations]        = 0.; // 0 = automatic
-   values[solver]                = 0.; // 0 = two-scale
+   values[solver]                = 0.; // 0 = all
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[pole_mass_loop_order]  = 2.;
    values[ewsb_loop_order]       = 2.;
