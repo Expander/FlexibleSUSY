@@ -133,7 +133,8 @@ CreateMuonFunctions[vertexRules_List] :=
 
                            "if (m_muon_pole == 0.0) {\n" <>
                            IndentText @
-                           ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
+                           ("context.model.solve_ewsb();\n" <>
+                            "context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
                             "m_muon_pole = " <> contextMuonPole <> ";\n") <>
                            "}\n\n" <>
 

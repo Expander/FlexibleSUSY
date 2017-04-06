@@ -28,6 +28,8 @@
 #include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
+#include "error.hpp"
+#include "logger.hpp"
 #include "numerics2.hpp"
 #include "wrappers.hpp"
 
@@ -404,12 +406,30 @@ double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 {
 @GMuonMinus2_GetMSUSY@
 }
+
+void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
+{
+   for (int i = 0; i < 3; i++) {
+      const double MSUSY = get_MSUSY(model);
+      if (MSUSY == 0.) return;
+      model.run_to(MSUSY);
+      model.calculate_DRbar_masses();
+   }
+}
+
 } // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
+
+   try {
+      run_to_MSUSY(model);
+   } catch (const Error& e) {
+      ERROR("@ModelName@_a_muon:" << e.what());
+      return std::numeric_limits<double>::quiet_NaN();
+   }
 
 @GMuonMinus2_Calculation@
 }
