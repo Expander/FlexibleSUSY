@@ -199,7 +199,7 @@ GetMSUSY[] :=
 
 GetQED2L[] :=
     "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
-    "const double m_muon = MuonFamily::numberOfGenerations == 1 ? context.mass<MuonFamily>() : context.mass<MuonFamily>(muonIndex());\n" <>
+    "const double m_muon = muonPhysicalMass(context);\n" <>
     "const double alpha_em = Sqr(muonCharge(context))/(4*Pi);\n" <>
     "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
     "return qed_2L;";
