@@ -76,7 +76,7 @@ struct Parameters {
 
     double g3{};    ///< MSSM strong gauge coupling DR-bar
     double mt{};    ///< MSSM top mass DR-bar
-    double mb{};    ///< MSSM bottom mass DR-bar
+    double mb{};    ///< SM   bottom mass DR-bar
     double mg{};    ///< MSSM gluino mass DR-bar
     double mst1{};  ///< MSSM light stop mass DR-bar
     double mst2{};  ///< MSSM heavy stop mass DR-bar
@@ -88,7 +88,7 @@ struct Parameters {
     double Q{};     ///< renormalization scale
 };
 
-/// 2-loop full SQCD contributions to mb [hep-ph/0507139]
+/// 2-loop full SQCD contributions to mb [arXiv:0707.0650]
 double delta_mb_2loop(const Parameters&);
 
 } // namespace mssm_twoloop_mb
@@ -278,11 +278,26 @@ namespace {
 
 } // anonymous namespace
 
-/// 2-loop SUSY contributions to mb [hep-ph/0507139]
+/**
+ * The function returns the 2-loop SQCD (QCD + SUSY) relation between
+ * the Standard Model DR-bar bottom mass
+ * \\f$m_b^{\\text{SM},\\overline{\\text{DR}}}\\f$ and the MSSM DR-bar
+ * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$.
+ * The relation has the form
+ *
+ * \\f[
+    m_b^{\\text{SM},\\overline{\\text{DR}}} =
+    m_b^{\\text{MSSM},\\overline{\\text{DR}}} \\left[
+       1 + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{1L}
+         + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{2L}
+    \\right]
+   \\f]
+ *
+ * The function returns \\f$(\\Delta m_b/m_b)_{2L}\\f$.
+ */
 double delta_mb_2loop(const Parameters& pars)
 {
    using std::log;
-   using gm2calc::dilog;
    const double g3     = pars.g3;
    const double Xt     = pars.xt;
    const double Xb     = pars.xb;

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Thu 6 Apr 2017 17:55:25
+// This file has been generated at Fri 7 Apr 2017 21:00:53
 // with the script "bquark_to_cpp.m".
 
 #include "mssm_twoloop_mb.hpp"
@@ -179,10 +179,28 @@ namespace {
 } // anonymous namespace
 
 /// 2-loop SUSY contributions to mb [hep-ph/0507139]
+/// 2-loop full SQCD contributions to mb [arXiv:0707.0650]
+
+/**
+ * The function returns the 2-loop SQCD (QCD + SUSY) relation between
+ * the Standard Model DR-bar bottom mass
+ * \f$m_b^{\text{SM},\overline{\text{DR}}}\f$ and the MSSM DR-bar
+ * bottom mass \f$m_b^{\text{MSSM},\overline{\text{DR}}}\f$.
+ * The relation has the form
+ *
+ * \f[
+    m_b^{\text{SM},\overline{\text{DR}}} =
+    m_b^{\text{MSSM},\overline{\text{DR}}} \left[
+       1 + \left(\frac{\Delta m_b}{m_b}\right)_{1L}
+         + \left(\frac{\Delta m_b}{m_b}\right)_{2L}
+    \right]
+   \f]
+ *
+ * The function returns \f$(\Delta m_b/m_b)_{2L}\f$.
+ */
 double delta_mb_2loop(const Parameters& pars)
 {
    using std::log;
-   using gm2calc::dilog;
    const double g3     = pars.g3;
    const double Xt     = pars.xt;
    const double Xb     = pars.xb;
