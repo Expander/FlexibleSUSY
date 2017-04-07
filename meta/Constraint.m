@@ -407,11 +407,22 @@ CreateBetasForParsIn[expr_] :=
           ];
 
 CalculateScale[expr_Equal, scaleName_String] :=
-    Module[{result},
-           result = Parameters`CreateLocalConstRefs[expr];
+    Module[{scaleReset, result},
+           result = "const double currentScale = model->get_scale();\n"
+                    <> "const auto beta_functions(model->calc_beta());\n\n";
+           result = result <> Parameters`CreateLocalConstRefs[expr];
            result = result <> Parameters`CreateLocalConstRefsForBetas[CreateBetasForParsIn[expr]];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
+           scaleReset = "ERROR(\"Overflow error during calculation of scale: \"\n"
+                        <> "      << strerror(errno) << '\\n'\n"
+                        <> "      << \"   current scale = \" << currentScale << '\\n'\n"
+                        <> "      << \"   new scale = \" << scale << '\\n'\n"
+                        <> "      << \"   resetting scale to \" << get_initial_scale_guess());\n";
+           scaleReset = "#ifdef ENABLE_VERBOSE\n" <> IndentText[scaleReset] <> "#endif\n";
+           scaleReset = scaleReset <> IndentText["scale = get_initial_scale_guess();\n"]
+                        <> IndentText["errno = 0;\n"];
+           result = result <> "if (errno == ERANGE) {\n" <> scaleReset <> "}\n";
            Return[result];
           ];
 

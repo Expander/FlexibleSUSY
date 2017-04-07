@@ -120,26 +120,10 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::update_scale()
 {
    check_model_ptr();
 
-   const double currentScale = model->get_scale();
-   const @ModelName@_soft_parameters beta_functions(model->calc_beta());
-
 @calculateScale@
-
-   if (errno == ERANGE) {
-#ifdef ENABLE_VERBOSE
-      ERROR("@ModelName@_high_scale_constraint<Semi_analytic>: Overflow error"
-            " during calculation of high scale: " << strerror(errno) << '\n'
-            << "   current scale = " << currentScale << '\n'
-            << "   new scale = " << scale << '\n'
-            << "   resetting scale to " << get_initial_scale_guess());
-#endif
-      scale = get_initial_scale_guess();
-      errno = 0;
-   }
-
 @restrictScale@
 @updateSemiAnalyticConstraint@
-   }
+}
 
 void @ModelName@_high_scale_constraint<Semi_analytic>::check_model_ptr() const
 {
