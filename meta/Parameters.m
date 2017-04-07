@@ -35,6 +35,8 @@ SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
 SetInputParameter::usage="set input parameter to value";
 AddInputParameters::usage="add an input parameter";
 AddExtraParameters::usage="add an extra parameter";
+RemoveExtraParameters::usage="removes a parameter from the list of
+known extra parameters";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
 SetPhase::usage="sets a phase to a value";
@@ -313,6 +315,11 @@ SetExtraParameters[pars_List] :=
     )
 
 AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+
+RemoveExtraParameters[par_] :=
+    allExtraParameters = DeleteCases[allExtraParameters, {par, __}];
+
+RemoveExtraParameters[pars_List] := RemoveExtraParameters /@ pars;
 
 SetInputParameterType[par_?IsInputParameter, type_] :=
     allInputParameters = SetStoredParameterType[allInputParameters, par, type];
