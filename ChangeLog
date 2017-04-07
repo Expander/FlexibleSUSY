@@ -32,13 +32,14 @@ FlexibleSUSY 2.0.0 [not released yet]
  * Feature: Support for SLHA-2 input block IMEXTPAR.
 
  * Feature: The full 2-loop O(alpha_s^2) corrections to the DR-bar top
-   Yukawa coupling in the MSSM [arxiv:hep-ph/0210258,
-   arxiv:hep-ph/0507139] can be added by setting
+   and bottom Yukawa couplings [arxiv:hep-ph/0210258,
+   arxiv:hep-ph/0507139, arxiv:hep-ph/0707.0650] can be added by
+   setting
 
      UseMSSMYukawa2LoopSQCD = True
 
    in the model file.
-   Thanks to Alexander Bednyakov.
+   Thanks to Alexander Bednyakov for providing the expressions.
 
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
