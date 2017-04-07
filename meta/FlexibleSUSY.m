@@ -1273,7 +1273,7 @@ WriteEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitial
 WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List, ewsbInitialGuessValues_List,
                                  ewsbSubstitutions_List, ewsbSolution_List, freePhases_List,
                                  solutions_List, files_List] :=
-    Module[{semiAnalyticSubs, numberOfIndependentEWSBEquations,
+    Module[{semiAnalyticSubs, additionalEwsbSubs, numberOfIndependentEWSBEquations,
             ewsbEquationsTreeLevel,
             independentEwsbEquations, higgsToEWSBEqAssociation,
             calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
@@ -1283,8 +1283,8 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
             setEWSBParametersFromLocalCopies = "", applyEWSBSubstitutions = "",
             setModelParametersFromEWSB = "", setBoundaryValueParametersFromLocalCopies = ""},
            semiAnalyticSubs = SemiAnalytic`GetSemiAnalyticEWSBSubstitutions[solutions];
-           independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB,
-                                                                     Join[semiAnalyticSubs, ewsbSubstitutions]];
+           additionalEwsbSubs = Complement[ewsbSubstitutions, semiAnalyticSubs];
+           independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB, ewsbSubstitutions];
            numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            If[ewsbEquations =!= Table[0, {Length[ewsbEquations]}] &&
@@ -1301,7 +1301,7 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB, ewsbInitialGuessValues];
            solveEwsbTreeLevel = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
            solveEwsbTreeLevel = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbTreeLevel, solutions];
-           setTreeLevelSolution = SemiAnalytic`SetTreeLevelEWSBSolution[ewsbSolution, solutions, ewsbSubstitutions];
+           setTreeLevelSolution = SemiAnalytic`SetTreeLevelEWSBSolution[ewsbSolution, solutions, additionalEwsbSubs];
            solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution];
            solveEwsbWithTadpoles        = SemiAnalytic`ReplacePreprocessorMacros[solveEwsbWithTadpoles, solutions];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
@@ -1311,8 +1311,8 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
              ];
            getEWSBParametersFromVector  = EWSB`GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, "ewsb_pars"];
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model."];
-           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, ewsbSubstitutions, "model."];
-           applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, ewsbSubstitutions];
+           setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, additionalEwsbSubs, "model."];
+           applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, additionalEwsbSubs];
            setBoundaryValueParametersFromLocalCopies = SemiAnalytic`SetBoundaryValueParametersFromLocalCopies[parametersFixedByEWSB, solutions];
            WriteOut`ReplaceInFiles[files,
                           { "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],
@@ -1785,8 +1785,8 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
 GetBVPSolverHeaderName[solver_] :=
     Switch[solver,
            FlexibleSUSY`TwoScaleSolver, "two_scale",
-           FlexibleSUSY`LatticeSolver, "lattice",
            FlexibleSUSY`SemiAnalyticSolver, "semi_analytic",
+           FlexibleSUSY`LatticeSolver, "lattice",
            _, Print["Error: invalid BVP solver requested: ", solver];
               Quit[1];
           ];
@@ -1803,8 +1803,8 @@ GetBVPSolverSLHAOptionKey[solver_] :=
 GetBVPSolverTemplateParameter[solver_] :=
     Switch[solver,
            FlexibleSUSY`TwoScaleSolver, "Two_scale",
-           FlexibleSUSY`LatticeSolver, "Lattice",
            FlexibleSUSY`SemiAnalyticSolver, "Semi_analytic",
+           FlexibleSUSY`LatticeSolver, "Lattice",
            _, Print["Error: invalid BVP solver requested: ", solver];
               Quit[1];
           ];
@@ -1814,10 +1814,10 @@ EnableForBVPSolver[solver_, statements_String] :=
            Switch[solver,
                   FlexibleSUSY`TwoScaleSolver,
                   result = result <> "ENABLE_TWO_SCALE_SOLVER\n" <> statements,
-                  FlexibleSUSY`LatticeSolver,
-                  result = result <> "ENABLE_LATTICE_SOLVER\n" <> statements,
                   FlexibleSUSY`SemiAnalyticSolver,
                   result = result <> "ENABLE_SEMI_ANALYTIC_SOLVER\n" <> statements,
+                  FlexibleSUSY`LatticeSolver,
+                  result = result <> "ENABLE_LATTICE_SOLVER\n" <> statements,
                   _, Print["Error: invalid BVP solver requested: ", solver];
                      Quit[1];
                  ];
@@ -2330,6 +2330,18 @@ PrepareEWSBEquations[indexReplacementRules_] :=
            MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations]
           ];
 
+
+AddEWSBSubstitutionsForSolver[solver_, currentSubs_, extraSubs_] :=
+    Module[{pos, oldSubs, newSubs},
+           pos = Position[currentSubs, solver -> subs_];
+           If[pos === {},
+              newSubs = Append[currentSubs, Rule[solver, extraSubs]];,
+              oldSubs = Extract[currentSubs, pos][[1,-1]];
+              newSubs = ReplacePart[currentSubs, pos -> Rule[solver, Join[oldSubs, extraSubs]]];
+             ];
+           newSubs
+          ];
+
 SolveEWSBEquations[ewsbEquations_, ewsbOutputParameters_, ewsbSubstitutions_, treeLevelSolution_, treeLevelEwsbSolutionOutputFile_] :=
     Module[{i, independentEwsbEquations, ewsbSolution, freePhases},
            Print["Searching for independent EWSB equations ..."];
@@ -2366,6 +2378,50 @@ SolveEWSBEquations[ewsbEquations_, ewsbOutputParameters_, ewsbSubstitutions_, tr
              ];
            {ewsbSolution, freePhases}
           ];
+
+SolveEWSBEquationsForSolvers[solvers_List, ewsbEquations_, ewsbOutputParameters_,
+                             solverSubstitutions_, treeLevelSolution_, solutionOutputFiles_] :=
+    Module[{i, solver, substitutions, outputFile, solution, freePhases,
+            allSolutions = {}, allFreePhases = {}},
+           For[i = 1, i <= Length[solvers], i++,
+               solver = solvers[[i]];
+               substitutions = solver /. solverSubstitutions;
+               outputFile = solver /. solutionOutputFiles;
+               {solution, freePhases} = SolveEWSBEquations[ewsbEquations, ewsbOutputParameters,
+                                                           substitutions, treeLevelSolution, outputFile];
+               allSolutions = Append[allSolutions, solver -> solution];
+               allFreePhases = Append[allFreePhases, solver -> freePhases];
+              ];
+           {allSolutions, allFreePhases}
+          ];
+
+SelectValidEWSBSolvers[solverSolutions_, ewsbSolvers_] :=
+    Module[{i, solver, solution, validSolvers, solverEwsbSolvers = {}},
+           For[i = 1, i <= Length[solverSolutions], i++,
+               solver = First[solverSolutions[[i]]];
+               solution = Last[solverSolutions[[i]]];
+               validSolvers = ewsbSolvers;
+               If[solution === {},
+                  (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
+                  If[MemberQ[validSolvers, FlexibleSUSY`FPIRelative],
+                     Print["Warning: FPIRelative was selected, but no analytic"];
+                     Print["   solution to the EWSB eqs. is provided."];
+                     Print["   FPIRelative will be removed from the list of EWSB solvers."];
+                     validSolvers = Cases[validSolvers, Except[FlexibleSUSY`FPIRelative]];
+                    ];
+                  If[MemberQ[validSolvers, FlexibleSUSY`FPIAbsolute],
+                     Print["Warning: FPIAbsolute was selected, but no analytic"];
+                     Print["   solution to the EWSB eqs. is provided."];
+                     Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
+                     validSolvers = Cases[validSolvers, Except[FlexibleSUSY`FPIAbsolute]];
+                    ];
+                 ];
+               solverEwsbSolvers = Append[solverEwsbSolvers, solver -> validSolvers];
+              ];
+           solverEwsbSolvers
+          ];
+
+GetAllFreePhases[solverFreePhases_List] := DeleteDuplicates[Flatten[#[[2]]& /@ solverFreePhases]];
 
 ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
                        mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
@@ -2684,10 +2740,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             allInputParameterIndexReplacementRules = {},
             allExtraParameterIndexReplacementRules = {},
             allParticles, allParameters,
-            ewsbEquations, ewsbSubstitutions,
-            freePhases = {}, ewsbSolution = {}, missingPhases,
-            treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
-            fixedParameters,
+            ewsbEquations, sharedEwsbSubstitutions = {}, solverEwsbSubstitutions = {},
+            freePhases = {}, solverFreePhases = {}, solverEwsbSolutions = {}, missingPhases,
+            treeLevelEwsbSolutionOutputFiles = {}, treeLevelEwsbEqsOutputFile,
+            solverEwsbSolvers = {}, fixedParameters,
             lesHouchesInputParameters,
             extraSLHAOutputBlocks, effectiveCouplings = {}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
@@ -3031,35 +3087,39 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`EWSBInitialGuess = EWSB`GetValidEWSBInitialGuesses[FlexibleSUSY`EWSBInitialGuess];
              ];
 
-           ewsbSubstitutions = {};
            If[FlexibleSUSY`EWSBSubstitutions =!= {},
-              ewsbSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
-              ewsbSubstitutions = (Rule @@ #)& /@ (ewsbSubstitutions /. allIndexReplacementRules);
+              sharedEwsbSubstitutions = EWSB`GetValidEWSBSubstitutions[FlexibleSUSY`EWSBSubstitutions];
+              sharedEwsbSubstitutions = (Rule @@ #)& /@ (sharedEwsbSubstitutions /. allIndexReplacementRules);
              ];
+           solverEwsbSubstitutions = Rule[#, sharedEwsbSubstitutions]& /@ FlexibleSUSY`FSBVPSolvers;
 
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
               semiAnalyticEWSBSubstitutions = SemiAnalytic`GetSemiAnalyticEWSBSubstitutions[semiAnalyticSolns];
+              solverEwsbSubstitutions = AddEWSBSubstitutionsForSolver[FlexibleSUSY`SemiAnalyticSolver,
+                                                                      solverEwsbSubstitutions,
+                                                                      semiAnalyticEWSBSubstitutions];
              ];
 
            FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
            If[ewsbEquations =!= {},
-              treeLevelEwsbSolutionOutputFile = FileNameJoin[{FSOutputDir,
-                                                              FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
-              treeLevelEwsbEqsOutputFile      = FileNameJoin[{FSOutputDir,
-                                                              FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
+              treeLevelEwsbEqsOutputFile = FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
               Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
-              If[ewsbSubstitutions =!= {},
-                 Put[Parameters`ReplaceAllRespectingSARAHHeads[ewsbEquations, ewsbSubstitutions], treeLevelEwsbEqsOutputFile],
+              If[sharedEwsbSubstitutions =!= {},
+                 Put[Parameters`ReplaceAllRespectingSARAHHeads[ewsbEquations, sharedEwsbSubstitutions], treeLevelEwsbEqsOutputFile],
                  Put[ewsbEquations, treeLevelEwsbEqsOutputFile]
                 ];
 
-              {ewsbSolution, freePhases} = SolveEWSBEquations[ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
-                                                              Join[semiAnalyticEWSBSubstitutions, ewsbSubstitutions],
-                                                              FlexibleSUSY`TreeLevelEWSBSolution,
-                                                              treeLevelEwsbSolutionOutputFile];
+              treeLevelEwsbSolutionOutputFiles =
+                  (Rule[#, FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_"
+                                                      <> GetBVPSolverHeaderName[#] <> "_EWSB_solution.m"}]])& /@ FlexibleSUSY`FSBVPSolvers;
+              {solverEwsbSolutions, solverFreePhases} = SolveEWSBEquationsForSolvers[FlexibleSUSY`FSBVPSolvers, ewsbEquations,
+                                                                                     FlexibleSUSY`EWSBOutputParameters, solverEwsbSubstitutions,
+                                                                                     FlexibleSUSY`TreeLevelEWSBSolution,
+                                                                                     treeLevelEwsbSolutionOutputFiles];
               ,
               Print["Note: There are no EWSB equations."];
              ];
+           freePhases = GetAllFreePhases[solverFreePhases];
            If[freePhases =!= {},
               Print["Note: the following phases are free: ", freePhases];
               missingPhases = Select[freePhases, !MemberQ[#[[1]]& /@ inputParameters, #]&];
@@ -3070,8 +3130,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 ];
              ];
 
-           If[ewsbSolution === {},
-              Print["Warning: could not find an analytic solution to the EWSB eqs."];
+           If[Cases[solverEwsbSolutions, (solver_ -> {}) :> solver] =!= {},
+              Print["Warning: an analytic solution to the EWSB eqs. ",
+                    " could not be found for the solvers: ",
+                    Cases[solverEwsbSolutions, (solver_ -> {}) :> solver]];
               Print["   An iterative algorithm will be used.  You can try to set"];
               Print["   the solution by hand in the model file like this:"];
               Print[""];
@@ -3081,20 +3143,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     If[i != Length[FlexibleSUSY`EWSBOutputParameters], ",", ""]];
                    ];
               Print["   };\n"];
-              (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
-              If[MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIRelative],
-                 Print["Warning: FPIRelative was selected, but no analytic"];
-                 Print["   solution to the EWSB eqs. is provided."];
-                 Print["   FPIRelative will be removed from the list of EWSB solvers."];
-                 FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIRelative]];
-                ];
-              If[MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIAbsolute],
-                 Print["Warning: FPIAbsolute was selected, but no analytic"];
-                 Print["   solution to the EWSB eqs. is provided."];
-                 Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
-                 FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
-                ];
              ];
+           solverEwsbSolvers = SelectValidEWSBSolvers[solverEwsbSolutions, FlexibleSUSY`FSEWSBSolvers];
 
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
@@ -3150,7 +3200,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
-                           Join[semiAnalyticEWSBSubstitutions, ewsbSubstitutions], nPointFunctions, vertexRules, Parameters`GetPhases[],
+                           DeleteDuplicates[Flatten[#[[2]]& /@ solverEwsbSubstitutions]], nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
@@ -3302,7 +3352,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for two-scale EWSB solver ..."];
               WriteEWSBSolverClass[ewsbEquations, FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
-                                   ewsbSubstitutions, ewsbSolution, freePhases,
+                                   FlexibleSUSY`TwoScaleSolver /. solverEwsbSubstitutions,
+                                   FlexibleSUSY`TwoScaleSolver /. solverEwsbSolutions,
+                                   FlexibleSUSY`TwoScaleSolver /. solverFreePhases,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_ewsb_solver.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_ewsb_solver.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_ewsb_solver.cpp.in"}],
@@ -3499,7 +3551,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for semi-analytic EWSB solver ..."];
               WriteSemiAnalyticEWSBSolverClass[ewsbEquations, FlexibleSUSY`EWSBOutputParameters, FlexibleSUSY`EWSBInitialGuess,
-                                               ewsbSubstitutions, ewsbSolution, freePhases, semiAnalyticSolns,
+                                               FlexibleSUSY`SemiAnalyticSolver /. solverEwsbSubstitutions,
+                                               FlexibleSUSY`SemiAnalyticSolver /. solverEwsbSolutions,
+                                               FlexibleSUSY`SemiAnalyticSolver /. solverFreePhases, semiAnalyticSolns,
                                                {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_ewsb_solver.hpp.in"}],
                                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_ewsb_solver.hpp"}]},
                                                 {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_ewsb_solver.cpp.in"}],
