@@ -464,7 +464,7 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
               result = "ERROR(\"no solution found for the equation " <>
                         ToString[expr1] <> " == " <> ToString[expr2] <> "\");\n";
               ,
-              result = scaleName <> " = " <> RValueToCFormString[solution] <> ";\n";
+              result = scaleName <> " = " <> CConversion`RValueToCFormString[solution] <> ";\n";
              ];
            Return[result];
           ];

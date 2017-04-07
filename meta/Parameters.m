@@ -1381,7 +1381,7 @@ DefineLocalConstCopyForBeta[{par_, -1}] :=
     DefineLocalConstCopy[par, "BETAPARAMETER", "beta_"];
 
 DefineLocalConstCopyForBeta[{par_, loops_}] :=
-    Module[{lstr = ToString[loops], parStr = ToValidCSymbolString[par]},
+    Module[{lstr = ToString[loops], parStr = CConversion`ToValidCSymbolString[par]},
            "const auto BETA1(" <> lstr <> "," <> parStr <>
            ") = BETAPARAMETER1(" <> lstr <> "," <> parStr <> ");\n"
           ];
