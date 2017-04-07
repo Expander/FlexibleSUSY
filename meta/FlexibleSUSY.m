@@ -1205,7 +1205,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
            If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
-              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mt.hpp\"";
+              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mb.hpp\"\n#include \"mssm_twoloop_mt.hpp\"";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
