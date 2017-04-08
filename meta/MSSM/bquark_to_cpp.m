@@ -314,6 +314,7 @@ double delta_mb_2loop(const Parameters& pars)
 
    const double result =
 " <> WrapText @ IndentText[ToCPP[b2l] <> ";"] <> "
+
    return result * twoLoop;
 }
 

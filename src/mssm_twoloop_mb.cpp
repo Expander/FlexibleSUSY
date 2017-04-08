@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Fri 7 Apr 2017 21:00:53
+// This file has been generated at Sat 8 Apr 2017 10:46:50
 // with the script "bquark_to_cpp.m".
 
 #include "mssm_twoloop_mb.hpp"
@@ -177,9 +177,6 @@ namespace {
    }
 
 } // anonymous namespace
-
-/// 2-loop SUSY contributions to mb [hep-ph/0507139]
-/// 2-loop full SQCD contributions to mb [arXiv:0707.0650]
 
 /**
  * The function returns the 2-loop SQCD (QCD + SUSY) relation between
@@ -4274,6 +4271,7 @@ double delta_mb_2loop(const Parameters& pars)
      log(mmgl/mmu))*pow4(mmsb2))/(9.*(-mmgl + mmsb1)*pow5(mmsb1 - mmsb2)) - (
      32*mmb*pow2(log(mmgl/mmu))*pow4(mmsb2))/(9.*(-mmgl + mmsb2)*pow5(mmsb1 -
      mmsb2))));
+
    return result * twoLoop;
 }
 
