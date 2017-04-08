@@ -112,6 +112,10 @@ SEMI_ANALYTIC_TEMPLATES := \
 		$(DIR)/standard_model_semi_analytic_high_scale_initial_guesser.cpp.in \
 		$(DIR)/standard_model_semi_analytic_high_scale_spectrum_generator.hpp.in \
 		$(DIR)/standard_model_semi_analytic_high_scale_spectrum_generator.cpp.in \
+		$(DIR)/standard_model_semi_analytic_low_scale_initial_guesser.hpp.in \
+		$(DIR)/standard_model_semi_analytic_low_scale_initial_guesser.cpp.in \
+		$(DIR)/standard_model_semi_analytic_low_scale_spectrum_generator.hpp.in \
+		$(DIR)/standard_model_semi_analytic_low_scale_spectrum_generator.cpp.in \
 		$(DIR)/standard_model_semi_analytic_matching.hpp.in \
 		$(DIR)/standard_model_semi_analytic_matching.cpp.in \
 		$(DIR)/susy_convergence_tester.hpp.in

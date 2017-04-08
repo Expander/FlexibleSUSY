@@ -23,7 +23,6 @@
 
 #include "@ModelName@_initial_guesser.hpp"
 #include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
-#include "@ModelName@_semi_analytic_high_scale_constraint.hpp"
 #include "standard_model_two_scale_low_scale_constraint.hpp"
 #include "initial_guesser.hpp"
 #include "lowe.h"
@@ -57,34 +56,13 @@ public:
                                standard_model::StandardModel<Two_scale>*,
                                const softsusy::QedQcd&,
                                const standard_model::Standard_model_low_scale_constraint<Two_scale>&,
-                               @ModelName@_susy_scale_constraint<Semi_analytic>&,
-                               @ModelName@_high_scale_constraint<Semi_analytic>&);
+                               @ModelName@_susy_scale_constraint<Semi_analytic>&);
    virtual ~@ModelName@_standard_model_initial_guesser() = default;
    virtual void guess(); ///< initial guess
 
    void set_running_precision(double p) { running_precision = p; }
 
 private:
-
-   class @ModelName@_initial_matching : public Single_scale_constraint {
-   public:
-      @ModelName@_initial_matching(@ModelName@<Semi_analytic>*, standard_model::StandardModel<Two_scale>*);
-      virtual ~@ModelName@_initial_matching() {};
-      virtual void apply() override;
-      virtual double get_scale() const override { return scale; }
-      virtual std::string name() const override { return "@ModelName@ matching constraint"; }
-      virtual void set_model(Model*) override;
-
-      void set_scale(double s) { scale = s; }
-      void set_model_constraint(Single_scale_constraint* c) { model_constraint = c; }
-
-   private:
-      double scale{0.};
-      @ModelName@<Semi_analytic>* model{nullptr};
-      standard_model::StandardModel<Two_scale>* eft{nullptr};
-      Single_scale_constraint* model_constraint{nullptr};
-   };
-
    @ModelName@<Semi_analytic>* model{nullptr}; ///< pointer to model class
    standard_model::StandardModel<Two_scale>* eft{nullptr}; ///< pointer to effective low energy model
    softsusy::QedQcd qedqcd{}; ///< Standard Model low-energy data
@@ -100,7 +78,6 @@ private:
    double running_precision{1.0e-3}; ///< Runge-Kutta RG running precision
    standard_model::Standard_model_low_scale_constraint<Two_scale> low_constraint{};
    @ModelName@_susy_scale_constraint<Semi_analytic>& susy_constraint;
-   @ModelName@_high_scale_constraint<Semi_analytic>& high_constraint;
 
    void guess_eft_parameters();
    void guess_model_parameters();
@@ -108,9 +85,7 @@ private:
    void calculate_@UpYukawa@_DRbar();
    void calculate_@DownYukawa@_DRbar();
    void calculate_@ElectronYukawa@_DRbar();
-   void initial_guess_susy_scale_parameters();
-   void initial_guess_high_scale_parameters();
-   void solve_susy_parameters();
+   void guess_susy_parameters();
    void guess_soft_parameters();
 };
 
