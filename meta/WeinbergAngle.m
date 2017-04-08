@@ -206,7 +206,7 @@ WaveResult[diagr_List, includeGoldstones_] :=
 CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsWave[particle], TreeMasses`IsVector];
 
 DeltaVBwave[includeGoldstones_:False] :=
-    Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult, result},
+    Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult},
            (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            If[Length[neutrinofields] == 1,
