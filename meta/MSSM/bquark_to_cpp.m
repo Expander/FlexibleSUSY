@@ -193,7 +193,7 @@ namespace {
       using gm2calc::dilog;
       const std::complex<double> img(0.,1.);
 
-      return std::real(img * 0.5 * (dilog(exp(-img*x)) - dilog(exp(img*x))));
+      return std::imag(dilog(exp(img*x)));
    }
 
    /// x < 1 && y < 1, LambdaSquared(x,y) > 0

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Sat 8 Apr 2017 10:46:50
+// This file has been generated at Sat 8 Apr 2017 12:05:27
 // with the script "bquark_to_cpp.m".
 
 #include "mssm_twoloop_mb.hpp"
@@ -93,7 +93,7 @@ namespace {
       using gm2calc::dilog;
       const std::complex<double> img(0.,1.);
 
-      return std::real(img * 0.5 * (dilog(exp(-img*x)) - dilog(exp(img*x))));
+      return std::imag(dilog(exp(img*x)));
    }
 
    /// x < 1 && y < 1, LambdaSquared(x,y) > 0
