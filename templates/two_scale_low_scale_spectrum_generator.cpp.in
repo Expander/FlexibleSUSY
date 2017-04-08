@@ -58,6 +58,8 @@ double @ModelName@_spectrum_generator<Two_scale>::get_pole_mass_scale() const
 void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQcd& qedqcd,
                                 const @ModelName@_input_parameters& input)
 {
+   VERBOSE_MSG("Solving BVP using two-scale solver");
+
    @ModelName@<Two_scale>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
