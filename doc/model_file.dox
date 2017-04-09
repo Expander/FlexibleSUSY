@@ -1342,7 +1342,7 @@ the DR-bar top mass from [arxiv:hep-ph/0210258,arxiv:hep-ph/0507139]
 can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSMYukawa3LoopSQCD = True; (* use two-loop threshold for yt *)
+UseMSSMYukawa2LoopSQCD = True; (* use two-loop threshold for yt *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 */

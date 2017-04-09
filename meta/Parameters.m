@@ -78,8 +78,8 @@ IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
 IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
-IsDerivedParameter::usage="returns True if parameter is a derived parameter";
-IsExtraParameter::usage="returns True if parameter is a defined extra parameter";
+IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
+IsGaugeCoupling::usage="returns True if parameter is a gauge coupling.";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -665,11 +665,6 @@ IsInputParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
 
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
-
-IsDerivedParameter[parameter_] := MemberQ[GetDependenceSPhenoSymbols[], parameter];
-
-IsDerivedParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    IsDerivedParameter[parameter];
 
 IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
 
@@ -1626,6 +1621,8 @@ StripSARAHIndicesRules[numberOfIndices_] :=
 ExtractParametersFromSARAHBetaLists[beta_List] :=
     StripIndices[#[[1]]]& /@ beta;
 
+ExtractParametersFromSARAHBetaLists[_] := {};
+
 GetModelParametersWithMassDimension[dim_?IntegerQ] :=
     Module[{dimPars},
            Switch[dim,
@@ -1648,7 +1645,6 @@ GetParametersWithMassDimension[dim_?IntegerQ] :=
            DeleteDuplicates[dimPars]
           ];
 
-
 GetModelParameterMassDimension[par_?IsModelParameter] :=
     Module[{i, parsList},
            For[i = 0, i <= 3, i++,
@@ -1666,6 +1662,17 @@ GetModelParameterMassDimension[par_] :=
           Print["Error: GetModelParameterMassDimension:", par, " is not a model parameter!"];
           Quit[1];
          ];
+
+IsGaugeCoupling[par_] := MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaGauge], par];
+
+AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
+    Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
+            pars},
+           (* ignore parameter heads Re[], Im[], Abs[], Phase[] *)
+           pars = parameters /. { Re[p_] :> p, Im[p_] :> p,
+                                  Abs[p_] :> p, FlexibleSUSY`Phase[p_] :> p };
+           And @@ (FreeQ[frac,#]& /@ pars)
+          ];
 
 GetThirdGeneration[par_] :=
     Which[IsScalar[par], par,

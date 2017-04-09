@@ -135,7 +135,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
-UseMSSMYukawa3LoopSQCD = False;
+UseMSSMYukawa2LoopSQCD = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
@@ -1438,12 +1438,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
-           If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
-              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mt.hpp\"";
+           If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mb.hpp\"\n#include \"mssm_twoloop_mt.hpp\"";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
-              FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];

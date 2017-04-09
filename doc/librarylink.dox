@@ -40,7 +40,7 @@ generated example can be found in `models/<model>/run_<model>.m`,
 which can be run for example as
 
     math -run "<< \"models/<model>/run_<model>.m\""
-.
+
 Before running the example Mathematica script, the model parameters in
 the script should be set to reasonable values.
 

@@ -72,7 +72,7 @@ pars.Q = get_scale();";
 
 
 AddMtPoleQCDCorrections[1, expr_] :=
-    If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
 "\
 double qcd_1l = 0.;
 
@@ -94,7 +94,7 @@ double qcd_1l = 0.;
     ];
 
 AddMtPoleQCDCorrections[2, expr_] :=
-    If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
 "\
 double qcd_2l = 0.;
 
@@ -123,6 +123,36 @@ if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
    qcd_3l = " <> CConversion`RValueToCFormString[expr] <> ";
 }
 ";
+
+AddMbRun2LSQCDCorrections[] :=
+    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+"
+if (get_thresholds() > 1) {
+   double mst_1, mst_2, theta_t;
+   " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
+   double msb_1, msb_2, theta_b;
+   " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <> ";
+
+   mssm_twoloop_mb::Parameters pars;
+   pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
+   pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+   pars.mb = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMBottomQuarkMultiplet[]]] <> ";
+   pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
+   pars.mst1 = mst_1;
+   pars.mst2 = mst_2;
+   pars.msb1 = msb_1;
+   pars.msb2 = msb_2;
+   pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+   pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
+   pars.xb = Sin(2*theta_b) * (Sqr(msb_1) - Sqr(msb_2)) / (2. * pars.mb);
+   pars.Q = get_scale();
+
+   qcd_2l = mssm_twoloop_mb::delta_mb_2loop(pars);
+}
+"
+       ,
+       ""
+      ];
 
 Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
@@ -950,9 +980,11 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMBottomQ
               body = body <>
               "const double m_tree = " <> RValueToCFormString[treeLevelMass] <> ";\n" <>
               "const double drbar_conversion = " <> RValueToCFormString[drbarConversion] <> ";\n" <>
-              "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n\n" <>
+              "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n" <>
+              "double qcd_2l = 0.;\n" <>
+              AddMbRun2LSQCDCorrections[] <> "\n" <>
               "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
-              "- self_energy_PL - self_energy_PR);\n\n" <>
+              "- self_energy_PL - self_energy_PR + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
@@ -1060,14 +1092,14 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               body = body <>
               "const double currentScale = get_scale();\n" <>
               "double qcd_1l = 0., qcd_2l = 0., qcd_3l = 0.;\n\n" <>
-                  If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                  If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                      CreateMSSM1LoopSQCDContributions[],
                      "qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
                     ] <>
               "\n\n" <>
               "if (get_thresholds() > 1) {\n" <>
               IndentText[
-                  If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                  If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                      CreateMSSM2LoopSQCDContributions[],
                      "qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
                     ]

@@ -85,7 +85,9 @@ void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
                                               double scale)
 {
    auto model_at_scale = model;
-   model_at_scale.run_to(scale);
+
+   if (scale > 0.)
+      model_at_scale.run_to(scale);
 
    return calculate_observables(model_at_scale, qedqcd, physical_input);
 }

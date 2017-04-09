@@ -250,7 +250,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveParticle[#,
-                                                                   If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                                                                   If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                                                                       {SARAH`VectorG,SARAH`Gluino},
                                                                       SARAH`VectorG
                                                                      ]
@@ -260,7 +260,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveParticle[#,
-                                                If[FlexibleSUSY`UseMSSMYukawa3LoopSQCD === True,
+                                                If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                                                    {SARAH`VectorG,SARAH`Gluino},
                                                    SARAH`VectorG
                                                   ]
