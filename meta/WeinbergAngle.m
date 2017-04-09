@@ -10,6 +10,7 @@ DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
 InitGenerationOfDiagrams::usage="";
 DeltaVBwave::usage="";
+DeltaVBvertex::usage="";
 CreateDeltaVBContributions::usage="";
 CreateDeltaVBCalculation::usage="";
 
@@ -221,6 +222,117 @@ DeltaVBwave[includeGoldstones_:False] :=
               chargedleptonresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[1]]}, CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]],
                                      WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[2]]}, CompleteWaveResult[chargedleptonfields[[2]], includeGoldstones]]};];
            Join[neutrinoresult, chargedleptonresult]
+          ];
+
+GenerateDiagramsVertex[part1_, part2_, part3_] :=
+    Module[{couplings, insertrules, topo, diagrs},
+           couplings = {C[SARAH`External[1], SARAH`AntiField[SARAH`Internal[2]], SARAH`Internal[3]],
+                        C[SARAH`External[2], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[3]]],
+                        C[SARAH`External[3], SARAH`AntiField[SARAH`Internal[1]], SARAH`Internal[2]]};
+           insertrules = {SARAH`External[1] -> part1, SARAH`External[2] -> part2, SARAH`External[3] -> part3,
+                          SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2], SARAH`Internal[3] -> SARAH`FieldToInsert[3]};
+           topo = {couplings /. insertrules, insertrules};
+           diagrs = SARAH`InsFields[topo];
+           (*add indices for later summation*)
+           diagrs = diagrs /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
+           diagrs = diagrs /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
+           (*TODO: test for more than 1 field in SARAH`VectorW*)
+           diagrs = ({couplings /. #[[2]], #[[2]]}) & /@ diagrs;
+           diagrs
+          ];
+
+(*True for Majorana fermions and outgoing Dirac fermions*)
+IsOutgoingFermion[particle_] := TreeMasses`IsFermion[particle] && (!FreeQ[particle, SARAH`bar] || SARAH`AntiField[particle] === particle);
+
+(*True for Majorana Fermions and incoming Dirac fermions*)
+IsIncomingFermion[particle_] := TreeMasses`IsFermion[particle] && FreeQ[particle, SARAH`bar];
+
+VertexResultFSS[diagr_List, includeGoldstones_] :=
+    Module[{extparticles, extvectorindex, extoutindex, extinindex, couplSSV, couplFFSout, couplFFSin, intparticles, intfermion, intscalars, result, intpartwithindex},
+           extparticles = {SARAH`External[1], SARAH`External[2], SARAH`External[3]} /. diagr[[2]];
+           extvectorindex = Position[extparticles, x_ /; TreeMasses`IsVector[x], {1}, Heads -> False][[1, 1]];
+           extoutindex = Position[extparticles, x_ /; IsOutgoingFermion[x], {1}, Heads -> False][[1, 1]];
+           extinindex = Complement[{1, 2, 3}, {extvectorindex, extoutindex}][[1]];
+           (*TODO: ensure correct momentum direction at SSV vertex*)
+           couplSSV = diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
+           couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
+           couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
+           intparticles = ({SARAH`Internal[3], SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
+           intscalars = Select[intparticles, TreeMasses`IsScalar];
+           result = 1/2 couplSSV couplFFSout couplFFSin (1/2 + SARAH`B0[0, SARAH`Mass2[intscalars[[2]]], SARAH`Mass2[intscalars[[1]]]]
+                                                         + SARAH`Mass2[intfermion] SARAH`C0[SARAH`Mass2[intfermion], SARAH`Mass2[intscalars[[2]]], SARAH`Mass2[intscalars[[1]]]]);
+           intpartwithindex = Cases[intparticles, _[{_}]];
+           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
+                 {i, Length[intpartwithindex]}];
+           result
+          ];
+
+VertexResultFFS[diagr_List, includeGoldstones_] :=
+    Module[{extparticles, extvectorindex, extoutindex, extinindex, fermiondirectok1, fermiondirectok2, needfermionflip, innaturalorder, orderedparticles, couplFFVPL, couplFFVPR, couplFFSout, couplFFSin, intparticles, intfermions, intscalar, result, intpartwithindex},
+           extparticles = {SARAH`External[1], SARAH`External[2], SARAH`External[3]} /. diagr[[2]];
+           extvectorindex = Position[extparticles, x_ /; TreeMasses`IsVector[x], {1}, Heads -> False][[1, 1]];
+           extoutindex = Position[extparticles, x_ /; IsOutgoingFermion[x], {1}, Heads -> False][[1, 1]];
+           extinindex = Complement[{1, 2, 3}, {extvectorindex, extoutindex}][[1]];
+           (*is fermion flip necessary?*)
+           fermiondirectok1 = Or @@ IsIncomingFermion /@ Complement[List @@ diagr[[1, extoutindex]], {SARAH`External[extoutindex]} /. diagr[[2]]];
+           fermiondirectok2 = Or @@ IsOutgoingFermion /@ Complement[List @@ diagr[[1, extinindex]], {SARAH`External[extinindex]} /. diagr[[2]]];
+           needfermionflip = !(fermiondirectok1 && fermiondirectok2);
+           (*are fermions in natural order (outgoing before incoming)?*)
+           innaturalorder = (IsOutgoingFermion[#[[1]]] && IsIncomingFermion[#[[2]]]) & @ Select[List @@ diagr[[1, extvectorindex]], TreeMasses`IsFermion];
+           orderedparticles = If[innaturalorder, List @@ diagr[[1, extvectorindex]], Reverse[List @@ diagr[[1, extvectorindex]]]];
+           (*use non-flipped or flipped FFV vertex appropriately*)
+           couplFFVPL = (SARAH`Cp @@ If[needfermionflip, Reverse[orderedparticles], orderedparticles])[SARAH`PL];
+           couplFFVPR = (SARAH`Cp @@ If[needfermionflip, Reverse[orderedparticles], orderedparticles])[SARAH`PR];
+           couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
+           couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
+           intparticles = ({SARAH`Internal[3], SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intfermions = Select[intparticles, TreeMasses`IsFermion];
+           intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
+           result = couplFFSout couplFFSin (-couplFFVPL FlexibleSUSY`M[intfermions[[2]]] FlexibleSUSY`M[intfermions[[1]]] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]
+                                            + 1/2 couplFFVPR (-1/2 + SARAH`B0[0, SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]
+                                                              + SARAH`Mass2[intscalar] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]));
+           intpartwithindex = Cases[intparticles, _[{_}]];
+           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
+                 {i, Length[intpartwithindex]}];
+           result
+          ];
+
+VertexResult[diagr_List, includeGoldstones_] :=
+    Module[{intparticles, nFermions, nScalars},
+           intparticles = {SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]];
+           nFermions = Count[TreeMasses`IsFermion /@ intparticles, True];
+           nScalars = Count[TreeMasses`IsScalar /@ intparticles, True];
+           Switch[{nFermions, nScalars},
+                  {1, 2}, VertexResultFSS[diagr, includeGoldstones],
+                  {2, 1}, VertexResultFFS[diagr, includeGoldstones],
+                  _, Print["Error: diagram type not supported"]; 0]
+          ];
+
+VertexTreeResult[part1_, part2_] :=
+    Module[{part1withindex, part2withindex},
+           If[TreeMasses`GetDimension[part1] > 1, part1withindex = part1[{SARAH`gO1}], part1withindex = part1];
+           If[TreeMasses`GetDimension[part2] > 1, part2withindex = part2[{SARAH`gO2}], part2withindex = part2];
+           SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
+          ];
+
+CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]], TreeMasses`IsVector]) / VertexTreeResult[part1, part2];
+
+DeltaVBvertex[includeGoldstones_: False] :=
+    Module[{neutrinofields, chargedleptonfields, result},
+           (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
+           neutrinofields = TreeMasses`GetSMNeutralLeptons[];
+           chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
+           If[Length[neutrinofields] != Length[chargedleptonfields], Print["Error: DeltaVBvertex does not work because the numbers of neutrino and charged lepton fields are different"]; Return[{}];];
+           If[Length[neutrinofields] == 1,
+              result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}},
+                                              CompleteVertexResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], includeGoldstones]]},
+              If[Length[neutrinofields] != 3, Print["Error: DeltaVBvertex does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[1]], neutrinofields[[1]]},
+                                              CompleteVertexResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], includeGoldstones]],
+                        WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[2]], neutrinofields[[2]]},
+                                              CompleteVertexResult[chargedleptonfields[[2]], SARAH`bar[neutrinofields[[2]]], includeGoldstones]]}];
+           result
           ];
 
 indextype = CConversion`CreateCType[CConversion`ScalarType[CConversion`integerScalarCType]];
