@@ -347,6 +347,8 @@ CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" 
 
 CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec_}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest] <> "_" <> CConversion`ToValidCSymbolString[spec];
 
+CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec1_, spec2_}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest] <> "_" <> CConversion`ToValidCSymbolString[spec1] <> "_" <> CConversion`ToValidCSymbolString[spec2];
+
 CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] := CreateContributionName[deltaVBcontri] <> "(" <> AddIndices[deltaVBcontri[[1, 2]]] <> ") const";
 
 (*based on CreateNPointFunction from SelfEnergies.m*)
@@ -374,6 +376,11 @@ PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, pa
 PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {idx_}, part_}, _]] :=
     "deltaVB wave-function contribution for field " <> CConversion`ToValidCSymbolString[part] <> "[" <> CConversion`ToValidCSymbolString[idx] <> "]";
 
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, part1_, part2_}, _]] :=
+    "deltaVB vertex contribution for fields " <> CConversion`ToValidCSymbolString[part1] <> ", " <> CConversion`ToValidCSymbolString[part2];
+
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {__}}, _]] := "deltaVB vertex contribution";
+
 (*based on CreateNPointFunctions from SelfEnergies.m*)
 CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
     Module[{relevantVertexRules, prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
@@ -390,14 +397,23 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
            {prototypes, defs}
           ];
 
-CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {}, _}, _]]] := CreateContributionName[deltaVBcontri] <> "()";
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "()";
 
-CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, _}, _]]] := CreateContributionName[deltaVBcontri] <> "(0) + " <> CreateContributionName[deltaVBcontri] <> "(1)";
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "(0) + " <> CreateContributionName[deltaVBcontri] <> "(1)";
+
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "(0, 0) + " <> CreateContributionName[deltaVBcontri] <> "(1, 1)";
 
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
-    Module[{type, result = "", wavecontris},
+    Module[{type, result = "", vertexcontris, wavecontris},
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           vertexcontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, __}, _]];
            wavecontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, __}, _]];
+           result = result <> "const " <> type <> " deltaV =\n";
+           For[k = 1, k <= Length[vertexcontris], k++,
+               If[k > 1, result = result <> " + ";];
+               result = result <> CreateContributionCall[vertexcontris[[k]]];
+              ];
+           result = result <> ";\n";
            result = result <> "const " <> type <> " deltaZ =\n";
            For[k = 1, k <= Length[wavecontris], k++,
                If[k > 1, result = result <> " + ";];

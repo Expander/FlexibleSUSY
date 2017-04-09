@@ -2595,7 +2595,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating class for calculation of weinberg angle ..."];
-           WriteWeinbergAngleClass[massMatrices, deltaVBwave, vertexRules,
+           WriteWeinbergAngleClass[massMatrices, Join[deltaVBwave, deltaVBvertex], vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
