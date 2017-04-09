@@ -207,7 +207,7 @@ public:
    void check_spectrum(MLINK link) const;
    void calculate_model_observables();
 
-   double get_model_scale() const;
+   double get_model_scale() const { return spectrum->get_model_scale(); }
 private:
    @ModelName@_input_parameters input{};     ///< model input parameters
    Physical_input physical_input{};          ///< extra non-SLHA physical input
