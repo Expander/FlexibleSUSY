@@ -283,7 +283,7 @@ namespace {
  * the Standard Model MS-bar bottom mass
  * \\f$m_b^{\\text{SM},\\overline{\\text{MS}}}\\f$ and the MSSM DR-bar
  * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$,
- * Eq. (57) of [arxiv:0707.0650].  The relation has the form
+ * Eq. (61) of [arxiv:0707.0650].  The relation has the form
  *
  * \\f[
     m_b^{\\text{SM},\\overline{\\text{MS}}} =
