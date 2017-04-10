@@ -130,6 +130,7 @@ SCALE;
 THRESHOLD;
 VEV::usage = "running SM-like VEV in the full model";
 UseHiggs2LoopNMSSM = False;
+UseHiggs3LoopMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
@@ -1199,6 +1200,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n";
              ];
+           If[FlexibleSUSY`UseHiggs3LoopMSSM === True,
+              {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesMSSM[{SARAH`HiggsBoson}];
+              threeLoopHiggsHeaders = threeLoopHiggsHeaders <> "#include \"HierarchyCalculator.hpp\"\n";
+             ];
            If[FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
@@ -1209,7 +1214,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
-              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True ||
+              FlexibleSUSY`UseHiggs3LoopMSSM === True,
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
@@ -1989,6 +1995,13 @@ FSCheckLoopCorrections[eigenstates_] :=
              ];
           ];
 
+FSCheckFlags[] :=
+    Module[{},
+           If[FlexibleSUSY`UseHiggs3LoopMSSM === True,
+              SARAH`UseHiggs2LoopMSSM = True;
+             ];
+          ];
+
 PrepareSelfEnergies[eigenstates_] :=
     Module[{selfEnergies = {}, selfEnergiesFile},
            selfEnergiesFile = GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates];
@@ -2232,6 +2245,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xi = 1;
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
+
+           FSCheckFlags[];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               Print["Adding SM 3-loop beta-functions from ",

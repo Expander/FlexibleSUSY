@@ -467,7 +467,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
               If[SARAH`UseHiggs2LoopMSSM === True ||
-                 FlexibleSUSY`UseHiggs2LoopNMSSM === True,
+                 FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
+                 FlexibleSUSY`UseHiggs3LoopMSSM === True,
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                     numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
                     numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
@@ -489,6 +490,15 @@ for (int i = 0; i < " <> dimStr <> "; i++) {
 "] <> "}
 ";
                    ];
+                ];
+              If[FlexibleSUSY`UseHiggs3LoopMSSM === True && MemberQ[{SARAH`HiggsBoson}, particle],
+                 addTwoLoopHiggsContributions = addTwoLoopHiggsContributions <> "self_energy += self_energy_3l;\n";
+                 calcTwoLoopHiggsContributions = calcTwoLoopHiggsContributions <> "
+// three-loop Higgs self-energy contributions
+" <> selfEnergyMatrixCType <> " self_energy_3l(" <> selfEnergyMatrixCType <> "::Zero());
+
+if (pole_mass_loop_order > 2)
+" <> IndentText["self_energy_3l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_3loop();"] <> "\n";
                 ];
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>

@@ -113,6 +113,8 @@ InitialGuessAtHighScale = {
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 UseMSSM3LoopRGEs = True;
+UseHiggs3LoopMSSM = True;
+UseMSSMYukawa2LoopSQCD = True;
 
 (* low-energy input to determine weak mixing angle
  * Possible values: FSFermiConstant (default), FSMassW

@@ -47,6 +47,9 @@ definitions for two-loop Higgs self-energies in the MSSM";
 CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the NMSSM";
 
+CreateThreeLoopSelfEnergiesMSSM::usage="Creates function prototypes
+and definitions for three-loop Higgs contribution in the MSSM";
+
 CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
 
@@ -1246,6 +1249,77 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
 return self_energy_2l;"
           ];
 
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "MSSM", 3] :=
+    Module[{g3Str, mtStr, mbStr, mTop, mBot,
+            vuStr, vdStr, muStr, m3Str, mA0Str,
+            AtStr, AbStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
+           AssertFieldDimension[particle, 2, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           muStr   = CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
+           AtStr   = CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2] / SARAH`UpYukawa[2,2]];
+           AbStr   = CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2] / SARAH`DownYukawa[2,2]];
+           mWStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorW]];
+           mZStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorZ]];
+           mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
+           mu2Str  = CConversion`RValueToCFormString[SARAH`SoftUp];
+           md2Str  = CConversion`RValueToCFormString[SARAH`SoftDown];
+"\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+";
+
+h3m::Parameters pars;
+pars.scale = get_scale();
+pars.mu = Re(" <> muStr <> ");
+pars.g3 = " <> g3Str <> ";
+pars.vd = " <> vdStr <> ";
+pars.vu = " <> vuStr <> ";
+pars.mq2 = Re(" <> mq2Str <> ");
+pars.md2 = Re(" <> md2Str <> ");
+pars.mu2 = Re(" <> mu2Str <> ");
+pars.At = Re(" <> AtStr <> ");
+pars.Ab = Re(" <> AbStr <> ");
+pars.MG = " <> m3Str <> ";
+pars.MW = " <> mWStr <> ";
+pars.MZ = " <> mZStr <> ";
+pars.Mt = " <> mtStr <> ";
+pars.Mb = " <> mbStr <> ";
+pars.MA = " <> mA0Str <> ";
+pars.MSt << mst_1, mst_2;
+pars.MSb << msb_1, msb_2;
+pars.s2t = Sin(2*theta_t);
+pars.s2b = Sin(2*theta_b);
+
+h3m::HierarchyCalculator hc(pars);
+
+const auto suitableHierarchyTop = hc.compareHierarchies(false);
+const auto suitableHierarchyBot = hc.compareHierarchies(true);
+
+// calculate the 3-loop corrections with the suitable hierarchy
+const auto DMh3Lt = hc.calculateHierarchy(suitableHierarchyTop, false, 0, 0, 1);
+const auto DMh3Lb = hc.calculateHierarchy(suitableHierarchyBot, true , 0, 0, 1);
+
+" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
+
+self_energy_3l = - DMh3Lt - DMh3Lb;
+
+return self_energy_3l;"
+          ];
+
 GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
     Module[{},
            Print["Error: ", loop,"-loop self-energy corrections not available for ",
@@ -1284,6 +1358,9 @@ CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
 
 CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "NMSSM", 2];
+
+CreateThreeLoopSelfEnergiesMSSM[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "MSSM", 3];
 
 CreateThreeLoopSelfEnergiesSplit[particles_List] :=
     CreateNLoopSelfEnergies[particles, "Split", 3];
