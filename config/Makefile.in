@@ -34,7 +34,7 @@ ENABLE_VERBOSE        := @ENABLE_VERBOSE@
 # Makefile modules
 MODELS             := @MODELS@
 ADDONS             := @ADDONS@
-MODULES            := config src fflite slhaea doc
+MODULES            := config src fflite slhaea H3m doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
