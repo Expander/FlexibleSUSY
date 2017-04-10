@@ -76,7 +76,7 @@ struct Parameters {
 
     double g3{};    ///< MSSM strong gauge coupling DR-bar
     double mt{};    ///< MSSM top mass DR-bar
-    double mb{};    ///< SM   bottom mass MS-bar
+    double mb{};    ///< SM   bottom mass DR-bar
     double mg{};    ///< MSSM gluino mass DR-bar
     double mst1{};  ///< MSSM light stop mass DR-bar
     double mst2{};  ///< MSSM heavy stop mass DR-bar
