@@ -419,8 +419,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr,
             selfEnergyMatrixType, selfEnergyMatrixCType, eigenArrayType,
-            addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
-            numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
+            addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "", n, l, k},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -469,8 +468,6 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               If[SARAH`UseHiggs2LoopMSSM === True ||
                  FlexibleSUSY`UseHiggs2LoopNMSSM === True,
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
-                    numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
-                    numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
                     addTwoLoopHiggsContributions = "self_energy += self_energy_2l;\n";
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
