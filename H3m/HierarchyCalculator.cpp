@@ -40,7 +40,7 @@ typename std::enable_if< !std::is_same<T,SCALAR>::value, std::complex<T> >::type
 operator- ( SCALAR n, const std::complex<T>& c ) { return T(n) - c ; }
 
 
-extern "C" void DSZHiggs_(double *t, double *mg, double *T1, double *T2, double *st, double *ct, double *q, double *mu, double *tanb,
+extern "C" void dszhiggs_(double *t, double *mg, double *T1, double *T2, double *st, double *ct, double *q, double *mu, double *tanb,
       double *v2, double *gs, int *OS, double *S11, double *S22, double *S12);
 
 /*
@@ -731,7 +731,7 @@ Eigen::Matrix2d h3m::HierarchyCalculator::getMt42L(const int tag, const bool isB
    double v2 = pow(p.vu,2) + pow(p.vd,2);
    double gs = p.g3;
    int os = 0;
-   DSZHiggs_(&Mt2, &MG, &Mst12, &Mst22, &st, &ct, &scale2, &mu, &tanb, &v2, &gs, &os, &S11, &S22, &S12);
+   dszhiggs_(&Mt2, &MG, &Mst12, &Mst22, &st, &ct, &scale2, &mu, &tanb, &v2, &gs, &os, &S11, &S22, &S12);
    Mt42L(0, 0) = S11;
    Mt42L(1, 0) = S12;
    Mt42L(0, 1) = S12;
