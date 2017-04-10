@@ -179,11 +179,10 @@ InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
 ExcludeDiagrams[diagrs_List, excludeif_:(False &)] := Select[diagrs, !Or @@ (excludeif /@ (Cases[#, Rule[Internal[_], x_] :> x, Infinity])) &];
 
 GenerateDiagramsWave[particle_] :=
-    Module[{couplings, insertrules, topo, diagrs},
+    Module[{couplings, insertrules, diagrs},
            couplings = {C[SARAH`External[1], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]]};
            insertrules = {SARAH`External[1] -> particle, SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2]};
-           topo = {couplings /. insertrules, insertrules};
-           diagrs = SARAH`InsFields[topo];
+           diagrs = SARAH`InsFields[{couplings /. insertrules, insertrules}];
            (*add indices for later summation*)
            diagrs = diagrs /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
            diagrs = diagrs /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
@@ -225,14 +224,13 @@ DeltaVBwave[includeGoldstones_:False] :=
           ];
 
 GenerateDiagramsVertex[part1_, part2_, part3_] :=
-    Module[{couplings, insertrules, topo, diagrs},
+    Module[{couplings, insertrules, diagrs},
            couplings = {C[SARAH`External[1], SARAH`AntiField[SARAH`Internal[2]], SARAH`Internal[3]],
                         C[SARAH`External[2], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[3]]],
                         C[SARAH`External[3], SARAH`AntiField[SARAH`Internal[1]], SARAH`Internal[2]]};
            insertrules = {SARAH`External[1] -> part1, SARAH`External[2] -> part2, SARAH`External[3] -> part3,
                           SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2], SARAH`Internal[3] -> SARAH`FieldToInsert[3]};
-           topo = {couplings /. insertrules, insertrules};
-           diagrs = SARAH`InsFields[topo];
+           diagrs = SARAH`InsFields[{couplings /. insertrules, insertrules}];
            (*add indices for later summation*)
            diagrs = diagrs /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
            diagrs = diagrs /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
