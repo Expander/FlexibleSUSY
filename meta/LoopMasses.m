@@ -472,6 +472,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
 " <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
+
 if (pole_mass_loop_order > 1) {
 " <> IndentText["\
 self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
