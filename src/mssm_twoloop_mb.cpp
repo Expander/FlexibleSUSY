@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Sat 8 Apr 2017 12:05:27
+// This file has been generated at Mon 10 Apr 2017 12:04:37
 // with the script "bquark_to_cpp.m".
 
 #include "mssm_twoloop_mb.hpp"
@@ -180,13 +180,13 @@ namespace {
 
 /**
  * The function returns the 2-loop SQCD (QCD + SUSY) relation between
- * the Standard Model DR-bar bottom mass
- * \f$m_b^{\text{SM},\overline{\text{DR}}}\f$ and the MSSM DR-bar
+ * the Standard Model MS-bar bottom mass
+ * \f$m_b^{\text{SM},\overline{\text{MS}}}\f$ and the MSSM DR-bar
  * bottom mass \f$m_b^{\text{MSSM},\overline{\text{DR}}}\f$.
  * The relation has the form
  *
  * \f[
-    m_b^{\text{SM},\overline{\text{DR}}} =
+    m_b^{\text{SM},\overline{\text{MS}}} =
     m_b^{\text{MSSM},\overline{\text{DR}}} \left[
        1 + \left(\frac{\Delta m_b}{m_b}\right)_{1L}
          + \left(\frac{\Delta m_b}{m_b}\right)_{2L}

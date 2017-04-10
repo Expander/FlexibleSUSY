@@ -1262,12 +1262,14 @@ UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 
 #### MSSM ####
 
-In the MSSM the known two-loop relation between the top pole mass and
-the DR-bar top mass from [arxiv:hep-ph/0210258,arxiv:hep-ph/0507139]
-can be used by setting in the model file
+In the MSSM the known two-loop SQCD relation between the top pole mass
+and the DR-bar top mass from
+[arxiv:hep-ph/0210258,arxiv:hep-ph/0507139] as well as between the
+MS-bar bottom mass in the Standard Model and the DR-bar bottom mass in
+the MSSM [arxiv:0707.0650] can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSMYukawa2LoopSQCD = True; (* use two-loop threshold for yt *)
+UseMSSMYukawa2LoopSQCD = True; (* use two-loop threshold for yt and yb *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 */

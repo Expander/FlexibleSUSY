@@ -76,7 +76,7 @@ struct Parameters {
 
     double g3{};    ///< MSSM strong gauge coupling DR-bar
     double mt{};    ///< MSSM top mass DR-bar
-    double mb{};    ///< SM   bottom mass DR-bar
+    double mb{};    ///< SM   bottom mass MS-bar
     double mg{};    ///< MSSM gluino mass DR-bar
     double mst1{};  ///< MSSM light stop mass DR-bar
     double mst2{};  ///< MSSM heavy stop mass DR-bar
@@ -280,13 +280,13 @@ namespace {
 
 /**
  * The function returns the 2-loop SQCD (QCD + SUSY) relation between
- * the Standard Model DR-bar bottom mass
- * \\f$m_b^{\\text{SM},\\overline{\\text{DR}}}\\f$ and the MSSM DR-bar
- * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$.
- * The relation has the form
+ * the Standard Model MS-bar bottom mass
+ * \\f$m_b^{\\text{SM},\\overline{\\text{MS}}}\\f$ and the MSSM DR-bar
+ * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$,
+ * Eq. (57) of [arxiv:0707.0650].  The relation has the form
  *
  * \\f[
-    m_b^{\\text{SM},\\overline{\\text{DR}}} =
+    m_b^{\\text{SM},\\overline{\\text{MS}}} =
     m_b^{\\text{MSSM},\\overline{\\text{DR}}} \\left[
        1 + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{1L}
          + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{2L}
