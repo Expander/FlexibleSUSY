@@ -148,6 +148,12 @@ if (get_thresholds() > 1) {
    pars.Q = get_scale();
 
    qcd_2l = mssm_twoloop_mb::delta_mb_2loop(pars);
+
+   const double alpha_s = Sqr(pars.g3) / (4.*Pi);
+
+   // subtract 2-loop epsilon scalar contributions
+   qcd_2l -= 31./72. * Sqr(alpha_s / Pi)
+      + alpha_s/(3.*Pi) * delta_mb_1loop;
 }
 "
        ,
@@ -978,10 +984,10 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMBottomQ
               "const double m_tree = " <> RValueToCFormString[treeLevelMass] <> ";\n" <>
               "const double drbar_conversion = " <> RValueToCFormString[drbarConversion] <> ";\n" <>
               "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n" <>
+              "const double delta_mb_1loop = - self_energy_1/m_tree - self_energy_PL - self_energy_PR;\n" <>
               "double qcd_2l = 0.;\n" <>
               AddMbRun2LSQCDCorrections[] <> "\n" <>
-              "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
-              "- self_energy_PL - self_energy_PR + qcd_2l);\n\n" <>
+              "const double m_susy_drbar = m_sm_drbar / (1.0 + delta_mb_1loop + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
