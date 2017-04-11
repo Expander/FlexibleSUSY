@@ -1926,7 +1926,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
-            deltaVBwave, deltaVBvertex,
+            deltaVBwave, deltaVBvertex, deltaVBbox,
 	    vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
@@ -2543,6 +2543,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WeinbergAngle`InitGenerationOfDiagrams[];
            deltaVBwave = WeinbergAngle`DeltaVBwave[];
            deltaVBvertex = WeinbergAngle`DeltaVBvertex[];
+           deltaVBbox = WeinbergAngle`DeltaVBbox[];
 
 	   vertexRuleFileName =
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
@@ -2555,7 +2556,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, deltaVBwave, deltaVBvertex], Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, deltaVBwave, deltaVBvertex, deltaVBbox], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];

@@ -11,6 +11,7 @@ RhoHatTree::usage="";
 InitGenerationOfDiagrams::usage="";
 DeltaVBwave::usage="";
 DeltaVBvertex::usage="";
+DeltaVBbox::usage="";
 CreateDeltaVBContributions::usage="";
 CreateDeltaVBCalculation::usage="";
 
@@ -330,6 +331,76 @@ DeltaVBvertex[includeGoldstones_: False] :=
                                               CompleteVertexResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], includeGoldstones]],
                         WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[2]], neutrinofields[[2]]},
                                               CompleteVertexResult[chargedleptonfields[[2]], SARAH`bar[neutrinofields[[2]]], includeGoldstones]]}];
+           result
+          ];
+
+GenerateDiagramsBox[part1_, part2_, part3_, part4_] :=
+    Module[{couplings1, couplings2, couplings3, insertrules, diagrs1, diagrs2, diagrs3},
+           couplings1 = {C[SARAH`External[1], SARAH`Internal[4], SARAH`AntiField[SARAH`Internal[1]]],
+                         C[SARAH`External[2], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]],
+                         C[SARAH`External[3], SARAH`Internal[2], SARAH`AntiField[SARAH`Internal[3]]],
+                         C[SARAH`External[4], SARAH`Internal[3], SARAH`AntiField[SARAH`Internal[4]]]};
+           couplings2 = {C[SARAH`External[1], SARAH`Internal[4], SARAH`AntiField[SARAH`Internal[1]]],
+                         C[SARAH`External[2], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]],
+                         C[SARAH`External[3], SARAH`Internal[3], SARAH`AntiField[SARAH`Internal[4]]],
+                         C[SARAH`External[4], SARAH`Internal[2], SARAH`AntiField[SARAH`Internal[3]]]};
+           couplings3 = {C[SARAH`External[1], SARAH`Internal[4], SARAH`AntiField[SARAH`Internal[1]]],
+                         C[SARAH`External[2], SARAH`Internal[2], SARAH`AntiField[SARAH`Internal[3]]],
+                         C[SARAH`External[3], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]],
+                         C[SARAH`External[4], SARAH`Internal[3], SARAH`AntiField[SARAH`Internal[4]]]};
+           insertrules = {SARAH`External[1] -> part1, SARAH`External[2] -> part2, SARAH`External[3] -> part3, SARAH`External[4] -> part4,
+                          SARAH`Internal[1] -> SARAH`FieldToInsert[1], SARAH`Internal[2] -> SARAH`FieldToInsert[2], SARAH`Internal[3] -> SARAH`FieldToInsert[3], SARAH`Internal[4] -> SARAH`FieldToInsert[4]};
+           diagrs1 = SARAH`InsFields[{couplings1 /. insertrules, insertrules}];
+           diagrs2 = SARAH`InsFields[{couplings2 /. insertrules, insertrules}];
+           diagrs3 = SARAH`InsFields[{couplings3 /. insertrules, insertrules}];
+           (*add indices for later summation*)
+           {diagrs1, diagrs2, diagrs3} = {diagrs1, diagrs2, diagrs3} /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
+           {diagrs1, diagrs2, diagrs3} = {diagrs1, diagrs2, diagrs3} /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
+           diagrs1 = ({couplings1 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 1]}) & /@ diagrs1;
+           diagrs2 = ({couplings2 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 2]}) & /@ diagrs2;
+           diagrs3 = ({couplings3 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 3]}) & /@ diagrs3;
+           Join[diagrs1, diagrs2, diagrs3]
+          ];
+
+BoxResult[diagr_List, includeGoldstones_] :=
+    Module[{couplMu, couplMuNeutr, couplElNeutr, couplEl, intparticles, intfermions, toponr, result, intpartwithindex},
+           couplMu = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
+           couplMuNeutr = (diagr[[1, 2]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
+           couplElNeutr = (diagr[[1, 3]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
+           couplEl = (diagr[[1, 4]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
+           intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3], SARAH`Internal[4]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intfermions = Select[intparticles, TreeMasses`IsFermion];
+           toponr = WeinbergAngle`topoNr /. diagr[[2]];
+           result = couplMu couplMuNeutr couplElNeutr couplEl;
+           If[toponr == 1,
+              result = result * SARAH`D27[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           If[toponr == 2 && TreeMasses`IsFermion[intparticles[[1]]],
+              result = result * (-1) * SARAH`D27[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           If[toponr == 2 && TreeMasses`IsScalar[intparticles[[1]]],
+              result = result * 1/2 * FlexibleSUSY`M[intfermions[[1]]] FlexibleSUSY`M[intfermions[[2]]] SARAH`D0[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           If[toponr == 3 && TreeMasses`IsFermion[intparticles[[1]]],
+              result = result * 1/2 * FlexibleSUSY`M[intfermions[[1]]] FlexibleSUSY`M[intfermions[[2]]] SARAH`D0[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           If[toponr == 3 && TreeMasses`IsScalar[intparticles[[1]]],
+              result = result * (-1) * SARAH`D27[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
+           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
+                 {i, Length[intpartwithindex]}];
+           result
+          ];
+
+CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] := Plus @@ (BoxResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsBox[part1, part2, part3, part4], TreeMasses`IsVector];
+
+DeltaVBbox[includeGoldstones_: False] :=
+    Module[{neutrinofields, chargedleptonfields, result},
+           neutrinofields = TreeMasses`GetSMNeutralLeptons[];
+           chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
+           If[Length[neutrinofields] != Length[chargedleptonfields], Print["Error: DeltaVBbox does not work because the numbers of neutrino and charged lepton fields are different"]; Return[{}];];
+           If[Length[neutrinofields] == 1,
+              result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}},
+                                              CompleteBoxResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], neutrinofields[[1]], SARAH`bar[chargedleptonfields[[1]]], includeGoldstones]]},
+              If[Length[neutrinofields] != 3, Print["Error: DeltaVBbox does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {}},
+                                              CompleteBoxResult[chargedleptonfields[[2]], SARAH`bar[neutrinofields[[2]]], neutrinofields[[1]], SARAH`bar[chargedleptonfields[[1]]], includeGoldstones]]}];
            result
           ];
 
