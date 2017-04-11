@@ -148,6 +148,12 @@ if (get_thresholds() > 1) {
    pars.Q = get_scale();
 
    qcd_2l = mssm_twoloop_mb::delta_mb_2loop(pars);
+
+   const double alpha_s = Sqr(pars.g3) / (4.*Pi);
+
+   // subtract 2-loop epsilon scalar contributions
+   qcd_2l -= 31./72. * Sqr(alpha_s / Pi)
+      + alpha_s/(3.*Pi) * delta_mb_1loop;
 }
 "
        ,
@@ -988,10 +994,10 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMBottomQ
               "const double m_tree = " <> RValueToCFormString[treeLevelMass] <> ";\n" <>
               "const double drbar_conversion = " <> RValueToCFormString[drbarConversion] <> ";\n" <>
               "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n" <>
+              "const double delta_mb_1loop = - self_energy_1/m_tree - self_energy_PL - self_energy_PR;\n" <>
               "double qcd_2l = 0.;\n" <>
               AddMbRun2LSQCDCorrections[] <> "\n" <>
-              "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
-              "- self_energy_PL - self_energy_PR + qcd_2l);\n\n" <>
+              "const double m_susy_drbar = m_sm_drbar / (1.0 + delta_mb_1loop + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
@@ -1125,21 +1131,12 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
 
 CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
-            selfEnergyFunctionPR, name,
-            twoLoopCorrection, twoLoopCorrectionDecl = "", addTwoLoopCorrection = False,
-            dimParticle},
+            selfEnergyFunctionPR, name, dimParticle},
            dimParticle = TreeMasses`GetDimension[particle];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1], 1];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL], 1];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR], 1];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           twoLoopCorrection = 0; (* disable corrections until checked against Softsusy *)
-           (* twoLoopCorrection = TwoLoopQCD`GetDeltaMQCD[particle, Global`displayMu[]] /. *)
-           (*                     FlexibleSUSY`M[p_] :> FlexibleSUSY`M[p[Global`idx]]; *)
-           addTwoLoopCorrection = twoLoopCorrection =!= 0;
-           If[addTwoLoopCorrection,
-              twoLoopCorrectionDecl = "const double two_loop = " <> RValueToCFormString[twoLoopCorrection] <> ";\n";
-             ];
            If[IsMassless[particle],
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double) const\n{\n";,
@@ -1160,14 +1157,8 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle], _] :=
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n";
                 ];
-              If[addTwoLoopCorrection,
-                 body = body <> twoLoopCorrectionDecl;
-                ];
               body = body <> "\n" <>
                      "const double m_drbar = m_pole + self_energy_1 + m_pole * (self_energy_PL + self_energy_PR)";
-              If[addTwoLoopCorrection,
-                 body = body <> " - two_loop";
-                ];
               body = body <> ";\n\n";
               body = body <> "return m_drbar;\n";
              ];
