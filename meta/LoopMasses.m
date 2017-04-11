@@ -66,7 +66,7 @@ pars.mt = " <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass
 pars.mg = " <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> ";
 pars.mst1 = mst_1;
 pars.mst2 = mst_2;
-pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+pars.msusy = " <> CConversion`RValueToCFormString[AbsSqrt[SARAH`SoftSquark[2,2]] AbsSqrt[SARAH`SoftDown[2,2]]] <> ";
 pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
 pars.Q = get_scale();";
 
@@ -142,7 +142,9 @@ if (get_thresholds() > 1) {
    pars.mst2 = mst_2;
    pars.msb1 = msb_1;
    pars.msb2 = msb_2;
-   pars.msusy = " <> CConversion`RValueToCFormString[Sqrt[Sqrt[SARAH`SoftSquark[2,2] SARAH`SoftDown[2,2]]]] <> ";
+   pars.msusy = " <> CConversion`RValueToCFormString[
+       AbsSqrt[SARAH`SoftSquark[0,0]] AbsSqrt[SARAH`SoftUp[0,0]] AbsSqrt[SARAH`SoftDown[0,0]]
+       AbsSqrt[SARAH`SoftSquark[1,1]] AbsSqrt[SARAH`SoftUp[1,1]] AbsSqrt[SARAH`SoftDown[1,1]]] <> ";
    pars.xt = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
    pars.xb = Sin(2*theta_b) * (Sqr(msb_1) - Sqr(msb_2)) / (2. * pars.mb);
    pars.Q = get_scale();
