@@ -489,8 +489,8 @@ for (int i = 0; i < " <> dimStr <> "; i++) {
 ";
                 ];
               If[FlexibleSUSY`UseHiggs3LoopMSSM === True && MemberQ[{SARAH`HiggsBoson}, particle],
-                 addTwoLoopHiggsContributions = addTwoLoopHiggsContributions <> "self_energy += self_energy_3l;\n";
-                 calcTwoLoopHiggsContributions = calcTwoLoopHiggsContributions <> "
+                 addHigherLoopHiggsContributions = addHigherLoopHiggsContributions <> "self_energy += self_energy_3l;\n";
+                 calcHigherLoopHiggsContributions = calcHigherLoopHiggsContributions <> "
 // three-loop Higgs self-energy contributions
 " <> selfEnergyMatrixCType <> " self_energy_3l(" <> selfEnergyMatrixCType <> "::Zero());
 
