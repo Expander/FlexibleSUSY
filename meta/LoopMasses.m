@@ -1115,21 +1115,12 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
 
 CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
-            selfEnergyFunctionPR, name,
-            twoLoopCorrection, twoLoopCorrectionDecl = "", addTwoLoopCorrection = False,
-            dimParticle},
+            selfEnergyFunctionPR, name, dimParticle},
            dimParticle = TreeMasses`GetDimension[particle];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1], 1];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL], 1];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR], 1];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           twoLoopCorrection = 0; (* disable corrections until checked against Softsusy *)
-           (* twoLoopCorrection = TwoLoopQCD`GetDeltaMQCD[particle, Global`displayMu[]] /. *)
-           (*                     FlexibleSUSY`M[p_] :> FlexibleSUSY`M[p[Global`idx]]; *)
-           addTwoLoopCorrection = twoLoopCorrection =!= 0;
-           If[addTwoLoopCorrection,
-              twoLoopCorrectionDecl = "const double two_loop = " <> RValueToCFormString[twoLoopCorrection] <> ";\n";
-             ];
            If[IsMassless[particle],
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double) const\n{\n";,
@@ -1150,14 +1141,8 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle], _] :=
                  "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
                  "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n";
                 ];
-              If[addTwoLoopCorrection,
-                 body = body <> twoLoopCorrectionDecl;
-                ];
               body = body <> "\n" <>
                      "const double m_drbar = m_pole + self_energy_1 + m_pole * (self_energy_PL + self_energy_PR)";
-              If[addTwoLoopCorrection,
-                 body = body <> " - two_loop";
-                ];
               body = body <> ";\n\n";
               body = body <> "return m_drbar;\n";
              ];
