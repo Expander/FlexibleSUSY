@@ -193,11 +193,11 @@ GenerateDiagramsWave[particle_] :=
 WaveResult[diagr_List, includeGoldstones_] :=
     Module[{coupl, intparticles, intfermion, intscalar, result, intpartwithindex},
            coupl = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
-           intparticles = ({SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intparticles = ({SARAH`Internal[1], SARAH`Internal[2]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
            result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
-           intpartwithindex = Cases[intparticles, _[{_}]];
+           intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
@@ -255,12 +255,12 @@ VertexResultFSS[diagr_List, includeGoldstones_] :=
            couplSSV = diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
            couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
            couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
-           intparticles = ({SARAH`Internal[3], SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
            intscalars = Select[intparticles, TreeMasses`IsScalar];
-           result = 1/2 couplSSV couplFFSout couplFFSin (1/2 + SARAH`B0[0, SARAH`Mass2[intscalars[[2]]], SARAH`Mass2[intscalars[[1]]]]
-                                                         + SARAH`Mass2[intfermion] SARAH`C0[SARAH`Mass2[intfermion], SARAH`Mass2[intscalars[[2]]], SARAH`Mass2[intscalars[[1]]]]);
-           intpartwithindex = Cases[intparticles, _[{_}]];
+           result = 1/2 couplSSV couplFFSout couplFFSin (1/2 + SARAH`B0[0, SARAH`Mass2[intscalars[[1]]], SARAH`Mass2[intscalars[[2]]]]
+                                                         + SARAH`Mass2[intfermion] SARAH`C0[SARAH`Mass2[intfermion], SARAH`Mass2[intscalars[[1]]], SARAH`Mass2[intscalars[[2]]]]);
+           intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
@@ -284,13 +284,13 @@ VertexResultFFS[diagr_List, includeGoldstones_] :=
            couplFFVPR = (SARAH`Cp @@ If[needfermionflip, Reverse[orderedparticles], orderedparticles])[SARAH`PR];
            couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
            couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
-           intparticles = ({SARAH`Internal[3], SARAH`Internal[2], SARAH`Internal[1]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            intfermions = Select[intparticles, TreeMasses`IsFermion];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
-           result = couplFFSout couplFFSin (-couplFFVPL FlexibleSUSY`M[intfermions[[2]]] FlexibleSUSY`M[intfermions[[1]]] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]
-                                            + 1/2 couplFFVPR (-1/2 + SARAH`B0[0, SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]
-                                                              + SARAH`Mass2[intscalar] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[2]]], SARAH`Mass2[intfermions[[1]]]]));
-           intpartwithindex = Cases[intparticles, _[{_}]];
+           result = couplFFSout couplFFSin (-couplFFVPL FlexibleSUSY`M[intfermions[[1]]] FlexibleSUSY`M[intfermions[[2]]] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]
+                                            + 1/2 couplFFVPR (-1/2 + SARAH`B0[0, SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]
+                                                              + SARAH`Mass2[intscalar] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]));
+           intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
