@@ -1169,11 +1169,26 @@ the model file
 UseHiggs2LoopMSSM = True; (* use 2-loop Higgs corrections *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In addition, the effective \f$\mu\f$ parameter must be specified using
-the `EffectiveMu` variable:
+The known three-loop Higgs pole mass corrections of the order
+\f$O(\alpha_t\alpha_s^2)\f$ of H3m [arxiv:hep-ph/1005.5709] can be
+used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs3LoopMSSM = True; (* use 3-loop Higgs corrections of H3m *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To make use of the 2-loop and/or 3-loop corrections the effective
+\f$\mu\f$ parameter must be specified using the `EffectiveMu`
+variable:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 EffectiveMu = \[Mu];
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note When the 3-loop corrections are used, the following switch
+should be set to `True` for consistency:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseMSSMYukawa2LoopSQCD = True; (* use two-loop thresholds for yt and yb *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #### NMSSM ####
