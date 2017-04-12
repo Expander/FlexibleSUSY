@@ -1,4 +1,4 @@
-FlexibleSUSY-1.7.4 [not released yet]
+FlexibleSUSY-1.7.4 [April, 12 2017]
 
  * Bugfix (commit f434e30): Rename internal IndexSum symbol which
    conflicts with SARAH version 4.11.0 and higher.
