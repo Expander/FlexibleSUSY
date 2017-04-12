@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Mon 10 Apr 2017 12:40:10
+// This file has been generated at Wed 12 Apr 2017 14:09:58
 // with the script "bquark_to_cpp.m".
 
 #include "mssm_twoloop_mb.hpp"
@@ -37,11 +37,6 @@ namespace {
    template <typename T> T pow3(T x)  { return x*x*x; }
    template <typename T> T pow4(T x)  { return x*x*x*x; }
    template <typename T> T pow5(T x)  { return x*x*x*x*x; }
-   template <typename T> T pow6(T x)  { return x*x*x*x*x*x; }
-   template <typename T> T pow7(T x)  { return x*x*x*x*x*x*x; }
-   template <typename T> T pow8(T x)  { return x*x*x*x*x*x*x*x; }
-   template <typename T> T pow9(T x)  { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T pow10(T x) { return x*x*x*x*x*x*x*x*x*x; }
 
    const double oneLoop = 1./pow2(4*Pi);
    const double twoLoop = pow2(oneLoop);
