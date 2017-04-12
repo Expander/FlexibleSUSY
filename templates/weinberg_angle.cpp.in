@@ -372,7 +372,6 @@ double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
-   const std::complex<double> a1 = (0., 0.); // delta_vb_box();
 @deltaVBcalculation@
 
    const double deltaVbSusy = oneOver16PiSqr *

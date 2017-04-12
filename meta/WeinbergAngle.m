@@ -412,6 +412,9 @@ AddIndices[{ind_}] := indextype <> " " <> CConversion`ToValidCSymbolString[ind];
 
 AddIndices[{ind1_, ind2_}] := indextype <> " " <> CConversion`ToValidCSymbolString[ind1] <> ", " <> indextype <> " " <> CConversion`ToValidCSymbolString[ind2];
 
+AddIndices[{ind1_, ind2_, ind3_, ind4_}] := indextype <> " " <> CConversion`ToValidCSymbolString[ind1] <> ", " <> indextype <> " " <> CConversion`ToValidCSymbolString[ind2] <>
+                                    ", " <> indextype <> " " <> CConversion`ToValidCSymbolString[ind3] <> ", " <> indextype <> " " <> CConversion`ToValidCSymbolString[ind4];
+
 CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest];
 
 CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec_}, _]] := "delta_vb_" <> StringReplace[CConversion`ToValidCSymbolString[type], StartOfString ~~ "fs" ~~ rest_ :> rest] <> "_" <> CConversion`ToValidCSymbolString[spec];
@@ -450,6 +453,8 @@ PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, 
 
 PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {__}}, _]] := "deltaVB vertex contribution";
 
+PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {___}}, _]] := "deltaVB box contribution";
+
 (*based on CreateNPointFunctions from SelfEnergies.m*)
 CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
     Module[{relevantVertexRules, prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
@@ -472,11 +477,16 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`Del
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "(0, 0) + " <> CreateContributionName[deltaVBcontri] <> "(1, 1)";
 
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
+
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
-    Module[{type, result = "", vertexcontris, wavecontris},
+    Module[{type, result = "", boxcontri, vertexcontris, wavecontris},
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           boxcontri = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, __}, _]][[1]];
            vertexcontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, __}, _]];
            wavecontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, __}, _]];
+           result = result <> "const " <> type <> " a1 = ";
+           result = result <> CreateContributionCall[boxcontri] <> ";\n";
            result = result <> "const " <> type <> " deltaV =\n";
            For[k = 1, k <= Length[vertexcontris], k++,
                If[k > 1, result = result <> " + ";];
