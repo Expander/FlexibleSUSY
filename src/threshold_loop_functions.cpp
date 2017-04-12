@@ -36,7 +36,7 @@ namespace {
    template <typename T> T pow7(T x) { return x*x*x*x*x*x*x; }
    template <typename T> T pow8(T x) { return x*x*x*x*x*x*x*x; }
    template <typename T> T pow9(T x) { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T pow10(T x) { return x*x*x*x*x*x*x*x*x*x; }
+   template <typename T> T power10(T x) { return x*x*x*x*x*x*x*x*x*x; }
 
    template <typename T>
    bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
@@ -204,7 +204,7 @@ static double F8_1_x2(double x1, double x2)
       /quad(-1. + sqr(x2))
       + (0.26666666666666666*quad(-1. + x1)*(
             0.25 + 2.5*sqr(x2) + 80.*quad(x2) - 47.5*pow6(x2)
-            - 36.25*pow8(x2) + pow10(x2)
+            - 36.25*pow8(x2) + power10(x2)
             + (37.5*quad(x2) + 75.*pow6(x2)
                + 7.5*pow8(x2))*lx22))
       /pow6(-1. + sqr(x2));
@@ -329,7 +329,7 @@ static double F9_1_x2(double x1, double x2)
              + (18.*sqr(x2) + 6.*quad(x2))*lx22)
            - 0.06666666666666667*quad(-1. + x1)*(
               -16. - 305.*sqr(x2) + 170.*quad(x2) + 160.*pow6(x2)
-              - 10.*pow8(x2) + pow10(x2)
+              - 10.*pow8(x2) + power10(x2)
               + (-150.*sqr(x2) - 300.*quad(x2)
                  - 30.*pow6(x2))*lx22))
       /pow6(-1. + sqr(x2));
@@ -598,7 +598,7 @@ static double f5_r1_r2(double r1, double r2)
       6*quad(r2)*lr22 + pow6(r2)*lr22)
      /cube(-1 + r22) +
    (cube(r1 - r2)*(3 + 273*r22 + 314*quad(r2) -
-        498*pow6(r2) - 93*pow8(r2) + pow10(r2) +
+        498*pow6(r2) - 93*pow8(r2) + power10(r2) +
         90*r22*lr22 +
         510*quad(r2)*lr22 +
         342*pow6(r2)*lr22 +
