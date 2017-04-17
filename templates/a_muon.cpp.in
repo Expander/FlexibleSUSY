@@ -410,12 +410,24 @@ double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 
 void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
 {
-   for (int i = 0; i < 3; i++) {
-      const double MSUSY = get_MSUSY(model);
-      if (MSUSY == 0.) return;
-      model.run_to(MSUSY);
+   const int Nmax = 100;
+   const double precision_goal = 1e-5;
+   int it = 0;
+   double precision = 0.;
+   double MSUSY_old = 0., MSUSY_new = 0.;
+
+   do {
+      MSUSY_new = get_MSUSY(model);
+
+      if (MSUSY_new == 0.)
+         return;
+
+      model.run_to(MSUSY_new);
       model.calculate_DRbar_masses();
-   }
+
+      precision = MaxRelDiff(MSUSY_old, MSUSY_new);
+      MSUSY_old = MSUSY_new;
+   } while (precision > precision_goal && ++it < Nmax);
 }
 
 double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
