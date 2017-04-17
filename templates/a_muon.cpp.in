@@ -34,6 +34,7 @@
 #include "wrappers.hpp"
 
 #include <array>
+#include <algorithm>
 #include <vector>
 #include <boost/mpl/vector_c.hpp>
 #include <boost/mpl/at.hpp>
@@ -422,6 +423,50 @@ double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
 @GMuonMinus2_Calculation@
 }
 
+/// generates array with N scales from mean/factor to mean*factor
+template <int N>
+std::array<double,N> generate_scales(double mean, double factor)
+{
+   static_assert(N > 1, "N must be greater than 1!");
+
+   const double start = mean / factor, stop = mean * factor;
+   std::array<double,N> scales;
+
+   scales[0] = start;
+
+   for (int i = 1; i < (N-1); i++)
+      scales[i] = std::exp(std::log(start) + (std::log(stop) - std::log(start))*i / N);
+
+   scales[N-1] = stop;
+
+   return scales;
+}
+
+/// returns minimum and maximum a_mu when scale is varied by a factor 2
+std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
+{
+   auto scales = generate_scales<7>(model.get_scale(), 2.);
+
+   std::transform(scales.begin(), scales.end(), scales.begin(),
+                  [&model] (double scale) {
+                     double amu = 0.;
+                     try {
+                        auto m = model;
+                        m.run_to(scale);
+                        m.get_physical().clear();
+                        m.calculate_DRbar_masses();
+                        amu = calculate_a_muon_impl(m);
+                     } catch(const Error& e) {
+                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
+                     }
+                     return amu;
+                  });
+
+   const auto minmax = std::minmax_element(scales.cbegin(), scales.cend());
+
+   return std::make_pair(*(minmax.first), *(minmax.second));
+}
+
 } // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
@@ -430,12 +475,31 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
 
    try {
       run_to_MSUSY(model);
+      model.get_physical().clear();
    } catch (const Error& e) {
       ERROR("@ModelName@_a_muon:" << e.what());
       return std::numeric_limits<double>::quiet_NaN();
    }
 
    return calculate_a_muon_impl(model);
+}
+
+double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
+{
+   NUHMSSMNoFV_mass_eigenstates model(model_);
+
+   try {
+      run_to_MSUSY(model);
+      model.get_physical().clear();
+   } catch (const Error& e) {
+      ERROR("@ModelName@_a_muon uncertainty: " << e.what());
+      return std::numeric_limits<double>::quiet_NaN();
+   }
+
+   const auto delta_amu_scale_minmax = vary_scale(model);
+   const auto delta_amu_scale = std::abs(delta_amu_scale_minmax.second - delta_amu_scale_minmax.first);
+
+   return delta_amu_scale;
 }
 
 namespace {
