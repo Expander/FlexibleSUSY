@@ -417,11 +417,15 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
    }
 }
 
+double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
+{
+@GMuonMinus2_Calculation@
+}
+
 } // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
-   // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
 
    try {
@@ -431,7 +435,7 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
       return std::numeric_limits<double>::quiet_NaN();
    }
 
-@GMuonMinus2_Calculation@
+   return calculate_a_muon_impl(model);
 }
 
 namespace {
