@@ -486,7 +486,7 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
 
 double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
 {
-   NUHMSSMNoFV_mass_eigenstates model(model_);
+   @ModelName@_mass_eigenstates model(model_);
 
    try {
       run_to_MSUSY(model);
