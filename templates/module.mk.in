@@ -31,7 +31,7 @@ WITH_$(MODNAME) := yes
 
 LIB@CLASSNAME@_SRC := \
 		$(DIR)/@CLASSNAME@_a_muon.cpp \
-        $(DIR)/@CLASSNAME@_edm.cpp \
+		$(DIR)/@CLASSNAME@_edm.cpp \
 		$(DIR)/@CLASSNAME@_effective_couplings.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_input_parameters.cpp \
@@ -60,7 +60,6 @@ LL@CLASSNAME@_MMA  := \
 LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_edm.hpp \
-		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_effective_couplings.hpp \
 		$(DIR)/@CLASSNAME@_info.hpp \
 		$(DIR)/@CLASSNAME@_input_parameters.hpp \
