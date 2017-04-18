@@ -418,7 +418,7 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
    do {
       MSUSY_new = get_MSUSY(model);
 
-      if (MSUSY_new == 0.)
+      if (MSUSY_new <= 0.)
          return;
 
       model.run_to(MSUSY_new);
