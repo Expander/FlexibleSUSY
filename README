@@ -190,7 +190,7 @@ By running
 
 the generated C++ source code for all <models> is copied to
 /path/to/export/directory , together with the non-model specific
-source code from config/ , doc/ , legacy/ , slhaea/ and src/ .
+source code from config/ , doc/ , slhaea/ and src/ .
 Afterwards, the standalone package can be build via
 
    $ cd /path/to/export/directory
