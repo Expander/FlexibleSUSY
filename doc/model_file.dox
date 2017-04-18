@@ -1068,6 +1068,100 @@ Example: In the MSSM the lightest supersymmetric particles might be
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\section calc_obervables Observables
+
+FlexibleSUSY can calculate various observables.  To enable the
+calculation of a specific observable, the corresponding symbol must be
+added to an extra SLHA output block, see @ref output_blocks .  In the
+following the supported observables are listed.
+
+\subsection eff_higgs_cp Effective Higgs-Photon-Photon and Higgs-Gluon-Gluon couplings
+
+In the context of [<a
+href="https://arxiv.org/abs/1602.05581">arxiv:1602.05581</a>],
+FlexibleSUSY has been extended to calculate the effective couplings of
+CP-even and CP-odd Higgs bosons to two photons or two gluons up to
+NNNLO.  The following table lists the Mathematica symbols to enable
+the calculation of these effective couplings.
+
+| Coupling                                                     | Symbol                                                |
+|--------------------------------------------------------------|-------------------------------------------------------|
+| CP-even Higgs to two photons, \f$h\rightarrow\gamma\gamma\f$ | \c FlexibleSUSYObservable\`CpHiggsPhotonPhoton        |
+| CP-odd  Higgs to two photons, \f$A\rightarrow\gamma\gamma\f$ | \c FlexibleSUSYObservable\`CpPseudoScalarPhotonPhoton |
+| CP-even Higgs to two gluons,  \f$h\rightarrow gg\f$          | \c FlexibleSUSYObservable\`CpHiggsGluonGluon          |
+| CP-odd  Higgs to two gluons,  \f$A\rightarrow gg\f$          | \c FlexibleSUSYObservable\`CpPseudoScalarGluonGluon   |
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\subsection amu_FS BSM contributions to the anomalous magnetic moment of the muon
+
+Since version 2.0, FlexibleSUSY can calculate the BSM contributions to
+the anomalous magnetic moment of the muon, \f$a_\mu^{\text{BSM}}\f$ at
+the 1-loop level, including the leading 2-loop QED logarithmic
+corrections.  The following table lists the Mathematica symbols to
+enable the calculation of \f$a_\mu^{\text{BSM}}\f$.
+
+| Observable                      | Symbol                                      |
+|---------------------------------|---------------------------------------------|
+| \f$a_\mu^{\text{BSM}}\f$        | \c FlexibleSUSYObservable\`aMuon            |
+| \f$\Delta a_\mu^{\text{BSM}}\f$ | \c FlexibleSUSYObservable\`aMuonUncertainty |
+
+\f$\Delta a_\mu^{\text{BSM}}\f$ is obtained by varying the
+renormalization scale by a factor 2.  It therefore represents a \a
+lower \a bound of the theoretical uncertainty.
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{0, FlexibleSUSYObservable`aMuon},
+            {1, FlexibleSUSYObservable`aMuonUncertainty} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\subsection amu_GM2Calc MSSM contributions to the anomalous magnetic moment of the muon with GM2Calc
+
+FlexibleSUSY contains an interface to <a
+href="https://gm2calc.hepforge.org/">GM2Calc</a> [<a
+href="https://arxiv.org/abs/1510.08071">arxiv:1510.08071</a>], which
+can be used to calculate the MSSM contributions to the anomalous
+magnetic moment of the muon, \f$a_\mu^{\text{MSSM}}\f$.  GM2Calc
+calculates \f$a_\mu^{\text{MSSM}}\f$ at the 1-loop level, takes all
+known 2-loop contributions into account and performs a resummation of
+\f$\tan\beta\f$-enhanced contributions.
+
+\note GM2Calc 1.*.* is restricted to CP-conserving MSSM without
+sfermion flavour violation.  Thus, the GM2Calc interface in
+FlexibleSUSY can only be used for MSSM models with CP and sfermion
+flavour conservation.
+
+| Observable                       | Symbol                                             |
+|----------------------------------|----------------------------------------------------|
+| \f$a_\mu^{\text{MSSM}}\f$        | \c FlexibleSUSYObservable\`aMuonGM2Calc            |
+| \f$\Delta a_\mu^{\text{MSSM}}\f$ | \c FlexibleSUSYObservable\`aMuonGM2CalcUncertainty |
+
+Example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{2, FlexibleSUSYObservable`aMuonGM2Calc},
+            {3, FlexibleSUSYObservable`aMuonGM2CalcUncertainty} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 \section output_blocks Output blocks
 
 The user can define additional SLHA output blocks.  These additional
