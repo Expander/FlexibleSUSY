@@ -27,6 +27,8 @@
 #include <utility>
 #include <vector>
 
+namespace flexiblesusy {
+
 /// returns directory from file name
 std::string directory(const std::string& file_name)
 {
@@ -282,8 +284,12 @@ std::vector<std::string> search_includes(const std::string& file_name,
    return existing;
 }
 
+} // namespace flexiblesusy
+
 int main(int argc, char* argv[])
 {
+   using namespace flexiblesusy;
+
    if (argc < 2) {
       std::cerr << "Error: no file given\n";
       print_usage(argv[0]);
