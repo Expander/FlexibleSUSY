@@ -75,7 +75,7 @@ template<unsigned N> struct IndexIterator
 std::input_iterator_tag,
 const std::array<unsigned, N>>
 {
-   friend class IndexBounds<N>;
+   friend struct IndexBounds<N>;
 private:
    const IndexBounds<N> *bounds;
    std::array<unsigned, N> indices;
