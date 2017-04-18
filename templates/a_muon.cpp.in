@@ -410,8 +410,8 @@ double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 
 void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
 {
-   const int Nmax = 100;
-   const double precision_goal = 1e-5;
+   const double precision_goal = model.get_precision();
+   const int Nmax = static_cast<int>(-log10(precision_goal) * 10);
    int it = 0;
    double precision = 0.;
    double MSUSY_old = 0., MSUSY_new = 0.;
@@ -428,6 +428,12 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
       precision = MaxRelDiff(MSUSY_old, MSUSY_new);
       MSUSY_old = MSUSY_new;
    } while (precision > precision_goal && ++it < Nmax);
+
+   if (precision > precision_goal) {
+      WARNING("@ModelName@_a_muon: run_to_MSUSY(): "
+              "Iteration did not converge after " << Nmax
+              << " iterations (precision goal: " << precision_goal << ")");
+   }
 }
 
 double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
