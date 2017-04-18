@@ -15,7 +15,7 @@ The generated HTML index file can then be found in
 
     firefox doc/html/index.html
 
-To generate the man documentation please run:
+To generate the man pages please run:
 
     make doc-man
 
