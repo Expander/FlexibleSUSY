@@ -415,11 +415,15 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
    double precision = 0.;
    double MSUSY_old = 0., MSUSY_new = 0.;
 
+   VERBOSE_MSG("@ModelName@_a_muon: iterate to run to MSUSY ...");
+
    do {
       MSUSY_new = get_MSUSY(model);
 
       if (MSUSY_new <= 0.)
          return;
+
+      VERBOSE_MSG("@ModelName@_a_muon:    running to new MSUSY = " << MSUSY_new);
 
       model.run_to(MSUSY_new);
       model.calculate_DRbar_masses();
@@ -427,6 +431,8 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
       precision = MaxRelDiff(MSUSY_old, MSUSY_new);
       MSUSY_old = MSUSY_new;
    } while (precision > precision_goal && ++it < Nmax);
+
+   VERBOSE_MSG("@ModelName@_a_muon: iteration finished. MSUSY = " << MSUSY_new);
 
    if (precision > precision_goal) {
       WARNING("@ModelName@_a_muon: run_to_MSUSY(): "
@@ -437,6 +443,8 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
 
 double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
 {
+   VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
+
 @GMuonMinus2_Calculation@
 }
 
@@ -490,6 +498,8 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
 {
    @ModelName@_mass_eigenstates model(model_);
 
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu ...");
+
    try {
       run_to_MSUSY(model);
       model.get_physical().clear();
@@ -504,6 +514,8 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
 double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
 {
    @ModelName@_mass_eigenstates model(model_);
+
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu uncertainty ...");
 
    try {
       run_to_MSUSY(model);
