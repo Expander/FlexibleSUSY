@@ -233,7 +233,7 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                    ] &) /@ fields, "\n\n"] <> "\n\n" <>
        
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
-                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @\[NonBreakingSpace]#}],
+                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
                                     numberOfIndices},
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
