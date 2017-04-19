@@ -300,7 +300,7 @@ CreateVertices[vertexRules_List] :=
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
            
-           If[vertices =!= {},
+           If[vertices === {},
               {"",""},
               
               {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
@@ -516,7 +516,7 @@ ContributingDiagrams[] :=
                    (Sequence @@ Cases[diagrams,
                          {#, diags_List} -> diags])} &) /@ edmFields;
                          
-              cachedContributingDiagrams];
+              cachedContributingDiagrams]
           ];
 
 LoadVerticesIfNecessary[] :=
