@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["EDM`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`"}];
 
 (* This module generates c++ code that calculates electric dipole moments of fields *)
@@ -63,7 +65,7 @@ Module[{fields, code},
                                     "};\n" &) /@ fields, "\n"]
                );
        
-       Return[code];
+       code
        ];
 
 EDMCreateDiagrams[] :=
@@ -86,7 +88,7 @@ Module[{code},
                                     &) /@ diagramSubTypes[diagramType], "\n\n"]] &) /@ diagramTypes, "\n\n"]
                );
        
-       Return[code];
+       code
        ];
 
 EDMCreateInterfaceFunctions[] :=
@@ -143,7 +145,7 @@ Module[{prototypes, definitions, evaluators},
                                  ) <>
                                 "\n}"] & /@ evaluators, "\n\n"];
        
-       Return[{prototypes, definitions}];
+       {prototypes, definitions}
        ];
 
 EDMCreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
@@ -231,7 +233,7 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                    ] &) /@ fields, "\n\n"] <> "\n\n" <>
        
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
-                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
+                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @\[NonBreakingSpace]#}],
                                     numberOfIndices},
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
@@ -269,9 +271,9 @@ ContributingDiagramsOfType[OneLoopDiagram] :=
             subtypedDiagrams, uniqueDiagrams},
            
            If[TreeMasses`IsFermion[edmField] =!= True,
-              Return[{edmField,{}}]];
-           
-           subtypedDiagrams = (Module[{photonEmitter = #[[2,1]],
+              {edmField,{}},
+              
+              subtypedDiagrams = (Module[{photonEmitter = #[[2,1]],
                                        exchangeField = #[[2,2]],
                                        subType},
                                       subType = If[TreeMasses`IsFermion[photonEmitter] &&
@@ -285,9 +287,8 @@ ContributingDiagramsOfType[OneLoopDiagram] :=
                                          Diagram[OneLoopDiagram[subType], edmField, photonEmitter, exchangeField]]
                                       ]
                                &) /@ diagrams;
-           uniqueDiagrams = DeleteDuplicates @ Cases[subtypedDiagrams, Except[Null]];
-           
-           {edmField, uniqueDiagrams}] & /@ edmFields;
+              uniqueDiagrams = DeleteDuplicates @ Cases[subtypedDiagrams, Except[Null]];
+              {edmField, uniqueDiagrams}]] & /@ edmFields;
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
  The returned value is a list {prototypes, definitions}. *)
@@ -299,13 +300,13 @@ CreateVertices[vertexRules_List] :=
            vertices = DeleteDuplicates @ Flatten[VerticesForDiagram /@
                                                  Flatten @ contributingDiagrams[[All, 2]], 1];
            
-           If[vertices === {}, Return[{"",""}];];
-           
-           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
+           If[vertices =!= {},
+              {"",""},
+              
+              {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @
                ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
-
-           (StringJoin @ Riffle[#, "\n\n"] &) /@ {vertexClassesPrototypes, vertexClassesDefinitions}
-          ];
+              (StringJoin @ Riffle[#, "\n\n"] &) /@ {vertexClassesPrototypes, vertexClassesDefinitions}
+          ]];
 
 (* Returns the vertices that are present in the specified diagram.
  This function should be overloaded for future diagram types. *)
@@ -313,12 +314,12 @@ VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_
     Module[{edmVertex, photonVertex},
            edmVertex = {SARAH`AntiField[edmField], photonEmitter, exchangeField};
            photonVertex = {SARAH`Photon, photonEmitter, SARAH`AntiField[photonEmitter]};
-           Return[{edmVertex, photonVertex}];
+           {edmVertex, photonVertex}
            ];
 
 (* Returns the vertex type for a vertex with a given list of fields *)
 VertexTypeForFields[fields_List] :=
-    Module[{fermions, scalarCount, vectorCount, fermionCount},
+    Module[{fermions, scalarCount, vectorCount, fermionCount, vertexType = Null},
            fermions = Select[fields, TreeMasses`IsFermion];
            
            scalarCount = Length @ Select[fields, TreeMasses`IsScalar];
@@ -326,14 +327,14 @@ VertexTypeForFields[fields_List] :=
            fermionCount = Length @ fermions;
            
            If[fermionCount === 2 && scalarCount === 1 && vectorCount === 0,
-              Return[LeftAndRightComponentedVertex]];
+              vertexType = LeftAndRightComponentedVertex];
            If[fermionCount === 2 && scalarCount === 0 && vectorCount === 1,
               If[fermions[[1]] === SARAH`AntiField[fermions[[2]]],
-                 Return[LeftAndRightComponentedVertex]]];
+                 vertexType = LeftAndRightComponentedVertex]];
            If[fermionCount === 0 && scalarCount === 2 && vectorCount === 1,
-              Return[SingleComponentedVertex]];
+              vertexType = SingleComponentedVertex];
            
-           Return[Null];
+           vertexType
            ];
 
 (* Returns the different SARAH`Cp coupling parts for a vertex with a given list of fields *)
@@ -392,7 +393,7 @@ CreateVertexFunction[fields_List, vertexRules_List] :=
                          IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
                          "}");
            
-           Return[{prototype, definition}];
+           {prototype, definition}
           ];
 
 (* Creates local declarations of field indices, whose values are taken
@@ -486,7 +487,7 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        vertexClassName,
                                        vertexFunctionBody];
 
-           Return[parsedVertex];
+           parsedVertex
            ];
 
 (** Getters to the ParsedVertex structure **)
@@ -503,17 +504,19 @@ VertexFunctionBody[parsedVertex_ParsedVertex] := parsedVertex[[4]];
 cachedContributingDiagrams = Null;
 ContributingDiagrams[] :=
        Module[{diagrams},
-           If[cachedContributingDiagrams =!= Null, Return[cachedContributingDiagrams]];
-           LoadVerticesIfNecessary[];
-
-           diagrams = Flatten[(ContributingDiagramsOfType[#] &)
+           If[cachedContributingDiagrams =!= Null,
+              cachedContributingDiagrams,
+              
+              LoadVerticesIfNecessary[];
+   
+              diagrams = Flatten[(ContributingDiagramsOfType[#] &)
                                  /@ diagramTypes
                                  , 1];
-              
-           cachedContributingDiagrams = ({#, Union @
+              cachedContributingDiagrams = ({#, Union @
                    (Sequence @@ Cases[diagrams,
                          {#, diags_List} -> diags])} &) /@ edmFields;
-           Return[cachedContributingDiagrams];
+                         
+              cachedContributingDiagrams];
           ];
 
 LoadVerticesIfNecessary[] :=
