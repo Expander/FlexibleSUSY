@@ -87,9 +87,9 @@ Block ADIN
   2  2     1e4   # Re(Ad(2,2))
   3  3     1e4   # Re(Ad(3,3))
 Block AEIN
-  1  1     1e4   # Re(Ad(1,1))
-  2  2     1e4   # Re(Ad(2,2))
-  3  3     1e4   # Re(Ad(3,3))
+  1  1     1e4   # Re(Ae(1,1))
+  2  2     1e4   # Re(Ae(2,2))
+  3  3     1e4   # Re(Ae(3,3))
 Block IMAUIN
   1  1       0   # Im(Au(1,1))
   2  2       0   # Im(Au(2,2))
@@ -99,6 +99,6 @@ Block IMADIN
   2  2       0   # Im(Ad(2,2))
   3  3       0   # Im(Ad(3,3))
 Block IMAEIN
-  1  1       0   # Im(Ad(1,1))
-  2  2       0   # Im(Ad(2,2))
-  3  3       0   # Im(Ad(3,3))
+  1  1       0   # Im(Ae(1,1))
+  2  2       0   # Im(Ae(2,2))
+  3  3       0   # Im(Ae(3,3))
