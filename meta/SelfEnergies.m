@@ -1304,6 +1304,16 @@ pars.MSb << msb_1, msb_2;
 pars.s2t = Sin(2*theta_t);
 pars.s2b = Sin(2*theta_b);
 
+if (pars.MSt(0) > pars.MSt(1)) {
+   std::swap(pars.MSt(0), pars.MSt(1));
+   pars.s2t *= -1;
+}
+
+if (pars.MSb(0) > pars.MSb(1)) {
+   std::swap(pars.MSb(0), pars.MSb(1));
+   pars.s2b *= -1;
+}
+
 h3m::HierarchyCalculator hc(pars);
 
 const auto suitableHierarchyTop = hc.compareHierarchies(false);
