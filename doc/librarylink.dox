@@ -450,19 +450,8 @@ _Output_:
 
 For each `<model>`, the `FS<model>CalculateObservables[handle]`
 function calculates further observables, such as effective Higgs
-couplings to two photons or gluons.
-
-Note: The observables to be calculated must be specified in the model
-file in the `ExtraSLHAOutputBlocks`.  Available observables are:
-
-~~~~~~~~~~~~~~~~~~~~{.m}
-FlexibleSUSYObservable`aMuonGM2Calc
-FlexibleSUSYObservable`aMuonGM2CalcUncertainty
-FlexibleSUSYObservable`CpHiggsPhotonPhoton
-FlexibleSUSYObservable`CpHiggsGluonGluon
-FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton
-FlexibleSUSYObservable`CpPseudoScalarGluonGluon
-~~~~~~~~~~~~~~~~~~~~
+couplings to two photons or gluons.  See @ref calc_obervables for a
+list of all available observables.
 
 Note: The `FS<model>CalculateObservables[handle]` function assumes,
 that the pole mass spectrum has been calculated before, using the

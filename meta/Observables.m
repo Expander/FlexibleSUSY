@@ -2,7 +2,7 @@ BeginPackage["Observables`", {"FlexibleSUSY`", "SARAH`", "BetaFunction`", "Param
 
 (* observables *)
 Begin["FlexibleSUSYObservable`"];
-FSObservables = { aMuon, aMuonGM2Calc, aMuonGM2CalcUncertainty,
+FSObservables = { aMuon, aMuonUncertainty, aMuonGM2Calc, aMuonGM2CalcUncertainty,
                   CpHiggsPhotonPhoton, CpHiggsGluonGluon,
                   CpPseudoScalarPhotonPhoton, CpPseudoScalarGluonGluon,
                   EDM };
@@ -56,6 +56,7 @@ GetRequestedObservables[blocks_] :=
           ];
 
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon";
+GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := "a_muon_uncertainty";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon_gm2calc";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "a_muon_gm2calc_uncertainty";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] := "eff_cp_higgs_photon_photon";
@@ -65,7 +66,8 @@ GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluo
 GetObservableName[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableName[FlexibleSUSYObservable`EDM[p]] <> "_" <> ToString[idx];
 GetObservableName[FlexibleSUSYObservable`EDM[p_]]       := "edm_" <> CConversion`ToValidCSymbolString[p];
 
-GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY at 1L)";
+GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
+GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := "uncertainty of a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon = (g-2)/2 of the muon (calculated with GM2Calc)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "uncertainty of (g-2)/2 of the muon (calculated with GM2Calc)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] := "effective H-Photon-Photon coupling";
@@ -76,6 +78,7 @@ GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableD
 GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p];
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
+GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[FlexibleSUSYObservable`EDM[p_]] := CConversion`ScalarType[CConversion`realScalarCType];
@@ -210,6 +213,9 @@ CreateClearObservablesFunction[observables_List] :=
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuon, structName_String] :=
     structName <> ".AMU = " <> FlexibleSUSY`FSModelName <> "_a_muon::calculate_a_muon(MODEL);";
+
+CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty, structName_String] :=
+    structName <> ".AMUUNCERTAINTY = " <> FlexibleSUSY`FSModelName <> "_a_muon::calculate_a_muon_uncertainty(MODEL);";
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc, structName_String] :=
     structName <> ".AMUGM2CALC = gm2calc_calculate_amu(gm2calc_data);";

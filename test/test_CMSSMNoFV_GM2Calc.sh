@@ -34,7 +34,7 @@ EOF
 
 amu_fs=$(cat "${SLHA_OUT}" | awk -f "$print_block" -v block=FlexibleSUSYLowEnergy | awk '{ if ($1 == 0) print $2 }')
 
-amu_gm2calc_fs=$(cat "${SLHA_OUT}" | awk -f "$print_block" -v block=FlexibleSUSYLowEnergy | awk '{ if ($1 == 1) print $2 }')
+amu_gm2calc_fs=$(cat "${SLHA_OUT}" | awk -f "$print_block" -v block=FlexibleSUSYLowEnergy | awk '{ if ($1 == 2) print $2 }')
 
 amu_gm2calc=$({ cat <<EOF
 Block GM2CalcConfig

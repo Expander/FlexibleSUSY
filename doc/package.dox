@@ -11,8 +11,8 @@
 
  - <code>examples/</code> contains some example spectrum generators
 
- - <code>legacy/</code> contains legacy C++ source code, which will be
-   removed in a later FlexibleSUSY version
+ - <code>fflite/</code> contains an alternative implementation of the
+   Passarino-Veltman loop functions, based on FF
 
  - <code>meta/</code> contains the @ref meta_code "Mathematica meta code"
 

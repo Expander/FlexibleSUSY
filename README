@@ -10,13 +10,14 @@ Homepage:                https://flexiblesusy.hepforge.org
 Mailing list:            flexiblesusy@projects.hepforge.org
 Source code repository:  https://github.com/FlexibleSUSY
 Bug reports:             https://github.com/FlexibleSUSY/FlexibleSUSY/issues
-References:              CPC 190 (2015) 139-172 (arxiv:1406.2319 [hep-ph])
+References:              CPC 190 (2015) 139-172 (arxiv:1406.2319 [hep-ph]),
+                         JHEP 1701 (2017) 079 (arXiv:1609.00371 [hep-ph])
 
 
 Requirements
 ============
 
- * C++ compiler (g++ >= 4.7.2 or clang++ >= 3.1 or icpc >= 12.1)
+ * C++ compiler (g++ >= 4.8.4 or clang++ >= 3.1 or icpc >= 12.1)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
  * SARAH (version 4.11.0 or higher)   http://sarah.hepforge.org
@@ -38,9 +39,9 @@ the Needs["SARAH`"] command from inside Mathematica.  We recommend the
 following setup:
 
    $ cd ~/.Mathematica/Applications/
-   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.7.0.tar.gz
-   $ tar -xf SARAH-4.9.3.tar.gz
-   $ ln -s $PWD/SARAH-4.9.3/ SARAH
+   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.11.0.tar.gz
+   $ tar -xf SARAH-4.11.0.tar.gz
+   $ ln -s $PWD/SARAH-4.11.0/ SARAH
 
    $ cd ~/.Mathematica/Kernel/
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \
@@ -189,7 +190,7 @@ By running
 
 the generated C++ source code for all <models> is copied to
 /path/to/export/directory , together with the non-model specific
-source code from config/ , doc/ , legacy/ , slhaea/ and src/ .
+source code from config/ , doc/ , slhaea/ and src/ .
 Afterwards, the standalone package can be build via
 
    $ cd /path/to/export/directory

@@ -58,9 +58,8 @@
 #define PHYSICALPARAMETER(p) model.get_physical().p
 #define OBSERVABLE(o) observables.o
 
+namespace flexiblesusy {
 namespace @ModelName@_librarylink {
-
-using namespace flexiblesusy;
 
 using Handle = mint;
 
@@ -821,6 +820,7 @@ std::unique_ptr<Model_data> make_data(const Dynamic_array_view<Element_t>& pars)
 }
 
 } // namespace @ModelName@_librarylink
+} // namespace flexiblesusy
 
 extern "C" {
 
@@ -842,7 +842,7 @@ DLLEXPORT int WolframLibrary_initialize(WolframLibraryData /* libData */)
 
 DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSettings"))
       return LIBRARY_TYPE_ERROR;
@@ -863,7 +863,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
 
 DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetSMInputParameters"))
       return LIBRARY_TYPE_ERROR;
@@ -884,7 +884,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
 
 DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetInputParameters"))
       return LIBRARY_TYPE_ERROR;
@@ -906,7 +906,8 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
 DLLEXPORT int FS@ModelName@OpenHandle(
    WolframLibraryData libData, mint Argc, MArgument* Args, MArgument Res)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
@@ -940,7 +941,7 @@ DLLEXPORT int FS@ModelName@OpenHandle(
 DLLEXPORT int FS@ModelName@CloseHandle(
    WolframLibraryData /* libData */, mint Argc, MArgument* Args, MArgument /* Res */)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (Argc != 1)
       return LIBRARY_TYPE_ERROR;
@@ -959,7 +960,8 @@ DLLEXPORT int FS@ModelName@CloseHandle(
 DLLEXPORT int FS@ModelName@Set(
    WolframLibraryData libData, mint Argc, MArgument* Args, MArgument /* Res */)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (Argc != 2)
       return LIBRARY_TYPE_ERROR;
@@ -989,7 +991,7 @@ DLLEXPORT int FS@ModelName@Set(
 DLLEXPORT int FS@ModelName@GetProblems(
    WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetProblems"))
       return LIBRARY_TYPE_ERROR;
@@ -1010,7 +1012,7 @@ DLLEXPORT int FS@ModelName@GetProblems(
 
 DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@ToSLHA"))
       return LIBRARY_TYPE_ERROR;
@@ -1032,7 +1034,7 @@ DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
 DLLEXPORT int FS@ModelName@GetWarnings(
    WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@GetWarnings"))
       return LIBRARY_TYPE_ERROR;
@@ -1054,7 +1056,7 @@ DLLEXPORT int FS@ModelName@GetWarnings(
 DLLEXPORT int FS@ModelName@CalculateSpectrum(
    WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateSpectrum"))
       return LIBRARY_TYPE_ERROR;
@@ -1083,7 +1085,7 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 DLLEXPORT int FS@ModelName@CalculateObservables(
    WolframLibraryData /* libData */, MLINK link)
 {
-   using namespace @ModelName@_librarylink;
+   using namespace flexiblesusy::@ModelName@_librarylink;
 
    if (!check_number_of_args(link, 1, "FS@ModelName@CalculateObservables"))
       return LIBRARY_TYPE_ERROR;
