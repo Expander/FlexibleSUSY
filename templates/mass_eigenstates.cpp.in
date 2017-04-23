@@ -632,6 +632,22 @@ Eigen::ArrayXd CLASSNAME::get_DRbar_masses() const
 @getMasses@
 }
 
+void CLASSNAME::set_DRbar_masses_and_mixings(const Eigen::ArrayXd& pars)
+{
+   set_DRbar_masses(pars);
+
+@setMixings@
+}
+
+Eigen::ArrayXd CLASSNAME::get_DRbar_masses_and_mixings() const
+{
+   Eigen::ArrayXd pars(get_DRbar_masses());
+
+@getMixings@
+
+   return pars;
+}
+
 std::string CLASSNAME::name() const
 {
    return "@ModelName@";
