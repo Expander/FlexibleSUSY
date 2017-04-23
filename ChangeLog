@@ -41,6 +41,10 @@ FlexibleSUSY 2.0.0 [not released yet]
    in the model file.
    Thanks to Alexander Bednyakov for providing the expressions.
 
+ * Feature: The SQLite database output now contains the MS-bar/DR-bar
+   mass spectrum and mixing matrices, in addition to the pole mass
+   spectrum.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
