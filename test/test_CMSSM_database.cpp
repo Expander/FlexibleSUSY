@@ -204,8 +204,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const std::string db_file("test/test_CMSSM_database.db");
 
+   BOOST_TEST_MESSAGE("writing to database " << db_file);
    CMSSM_database::to_database(db_file, model, &qedqcd1, &physical_input1, &obs1);
 
+   BOOST_TEST_MESSAGE("reading from database " << db_file);
    const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &physical_input2, &obs2));
 
    const double eps = 1e-10;
