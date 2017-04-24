@@ -1032,9 +1032,9 @@ CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particl
                 ];
               body = body <>
               "const double drbar_conversion = " <> RValueToCFormString[drbarConversion] <> ";\n" <>
-              "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n\n" <>
-              "const double m_susy_drbar = m_sm_drbar + self_energy_1 " <>
-              "+ m_sm_drbar * (self_energy_PL + self_energy_PR);\n\n" <>
+              "const double m_sm_drbar = m_sm_msbar * drbar_conversion;\n" <>
+              "const double delta_mf_1loop = - self_energy_1/m_sm_drbar - self_energy_PL - self_energy_PR;\n\n" <>
+              "const double m_susy_drbar = m_sm_drbar / (1.0 + delta_mf_1loop);\n\n" <>
               "return m_susy_drbar;\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
