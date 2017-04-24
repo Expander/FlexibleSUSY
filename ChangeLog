@@ -108,6 +108,9 @@ FlexibleSUSY 2.0.0 [not released yet]
                   {4, gN} } }
       };
 
+ * Change (commit 9bfd5f1): tan(beta)-enhanced contributions to the
+   down-lepton Yukawa couplings are now resummed.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
