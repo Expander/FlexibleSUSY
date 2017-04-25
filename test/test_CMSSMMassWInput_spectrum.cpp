@@ -781,7 +781,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum )
    BOOST_CHECK_EQUAL(fs.get_MFv()(1), 0.0);
    BOOST_CHECK_EQUAL(fs.get_MFv()(2), 0.0);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(2), ss.displayDrBarPars().mtau, 0.00044);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(2), ss.displayDrBarPars().mtau, 0.0011);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(2), ss.displayDrBarPars().mt  , 0.0097);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(2), ss.displayDrBarPars().mb  , 0.0027);
 
