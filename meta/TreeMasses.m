@@ -60,8 +60,8 @@ CopyDRBarMassesToPoleMasses::usage="copies DRbar mass to pole mass";
 
 CreateMassArrayGetter::usage="";
 CreateMassArraySetter::usage="";
-CreatePhysicalArrayGetter::usage="";
-CreatePhysicalArraySetter::usage="";
+CreateMixingArrayGetter::usage="";
+CreateMixingArraySetter::usage="";
 
 GetParticles::usage="returns list of particles";
 
@@ -2015,7 +2015,7 @@ CreateMassArrayGetter[masses_List] :=
            Return[display];
           ];
 
-CreatePhysicalArrayGetter[masses_List] :=
+CreateMixingArrayGetter[masses_List] :=
     Module[{display = "", paramCount, assignment = "", nAssignments = 0},
            paramCount = CountNumberOfMasses[masses];
            {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateDisplayAssignment];
@@ -2052,7 +2052,7 @@ CreateMassArraySetter[masses_List, array_String] :=
            Return[set];
           ];
 
-CreatePhysicalArraySetter[masses_List, array_String] :=
+CreateMixingArraySetter[masses_List, array_String] :=
     Module[{set = "", paramCount, assignment = "", nAssignments = 0},
            paramCount = CountNumberOfMasses[masses];
            {assignment, nAssignments} = CreateMixingMatrixArrayGetterSetter[masses, paramCount, Parameters`CreateSetAssignment];

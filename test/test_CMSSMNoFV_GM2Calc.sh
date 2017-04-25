@@ -87,7 +87,7 @@ fi
 
 ### test FlexibleSUSY vs. embedded GM2Calc
 
-rel_error=0.012
+rel_error=0.014
 
 diff=$(cat <<EOF | bc $BASEDIR/abs.bc
 scale=100

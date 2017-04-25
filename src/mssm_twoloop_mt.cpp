@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Wed 12 Apr 2017 14:11:33
+// This file has been generated at Tue 25 Apr 2017 15:21:02
 // with the script "tquark_to_cpp.m".
 
 #include "mssm_twoloop_mt.hpp"
@@ -53,6 +53,19 @@ namespace {
       return is_zero(a - b, prec);
    }
 
+   template <typename T>
+   bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+   {
+      if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+         return true;
+
+      if (std::abs(a) < std::numeric_limits<T>::epsilon() ||
+          std::abs(b) < std::numeric_limits<T>::epsilon())
+         return false;
+
+      return std::abs((a - b)/a) < prec;
+   }
+
    /**
     * fin[] function from arXiv:hep-ph/0507139 .
     *
@@ -74,6 +87,18 @@ namespace {
             pow2(log(mm1/mm2))/2.) +
          ((mm1 + mm2)*pow2(log(mm1/mm2)))/2. -
          2*(mm1*pow2(log(mm1/mmu)) + mm2*pow2(log(mm2/mmu))))/2.;
+   }
+
+   /// shift gluino mass away from mst1 and mst2 if too close
+   double shift_mg(double mg, double mst1, double mst2)
+   {
+      if (is_equal_rel(std::min(mst1, mst2), mg, 0.003))
+         return mg * 0.995;
+
+      if (is_equal_rel(std::max(mst1, mst2), mg, 0.003))
+         return mg * 1.005;
+
+      return mg;
    }
 
 } // anonymous namespace
@@ -186,10 +211,10 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
    const double g3     = pars.g3;
    const double Xt     = pars.xt;
    const double mt     = pars.mt;
-   const double mgl    = pars.mg;
+   const double mgl    = shift_mg(pars.mg, pars.mst1, pars.mst2);
    const double mmu    = pow2(pars.Q);
    const double mmt    = pow2(pars.mt);
-   const double mmgl   = pow2(pars.mg);
+   const double mmgl   = pow2(mgl);
    const double mmst1  = pow2(pars.mst1);
    const double mmst2  = pow2(pars.mst2);
    const double mmsusy = pow2(pars.msusy);
