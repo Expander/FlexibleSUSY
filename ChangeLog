@@ -8,6 +8,10 @@ FlexibleSUSY-1.7.4 [April, 12 2017]
    bugfix in SARAH 4.11.0.  This bugfix affects the Higgs mass
    prediction with FlexibleEFTHiggs by around 10 MeV.
 
+ * Bugfix (commit 03e9265): Correcting wrong vertex between
+   chargino-smuon-neutrino and chargino-muon-sneutrino in muon decay.
+   Thanks to Markus Bach.
+
 FlexibleSUSY-1.7.3 [February, 27 2017]
 
  * Change (commit 43bb03a): FlexibleSUSY now aborts the code
