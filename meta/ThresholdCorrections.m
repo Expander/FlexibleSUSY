@@ -331,7 +331,7 @@ CalculateThetaWFromFermiConstantSUSY[options_List] :=
             mhStr, zhStr,
             mseExpr, msveExpr, msmExpr, msvmExpr,
             mseStr, msveStr, msmStr, msvmStr,
-            zStr, wStr, ymStr,
+            zStr, wStr,
             gHyp, gLef, gCol,
             localConstRefs = ""
            },
@@ -357,7 +357,6 @@ CalculateThetaWFromFermiConstantSUSY[options_List] :=
            zhStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSHiggsMM][0,1]];
            wStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorW]];
            zStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorZ]];
-           ymStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSElectronYukawa][1,1]];
            mseExpr  = Utils`FSGetOption[options,FlexibleSUSY`FSSelectronL];
            msveExpr = Utils`FSGetOption[options,FlexibleSUSY`FSSelectronNeutrinoL];
            msmExpr  = Utils`FSGetOption[options,FlexibleSUSY`FSSmuonL];
@@ -381,7 +380,6 @@ const double mh_drbar      = " <> mhStr <> ";
 const double gY            = " <> g1Str <> ";
 const double g2            = " <> g2Str <> ";
 const double g3            = " <> g3Str <> ";
-const double ymu           = Re(" <> ymStr <> ");
 const double hmix_12       = " <> zhStr <> ";
 const double tanBeta       = " <> vuStr <> " / " <> vdStr <> ";
 const double mselL         = " <> mseStr <> ";
@@ -438,7 +436,6 @@ data.gY                  = gY;
 data.g2                  = g2;
 data.g3                  = g3;
 data.tan_beta            = tanBeta;
-data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.enable_susy_contributions();
@@ -460,7 +457,7 @@ CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
             mTop, mBot, mHiggs,
             mtStr, mbStr,
             mhStr, zhStr,
-            zStr, wStr, ymStr,
+            zStr, wStr,
             gHyp, gLef, gCol
            },
            mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
@@ -478,7 +475,6 @@ CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
            zhStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSHiggsMM][0,1]];
            wStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorW]];
            zStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorZ]];
-           ymStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSElectronYukawa][1,1]];
     "\
 using namespace weinberg_angle;
 
@@ -492,7 +488,6 @@ const double mh_drbar      = " <> mhStr <> ";
 const double gY            = " <> g1Str <> ";
 const double g2            = " <> g2Str <> ";
 const double g3            = " <> g3Str <> ";
-const double ymu           = Re(" <> ymStr <> ");
 const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "_1loop(mz_pole));
 const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "_1loop(0.));
 self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "_1loop(mw_pole));
@@ -532,7 +527,6 @@ data.mh_drbar            = mh_drbar;
 data.gY                  = gY;
 data.g2                  = g2;
 data.g3                  = g3;
-data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.disable_susy_contributions();
