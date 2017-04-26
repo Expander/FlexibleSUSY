@@ -37,7 +37,8 @@ EXTPAR = { {0, Qin},
            {46, mu33IN},
            {47, md11IN},
            {48, md22IN},
-           {49, md33IN} 
+           {49, md33IN},
+           {100, Mlow}
 };
 
 EWSBOutputParameters = { mHd2, mHu2 };
@@ -84,9 +85,9 @@ HighScaleInput = {
    {MassG,M3}
 };
 
-LowScale = LowEnergyConstant[MZ];
+LowScale = If[Mlow != 0, Mlow, LowEnergyConstant[MZ]];
 
-LowScaleFirstGuess = LowEnergyConstant[MZ];
+LowScaleFirstGuess = If[Mlow != 0, Mlow, LowEnergyConstant[MZ]];
 
 LowScaleInput = {
    {Yu, Automatic},
