@@ -126,7 +126,9 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
            functionName = CreateSolverName[];
-           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,parameters,function];
+           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,
+                                                               Parameters`DecreaseIndexLiterals[parameters],
+                                                               Parameters`DecreaseIndexLiterals[function]];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
                            "> minimizer(" <> functionName <> ", 100, 1.0e-2);\n" <>
@@ -155,7 +157,9 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
            functionName = CreateSolverName[];
-           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,parameters,function];
+           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,
+                                                             Parameters`DecreaseIndexLiterals[parameters],
+                                                             Parameters`DecreaseIndexLiterals[function]];
            callRootFinder = functionWrapper <> "\n" <> startPoint <>
                            "Root_finder<" <> dimStr <>
                            "> root_finder(" <> functionName <> ", 100, 1.0e-2);\n" <>
