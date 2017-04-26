@@ -876,7 +876,6 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
    const double mb_drbar            = MFd(2);
    const double mh_drbar            = Mhh;
    const double gY                  = g1 * 0.7745966692414834;
-   const double ymu                 = Re(Ye(1,1));
    const double pizztMZ             = Re(self_energy_VZ_1loop(mz_pole));
    const double piwwt0              = Re(self_energy_VWp_1loop(0.));
    const double self_energy_w_at_mw = Re(self_energy_VWp_1loop(mw_pole));
@@ -919,7 +918,6 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
    data.gY                  = gY;
    data.g2                  = g2;
    data.g3                  = g3;
-   data.ymu                 = ymu;
 
    Weinberg_angle weinberg;
    weinberg.disable_susy_contributions();

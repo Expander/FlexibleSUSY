@@ -128,7 +128,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.up = v;
    data.gY = gY;
    data.g2 = g2;
-   data.ymu = hmu;
 
    // test with SoftSusy parameters
    double fs_delta_vb =
@@ -153,7 +152,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.up = fs_v;
    data.gY = fs_gY;
    data.g2 = fs_g2;
-   data.ymu = fs_hmu;
 
    fs_delta_vb =
       Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
@@ -279,7 +277,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.g2 = g2;
    data.g3 = g3;
    data.tan_beta = tanBeta;
-   data.ymu = hmu;
 
    // test with SoftSusy parameters
    double fs_delta_r =
@@ -311,7 +308,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.gY = fs_gY;
    data.g2 = fs_g2;
    data.g3 = fs_g3;
-   data.ymu = fs_hmu;
    data.tan_beta = fs_tanBeta;
 
    fs_delta_r =
@@ -504,7 +500,6 @@ void setup_data(const CMSSM_input_parameters& input,
    data.g2 = g2;
    data.g3 = g3;
    data.tan_beta = tanBeta;
-   data.ymu = hmu;
 }
 
 BOOST_AUTO_TEST_CASE( test_rho_sinTheta )

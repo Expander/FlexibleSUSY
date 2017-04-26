@@ -77,11 +77,12 @@ CreateStartPoint[parameters_List, name_String] :=
            dim = Length[parameters];
            dimStr = ToString[dim];
            For[i = 1, i <= dim, i++,
-               startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
-                            CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
+               startPoint = startPoint <> If[i==1,"",", "] <>
+                            CConversion`RValueToCFormString[parameters[[i]]];
               ];
+           Parameters`CreateLocalConstRefs[parameters] <> "\n" <>
            "Eigen::VectorXd " <> name <> "(" <> dimStr <> ");\n" <>
-           name <> " << " <> startPoint <> " ;\n"
+           name <> " << " <> startPoint <> ";\n"
           ];
 
 SetModelParametersFromVector[model_String, vector_String, parameters_List] :=
@@ -107,7 +108,7 @@ CreateMinimizationFunctionWrapper[functionName_String, dim_Integer, parameters_L
     Module[{type, stype},
            type  = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
            stype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
-"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> stype <> " {
+"auto " <> functionName <> " = [this](const "<> type <> "& x) {
 " <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL->","x",parameters]] <> "
    MODEL->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
@@ -126,19 +127,20 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
            functionName = CreateSolverName[];
-           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,parameters,function];
+           functionWrapper = CreateMinimizationFunctionWrapper[functionName,dim,parameters,
+                                                               Parameters`DecreaseIndexLiterals[function]];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
                            "> minimizer(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = minimizer.minimize(start_point);\n" <>
                            "VERBOSE_MSG(\"\\tminimizer status: \" << gsl_strerror(status));\n";
-           Return[callMinimizer];
+           "\n{" <> TextFormatting`IndentText[callMinimizer] <> "}\n"
           ];
 
 CreateRootFinderFunctionWrapper[functionName_String, dim_Integer, parameters_List, function_List] :=
     Module[{type},
            type = CConversion`CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, 1]];
-"auto " <> functionName <> " = [this](const "<> type <> "& x) -> " <> type <> " {
+"auto " <> functionName <> " = [this](const "<> type <> "& x) {
 " <> TextFormatting`IndentText[SetModelParametersFromVector["MODEL->","x",parameters]] <> "
    MODEL->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function]] <> "
@@ -155,13 +157,14 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
            functionName = CreateSolverName[];
-           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,parameters,function];
+           functionWrapper = CreateRootFinderFunctionWrapper[functionName,dim,parameters,
+                                                             Parameters`DecreaseIndexLiterals[function]];
            callRootFinder = functionWrapper <> "\n" <> startPoint <>
                            "Root_finder<" <> dimStr <>
                            "> root_finder(" <> functionName <> ", 100, 1.0e-2);\n" <>
                            "const int status = root_finder.find_root(start_point);\n" <>
                            "VERBOSE_MSG(\"\\troot finder status: \" << gsl_strerror(status));\n";
-           Return[callRootFinder];
+           "\n{\n" <> TextFormatting`IndentText[callRootFinder] <> "}\n\n"
           ];
 
 ApplyConstraint[FlexibleSUSY`FSSolveEWSBFor[___], modelName_String] :=

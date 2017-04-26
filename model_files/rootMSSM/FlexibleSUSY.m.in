@@ -11,6 +11,8 @@ MINPAR = { {1, m0},
            {5, Azero}
          };
 
+EXTPAR = { {1, MhInput} };
+
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
@@ -47,7 +49,7 @@ LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   FSFindRoot[{vd,vu}, {LowEnergyConstant[MZ] - Pole[M[VZ]], LowEnergyConstant[MH] - Pole[M[hh[1]]]}]
+   FSFindRoot[{vd,vu}, {LowEnergyConstant[MZ] - Pole[M[VZ]], MhInput - Pole[M[hh[1]]]}]
 };
 
 InitialGuessAtLowScale = {
