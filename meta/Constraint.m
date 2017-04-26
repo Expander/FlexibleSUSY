@@ -77,11 +77,12 @@ CreateStartPoint[parameters_List, name_String] :=
            dim = Length[parameters];
            dimStr = ToString[dim];
            For[i = 1, i <= dim, i++,
-               startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
-                            CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
+               startPoint = startPoint <> If[i==1,"",", "] <>
+                            CConversion`RValueToCFormString[parameters[[i]]];
               ];
+           Parameters`CreateLocalConstRefs[parameters] <> "\n" <>
            "Eigen::VectorXd " <> name <> "(" <> dimStr <> ");\n" <>
-           name <> " << " <> startPoint <> " ;\n"
+           name <> " << " <> startPoint <> ";\n"
           ];
 
 SetModelParametersFromVector[model_String, vector_String, parameters_List] :=
