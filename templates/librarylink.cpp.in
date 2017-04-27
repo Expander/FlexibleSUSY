@@ -338,6 +338,7 @@ void Model_data::put_settings(MLINK link) const
    MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::eft_matching_loop_order_down)), "eftMatchingLoopOrderDown");
    MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::eft_higgs_index)), "eftHiggsIndex");
    MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::calculate_bsm_masses)), "calculateBSMMasses");
+   MLPutRuleTo(link, static_cast<int>(settings.get(Spectrum_generator_settings::threshold_corrections)), "thresholdCorrections");
    MLPutRuleTo(link, modsel.parameter_output_scale, "parameterOutputScale");
 
    MLEndPacket(link);
@@ -742,6 +743,7 @@ std::unique_ptr<Model_data> make_data(const Dynamic_array_view<Element_t>& pars)
    settings.set(Spectrum_generator_settings::eft_matching_loop_order_down, pars[c++]);
    settings.set(Spectrum_generator_settings::eft_higgs_index, pars[c++]);
    settings.set(Spectrum_generator_settings::calculate_bsm_masses, pars[c++]);
+   settings.set(Spectrum_generator_settings::threshold_corrections, pars[c++]);
 
    SLHA_io::Modsel modsel;
    modsel.parameter_output_scale = pars[c++];

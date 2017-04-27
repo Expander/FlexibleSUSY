@@ -402,7 +402,7 @@ double pizztMZ_corrected = pizztMZ;
 double piwwtMW_corrected = self_energy_w_at_mw;
 double piwwt0_corrected  = piwwt0;
 
-if (model->get_thresholds() > 1) {
+if (model->get_thresholds() > 1 && model->get_threshold_corrections().sin_theta_w > 1) {
    pizztMZ_corrected =
       Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
    piwwtMW_corrected =
@@ -439,7 +439,7 @@ data.tan_beta            = tanBeta;
 
 Weinberg_angle weinberg;
 weinberg.enable_susy_contributions();
-weinberg.set_number_of_loops(MODEL->get_thresholds());
+weinberg.set_number_of_loops(model->get_threshold_corrections().sin_theta_w);
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();
@@ -504,7 +504,7 @@ double pizztMZ_corrected = pizztMZ;
 double piwwtMW_corrected = self_energy_w_at_mw;
 double piwwt0_corrected  = piwwt0;
 
-if (model->get_thresholds() > 1) {
+if (model->get_thresholds() > 1 && model->get_threshold_corrections().sin_theta_w > 1) {
    pizztMZ_corrected =
       Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
    piwwtMW_corrected =
@@ -530,7 +530,7 @@ data.g3                  = g3;
 
 Weinberg_angle weinberg;
 weinberg.disable_susy_contributions();
-weinberg.set_number_of_loops(MODEL->get_thresholds());
+weinberg.set_number_of_loops(model->get_threshold_corrections().sin_theta_w);
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();

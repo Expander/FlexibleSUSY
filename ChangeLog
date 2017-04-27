@@ -45,6 +45,26 @@ FlexibleSUSY 2.0.0 [not released yet]
    mass spectrum and mixing matrices, in addition to the pole mass
    spectrum.
 
+ * Feature: The loop orders of the threshold corrections of the SM(5)
+   parameters to the BSM model can now be selected individually by
+   using the flag FlexibleSUSY[24] in the SLHA input file or the
+   thresholdCorrections variable in the Mathematica interface.  The
+   given value consists of 9 digits, each one representing the
+   threshold correction loop order of a parameter:
+
+     digit position n    | default value | parameter
+     (prefactor of 10^n) |               |
+     -------------------:|---------------|-------------------------
+      0                  | 1 (1-loop)    | alpha_em
+      1                  | 2 (2-loop)    | sin(theta_W)
+      2                  | 1 (1-loop)    | alpha_s
+      3                  | 1 (1-loop)    | m_Z
+      4                  | 1 (1-loop)    | m_W
+      5                  | 1 (1-loop)    | m_h
+      6                  | 3 (3-loop)    | m_t
+      7                  | 2 (2-loop)    | m_b
+      8                  | 1 (1-loop)    | m_\tau
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
