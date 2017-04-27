@@ -49,7 +49,7 @@ void set_digit(Threshold_corrections::Flags_t& flags, int pos, int digit)
          "set_digit: digit ( " + std::to_string(digit) + ") must be within [0-9]");
    }
 
-   const int old_digit = get_digit(flags, pos);
+   const auto old_digit = get_digit(flags, pos);
 
    flags += (digit - old_digit) * std::pow(10.l,pos);
 }
