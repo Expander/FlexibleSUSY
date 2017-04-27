@@ -784,23 +784,7 @@ RValueToCFormString[expr_] :=
              ];
            result = Block[{Which, If}, expr /. greekSymbolsRules] /.
                     SARAH`sum -> FlexibleSUSY`SUM /.
-                    SARAH`Mass -> FlexibleSUSY`M //. {
-                    SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
-                    SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
-                    SARAH`B1[a___, SARAH`Mass2[b_], c___]  :> SARAH`B1[a,FlexibleSUSY`M[b],c],
-                    SARAH`B00[a___, SARAH`Mass2[b_], c___] :> SARAH`B00[a,FlexibleSUSY`M[b],c],
-                    SARAH`B22[a___, SARAH`Mass2[b_], c___] :> SARAH`B22[a,FlexibleSUSY`M[b],c],
-                    SARAH`F0[a___, SARAH`Mass2[b_], c___]  :> SARAH`F0[a,FlexibleSUSY`M[b],c],
-                    SARAH`G0[a___, SARAH`Mass2[b_], c___]  :> SARAH`G0[a,FlexibleSUSY`M[b],c],
-                    SARAH`H0[a___, SARAH`Mass2[b_], c___]  :> SARAH`H0[a,FlexibleSUSY`M[b],c] } /. {
-                    SARAH`A0[p_^2]                   :> SARAH`A0[p],
-                    SARAH`B0[p_^2, a__]              :> SARAH`B0[p, a],
-                    SARAH`B1[p_^2, a__]              :> SARAH`B1[p, a],
-                    SARAH`B00[p_^2, a__]             :> SARAH`B00[p, a],
-                    SARAH`B22[p_^2, a__]             :> SARAH`B22[p, a],
-                    SARAH`F0[p_^2, a__]              :> SARAH`F0[p, a],
-                    SARAH`G0[p_^2, a__]              :> SARAH`G0[p, a],
-                    SARAH`H0[p_^2, a__]              :> SARAH`H0[p, a] } /.
+                    SARAH`Mass -> FlexibleSUSY`M /.
                     SARAH`A0[0]              -> 0 /.
                     SARAH`Mass2[a_?NumberQ]  :> Sqr[a] /.
                     SARAH`Mass2[a_]          :> Sqr[FlexibleSUSY`M[a]] /.
