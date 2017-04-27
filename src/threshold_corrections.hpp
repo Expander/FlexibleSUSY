@@ -39,12 +39,12 @@ struct Threshold_corrections {
    int alpha_em{1};
    int sin_theta_w{2};
    int alpha_s{1};
-   int mt{3};
-   int mb{2};
-   int mtau{1};
    int mz{1};
    int mw{1};
    int mh{1};
+   int mt{3};
+   int mb{2};
+   int mtau{1};
 
    void set(Flags_t);   ///< sets all values to digits in given a Flags_t
    Flags_t get() const; ///< returns all value in a Flags_t
