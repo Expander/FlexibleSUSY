@@ -19,6 +19,7 @@
 #ifndef SPECTRUM_GENERATOR_SETTINGS_H
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
+#include "threshold_corrections.hpp"
 #include "two_loop_corrections.hpp"
 #include <array>
 #include <iosfwd>
@@ -61,6 +62,7 @@ public:
       eft_matching_loop_order_down, ///< [21] loop order at which lambda of the SM is calculated from the full model parameters at the matching scale (downwards matching)
       eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
       calculate_bsm_masses,  ///< [23] calculate BSM pole masses
+      threshold_corrections, ///< [24] individual threshold correction loop orders
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
@@ -73,6 +75,8 @@ public:
 
    Two_loop_corrections get_two_loop_corrections() const;
    void set_two_loop_corrections(const Two_loop_corrections&);
+   Threshold_corrections get_threshold_corrections() const;
+   void set_threshold_corrections(const Threshold_corrections&);
 
 private:
    std::array<double, NUMBER_OF_OPTIONS> values; ///< spectrum generator settings

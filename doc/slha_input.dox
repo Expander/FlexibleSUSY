@@ -10,29 +10,31 @@ __Default values__:
 
 ~~~~~~~~~~~~~~~~~~~~~~~{.txt}
 Block FlexibleSUSY
-    0   1.0e-04  # precision goal
-    1   0        # max. iterations (0 = automatic)
-    2   0        # algorithm (0 = two_scale, 1 = lattice)
-    3   0        # calculate SM pole masses
-    4   2        # pole mass loop order
-    5   2        # EWSB loop order
-    6   2        # beta-functions loop order
-    7   2        # threshold corrections loop order
-    8   1        # Higgs 2-loop corrections O(alpha_t alpha_s)
-    9   1        # Higgs 2-loop corrections O(alpha_b alpha_s)
-   10   1        # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
-   11   1        # Higgs 2-loop corrections O(alpha_tau^2)
-   12   0        # force output
-   13   1        # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
-   14   1.0e-11  # beta-function zero threshold
-   15   0        # calculate observables (a_muon, effective couplings)
-   16   0        # force positive majorana masses
-   17   0        # pole mass scale
-   18   0        # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
-   19   0        # EFT matching scale (0 = SUSY scale)
-   20   2        # EFT loop order for upwards matching (SM -> BSM)
-   21   1        # EFT loop order for downwards matching (BSM -> SM)
-   22   0        # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
+    0   1.0e-04   # precision goal
+    1   0         # max. iterations (0 = automatic)
+    2   0         # algorithm (0 = two_scale, 1 = lattice)
+    3   0         # calculate SM pole masses
+    4   2         # pole mass loop order
+    5   2         # EWSB loop order
+    6   2         # beta-functions loop order
+    7   2         # threshold corrections loop order
+    8   1         # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1         # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1         # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+   11   1         # Higgs 2-loop corrections O(alpha_tau^2)
+   12   0         # force output
+   13   1         # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
+   14   1.0e-11   # beta-function zero threshold
+   15   0         # calculate observables (a_muon, effective couplings)
+   16   0         # force positive majorana masses
+   17   0         # pole mass scale
+   18   0         # pole mass scale in the EFT (0 = min(SUSY scale, Mt))
+   19   0         # EFT matching scale (0 = SUSY scale)
+   20   2         # EFT loop order for upwards matching (SM -> BSM)
+   21   1         # EFT loop order for downwards matching (BSM -> SM)
+   22   0         # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
+   23   1         # calculate BSM pole masses
+   24   123111121 # individual threshold correction loop orders
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -42,31 +44,33 @@ calculation at run-time.  For example, in the `FlexibleSUSY` block the
 renormalization group running precsision, the beta function loop order
 or the loop order of the pole mass calculation can be selected.
 
-index | description                          | possible values              | default value
------:|--------------------------------------|------------------------------|----------------
- 0    | precision goal                       | any positive double          | 1.0e-4
- 1    | max. number of iterations            | any positive double          | 0 (= automatic)
- 2    | BC solver                            | 0 (two-scale) or 1 (lattice) | 0 (= two-scale)
- 3    | calculate SM pole masses             | 0 (no) or 1 (yes)            | 0 (= no)
- 4    | pole mass loop order                 | 0, 1, 2                      | 2 (= 2-loop)
- 5    | EWSB loop order                      | 0, 1, 2                      | 2 (= 2-loop)
- 6    | beta function loop order             | 0, 1, 2, 3                   | 2 (= 2-loop)
- 7    | threshold corrections loop order     | 0, 1, 2                      | 2 (= 2-loop)
- 8    | higgs 2-loop correction O(at as)     | 0, 1                         | 1 (= enabled)
- 9    | higgs 2-loop correction O(ab as)     | 0, 1                         | 1 (= enabled)
-10    | higgs 2-loop correction O(at at)     | 0, 1                         | 1 (= enabled)
-11    | higgs 2-loop correction O(atau atau) | 0, 1                         | 1 (= enabled)
-12    | force output                         | 0 (no) or 1 (yes)            | 0 (= no)
-13    | top quark pole QCD corrections       | 0 (1L), 1 (2L), 2 (3L)       | 1 (= 2L QCD)
-14    | beta function zero threshold         | any positive double          | 1.0e-11
-15    | calculate observables                | 0 (no) or 1 (yes)            | 0 (= no)
-16    | force positive Majorana masses       | 0 (no) or 1 (yes)            | 0 (= no)
-17    | pole mass scale                      | any positive double          | 0 (= SUSY scale)
-18    | EFT pole mass scale                  | any positive double          | 0 (= minimum of {Mt, SUSY scale})
-19    | EFT matching scale                   | any positive double          | 0 (= SUSY scale)
-20    | EFT loop order for upwards matching  | 0, 1, 2                      | 2 (= 2-loop)
-21    | EFT loop order for downwards matching| 0, 1                         | 1 (= 1-loop)
-22    | EFT Higgs index                      | any integer >= 0             | 0 (= lightest)
+index | description                            | possible values              | default value
+-----:|----------------------------------------|------------------------------|----------------
+ 0    | precision goal                         | any positive double          | 1.0e-4
+ 1    | max. number of iterations              | any positive double          | 0 (= automatic)
+ 2    | BC solver                              | 0 (two-scale) or 1 (lattice) | 0 (= two-scale)
+ 3    | calculate SM pole masses               | 0 (no) or 1 (yes)            | 0 (= no)
+ 4    | pole mass loop order                   | 0, 1, 2                      | 2 (= 2-loop)
+ 5    | EWSB loop order                        | 0, 1, 2                      | 2 (= 2-loop)
+ 6    | beta function loop order               | 0, 1, 2, 3                   | 2 (= 2-loop)
+ 7    | threshold corrections loop order       | 0, 1, 2                      | 2 (= 2-loop)
+ 8    | higgs 2-loop correction O(at as)       | 0, 1                         | 1 (= enabled)
+ 9    | higgs 2-loop correction O(ab as)       | 0, 1                         | 1 (= enabled)
+10    | higgs 2-loop correction O(at at)       | 0, 1                         | 1 (= enabled)
+11    | higgs 2-loop correction O(atau atau)   | 0, 1                         | 1 (= enabled)
+12    | force output                           | 0 (no) or 1 (yes)            | 0 (= no)
+13    | top quark pole QCD corrections         | 0 (1L), 1 (2L), 2 (3L)       | 1 (= 2L QCD)
+14    | beta function zero threshold           | any positive double          | 1.0e-11
+15    | calculate observables                  | 0 (no) or 1 (yes)            | 0 (= no)
+16    | force positive Majorana masses         | 0 (no) or 1 (yes)            | 0 (= no)
+17    | pole mass scale                        | any positive double          | 0 (= SUSY scale)
+18    | EFT pole mass scale                    | any positive double          | 0 (= minimum of {Mt, SUSY scale})
+19    | EFT matching scale                     | any positive double          | 0 (= SUSY scale)
+20    | EFT loop order for upwards matching    | 0, 1, 2                      | 2 (= 2-loop)
+21    | EFT loop order for downwards matching  | 0, 1                         | 1 (= 1-loop)
+22    | EFT Higgs index                        | any integer >= 0             | 0 (= lightest)
+23    | calculate pole masses of BSM particles | 0 (no) or 1 (yes)            | 1 (= yes)
+24    | individual threshold corrections       | positive integer             | 123111121
 
 ### Precision goal (`FlexibleSUSY[0]`) ###
 
@@ -99,13 +103,16 @@ iterations is set to \f[N_{\text{max.it.}} = -10 \log_{10}p,\f] where
 
 ### Threshold correction loop order (`FlexibleSUSY[7]`) ###
 
-Using the flag `FlexibleSUSY[7]` the loop order of the threshold
-corrections of the SM to the full BSM model can be selected.  The
-threshold corrections affect the determination of the running BSM
+Using the flag `FlexibleSUSY[7]` the "global" loop order of the
+threshold corrections of the SM to the full BSM model can be selected.
+The threshold corrections affect the determination of the running BSM
 model parameters \f$\alpha_{\text{em}}\f$, \f$\alpha_s\f$,
 \f$\sin(\theta_W)\f$, \f$y_e\f$, \f$y_\mu\f$, \f$y_\tau\f$, \f$y_b\f$,
 \f$y_t\f$, \f$v\f$ at the low-energy scale \f$Q_{\text{low}}\f$ in the
 \f$\overline{\text{MS}}\f$ or \f$\overline{\text{DR}}\f$ scheme.
+
+\note The individual loop orders of the threshold corrections can be
+specified using `FlexibleSUSY[24]`
 
 - \f$\alpha_{\text{em}}(Q_{\text{low}})\f$: If the threshold
   correction loop order is set to `0`,
@@ -326,6 +333,31 @@ Using `FlexibleSUSY[22]`, the user can specify which Higgs in the BSM
 model should be interpreted to be the SM-like one.  If unspecified,
 the index is set to `0`, i.e. the lightest Higgs eigenstate in the BSM
 model is interpreted as the SM-like Higgs.
+
+### Individual threshold corrections (`FlexibleSUSY[24]`) ###
+
+The entry `FlexibleSUSY[24]` can be used for a fine-grained control to
+specify the loop orders of the low-energy threshold corrections of the
+SM(5) parameters to the parameters of the BSM model.  The given number
+is composed of several digits, each one specifying a threshold
+correction loop order of a parameter.  The following table shows which
+digit is associated with which parameter.
+
+digit position \f$n\f$ (prefactor of \f$10^n\f$) | default value | parameter
+------------------------------------------------:|---------------|-------------------------
+ 0                                               | 1 (1-loop)    | \f$\alpha_{\text{em}}\f$
+ 1                                               | 2 (2-loop)    | \f$\sin\theta_W\f$
+ 2                                               | 1 (1-loop)    | \f$\alpha_{s}\f$
+ 3                                               | 1 (1-loop)    | \f$m_Z\f$
+ 4                                               | 1 (1-loop)    | \f$m_W\f$
+ 5                                               | 1 (1-loop)    | \f$m_h\f$
+ 6                                               | 3 (3-loop)    | \f$m_t\f$
+ 7                                               | 2 (2-loop)    | \f$m_b\f$
+ 8                                               | 1 (1-loop)    | \f$m_{\tau}\f$
+
+\note Note, that the threshold correction loop order of a parameter is
+not higher than the "global" threshold correction loop order,
+specified by `FlexibleSUSY[7]`.
 
 
 \section FlexibleSUSY_input Additional physical input parameters (FlexibleSUSYInput)

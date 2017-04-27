@@ -88,6 +88,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.set_ewsb_loop_order(this->model.get_ewsb_loop_order());
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
    eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
+   eft.set_threshold_corrections(this->model.get_threshold_corrections());
 
    @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);
    standard_model::Standard_model_low_scale_constraint<Two_scale>  low_scale_constraint(&eft, qedqcd);
