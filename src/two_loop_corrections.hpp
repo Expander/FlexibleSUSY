@@ -29,15 +29,11 @@
 namespace flexiblesusy {
 
 struct Two_loop_corrections {
-   Two_loop_corrections()
-      : higgs_at_as(true)
-      , higgs_ab_as(true)
-      , higgs_at_at(true)
-      , higgs_atau_atau(true)
-      , top_qcd(1)
-      {}
-   bool higgs_at_as, higgs_ab_as, higgs_at_at, higgs_atau_atau;
-   int top_qcd; ///< top pole mass QCD corrections
+   bool higgs_at_as{true};
+   bool higgs_ab_as{true};
+   bool higgs_at_at{true};
+   bool higgs_atau_atau{true};
+   int top_qcd{1}; ///< top pole mass QCD corrections
 };
 
 } // namespace flexiblesusy
