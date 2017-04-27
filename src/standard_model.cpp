@@ -193,6 +193,16 @@ const Two_loop_corrections& Standard_model::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
+void Standard_model::set_threshold_corrections(const Threshold_corrections& tc)
+{
+   threshold_corrections = tc;
+}
+
+const Threshold_corrections& Standard_model::get_threshold_corrections() const
+{
+   return threshold_corrections;
+}
+
 int Standard_model::get_number_of_ewsb_iterations() const
 {
    return static_cast<int>(std::abs(-log10(ewsb_iteration_precision) * 10));

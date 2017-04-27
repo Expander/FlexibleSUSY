@@ -29,6 +29,7 @@
 #include "betafunction.hpp"
 #include "standard_model_physical.hpp"
 #include "two_loop_corrections.hpp"
+#include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
@@ -124,6 +125,8 @@ public:
    void set_ewsb_loop_order(int);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_threshold_corrections(const Threshold_corrections&);
+   const Threshold_corrections& get_threshold_corrections() const;
    void set_pole_mass_loop_order(int);
    int get_pole_mass_loop_order() const;
    void set_physical(const Standard_model_physical&);
@@ -580,7 +583,8 @@ private:
    double ewsb_iteration_precision{1e-5};
    Standard_model_physical physical{}; ///< contains the pole masses and mixings
    Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS> problems{standard_model_info::particle_names, standard_model_info::parameter_names};
-   Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
+   Two_loop_corrections two_loop_corrections{}; ///< used 2-loop pole mass corrections
+   Threshold_corrections threshold_corrections{}; ///< used low-energy threshold corrections
    Physical_input input{};
 
    int get_number_of_ewsb_iterations() const;
