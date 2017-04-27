@@ -44,6 +44,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/standard_model_two_scale_convergence_tester.cpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
+		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
@@ -122,6 +123,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/thread_pool.hpp \
+		$(DIR)/threshold_corrections.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/which.hpp \
