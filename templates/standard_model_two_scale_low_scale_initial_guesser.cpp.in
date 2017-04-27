@@ -90,7 +90,7 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters
 
    mu_guess = leAtMt.displayMass(mUp);
    mc_guess = leAtMt.displayMass(mCharm);
-   mt_guess = model->get_thresholds() > 0 ?
+   mt_guess = model->get_thresholds() > 0 && model->get_threshold_corrections().mt > 0 ?
       leAtMt.displayMass(mTop) - 30.0 :
       leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(mDown);

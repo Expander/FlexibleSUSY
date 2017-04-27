@@ -127,7 +127,7 @@ if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
 AddMbRun2LSQCDCorrections[] :=
     If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
 "
-if (get_thresholds() > 1) {
+if (get_thresholds() > 1 && threshold_corrections.mb > 1) {
    double mst_1, mst_2, theta_t;
    " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
    double msb_1, msb_2, theta_b;
@@ -1115,7 +1115,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
                      "qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
                     ] <>
               "\n\n" <>
-              "if (get_thresholds() > 1) {\n" <>
+              "if (get_thresholds() > 1 && threshold_corrections.mt > 1) {\n" <>
               IndentText[
                   If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                      CreateMSSM2LoopSQCDContributions[],
@@ -1124,7 +1124,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               ] <> "\n" <>
               "}\n\n" <>
               If[qcdThreeLoop =!= 0,
-              "if (get_thresholds() > 2) {\n" <>
+              "if (get_thresholds() > 2 && threshold_corrections.mt > 2) {\n" <>
                   IndentText["qcd_3l = " <> CConversion`RValueToCFormString[qcdThreeLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"] <> "\n" <>
               "}\n\n", ""] <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>

@@ -193,6 +193,16 @@ const Two_loop_corrections& Standard_model::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
+void Standard_model::set_threshold_corrections(const Threshold_corrections& tc)
+{
+   threshold_corrections = tc;
+}
+
+const Threshold_corrections& Standard_model::get_threshold_corrections() const
+{
+   return threshold_corrections;
+}
+
 int Standard_model::get_number_of_ewsb_iterations() const
 {
    return static_cast<int>(std::abs(-log10(ewsb_iteration_precision) * 10));
@@ -729,17 +739,17 @@ void Standard_model::initialise_from_input(const softsusy::QedQcd& qedqcd_)
 
       double mz_run = mz_pole;
 
-      if (get_thresholds()) {
+      if (get_thresholds() && threshold_corrections.mz > 0)
          mz_run = calculate_MVZ_DRbar(mz_pole);
-      }
 
       double delta_alpha_em = 0.;
       double delta_alpha_s  = 0.;
 
-      if (get_thresholds()) {
+      if (get_thresholds() && threshold_corrections.alpha_em > 0)
          delta_alpha_em = calculate_delta_alpha_em(alpha_em);
+
+      if (get_thresholds() && threshold_corrections.alpha_s > 0)
          delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
-      }
 
       const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
       const double alpha_s_drbar  = alpha_s / (1.0 - delta_alpha_s);
@@ -775,7 +785,7 @@ void Standard_model::initialise_from_input(const softsusy::QedQcd& qedqcd_)
          g2 = Electroweak_constants::g2;
       }
 
-      if (get_thresholds())
+      if (get_thresholds() && threshold_corrections.sin_theta_w > 0)
          qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 
       converged = check_convergence(old);
@@ -797,7 +807,7 @@ void Standard_model::initial_guess_for_parameters(const softsusy::QedQcd& qedqcd
 
    const double mu_guess = qedqcd.displayMass(softsusy::mUp);
    const double mc_guess = qedqcd.displayMass(softsusy::mCharm);
-   const double mt_guess = get_thresholds() > 0 ?
+   const double mt_guess = get_thresholds() > 0 && threshold_corrections.mt > 0 ?
       qedqcd.displayMass(softsusy::mTop) - 30.0 :
       qedqcd.displayPoleMt();
    const double md_guess = qedqcd.displayMass(softsusy::mDown);
@@ -892,7 +902,7 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
    double piwwtMW_corrected = self_energy_w_at_mw;
    double piwwt0_corrected  = piwwt0;
 
-   if (get_thresholds() > 1) {
+   if (get_thresholds() > 1 && threshold_corrections.sin_theta_w > 1) {
       pizztMZ_corrected =
          Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole,
             se_data);
@@ -921,7 +931,7 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
 
    Weinberg_angle weinberg;
    weinberg.disable_susy_contributions();
-   weinberg.set_number_of_loops(get_thresholds());
+   weinberg.set_number_of_loops(threshold_corrections.sin_theta_w);
    weinberg.set_data(data);
 
    const int error = weinberg.calculate();
@@ -943,9 +953,8 @@ void Standard_model::calculate_Yu_DRbar(const softsusy::QedQcd& qedqcd)
    upQuarksDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
    upQuarksDRbar(2,2)      = qedqcd.displayPoleMt();
 
-   if (get_thresholds()) {
+   if (get_thresholds() && threshold_corrections.mt > 0)
       upQuarksDRbar(2,2) = calculate_MFu_DRbar(qedqcd.displayPoleMt(), 2);
-   }
 
    Yu = -((1.4142135623730951*upQuarksDRbar)/v).transpose();
 }
@@ -957,9 +966,8 @@ void Standard_model::calculate_Yd_DRbar(const softsusy::QedQcd& qedqcd)
    downQuarksDRbar(1,1)   = qedqcd.displayMass(softsusy::mStrange);
    downQuarksDRbar(2,2)   = qedqcd.displayMass(softsusy::mBottom);
 
-   if (get_thresholds()) {
+   if (get_thresholds() && threshold_corrections.mb > 0)
       downQuarksDRbar(2,2) = calculate_MFd_DRbar(qedqcd.displayMass(softsusy::mBottom), 2);
-   }
 
    Yd = ((1.4142135623730951*downQuarksDRbar)/v).transpose();
 }
@@ -974,8 +982,10 @@ void Standard_model::calculate_Ye_DRbar(const softsusy::QedQcd& qedqcd)
    if (get_thresholds()) {
       downLeptonsDRbar(0,0) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mElectron), 0);
       downLeptonsDRbar(1,1) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mMuon), 1);
-      downLeptonsDRbar(2,2) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mTau), 2);
    }
+
+   if (get_thresholds() && threshold_corrections.mtau > 0)
+      downLeptonsDRbar(2,2) = calculate_MFe_DRbar(qedqcd.displayMass(softsusy::mTau), 2);
 
    Ye = ((1.4142135623730951*downLeptonsDRbar)/v).transpose();
 }
@@ -984,9 +994,8 @@ void Standard_model::calculate_Lambdax_DRbar()
 {
    double higgsDRbar = input.get(Physical_input::mh_pole);
 
-   if (get_thresholds()) {
+   if (get_thresholds() && threshold_corrections.mh > 0)
       higgsDRbar = calculate_Mhh_DRbar(higgsDRbar);
-   }
 
    Lambdax = Sqr(higgsDRbar) / Sqr(v);
 }
@@ -4431,14 +4440,14 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
       /Sqr(currentScale)))*Sqr(g3);
    double qcd_2l = 0., qcd_3l = 0.;
 
-   if (get_thresholds() > 1) {
+   if (get_thresholds() > 1 && threshold_corrections.mt > 1) {
       qcd_2l = -0.0041441100714622115*Quad(g3) - 0.0015238567409297061
          *Log(Sqr(currentScale)/Sqr(MFu(idx)))*Quad(g3) -
          0.00024060895909416413*Quad(g3)*Sqr(Log(Power(currentScale,2)/Sqr(MFu(
          idx))));
    }
 
-   if (get_thresholds() > 2) {
+   if (get_thresholds() > 2 && threshold_corrections.mt > 2) {
       qcd_3l = -0.0008783313853540776*Power6(g3) -
          5.078913443827405e-6*Cube(Log(Sqr(currentScale)/Sqr(MFu(idx))))*Power6
          (g3) - 0.0004114970933517977*Log(Sqr(currentScale)/Sqr(MFu(idx)))*

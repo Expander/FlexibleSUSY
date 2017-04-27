@@ -133,6 +133,16 @@ const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
    return two_loop_corrections;
 }
 
+void CLASSNAME::set_threshold_corrections(const Threshold_corrections& tc)
+{
+   threshold_corrections = tc;
+}
+
+const Threshold_corrections& CLASSNAME::get_threshold_corrections() const
+{
+   return threshold_corrections;
+}
+
 int CLASSNAME::get_number_of_ewsb_iterations() const
 {
    return static_cast<int>(std::abs(-log10(ewsb_iteration_precision) * 10));
@@ -477,46 +487,47 @@ void CLASSNAME::print(std::ostream& ostr) const
 
 /**
  * wrapper routines for passarino Veltman functions
+ * @note: They take squared arguments!
  */
 
 double CLASSNAME::A0(double m) const
 {
-   return passarino_veltman::ReA0(m*m, Sqr(get_scale()));
+   return passarino_veltman::ReA0(m, Sqr(get_scale()));
 }
 
 double CLASSNAME::B0(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReB0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReB0(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B1(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReB1(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B00(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReB00(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReB00(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B22(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReB22(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReB22(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::H0(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReH0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReH0(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::F0(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReF0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReF0(p, m1, m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::G0(double p, double m1, double m2) const
 {
-   return passarino_veltman::ReG0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
+   return passarino_veltman::ReG0(p, m1, m2, Sqr(get_scale()));
 }
 
 /**
