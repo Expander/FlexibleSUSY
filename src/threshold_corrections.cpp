@@ -66,13 +66,12 @@ void Threshold_corrections::set(Flags_t flags)
    alpha_em    = get_digit(flags, 0);
    sin_theta_w = get_digit(flags, 1);
    alpha_s     = get_digit(flags, 2);
-   mw          = get_digit(flags, 3);
-   mz          = get_digit(flags, 4);
-   mt          = get_digit(flags, 5);
-   mb          = get_digit(flags, 6);
-   me          = get_digit(flags, 7);
-   mm          = get_digit(flags, 8);
-   mtau        = get_digit(flags, 9);
+   mt          = get_digit(flags, 3);
+   mb          = get_digit(flags, 4);
+   mtau        = get_digit(flags, 5);
+   mz          = get_digit(flags, 6);
+   mw          = get_digit(flags, 7);
+   mh          = get_digit(flags, 8);
 }
 
 Threshold_corrections::Flags_t Threshold_corrections::get() const
@@ -82,13 +81,12 @@ Threshold_corrections::Flags_t Threshold_corrections::get() const
    set_digit(flags, 0, alpha_em);
    set_digit(flags, 1, sin_theta_w);
    set_digit(flags, 2, alpha_s);
-   set_digit(flags, 3, mw);
-   set_digit(flags, 4, mz);
-   set_digit(flags, 5, mt);
-   set_digit(flags, 6, mb);
-   set_digit(flags, 7, me);
-   set_digit(flags, 8, mm);
-   set_digit(flags, 9, mtau);
+   set_digit(flags, 3, mt);
+   set_digit(flags, 4, mb);
+   set_digit(flags, 5, mtau);
+   set_digit(flags, 6, mz);
+   set_digit(flags, 7, mw);
+   set_digit(flags, 8, mh);
 
    return flags;
 }
