@@ -33,6 +33,10 @@ namespace flexiblesusy {
 struct Threshold_corrections {
    using Flags_t = std::int_fast32_t;
 
+   enum class Positions : int {
+      alpha_em, sin_theta_w, alpha_s, mz, mw, mh, mt, mb, mtau
+   };
+
    Threshold_corrections() = default;
    Threshold_corrections(Flags_t);
 

@@ -49,7 +49,7 @@ void set_digit(Threshold_corrections::Flags_t& flags, int pos, int digit)
          "set_digit: digit ( " + std::to_string(digit) + ") must be within [0-9]");
    }
 
-   const int old_digit = get_digit(flags, pos);
+   const auto old_digit = get_digit(flags, pos);
 
    flags += (digit - old_digit) * std::pow(10.l,pos);
 }
@@ -63,30 +63,30 @@ Threshold_corrections::Threshold_corrections(Flags_t flags)
 
 void Threshold_corrections::set(Flags_t flags)
 {
-   alpha_em    = get_digit(flags, 0);
-   sin_theta_w = get_digit(flags, 1);
-   alpha_s     = get_digit(flags, 2);
-   mz          = get_digit(flags, 3);
-   mw          = get_digit(flags, 4);
-   mh          = get_digit(flags, 5);
-   mt          = get_digit(flags, 6);
-   mb          = get_digit(flags, 7);
-   mtau        = get_digit(flags, 8);
+   alpha_em    = get_digit(flags, static_cast<int>(Positions::alpha_em   ));
+   sin_theta_w = get_digit(flags, static_cast<int>(Positions::sin_theta_w));
+   alpha_s     = get_digit(flags, static_cast<int>(Positions::alpha_s    ));
+   mz          = get_digit(flags, static_cast<int>(Positions::mz         ));
+   mw          = get_digit(flags, static_cast<int>(Positions::mw         ));
+   mh          = get_digit(flags, static_cast<int>(Positions::mh         ));
+   mt          = get_digit(flags, static_cast<int>(Positions::mt         ));
+   mb          = get_digit(flags, static_cast<int>(Positions::mb         ));
+   mtau        = get_digit(flags, static_cast<int>(Positions::mtau       ));
 }
 
 Threshold_corrections::Flags_t Threshold_corrections::get() const
 {
    Flags_t flags = 0;
 
-   set_digit(flags, 0, alpha_em);
-   set_digit(flags, 1, sin_theta_w);
-   set_digit(flags, 2, alpha_s);
-   set_digit(flags, 3, mz);
-   set_digit(flags, 4, mw);
-   set_digit(flags, 5, mh);
-   set_digit(flags, 6, mt);
-   set_digit(flags, 7, mb);
-   set_digit(flags, 8, mtau);
+   set_digit(flags, static_cast<int>(Positions::alpha_em   ), alpha_em);
+   set_digit(flags, static_cast<int>(Positions::sin_theta_w), sin_theta_w);
+   set_digit(flags, static_cast<int>(Positions::alpha_s    ), alpha_s);
+   set_digit(flags, static_cast<int>(Positions::mz         ), mz);
+   set_digit(flags, static_cast<int>(Positions::mw         ), mw);
+   set_digit(flags, static_cast<int>(Positions::mh         ), mh);
+   set_digit(flags, static_cast<int>(Positions::mt         ), mt);
+   set_digit(flags, static_cast<int>(Positions::mb         ), mb);
+   set_digit(flags, static_cast<int>(Positions::mtau       ), mtau);
 
    return flags;
 }

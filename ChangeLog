@@ -65,6 +65,9 @@ FlexibleSUSY 2.0.0 [not released yet]
       7                  | 2 (2-loop)    | m_b
       8                  | 1 (1-loop)    | m_\tau
 
+   The default value is 123111121, which corresponds to the loop
+   orders given in the above table.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
