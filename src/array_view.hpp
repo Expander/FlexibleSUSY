@@ -76,7 +76,7 @@ public:
    using Index_t = std::ptrdiff_t;
    using Pointer_t = Element_t*;
    using Iterator_t = Pointer_t;
-   using Const_iterator_t = const Iterator_t;
+   using Const_iterator_t = Iterator_t;
    using Reference_t = Element_t&;
 
    constexpr Dynamic_array_view() noexcept = default;
