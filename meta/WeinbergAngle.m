@@ -204,7 +204,7 @@ WaveResult[diagr_List, includeGoldstones_] :=
            result
           ];
 
-CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsWave[particle], TreeMasses`IsVector];
+CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsWave[particle], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]];
 
 DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult},
@@ -315,7 +315,7 @@ VertexTreeResult[part1_, part2_] :=
            SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
           ];
 
-CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]], TreeMasses`IsVector]) / VertexTreeResult[part1, part2];
+CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) / VertexTreeResult[part1, part2];
 
 DeltaVBvertex[includeGoldstones_: False] :=
     Module[{neutrinofields, chargedleptonfields, result},
@@ -388,7 +388,7 @@ BoxResult[diagr_List, includeGoldstones_] :=
            result
           ];
 
-CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] := Plus @@ (BoxResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsBox[part1, part2, part3, part4], TreeMasses`IsVector];
+CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] := Plus @@ (BoxResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsBox[part1, part2, part3, part4], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]];
 
 DeltaVBbox[includeGoldstones_: False] :=
     Module[{neutrinofields, chargedleptonfields, result},
