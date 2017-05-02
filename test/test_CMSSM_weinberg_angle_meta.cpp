@@ -104,7 +104,7 @@ void setup_CMSSM_const_non_3rd_gen(CMSSM_mass_eigenstates& model,
 {
    setup_CMSSM_const(model, input);
 
-   const double ymu = 0.1;
+   const double ymu = 0.001;
 
    Eigen::Matrix<double,3,3> Ye = model.get_Ye();
    Ye(1,1) = ymu;
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
-   input.TanBeta = 10.;
+   input.TanBeta = 20.;
    input.SignMu = 1;
    input.Azero = 0.;
 
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    CMSSM_weinberg_angle wein(&model, sm_parameters);
    double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
-   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 1.0e-6);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_r )
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
-   input.TanBeta = 10.;
+   input.TanBeta = 20.;
    input.SignMu = 1;
    input.Azero = 0.;
 
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    wein.piwwt_0  = wein.calculate_self_energy_VWm(0.);
    double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
 
-   BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 2.0e-4);
 }
 
 BOOST_AUTO_TEST_CASE( test_sin_theta )
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
-   input.TanBeta = 10.;
+   input.TanBeta = 20.;
    input.SignMu = 1;
    input.Azero = 0.;
 
@@ -322,5 +322,5 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    double time_2 = stopwatch.get_time_in_seconds();
    BOOST_MESSAGE("calculation with CMSSM_weinberg_angle took " << time_2 << " seconds");
 
-   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 3.0e-8);
 }
