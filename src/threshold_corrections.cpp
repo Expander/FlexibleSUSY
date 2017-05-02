@@ -18,8 +18,10 @@
 
 #include "threshold_corrections.hpp"
 #include "error.hpp"
+#include "logger.hpp"
 #include <cmath>
 #include <string>
+#include <iostream>
 
 namespace flexiblesusy {
 
@@ -33,7 +35,7 @@ int get_digit(Threshold_corrections::Flags_t flags, int pos)
          "get_digit: position ( " + std::to_string(pos) + ") must be positive");
    }
 
-   return static_cast<Threshold_corrections::Flags_t>(flags * std::pow(10.l, -pos)) % 10;
+   return static_cast<Threshold_corrections::Flags_t>(std::abs(flags) * std::pow(10.l, -pos)) % 10;
 }
 
 /// sets digit [0-9] in flags at position pos
@@ -44,9 +46,15 @@ void set_digit(Threshold_corrections::Flags_t& flags, int pos, int digit)
          "set_digit: position ( " + std::to_string(pos) + ") must be positive");
    }
 
-   if (digit < 0 || digit > 9) {
+   if (digit > 9) {
       throw OutOfBoundsError(
-         "set_digit: digit ( " + std::to_string(digit) + ") must be within [0-9]");
+         "set_digit: digit ( " + std::to_string(digit) + ") must be less or equal than 9.");
+   }
+
+   if (digit < 0) {
+      WARNING("digit at position " << pos << " is negative (" << digit << ")."
+              " I'm setting it to zero.");
+      digit = 0;
    }
 
    const auto old_digit = get_digit(flags, pos);
@@ -89,6 +97,22 @@ Threshold_corrections::Flags_t Threshold_corrections::get() const
    set_digit(flags, static_cast<int>(Positions::mtau       ), mtau);
 
    return flags;
+}
+
+std::ostream& operator<<(std::ostream& ostr, const Threshold_corrections& tc)
+{
+   ostr << '['
+        << tc.mtau << ','
+        << tc.mb << ','
+        << tc.mt << ','
+        << tc.mh << ','
+        << tc.mw << ','
+        << tc.mz << ','
+        << tc.alpha_s << ','
+        << tc.sin_theta_w << ','
+        << tc.alpha_em << ']';
+
+   return ostr;
 }
 
 } // namespace flexiblesusy

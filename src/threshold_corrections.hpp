@@ -27,6 +27,7 @@
 #define THRESHOLD_CORRECTIONS_H
 
 #include <cstdint>
+#include <iosfwd>
 
 namespace flexiblesusy {
 
@@ -53,6 +54,8 @@ struct Threshold_corrections {
    void set(Flags_t);   ///< sets all values to digits in given a Flags_t
    Flags_t get() const; ///< returns all value in a Flags_t
 };
+
+std::ostream& operator<<(std::ostream&, const Threshold_corrections&);
 
 } // namespace flexiblesusy
 
