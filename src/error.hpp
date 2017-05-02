@@ -30,6 +30,12 @@ public:
    virtual std::string what() const = 0;
 };
 
+class FatalError {
+public:
+   virtual ~FatalError() {}
+   virtual std::string what() const { return "Fatal error."; };
+};
+
 /**
  * @class SetupError
  * @brief Spectrum generator was not setup correctly

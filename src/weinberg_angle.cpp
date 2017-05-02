@@ -68,7 +68,6 @@ Weinberg_angle::Data::Data()
    , g2(0.)
    , g3(0.)
    , tan_beta(0.)
-   , ymu(0.)
 {
 }
 

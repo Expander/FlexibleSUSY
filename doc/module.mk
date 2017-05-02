@@ -110,7 +110,7 @@ $(INDEX_PAGE):
 		  echo "OUTPUT_DIRECTORY = $(HTML_OUTPUT_DIR)" ; \
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \
-		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		  echo "EXCLUDE_PATTERNS = */meta/* */test/*"; \
 		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
 		) | doxygen -
 
@@ -120,7 +120,8 @@ $(MAN_PAGE):
 		  echo "OUTPUT_DIRECTORY = $(MAN_OUTPUT_DIR)" ; \
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \
-		  echo "EXCLUDE_PATTERNS = */test/*"; \
+		  echo "EXCLUDE_PATTERNS = */meta/* */test/*"; \
+		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
 		  echo "GENERATE_MAN = YES"; \
 		  echo "GENERATE_HTML = NO"; \
 		) | doxygen -

@@ -1360,7 +1360,7 @@ DecreaseIndexLiterals[expr_, heads_List] :=
     IncreaseIndexLiterals[expr, -1, heads];
 
 DecreaseSumIndices[expr_] :=
-    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
+    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`FSIndexSum[idx, start - 1, stop - 1, exp];
 
 GetEffectiveMu[] :=
     Module[{},

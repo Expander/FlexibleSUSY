@@ -24,6 +24,8 @@ MS=2000
 MS2=$(echo "$MS*$MS" | bc)
 Mu="$MS"
 TB=10
+Xb=0
+Xtau=0
 
 printf "Comparison FlexibleSUSY/HSSUSY and SUSYHD\n"
 printf "MS = ${MS}, Mu = ${Mu}, MSf^2 = ${MS2}, tan(beta) = ${TB}\n\n"
@@ -34,6 +36,14 @@ for Xt in ${Xt_values}
 do
     At=$(cat <<EOF | bc
 ${Xt}*${MS} + ${Mu}/${TB}
+EOF
+      )
+    Ab=$(cat <<EOF | bc
+${Xb}*${MS} + ${Mu}*${TB}
+EOF
+      )
+    Atau=$(cat <<EOF | bc
+${Xtau}*${MS} + ${Mu}*${TB}
 EOF
       )
 
@@ -80,8 +90,17 @@ Block EXTPAR                 # Input parameters
     5   ${MS}                # mA(MSUSY)
     6   173.34               # MEWSB
     7   ${At}                # At(MSUSY)
+    8   ${Ab}                # Ab(MSUSY)
+    9   ${Atau}              # Atau(MSUSY)
    25   ${TB}                # TanBeta(MSUSY)
   100   2                    # LambdaLoopOrder
+  101   1                    # 2-loop at*as
+  102   1                    # 2-loop ab*as
+  103   1                    # 2-loop at*ab
+  104   1                    # 2-loop atau*atau
+  105   1                    # 2-loop at*at
+  106   1                    # 1-loop ab
+  107   1                    # 1-loop atau
 Block MSQ2IN
   1  1     ${MS2}            # mq2(1,1)
   2  2     ${MS2}            # mq2(2,2)

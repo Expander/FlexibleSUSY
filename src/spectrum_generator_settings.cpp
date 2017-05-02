@@ -99,6 +99,7 @@ void Spectrum_generator_settings::reset()
    values[eft_matching_loop_order_down]     = 1.;
    values[eft_higgs_index]                  = 0;
    values[calculate_bsm_masses]             = 1.;
+   values[force_output]                     = 0;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const

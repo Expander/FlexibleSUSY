@@ -9836,9 +9836,9 @@ double Softsusy<SoftPars>::deltaVb(double outrho, double outsin,
   
   double hmu = displayYukawaElement(YE, 2, 2);
   bPsicNuSmul(1) = g;
-  bPsicNuSmul(2) = -hmu;
+  bPsicNuSmul(2) = 0.;
   aPsicMuSnul(1) = g;
-  aPsicMuSnul(2) = -hmu;
+  aPsicMuSnul(2) = 0.;
   bPsi0MuSmul(1) = -gp / root2;
   bPsi0MuSmul(2) = -g * root2 * 0.5;
 

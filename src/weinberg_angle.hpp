@@ -66,7 +66,6 @@ public:
       double g2;                     ///< SU(2)_L gauge coupling
       double g3;                     ///< SU(3)_c gauge coupling
       double tan_beta;               ///< tan(beta) = vu / vd
-      double ymu;                    ///< Myon Yukawa coupling
    };
 
    struct Self_energy_data {

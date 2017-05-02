@@ -382,7 +382,6 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::fill_data(
    data.g2 = g2;
    data.g3 = g3;
    data.tan_beta = tanBeta;
-   data.ymu = hmu;
 }
 
 /**

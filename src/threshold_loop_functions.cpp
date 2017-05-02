@@ -18,6 +18,7 @@
 
 #include "threshold_loop_functions.hpp"
 #include "pv.hpp"
+#include "logger.hpp"
 #include "numerics.h"
 
 #include <cmath>
@@ -35,7 +36,7 @@ namespace {
    template <typename T> T pow7(T x) { return x*x*x*x*x*x*x; }
    template <typename T> T pow8(T x) { return x*x*x*x*x*x*x*x; }
    template <typename T> T pow9(T x) { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T pow10(T x) { return x*x*x*x*x*x*x*x*x*x; }
+   template <typename T> T power10(T x) { return x*x*x*x*x*x*x*x*x*x; }
 
    template <typename T>
    bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
@@ -60,7 +61,12 @@ namespace {
 
       return std::fabs((a - b)/a) < prec;
    }
-}
+
+   std::complex<double> complex_sqrt(double x) {
+      return std::sqrt(std::complex<double>(x, 0));
+   }
+
+} // anonymous namespace
 
 double F1(double x)
 {
@@ -125,6 +131,9 @@ double F5(double x)
    if (is_equal(x, 1., 0.01))
       return (13 + 165*x - 174*x2 + 81*cube(x) - 15*x4)/70.;
 
+   if (is_equal(x, -1., 0.01))
+     return (-13 + 165*x + 174*x2 + 81*cube(x) + 15*x4)/70.;
+
    return 3*x*(1-x4+2*x2*std::log(x2))/cube(1-x2);
 }
 
@@ -137,6 +146,9 @@ double F6(double x)
 
    if (is_equal(x, 1., 0.01))
       return (-103 + 128*x - 26*x2 + quad(x))/120.;
+
+   if (is_equal(x, -1., 0.01))
+      return (-103 - 128*x - 26*x2 + quad(x))/120.;
 
    return (x2-3)/(4*(1-x2)) + x2*(x2-2)/(2*sqr(1.-x2))*std::log(x2);
 }
@@ -152,6 +164,11 @@ double F7(double x)
    if (is_equal(x, 1., 0.01))
       return -1.8642857142857139 + 2.057142857142856*x
          + 1.7142857142857153*x2 - 1.1428571428571432*cube(x)
+         + 0.2357142857142858*x4;
+
+   if (is_equal(x, -1., 0.01))
+      return -1.8642857142857139 - 2.057142857142856*x
+         + 1.7142857142857153*x2 + 1.1428571428571432*cube(x)
          + 0.2357142857142858*x4;
 
    return (-3*(x4-6*x2+1.))/(2*sqr(x2-1))
@@ -187,7 +204,7 @@ static double F8_1_x2(double x1, double x2)
       /quad(-1. + sqr(x2))
       + (0.26666666666666666*quad(-1. + x1)*(
             0.25 + 2.5*sqr(x2) + 80.*quad(x2) - 47.5*pow6(x2)
-            - 36.25*pow8(x2) + pow10(x2)
+            - 36.25*pow8(x2) + power10(x2)
             + (37.5*quad(x2) + 75.*pow6(x2)
                + 7.5*pow8(x2))*lx22))
       /pow6(-1. + sqr(x2));
@@ -312,7 +329,7 @@ static double F9_1_x2(double x1, double x2)
              + (18.*sqr(x2) + 6.*quad(x2))*lx22)
            - 0.06666666666666667*quad(-1. + x1)*(
               -16. - 305.*sqr(x2) + 170.*quad(x2) + 160.*pow6(x2)
-              - 10.*pow8(x2) + pow10(x2)
+              - 10.*pow8(x2) + power10(x2)
               + (-150.*sqr(x2) - 300.*quad(x2)
                  - 30.*pow6(x2))*lx22))
       /pow6(-1. + sqr(x2));
@@ -351,6 +368,9 @@ double F9(double x1, double x2)
 {
    if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
       return F9_1_1(x1, x2);
+
+   if (is_equal(x1, -1., 0.01) && is_equal(x2, -1., 0.01))
+     return F9_1_1(-x1, -x2);
 
    if (is_equal(x1, 1., 0.01)) {
       if (is_equal(x2, 0., 0.01))
@@ -396,9 +416,15 @@ double f1(double r)
    if (is_equal(r, 0., 0.01))
       return 18./7.*sqr(r);
 
+   // The function is even under x-> -x
    if (is_equal(r, 1., 0.01))
       return (-81 + 464*r + 270*sqr(r)
               - 208*cube(r) + 45*quad(r))/490.;
+
+   // Notice the flipped sign for the odd terms
+   if (is_equal(r, -1., 0.01))
+      return (-81 - 464*r + 270*sqr(r)
+              + 208*cube(r) + 45*quad(r))/490.;
 
    const double r2 = sqr(r);
 
@@ -411,9 +437,15 @@ double f2(double r)
    if (is_equal(r, 0., 0.01))
       return 22./9.*sqr(r);
 
+   // The function is even under x -> -x
    if (is_equal(r, 1., 0.01))
       return (-285 + 1616*r + 1230*sqr(r)
               - 848*cube(r) + 177*quad(r))/1890.;
+
+   // Notice the flipped sign for the odd terms
+   if (is_equal(r, -1., 0.01))
+      return (-285 - 1616*r + 1230*sqr(r)
+              + 848*cube(r) + 177*quad(r))/1890.;
 
    const double r2 = sqr(r);
 
@@ -429,6 +461,10 @@ double f3(double r)
    if (is_equal(r, 1., 0.01))
       return (849 - 1184*r + 1566*sqr(r)
               - 736*cube(r) + 135*quad(r))/630.;
+
+   if (is_equal(r, -1., 0.01))
+      return (849 + 1184*r + 1566*sqr(r)
+              + 736*cube(r) + 135*quad(r))/630.;
 
    const double r2 = sqr(r);
    const double r4 = quad(r);
@@ -447,6 +483,9 @@ double f4(double r)
 
    if (is_equal(r, 1., 0.01))
       return (2589 - 3776*r + 4278*r2 - 1984*cube(r) + 363*r4)/1470.;
+
+   if (is_equal(r, -1., 0.01))
+      return (2589 + 3776*r + 4278*r2 + 1984*cube(r) + 363*r4)/1470.;
 
    return (2*(5*r4+25*r2+6))/(7*sqr(r2-1))
       + (2*(r4-19*r2-18)*r2*std::log(r2))/(7*cube(r2-1));
@@ -559,7 +598,7 @@ static double f5_r1_r2(double r1, double r2)
       6*quad(r2)*lr22 + pow6(r2)*lr22)
      /cube(-1 + r22) +
    (cube(r1 - r2)*(3 + 273*r22 + 314*quad(r2) -
-        498*pow6(r2) - 93*pow8(r2) + pow10(r2) +
+        498*pow6(r2) - 93*pow8(r2) + power10(r2) +
         90*r22*lr22 +
         510*quad(r2)*lr22 +
         342*pow6(r2)*lr22 +
@@ -574,6 +613,9 @@ double f5(double r1, double r2)
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f5_1_1(r1, r2);
+
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f5_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.01))
@@ -709,6 +751,9 @@ double f6(double r1, double r2)
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f6_1_1(r1, r2);
 
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f6_1_1(-r1, -r2);
+
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
          return f6_0_1(r2, r1);
@@ -839,6 +884,9 @@ double f7(double r1, double r2)
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f7_1_1(r1, r2);
+
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return f7_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
@@ -971,6 +1019,9 @@ double f8(double r1, double r2)
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
       return f8_1_1(r1, r2);
 
+   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+      return -1.;
+
    if (is_equal(r1, 1., 0.01)) {
       if (is_equal(r2, 0., 0.0001))
          return f8_0_1(r2, r1);
@@ -1077,6 +1128,232 @@ double Iabc(double a, double b, double c) {
            + sqr(b * c) * log(sqr(b / c))
            + sqr(c * a) * log(sqr(c / a)))
            / ((sqr(a) - sqr(b)) * (sqr(b) - sqr(c)) * (sqr(a) - sqr(c))) );
+}
+
+/// Delta function from hep-ph/0907.47682v1
+double deltaxyz(double x, double y, double z) {
+   return sqr(x)+sqr(y)+sqr(z)-2*(x*y+x*z+y*z);
+}
+
+/// \f$phi_{xyz}(x,y,z)\f$ function (Author: Emanuele Bagnaschi)
+double phixyz(double x, double y, double z)
+{
+   double u = x/z, v = y/z, m = x/y;
+   std::complex<double> xminus_c, xplus_c, lambda_c;
+   double fac = 0., my_x = 0., my_y = 0., my_z = 0.;
+   const double devu = std::fabs(u-1), devv = std::fabs(v-1), devm = std::fabs(m-1);
+   const double eps = 0.000001;
+   const double PI = M_PI;
+
+   // The defintion that we implement is valid when x/z < 1 and y/z < 1.
+   // We have to reshuffle the arguments to obtain the other branches
+   // u > 1 && v < 1 --> x > z && z > y -> y < z < x -> we want x as
+   // the third argument x * phi(x,y,z) = z*phi(z,y,x) -> phi(z,y,x) =
+   // x/z*phi(x,y,z)
+
+   if (devu >= eps && devv >= eps && devm >= eps) {
+      if (u > 1 && v < 1) {
+         fac = z/x;
+         my_x = z;
+         my_y = y;
+         my_z = x;
+      }
+      // u > 1 && v > 1 --> x > z && y > z -> z < y/x -> we want
+      // max(x,y) as the third argument
+      else if (u > 1 && v > 1) {
+         // x as a third argument
+         if (x > y) {
+            fac = z/x;
+            my_x = z;
+            my_y = y;
+            my_z = x;
+         }
+         // y as a third argument
+         else {
+            fac = z/y;
+            my_x = z;
+            my_y = x;
+            my_z = y;
+         }
+      }
+      // u < 1 && v > 1 --> x < z < y --> we want y as the third
+      // argument
+      else if (u < 1 && v > 1) {
+         fac = z/y;
+         my_x = z;
+         my_y = x;
+         my_z = y;
+      }
+      else if (u < 1 && v < 1) {
+         fac = 1.;
+         my_x = x;
+         my_y = y;
+         my_z = z;
+      }
+      else {
+         ERROR("unhandled case in phixyz function!");
+      }
+
+      u = my_x/my_z;
+      v = my_y/my_z;
+      lambda_c = complex_sqrt(sqr(1-u-v)-4*u*v);
+      xminus_c = 0.5*(1-(u-v)-lambda_c);
+      xplus_c  = 0.5*(1+(u-v)-lambda_c);
+
+      return std::real(fac * 1. / lambda_c *
+                       (2. * std::log(xplus_c) * std::log(xminus_c) -
+                        std::log(u) * std::log(v) -
+                        2. * (dilog(xplus_c) + dilog(xminus_c)) +
+                        sqr(PI) / 3.));
+   }
+
+   // u and v is equal to one -> all arguments are the same
+   if (devu < eps && devv < eps)
+      return 2.34391; // from Mathematica
+
+   // u = 1
+   if (devu < eps) {
+      // if v > 1 then y> z (= x) we have again to reshuffle the
+      // argument: here we have phi(z,y,z) with z < y and we want
+      // phi(z,z,y)
+      if (v > 1) {
+         fac = z/y;
+         my_x = z;
+         my_y = x; // should be equal to
+         my_z = y;
+
+         return std::real(
+             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+             (sqr(PI) / 3. +
+              2. * sqr(std::log(0.5 -
+                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+              sqr(std::log(my_x / my_z)) -
+              4. * dilog(0.5 *
+                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                            4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+      // phi(z,y,z) with z > y, just need to reshufle to phi(y,z,z),
+      // i.e. do nothing since they are the same
+      else {
+        fac = 1.;
+        my_x = y;
+        my_y = x;
+        my_z = z; // should be equl to my_y
+
+        return std::real(
+            fac * 1. /
+            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+            (sqr(PI) +
+             6. * std::log((my_x -
+                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                sqr(my_z))) /
+                           (2. * my_z)) *
+                 std::log(1. - my_x / (2. * my_z) -
+                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                             sqr(my_z))) -
+             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                 4. * my_x / my_z) -
+                               my_x / my_z)) -
+             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                             4. * my_x / my_z) +
+                               my_x / my_z))));
+      }
+   }
+
+   // v = 1
+   if (devv < eps) {
+      // if u > 1 we have again to reshuffle the arguments: here we
+      // start with phi(x,z,z) with z < x and we want phi(z,z,x)
+      if (u > 1) {
+         fac = z/x;
+         my_x = z;
+         my_y = y;
+         my_z = x;
+
+         return std::real(
+             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+             (sqr(PI) / 3. +
+              2. * sqr(std::log(0.5 -
+                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+              sqr(std::log(my_x / my_z)) -
+              4. * dilog(0.5 *
+                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                            4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+      // phi(x,z,z) with z > x, ok as it is
+      else {
+        fac = 1.;
+        my_x = x;
+        my_y = y;
+        my_z = z; // should be equal to y
+
+        return std::real(
+            fac * 1. /
+            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+            (sqr(PI) +
+             6. * std::log((my_x -
+                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                sqr(my_z))) /
+                           (2. * my_z)) *
+                 std::log(1. - my_x / (2. * my_z) -
+                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                             sqr(my_z))) -
+             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                 4. * my_x / my_z) -
+                               my_x / my_z)) -
+             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                             4. * my_x / my_z) +
+                               my_x / my_z))));
+      }
+   }
+
+   if (devm < eps) {
+      // if (v = ) u > 1, we are in the case phi(x,x,z) with x > z. We
+      // have to reshufle to phi(z,x,x)
+      if (u > 1) {
+         fac = z/x;
+         my_x = z;
+         my_y = y;
+         my_z = x;
+
+         return std::real(
+             fac * 1. /
+             (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+             (sqr(PI) +
+              6. * std::log((my_x -
+                             my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                 sqr(my_z))) /
+                            (2. * my_z)) *
+                  std::log(1. - my_x / (2. * my_z) -
+                           0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                              sqr(my_z))) -
+              6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                  4. * my_x / my_z) -
+                                my_x / my_z)) -
+              6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                              4. * my_x / my_z) +
+                                my_x / my_z))));
+      }
+      // if (v = u) < 1 we can directly use phi(x,x,z)
+      else {
+        fac = 1.;
+        my_x = x;
+        my_y = y;
+        my_z = z;
+
+        return std::real(
+            fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+            (sqr(PI) / 3. +
+             2. * sqr(std::log(0.5 -
+                               0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+             sqr(std::log(my_x / my_z)) -
+             4. * dilog(0.5 *
+                        (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                           4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+   }
+
+   FATAL("unhandled case in phixyz function!");
 }
 
 /**

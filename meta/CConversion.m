@@ -34,7 +34,7 @@ Sqr::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
-IndexSum::usage="";
+FSIndexSum::usage="";
 TensorProd::usage="";
 
 HaveSameDimension::usage = "Checks if given types have same
@@ -862,9 +862,9 @@ CreateUniqueCVariable[] :=
 ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
-    ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
+    ExpandSums[expr //. SARAH`sum -> FSIndexSum, variable, type, initialValue];
 
-ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String,
+ExpandSums[FSIndexSum[index_, start_, stop_, expr_], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
@@ -920,12 +920,12 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
+ExpandSums[expr_Times /; !FreeQ[expr,FSIndexSum], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
-           sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
+           sums = Select[factors, (!FreeQ[#,FSIndexSum[__]])&];
            rest = Complement[factors, sums];
            expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
            expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;
@@ -941,7 +941,7 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
            Return[result];
           ];
 
-ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,IndexSum], variable_String,
+ExpandSums[Fun_[expr_,rest___] /; !FreeQ[expr,FSIndexSum], variable_String,
            type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
     Module[{var, result = ""},
