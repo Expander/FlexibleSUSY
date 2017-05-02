@@ -1,7 +1,6 @@
-// this test file is almost identical to test_CMSSM_weinberg_angle_pointer.cpp
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_weinberg_angle_meta
+#define BOOST_TEST_MODULE test_CMSSM_weinberg_angle_meta
 
 #include <boost/test/unit_test.hpp>
 
@@ -276,35 +275,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
 }
-
-// BOOST_AUTO_TEST_CASE( test_delta_rho )
-// {
-//    CMSSM_mass_eigenstates model;
-//    CMSSM_input_parameters input;
-//    input.m0 = 125.;
-//    input.m12 = 500.;
-//    input.TanBeta = 10.;
-//    input.SignMu = 1;
-//    input.Azero = 0.;
-
-//    setup_CMSSM_const_non_3rd_gen(model, input);
-
-//    double outrho = 1.0, outsin = 0.48;
-
-//    Weinberg_angle::Data data;
-//    setup_data(model, data);
-//    double delta_rho_1 = Weinberg_angle::calculate_delta_rho(outrho, outsin, data);
-
-//    CMSSM_weinberg_angle::Sm_parameters sm_parameters;
-//    sm_parameters.fermi_constant = Electroweak_constants::gfermi;
-//    sm_parameters.mw_pole = Electroweak_constants::MW;
-//    sm_parameters.mz_pole = Electroweak_constants::MZ;
-//    sm_parameters.mt_pole = Electroweak_constants::PMTOP;
-//    CMSSM_weinberg_angle wein(&model, sm_parameters);
-//    double delta_rho_2 = wein.calculate_delta_rho_hat(outsin);
-
-//    BOOST_CHECK_CLOSE_FRACTION(delta_rho_1, delta_rho_2, 1.0e-10);
-// }
 
 BOOST_AUTO_TEST_CASE( test_sin_theta )
 {
