@@ -253,7 +253,7 @@ VertexResultFSS[diagr_List, includeGoldstones_] :=
            extoutindex = Position[extparticles, x_ /; IsOutgoingFermion[x], {1}, Heads -> False][[1, 1]];
            extinindex = Complement[{1, 2, 3}, {extvectorindex, extoutindex}][[1]];
            (*TODO: ensure correct momentum direction at SSV vertex*)
-           couplSSV = diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
+           couplSSV = -diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
            couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
            couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
            intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
