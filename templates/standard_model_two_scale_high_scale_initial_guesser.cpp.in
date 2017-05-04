@@ -86,29 +86,27 @@ void @ModelName@_standard_model_initial_guesser<Two_scale>::guess()
  */
 void @ModelName@_standard_model_initial_guesser<Two_scale>::guess_eft_parameters()
 {
-   using namespace softsusy;
-
    softsusy::QedQcd leAtMt(qedqcd);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = leAtMt.displayPoleMt();
 
-   mu_guess = leAtMt.displayMass(mUp);
-   mc_guess = leAtMt.displayMass(mCharm);
+   mu_guess = leAtMt.displayMass(softsusy::mUp);
+   mc_guess = leAtMt.displayMass(softsusy::mCharm);
    mt_guess = model->get_thresholds() > 0 && model->get_threshold_corrections().mt > 0 ?
-      leAtMt.displayMass(mTop) - 30.0 :
+      leAtMt.displayMass(softsusy::mTop) - 30.0 :
       leAtMt.displayPoleMt();
-   md_guess = leAtMt.displayMass(mDown);
-   ms_guess = leAtMt.displayMass(mStrange);
-   mb_guess = leAtMt.displayMass(mBottom);
+   md_guess = leAtMt.displayMass(softsusy::mDown);
+   ms_guess = leAtMt.displayMass(softsusy::mStrange);
+   mb_guess = leAtMt.displayMass(softsusy::mBottom);
    me_guess = model->get_thresholds() > 0 ?
-      leAtMt.displayMass(mElectron) :
+      leAtMt.displayMass(softsusy::mElectron) :
       leAtMt.displayPoleMel();
    mm_guess = model->get_thresholds() > 0 ?
-      leAtMt.displayMass(mMuon) :
+      leAtMt.displayMass(softsusy::mMuon) :
       leAtMt.displayPoleMmuon();
-   mtau_guess = leAtMt.displayMass(mTau);
+   mtau_guess = leAtMt.displayMass(softsusy::mTau);
 
    // guess gauge couplings at mt
    const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
