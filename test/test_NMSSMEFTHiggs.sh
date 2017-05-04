@@ -121,7 +121,7 @@ BLOCK EXTPAR	 	 #
 65	200.	 	 # 
 "
 
-input_NMSSMtower="
+input_NMSSMEFTHiggs="
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
@@ -223,12 +223,12 @@ error=0
 
 # run TP3
 MhlowNMSSM=$(run_sg "$MODELDIR/lowNMSSM/run_lowNMSSM.x" "$input_lowNMSSM")
-MhNMSSMtower=$(run_sg "$MODELDIR/NMSSMtower/run_NMSSMtower.x" "$input_NMSSMtower")
+MhNMSSMEFTHiggs=$(run_sg "$MODELDIR/NMSSMEFTHiggs/run_NMSSMEFTHiggs.x" "$input_NMSSMEFTHiggs")
 
 echo "Mh in the lowNMSSM  : $MhlowNMSSM"
-echo "Mh in the NMSSMtower: $MhNMSSMtower"
+echo "Mh in the NMSSMEFTHiggs: $MhNMSSMEFTHiggs"
 
-CHECK_EQUAL_FRACTION "$MhlowNMSSM" "$MhNMSSMtower" "0.007" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhlowNMSSM" "$MhNMSSMEFTHiggs" "0.007" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."

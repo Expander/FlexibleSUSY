@@ -126,12 +126,12 @@ run_sg() {
 error=0
 
 MhSM=$(run_sg "$MODELDIR/SMHighPrecision/run_SMHighPrecision.x" "$input")
-MhSMtower=$(run_sg "$MODELDIR/SMtower/run_SMtower.x" "$input")
+MhSMEFTHiggs=$(run_sg "$MODELDIR/SMEFTHiggs/run_SMEFTHiggs.x" "$input")
 
 echo "Mh in the SM     : $MhSM"
-echo "Mh in the SMtower: $MhSMtower"
+echo "Mh in the SMEFTHiggs: $MhSMEFTHiggs"
 
-CHECK_EQUAL_FRACTION "$MhSM" "$MhSMtower" "0.0001" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhSM" "$MhSMEFTHiggs" "0.0001" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."
