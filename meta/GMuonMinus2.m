@@ -129,7 +129,7 @@ CreateMuonFunctions[vertexRules_List] :=
                           "double muonPhysicalMass(EvaluationContext& context)\n" <>
                           "{\n" <>
                           IndentText @
-                          ("static double m_muon_pole = " <> contextMuonPole <> ";\n\n" <>
+                          ("double m_muon_pole = " <> contextMuonPole <> ";\n\n" <>
 
                            "if (m_muon_pole == 0.0) {\n" <>
                            IndentText @

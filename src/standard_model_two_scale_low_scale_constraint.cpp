@@ -59,17 +59,18 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    double delta_alpha_em = 0.;
    double delta_alpha_s  = 0.;
 
-   if (model->get_thresholds()) {
+   if (model->get_thresholds() && model->get_threshold_corrections().alpha_em > 0)
       delta_alpha_em = model->calculate_delta_alpha_em(alpha_em);
+
+   if (model->get_thresholds() && model->get_threshold_corrections().alpha_s > 0)
       delta_alpha_s  = model->calculate_delta_alpha_s(alpha_s);
-   }
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
    const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
-   const double mZ = model->get_thresholds() ?
+   const double mZ = model->get_thresholds() && model->get_threshold_corrections().mz > 0 ?
       model->calculate_MVZ_DRbar(mz_pole) : mz_pole;
    const double theta_w = model->calculate_theta_w(qedqcd, alpha_em_drbar);
 
@@ -100,7 +101,7 @@ void Standard_model_low_scale_constraint<Two_scale>::apply()
    model->set_g2(new_g2);
    model->set_g3(3.5449077018110318*Sqrt(alpha_s_drbar));
 
-   if (model->get_thresholds())
+   if (model->get_thresholds() && model->get_threshold_corrections().sin_theta_w > 0)
       qedqcd.setPoleMW(model->recalculate_mw_pole(qedqcd.displayPoleMW()));
 }
 

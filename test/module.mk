@@ -44,6 +44,7 @@ TEST_SRC := \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
 		$(DIR)/test_thread_pool.cpp \
+		$(DIR)/test_threshold_corrections.cpp \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_which.cpp \
 		$(DIR)/test_wrappers.cpp
@@ -644,6 +645,9 @@ $(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBTEST) $(filter-out
 
 $(DIR)/test_thread_pool.x: $(DIR)/test_thread_pool.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(FLIBS) $(LIBTEST)
+
+$(DIR)/test_threshold_corrections.x: $(DIR)/test_threshold_corrections.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS) $(LIBTEST)
 
 $(DIR)/test_threshold_loop_functions.x: $(DIR)/test_threshold_loop_functions.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS) $(LIBTEST)

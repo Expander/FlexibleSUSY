@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 9.0e-15);
-   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 7.0e-4);
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 5.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 5.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(2,2)), s.displayYukawaMatrix(YU)(3,3), 0.0001);
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(2,2)), s.displayYukawaMatrix(YD)(3,3), 0.00014);
-   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(2,2)), s.displayYukawaMatrix(YE)(3,3), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(2,2)), s.displayYukawaMatrix(YE)(3,3), 0.0007);
 
    BOOST_CHECK_SMALL(Im(m.get_Yu()(0,0)), 1e-10);
    BOOST_CHECK_SMALL(Im(m.get_Yd()(0,0)), 1e-10);

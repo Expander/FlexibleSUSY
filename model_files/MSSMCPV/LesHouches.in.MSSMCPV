@@ -25,6 +25,7 @@ Block FlexibleSUSY
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
    23   1                    # calculate BSM pole masses
+   24   123111121            # individual threshold correction loop orders
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
@@ -87,9 +88,9 @@ Block ADIN
   2  2     1e4   # Re(Ad(2,2))
   3  3     1e4   # Re(Ad(3,3))
 Block AEIN
-  1  1     1e4   # Re(Ad(1,1))
-  2  2     1e4   # Re(Ad(2,2))
-  3  3     1e4   # Re(Ad(3,3))
+  1  1     1e4   # Re(Ae(1,1))
+  2  2     1e4   # Re(Ae(2,2))
+  3  3     1e4   # Re(Ae(3,3))
 Block IMAUIN
   1  1       0   # Im(Au(1,1))
   2  2       0   # Im(Au(2,2))
@@ -99,6 +100,6 @@ Block IMADIN
   2  2       0   # Im(Ad(2,2))
   3  3       0   # Im(Ad(3,3))
 Block IMAEIN
-  1  1       0   # Im(Ad(1,1))
-  2  2       0   # Im(Ad(2,2))
-  3  3       0   # Im(Ad(3,3))
+  1  1       0   # Im(Ae(1,1))
+  2  2       0   # Im(Ae(2,2))
+  3  3       0   # Im(Ae(3,3))

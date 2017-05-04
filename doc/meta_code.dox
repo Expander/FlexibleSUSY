@@ -57,4 +57,16 @@ implementation of the complete analytic 1-loop threshold corrections
 of the THDM and the THDM + Higgsinos + gauginos to the MSSM
 [arxiv:0901.2065].
 
+<code>meta/MSSM/tquark_2loop_strong.m</code> contains the analytic
+expression for the 2-loop relation \f$O(\alpha_s^2)\f$ between the top
+quark pole mass and the \f$\overline{\text{DR}}\f$ top mass in the
+MSSM [arxiv:hep-ph/0210258, arxiv:hep-ph/0507139].
+
+<code>meta/MSSM/bquark_2loop_sqcd_decoupling.m</code> contains the
+analytic expression for the 2-loop relation \f$O(\alpha_s^2)\f$
+between the \f$\overline{\text{MS}}\f$ bottom quark mass in the
+Standard Model (without the top quark) and the
+\f$\overline{\text{DR}}\f$ bottom mass in the MSSM
+[arxiv:hep-ph/0707.0650].
+
 */

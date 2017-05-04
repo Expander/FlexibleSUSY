@@ -34,6 +34,7 @@
 #include "wrappers.hpp"
 
 #include <array>
+#include <algorithm>
 #include <vector>
 #include <boost/mpl/vector_c.hpp>
 #include <boost/mpl/at.hpp>
@@ -43,8 +44,7 @@
 #define PHASE(p) context.model.get_##p()
 #define DERIVEDPARAMETER(p) context.model.p()
 
-using namespace flexiblesusy;
-
+namespace flexiblesusy {
 namespace {
 /**
  * @class IndexBounds<N>
@@ -76,7 +76,7 @@ template<unsigned N> struct IndexIterator
 std::input_iterator_tag,
 const std::array<unsigned, N>>
 {
-   friend class IndexBounds<N>;
+   friend struct IndexBounds<N>;
 private:
    const IndexBounds<N> *bounds;
    std::array<unsigned, N> indices;
@@ -410,29 +410,126 @@ double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 
 void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
 {
-   for (int i = 0; i < 3; i++) {
-      const double MSUSY = get_MSUSY(model);
-      if (MSUSY == 0.) return;
-      model.run_to(MSUSY);
+   const double precision_goal = model.get_precision();
+   const int Nmax = static_cast<int>(-log10(precision_goal) * 10);
+   int it = 0;
+   double precision = 0.;
+   double MSUSY_old = 0., MSUSY_new = 0.;
+
+   VERBOSE_MSG("@ModelName@_a_muon: iterate to run to MSUSY ...");
+
+   do {
+      MSUSY_new = get_MSUSY(model);
+
+      if (MSUSY_new <= 0.)
+         return;
+
+      VERBOSE_MSG("@ModelName@_a_muon:    running to new MSUSY = " << MSUSY_new);
+
+      model.run_to(MSUSY_new);
       model.calculate_DRbar_masses();
+
+      precision = MaxRelDiff(MSUSY_old, MSUSY_new);
+      MSUSY_old = MSUSY_new;
+   } while (precision > precision_goal && ++it < Nmax);
+
+   VERBOSE_MSG("@ModelName@_a_muon: iteration finished. MSUSY = " << MSUSY_new);
+
+   if (precision > precision_goal) {
+      WARNING("@ModelName@_a_muon: run_to_MSUSY(): "
+              "Iteration did not converge after " << Nmax
+              << " iterations (precision goal: " << precision_goal << ")");
    }
+}
+
+double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
+{
+   VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
+
+@GMuonMinus2_Calculation@
+}
+
+/// generates array with N scales from mean/factor to mean*factor
+template <int N>
+std::array<double,N> generate_scales(double mean, double factor)
+{
+   static_assert(N > 1, "N must be greater than 1!");
+
+   const double start = mean / factor, stop = mean * factor;
+   std::array<double,N> scales;
+
+   scales[0] = start;
+
+   for (int i = 1; i < (N-1); i++)
+      scales[i] = std::exp(std::log(start) + (std::log(stop) - std::log(start))*i / N);
+
+   scales[N-1] = stop;
+
+   return scales;
+}
+
+/// returns minimum and maximum a_mu when scale is varied by a factor 2
+std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
+{
+   auto scales = generate_scales<7>(model.get_scale(), 2.);
+
+   std::transform(scales.begin(), scales.end(), scales.begin(),
+                  [&model] (double scale) {
+                     double amu = 0.;
+                     try {
+                        auto m = model;
+                        m.run_to(scale);
+                        m.get_physical().clear();
+                        m.calculate_DRbar_masses();
+                        amu = calculate_a_muon_impl(m);
+                     } catch(const Error& e) {
+                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
+                     }
+                     return amu;
+                  });
+
+   const auto minmax = std::minmax_element(scales.cbegin(), scales.cend());
+
+   return std::make_pair(*(minmax.first), *(minmax.second));
 }
 
 } // anonymous namespace
 
 double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
-   // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
+
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu ...");
 
    try {
       run_to_MSUSY(model);
+      model.get_physical().clear();
    } catch (const Error& e) {
       ERROR("@ModelName@_a_muon:" << e.what());
       return std::numeric_limits<double>::quiet_NaN();
    }
 
-@GMuonMinus2_Calculation@
+   return calculate_a_muon_impl(model);
+}
+
+double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
+{
+   @ModelName@_mass_eigenstates model(model_);
+
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu uncertainty ...");
+
+   try {
+      run_to_MSUSY(model);
+      model.get_physical().clear();
+   } catch (const Error& e) {
+      ERROR("@ModelName@_a_muon uncertainty: " << e.what());
+      return std::numeric_limits<double>::quiet_NaN();
+   }
+
+   const auto delta_amu_scale_minmax = vary_scale(model);
+   const auto delta_amu_scale = std::abs(delta_amu_scale_minmax.second - delta_amu_scale_minmax.first);
+
+   return delta_amu_scale;
 }
 
 namespace {
@@ -736,3 +833,4 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
    return res;
 }
 } // anonymous namespace
+} // namespace flexiblesusy

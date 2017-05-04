@@ -85,7 +85,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 
    mu_guess = leAtMt.displayMass(softsusy::mUp);
    mc_guess = leAtMt.displayMass(softsusy::mCharm);
-   mt_guess = model->get_thresholds() > 0 ?
+   mt_guess = model->get_thresholds() > 0 && model->get_threshold_corrections().mt > 0 ?
       leAtMt.displayMass(softsusy::mTop) - 30.0 :
       leAtMt.displayPoleMt();
    md_guess = leAtMt.displayMass(softsusy::mDown);

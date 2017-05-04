@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Sat 8 Apr 2017 12:05:27
+// This file has been generated at Wed 12 Apr 2017 14:09:58
 // with the script "bquark_to_cpp.m".
 
 #ifndef MSSM_TWO_LOOP_SQCD_MB_H

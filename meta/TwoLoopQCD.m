@@ -43,7 +43,7 @@ GetDeltaMPoleOverMRunningQCDTwoLoop[quark_, renScale_, renScheme_] :=
               Quit[1];
           ];
 
-GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, renScale_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === TreeMasses`GetSMTopQuarkMultiplet[], renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, log, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
@@ -60,14 +60,14 @@ GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === SARAH`TopQuark, ren
            result
           ];
 
-GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === SARAH`BottomQuark, renScale_] :=
+GetDeltaMPoleOverMRunningQCDTwoLoopDRbar[quark_ /; quark === TreeMasses`GetSMBottomQuarkMultiplet[], renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, mt, log, logMt, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
            CA = SA`Casimir[SARAH`VectorG, colorPosition];
            alphaStrong = SARAH`strongCoupling^2 / (4 Pi);
            mf = FlexibleSUSY`M[quark];
-           mt = FlexibleSUSY`M[SARAH`TopQuark];
+           mt = FlexibleSUSY`M[TreeMasses`GetSMTopQuarkMultiplet[]];
            log = Log[(mf / renScale)^2];
            logMt = Log[(mf / mt)^2];
            result = CF (alphaStrong / (4 Pi))^2 (

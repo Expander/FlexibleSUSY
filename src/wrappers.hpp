@@ -837,7 +837,7 @@ inline Eigen::VectorXd UnitVector(int N, int i)
 
 /// matrix projector of size MxN into direction i, j
 template <int M, int N, int i, int j, typename Scalar = double>
-constexpr auto MatrixProjector() -> Eigen::Matrix<Scalar,M,N>
+auto MatrixProjector() -> Eigen::Matrix<Scalar,M,N>
 {
    Eigen::Matrix<Scalar,M,N> proj(Eigen::Matrix<Scalar,M,N>::Zero());
    proj(i,j) = 1;
@@ -847,7 +847,7 @@ constexpr auto MatrixProjector() -> Eigen::Matrix<Scalar,M,N>
 
 /// matrix projector of size MxN into direction i, j
 template <int M, int N, typename Scalar = double>
-constexpr auto MatrixProjector(int i, int j) -> Eigen::Matrix<Scalar,M,N>
+auto MatrixProjector(int i, int j) -> Eigen::Matrix<Scalar,M,N>
 {
    Eigen::Matrix<Scalar,M,N> proj(Eigen::Matrix<Scalar,M,N>::Zero());
    proj(i,j) = 1;

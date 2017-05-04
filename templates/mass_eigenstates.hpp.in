@@ -36,6 +36,7 @@
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_soft_parameters.hpp"
 #include "two_loop_corrections.hpp"
+#include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
@@ -71,6 +72,7 @@ public:
    virtual void clear() override;
    void clear_DRbar_parameters();
    Eigen::ArrayXd get_DRbar_masses() const;
+   Eigen::ArrayXd get_DRbar_masses_and_mixings() const;
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void do_calculate_bsm_pole_masses(bool);
@@ -83,7 +85,10 @@ public:
    void set_ewsb_loop_order(int);
    void set_two_loop_corrections(const Two_loop_corrections&);
    const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_threshold_corrections(const Threshold_corrections&);
+   const Threshold_corrections& get_threshold_corrections() const;
    void set_DRbar_masses(const Eigen::ArrayXd&);
+   void set_DRbar_masses_and_mixings(const Eigen::ArrayXd&);
    void set_pole_mass_loop_order(int);
    int get_pole_mass_loop_order() const;
    void set_physical(const @ModelName@_physical&);
@@ -144,6 +149,7 @@ private:
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names}; ///< problems
    Two_loop_corrections two_loop_corrections{}; ///< used 2-loop corrections
    std::shared_ptr<@ModelName@_ewsb_solver_interface> ewsb_solver{};
+   Threshold_corrections threshold_corrections{}; ///< used threshold corrections
 
    int get_number_of_ewsb_iterations() const;
    int get_number_of_mass_iterations() const;

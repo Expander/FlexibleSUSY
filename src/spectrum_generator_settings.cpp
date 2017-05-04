@@ -47,7 +47,8 @@ const std::array<std::string, Spectrum_generator_settings::NUMBER_OF_OPTIONS> de
    "EFT loop order for upwards matching",
    "EFT loop order for downwards matching",
    "EFT index of SM-like Higgs in the BSM model",
-   "calculate BSM pole masses"
+   "calculate BSM pole masses",
+   "individual threshold correction loop orders"
 };
 } // anonymous namespace
 
@@ -106,6 +107,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | eft_matching_loop_order_down     | 0, 1                                            | 1 (= 1-loop)    |
  * | eft_higgs_index                  | any integer >= 0                                | 0 (= lightest)  |
  * | calculate_bsm_masses             | 0 (no) or 1 (yes)                               | 1 (= yes)       |
+ * | threshold_corrections            | positive integer             | 123111121       |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -121,6 +123,7 @@ void Spectrum_generator_settings::reset()
    values[higgs_2loop_correction_ab_as]     = 1.;
    values[higgs_2loop_correction_at_at]     = 1.;
    values[higgs_2loop_correction_atau_atau] = 1.;
+   values[force_output]                     = 0;
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[top_pole_qcd_corrections]         = 1.;
    values[beta_zero_threshold]              = 1.0e-11;
@@ -133,6 +136,7 @@ void Spectrum_generator_settings::reset()
    values[eft_matching_loop_order_down]     = 1.;
    values[eft_higgs_index]                  = 0;
    values[calculate_bsm_masses]             = 1.;
+   values[threshold_corrections]            = Threshold_corrections().get();
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
@@ -155,6 +159,16 @@ void Spectrum_generator_settings::set_two_loop_corrections(
    set(higgs_2loop_correction_at_at, two_loop_corrections.higgs_at_at);
    set(higgs_2loop_correction_atau_atau, two_loop_corrections.higgs_atau_atau);
    set(top_pole_qcd_corrections, two_loop_corrections.top_qcd);
+}
+
+Threshold_corrections Spectrum_generator_settings::get_threshold_corrections() const
+{
+   return Threshold_corrections(get(threshold_corrections));
+}
+
+void Spectrum_generator_settings::set_threshold_corrections(const Threshold_corrections& tc)
+{
+   set(threshold_corrections, tc.get());
 }
 
 std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_settings& sgs)

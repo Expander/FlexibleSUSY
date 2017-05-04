@@ -41,6 +41,33 @@ FlexibleSUSY 2.0.0 [not released yet]
    in the model file.
    Thanks to Alexander Bednyakov for providing the expressions.
 
+ * Feature: The SQLite database output now contains the MS-bar/DR-bar
+   mass spectrum and mixing matrices, in addition to the pole mass
+   spectrum.
+
+ * Feature: The loop orders of the threshold corrections of the SM(5)
+   parameters to the BSM model can now be selected individually by
+   using the flag FlexibleSUSY[24] in the SLHA input file or the
+   thresholdCorrections variable in the Mathematica interface.  The
+   given value consists of 9 digits, each one representing the
+   threshold correction loop order of a parameter:
+
+     digit position n    | default value | parameter
+     (prefactor of 10^n) |               |
+     -------------------:|---------------|-------------------------
+      0                  | 1 (1-loop)    | alpha_em
+      1                  | 2 (2-loop)    | sin(theta_W)
+      2                  | 1 (1-loop)    | alpha_s
+      3                  | 1 (1-loop)    | m_Z
+      4                  | 1 (1-loop)    | m_W
+      5                  | 1 (1-loop)    | m_h
+      6                  | 3 (3-loop)    | m_t
+      7                  | 2 (2-loop)    | m_b
+      8                  | 1 (1-loop)    | m_\tau
+
+   The default value is 123111121, which corresponds to the loop
+   orders given in the above table.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
@@ -104,6 +131,9 @@ FlexibleSUSY 2.0.0 [not released yet]
                   {4, gN} } }
       };
 
+ * Change (commit 9bfd5f1): tan(beta)-enhanced contributions to the
+   down-lepton Yukawa couplings are now resummed.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
@@ -112,7 +142,7 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Peter Athron and Pat Scott.
 
-FlexibleSUSY-1.7.4 [not released yet]
+FlexibleSUSY-1.7.4 [April, 12 2017]
 
  * Bugfix (commit f434e30): Rename internal IndexSum symbol which
    conflicts with SARAH version 4.11.0 and higher.
@@ -121,6 +151,10 @@ FlexibleSUSY-1.7.4 [not released yet]
    beta function of SM vacuum expectation value after a corresponding
    bugfix in SARAH 4.11.0.  This bugfix affects the Higgs mass
    prediction with FlexibleEFTHiggs by around 10 MeV.
+
+ * Bugfix (commit 03e9265): Correcting wrong vertex between
+   chargino-smuon-neutrino and chargino-muon-sneutrino in muon decay.
+   Thanks to Markus Bach.
 
 FlexibleSUSY-1.7.3 [February, 27 2017]
 

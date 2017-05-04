@@ -137,11 +137,6 @@ namespace {
    template <typename T> T pow3(T x)  { return x*x*x; }
    template <typename T> T pow4(T x)  { return x*x*x*x; }
    template <typename T> T pow5(T x)  { return x*x*x*x*x; }
-   template <typename T> T pow6(T x)  { return x*x*x*x*x*x; }
-   template <typename T> T pow7(T x)  { return x*x*x*x*x*x*x; }
-   template <typename T> T pow8(T x)  { return x*x*x*x*x*x*x*x; }
-   template <typename T> T pow9(T x)  { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T pow10(T x) { return x*x*x*x*x*x*x*x*x*x; }
 
    const double oneLoop = 1./pow2(4*Pi);
    const double twoLoop = pow2(oneLoop);
@@ -280,13 +275,13 @@ namespace {
 
 /**
  * The function returns the 2-loop SQCD (QCD + SUSY) relation between
- * the Standard Model DR-bar bottom mass
- * \\f$m_b^{\\text{SM},\\overline{\\text{DR}}}\\f$ and the MSSM DR-bar
- * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$.
- * The relation has the form
+ * the Standard Model MS-bar bottom mass
+ * \\f$m_b^{\\text{SM},\\overline{\\text{MS}}}\\f$ and the MSSM DR-bar
+ * bottom mass \\f$m_b^{\\text{MSSM},\\overline{\\text{DR}}}\\f$,
+ * Eq. (61) of [arxiv:0707.0650].  The relation has the form
  *
  * \\f[
-    m_b^{\\text{SM},\\overline{\\text{DR}}} =
+    m_b^{\\text{SM},\\overline{\\text{MS}}} =
     m_b^{\\text{MSSM},\\overline{\\text{DR}}} \\left[
        1 + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{1L}
          + \\left(\\frac{\\Delta m_b}{m_b}\\right)_{2L}
