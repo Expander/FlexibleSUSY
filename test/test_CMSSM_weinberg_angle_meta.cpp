@@ -131,7 +131,6 @@ void setup_data(const CMSSM_mass_eigenstates& model,
    data.g2             = g2;
    data.g3             = model.get_g3();
    data.alpha_em_drbar = Sqr(e_drbar) / (4.0 * Pi);
-   data.ymu            = Re(model.get_Ye(1,1));
    data.tan_beta       = model.get_vu() / model.get_vd();
    data.hmix_12        = model.get_ZH(0,1);
    data.mh_drbar       = model.get_Mhh(0);
