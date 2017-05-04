@@ -3130,10 +3130,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 ];
              ];
 
-           If[Cases[solverEwsbSolutions, (solver_ -> {}) :> solver] =!= {},
+           If[Cases[solverEwsbSolutions, (Rule[solver_, {}]) :> solver] =!= {},
               Print["Warning: an analytic solution to the EWSB eqs. ",
                     " could not be found for the solvers: ",
-                    Cases[solverEwsbSolutions, (solver_ -> {}) :> solver]];
+                    Cases[solverEwsbSolutions, (Rule[solver_ , {}]) :> solver]];
               Print["   An iterative algorithm will be used.  You can try to set"];
               Print["   the solution by hand in the model file like this:"];
               Print[""];
