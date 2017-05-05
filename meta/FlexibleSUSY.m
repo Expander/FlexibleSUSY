@@ -799,13 +799,13 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
                  } ];
           ];
 
-WriteWeinbergAngleClass[massMatrices_List, deltaVBcontributions_List, vertexRules_List, files_List] :=
+WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List] :=
    Module[{deltaVBprototypes = "", deltaVBfunctions = "", deltaVBcalculation = ""},
           {deltaVBprototypes, deltaVBfunctions} = WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
           deltaVBcalculation = WeinbergAngle`CreateDeltaVBCalculation[deltaVBcontributions];
           WriteOut`ReplaceInFiles[files,
-                 { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[massMatrices]]]],
-                   "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[massMatrices]]]],
+                 { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[]]]],
+                   "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[]]]],
                    "@RhoHatTree@"         -> IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]],
                    "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
@@ -2596,7 +2596,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating class for calculation of weinberg angle ..."];
-           WriteWeinbergAngleClass[massMatrices, Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
+           WriteWeinbergAngleClass[Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],

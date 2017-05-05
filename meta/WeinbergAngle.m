@@ -103,52 +103,46 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[] :=
 extPars={SINTHETAW, RHOHATRATIO, GFERMI, MW, MZ, MT, RHO2, DELTARHAT1LOOP, PIZZTMZ};
 Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Length[extPars]}];
 
-(*returns coefficients of Higgs-top-top vertices*)
+(*returns coefficients of 1 and gamma5 in Higgs-top-top vertices*)
 HiggsTopVertices[higgsName_] :=
-    Module[{indexRange, indexList, topQuark, higgsVertices, rule},
+    Module[{indexRange, indexList, topQuark, higgsVertices},
            If[FreeQ[TreeMasses`GetParticles[], higgsName] || TreeMasses`GetDimensionWithoutGoldstones[higgsName] == 0, Return[{}];];
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {}, indexRange = {1};];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}], Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1, indexRange[[k]]}, {k, Length[indexRange]}]}, Length[indexRange] - 1];
            topQuark = Level[TreeMasses`GetUpQuark[{3}], {Boole[ListQ[TreeMasses`GetUpQuark[{3}]]]}][[1]];
            higgsVertices = Vertices`StripGroupStructure[SARAH`Vertex[{bar[topQuark], topQuark, higgsName[#]}] & /@ indexList, SARAH`ctNr /@ Range[4]];
-           rule = SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx, start, stop}];
-           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}}
-                                 /; ((coeffPL/I //. rule) * Susyno`LieGroups`conj[coeffPL/I //. rule] === (coeffPR/I //. rule) * Susyno`LieGroups`conj[coeffPR/I //. rule])
-                                    && !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, coeffPL/I}];
+           higgsVertices = Cases[higgsVertices, {{__, higgsField_}, {coeffPL_, SARAH`PL}, {coeffPR_, SARAH`PR}} /; !TreeMasses`IsGoldstone[higgsField] :> {higgsField /. List -> Sequence, Simplify[(coeffPR + coeffPL)/2], Simplify[(coeffPR - coeffPL)/2]}];
            higgsVertices
           ];
 
 (*generalize Higgs dependent part of (C.5) and (C.6) in hep-ph/9606211 analogous to (C.9) and (C.10)*)
-HiggsContributions2LoopSM[massMatrices_List] :=
-    Module[{higgsMatrices, higgsVEVlist, higgsDep},
+HiggsContributions2LoopSM[] :=
+    Module[{higgsVEVlist, higgsDep},
            If[!ValueQ[SARAH`VEVSM], Print["Error: SM like Higgs vev does not exist."]; Return[0];];
-           higgsMatrices = Select[massMatrices, !FreeQ[#, SARAH`HiggsBoson] || !FreeQ[#, SARAH`PseudoScalar] &][[All, 1]];
-           If[!(And @@ Parameters`IsRealParameter /@ Parameters`FindAllParameters[higgsMatrices]) || (Parameters`FSPhases /. Parameters`FindAllParametersClassified[higgsMatrices]) =!= {},
-              Print["Warning: CP violation in Higgs sector"]; Return[0];];
            higgsVEVlist = Cases[Parameters`GetDependenceSPhenoRules[], RuleDelayed[SARAH`VEVSM, repr_] :> repr];
            If[higgsVEVlist === {}, higgsVEVlist = {SARAH`VEVSM};];
-           higgsDep = Abs[#[[2]]]^2 RHO2[FlexibleSUSY`M[#[[1]]]/MT] &;
-           Simplify[3 (GFERMI MT higgsVEVlist[[1]] / (8 Pi^2 Sqrt[2]))^2 (Plus @@ (higgsDep /@ HiggsTopVertices[SARAH`HiggsBoson]) - Plus @@ (higgsDep /@ HiggsTopVertices[SARAH`PseudoScalar]))]
+           higgsDep = (Abs[#[[2]]]^2 - Abs[#[[3]]]^2) RHO2[FlexibleSUSY`M[#[[1]]]/MT] &;
+           Simplify[3 (GFERMI MT higgsVEVlist[[1]] / (8 Pi^2 Sqrt[2]))^2 (Plus @@ (higgsDep /@ Join[HiggsTopVertices[SARAH`HiggsBoson], HiggsTopVertices[SARAH`PseudoScalar]]))]
           ];
 
 (*formula according to (C.6) from hep-ph/9606211*)
-DeltaRhoHat2LoopSM[massMatrices_List]:=
+DeltaRhoHat2LoopSM[]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = (alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2)(-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) + HiggsContributions2LoopSM[massMatrices]) / (1 + PIZZTMZ / MZ^2);
+           expr = (alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2)(-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) + HiggsContributions2LoopSM[]) / (1 + PIZZTMZ / MZ^2);
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> TreeMasses`ExpressionToString[expr, "deltaRhoHat2LoopSM"];
            result
           ];
 
 (*formula according to (C.5) from hep-ph/9606211*)
-DeltaRHat2LoopSM[massMatrices_List]:=
+DeltaRHat2LoopSM[]:=
     Module[{gY, alphaDRbar, expr, result},
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2))(2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) - HiggsContributions2LoopSM[massMatrices] (1 - DELTARHAT1LOOP) RHOHATRATIO;
+           expr = alphaDRbar SARAH`strongCoupling^2/(16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2))(2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) - HiggsContributions2LoopSM[] (1 - DELTARHAT1LOOP) RHOHATRATIO;
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
            result = result <> TreeMasses`ExpressionToString[expr, "deltaRHat2LoopSM"];
            result
