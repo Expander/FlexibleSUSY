@@ -203,7 +203,11 @@ sqlite3* Database::open(const std::string& file_name)
  *
  * @return 0
  */
+#ifdef ENABLE_VERBOSE
 int Database::extract_callback(void* data, int argc, char** argv, char** col_name)
+#else
+int Database::extract_callback(void* data, int argc, char** argv, char**)
+#endif
 {
    Eigen::ArrayXd* values = static_cast<Eigen::ArrayXd*>(data);
    values->conservativeResize(argc);

@@ -291,10 +291,11 @@ FlexibleSUSY-1.7.0 [September, 19 2016]
  * Feature: FlexibleSUSY is now able to generate custom spectrum
    generators using the FlexibleEFTHiggs method described in
    [arXiv:1609.00371].  The following FlexibleEFTHiggs example models
-   are provided: CMSSMtower, MSSMtower, MSSMNoFVtower, NMSSMtower,
-   NUHMSSMalttower, MRSSMtower, E6SSMtower.  A documentation of the
-   new model file options to create a custom FlexibleEFTHiggs spectrum
-   generator can be found in doc/html/FlexibleEFTHiggs.html .
+   are provided: CMSSMEFTHiggs, MSSMEFTHiggs, MSSMNoFVEFTHiggs,
+   NMSSMEFTHiggs, NUHMSSMaltEFTHiggs, MRSSMEFTHiggs, E6SSMEFTHiggs.  A
+   documentation of the new model file options to create a custom
+   FlexibleEFTHiggs spectrum generator can be found in
+   doc/html/FlexibleEFTHiggs.html .
 
  * Feature: FlexibleSUSY now provides a Mathematica interface for the
    generated spectrum generators.  For each model, an example

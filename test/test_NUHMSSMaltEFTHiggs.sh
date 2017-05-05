@@ -119,12 +119,12 @@ run_sg() {
 error=0
 
 MhNUHMSSMalt=$(run_sg "$MODELDIR/NUHMSSMalt/run_NUHMSSMalt.x" "$input")
-MhNUHMSSMalttower=$(run_sg "$MODELDIR/NUHMSSMalttower/run_NUHMSSMalttower.x" "$input")
+MhNUHMSSMaltEFTHiggs=$(run_sg "$MODELDIR/NUHMSSMaltEFTHiggs/run_NUHMSSMaltEFTHiggs.x" "$input")
 
 echo "Mh in the NUHMSSMalt     : $MhNUHMSSMalt"
-echo "Mh in the NUHMSSMalttower: $MhNUHMSSMalttower"
+echo "Mh in the NUHMSSMaltEFTHiggs: $MhNUHMSSMaltEFTHiggs"
 
-CHECK_EQUAL_FRACTION "$MhNUHMSSMalt" "$MhNUHMSSMalttower" "0.008" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhNUHMSSMalt" "$MhNUHMSSMaltEFTHiggs" "0.008" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."

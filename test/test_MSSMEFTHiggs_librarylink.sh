@@ -98,13 +98,13 @@ Block AEIN
 "
 
 ll_input="
-Get[\"${MODELSDIR}/MSSMtower/MSSMtower_librarylink.m\"];
+Get[\"${MODELSDIR}/MSSMEFTHiggs/MSSMEFTHiggs_librarylink.m\"];
 
-Off[FSMSSMtower::info];
-Off[FSMSSMtowerCalculateSpectrum::warning];
-Off[FSMSSMtowerCalculateSpectrum::error];
+Off[FSMSSMEFTHiggs::info];
+Off[FSMSSMEFTHiggsCalculateSpectrum::warning];
+Off[FSMSSMEFTHiggsCalculateSpectrum::error];
 
-handle = FSMSSMtowerOpenHandle[
+handle = FSMSSMEFTHiggsOpenHandle[
     fsSettings -> {
         precisionGoal -> 1.*^-5,           (* FlexibleSUSY[0] *)
         maxIterations -> 0,                (* FlexibleSUSY[1] *)
@@ -181,18 +181,18 @@ handle = FSMSSMtowerOpenHandle[
     }
 ];
 
-spectrum    = MSSMtower /. FSMSSMtowerCalculateSpectrum[handle];
-observables = FSMSSMtowerCalculateObservables[handle];
-FSMSSMtowerCloseHandle[handle];
+spectrum    = MSSMEFTHiggs /. FSMSSMEFTHiggsCalculateSpectrum[handle];
+observables = FSMSSMEFTHiggsCalculateObservables[handle];
+FSMSSMEFTHiggsCloseHandle[handle];
 
 Print[(Pole[M[hh]] /. spectrum)[[1]]];
 "
 
-Mh_slha=$(echo "$slha_input" | ${MODELSDIR}/MSSMtower/run_MSSMtower.x --slha-input-file=- 2>/dev/null | \
+Mh_slha=$(echo "$slha_input" | ${MODELSDIR}/MSSMEFTHiggs/run_MSSMEFTHiggs.x --slha-input-file=- 2>/dev/null | \
                  awk -f ${UTILSDIR}/print_slha_block.awk -v block="MASS" | \
                  awk -f ${UTILSDIR}/print_slha_block_entry.awk -v entries="25" | tail -n 1)
 
-ll_script="${BASEDIR}/run_MSSMtower.m"
+ll_script="${BASEDIR}/run_MSSMEFTHiggs.m"
 echo "$ll_input" > "$ll_script"
 
 Mh_ll=$($MATH -noprompt -run "commandLineArg={\"$1\"}; Get[\"$ll_script\"]; Exit[];")
