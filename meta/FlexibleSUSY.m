@@ -3118,6 +3118,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                                                      treeLevelEwsbSolutionOutputFiles];
               ,
               Print["Note: There are no EWSB equations."];
+              solverEwsbSolutions = Rule[#, {}]& /@ FlexibleSUSY`FSBVPSolvers;
+              solverFreePhases = Rule[#, {}]& /@ FlexibleSUSY`FSBVPSolvers;
              ];
            freePhases = GetAllFreePhases[solverFreePhases];
            If[freePhases =!= {},
