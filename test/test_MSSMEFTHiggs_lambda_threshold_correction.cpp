@@ -1,13 +1,13 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSMtower_lambda_threshold_correction
+#define BOOST_TEST_MODULE test_MSSMEFTHiggs_lambda_threshold_correction
 
 #include <boost/test/unit_test.hpp>
 
 #include "wrappers.hpp"
 #include "standard_model.hpp"
 #include "splitmssm_thresholds.hpp"
-#include "models/MSSMtower/MSSMtower_standard_model_matching.hpp"
-#include "models/MSSMtower/MSSMtower_two_scale_ewsb_solver.hpp"
+#include "models/MSSMEFTHiggs/MSSMEFTHiggs_standard_model_matching.hpp"
+#include "models/MSSMEFTHiggs/MSSMEFTHiggs_two_scale_ewsb_solver.hpp"
 
 using namespace flexiblesusy;
 using namespace flexiblesusy::standard_model;
@@ -37,7 +37,7 @@ Standard_model create_sm(double Q)
    return sm;
 }
 
-MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q)
+MSSMEFTHiggs_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q)
 {
    Eigen::Matrix<double,3,3> Yu, Yd, Ye, Id;
    Id.setIdentity();
@@ -55,7 +55,7 @@ MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q
    const double Ab = Xb*MS + Mu*tb;
    const double Al = Xl*MS + Mu*tb;
 
-   MSSMtower_mass_eigenstates mssm;
+   MSSMEFTHiggs_mass_eigenstates mssm;
    mssm.set_scale(Q);
    mssm.set_g1(0.3);
    mssm.set_g2(0.4);
@@ -79,9 +79,9 @@ MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q
    mssm.set_MassWB(MS);
    mssm.set_MassG(MS);
 
-   MSSMtower_ewsb_solver<Two_scale> ewsb_solver;
+   MSSMEFTHiggs_ewsb_solver<Two_scale> ewsb_solver;
    mssm.set_ewsb_solver(
-      std::make_shared<MSSMtower_ewsb_solver<Two_scale> >(ewsb_solver));
+      std::make_shared<MSSMEFTHiggs_ewsb_solver<Two_scale> >(ewsb_solver));
    
    mssm.calculate_DRbar_masses();
    mssm.solve_ewsb();
@@ -89,7 +89,7 @@ MSSMtower_mass_eigenstates create_mssm(double MS, double Xt, double tb, double Q
    return mssm;
 }
 
-double calculate_delta_lambda_eft(const Standard_model& sm, const MSSMtower_mass_eigenstates& mssm, unsigned loops)
+double calculate_delta_lambda_eft(const Standard_model& sm, const MSSMEFTHiggs_mass_eigenstates& mssm, unsigned loops)
 {
    using namespace splitmssm_thresholds;
 
@@ -124,9 +124,9 @@ double calculate_delta_lambda_eft(const Standard_model& sm, const MSSMtower_mass
    return lambda;
 }
 
-double calculate_delta_lambda_fs(const Standard_model& sm, const MSSMtower_mass_eigenstates& mssm, unsigned loops)
+double calculate_delta_lambda_fs(const Standard_model& sm, const MSSMEFTHiggs_mass_eigenstates& mssm, unsigned loops)
 {
-   using namespace MSSMtower_standard_model_matching;
+   using namespace MSSMEFTHiggs_standard_model_matching;
 
    auto tmp_sm = sm;
    auto tmp_mssm = mssm;
@@ -145,7 +145,7 @@ double calculate_delta_lambda_fs(const Standard_model& sm, const MSSMtower_mass_
 BOOST_AUTO_TEST_CASE( test_threshold_0L )
 {
    Standard_model sm = create_sm(3000.);
-   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2., 5, 3000.);
+   MSSMEFTHiggs_mass_eigenstates mssm = create_mssm(2000., -2., 5, 3000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 0);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 0);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_0L )
 BOOST_AUTO_TEST_CASE( test_threshold_1L )
 {
    Standard_model sm = create_sm(2000.);
-   MSSMtower_mass_eigenstates mssm = create_mssm(2000., -2., 5, 2000.);
+   MSSMEFTHiggs_mass_eigenstates mssm = create_mssm(2000., -2., 5, 2000.);
 
    const double dl_eft = calculate_delta_lambda_eft(sm, mssm, 1);
    const double dl_fs  = calculate_delta_lambda_fs(sm, mssm, 1);

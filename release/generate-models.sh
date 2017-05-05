@@ -65,10 +65,10 @@ models_array="             \
    THDMIIMSSMBC,THDM-II    \
    HTHDMIIMSSMBC,HTHDM-II  \
    HGTHDMIIMSSMBC,HGTHDM-II \
-   MSSMtower,MSSM          \
-   NMSSMtower,NMSSM        \
-   E6SSMtower,E6SSM        \
-   MRSSMtower,MRSSM        \
+   MSSMEFTHiggs,MSSM          \
+   NMSSMEFTHiggs,NMSSM        \
+   E6SSMEFTHiggs,E6SSM        \
+   MRSSMEFTHiggs,MRSSM        \
 "
 
 models="`echo $models_array | sed 's/,[a-zA-Z0-9-]*//g'`"

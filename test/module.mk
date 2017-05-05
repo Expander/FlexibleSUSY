@@ -363,40 +363,40 @@ TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
 endif
 
-ifeq ($(WITH_NUHMSSMalttower) $(WITH_NUHMSSMalt),yes yes)
+ifeq ($(WITH_NUHMSSMaltEFTHiggs) $(WITH_NUHMSSMalt),yes yes)
 TEST_SH += \
-		$(DIR)/test_NUHMSSMalttower.sh
+		$(DIR)/test_NUHMSSMaltEFTHiggs.sh
 endif
 
-ifeq ($(WITH_HSSUSY) $(WITH_MSSMtower) $(WITH_MSSMMuBMu),yes yes yes)
+ifeq ($(WITH_HSSUSY) $(WITH_MSSMEFTHiggs) $(WITH_MSSMMuBMu),yes yes yes)
 TEST_SH += \
-		$(DIR)/test_MSSMtower.sh
+		$(DIR)/test_MSSMEFTHiggs.sh
 endif
 
-ifeq ($(WITH_MSSMtower),yes)
+ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
-		$(DIR)/test_MSSMtower_lambda_threshold_correction.cpp
+		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
 TEST_SH += \
-		$(DIR)/test_MSSMtower_librarylink.sh \
-		$(DIR)/test_MSSMtower_profile.sh
+		$(DIR)/test_MSSMEFTHiggs_librarylink.sh \
+		$(DIR)/test_MSSMEFTHiggs_profile.sh
 endif
 
-ifeq ($(WITH_MSSMtower) $(WITH_MSSMNoFVtower),yes yes)
+ifeq ($(WITH_MSSMEFTHiggs) $(WITH_MSSMNoFVEFTHiggs),yes yes)
 TEST_SH += \
-		$(DIR)/test_MSSMNoFVtower.sh
+		$(DIR)/test_MSSMNoFVEFTHiggs.sh
 endif
 
-ifeq ($(WITH_NMSSMtower) $(WITH_lowNMSSM),yes yes)
+ifeq ($(WITH_NMSSMEFTHiggs) $(WITH_lowNMSSM),yes yes)
 TEST_SH += \
-		$(DIR)/test_NMSSMtower.sh
+		$(DIR)/test_NMSSMEFTHiggs.sh
 endif
 
-ifeq ($(WITH_SMHighPrecision) $(WITH_SMtower),yes yes)
+ifeq ($(WITH_SMHighPrecision) $(WITH_SMEFTHiggs),yes yes)
 TEST_SH += \
-		$(DIR)/test_SMtower.sh
+		$(DIR)/test_SMEFTHiggs.sh
 endif
 
-ifeq ($(WITH_SM) $(WITH_SMtower),yes yes)
+ifeq ($(WITH_SM) $(WITH_SMEFTHiggs),yes yes)
 TEST_META += \
 		$(DIR)/test_multiple_librarylinks.m
 endif
@@ -747,7 +747,7 @@ $(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out 
 
 $(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSMtower_lambda_threshold_correction.x: $(LIBMSSMtower) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.x: $(LIBMSSMEFTHiggs) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 

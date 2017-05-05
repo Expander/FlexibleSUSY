@@ -120,7 +120,7 @@ run_sg() {
     echo $value
 }
 
-run_MSSMtower() {
+run_MSSMEFTHiggs() {
     local SG="$1"
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
@@ -172,7 +172,7 @@ Block AEIN
     echo $(run_sg "$SG" "$slha_input" "MASS-25")
 }
 
-run_MSSMNoFVtower() {
+run_MSSMNoFVEFTHiggs() {
     local SG="$1"
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
@@ -221,7 +221,7 @@ scan() {
     local stop="$2"
     local steps="$3"
 
-    printf "# %14s %16s %16s\n" "MS" "MSSMtower" "MSSMNoFVtower"
+    printf "# %14s %16s %16s\n" "MS" "MSSMEFTHiggs" "MSSMNoFVEFTHiggs"
 
     for i in $(seq 0 $steps); do
         MS=$(cat <<EOF | bc -l
@@ -230,12 +230,12 @@ e(l($start) + (l($stop) - l($start))*${i} / $steps)
 EOF
           )
 
-        MhMSSMtower=$(run_MSSMtower "$MODELDIR/MSSMtower/run_MSSMtower.x")
-        MhMSSMNoFVtower=$(run_MSSMNoFVtower "$MODELDIR/MSSMNoFVtower/run_MSSMNoFVtower.x")
+        MhMSSMEFTHiggs=$(run_MSSMEFTHiggs "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x")
+        MhMSSMNoFVEFTHiggs=$(run_MSSMNoFVEFTHiggs "$MODELDIR/MSSMNoFVEFTHiggs/run_MSSMNoFVEFTHiggs.x")
 
-        CHECK_EQUAL_FRACTION "$MhMSSMtower" "$MhMSSMNoFVtower" "0.0005" || error=$(expr $error + 1)
+        CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMNoFVEFTHiggs" "0.0005" || error=$(expr $error + 1)
 
-        printf "%16s %16s %16s\n" "$MS" "$MhMSSMtower" "$MhMSSMNoFVtower"
+        printf "%16s %16s %16s\n" "$MS" "$MhMSSMEFTHiggs" "$MhMSSMNoFVEFTHiggs"
     done
 }
 

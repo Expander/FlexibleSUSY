@@ -635,7 +635,7 @@ With the `InitialGuessAtSUSYScale` variable initial values for the
 model MS-bar/DR-bar parameters can be given at the SUSY scale
 `SUSYScale`.
 
-Example: In the MSSMtower `InitialGuessAtSUSYScale` is given as follows:
+Example: In the MSSMEFTHiggs `InitialGuessAtSUSYScale` is given as follows:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 InitialGuessAtSUSYScale = {
