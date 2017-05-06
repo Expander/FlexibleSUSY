@@ -227,11 +227,11 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
    setup_CMSSM_const_non_3rd_gen(model, input);
 
-   double outrho = 1.0, outsin = 0.48;
+   const double outrho = 1.0, outsin = 0.48;
 
    Weinberg_angle::Data data;
    setup_data(model, data);
-   double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
+   const double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
 
    CMSSM_weinberg_angle::Sm_parameters sm_parameters;
    sm_parameters.fermi_constant = Electroweak_constants::gfermi;
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = Electroweak_constants::PMTOP;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
-   double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
+   const double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 4.0e-6);
 }
@@ -256,11 +256,11 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
    setup_CMSSM_const_non_3rd_gen(model, input);
 
-   double outrho = 1.0, outsin = 0.48;
+   const double outrho = 1.0, outsin = 0.48;
 
    Weinberg_angle::Data data;
    setup_data(model, data);
-   double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data);
+   const double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data);
 
    CMSSM_weinberg_angle::Sm_parameters sm_parameters;
    sm_parameters.fermi_constant = Electroweak_constants::gfermi;
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    wein.pizzt_MZ = wein.calculate_self_energy_VZ(Electroweak_constants::MZ);
    wein.piwwt_MW = wein.calculate_self_energy_VWm(Electroweak_constants::MW);
    wein.piwwt_0  = wein.calculate_self_energy_VWm(0.);
-   double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
+   const double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 2.0e-5);
 }
@@ -301,10 +301,10 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    wein.set_data(data);
    wein.set_number_of_iterations(maxTries);
    wein.set_precision_goal(tol);
-   int error = wein.calculate(rho_start, sin_start);
-   double sin_theta_1 = wein.get_sin_theta();
+   const int error = wein.calculate(rho_start, sin_start);
+   const double sin_theta_1 = wein.get_sin_theta();
    stopwatch.stop();
-   double time_1 = stopwatch.get_time_in_seconds();
+   const double time_1 = stopwatch.get_time_in_seconds();
    BOOST_REQUIRE(error == 0);
    BOOST_MESSAGE("calculation with Weinberg_angle       took " << time_1 << " seconds" << '\n');
 
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    double sin_theta_2;
    BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start));
    stopwatch.stop();
-   double time_2 = stopwatch.get_time_in_seconds();
+   const double time_2 = stopwatch.get_time_in_seconds();
    BOOST_MESSAGE("calculation with CMSSM_weinberg_angle took " << time_2 << " seconds");
 
    BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 4.0e-8);
