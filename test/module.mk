@@ -226,7 +226,8 @@ TEST_SRC += \
 		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_three_loop_spectrum.cpp \
 		$(DIR)/test_SM_two_loop_spectrum.cpp \
-		$(DIR)/test_SM_weinberg_angle.cpp
+		$(DIR)/test_SM_weinberg_angle.cpp \
+		$(DIR)/test_SM_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_SMHighPrecision),yes)
@@ -716,6 +717,8 @@ $(DIR)/test_SM_three_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter
 $(DIR)/test_SM_two_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
