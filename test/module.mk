@@ -161,7 +161,8 @@ ifeq ($(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
-		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
+		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp \
+		$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_CMSSM) $(WITH_cCMSSM),yes yes)
@@ -695,6 +696,8 @@ $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGA
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
+$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
+
 $(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
@@ -718,7 +721,7 @@ $(DIR)/test_SM_two_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-o
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
