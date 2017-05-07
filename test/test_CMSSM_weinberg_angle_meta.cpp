@@ -20,6 +20,7 @@ void setup_CMSSM_const_non_3rd_gen(CMSSM_mass_eigenstates& model,
                                    const CMSSM_input_parameters& input)
 {
    setup_CMSSM_const(model, input);
+   model.set_thresholds(2);
 
    const double ymu = 0.001;
 
@@ -84,12 +85,9 @@ void setup_data(const CMSSM_mass_eigenstates& model,
    data.msve_drbar  = msve;
    data.msvm_drbar  = msvm;
 
-   const double pizztMZ     = Re(model.self_energy_VZ(mz_pole));
-   const double piwwtMW     = Re(model.self_energy_VWm(mw_pole));
-   const double piwwt0      = Re(model.self_energy_VWm(0.));
-   double pizztMZ_corrected = pizztMZ;
-   double piwwtMW_corrected = piwwtMW;
-   double piwwt0_corrected  = piwwt0;
+   const double pizztMZ = Re(model.self_energy_VZ(mz_pole));
+   const double piwwtMW = Re(model.self_energy_VWm(mw_pole));
+   const double piwwt0  = Re(model.self_energy_VWm(0.));
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale    = scale;
@@ -99,14 +97,14 @@ void setup_data(const CMSSM_mass_eigenstates& model,
    se_data.gY       = gY;
    se_data.g2       = g2;
 
-   if (model.get_thresholds() > 1) {
-      pizztMZ_corrected =
-         Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
-      piwwtMW_corrected =
-         Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
-      piwwt0_corrected =
-         Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
-   }
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
 
    data.self_energy_z_at_mz = pizztMZ_corrected;
    data.self_energy_w_at_mw = piwwtMW_corrected;
