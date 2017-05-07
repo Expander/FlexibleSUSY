@@ -311,7 +311,7 @@ VertexTreeResult[part1_, part2_] :=
 
 CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) / VertexTreeResult[part1, part2];
 
-DeltaVBvertex[includeGoldstones_: False] :=
+DeltaVBvertex[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
            (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
@@ -384,7 +384,7 @@ BoxResult[diagr_List, includeGoldstones_] :=
 
 CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] := Plus @@ (BoxResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsBox[part1, part2, part3, part4], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]];
 
-DeltaVBbox[includeGoldstones_: False] :=
+DeltaVBbox[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
