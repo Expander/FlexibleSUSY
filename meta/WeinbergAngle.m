@@ -475,6 +475,7 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`Del
 
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
     Module[{type, result = "", boxcontri, vertexcontris, wavecontris},
+           If[!(TreeMasses`FindMixingMatrixSymbolFor[TreeMasses`GetSMNeutralLeptons[][[1]]] === Null), Print["Warning: neutrino mixing is not considered in muon decay"];];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            boxcontri = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, __}, _]][[1]];
            vertexcontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, __}, _]];
