@@ -481,13 +481,13 @@ CreateDeltaVBCalculation[deltaVBcontris_List] :=
            wavecontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, __}, _]];
            result = result <> "const " <> type <> " a1 = ";
            result = result <> CreateContributionCall[boxcontri] <> ";\n";
-           result = result <> "const " <> type <> " deltaV =\n";
+           result = result <> "const " <> type <> " deltaV =\n   ";
            For[k = 1, k <= Length[vertexcontris], k++,
                If[k > 1, result = result <> " + ";];
                result = result <> CreateContributionCall[vertexcontris[[k]]];
               ];
            result = result <> ";\n";
-           result = result <> "const " <> type <> " deltaZ =\n";
+           result = result <> "const " <> type <> " deltaZ =\n   ";
            For[k = 1, k <= Length[wavecontris], k++,
                If[k > 1, result = result <> " + ";];
                result = result <> CreateContributionCall[wavecontris[[k]]];
