@@ -33,17 +33,21 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
-FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
-FS`Contributors = {"D. Harries", "T. Steudtner", "J. Ziebell"};
+FS`Authors = {"P. Athron", "T. Kwasnitza", "D. Harries",
+              "J.-h. Park", "T. Steudtner", "D. Stöckinger",
+              "A. Voigt", "J. Ziebell"};
+FS`Contributors = {};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
 Print[""];
 Utils`FSFancyLine["="];
 Utils`FSFancyPrint["FlexibleSUSY " <> FS`Version, 0];
-Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
-      FS`Years];
-Print["  contributions by " <> Utils`StringJoinWithSeparator[FS`Contributors, ", "]];
+Print["  by " <> StringJoin[Riffle[Riffle[FS`Authors, ", "], "\n  ", 11]] <>
+      "\n  " <> FS`Years];
+If[FS`Contributors =!= {},
+   Print["  contributions by " <> Utils`StringJoinWithSeparator[FS`Contributors, ", "]];
+  ];
 Print[""];
 Utils`FSFancyPrint["References:"];
 Print["  " <> #]& /@ FS`References;
