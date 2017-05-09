@@ -247,6 +247,12 @@ double CLASSNAME::calculate_delta_rho_hat(double sinThetaW)
 
    std::complex<double> deltaRhoHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
+      if (Abs(1. - model->get_scale() / mz) > 0.1) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("scale deviates from value mz_pole assumed in deltaRhoHat2LoopSM");
+#endif
+      }
+
 @DeltaRhoHat2LoopSM@   }
 
    const double deltaRhoHat2LoopSMreal = std::real(deltaRhoHat2LoopSM);
@@ -283,6 +289,12 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
 
    std::complex<double> deltaRHat2LoopSM(0., 0.);
    if (number_of_loops > 1) {
+      if (Abs(1. - model->get_scale() / mz) > 0.1) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+         WARNING("scale deviates from value mz_pole assumed in deltaRHat2LoopSM");
+#endif
+      }
+
 @DeltaRHat2LoopSM@   }
 
    const double deltaRHat2LoopSMreal = std::real(deltaRHat2LoopSM);
