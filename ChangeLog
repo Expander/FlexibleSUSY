@@ -142,6 +142,11 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Peter Athron and Pat Scott.
 
+ * Bugfix (commit 0cb4042): Matrix products of the form A*B in the
+   boundary conditions are now interpreted as element-wise products
+   (as in Mathematica).  For genuine matrix products use MatMul[A,B]
+   or A.B.
+
 FlexibleSUSY-1.7.4 [April, 12 2017]
 
  * Bugfix (commit f434e30): Rename internal IndexSum symbol which
