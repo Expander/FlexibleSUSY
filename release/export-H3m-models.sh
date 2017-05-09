@@ -3,7 +3,8 @@
 # creates MSSM models with H3m corrections
 
 models="MSSMNoFVH3m,MSSMNoFVatMGUTH3m,NUHMSSMNoFVH3m"
-output="FlexibleH3m"
+version=$(cat config/version)
+output="FlexibleH3m-${version}"
 
 for m in $(echo "$models" | tr ',' ' ') ; do
     ./createmodel --name=$m -f
