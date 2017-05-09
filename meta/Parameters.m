@@ -583,6 +583,9 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
 GetRealTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
     CConversion`TensorType[CConversion`realScalarCType, dims];
 
+GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    CConversion`GetScalarElementType[GetType[sym]];
+
 GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
 GetType[FlexibleSUSY`M[sym_]] :=
@@ -596,9 +599,6 @@ GetType[sym_?IsExtraParameter] :=
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
-
-GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    GetType[sym]
 
 GetParameterDimensions[sym_ /; (IsInputParameter[sym] || IsExtraParameter[sym])] :=
     Module[{type},
