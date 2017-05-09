@@ -825,7 +825,7 @@ RValueToCFormString[expr_] :=
                     Power[a_,-2]             :> 1/Sqr[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
-                          Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
+                          Hold[#] &[result /. { (p:(Dot | SARAH`MatMul))[a__] :> times @@ p[a],
                                                 SARAH`trace[a__]  :> SARAH`trace[times[a]] }]
                           /. times -> Times
                          ];
