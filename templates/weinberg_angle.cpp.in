@@ -73,7 +73,7 @@ CLASSNAME::@ModelName@_weinberg_angle(
    : number_of_iterations(20)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
-   , include_dvbsusy(true)
+   , include_dvb_bsm(true)
    , model(model_)
    , sm_parameters(sm_parameters_)
    , pizzt_MZ(0.)
@@ -97,14 +97,14 @@ void CLASSNAME::set_precision_goal(double p)
    precision_goal = p;
 }
 
-void CLASSNAME::enable_dvbsusy()
+void CLASSNAME::enable_dvb_bsm()
 {
-   include_dvbsusy = true;
+   include_dvb_bsm = true;
 }
 
-void CLASSNAME::disable_dvbsusy()
+void CLASSNAME::disable_dvb_bsm()
 {
-   include_dvbsusy = false;
+   include_dvb_bsm = false;
 }
 
 void CLASSNAME::set_model(const @ModelName@_mass_eigenstates* model_)
@@ -306,11 +306,11 @@ double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
 {
    const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
 
-   double deltaVbSusy = 0.;
-   if (include_dvbsusy)
-      deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
+   double deltaVbBSM = 0.;
+   if (include_dvb_bsm)
+      deltaVbBSM = calculate_delta_vb_bsm(sinThetaW);
 
-   const double deltaVb = deltaVbSM + deltaVbSusy;
+   const double deltaVb = deltaVbSM + deltaVbBSM;
 
    return deltaVb;
 }
@@ -361,7 +361,7 @@ double CLASSNAME::calculate_delta_vb_sm(
  * @return \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as defined in (C.13)
  * from hep-ph/9606211
  */
-double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
+double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
 {
    const double mz         = sm_parameters.mz_pole;
    const double gY         = model->get_@hyperchargeCoupling@() * @ModelName@_info::normalization_@hyperchargeCoupling@;
@@ -374,11 +374,11 @@ double CLASSNAME::calculate_delta_vb_susy(double sinThetaW)
 
 @deltaVBcalculation@
 
-   const double deltaVbSusy = oneOver16PiSqr *
+   const double deltaVbBSM = oneOver16PiSqr *
       (- sinThetaW2 * outcos2 / (2.0 * Pi * alphaDRbar) * Sqr(mz) * a1.real() +
        deltaV.real() + 0.5 * deltaZ.real());
 
-   return deltaVbSusy;
+   return deltaVbBSM;
 }
 
 @deltaVBfunctions@

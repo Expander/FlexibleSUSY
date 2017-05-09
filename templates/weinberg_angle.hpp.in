@@ -49,8 +49,8 @@ public:
    void set_number_of_iterations(unsigned);  ///< maximum number of iterations
    void set_number_of_loops(unsigned);       ///< set number of loops
    void set_precision_goal(double);          ///< set precision goal
-   void enable_dvbsusy();                    ///< enable susy vertex and box corrections
-   void disable_dvbsusy();                   ///< disable susy vertex and box corrections
+   void enable_dvb_bsm();                    ///< enable bsm vertex and box corrections
+   void disable_dvb_bsm();                   ///< disable bsm vertex and box corrections
    void set_model(const @ModelName@_mass_eigenstates*);  ///< set pointer to investigated model
    void set_sm_parameters(const Sm_parameters&);  ///< set sm_parameters member variable
 
@@ -61,7 +61,7 @@ private:
    unsigned number_of_iterations; ///< maximum number of iterations
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
-   bool include_dvbsusy;          ///< susy vertex and box corrections are included or not
+   bool include_dvb_bsm;          ///< bsm vertex and box corrections are included or not
    const @ModelName@_mass_eigenstates* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
    double pizzt_MZ;               ///< transverse Z self-energy at p^2 = MZ^2
@@ -73,7 +73,7 @@ private:
    double calculate_delta_r_hat(double, double);
    double calculate_delta_vb(double, double);
    double calculate_delta_vb_sm(double, double);
-   double calculate_delta_vb_susy(double);
+   double calculate_delta_vb_bsm(double);
 
 @deltaVBprototypes@
    double B0(double, double, double) const;
