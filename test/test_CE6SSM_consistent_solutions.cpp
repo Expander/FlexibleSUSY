@@ -500,12 +500,12 @@ std::vector<CE6SSM_input_parameters> initialize_semi_analytic_inputs()
    std::vector<CE6SSM_input_parameters> inputs{1};
 
    inputs[0].TanBeta = 10.;
-   inputs[0].LambdaInput = 0.2;
-   inputs[0].KappaInput = 0.15;
+   inputs[0].LambdaInput = 0.12;
+   inputs[0].KappaInput = 0.2;
    inputs[0].MuPrimeInput = 10000.;
-   inputs[0].BMuPrimeInput = 10000.;
-   inputs[0].vsInput = 6000.;
-   inputs[0].Lambda12Input = 0.2;
+   inputs[0].BMuPrimeInput = 0.;
+   inputs[0].vsInput = 4000.;
+   inputs[0].Lambda12Input = 0.1;
 
    return inputs;
 }
