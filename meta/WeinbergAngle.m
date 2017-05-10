@@ -184,7 +184,9 @@ WaveResult[diagr_List, includeGoldstones_] :=
     Module[{coupl, intparticles, intfermion, intscalar, result, intpartwithindex},
            coupl = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
            intparticles = ({SARAH`Internal[1], SARAH`Internal[2]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           If[Select[intparticles, TreeMasses`IsFermion] === {}, Print["Error: no internal fermion in wave function diagram"]; Return[0];];
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
+           If[Select[intparticles, TreeMasses`IsScalar] === {}, Print["Error: no internal scalar in wave function diagram"]; Return[0];];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
            result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
@@ -197,17 +199,20 @@ CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, incl
 
 DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult},
-           (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            If[Length[neutrinofields] == 1,
+              If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3, Print["Error: DeltaVBwave does not work because the model does not contain 3 neutrinos"]; Return[{}];];
               neutrinoresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, neutrinofields[[1]]}, CompleteWaveResult[neutrinofields[[1]], includeGoldstones]]},
               If[Length[neutrinofields] != 3, Print["Error: DeltaVBwave does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              If[TreeMasses`GetDimension[neutrinofields[[1]]] != 1 || TreeMasses`GetDimension[neutrinofields[[2]]] != 1, Print["Error: definition of neutrino fields not supported"]; Return[{}];];
               neutrinoresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[1]]}, CompleteWaveResult[neutrinofields[[1]], includeGoldstones]],
                                 WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[2]]}, CompleteWaveResult[neutrinofields[[2]], includeGoldstones]]};];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[chargedleptonfields] == 1,
+              If[TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3, Print["Error: DeltaVBwave does not work because the model does not contain 3 charged leptons"]; Return[{}];];
               chargedleptonresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, chargedleptonfields[[1]]}, CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]]},
               If[Length[chargedleptonfields] != 3, Print["Error: DeltaVBwave does not work because there are neither 1 nor 3 charged lepton fields"]; Return[{}];];
+              If[TreeMasses`GetDimension[chargedleptonfields[[1]]] != 1 || TreeMasses`GetDimension[chargedleptonfields[[2]]] != 1, Print["Error: definition of charged lepton fields not supported"]; Return[{}];];
               chargedleptonresult = {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[1]]}, CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]],
                                      WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[2]]}, CompleteWaveResult[chargedleptonfields[[2]], includeGoldstones]]};];
            Join[neutrinoresult, chargedleptonresult]
@@ -224,7 +229,6 @@ GenerateDiagramsVertex[part1_, part2_, part3_] :=
            (*add indices for later summation*)
            diagrs = diagrs /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
            diagrs = diagrs /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
-           (*TODO: test for more than 1 field in SARAH`VectorW*)
            diagrs = ({couplings /. #[[2]], #[[2]]}) & /@ diagrs;
            diagrs
           ];
@@ -301,6 +305,7 @@ VertexTreeResult[part1_, part2_] :=
     Module[{part1withindex, part2withindex},
            If[TreeMasses`GetDimension[part1] > 1, part1withindex = part1[{SARAH`gO1}], part1withindex = part1];
            If[TreeMasses`GetDimension[part2] > 1, part2withindex = part2[{SARAH`gO2}], part2withindex = part2];
+           If[TreeMasses`GetDimension[SARAH`VectorW] != 1, Print["Error: W boson is not defined uniquely or at all"]; Return[1];];
            SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
           ];
 
@@ -308,14 +313,15 @@ CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResu
 
 DeltaVBvertex[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
-           (*TODO: insert tests for consistency of TreeMasses`GetDimension[] and Length[TreeMasses`GetSM...Leptons[]]*)
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[neutrinofields] != Length[chargedleptonfields], Print["Error: DeltaVBvertex does not work because the numbers of neutrino and charged lepton fields are different"]; Return[{}];];
            If[Length[neutrinofields] == 1,
+              If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3 || TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3, Print["Error: DeltaVBvertex does not work because the model does not contain 3 neutrinos and 3 charged leptons"]; Return[{}];];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}},
                                               CompleteVertexResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], includeGoldstones]]},
               If[Length[neutrinofields] != 3, Print["Error: DeltaVBvertex does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              If[Or @@ ((TreeMasses`GetDimension[#] != 1) & /@ {neutrinofields[[1]], neutrinofields[[2]], chargedleptonfields[[1]], chargedleptonfields[[2]]}), Print["Error: definition of neutrino or charged lepton fields not supported"]; Return[{}];];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[1]], neutrinofields[[1]]},
                                               CompleteVertexResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], includeGoldstones]],
                         WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[2]], neutrinofields[[2]]},
@@ -358,6 +364,8 @@ BoxResult[diagr_List, includeGoldstones_] :=
            couplElNeutr = (diagr[[1, 3]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
            couplEl = (diagr[[1, 4]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
            intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3], SARAH`Internal[4]} /. diagr[[2]]) /. {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
+           If[Length[Select[intparticles, TreeMasses`IsFermion]] != 2, Print["Error: there are not 2 internal fermions in box diagram"]; Return[0];];
+           If[Length[Select[intparticles, TreeMasses`IsScalar]] != 2, Print["Error: there are not 2 internal scalars in box diagram"]; Return[0];];
            intfermions = Select[intparticles, TreeMasses`IsFermion];
            toponr = WeinbergAngle`topoNr /. diagr[[2]];
            result = couplMu couplMuNeutr couplElNeutr couplEl;
@@ -385,9 +393,11 @@ DeltaVBbox[includeGoldstones_:False] :=
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[neutrinofields] != Length[chargedleptonfields], Print["Error: DeltaVBbox does not work because the numbers of neutrino and charged lepton fields are different"]; Return[{}];];
            If[Length[neutrinofields] == 1,
+              If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3 || TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3, Print["Error: DeltaVBbox does not work because the model does not contain 3 neutrinos and 3 charged leptons"]; Return[{}];];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}},
                                               CompleteBoxResult[chargedleptonfields[[1]], SARAH`bar[neutrinofields[[1]]], neutrinofields[[1]], SARAH`bar[chargedleptonfields[[1]]], includeGoldstones]]},
               If[Length[neutrinofields] != 3, Print["Error: DeltaVBbox does not work because there are neither 1 nor 3 neutrino fields"]; Return[{}];];
+              If[Or @@ ((TreeMasses`GetDimension[#] != 1) & /@ {neutrinofields[[1]], neutrinofields[[2]], chargedleptonfields[[1]], chargedleptonfields[[2]]}), Print["Error: definition of neutrino or charged lepton fields not supported"]; Return[{}];];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {}},
                                               CompleteBoxResult[chargedleptonfields[[2]], SARAH`bar[neutrinofields[[2]]], neutrinofields[[1]], SARAH`bar[chargedleptonfields[[1]]], includeGoldstones]]}];
            result
