@@ -121,7 +121,7 @@ void CLASSNAME::set_sm_parameters(const Sm_parameters& sm_parameters_)
  * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as input
- * and taking the tree-level value of the rhohat parameter into account.
+ * and taking the tree-level value of the \f$\hat{\rho}\f$ parameter into account.
  *
  * The function throws an exception of type NoSinThetaWConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
@@ -218,6 +218,13 @@ double CLASSNAME::calculate(double sinThetaW_start)
    return sinThetaW_new;
 }
 
+/**
+ * Calculates the tree-level value of \f$\hat{\rho}\f$ taking contributions
+ * from higher Higgs multiplets and possible \f$Z\f$-\f$Z^{\prime}\f$-mixing
+ * into account.
+ *
+ * @return tree-level value of \f$\hat{\rho}\f$
+ */
 double CLASSNAME::calculate_rho_hat_tree()
 {
    double rhohat_tree = 1.;
@@ -305,14 +312,14 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
 }
 
 /**
- * Calculates the vertex, box and external wave-function
- * renormalizations \f$\delta_{\text{VB}}\f$ as given in
- * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211.
+ * Calculates the vertex, box and external wave-function renormalization
+ * corrections \f$\delta_{\text{VB}}\f$ for the specific model as e.g.
+ * given in Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211 for the MSSM.
  *
  * @param rhohat_ratio = rhohat / rhohat_tree
  * @param sinThetaW sin(theta_W)
  *
- * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ * @return \f$\delta_{\text{VB}}\f$
  */
 double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
 {
@@ -364,14 +371,13 @@ double CLASSNAME::calculate_delta_vb_sm(
 }
 
 /**
- * Calculates the SUSY vertex, box and external wave-function
- * renormalizations \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as given in
- * Eqs. (C.13)-(C.16), (C.20) from hep-ph/9606211 .
+ * Calculates the BSM vertex, box and external wave-function renormalization
+ * corrections \f$\delta_{\text{VB}}^{\text{BSM}}\f$ for the specific model
+ * as e.g. given in Eqs. (C.13)-(C.16), (C.20) from hep-ph/9606211 for the MSSM.
  *
  * @param sinThetaW sin(theta_W)
  *
- * @return \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as defined in (C.13)
- * from hep-ph/9606211
+ * @return \f$\delta_{\text{VB}}^{\text{BSM}}\f$
  */
 double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
 {
@@ -393,7 +399,16 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
    return deltaVbBSM;
 }
 
+/**
+ * Routines for computation of couplings and terms included in
+ * \f$\delta_{\text{VB}}^{\text{BSM}}\f$
+ */
+
 @deltaVBfunctions@
+
+/**
+ * Wrapper routines for Passarino-Veltman loop functions
+ */
 
 double CLASSNAME::B0(double p, double m1, double m2) const
 {

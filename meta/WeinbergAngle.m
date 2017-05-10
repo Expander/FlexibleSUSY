@@ -95,6 +95,7 @@ RhoZero[] :=
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[] := Simplify[ArcCos[Sqrt[UnmixedWMass2[] / UnmixedZMass2[] / RhoZero[]]]];
 
+(*parameters and functions transferred directly to and defined on the C++ level*)
 extPars={SINTHETAW, RHOHATRATIO, GFERMI, MW, MZ, MT, RHO2, DELTARHAT1LOOP, PIZZTMZ};
 Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Length[extPars]}];
 
@@ -111,7 +112,7 @@ HiggsTopVertices[higgsName_] :=
            higgsVertices
           ];
 
-(*generalize Higgs dependent part of (C.5) and (C.6) in hep-ph/9606211 analogous to (C.9) and (C.10)*)
+(*generalizes Higgs dependent part of (C.5) and (C.6) in hep-ph/9606211 analogous to (C.9) and (C.10)*)
 HiggsContributions2LoopSM[] :=
     Module[{higgsVEVlist, higgsDep},
            If[!ValueQ[SARAH`VEVSM], Print["Error: SM like Higgs vev does not exist."]; Return[0];];
@@ -158,6 +159,7 @@ RhoHatTree[]:=
 
 (*functions for creation of wave-function renormalization, vertex and box corrections:*)
 
+(*enables usage of routine SARAH`InsFields*)
 InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Module[{},
            SA`CurrentStates = eigenstates;
@@ -166,8 +168,10 @@ InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
            SARAH`MakeCouplingLists;
           ];
 
+(*excludes diagrams in which an internal particle fulfills the condition excludeif*)
 ExcludeDiagrams[diagrs_List, excludeif_:(False &)] := Select[diagrs, !Or @@ (excludeif /@ (Cases[#, Rule[Internal[_], x_] :> x, Infinity])) &];
 
+(*generates wave-function renormalization diagrams for given particle*)
 GenerateDiagramsWave[particle_] :=
     Module[{couplings, insertrules, diagrs},
            couplings = {C[SARAH`External[1], SARAH`Internal[1], SARAH`AntiField[SARAH`Internal[2]]]};
@@ -180,6 +184,7 @@ GenerateDiagramsWave[particle_] :=
            diagrs
           ];
 
+(*calculates contribution from given wave-function renormalization diagram*)
 WaveResult[diagr_List, includeGoldstones_] :=
     Module[{coupl, intparticles, intfermion, intscalar, result, intpartwithindex},
            coupl = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
@@ -189,14 +194,17 @@ WaveResult[diagr_List, includeGoldstones_] :=
            If[Select[intparticles, TreeMasses`IsScalar] === {}, Print["Error: no internal scalar in wave function diagram"]; Return[0];];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
            result = -coupl Susyno`LieGroups`conj[coupl] SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
+           (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
           ];
 
+(*combines generation of diagrams and calculation of their contributions*)
 CompleteWaveResult[particle_, includeGoldstones_] := Plus @@ (WaveResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsWave[particle], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]];
 
+(*returns the complete wave-function renormalization part of deltaVB*)
 DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult},
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
@@ -218,6 +226,7 @@ DeltaVBwave[includeGoldstones_:False] :=
            Join[neutrinoresult, chargedleptonresult]
           ];
 
+(*generates vertex diagrams for given external particles*)
 GenerateDiagramsVertex[part1_, part2_, part3_] :=
     Module[{couplings, insertrules, diagrs},
            couplings = {C[SARAH`External[1], SARAH`AntiField[SARAH`Internal[2]], SARAH`Internal[3]],
@@ -239,6 +248,7 @@ IsOutgoingFermion[particle_] := TreeMasses`IsFermion[particle] && (!FreeQ[partic
 (*True for Majorana Fermions and incoming Dirac fermions*)
 IsIncomingFermion[particle_] := TreeMasses`IsFermion[particle] && FreeQ[particle, SARAH`bar];
 
+(*calculates contribution from given vertex diagram with 1 internal fermion and 2 internal scalars*)
 VertexResultFSS[diagr_List, includeGoldstones_] :=
     Module[{extparticles, extvectorindex, extoutindex, extinindex, couplSSV, couplFFSout, couplFFSin, intparticles, intfermion, intscalars, result, intpartwithindex},
            extparticles = {SARAH`External[1], SARAH`External[2], SARAH`External[3]} /. diagr[[2]];
@@ -254,12 +264,14 @@ VertexResultFSS[diagr_List, includeGoldstones_] :=
            intscalars = Select[intparticles, TreeMasses`IsScalar];
            result = 1/2 couplSSV couplFFSout couplFFSin (1/2 + SARAH`B0[0, SARAH`Mass2[intscalars[[1]]], SARAH`Mass2[intscalars[[2]]]]
                                                          + SARAH`Mass2[intfermion] SARAH`C0[SARAH`Mass2[intfermion], SARAH`Mass2[intscalars[[1]]], SARAH`Mass2[intscalars[[2]]]]);
+           (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
           ];
 
+(*calculates contribution from given vertex diagram with 2 internal fermions and 1 internal scalar*)
 VertexResultFFS[diagr_List, includeGoldstones_] :=
     Module[{extparticles, extvectorindex, extoutindex, extinindex, fermiondirectok1, fermiondirectok2, needfermionflip, innaturalorder, orderedparticles, couplFFVPL, couplFFVPR, couplFFSout, couplFFSin, intparticles, intfermions, intscalar, result, intpartwithindex},
            extparticles = {SARAH`External[1], SARAH`External[2], SARAH`External[3]} /. diagr[[2]];
@@ -284,12 +296,14 @@ VertexResultFFS[diagr_List, includeGoldstones_] :=
            result = couplFFSout couplFFSin (-couplFFVPL FlexibleSUSY`M[intfermions[[1]]] FlexibleSUSY`M[intfermions[[2]]] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]
                                             + 1/2 couplFFVPR (-1/2 + SARAH`B0[0, SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]
                                                               + SARAH`Mass2[intscalar] SARAH`C0[SARAH`Mass2[intscalar], SARAH`Mass2[intfermions[[1]]], SARAH`Mass2[intfermions[[2]]]]));
+           (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
           ];
 
+(*calculates contribution from given vertex diagram*)
 VertexResult[diagr_List, includeGoldstones_] :=
     Module[{intparticles, nFermions, nScalars},
            intparticles = {SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]];
@@ -301,6 +315,7 @@ VertexResult[diagr_List, includeGoldstones_] :=
                   _, Print["Error: diagram type not supported"]; 0]
           ];
 
+(*calculates tree-level vertex result for normalization of one-loop results*)
 VertexTreeResult[part1_, part2_] :=
     Module[{part1withindex, part2withindex},
            If[TreeMasses`GetDimension[part1] > 1, part1withindex = part1[{SARAH`gO1}], part1withindex = part1];
@@ -309,8 +324,10 @@ VertexTreeResult[part1_, part2_] :=
            SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
           ];
 
+(*combines generation of diagrams and calculation of their contributions*)
 CompleteVertexResult[part1_, part2_, includeGoldstones_] := (Plus @@ (VertexResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) / VertexTreeResult[part1, part2];
 
+(*returns the complete vertex part of deltaVB*)
 DeltaVBvertex[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
@@ -329,6 +346,7 @@ DeltaVBvertex[includeGoldstones_:False] :=
            result
           ];
 
+(*generates box diagrams for given external particles*)
 GenerateDiagramsBox[part1_, part2_, part3_, part4_] :=
     Module[{couplings1, couplings2, couplings3, insertrules, diagrs1, diagrs2, diagrs3},
            couplings1 = {C[SARAH`External[1], SARAH`Internal[4], SARAH`AntiField[SARAH`Internal[1]]],
@@ -351,12 +369,14 @@ GenerateDiagramsBox[part1_, part2_, part3_, part4_] :=
            (*add indices for later summation*)
            {diagrs1, diagrs2, diagrs3} = {diagrs1, diagrs2, diagrs3} /. (Rule[SARAH`Internal[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`Internal[i], x[{ToExpression["SARAH`gI" <> ToString[i]]}]];
            {diagrs1, diagrs2, diagrs3} = {diagrs1, diagrs2, diagrs3} /. (Rule[SARAH`External[i_], x_] /; TreeMasses`GetDimension[x] > 1) :> Rule[SARAH`External[i], x[{ToExpression["SARAH`gO" <> ToString[i]]}]];
+           (*add topoNr to distinguish different topologies -> appropriate result can later be calculated*)
            diagrs1 = ({couplings1 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 1]}) & /@ diagrs1;
            diagrs2 = ({couplings2 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 2]}) & /@ diagrs2;
            diagrs3 = ({couplings3 /. #[[2]], Append[#[[2]], WeinbergAngle`topoNr -> 3]}) & /@ diagrs3;
            Join[diagrs1, diagrs2, diagrs3]
           ];
 
+(*calculates contribution from given box diagram*)
 BoxResult[diagr_List, includeGoldstones_] :=
     Module[{couplMu, couplMuNeutr, couplElNeutr, couplEl, intparticles, intfermions, toponr, result, intpartwithindex},
            couplMu = (diagr[[1, 1]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
@@ -379,14 +399,17 @@ BoxResult[diagr_List, includeGoldstones_] :=
               result = result * 1/2 * FlexibleSUSY`M[intfermions[[1]]] FlexibleSUSY`M[intfermions[[2]]] SARAH`D0[Sequence @@ SARAH`Mass2 /@ intparticles]];
            If[toponr == 3 && TreeMasses`IsScalar[intparticles[[1]]],
               result = result * (-1) * SARAH`D27[Sequence @@ SARAH`Mass2 /@ intparticles]];
+           (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
            Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]], If[includeGoldstones, 1, TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]], TreeMasses`GetDimension[intpartwithindex[[i]]], result],
                  {i, Length[intpartwithindex]}];
            result
           ];
 
+(*combines generation of diagrams and calculation of their contributions*)
 CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] := Plus @@ (BoxResult[#, includeGoldstones] &) /@ ExcludeDiagrams[GenerateDiagramsBox[part1, part2, part3, part4], If[includeGoldstones, TreeMasses`IsVector, TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]];
 
+(*returns the complete box part of deltaVB*)
 DeltaVBbox[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
@@ -422,7 +445,7 @@ CreateContributionName[WeinbergAngle`DeltaVB[{type_, {___}, spec1_, spec2_}, _]]
 
 CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] := CreateContributionName[deltaVBcontri] <> "(" <> AddIndices[deltaVBcontri[[1, 2]]] <> ") const";
 
-(*based on CreateNPointFunction from SelfEnergies.m*)
+(*creates C++ code for given part of deltaVB; based on CreateNPointFunction from SelfEnergies.m*)
 CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List] :=
     Module[{expr, functionName, type, prototype, decl, body},
            expr = deltaVBcontri[[2]];
@@ -454,7 +477,7 @@ PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {__}
 
 PrintDeltaVBContributionName[WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {___}}, _]] := "deltaVB box contribution";
 
-(*based on CreateNPointFunctions from SelfEnergies.m*)
+(*creates C++ code for needed couplings and all parts of deltaVB; based on CreateNPointFunctions from SelfEnergies.m*)
 CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
     Module[{relevantVertexRules, prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
            Print["Converting vertex functions ..."];
@@ -478,6 +501,7 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`Del
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri, WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}, ___}, _]]] := CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
 
+(*creates C++ code for calling the different functions contributing to deltaVB*)
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
     Module[{type, result = "", boxcontri, vertexcontris, wavecontris},
            If[!(TreeMasses`FindMixingMatrixSymbolFor[TreeMasses`GetSMNeutralLeptons[][[1]]] === Null), Print["Warning: neutrino mixing is not considered in muon decay"];];
