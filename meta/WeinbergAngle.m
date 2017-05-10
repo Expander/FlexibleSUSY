@@ -93,12 +93,7 @@ RhoZero[] :=
                     Element[Alternatives @@ Cases[SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 2, 1]], x_ /; Parameters`IsRealParameter[x]], Reals]]
           ];
 
-ExpressWeinbergAngleInTermsOfGaugeCouplings[] :=
-    Module[{solution},
-           Print["Expressing Weinberg angle in terms of model parameters ..."];
-           solution = ArcCos[Sqrt[UnmixedWMass2[] / UnmixedZMass2[] / RhoZero[]]];
-           Simplify[solution]
-          ];
+ExpressWeinbergAngleInTermsOfGaugeCouplings[] := Simplify[ArcCos[Sqrt[UnmixedWMass2[] / UnmixedZMass2[] / RhoZero[]]]];
 
 extPars={SINTHETAW, RHOHATRATIO, GFERMI, MW, MZ, MT, RHO2, DELTARHAT1LOOP, PIZZTMZ};
 Do[Format[extPars[[i]],CForm]=Format[ToString[extPars[[i]]],OutputForm],{i,Length[extPars]}];
