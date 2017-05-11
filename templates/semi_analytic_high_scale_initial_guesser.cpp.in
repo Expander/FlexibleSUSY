@@ -193,10 +193,22 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    model->run_to(low_scale_guess, running_precision);
 
    const auto old_thresholds = model->get_thresholds();
+   const auto old_threshold_corrections = model->get_threshold_corrections();
    const auto save_thresholds = make_raii_guard(
-      [this, old_thresholds] () { this->model->set_thresholds(old_thresholds); });
+      [this, old_thresholds, old_threshold_corrections] () {
+         this->model->set_thresholds(old_thresholds);
+         this->model->set_threshold_corrections(old_threshold_corrections);
+      });
 
+   Threshold_corrections temp_thresholds;
+   temp_thresholds.set(0);
    model->set_thresholds(0);
+   model->set_threshold_corrections(temp_thresholds);
+
+   const auto old_loop_order = model->get_ewsb_loop_order();
+   const auto save_loop_order = make_raii_guard(
+      [this, old_loop_order] () { this->model->set_ewsb_loop_order(old_loop_order); });
+   model->set_ewsb_loop_order(0);
 
    const softsusy::QedQcd old_low_sm_parameters = low_constraint.get_sm_parameters();
    const auto save_low_sm_parameters = make_raii_guard(
