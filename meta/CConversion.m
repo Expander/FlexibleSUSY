@@ -775,7 +775,9 @@ CConversion`ElementwiseProd[] = 1;
 
 (* finds all vectors, matrices and tensors in a given list *)
 FindMatrices[syms_List] :=
-    Select[syms, Length[Parameters`GetParameterDimensions[#]] > 1 &];
+    Select[syms,
+           Parameters`IsParameter[#] &&
+           Length[Parameters`GetParameterDimensions[#]] > 1 &];
 
 FactorElementwiseProd[fac_] :=
     Module[{facs, mat},
