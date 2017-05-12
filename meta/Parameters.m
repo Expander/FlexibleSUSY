@@ -62,6 +62,7 @@ IsRealExpression::usage="";
 IsMatrix::usage="returns True if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns True if parameter is a matrix";
 IsTensor::usage="returns True if parameter is a matrix";
+IsParameter::usage="returns True if symbol is a model/input/output/phase parameter";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
@@ -436,6 +437,12 @@ IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
 
 IsExtraParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsExtraParameter[parameter];
+
+IsParameter[sym_] :=
+    IsModelParameter[sym] ||
+    IsInputParameter[sym] ||
+    IsExtraParameter[sym] ||
+    IsPhase[sym];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
