@@ -71,19 +71,24 @@ BOOST_AUTO_TEST_CASE( test_rho_2 )
    double r;
 
    r = 0.1;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), SM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                                 SM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 1.8;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), SM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                                 SM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 1.9;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), SM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                                 SM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 2.0;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), SM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                                 SM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 2.1;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), SM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                                 SM_weinberg_angle::rho_2(r), 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_vb )
@@ -100,7 +105,8 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
    Weinberg_angle::Data data;
    setup_data(model, data);
-   const double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data, false);
+   const double delta_vb_1 =
+      Weinberg_angle::calculate_delta_vb(outrho, outsin, data, false);
 
    SM_weinberg_angle::Sm_parameters sm_parameters;
    sm_parameters.fermi_constant = Electroweak_constants::gfermi;
@@ -127,7 +133,8 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
    Weinberg_angle::Data data;
    setup_data(model, data);
-   const double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data, false);
+   const double delta_r_1 =
+      Weinberg_angle::calculate_delta_r(outrho, outsin, data, false);
 
    SM_weinberg_angle::Sm_parameters sm_parameters;
    sm_parameters.fermi_constant = Electroweak_constants::gfermi;

@@ -116,19 +116,24 @@ BOOST_AUTO_TEST_CASE( test_rho_2 )
    double r;
 
    r = 0.1;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                              CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 1.8;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                              CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 1.9;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                              CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 2.0;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                              CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
 
    r = 2.1;
-   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r), CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Weinberg_angle::rho_2(r),
+                              CMSSM_weinberg_angle::rho_2(r), 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_vb )

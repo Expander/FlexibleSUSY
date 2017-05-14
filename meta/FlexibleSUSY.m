@@ -801,7 +801,8 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 
 WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List] :=
    Module[{deltaVBprototypes = "", deltaVBfunctions = "", deltaVBcalculation = ""},
-          {deltaVBprototypes, deltaVBfunctions} = WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
+          {deltaVBprototypes, deltaVBfunctions} =
+             WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
           deltaVBcalculation = WeinbergAngle`CreateDeltaVBCalculation[deltaVBcontributions];
           WriteOut`ReplaceInFiles[files,
                  { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[]]]],
@@ -2556,7 +2557,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
 	      Put[vertexRules =
-		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, deltaVBwave, deltaVBvertex, deltaVBbox], Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, extraVertices, deltaVBwave,
+                                                deltaVBvertex, deltaVBbox], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
