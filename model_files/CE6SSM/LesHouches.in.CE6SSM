@@ -53,3 +53,6 @@ Block EXTPAR
    64   0                    # BMuPrimeInput
    65   4000                 # vsInput
    66   0.1                  # Lambda12Input
+   67   1.6e7                # m0SqGuess
+   68   400                  # m12Guess
+   69   400                  # AzeroGuess

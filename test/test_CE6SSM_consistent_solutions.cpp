@@ -144,6 +144,9 @@ CE6SSM_input_parameters initialize_semi_analytic_input(
    input.BMuPrimeInput = BMuPr;
    input.vsInput = two_scale_input.vSInput;
    input.Lambda12Input = two_scale_input.Lambda12Input;
+   input.m0SqGuess = Sqr(two_scale_input.vSInput);
+   input.m12Guess = two_scale_input.vSInput / two_scale_input.TanBeta;
+   input.AzeroGuess = two_scale_input.vSInput / two_scale_input.TanBeta;
 
    return input;
 }
@@ -506,6 +509,9 @@ std::vector<CE6SSM_input_parameters> initialize_semi_analytic_inputs()
    inputs[0].BMuPrimeInput = 10000.;
    inputs[0].vsInput = 6000.;
    inputs[0].Lambda12Input = 0.2;
+   inputs[0].m0SqGuess = Sqr(6000.);
+   inputs[0].m12Guess = 600.;
+   inputs[0].AzeroGuess = 600.;
 
    return inputs;
 }

@@ -196,6 +196,9 @@ void setup_CE6SSM(flexiblesusy::CE6SSM_mass_eigenstates& m,
    input.BMuPrimeInput = 10000.;
    input.vsInput = 6000.;
    input.Lambda12Input = 0.2;
+   input.m0SqGuess = flexiblesusy::Sqr(6000.);
+   input.m12Guess = 600.;
+   input.AzeroGuess = 600.;
 
    setup_CE6SSM_const(m, input);
 }

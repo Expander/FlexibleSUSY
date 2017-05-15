@@ -16,7 +16,10 @@ EXTPAR = {
    {63, MuPrimeInput},
    {64, BMuPrimeInput},
    {65, vsInput},
-   {66, Lambda12Input}
+   {66, Lambda12Input},
+   {67, m0SqGuess},
+   {68, m12Guess},
+   {69, AzeroGuess}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -105,9 +108,9 @@ InitialGuessAtLowScale = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {m0Sq, vsInput^2},
-   {m12, vsInput / TanBeta},
-   {Azero, vsInput / TanBeta}
+   {m0Sq, m0SqGuess},
+   {m12, m12Guess},
+   {Azero, AzeroGuess}
 };
 
 InitialGuessAtHighScale = {};
