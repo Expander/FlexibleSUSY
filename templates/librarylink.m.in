@@ -1,3 +1,8 @@
+Print["================================"];
+Print["FlexibleSUSY @FlexibleSUSYVersion@"];
+Print["http://flexiblesusy.hepforge.org"];
+Print["================================"];
+
 lib@ModelName@ = FileNameJoin[{Directory[], "models", "@ModelName@", "@ModelName@_librarylink.so"}];
 
 FS@ModelName@GetSettings = LibraryFunctionLoad[lib@ModelName@, "FS@ModelName@GetSettings", LinkObject, LinkObject];
