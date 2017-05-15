@@ -144,7 +144,15 @@ UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
-ExtraSLHAOutputBlocks = {};
+ExtraSLHAOutputBlocks = {
+    {FlexibleSUSYLowEnergy,
+        {{1, FlexibleSUSYObservable`aMuon} } },
+    {EFFHIGGSCOUPLINGS, NoScale,
+        {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+         {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+         {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+         {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
+};
 FSExtraInputParameters = {};
 FSAuxiliaryParameters = {};
 IMMINPAR = {};
