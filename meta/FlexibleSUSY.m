@@ -154,7 +154,6 @@ ExtraSLHAOutputBlocks = {
          {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
          {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
 };
-FSExtraInputParameters = {};
 FSAuxiliaryParameterInfo = {};
 IMMINPAR = {};
 IMEXTPAR = {};
