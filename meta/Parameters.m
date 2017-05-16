@@ -62,6 +62,7 @@ IsRealExpression::usage="";
 IsMatrix::usage="returns True if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns True if parameter is a matrix";
 IsTensor::usage="returns True if parameter is a matrix";
+IsParameter::usage="returns True if symbol is a model/input/output/phase parameter";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
@@ -437,6 +438,12 @@ IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
 IsExtraParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsExtraParameter[parameter];
 
+IsParameter[sym_] :=
+    IsModelParameter[sym] ||
+    IsInputParameter[sym] ||
+    IsExtraParameter[sym] ||
+    IsPhase[sym];
+
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
 IsRealParameter[FlexibleSUSY`M[_]] := True;
@@ -583,6 +590,9 @@ GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
 GetRealTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
     CConversion`TensorType[CConversion`realScalarCType, dims];
 
+GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    CConversion`GetScalarElementType[GetType[sym]];
+
 GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
 GetType[FlexibleSUSY`M[sym_]] :=
@@ -596,9 +606,6 @@ GetType[sym_?IsExtraParameter] :=
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
-
-GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    GetType[sym]
 
 GetParameterDimensions[sym_ /; (IsInputParameter[sym] || IsExtraParameter[sym])] :=
     Module[{type},

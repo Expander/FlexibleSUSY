@@ -638,7 +638,7 @@ double MSSMNoFV_onshell::convert_me2_root(
                 << precision << " GeV\n";
    }
 
-   return precision;
+   return std::isfinite(precision) ? precision : 0.;
 }
 
 /**
@@ -722,7 +722,7 @@ double MSSMNoFV_onshell::convert_me2_fpi(
                 << precision << " GeV\n";
    }
 
-   return precision;
+   return std::isfinite(precision) ? precision : 0.;
 }
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)

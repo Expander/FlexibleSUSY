@@ -53,12 +53,23 @@ the shell
 
 \section References
 
- - FlexibleSUSY — A spectrum generator generator for supersymmetric
-   models
-   [<a href="http://arxiv.org/abs/1406.2319">CPC 190 (2015) 139-172</a>]
+ - Peter Athron, Jae-hyeon Park, Dominik Stöckinger, Alexander Voigt:
+   "FlexibleSUSY — A spectrum generator generator for supersymmetric
+   models" [<a href="https://arxiv.org/abs/1406.2319">CPC 190 (2015)
+   139-172</a>]
 
-If you use FlexibleSUSY in your work please cite the <a
-  href="http://inspirehep.net/record/1299998">FlexibleSUSY manual</a>.
+ - Peter Athron, Jae-hyeon Park, Tom Steudtner, Dominik Stöckinger,
+   Alexander Voigt: "Precise Higgs mass calculations in (non-)minimal
+   supersymmetry at both high and low scales" [<a
+   href="https://arxiv.org/abs/1609.00371">JHEP 1701 (2017) 079</a>]
+
+If you use FlexibleSUSY in your work please cite [<a
+href="http://inspirehep.net/record/1299998">CPC 190 (2015)
+139-172</a>].
+
+If you use the FlexibleEFTHiggs approach in your work please cite [<a
+href="https://inspirehep.net/record/1484857">JHEP 1701 (2017)
+079</a>].
 
 FlexibleSUSY depends on SARAH and contains components from
 Softsusy. Therefore, please also cite the following publications along
@@ -79,17 +90,13 @@ with FlexibleSUSY:
 FlexibleSUSY has been written by
 
 - Peter Athron
+- Markus Bach
+- Dylan Harries
+- Thomas Kwasnitza
 - Jae-hyeon Park
 - Dominik Stöckinger
 - Alexander Voigt
-
-The following people have made major contributions to FlexibleSUSY:
-
-- Dylan Harries (loop-induced effective vertices
-  \f$h\rightarrow\gamma\gamma\f$ and \f$h\rightarrow gg\f$)
-- Tom Steudtner (FlexibleEFTHiggs)
-- Jobst Ziebell (1-loop BSM contributions to the anomalous magnetic
-  moment of the muon, \f$a_\mu\f$)
+- Jobst Ziebell
 
 \section fs_resources Resources
 

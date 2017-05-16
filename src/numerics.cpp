@@ -28,6 +28,7 @@
 // #define USE_LOOPTOOLS
 
 #include "numerics.h"
+#include "numerics2.hpp"
 #include "rk.hpp"
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
@@ -60,10 +61,11 @@ bool is_close(double m1, double m2, double tol)
 
 double refnfn(double x, double p, double m1, double m2, double q) noexcept
 {
+  using flexiblesusy::fast_log;
   const static std::complex<double> iEpsilon(0.0, TOL * 1.0e-20);
 
   return std::real(x *
-    std::log(((1 - x) * sqr(m1) + x * sqr(m2)
+    fast_log(((1 - x) * sqr(m1) + x * sqr(m2)
               - x * (1 - x) * sqr(p) - iEpsilon) / sqr(q)));
 }
 
@@ -108,6 +110,7 @@ double bIntegral(double p, double m1, double m2, double q)
 
 double fB(const std::complex<double>& a) noexcept
 {
+  using flexiblesusy::fast_log;
   const double x = a.real();
 
   if (fabs(x) < EPSTOL)
@@ -116,7 +119,7 @@ double fB(const std::complex<double>& a) noexcept
   if (is_close(x, 1., EPSTOL))
      return -1.;
 
-  return std::real(std::log(1. - a) - 1. - a * std::log(1.0 - 1.0 / a));
+  return std::real(fast_log(1. - a) - 1. - a * fast_log(1.0 - 1.0 / a));
 }
 
 } // anonymous namespace

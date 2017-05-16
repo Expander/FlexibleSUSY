@@ -43,10 +43,16 @@ GetBeta[BetaFunction[name_, type_, beta_List], loopOrder_Integer] :=
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
-GuessType[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
+betaIndices = {
+    Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
+};
+
+IsBetaIdx[i_] := MemberQ[betaIndices, i];
+
+GuessType[sym_[_?IsBetaIdx, _?IsBetaIdx]] :=
     Parameters`GetType[sym];
 
-GuessType[sym_[Susyno`LieGroups`i1]] :=
+GuessType[sym_[_?IsBetaIdx]] :=
     Parameters`GetType[sym];
 
 GuessType[sym_] :=

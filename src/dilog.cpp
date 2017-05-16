@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "dilog.hpp"
+#include "numerics2.hpp"
 #include <cmath>
 #include <limits>
 
@@ -108,6 +109,7 @@ double dilog(double x) {
  * @return \f$\mathrm{Li}_2(z)\f$
  */
 std::complex<double> dilog(const std::complex<double>& z) {
+   using flexiblesusy::fast_log;
    std::complex<double> cy, cz;
    int jsgn, ipi12;
    static const int N = 20;
@@ -154,25 +156,25 @@ std::complex<double> dilog(const std::complex<double>& z) {
    // transformation to |z|<1, Re(z)<=0.5
    if (rz <= 0.5) {
       if (az > 1.) {
-         cy = -0.5 * sqr(std::log(-z));
-         cz = -std::log(1. - 1. / z);
+         cy = -0.5 * sqr(fast_log(-z));
+         cz = -fast_log(1. - 1. / z);
          jsgn = -1;
          ipi12 = -2;
       } else { // (az <= 1.)
          cy = 0;
-         cz = -std::log(1. - z);
+         cz = -fast_log(1. - z);
          jsgn = 1;
          ipi12 = 0;
       }
    } else { // rz > 0.5
       if (az <= std::sqrt(2*rz)) {
-         cz = -std::log(z);
-         cy = cz * std::log(1. - z);
+         cz = -fast_log(z);
+         cy = cz * fast_log(1. - z);
          jsgn = -1;
          ipi12 = 2;
       } else { // (az > sqrt(2*rz))
-         cy = -0.5 * sqr(std::log(-z));
-         cz = -std::log(1. - 1. / z);
+         cy = -0.5 * sqr(fast_log(-z));
+         cz = -fast_log(1. - 1. / z);
          jsgn = -1;
          ipi12 = -2;
       }
