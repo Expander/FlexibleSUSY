@@ -42,6 +42,8 @@ AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
 TensorProd::usage="";
+ElementwiseProd::usage = "represents an elemen-wise product of
+ vectors, matrices or tensors";
 
 HaveSameDimension::usage = "Checks if given types have same
 dimension";
@@ -768,6 +770,16 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
     Format["(" <> ToString[CForm[HoldForm[x]]] <> ")*(" <>
            ToString[CForm[HoldForm[y]]] <> ").transpose()", OutputForm];
 
+Format[CConversion`ElementwiseProd[HoldPattern[fac_]],CForm] :=
+    Format[ToString[CForm[HoldForm[fac]]], OutputForm];
+
+Format[CConversion`ElementwiseProd[HoldPattern[fac__]],CForm] :=
+    Format[
+        "(" <> StringJoin[
+            Riffle[ToString[CForm[HoldForm[#]]]& /@ {fac}, ").cwiseProduct("]
+         ] <> ")"
+        , OutputForm];
+
 (* Finds all Greek symbols in an expression.
    Note: All arguments of Which and If are evaluated.
  *)
@@ -776,6 +788,21 @@ FindGreekSymbols[expr_] :=
           DeleteDuplicates @ Select[
               Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True], GreekQ]
          ];
+
+CConversion`ElementwiseProd[] = 1;
+
+(* finds all vectors, matrices and tensors in a given list *)
+FindMatrices[syms_List] :=
+    Select[syms,
+           Parameters`IsParameter[#] &&
+           Length[Parameters`GetParameterDimensions[#]] > 1 &];
+
+FactorElementwiseProd[fac_] :=
+    Module[{facs, mat},
+           facs = If[Head[fac] === Times, List @@ fac, {fac}];
+           mat = FindMatrices[facs];
+           Times[Sequence @@ Complement[facs, mat]] CConversion`ElementwiseProd[Sequence @@ mat]
+          ];
 
 (* Converts an expression to CForm and expands SARAH symbols
  *
@@ -813,6 +840,7 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
+                    Times[fac__] :> FactorElementwiseProd[fac] /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
                     Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.

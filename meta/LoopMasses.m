@@ -425,7 +425,7 @@ DoFastDiagonalization[particle_Symbol, _] :=
 
 (* ********** medium diagonalization routines ********** *)
 
-DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
+DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List, calc2L_:True] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr,
@@ -480,23 +480,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                   FlexibleSUSY`UseHiggs2LoopNMSSM === True) &&
                  MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                  addHigherLoopHiggsContributions = "self_energy += self_energy_2l;\n";
-                 calcHigherLoopHiggsContributions = "
-// two-loop Higgs self-energy contributions
-" <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
-
-if (pole_mass_loop_order > 1) {
-" <> IndentText["\
-self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
-for (int i = 0; i < " <> dimStr <> "; i++) {
-   for (int k = 0; k < " <> dimStr <> "; k++) {
-      if (!std::isfinite(self_energy_2l(i,k))) {
-         self_energy_2l(i,k) = 0.;
-         problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
-      }
-   }
-}
-"] <> "}
-";
+                 If[calc2L,
+                    calcHigherLoopHiggsContributions = CalcEffPot2L[particle];
+                   ];
                 ];
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
@@ -520,7 +506,7 @@ for (int i = 0; i < " <> dimStr <> "; i++) {
            Return[result];
           ];
 
-DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, _] :=
+DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, __] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr,
@@ -675,7 +661,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            Return[result];
           ];
 
-DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _] :=
+DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, __] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, selfEnergyMatrixType, selfEnergyMatrixCType},
            dim = GetDimension[particle];
@@ -702,22 +688,52 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            Return[result];
           ];
 
-DoMediumDiagonalization[particle_Symbol, inputMomentum_:"", _] :=
-    "ERROR(\"medium diagonalization of " <> ToString[particle] <> " not implemented\");\n";
+DoMediumDiagonalization[particle_Symbol, __] := (
+    Print["Error: medium diagonalization of ", particle, " not implemented"];
+    "ERROR(\"medium diagonalization of " <> ToString[particle] <> " not implemented\");\n"
+);
 
 
 (* ********** high precision diagonalization routines ********** *)
 
+CalcEffPot2L[particle_] :=
+    Module[{dim = GetDimension[particle], dimStr, selfEnergyMatrixCType},
+           dimStr = ToString[dim];
+           selfEnergyMatrixCType = CreateCType[TreeMasses`GetMassMatrixType[particle]];
+           "\
+// two-loop Higgs self-energy contributions
+" <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
+
+if (pole_mass_loop_order > 1) {
+" <> IndentText["\
+self_energy_2l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop();
+for (int i = 0; i < " <> dimStr <> "; i++) {
+   for (int k = 0; k < " <> dimStr <> "; k++) {
+      if (!std::isfinite(self_energy_2l(i,k))) {
+         self_energy_2l(i,k) = 0.;
+         problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+      }
+   }
+}
+"] <> "}
+"
+          ];
+
 DoSlowDiagonalization[particle_Symbol, tadpole_] :=
     Module[{result, dim, dimStr, massName, inputMomenta, outputMomenta,
-            body, particleStr},
+            body, particleStr, effPot2L = ""},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleStr = CConversion`ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            inputMomenta = "old_" <> massName;
            outputMomenta = "new_" <> massName;
-           body = DoMediumDiagonalization[particle, inputMomenta, tadpole] <> "\n" <>
+           If[dim > 1 && (SARAH`UseHiggs2LoopMSSM === True ||
+                          FlexibleSUSY`UseHiggs2LoopNMSSM === True) &&
+              MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
+              effPot2L = CalcEffPot2L[particle];
+             ];
+           body = DoMediumDiagonalization[particle, inputMomenta, tadpole, effPot2L === ""] <> "\n" <>
                   outputMomenta <> " = PHYSICAL(" <> massName <> ");\n" <>
                   "diff = MaxRelDiff(" <> outputMomenta <> ", " <> inputMomenta <> ");\n" <>
                   inputMomenta <> " = " <> outputMomenta <> ";\n" <>
@@ -728,6 +744,7 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                     "decltype(" <> massName <> ") " <>
                     inputMomenta  <> "(" <> massName <> "), " <>
                     outputMomenta <> "(" <> massName <> ");\n\n" <>
+                    effPot2L <> "\n" <>
                     "do {\n" <>
                     IndentText[body] <>
                     "\
@@ -747,7 +764,7 @@ DoDiagonalization[particle_Symbol, FlexibleSUSY`LowPrecision, tadpole_] :=
     "// diagonalization with low precision\n" <> DoFastDiagonalization[particle, tadpole];
 
 DoDiagonalization[particle_Symbol, FlexibleSUSY`MediumPrecision, tadpole_] :=
-    "// diagonalization with medium precision\n" <> DoMediumDiagonalization[particle, "", tadpole];
+    "// diagonalization with medium precision\n" <> DoMediumDiagonalization[particle, "", tadpole, True];
 
 DoDiagonalization[particle_Symbol, FlexibleSUSY`HighPrecision, tadpole_] :=
     "// diagonalization with high precision\n" <> DoSlowDiagonalization[particle, tadpole];

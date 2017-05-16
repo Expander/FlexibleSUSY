@@ -23,6 +23,7 @@
 #include <cmath>
 #include <complex>
 #include <limits>
+#include <complex>
 #include <cstddef>
 #include <cstdlib>
 
@@ -78,6 +79,13 @@ template <typename T, std::size_t N>
 bool is_finite(const std::array<T, N>& v)
 {
    return is_finite<N>(&v[0]);
+}
+
+template <class T>
+std::complex<T> fast_log(const std::complex<T>& z)
+{
+   const T r = std::abs(z);
+   return std::complex<T>(std::log(r), std::arg(z));
 }
 
 } // namespace flexiblesusy
