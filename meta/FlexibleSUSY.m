@@ -2557,7 +2557,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                FSEigenstates];
 
            (*prepare Weinberg angle calculation*)
-           WeinbergAngle`InitGenerationOfDiagrams[];
+           WeinbergAngle`InitMuonDecay[];
            deltaVBwave = WeinbergAngle`DeltaVBwave[];
            deltaVBvertex = WeinbergAngle`DeltaVBvertex[];
            deltaVBbox = WeinbergAngle`DeltaVBbox[];

@@ -2,6 +2,8 @@
 BeginPackage["WeinbergAngle`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`",
                                 "TextFormatting`", "ThresholdCorrections`", "TreeMasses`", "Vertices`"}];
 
+InitMuonDecay::usage="";
+
 GetBottomMass::usage="";
 GetTopMass::usage="";
 
@@ -9,7 +11,6 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 DeltaRhoHat2LoopSM::usage="";
 DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
-InitGenerationOfDiagrams::usage="";
 DeltaVBwave::usage="";
 DeltaVBvertex::usage="";
 DeltaVBbox::usage="";
@@ -17,6 +18,16 @@ CreateDeltaVBContributions::usage="";
 CreateDeltaVBCalculation::usage="";
 
 Begin["`Private`"];
+
+(*prepare usage of muon decay method*)
+InitMuonDecay[eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Module[{},
+           (*enable usage of routine SARAH`InsFields*)
+           SA`CurrentStates = eigenstates;
+           SARAH`InitVertexCalculation[eigenstates, False];
+           SARAH`ReadVertexList[eigenstates, False, False, True];
+           SARAH`MakeCouplingLists;
+          ];
 
 GetBottomMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
 GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
@@ -222,15 +233,6 @@ RhoHatTree[]:=
 
 
 (*functions for creation of wave-function renormalization, vertex and box corrections:*)
-
-(*enables usage of routine SARAH`InsFields*)
-InitGenerationOfDiagrams[eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{},
-           SA`CurrentStates = eigenstates;
-           SARAH`InitVertexCalculation[eigenstates, False];
-           SARAH`ReadVertexList[eigenstates, False, False, True];
-           SARAH`MakeCouplingLists;
-          ];
 
 (*excludes diagrams in which an internal particle fulfills the condition excludeif*)
 ExcludeDiagrams[diagrs_List, excludeif_:(False &)] :=
