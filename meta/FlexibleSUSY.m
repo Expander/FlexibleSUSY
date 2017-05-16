@@ -328,6 +328,22 @@ CheckFermiConstantInputRequirements[requiredSymbols_List, printout_:True] :=
            And @@ areDefined
           ];
 
+CheckMuonDecayInputRequirements[printout_:True] :=
+    Module[{requiredSymbols, availPars, areDefined},
+           requiredSymbols = {SARAH`VectorP, SARAH`VectorW, SARAH`VectorZ,
+                              SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling};
+           availPars = Join[TreeMasses`GetParticles[],
+                            Parameters`GetInputParameters[],
+                            Parameters`GetModelParameters[],
+                            Parameters`GetOutputParameters[]];
+           areDefined = MemberQ[availPars, #]& /@ requiredSymbols;
+           If[printout,
+              Print["Unknown symbol: ", #]& /@
+              Cases[Utils`Zip[areDefined, requiredSymbols], {False, p_} :> p];
+             ];
+           And @@ areDefined
+          ];
+
 CheckFermiConstantInputRequirementsForSUSYModel[] :=
     CheckFermiConstantInputRequirements[
         {FSHiggs, FSHyperchargeCoupling,
