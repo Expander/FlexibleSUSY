@@ -280,11 +280,11 @@ WaveResult[diagr_List, includeGoldstones_] :=
            intparticles = ({SARAH`Internal[1], SARAH`Internal[2]} /. diagr[[2]]) /.
                              {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            If[Select[intparticles, TreeMasses`IsFermion] === {},
-              Print["Error: no internal fermion in wave function diagram"];
+              Print["Warning: no internal fermion in wave function diagram"];
               Return[0]];
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
            If[Select[intparticles, TreeMasses`IsScalar] === {},
-              Print["Error: no internal scalar in wave function diagram"];
+              Print["Warning: no internal scalar in wave function diagram"];
               Return[0]];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
            result = -coupl Susyno`LieGroups`conj[coupl] *
@@ -609,10 +609,10 @@ BoxResult[diagr_List, includeGoldstones_] :=
                             SARAH`Internal[3], SARAH`Internal[4]} /. diagr[[2]]) /.
                              {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            If[Length[Select[intparticles, TreeMasses`IsFermion]] != 2,
-              Print["Error: there are not 2 internal fermions in box diagram"];
+              Print["Warning: not 2 internal fermions in box diagram"];
               Return[0]];
            If[Length[Select[intparticles, TreeMasses`IsScalar]] != 2,
-              Print["Error: there are not 2 internal scalars in box diagram"];
+              Print["Warning: not 2 internal scalars in box diagram"];
               Return[0]];
            intfermions = Select[intparticles, TreeMasses`IsFermion];
            toponr = WeinbergAngle`topoNr /. diagr[[2]];
