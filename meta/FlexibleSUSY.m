@@ -152,7 +152,7 @@ ExtraSLHAOutputBlocks = {
         {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
          {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
          {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
-         {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
+         {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
 };
 FSExtraInputParameters = {};
 FSAuxiliaryParameters = {};
