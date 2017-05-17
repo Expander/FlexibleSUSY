@@ -346,7 +346,7 @@ CNMSSM<Semi_analytic> run_single_semi_analytic_iteration(
    low_scale_constraint.set_sm_parameters(qedqcd);
    soft_constraint.set_sm_parameters(qedqcd);
 
-   high_scale_constraint.set_soft_parameters_constraint(&soft_constraint);
+   soft_constraint.set_boundary_constraint(&high_scale_constraint);
 
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
