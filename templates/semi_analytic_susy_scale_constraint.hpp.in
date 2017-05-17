@@ -31,7 +31,6 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
-@semiAnalyticForwardDecls@
 class Semi_analytic;
 
 template<>
@@ -39,7 +38,7 @@ class @ModelName@_susy_scale_constraint<Semi_analytic> : public Single_scale_con
 public:
    @ModelName@_susy_scale_constraint() = default;
    @ModelName@_susy_scale_constraint(@ModelName@<Semi_analytic>*, const softsusy::QedQcd&);
-   virtual ~@ModelName@_susy_scale_constraint();
+   virtual ~@ModelName@_susy_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override { return scale; }
    virtual std::string name() const override { return "@ModelName@ SUSY-scale constraint"; }
@@ -52,7 +51,7 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
-@setSemiAnalyticConstraint@
+
 protected:
    void update_scale();
 
@@ -61,7 +60,6 @@ private:
    double initial_scale_guess{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
-@semiAnalyticConstraint@
 
    void check_model_ptr() const;
 };

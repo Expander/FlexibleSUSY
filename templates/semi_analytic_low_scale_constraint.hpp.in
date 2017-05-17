@@ -32,7 +32,6 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
-@semiAnalyticForwardDecls@
 class Semi_analytic;
 
 template<>
@@ -40,7 +39,7 @@ class @ModelName@_low_scale_constraint<Semi_analytic> : public Single_scale_cons
 public:
    @ModelName@_low_scale_constraint() = default;
    @ModelName@_low_scale_constraint(@ModelName@<Semi_analytic>*, const softsusy::QedQcd&);
-   virtual ~@ModelName@_low_scale_constraint();
+   virtual ~@ModelName@_low_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override { return scale; }
    virtual std::string name() const override { return "@ModelName@ low-scale constraint"; }
@@ -53,7 +52,7 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
-@setSemiAnalyticConstraint@
+
 private:
    double scale{0.};
    double initial_scale_guess{0.};
@@ -69,7 +68,6 @@ private:
    double ThetaWDRbar{0.};
    double new_g1{0.}, new_g2{0.}, new_g3{0.};
    double self_energy_w_at_mw{0.};
-@semiAnalyticConstraint@
 
    double calculate_theta_w(double);
    void calculate_threshold_corrections();

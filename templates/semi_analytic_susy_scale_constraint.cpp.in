@@ -20,7 +20,6 @@
 
 #include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
 #include "@ModelName@_semi_analytic_model.hpp"
-#include "@ModelName@_semi_analytic_soft_parameters_constraint.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
@@ -59,10 +58,6 @@ namespace flexiblesusy {
    initialize();
 }
 
-@ModelName@_susy_scale_constraint<Semi_analytic>::~@ModelName@_susy_scale_constraint()
-{
-}
-
 void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();
@@ -96,7 +91,6 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::clear()
    initial_scale_guess = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
-@clearSemiAnalyticConstraint@
 }
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::initialize()
@@ -113,7 +107,6 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::update_scale()
 
 @calculateScale@
 @restrictScale@
-@updateSemiAnalyticConstraint@
 }
 
 void @ModelName@_susy_scale_constraint<Semi_analytic>::check_model_ptr() const

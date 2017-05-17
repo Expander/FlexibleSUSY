@@ -57,16 +57,13 @@ namespace flexiblesusy {
    initialize();
 }
 
-@ModelName@_soft_parameters_constraint<Semi_analytic>::~@ModelName@_soft_parameters_constraint()
-{
-}
-
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();
 
 @temporarySetting@
 
+   const double boundary_scale = (boundary_constraint ? boundary_constraint->get_scale() : scale);
    model->calculate_semi_analytic_solutions(boundary_scale);
    model->calculate_DRbar_masses();
    update_scale();
@@ -92,9 +89,9 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   boundary_scale = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
+   boundary_constraint = nullptr;
 }
 
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::initialize()
@@ -103,7 +100,6 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::initialize()
 
 @scaleGuess@
    scale = initial_scale_guess;
-   boundary_scale = scale;
 }
 
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::update_scale()

@@ -30,7 +30,6 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
-@semiAnalyticForwardDecls@
 class Semi_analytic;
 
 template<>
@@ -38,7 +37,7 @@ class @ModelName@_high_scale_constraint<Semi_analytic> : public Single_scale_con
 public:
    @ModelName@_high_scale_constraint() = default;
    @ModelName@_high_scale_constraint(@ModelName@<Semi_analytic>*);
-   virtual ~@ModelName@_high_scale_constraint();
+   virtual ~@ModelName@_high_scale_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override { return scale; }
    virtual std::string name() const override { return "@ModelName@ high-scale constraint"; }
@@ -50,7 +49,7 @@ public:
    @ModelName@<Semi_analytic>* get_model() const { return model; }
    void initialize();
    void set_scale(double s) { scale = s; }
-@setSemiAnalyticConstraint@
+
 protected:
    void update_scale();
    bool check_non_perturbative();
@@ -59,7 +58,6 @@ private:
    double scale{0.};
    double initial_scale_guess{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
-@semiAnalyticConstraint@
 
    void check_model_ptr() const;
 };

@@ -38,7 +38,7 @@ class @ModelName@_soft_parameters_constraint<Semi_analytic> : public Single_scal
 public:
    @ModelName@_soft_parameters_constraint() = default;
    @ModelName@_soft_parameters_constraint(@ModelName@<Semi_analytic>*, const softsusy::QedQcd&);
-   virtual ~@ModelName@_soft_parameters_constraint();
+   virtual ~@ModelName@_soft_parameters_constraint() = default;
    virtual void apply() override;
    virtual double get_scale() const override { return scale; }
    virtual std::string name() const override { return "@ModelName@ soft parameters constraint"; }
@@ -46,8 +46,7 @@ public:
 
    void clear();
    double get_initial_scale_guess() const { return initial_scale_guess; }
-   double get_boundary_scale() const { return boundary_scale; }
-   void set_boundary_scale(double s) { boundary_scale = s; }
+   void set_boundary_constraint(Single_scale_constraint* bc) { boundary_constraint = bc; }
    const @ModelName@_input_parameters& get_input_parameters() const;
    @ModelName@<Semi_analytic>* get_model() const { return model; }
    void initialize();
@@ -60,9 +59,9 @@ protected:
 private:
    double scale{0.};
    double initial_scale_guess{0.};
-   double boundary_scale{0.};
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
+   Single_scale_constraint* boundary_constraint{nullptr};
 
    void check_model_ptr() const;
 };
