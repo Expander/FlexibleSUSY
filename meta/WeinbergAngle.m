@@ -39,7 +39,7 @@ FindMass2[masses_List, particle_] :=
            massExpr = Cases[masses, TreeMasses`FSMassMatrix[{mass_}, particle, ___] :> mass];
            If[Head[massExpr] =!= List || massExpr === {},
               Print["Error: Could not find mass of ", particle, " in masses list."];
-              Return[0];];
+              Return[0]];
            TreeMasses`ReplaceDependenciesReverse[massExpr[[1]]]
           ];
 
@@ -56,11 +56,11 @@ UnmixedZMass2[] :=
            submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
            If[Length[submatrix] != 1,
               Print["Error: Photon-Z mass matrix could not be identified"];
-              Return[0];];
+              Return[0]];
            mass2Eigenvalues = Eigenvalues[submatrix];
            If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0],
               Print["Error: Determination of UnmixedZMass2 failed"];
-              Return[0];];
+              Return[0]];
            Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]
           ];
 
@@ -77,11 +77,11 @@ UnmixedWMass2[] :=
            submatrix = Cases[submatrixList, x_ /; And @@ (FreeQ[x, #] & /@ extraGaugeCouplings)];
            If[Length[submatrix] != 1,
               Print["Error: W mass matrix could not be identified"];
-              Return[0];];
+              Return[0]];
            mass2Eigenvalues = Eigenvalues[submatrix];
            If[Length[DeleteDuplicates[mass2Eigenvalues]] != 1,
               Print["Error: Determination of UnmixedWMass2 failed"];
-              Return[0];];
+              Return[0]];
            mass2Eigenvalues[[1]] /. Parameters`ApplyGUTNormalization[]
           ];
 
@@ -91,12 +91,12 @@ GellMannNishijimaRelationHolds[] :=
             BW3pos, photonEigenSystem, photonVector},
            If[FreeQ[SARAH`Gauge, SARAH`hypercharge] || FreeQ[SARAH`Gauge, SARAH`left],
               Print["Error: hypercharge or left gauge group does not exist"];
-              Return[False];];
+              Return[False]];
            photonMassMatrix = SARAH`MassMatrix[SARAH`VectorP];
            Assert[MatrixQ[photonMassMatrix]];
            If[Length[photonMassMatrix] > 4,
               Print["Error: neutral vector boson mass matrix is too large to be diagonalized"];
-              Return[False];];
+              Return[False]];
            extraGaugeCouplings = Cases[SARAH`Gauge, x_ /; FreeQ[x, SARAH`hypercharge] &&
                                           FreeQ[x, SARAH`left] && FreeQ[x, SARAH`color] :> x[[4]]];
            submatrixIndices = Flatten[Table[{i, j}, {i, 1, Length[photonMassMatrix]},
@@ -107,13 +107,13 @@ GellMannNishijimaRelationHolds[] :=
                                              {1}, Heads -> False]]];
            If[Length[BW3pos] != 2,
               Print["Error: Photon-Z mass matrix could not be identified"];
-              Return[False];];
+              Return[False]];
            photonEigenSystem = Eigensystem[photonMassMatrix];
            photonVector = Extract[photonEigenSystem[[2]], Position[photonEigenSystem[[1]], 0]];
            If[!MemberQ[Total[Abs[Part[#, Complement[Range[Length[photonMassMatrix]],
                                                     BW3pos]] & /@ photonVector], {2}], 0],
               Print["Error: SM-like photon could not be identified"];
-              Return[False];];
+              Return[False]];
            True
           ];
 
@@ -122,7 +122,7 @@ RhoZero[] :=
     Module[{hyperchargePos, leftPos, vevlist},
            If[!GellMannNishijimaRelationHolds[],
               Print["Error: the Gell-Mann-Nishijima relation does not hold"];
-              Return[0];];
+              Return[0]];
            hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
            vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
@@ -134,7 +134,7 @@ RhoZero[] :=
                                  -SA`ChargeGG[fieldname, hyperchargePos]}];
            If[!FreeQ[vevlist, None],
               Print["Error: determination of electric charge did not work"];
-              Return[0];];
+              Return[0]];
            Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) /
                        Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist),
                     Element[Alternatives @@ Cases[SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 2, 1]],
@@ -153,10 +153,10 @@ HiggsTopVertices[higgsName_] :=
     Module[{indexRange, indexList, topQuark, higgsVertices},
            If[FreeQ[TreeMasses`GetParticles[], higgsName] ||
                  TreeMasses`GetDimensionWithoutGoldstones[higgsName] == 0,
-              Return[{}];];
+              Return[{}]];
            indexRange = TreeMasses`GetParticleIndices[higgsName][[All, 2]];
            If[indexRange === {},
-              indexRange = {1};];
+              indexRange = {1}];
            indexList = Flatten[Table @@ {Table[ToExpression["i" <> ToString[k]], {k, Length[indexRange]}],
                                          Sequence @@ Table[{ToExpression["i" <> ToString[k]], 1,
                                                             indexRange[[k]]}, {k, Length[indexRange]}]},
@@ -178,11 +178,11 @@ HiggsContributions2LoopSM[] :=
     Module[{higgsVEVlist, higgsDep},
            If[!ValueQ[SARAH`VEVSM],
               Print["Error: SM like Higgs vev does not exist."];
-              Return[0];];
+              Return[0]];
            higgsVEVlist = Cases[Parameters`GetDependenceSPhenoRules[],
                                 RuleDelayed[SARAH`VEVSM, repr_] :> repr];
            If[higgsVEVlist === {},
-              higgsVEVlist = {SARAH`VEVSM};];
+              higgsVEVlist = {SARAH`VEVSM}];
            higgsDep = (Abs[#[[2]]]^2 - Abs[#[[3]]]^2) RHO2[FlexibleSUSY`M[#[[1]]]/MT] &;
            Simplify[3 (GFERMI MT higgsVEVlist[[1]] / (8 Pi^2 Sqrt[2]))^2 *
                     (Plus @@ (higgsDep /@ Join[HiggsTopVertices[SARAH`HiggsBoson],
@@ -262,11 +262,11 @@ WaveResult[diagr_List, includeGoldstones_] :=
                              {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            If[Select[intparticles, TreeMasses`IsFermion] === {},
               Print["Error: no internal fermion in wave function diagram"];
-              Return[0];];
+              Return[0]];
            intfermion = Select[intparticles, TreeMasses`IsFermion][[1]];
            If[Select[intparticles, TreeMasses`IsScalar] === {},
               Print["Error: no internal scalar in wave function diagram"];
-              Return[0];];
+              Return[0]];
            intscalar = Select[intparticles, TreeMasses`IsScalar][[1]];
            result = -coupl Susyno`LieGroups`conj[coupl] *
                     SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
@@ -295,43 +295,43 @@ DeltaVBwave[includeGoldstones_:False] :=
            If[Length[neutrinofields] == 1,
               If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3,
                  Print["Error: DeltaVBwave does not work since there are not 3 neutrinos"];
-                 Return[{}];];
+                 Return[{}]];
               neutrinoresult =
                  {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, neutrinofields[[1]]},
                                         CompleteWaveResult[neutrinofields[[1]], includeGoldstones]]},
               If[Length[neutrinofields] != 3,
                  Print["Error: DeltaVBwave does not work since there are neither 1 nor 3 neutrino fields"];
-                 Return[{}];];
+                 Return[{}]];
               If[TreeMasses`GetDimension[neutrinofields[[1]]] != 1 ||
                     TreeMasses`GetDimension[neutrinofields[[2]]] != 1,
                  Print["Error: definition of neutrino fields not supported"];
-                 Return[{}];];
+                 Return[{}]];
               neutrinoresult =
                  {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[1]]},
                                         CompleteWaveResult[neutrinofields[[1]], includeGoldstones]],
                   WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, neutrinofields[[2]]},
-                                        CompleteWaveResult[neutrinofields[[2]], includeGoldstones]]};];
+                                        CompleteWaveResult[neutrinofields[[2]], includeGoldstones]]}];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[chargedleptonfields] == 1,
               If[TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3,
                  Print["Error: DeltaVBwave does not work since there are not 3 charged leptons"];
-                 Return[{}];];
+                 Return[{}]];
               chargedleptonresult =
                  {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1}, chargedleptonfields[[1]]},
                                         CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]]},
               If[Length[chargedleptonfields] != 3,
                  Print["Error: DeltaVBwave does not work since there are ",
                        "neither 1 nor 3 charged lepton fields"];
-                 Return[{}];];
+                 Return[{}]];
               If[TreeMasses`GetDimension[chargedleptonfields[[1]]] != 1 ||
                     TreeMasses`GetDimension[chargedleptonfields[[2]]] != 1,
                  Print["Error: definition of charged lepton fields not supported"];
-                 Return[{}];];
+                 Return[{}]];
               chargedleptonresult =
                  {WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[1]]},
                                         CompleteWaveResult[chargedleptonfields[[1]], includeGoldstones]],
                   WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {}, chargedleptonfields[[2]]},
-                                        CompleteWaveResult[chargedleptonfields[[2]], includeGoldstones]]};];
+                                        CompleteWaveResult[chargedleptonfields[[2]], includeGoldstones]]}];
            Join[neutrinoresult, chargedleptonresult]
           ];
 
@@ -460,7 +460,7 @@ VertexResult[diagr_List, includeGoldstones_] :=
            Switch[{nFermions, nScalars},
                   {1, 2}, VertexResultFSS[diagr, includeGoldstones],
                   {2, 1}, VertexResultFFS[diagr, includeGoldstones],
-                  _, Print["Error: diagram type not supported"]; 0]
+                  _, Print["Warning: vertex diagram type not supported"]; 0]
           ];
 
 (*calculates tree-level vertex result for normalization of one-loop results*)
@@ -474,7 +474,7 @@ VertexTreeResult[part1_, part2_] :=
               part2withindex = part2];
            If[TreeMasses`GetDimension[SARAH`VectorW] != 1,
               Print["Error: W boson is not defined uniquely or at all"];
-              Return[1];];
+              Return[1]];
            SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
           ];
 
@@ -494,13 +494,13 @@ DeltaVBvertex[includeGoldstones_:False] :=
            If[Length[neutrinofields] != Length[chargedleptonfields],
               Print["Error: DeltaVBvertex does not work since the numbers of ",
                     "neutrino and charged lepton fields are different"];
-              Return[{}];];
+              Return[{}]];
            If[Length[neutrinofields] == 1,
               If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3 ||
                     TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3,
                     Print["Error: DeltaVBvertex does not work since there are ",
                           "not 3 neutrinos and 3 charged leptons"];
-                 Return[{}];];
+                 Return[{}]];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}},
                                               CompleteVertexResult[chargedleptonfields[[1]],
                                                                    SARAH`bar[neutrinofields[[1]]],
@@ -508,12 +508,12 @@ DeltaVBvertex[includeGoldstones_:False] :=
               If[Length[neutrinofields] != 3,
                  Print["Error: DeltaVBvertex does not work since there are ",
                        "neither 1 nor 3 neutrino fields"];
-                 Return[{}];];
+                 Return[{}]];
               If[Or @@ ((TreeMasses`GetDimension[#] != 1) & /@
                            {neutrinofields[[1]], neutrinofields[[2]],
                             chargedleptonfields[[1]], chargedleptonfields[[2]]}),
                  Print["Error: definition of neutrino or charged lepton fields not supported"];
-                 Return[{}];];
+                 Return[{}]];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {}, chargedleptonfields[[1]],
                                                neutrinofields[[1]]},
                                               CompleteVertexResult[chargedleptonfields[[1]],
@@ -579,10 +579,10 @@ BoxResult[diagr_List, includeGoldstones_] :=
                              {SARAH`bar[p_] :> p, Susyno`LieGroups`conj[p_] :> p};
            If[Length[Select[intparticles, TreeMasses`IsFermion]] != 2,
               Print["Error: there are not 2 internal fermions in box diagram"];
-              Return[0];];
+              Return[0]];
            If[Length[Select[intparticles, TreeMasses`IsScalar]] != 2,
               Print["Error: there are not 2 internal scalars in box diagram"];
-              Return[0];];
+              Return[0]];
            intfermions = Select[intparticles, TreeMasses`IsFermion];
            toponr = WeinbergAngle`topoNr /. diagr[[2]];
            result = couplMu couplMuNeutr couplElNeutr couplEl;
@@ -624,13 +624,13 @@ DeltaVBbox[includeGoldstones_:False] :=
            If[Length[neutrinofields] != Length[chargedleptonfields],
               Print["Error: DeltaVBbox does not work since the numbers of ",
                     "neutrino and charged lepton fields are different"];
-              Return[{}];];
+              Return[{}]];
            If[Length[neutrinofields] == 1,
               If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3 ||
                     TreeMasses`GetDimension[chargedleptonfields[[1]]] != 3,
                  Print["Error: DeltaVBbox does not work since there are ",
                        "not 3 neutrinos and 3 charged leptons"];
-                 Return[{}];];
+                 Return[{}]];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2,
                                                                      SARAH`gO3, SARAH`gO4}},
                                               CompleteBoxResult[chargedleptonfields[[1]],
@@ -640,12 +640,12 @@ DeltaVBbox[includeGoldstones_:False] :=
                                                                 includeGoldstones]]},
               If[Length[neutrinofields] != 3,
                  Print["Error: DeltaVBbox does not work since there are neither 1 nor 3 neutrino fields"];
-                 Return[{}];];
+                 Return[{}]];
               If[Or @@ ((TreeMasses`GetDimension[#] != 1) & /@
                            {neutrinofields[[1]], neutrinofields[[2]],
                             chargedleptonfields[[1]], chargedleptonfields[[2]]}),
                  Print["Error: definition of neutrino or charged lepton fields not supported"];
-                 Return[{}];];
+                 Return[{}]];
               result = {WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {}},
                                               CompleteBoxResult[chargedleptonfields[[2]],
                                                                 SARAH`bar[neutrinofields[[2]]],
@@ -739,7 +739,7 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
                Print["   ", PrintDeltaVBContributionName[deltaVBcontris[[k]]]];
                {p, d} = CreateDeltaVBContribution[deltaVBcontris[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
-               defs = defs <> d;];
+               defs = defs <> d];
            {prototypes, defs}
           ];
 
@@ -765,7 +765,7 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
     Module[{type, result = "", boxcontri, vertexcontris, wavecontris},
            If[!(TreeMasses`FindMixingMatrixSymbolFor[TreeMasses`GetSMNeutralLeptons[][[1]]] === Null),
-              Print["Warning: neutrino mixing is not considered in muon decay"];];
+              Print["Warning: neutrino mixing is not considered in muon decay"]];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            boxcontri = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, __}, _]][[1]];
            vertexcontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, __}, _]];
@@ -774,13 +774,13 @@ CreateDeltaVBCalculation[deltaVBcontris_List] :=
            result = result <> CreateContributionCall[boxcontri] <> ";\n";
            result = result <> "const " <> type <> " deltaV =\n   ";
            For[k = 1, k <= Length[vertexcontris], k++,
-               If[k > 1, result = result <> " + ";];
-               result = result <> CreateContributionCall[vertexcontris[[k]]];];
+               If[k > 1, result = result <> " + "];
+               result = result <> CreateContributionCall[vertexcontris[[k]]]];
            result = result <> ";\n";
            result = result <> "const " <> type <> " deltaZ =\n   ";
            For[k = 1, k <= Length[wavecontris], k++,
-               If[k > 1, result = result <> " + ";];
-               result = result <> CreateContributionCall[wavecontris[[k]]];];
+               If[k > 1, result = result <> " + "];
+               result = result <> CreateContributionCall[wavecontris[[k]]]];
            result <> ";"
           ];
 
