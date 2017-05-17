@@ -51,7 +51,7 @@ FindMass2[masses_List, particle_] :=
            If[Head[massExpr] =!= List || massExpr === {},
               MuonDecayWorks = False;
               DebugPrint["Error: Could not find mass of ", particle, " in masses list"];
-              Return[0]];
+              Return[1]];
            TreeMasses`ReplaceDependenciesReverse[massExpr[[1]]]
           ];
 
@@ -69,12 +69,12 @@ UnmixedZMass2[] :=
            If[Length[submatrix] != 1,
               MuonDecayWorks = False;
               DebugPrint["Error: Photon-Z mass matrix could not be identified"];
-              Return[0]];
+              Return[1]];
            mass2Eigenvalues = Eigenvalues[submatrix];
            If[Length[mass2Eigenvalues] != 2 || !MemberQ[mass2Eigenvalues, 0],
               MuonDecayWorks = False;
               DebugPrint["Error: Determination of UnmixedZMass2 failed"];
-              Return[0]];
+              Return[1]];
            Select[mass2Eigenvalues, # =!= 0 &][[1]] /. Parameters`ApplyGUTNormalization[]
           ];
 
@@ -139,7 +139,7 @@ RhoZero[] :=
            If[!GellMannNishijimaRelationHolds[],
               MuonDecayWorks = False;
               DebugPrint["Error: the Gell-Mann-Nishijima relation does not hold"];
-              Return[0]];
+              Return[1]];
            hyperchargePos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`hypercharge], {1}][[1, 1]];
            leftPos = Position[SARAH`Gauge, x_ /; !FreeQ[x, SARAH`left], {1}][[1, 1]];
            vevlist = SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs];
@@ -152,7 +152,7 @@ RhoZero[] :=
            If[!FreeQ[vevlist, None],
               MuonDecayWorks = False;
               DebugPrint["Error: determination of electric charge did not work"];
-              Return[0]];
+              Return[1]];
            Simplify[Plus @@ ((#[[3]]^2 - #[[4]]^2 + #[[3]]) Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist) /
                        Plus @@ (2 #[[4]]^2 Abs[#[[1]] #[[2]] Sqrt[2]]^2 & /@ vevlist),
                     Element[Alternatives @@ Cases[SARAH`DEFINITION[SARAH`EWSB][SARAH`VEVs][[All, 2, 1]],
@@ -797,15 +797,24 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
        WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}, ___}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
 
+CreateContributionCall[0] := "0."; (*needed in case of an error*)
+
 (*creates C++ code for calling the different functions contributing to deltaVB*)
 CreateDeltaVBCalculation[deltaVBcontris_List] :=
     Module[{type, result = "", boxcontri, vertexcontris, wavecontris},
            If[!(TreeMasses`FindMixingMatrixSymbolFor[TreeMasses`GetSMNeutralLeptons[][[1]]] === Null),
               Print["Warning: neutrino mixing is not considered in muon decay"]];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
-           boxcontri = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, __}, _]][[1]];
+           boxcontri = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, __}, _]];
+           If[boxcontri === {},
+              boxcontri = 0,
+              boxcontri = boxcontri[[1]]];
            vertexcontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, __}, _]];
+           If[vertexcontris === {},
+              vertexcontris = {0}];
            wavecontris = Cases[deltaVBcontris, WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, __}, _]];
+           If[wavecontris === {},
+              wavecontris = {0}];
            result = result <> "const " <> type <> " a1 = ";
            result = result <> CreateContributionCall[boxcontri] <> ";\n";
            result = result <> "const " <> type <> " deltaV =\n   ";
