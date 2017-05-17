@@ -114,7 +114,7 @@ void @ModelName@_standard_model_initial_guesser<Semi_analytic>::guess_eft_parame
    eft->set_g3(sqrt(4.0 * M_PI * alpha_sm(2)));
    eft->set_scale(mtpole);
 
-   eft->set_v(246.22);
+   eft->set_v(Electroweak_constants::vev);
    eft->set_Yu(ZEROMATRIX(3,3));
    eft->set_Yd(ZEROMATRIX(3,3));
    eft->set_Ye(ZEROMATRIX(3,3));
