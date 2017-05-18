@@ -227,6 +227,8 @@ HiggsContributions2LoopSM[] :=
 (*formula according to (C.6) from hep-ph/9606211*)
 DeltaRhoHat2LoopSM[]:=
     Module[{gY, alphaDRbar, expr, result},
+           If[!MuonDecayWorks,
+              Return[""]];
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
            expr = (alphaDRbar SARAH`strongCoupling^2 / (16 Pi^3 SINTHETAW^2) *
@@ -241,6 +243,8 @@ DeltaRhoHat2LoopSM[]:=
 (*formula according to (C.5) from hep-ph/9606211*)
 DeltaRHat2LoopSM[]:=
     Module[{gY, alphaDRbar, expr, result},
+           If[!MuonDecayWorks,
+              Return[""]];
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
            expr = alphaDRbar SARAH`strongCoupling^2 / (16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2)) *
@@ -254,6 +258,8 @@ DeltaRHat2LoopSM[]:=
 (*calculates tree-level value of rhohat parameter from umixed and mixed Z mass as well as RhoZero*)
 RhoHatTree[]:=
     Module[{Zmass2unmixed, Zmass2mixed, expr, result},
+           If[!MuonDecayWorks,
+              Return[""]];
            Zmass2unmixed = UnmixedZMass2[];
            Zmass2mixed = FindMassZ2[TreeMasses`GetUnmixedParticleMasses[] /.
                                        Parameters`ApplyGUTNormalization[]];
@@ -326,6 +332,8 @@ CompleteWaveResult[particle_, includeGoldstones_] :=
 (*returns the complete wave-function renormalization part of deltaVB*)
 DeltaVBwave[includeGoldstones_:False] :=
     Module[{neutrinofields, neutrinoresult, chargedleptonfields, chargedleptonresult},
+           If[!MuonDecayWorks,
+              Return[{}]];
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            If[Length[neutrinofields] == 1,
               If[TreeMasses`GetDimension[neutrinofields[[1]]] != 3,
@@ -532,6 +540,8 @@ CompleteVertexResult[part1_, part2_, includeGoldstones_] :=
 (*returns the complete vertex part of deltaVB*)
 DeltaVBvertex[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
+           If[!MuonDecayWorks,
+              Return[{}]];
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[neutrinofields] != Length[chargedleptonfields],
@@ -666,6 +676,8 @@ CompleteBoxResult[part1_, part2_, part3_, part4_, includeGoldstones_] :=
 (*returns the complete box part of deltaVB*)
 DeltaVBbox[includeGoldstones_:False] :=
     Module[{neutrinofields, chargedleptonfields, result},
+           If[!MuonDecayWorks,
+              Return[{}]];
            neutrinofields = TreeMasses`GetSMNeutralLeptons[];
            chargedleptonfields = TreeMasses`GetSMChargedLeptons[];
            If[Length[neutrinofields] != Length[chargedleptonfields],
