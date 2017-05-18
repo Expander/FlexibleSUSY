@@ -248,7 +248,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
 void @ModelName@_initial_guesser<Semi_analytic>::guess_soft_parameters()
 {
    const double low_scale_guess = low_constraint.get_scale();
-   const double susy_scale_guess = susy_constraint.get_scale();
    const double input_scale = @inputScaleGuess@;
 
    model->run_to(low_scale_guess, running_precision);

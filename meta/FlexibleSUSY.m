@@ -3519,13 +3519,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
                 ];
               Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
-                 semiAnalyticInputScale = "high_scale_guess",
+                 semiAnalyticInputScale = "high_constraint.get_scale()",
                  SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
-                 semiAnalyticInputScale = "susy_scale_guess",
+                 semiAnalyticInputScale = "susy_constraint.get_scale()",
                  SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
-                 semiAnalyticInputScale = "low_scale_guess",
+                 semiAnalyticInputScale = "low_constraint.get_scale()",
                  True,
-                 semiAnalyticInputScale = "high_scale_guess"
+                 semiAnalyticInputScale = "high_constraint.get_scale()"
                 ];
               WriteSemiAnalyticInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
                                                    FlexibleSUSY`InitialGuessAtSUSYScale,
