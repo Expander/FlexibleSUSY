@@ -390,7 +390,7 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
-@deltaVBcalculation@
+@DeltaVBcalculation@
 
    const double deltaVbBSM = oneOver16PiSqr *
       (- sinThetaW2 * outcos2 / (2.0 * Pi * alphaDRbar) * Sqr(mz) * a1.real() +
@@ -404,7 +404,7 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
  * \f$\delta_{\text{VB}}^{\text{BSM}}\f$
  */
 
-@deltaVBfunctions@
+@DeltaVBfunctions@
 
 /**
  * Wrapper routines for Passarino-Veltman loop functions

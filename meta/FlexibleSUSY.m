@@ -810,9 +810,9 @@ WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List]
                    "@RhoHatTree@"         -> IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]],
                    "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
-                   "@deltaVBprototypes@"  -> IndentText[deltaVBprototypes],
-                   "@deltaVBfunctions@"   -> deltaVBfunctions,
-                   "@deltaVBcalculation@" -> IndentText[deltaVBcalculation],
+                   "@DeltaVBprototypes@"  -> IndentText[deltaVBprototypes],
+                   "@DeltaVBfunctions@"   -> deltaVBfunctions,
+                   "@DeltaVBcalculation@" -> IndentText[deltaVBcalculation],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];

@@ -74,7 +74,7 @@ private:
    double calculate_delta_vb_sm(double, double);
    double calculate_delta_vb_bsm(double);
 
-@deltaVBprototypes@
+@DeltaVBprototypes@
    // Passarino-Veltman loop functions
    double B0(double, double, double) const;
    double B1(double, double, double) const;
