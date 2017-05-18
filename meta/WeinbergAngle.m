@@ -9,7 +9,6 @@ InitMuonDecay::usage="";
 GetBottomMass::usage="";
 GetTopMass::usage="";
 
-ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 DeltaRhoHat2LoopSM::usage="";
 DeltaRHat2LoopSM::usage="";
 RhoHatTree::usage="";
