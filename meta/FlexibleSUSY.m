@@ -805,11 +805,15 @@ WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List]
              WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
           deltaVBcalculation = WeinbergAngle`CreateDeltaVBCalculation[deltaVBcontributions];
           WriteOut`ReplaceInFiles[files,
-                 { "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[]]]],
+                 { "@DefSMhyperCoupling@" -> WeinbergAngle`DefSMhyperCoupling[],
+                   "@DefSMleftCoupling@"  -> WeinbergAngle`DefSMleftCoupling[],
+                   "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[]]]],
                    "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[]]]],
                    "@RhoHatTree@"         -> IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]],
                    "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
+                   "@DefVZSelfEnergy@"    -> WeinbergAngle`DefVZSelfEnergy[],
+                   "@DefVWSelfEnergy@"    -> WeinbergAngle`DefVWSelfEnergy[],
                    "@DeltaVBprototypes@"  -> IndentText[deltaVBprototypes],
                    "@DeltaVBfunctions@"   -> deltaVBfunctions,
                    "@DeltaVBcalculation@" -> IndentText[deltaVBcalculation],

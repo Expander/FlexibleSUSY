@@ -6,8 +6,12 @@ BeginPackage["WeinbergAngle`", {"SARAH`", "CConversion`", "Parameters`", "SelfEn
 CheckMuonDecayRunning::usage="";
 InitMuonDecay::usage="";
 
+DefSMhyperCoupling::usage="";
+DefSMleftCoupling::usage="";
 GetBottomMass::usage="";
 GetTopMass::usage="";
+DefVZSelfEnergy::usage="";
+DefVWSelfEnergy::usage="";
 
 DeltaRhoHat2LoopSM::usage="";
 DeltaRHat2LoopSM::usage="";
@@ -55,8 +59,51 @@ InitMuonDecay[eigenstates_:FlexibleSUSY`FSEigenstates] :=
            SARAH`MakeCouplingLists;
           ];
 
+DefSMhyperCoupling[] :=
+    Module[{result},
+           result = "const double gY = ";
+           If[!MuonDecayWorks,
+              Return[result <> "1.;"]];
+           result = result <> ThresholdCorrections`GetParameter[SARAH`hyperchargeCoupling] <> " * ";
+           result = result <> FlexibleSUSY`FSModelName <> "_info::normalization_";
+           result = result <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <> ";";
+           result
+          ];
+
+DefSMleftCoupling[] :=
+    Module[{result},
+           result = "const double g2 = ";
+           If[!MuonDecayWorks,
+              Return[result <> "1.;"]];
+           result = result <> ThresholdCorrections`GetParameter[SARAH`leftCoupling] <> " * ";
+           result = result <> FlexibleSUSY`FSModelName <> "_info::normalization_";
+           result = result <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <> ";";
+           result
+          ];
+
 GetBottomMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
+
 GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
+
+DefVZSelfEnergy[] :=
+    Module[{result},
+           result = "const double pizzt   = ";
+           If[!MuonDecayWorks,
+              Return[result <> "0.;"]];
+           result = result <> "Re(model->self_energy_";
+           result = result <> CConversion`ToValidCSymbolString[SARAH`VectorZ] <> "(p));";
+           result
+          ];
+
+DefVWSelfEnergy[] :=
+    Module[{result},
+           result = "const double piwwt   = ";
+           If[!MuonDecayWorks,
+              Return[result <> "0.;"]];
+           result = result <> "Re(model->self_energy_";
+           result = result <> CConversion`ToValidCSymbolString[SARAH`VectorW] <> "(p));";
+           result
+          ];
 
 FindMassZ2[masses_List] := FindMass2[masses, SARAH`VectorZ];
 
