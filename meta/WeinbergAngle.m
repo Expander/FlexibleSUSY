@@ -32,7 +32,7 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<WeinbergAngle>: ", Sequence @@ Utils`InputFormOfNonStrings /@ {msg}]];
 
-CheckMuonDecayInputRequirements[printout_:True] :=
+CheckMuonDecayInputRequirements[] :=
     Module[{requiredSymbols, availPars, areDefined},
            requiredSymbols = {SARAH`VectorP, SARAH`VectorW, SARAH`VectorZ,
                               SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling};
@@ -41,10 +41,8 @@ CheckMuonDecayInputRequirements[printout_:True] :=
                             Parameters`GetModelParameters[],
                             Parameters`GetOutputParameters[]];
            areDefined = MemberQ[availPars, #]& /@ requiredSymbols;
-           If[printout,
-              Print["Unknown symbol: ", #]& /@
+           DebugPrint["Error: Unknown symbol: ", #]& /@
               Cases[Utils`Zip[areDefined, requiredSymbols], {False, p_} :> p];
-             ];
            And @@ areDefined
           ];
 
