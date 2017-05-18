@@ -29,10 +29,26 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<WeinbergAngle>: ", Sequence @@ Utils`InputFormOfNonStrings /@ {msg}]];
 
+CheckMuonDecayInputRequirements[printout_:True] :=
+    Module[{requiredSymbols, availPars, areDefined},
+           requiredSymbols = {SARAH`VectorP, SARAH`VectorW, SARAH`VectorZ,
+                              SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling};
+           availPars = Join[TreeMasses`GetParticles[],
+                            Parameters`GetInputParameters[],
+                            Parameters`GetModelParameters[],
+                            Parameters`GetOutputParameters[]];
+           areDefined = MemberQ[availPars, #]& /@ requiredSymbols;
+           If[printout,
+              Print["Unknown symbol: ", #]& /@
+              Cases[Utils`Zip[areDefined, requiredSymbols], {False, p_} :> p];
+             ];
+           And @@ areDefined
+          ];
+
 (*prepare usage of muon decay method*)
 InitMuonDecay[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Module[{},
-           MuonDecayWorks = True;
+           MuonDecayWorks = CheckMuonDecayInputRequirements[];
            (*enable usage of routine SARAH`InsFields*)
            SA`CurrentStates = eigenstates;
            SARAH`InitVertexCalculation[eigenstates, False];
