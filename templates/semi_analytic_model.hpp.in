@@ -50,7 +50,7 @@ public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@(const @ModelName@&) = default;
    @ModelName@(@ModelName@&&) = default;
-   virtual ~@ModelName@();
+   virtual ~@ModelName@() = default;
    @ModelName@& operator=(const @ModelName@&) = default;
    @ModelName@& operator=(@ModelName@&&) = default;
 
