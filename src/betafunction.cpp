@@ -30,17 +30,6 @@
 
 namespace flexiblesusy {
 
-Beta_function::Beta_function()
-   : num_pars(0)
-   , loops(0)
-   , thresholds(0)
-   , scale(0.0)
-   , tolerance(1.e-4)
-   , min_tolerance(1.0e-11)
-   , zero_threshold(1.e-11)
-{
-}
-
 void Beta_function::reset()
 {
    num_pars = 0;
