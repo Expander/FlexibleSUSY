@@ -24,7 +24,7 @@
 #ifndef BETAFUNCTION_H
 #define BETAFUNCTION_H
 
-#include "rk.hpp"
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 

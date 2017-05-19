@@ -22,8 +22,10 @@
  */
 
 #include "betafunction.hpp"
-#include "logger.hpp"
 #include "error.hpp"
+#include "logger.hpp"
+#include "rk.hpp"
+
 #include <cmath>
 
 namespace flexiblesusy {
