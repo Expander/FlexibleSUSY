@@ -83,6 +83,25 @@ void RGFlow<Semi_analytic>::add_outer(Single_scale_constraint* c, Model* m)
 }
 
 /**
+ * Adds a matching condition for the outer iteration.  This matching
+ * condition matches the two models by calling match().  The two
+ * models are passed to the set_models() function of the matching
+ * condition.
+ *
+ * @param mc matching condition
+ * @param m1 model 1
+ * @param m2 model 2
+ */
+void RGFlow<Semi_analytic>::add_outer(Single_scale_matching* mc, Model* m1, Model* m2)
+{
+   if (!mc) throw SetupError("matching condition pointer is NULL");
+   if (!m1) throw SetupError("model pointer 1 is NULL");
+   if (!m2) throw SetupError("model pointer 2 is NULL");
+   mc->set_models(m1, m2);
+   outer_sliders.push_back(std::make_shared<Matching_slider>(m1, m2, mc));
+}
+
+/**
  * @brief Solves the boundary value problem.
  *
  * At first the initial_guess() is called.  Afterwards, the semianalytic

@@ -71,6 +71,8 @@ public:
    void add_inner(Single_scale_matching*, Model*, Model*);
    /// add outer constraint
    void add_outer(Single_scale_constraint*, Model*);
+   /// add outer matching condition
+   void add_outer(Single_scale_matching*, Model*, Model*);
    /// get model at current scale
    Model* get_model() const;
    /// get number of used iterations
