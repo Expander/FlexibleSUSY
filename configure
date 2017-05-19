@@ -94,6 +94,7 @@ options="                    \
    enable_librarylink        \
    enable_looptools          \
    enable_mass_error_check   \
+   enable_odeint             \
    enable_silent             \
    enable_shared_libs        \
    enable_sqlite             \
@@ -123,6 +124,7 @@ enable_meta="no"
 # BEGIN: NOT EXPORTED ##########################################
 enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
+enable_odeint="no"
 enable_silent="no"
 enable_sqlite="automatic"
 enable_shared_libs="no"
@@ -140,6 +142,7 @@ DEFINE_ENABLE_LAPACK="#undef ENABLE_LAPACK"
 DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
 DEFINE_ENABLE_ILP64MKL_WORKAROUND="#undef ENABLE_ILP64MKL_WORKAROUND"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
+DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
 DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
@@ -195,6 +198,7 @@ LOOPFUNCFLAGS=""
 LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
+odeint_inc_dir=""
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -1842,6 +1846,36 @@ check_sqlite_libs() {
 }
 
 #_____________________________________________________________________
+check_odeint_incl() {
+    check_header "boost/numeric/odeint.hpp" "$odeint_inc_dir" \
+                 "$boost_inc_dir:$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        return 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$odeint_inc_dir" ]; then
+            ODEINTFLAGS="-I$odeint_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_odeint() {
+    if test "x$enable_odeint" != "xno" ; then
+        if check_odeint_incl ; then
+            enable_odeint=yes
+        else
+            if [ "x$enable_odeint" = xyes ] ; then
+                message "Error: odeint not found."
+                exit 1
+            fi
+            enable_odeint=no
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_sqlite_incl() {
     check_header "sqlite3.h" "$sqlite_inc_dir" \
 	"$default_inc_paths"
@@ -2269,6 +2303,17 @@ enable_defines() {
         fi
     fi
 
+    if test "x${enable_odeint}" = "xyes" ; then
+        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
+        message "Enabling odeint"
+        logmsg "   ${DEFINE_ENABLE_ODEINT}"
+    else
+        enable_odeint=no
+        DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
+        message "Disabling odeint"
+        logmsg "   ${DEFINE_ENABLE_ODEINT}"
+    fi
+
     if test "x${enable_sqlite}" = "xyes" ; then
         DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
         logmsg "Enabling sqlite"
@@ -2376,6 +2421,7 @@ replace_markers() {
 	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
+        -e "s|@ENABLE_ODEINT@|$enable_odeint|"    \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
 	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
@@ -2388,6 +2434,7 @@ replace_markers() {
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
         -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|"  \
         -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|"  \
+	-e "s|@ODEINTFLAGS@|$ODEINTFLAGS|"            \
 	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
 	-e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"        \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
@@ -2429,6 +2476,7 @@ cat <<EOF
 EOF
 # END:   NOT EXPORTED ##########################################
 cat <<EOF
+  odeint            Enable odeint (default: $enable_odeint)
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
   shared-libs       Create shared libraries (default: $enable_shared_libs)
@@ -2468,6 +2516,7 @@ cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
+  --with-odeint-incdir=     Path to search for odeint header
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
   --with-pthread-libdir=    Path to search for pthread library
@@ -2576,6 +2625,7 @@ if test $# -gt 0 ; then
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
+            --with-odeint-incdir=*)  odeint_inc_dir=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
             --with-shared-ldflags=*) SHARED_LDFLAGS=$optarg ;;
@@ -2647,6 +2697,7 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_libs
     fi
     check_loop_functions
+    check_odeint
     check_sqlite
     check_tsil
     check_static_lib_cmd
@@ -2733,6 +2784,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
+    -e "s|@DEFINE_ENABLE_ODEINT@|$DEFINE_ENABLE_ODEINT|"       \
     -e "s|@DEFINE_ENABLE_SQLITE@|$DEFINE_ENABLE_SQLITE|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
