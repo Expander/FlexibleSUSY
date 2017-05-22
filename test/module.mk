@@ -66,7 +66,7 @@ TEST_SRC += \
 		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_QedQcd.cpp \
-		$(DIR)/test_rk.cpp \
+		$(DIR)/test_basic_rk_integrator.cpp \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp \
 		$(DIR)/test_two_scale_solver.cpp \
@@ -573,7 +573,7 @@ $(DIR)/test_pv.x: $(DIR)/test_pv.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOP
 $(DIR)/test_QedQcd.x: $(DIR)/test_QedQcd.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
-$(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_basic_rk_integrator.x: $(DIR)/test_basic_rk_integrator.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
 $(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))

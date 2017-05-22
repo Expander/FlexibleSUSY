@@ -1,18 +1,18 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_rk
+#define BOOST_TEST_MODULE test_basic_rk_integrator
 
 #include <boost/test/unit_test.hpp>
 
-#include "rk.hpp"
+#include "basic_rk_integrator.hpp"
 #include "rk_legacy.hpp"
 #include "error.hpp"
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 using namespace flexiblesusy;
 using namespace softsusy;
 
-typedef DoubleVector (*Derivative_t)(double, const DoubleVector&);
+using Derivative_t = DoubleVector (*)(double, const DoubleVector&);
 
 Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
 {
@@ -31,14 +31,15 @@ DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
 }
 
 template <typename Derivs>
-void check_integrateOdes(DoubleVector& parameters,
-                         double start, double end,
-                         Derivative_t beta_legacy,
-                         Derivs beta_eigen)
+void check_basic_integrator(DoubleVector& parameters,
+                            double start, double end,
+                            Derivative_t beta_legacy,
+                            Derivs beta_eigen)
 {
    Eigen::ArrayXd parameter_eigen(ToEigenArray(parameters));
 
-   const double from = log(start), to = log(end);
+   const double from = std::log(start);
+   const double to = std::log(end);
    const double tol = 1.0e-7;
    const double guess = (from - to) * 0.1; // first step size
    const double hmin = (from - to) * tol * 1.0e-5; // min step size
@@ -49,8 +50,8 @@ void check_integrateOdes(DoubleVector& parameters,
 
    int err_eigen = 0;
    try {
-      runge_kutta::integrateOdes(parameter_eigen, from, to, tol, guess,
-                                 hmin, beta_eigen);
+      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd> integrator;
+      integrator(from, to, parameter_eigen, beta_eigen, tol);
    } catch (Error&) {
       err_eigen = 1;
    }
@@ -86,8 +87,8 @@ BOOST_AUTO_TEST_CASE( test_one_dim )
    DoubleVector parameter_legacy(1);
    parameter_legacy(1) = 0.5;
 
-   check_integrateOdes(parameter_legacy, 100., 1.0e10,
-                       beta_one_dim_legacy, beta_one_dim_eigen);
+   check_basic_integrator(parameter_legacy, 100., 1.0e10,
+                          beta_one_dim_legacy, beta_one_dim_eigen);
 }
 
 // ============================== 10 dimensions ==============================
@@ -108,8 +109,8 @@ BOOST_AUTO_TEST_CASE( test_ten_dim )
    for (std::size_t i = 1; i <= parameter_legacy.size(); i++)
       parameter_legacy(i) = 0.5 + 0.1 * i*i;
 
-   check_integrateOdes(parameter_legacy, 100., 1.0e10,
-                       beta_ten_dim_legacy, beta_ten_dim_eigen);
+   check_basic_integrator(parameter_legacy, 100., 1.0e10,
+                          beta_ten_dim_legacy, beta_ten_dim_eigen);
 }
 
 // ============================== non-perturbative ==============================
@@ -130,6 +131,6 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative )
    for (std::size_t i = 1; i <= parameter_legacy.size(); i++)
       parameter_legacy(i) = 3.0 + 0.1 * i*i;
 
-   check_integrateOdes(parameter_legacy, 100., 1.0e10,
-                       beta_non_pert_legacy, beta_non_pert_eigen);
+   check_basic_integrator(parameter_legacy, 100., 1.0e10,
+                          beta_non_pert_legacy, beta_non_pert_eigen);
 }
