@@ -287,8 +287,10 @@ CreateCouplingFunction[coupling_, expr_, inModelClass_] :=
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n";
-           If[!inModelClass, body = body <> Parameters`CreateLocalConstRefs[expr] <> "\n";];
+           If[inModelClass,
+              body = body <> Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n"];
+           If[!inModelClass,
+              body = body <> Parameters`CreateLocalConstRefs[expr] <> "\n"];
            body = body <> typeStr <> " result" <> initalValue <> ";\n\n";
            body = body <> TreeMasses`ExpressionToString[expr, "result"];
            body = body <> "\nreturn result;\n";
