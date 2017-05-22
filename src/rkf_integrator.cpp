@@ -22,6 +22,9 @@
  */
 
 #include "rkf_integrator.hpp"
+#include "logger.hpp"
+#include "wrappers.hpp"
+
 #include "config.h"
 
 #ifdef ENABLE_ODEINT
@@ -30,6 +33,7 @@
 #include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
 #include <boost/numeric/odeint/external/eigen/eigen.hpp>
 #include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
+#include <boost/numeric/odeint/stepper/generation.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta_fehlberg78.hpp>
 
 namespace boost {
@@ -55,7 +59,7 @@ namespace runge_kutta {
 
 void RKF_integrator::operator()(double start, double end,
                                 Eigen::ArrayXd& pars, Derivs derivs,
-                                double) const
+                                double tol) const
 {
    using state_type = Eigen::ArrayXd;
    using stepper_type = boost::numeric::odeint::runge_kutta_fehlberg78<
@@ -68,9 +72,28 @@ void RKF_integrator::operator()(double start, double end,
       dydt = derivs(t, y);
    };
 
-   stepper_type stepper;
+   const auto stepper = boost::numeric::odeint::make_controlled(tol, tol, stepper_type());
    boost::numeric::odeint::integrate_adaptive(
-      stepper, derivatives, pars, start, end, guess);
+      stepper, derivatives, pars, start, end, guess, RKF_observer());
+}
+
+void RKF_integrator::RKF_observer::operator()(const Eigen::ArrayXd& state, double t) const
+{
+   if (!IsFinite(state)) {
+      int max_step_dir = 0;
+      for (int i = 0; i < state.size(); ++i) {
+         if (!IsFinite(state(i))) {
+            max_step_dir = i;
+            break;
+         }
+      }
+#ifdef ENABLE_VERBOSE
+      ERROR("RKF_integrator: non-perturbative running at Q = "
+            << std::exp(t) << " GeV of parameter y(" << max_step_dir
+            << ") = " << state(max_step_dir));
+#endif
+      throw NonPerturbativeRunningError(std::exp(t), max_step_dir, state(max_step_dir));
+   }
 }
 
 } // namespace runge_kutta

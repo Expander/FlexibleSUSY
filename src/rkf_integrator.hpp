@@ -45,6 +45,10 @@ private:
    private:
       std::string msg;
    };
+
+   struct RKF_observer {
+      void operator()(const Eigen::ArrayXd&, double) const;
+   };
 };
 
 } // namespace runge_kutta
