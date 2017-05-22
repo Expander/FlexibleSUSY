@@ -46,6 +46,11 @@ TEST_SRC := \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_which.cpp \
 
+ifeq ($(WITH_CMSSM) $(WITH_SoftsusyMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSM_database.cpp
+endif
+
 TEST_SH := \
 		$(DIR)/test_depgen.sh \
 		$(DIR)/test_run_examples.sh \
@@ -87,9 +92,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_higgs_iteration.cpp \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
 		$(DIR)/test_CMSSM_low_scale_constraint.cpp \
-		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_model.cpp \
+		$(DIR)/test_CMSSM_slha.cpp \
+		$(DIR)/test_CMSSM_slha_input.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp \
+		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
+		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp
 endif
 
@@ -212,10 +220,6 @@ TEST_SH += \
 		$(DIR)/test_CMSSM_QedQcd_exception.sh \
 		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh
 TEST_SRC += \
-		$(DIR)/test_CMSSM_database.cpp \
-		$(DIR)/test_CMSSM_slha.cpp \
-		$(DIR)/test_CMSSM_slha_input.cpp \
-		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
 		$(DIR)/test_CMSSM_info.cpp
 endif
 
