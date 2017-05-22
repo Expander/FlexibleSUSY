@@ -24,7 +24,6 @@
 #include "betafunction.hpp"
 #include "error.hpp"
 #include "logger.hpp"
-#include "rk.hpp"
 
 #include <cmath>
 
@@ -123,13 +122,11 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    if (fabs(x1 - x2) < min_tolerance)
       return;
 
+   const double start = std::log(fabs(x1));
+   const double end = std::log(fabs(x2));
    const double tol = get_tolerance(eps);
-   const double from = log(fabs(x1));
-   const double to = log(fabs(x2));
-   const double guess = (from - to) * 0.1; //first step size
-   const double hmin = (from - to) * tol * 1.0e-5;
 
-   runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs);
+   integrator(start, end, v, derivs, tol);
 
    set_scale(x2);
 }

@@ -51,6 +51,7 @@ LIBFLEXI_SRC := \
 
 LIBFLEXI_HDR := \
 		$(DIR)/array_view.hpp \
+		$(DIR)/basic_rk_integrator.hpp \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \
@@ -104,7 +105,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/pv.hpp \
 		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
-		$(DIR)/rk.hpp \
 		$(DIR)/root_finder.hpp \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
