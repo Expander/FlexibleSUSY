@@ -169,7 +169,12 @@ template <typename StateType,
 class Basic_rk_integrator {
 public:
    void operator()(double, double, StateType&, Derivs, double) const;
+
+   void set_max_steps(int s) { max_steps = s; }
+   int get_max_steps() const { return max_steps; }
+
 private:
+   int max_steps{400};
    Stepper stepper{};
 };
 
@@ -181,7 +186,6 @@ void Basic_rk_integrator<StateType, Derivs, Stepper>::operator()(
    const double guess = (start - end) * 0.1; // first step size
    const double hmin = (start - end) * tolerance * 1.0e-5;
    const int nvar = ystart.size();
-   const int MAXSTP = 400;
    const double TINY = 1.0e-16;
 
    double x = start;
@@ -192,7 +196,7 @@ void Basic_rk_integrator<StateType, Derivs, Stepper>::operator()(
    StateType dydx;
    int max_step_dir;
 
-   for (int nstp = 0; nstp < MAXSTP; ++nstp) {
+   for (int nstp = 0; nstp < max_steps; ++nstp) {
       dydx = derivs(x, y);
       yscal = y.abs() + (dydx * h).abs() + TINY;
 
