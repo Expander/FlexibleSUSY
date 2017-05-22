@@ -215,7 +215,7 @@ void Basic_rk_integrator<StateType, Derivs, Stepper>::operator()(
    }
 
 #ifdef ENABLE_VERBOSE
-   ERROR("Basic_rkintegrator::integrate_odes: too many steps\n"
+   ERROR("Basic_rkintegrator: too many steps\n"
          "********** Q = " << std::exp(x) << " *********");
    ERROR("max step in direction of " << max_step_dir);
    for (int i = 0; i < nvar; i++)
