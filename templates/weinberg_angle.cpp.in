@@ -381,7 +381,7 @@ double CLASSNAME::calculate_delta_vb_sm(
  */
 double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
 {
-   const double mz         = sm_parameters.mz_pole;
+   const double mz = sm_parameters.mz_pole;
    @DefSMhyperCoupling@
    @DefSMleftCoupling@
    const double sinThetaW2 = Sqr(sinThetaW);
@@ -532,8 +532,8 @@ double CLASSNAME::calculate_self_energy_@VectorW@(double p)
  */
 double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt)
 {
-   const double q   = model->get_scale();
-   const double Nc  = 3.0;
+   const double q  = model->get_scale();
+   const double Nc = 3.0;
    @DefSMhyperCoupling@
    @DefSMleftCoupling@
    const double gY2 = Sqr(gY);
