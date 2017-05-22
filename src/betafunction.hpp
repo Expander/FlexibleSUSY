@@ -86,7 +86,7 @@ private:
    double min_tolerance{1.e-11}; ///< minimum tolerance allowed
    double zero_threshold{1.e-11};///< threshold for treating values as zero
    ODE_integrator integrator{
-      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd,Derivs>()};
+      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd>()};
 
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);

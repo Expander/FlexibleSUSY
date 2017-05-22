@@ -162,7 +162,9 @@ double Basic_rk_stepper<StateType,Derivs>::step(
    return errmax > ERRCON ? SAFETY * h * std::pow(errmax,PGROW) : 5.0 * h;
 }
 
-template <typename StateType, typename Derivs,
+template <typename StateType,
+          typename Derivs
+          = std::function<StateType(double, const StateType&)>,
           typename Stepper = Basic_rk_stepper<StateType,Derivs> >
 class Basic_rk_integrator {
 public:
