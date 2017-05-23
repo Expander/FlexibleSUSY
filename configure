@@ -229,7 +229,6 @@ std_cxx11_icpc_version="13.0.0"
 
 # required boost version
 required_boost_version="1.37.0"
-required_odeint_boost_version="1.53.0"
 
 # required Mathematica version
 required_mathematica_version="7"
@@ -1846,7 +1845,20 @@ check_sqlite_libs() {
 #_____________________________________________________________________
 check_odeint() {
     check_header "boost/numeric/odeint.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/algebra/algebra_dispatcher.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/algebra/vector_space_algebra.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/external/eigen/eigen.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/integrate/integrate_adaptive.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/stepper/generation.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths" && \
+    check_header "boost/numeric/odeint/stepper/runge_kutta_fehlberg78.hpp" "$boost_inc_dir" \
                  "$default_inc_paths"
+
     if test "x$found_hdr" = "x" ; then
         DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
         logmsg "Disabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
