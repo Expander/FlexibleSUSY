@@ -235,13 +235,13 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
-GetParticleIndices[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
+GetParticleIndicesInCoupling[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
 
-GetParticleIndices[Cp[a__][_]] := GetParticleIndices[Cp[a]];
+GetParticleIndicesInCoupling[Cp[a__][_]] := GetParticleIndicesInCoupling[Cp[a]];
 
 CreateCouplingSymbol[coupling_] :=
     Module[{symbol, indices},
-           indices = GetParticleIndices[coupling];
+           indices = GetParticleIndicesInCoupling[coupling];
            symbol = ToValidCSymbol[coupling /. a_[List[__]] :> a];
            symbol[Sequence @@ indices]
           ];
@@ -268,7 +268,7 @@ CreateCouplingFunction[coupling_, expr_, inModelClass_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
             type, typeStr, initalValue},
-           indices = GetParticleIndices[coupling];
+           indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            cFunctionName = cFunctionName <> "(";
