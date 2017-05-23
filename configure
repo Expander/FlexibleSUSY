@@ -1845,33 +1845,14 @@ check_sqlite_libs() {
 
 #_____________________________________________________________________
 check_odeint() {
-    checking_msg "Boost odeint"
-    try_compile_run_cpp_program "#include <iostream>
-#include <boost/version.hpp>
-int main() {
-   int boost_major = BOOST_VERSION / 100000;
-   int boost_minor = BOOST_VERSION / 100 % 1000;
-   int boost_patch = BOOST_VERSION % 100;
-   std::cout << boost_major << '.' << boost_minor << '.' << boost_patch << '\n';
-   return 0;
-}" "$CXX" "${BOOSTFLAGS}" && [ $cpp_exit = 0 ] || {
-        result "unknown"
-        message "Warning: could not determine boost version because"
-        message "   compilation or execution of the boost test program failed."
-	return 1
-    }
-
-    local boost_version="$cpp_output"
-
-    if version_at_least "$boost_version" "$required_odeint_boost_version" ;
-    then
-        result "ok"
-        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
-        logmsg "Enabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
-    else
-        result "not found"
+    check_header "boost/numeric/odeint.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
         DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
         logmsg "Disabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
+    else
+        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
+        logmsg "Enabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
     fi
 }
 
