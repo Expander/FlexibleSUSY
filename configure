@@ -94,7 +94,6 @@ options="                    \
    enable_librarylink        \
    enable_looptools          \
    enable_mass_error_check   \
-   enable_odeint             \
    enable_silent             \
    enable_shared_libs        \
    enable_sqlite             \
@@ -124,7 +123,6 @@ enable_meta="no"
 # BEGIN: NOT EXPORTED ##########################################
 enable_meta="yes"
 # END:   NOT EXPORTED ##########################################
-enable_odeint="no"
 enable_silent="no"
 enable_sqlite="automatic"
 enable_shared_libs="no"
@@ -198,7 +196,6 @@ LOOPFUNCFLAGS=""
 LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
-odeint_inc_dir=""
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -232,6 +229,7 @@ std_cxx11_icpc_version="13.0.0"
 
 # required boost version
 required_boost_version="1.37.0"
+required_odeint_boost_version="1.53.0"
 
 # required Mathematica version
 required_mathematica_version="7"
@@ -1846,32 +1844,34 @@ check_sqlite_libs() {
 }
 
 #_____________________________________________________________________
-check_odeint_incl() {
-    check_header "boost/numeric/odeint.hpp" "$odeint_inc_dir" \
-                 "$boost_inc_dir:$default_inc_paths"
-    if test "x$found_hdr" = "x" ; then
-        return 1
-    else
-        # assume that the compiler will look in the default paths
-        if [ -n "$odeint_inc_dir" ]; then
-            ODEINTFLAGS="-I$odeint_inc_dir"
-        fi
-    fi
-    return 0
-}
-
-#_____________________________________________________________________
 check_odeint() {
-    if test "x$enable_odeint" != "xno" ; then
-        if check_odeint_incl ; then
-            enable_odeint=yes
-        else
-            if [ "x$enable_odeint" = xyes ] ; then
-                message "Error: odeint not found."
-                exit 1
-            fi
-            enable_odeint=no
-        fi
+    checking_msg "Boost odeint"
+    try_compile_run_cpp_program "#include <iostream>
+#include <boost/version.hpp>
+int main() {
+   int boost_major = BOOST_VERSION / 100000;
+   int boost_minor = BOOST_VERSION / 100 % 1000;
+   int boost_patch = BOOST_VERSION % 100;
+   std::cout << boost_major << '.' << boost_minor << '.' << boost_patch << '\n';
+   return 0;
+}" "$CXX" "${BOOSTFLAGS}" && [ $cpp_exit = 0 ] || {
+        result "unknown"
+        message "Warning: could not determine boost version because"
+        message "   compilation or execution of the boost test program failed."
+	return 1
+    }
+
+    local boost_version="$cpp_output"
+
+    if version_at_least "$boost_version" "$required_odeint_boost_version" ;
+    then
+        result "ok"
+        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
+        logmsg "Enabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
+    else
+        result "not found"
+        DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
+        logmsg "Disabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
     fi
 }
 
@@ -2303,17 +2303,6 @@ enable_defines() {
         fi
     fi
 
-    if test "x${enable_odeint}" = "xyes" ; then
-        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
-        message "Enabling odeint"
-        logmsg "   ${DEFINE_ENABLE_ODEINT}"
-    else
-        enable_odeint=no
-        DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
-        message "Disabling odeint"
-        logmsg "   ${DEFINE_ENABLE_ODEINT}"
-    fi
-
     if test "x${enable_sqlite}" = "xyes" ; then
         DEFINE_ENABLE_SQLITE="#define ENABLE_SQLITE 1"
         logmsg "Enabling sqlite"
@@ -2421,7 +2410,6 @@ replace_markers() {
 	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
-        -e "s|@ENABLE_ODEINT@|$enable_odeint|"    \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
 	-e "s|@ENABLE_SQLITE@|$enable_sqlite|"    \
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
@@ -2434,7 +2422,6 @@ replace_markers() {
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
         -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|"  \
         -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|"  \
-	-e "s|@ODEINTFLAGS@|$ODEINTFLAGS|"            \
 	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
 	-e "s|@SQLITEFLAGS@|$SQLITEFLAGS|"        \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
@@ -2476,7 +2463,6 @@ cat <<EOF
 EOF
 # END:   NOT EXPORTED ##########################################
 cat <<EOF
-  odeint            Enable odeint (default: $enable_odeint)
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
   shared-libs       Create shared libraries (default: $enable_shared_libs)
@@ -2516,7 +2502,6 @@ cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
-  --with-odeint-incdir=     Path to search for odeint header
   --with-optional-modules=  Load optional FlexibleSUSY modules
                             (for example the \`test' or \`examples' module)
   --with-pthread-libdir=    Path to search for pthread library
@@ -2625,7 +2610,6 @@ if test $# -gt 0 ; then
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
-            --with-odeint-incdir=*)  odeint_inc_dir=$optarg ;;
             --with-optional-modules=*) OPTIONAL_MODULES="$(echo $optarg | tr ',' ' ')" ;;
             --with-pthread-libdir=*) pthread_lib_dir=$optarg ;;
             --with-shared-ldflags=*) SHARED_LDFLAGS=$optarg ;;

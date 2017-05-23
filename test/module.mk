@@ -46,11 +46,6 @@ TEST_SRC := \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_which.cpp \
 
-ifeq ($(ENABLE_ODEINT),yes)
-TEST_SRC += \
-		$(DIR)/test_rkf_integrator.cpp
-endif
-
 ifeq ($(WITH_CMSSM) $(WITH_SoftsusyMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_database.cpp
@@ -76,7 +71,7 @@ TEST_SRC += \
 		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_lowe.cpp \
 		$(DIR)/test_QedQcd.cpp \
-		$(DIR)/test_basic_rk_integrator.cpp \
+		$(DIR)/test_rk.cpp \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp \
 		$(DIR)/test_two_scale_solver.cpp \
@@ -451,10 +446,6 @@ $(DIR)/test_pv_looptools.x : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_L
 $(DIR)/test_pv_softsusy.x  : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_SOFTSUSY
 endif
 
-ifeq ($(ENABLE_ODEINT),yes)
-$(DIR)/test_rkf_integrator.x : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) $(ODEINTFLAGS)
-endif
-
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		clean-$(MODNAME)-dep clean-$(MODNAME)-log \
 		clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
@@ -586,7 +577,7 @@ $(DIR)/test_pv.x: $(DIR)/test_pv.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOP
 $(DIR)/test_QedQcd.x: $(DIR)/test_QedQcd.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
-$(DIR)/test_basic_rk_integrator.x: $(DIR)/test_basic_rk_integrator.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
 $(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -637,11 +628,6 @@ $(DIR)/test_pv_looptools.x: $(DIR)/test_pv_crosschecks.cpp $(LIBFLEXI)
 
 $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-out %pv.o,$(LIBFLEXI_OBJ))
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
-endif
-
-ifeq ($(ENABLE_ODEINT),yes)
-$(DIR)/test_rkf_integrator.x: $(DIR)/test_rkf_integrator.cpp $(LIBFLEXI)
-		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 endif
 
 $(DIR)/test_CMSSM_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
