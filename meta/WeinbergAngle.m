@@ -357,11 +357,12 @@ WaveResult[diagr_List, includeGoldstones_] :=
                     SARAH`B1[0, SARAH`Mass2[intfermion], SARAH`Mass2[intscalar]];
            (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
-           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]],
-                                 If[includeGoldstones, 1,
-                                    TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]],
-                                 TreeMasses`GetDimension[intpartwithindex[[i]]],
-                                 result],
+           Do[result = CConversion`FSIndexSum[
+                          intpartwithindex[[i, 1, 1]],
+                          If[includeGoldstones, 0,
+                             TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]] - 1],
+                          TreeMasses`GetDimension[intpartwithindex[[i]]] - 1,
+                          result],
               {i, Length[intpartwithindex]}];
            result
           ];
@@ -479,11 +480,12 @@ VertexResultFSS[diagr_List, includeGoldstones_] :=
                                                       SARAH`Mass2[intscalars[[2]]]]);
            (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
-           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]],
-                                 If[includeGoldstones, 1,
-                                    TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]],
-                                 TreeMasses`GetDimension[intpartwithindex[[i]]],
-                                 result],
+           Do[result = CConversion`FSIndexSum[
+                          intpartwithindex[[i, 1, 1]],
+                          If[includeGoldstones, 0,
+                             TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]] - 1],
+                          TreeMasses`GetDimension[intpartwithindex[[i]]] - 1,
+                          result],
               {i, Length[intpartwithindex]}];
            result
           ];
@@ -536,11 +538,12 @@ VertexResultFFS[diagr_List, includeGoldstones_] :=
                                                          SARAH`Mass2[intfermions[[2]]]]));
            (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
-           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]],
-                                 If[includeGoldstones, 1,
-                                    TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]],
-                                 TreeMasses`GetDimension[intpartwithindex[[i]]],
-                                 result],
+           Do[result = CConversion`FSIndexSum[
+                          intpartwithindex[[i, 1, 1]],
+                          If[includeGoldstones, 0,
+                             TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]] - 1],
+                          TreeMasses`GetDimension[intpartwithindex[[i]]] - 1,
+                          result],
               {i, Length[intpartwithindex]}];
            result
           ];
@@ -701,11 +704,12 @@ BoxResult[diagr_List, includeGoldstones_] :=
               result = result * (-1) * SARAH`D27[Sequence @@ SARAH`Mass2 /@ intparticles]];
            (*add sums over internal particles*)
            intpartwithindex = Reverse[Cases[intparticles, _[{_}]]];
-           Do[result = SARAH`sum[intpartwithindex[[i, 1, 1]],
-                                 If[includeGoldstones, 1,
-                                    TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]]],
-                                 TreeMasses`GetDimension[intpartwithindex[[i]]],
-                                 result],
+           Do[result = CConversion`FSIndexSum[
+                          intpartwithindex[[i, 1, 1]],
+                          If[includeGoldstones, 0,
+                             TreeMasses`GetDimensionStartSkippingGoldstones[intpartwithindex[[i]]] - 1],
+                          TreeMasses`GetDimension[intpartwithindex[[i]]] - 1,
+                          result],
               {i, Length[intpartwithindex]}];
            result
           ];
@@ -807,10 +811,7 @@ CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List]
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = Parameters`CreateLocalConstRefs[expr] <> "\n";
            body = body <> type <> " result;\n\n";
-           body = body <> CConversion`ExpandSums[
-                     Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[expr],
-                                                      TreeMasses`GetParticles[]] /.
-                     vertexRules /. a_[List[i__]] :> a[i], "result"];
+           body = body <> CConversion`ExpandSums[expr /. vertexRules /. a_[List[i__]] :> a[i], "result"];
            body = body <> "\nreturn result;";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            decl = decl <> body <> "}\n";
