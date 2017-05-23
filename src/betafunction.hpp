@@ -24,7 +24,9 @@
 #ifndef BETAFUNCTION_H
 #define BETAFUNCTION_H
 
-#include "rk.hpp"
+#include "basic_rk_integrator.hpp"
+
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
@@ -40,7 +42,10 @@ namespace flexiblesusy {
  */
 class Beta_function {
 public:
-   Beta_function();
+   using Derivs = std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)>;
+   using ODE_integrator = std::function<void(double, double, Eigen::ArrayXd&, Derivs, double)>;
+
+   Beta_function() = default;
    Beta_function(const Beta_function&) = default;
    Beta_function(Beta_function&&) = default;
    virtual ~Beta_function() = default;
@@ -52,6 +57,7 @@ public:
    void set_loops(int l) { loops = l; }
    void set_thresholds(int t) { thresholds = t; }
    void set_zero_threshold(double t) { zero_threshold = t; }
+   void set_integrator(const ODE_integrator& i) { integrator = i; }
 
    double get_scale() const { return scale; }
    int get_number_of_parameters() const { return num_pars; }
@@ -69,17 +75,18 @@ public:
    virtual void run_to(double, double eps = -1.0);
 
 protected:
-   using Derivs = std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)>;
    void call_rk(double, double, Eigen::ArrayXd&, Derivs, double eps = -1.0);
 
 private:
-   int num_pars;         ///< number of parameters
-   int loops;            ///< to what loop order does the RG evolution run
-   int thresholds;       ///< threshold correction loop order
-   double scale;         ///< current renormalization scale
-   double tolerance;     ///< running tolerance
-   double min_tolerance; ///< minimum tolerance allowed
-   double zero_threshold;///< threshold for treating values as zero
+   int num_pars{0};              ///< number of parameters
+   int loops{0};                 ///< to what loop order does the RG evolution run
+   int thresholds{0};            ///< threshold correction loop order
+   double scale{0.};             ///< current renormalization scale
+   double tolerance{1.e-4};      ///< running tolerance
+   double min_tolerance{1.e-11}; ///< minimum tolerance allowed
+   double zero_threshold{1.e-11};///< threshold for treating values as zero
+   ODE_integrator integrator{
+      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd>()};
 
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);

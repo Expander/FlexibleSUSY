@@ -22,22 +22,12 @@
  */
 
 #include "betafunction.hpp"
-#include "logger.hpp"
 #include "error.hpp"
+#include "logger.hpp"
+
 #include <cmath>
 
 namespace flexiblesusy {
-
-Beta_function::Beta_function()
-   : num_pars(0)
-   , loops(0)
-   , thresholds(0)
-   , scale(0.0)
-   , tolerance(1.e-4)
-   , min_tolerance(1.0e-11)
-   , zero_threshold(1.e-11)
-{
-}
 
 void Beta_function::reset()
 {
@@ -113,7 +103,7 @@ Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
 }
 
 /**
- * Calls Runge Kutta routine from rk.cpp passing start and end scales,
+ * Calls Runge Kutta routine, passing the start and end scales
  * as first and second argument respectively.  Parameters are passed
  * as third argument and the derivatives method as the fourth
  * argument.  The precison is passed as the last argument or if not
@@ -132,13 +122,11 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    if (fabs(x1 - x2) < min_tolerance)
       return;
 
+   const double start = std::log(fabs(x1));
+   const double end = std::log(fabs(x2));
    const double tol = get_tolerance(eps);
-   const double from = log(fabs(x1));
-   const double to = log(fabs(x2));
-   const double guess = (from - to) * 0.1; //first step size
-   const double hmin = (from - to) * tol * 1.0e-5;
 
-   runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs);
+   integrator(start, end, v, derivs, tol);
 
    set_scale(x2);
 }

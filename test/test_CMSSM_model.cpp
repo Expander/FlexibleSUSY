@@ -1,19 +1,19 @@
-
-#define private public
-
-#include "CMSSM_two_scale_model.hpp"
-#include "test.h"
-#include "test_CMSSM.hpp"
-#include "softsusy.h"
-#include "wrappers.hpp"
-#include "conversion.hpp"
-#include "root_finder.hpp"
-#include "fixed_point_iterator.hpp"
-
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <string>
+
+#include "conversion.hpp"
+#include "fixed_point_iterator.hpp"
+#include "root_finder.hpp"
+#include "test.h"
+#include "wrappers.hpp"
+
+#define private public
+
+#include "CMSSM_two_scale_model.hpp"
+#include "softsusy.h"
+#include "test_CMSSM.hpp"
 
 void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
 {

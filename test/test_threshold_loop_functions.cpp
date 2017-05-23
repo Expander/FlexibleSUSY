@@ -23,6 +23,8 @@
 #include "threshold_loop_functions.hpp"
 #include "numerics.h"
 
+#include <cmath>
+
 using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_C0 )

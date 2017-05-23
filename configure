@@ -140,6 +140,7 @@ DEFINE_ENABLE_LAPACK="#undef ENABLE_LAPACK"
 DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
 DEFINE_ENABLE_ILP64MKL_WORKAROUND="#undef ENABLE_ILP64MKL_WORKAROUND"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
+DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
 DEFINE_ENABLE_SQLITE="#undef ENABLE_SQLITE"
@@ -228,6 +229,7 @@ std_cxx11_icpc_version="13.0.0"
 
 # required boost version
 required_boost_version="1.37.0"
+required_odeint_boost_version="1.53.0"
 
 # required Mathematica version
 required_mathematica_version="7"
@@ -1842,6 +1844,19 @@ check_sqlite_libs() {
 }
 
 #_____________________________________________________________________
+check_odeint() {
+    check_header "boost/numeric/odeint.hpp" "$boost_inc_dir" \
+                 "$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        DEFINE_ENABLE_ODEINT="#undef ENABLE_ODEINT"
+        logmsg "Disabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
+    else
+        DEFINE_ENABLE_ODEINT="#define ENABLE_ODEINT 1"
+        logmsg "Enabling usage of odeint: ${DEFINE_ENABLE_ODEINT}"
+    fi
+}
+
+#_____________________________________________________________________
 check_sqlite_incl() {
     check_header "sqlite3.h" "$sqlite_inc_dir" \
 	"$default_inc_paths"
@@ -2647,6 +2662,7 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_libs
     fi
     check_loop_functions
+    check_odeint
     check_sqlite
     check_tsil
     check_static_lib_cmd
@@ -2733,6 +2749,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
+    -e "s|@DEFINE_ENABLE_ODEINT@|$DEFINE_ENABLE_ODEINT|"       \
     -e "s|@DEFINE_ENABLE_SQLITE@|$DEFINE_ENABLE_SQLITE|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
     -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
