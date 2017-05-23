@@ -2609,6 +2609,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
                                    }];
 
+           Print["MuonDecayTest: ", WeinbergAngle`CheckMuonDecayRunning[]];
+
             Print["Creating matching class ..."];
             WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
                                {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
