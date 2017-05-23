@@ -45,7 +45,7 @@ template <typename StateType, typename Derivs>
 class Basic_rk_stepper {
 public:
    /// @brief Carries out a variable step-size Runge-Kutta step
-   double step(StateType&, const StateType&, double*, double,
+   double step(StateType&, const StateType&, double&, double,
                double, const StateType&, Derivs, int&) const;
 private:
    /// @brief Carries out a single 5th order Runge-Kutta step
@@ -93,7 +93,7 @@ void Basic_rk_stepper<StateType, Derivs>::runge_kutta_step(
  */
 template <typename StateType, typename Derivs>
 double Basic_rk_stepper<StateType,Derivs>::step(
-   StateType& y, const StateType& dydx, double* x, double htry,
+   StateType& y, const StateType& dydx, double& x, double htry,
    double eps, const StateType& yscal, Derivs derivs,
    int& max_step_dir) const
 {
@@ -151,7 +151,7 @@ void Basic_rk_integrator<StateType, Derivs, Stepper>::operator()(
    const double guess = (start - end) * 0.1; // first step size
    const double hmin = (start - end) * tolerance * 1.0e-5;
    const auto rkqs = [this] (
-      StateType& y, const StateType& dydx, double* x, double htry,
+      StateType& y, const StateType& dydx, double& x, double htry,
       double eps, const StateType& yscal, Derivs derivs,
       int& max_step_dir) -> double {
       return this->stepper.step(y, dydx, x, htry, eps,

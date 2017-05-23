@@ -107,7 +107,7 @@ void rungeKuttaStep(const ArrayType& y, const ArrayType& dydx, double x,
 
 /// organises the variable step-size for Runge-Kutta evolution
 template <typename ArrayType, typename Derivs>
-double odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
+double odeStepper(ArrayType& y, const ArrayType& dydx, double& x, double htry,
                   double eps, const ArrayType& yscal, Derivs derivs,
                   int& max_step_dir)
 {
@@ -122,34 +122,34 @@ double odeStepper(ArrayType& y, const ArrayType& dydx, double *x, double htry,
    ArrayType ytemp(n);
 
    for (;;) {
-      rungeKuttaStep(y, dydx, *x, h, ytemp, yerr, derivs);
+      rungeKuttaStep(y, dydx, x, h, ytemp, yerr, derivs);
       errmax = (yerr / yscal).abs().maxCoeff(&max_step_dir);
       errmax  /= eps;
       if (!std::isfinite(errmax)) {
 #ifdef ENABLE_VERBOSE
          ERROR("odeStepper: non-perturbative running at Q = "
-               << std::exp(*x) << " GeV of parameter y(" << max_step_dir
+               << std::exp(x) << " GeV of parameter y(" << max_step_dir
                << ") = " << y(max_step_dir) << ", dy(" << max_step_dir
                << ")/dx = " << dydx(max_step_dir));
 #endif
-         throw NonPerturbativeRunningError(std::exp(*x), max_step_dir, y(max_step_dir));
+         throw NonPerturbativeRunningError(std::exp(x), max_step_dir, y(max_step_dir));
       }
       if (errmax <= 1.0) {
          break;
       }
       const double htemp = SAFETY * h * std::pow(errmax, PSHRNK);
       h = (h >= 0.0 ? std::max(htemp, 0.1 * h) : std::min(htemp, 0.1 * h));
-      if (*x + h == *x) {
+      if (x + h == x) {
 #ifdef ENABLE_VERBOSE
-         ERROR("At Q = " << std::exp(*x) << " GeV "
+         ERROR("At Q = " << std::exp(x) << " GeV "
                "stepsize underflow in odeStepper in parameter y("
                << max_step_dir << ") = " << y(max_step_dir) << ", dy("
                << max_step_dir << ")/dx = " << dydx(max_step_dir));
 #endif
-         throw NonPerturbativeRunningError(std::exp(*x), max_step_dir, y(max_step_dir));
+         throw NonPerturbativeRunningError(std::exp(x), max_step_dir, y(max_step_dir));
       }
    }
-   *x += h;
+   x += h;
    y = ytemp;
 
    return errmax > ERRCON ? SAFETY * h * std::pow(errmax,PGROW) : 5.0 * h;
@@ -178,7 +178,7 @@ void integrateOdes(ArrayType& ystart, double from, double to, double eps,
          h = to - x;
       }
 
-      const double hnext = rkqs(y, dydx, &x, h, eps, yscal, derivs, max_step_dir);
+      const double hnext = rkqs(y, dydx, x, h, eps, yscal, derivs, max_step_dir);
 
       if ((x - to) * (to - from) >= 0.0) {
          ystart = y;
