@@ -103,7 +103,7 @@ Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
 }
 
 /**
- * Calls Runge Kutta routine from rk.cpp passing start and end scales,
+ * Calls Runge Kutta routine, passing the start and end scales
  * as first and second argument respectively.  Parameters are passed
  * as third argument and the derivatives method as the fourth
  * argument.  The precison is passed as the last argument or if not
