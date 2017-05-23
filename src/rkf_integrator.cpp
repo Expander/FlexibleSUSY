@@ -57,6 +57,18 @@ namespace flexiblesusy {
 
 namespace runge_kutta {
 
+/**
+ * The vector of the initial values of the parameters is
+ * updated so that after calling this function, this vector contains
+ * the updated values of the parameters at the end-point of the
+ * integration.
+ *
+ * @param[in] start initial value of the independent variable
+ * @param[in] end final value of the independent variable
+ * @param[inout] pars initial values of the parameters
+ * @param[in] derivs function calculating the derivatives
+ * @param[in] tol desired accuracy to use in integration step
+ */
 void RKF_integrator::operator()(double start, double end,
                                 Eigen::ArrayXd& pars, Derivs derivs,
                                 double tol) const
@@ -106,6 +118,18 @@ namespace flexiblesusy {
 
 namespace runge_kutta {
 
+/**
+ * The vector of the initial values of the parameters is
+ * updated so that after calling this function, this vector contains
+ * the updated values of the parameters at the end-point of the
+ * integration.
+ *
+ * @param[in] start initial value of the independent variable
+ * @param[in] end final value of the independent variable
+ * @param[inout] pars initial values of the parameters
+ * @param[in] derivs function calculating the derivatives
+ * @param[in] tol desired accuracy to use in integration step
+ */
 void RKF_integrator::operator()(double, double, Eigen::ArrayXd&, Derivs,
                                 double) const
 {

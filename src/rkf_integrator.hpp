@@ -33,10 +33,20 @@ namespace flexiblesusy {
 
 namespace runge_kutta {
 
+/**
+ * @class RKF_integrator
+ * @brief Class for integrating ODEs using a Runge-Kutta-Fehlberg method
+ *
+ * This class makes use of the 8th order Runge-Kutta-Fehlberg algorithm
+ * provided by the odeint library in Boost.
+ */
 class RKF_integrator {
 public:
    using Derivs = std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)>;
-   void operator()(double, double, Eigen::ArrayXd&, Derivs, double) const;
+
+   /// Integrates the system over an interval
+   void operator()(double start, double end, Eigen::ArrayXd& pars,
+                   Derivs derivs, double tol) const;
 private:
    class DisabledOdeintError : Error {
    public:
