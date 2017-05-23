@@ -39,6 +39,7 @@ public:
    void operator()(double, double, Eigen::ArrayXd&, Derivs, double) const;
 private:
    class DisabledOdeintError : Error {
+   public:
       explicit DisabledOdeintError(const std::string& msg_) : msg(msg_) {}
       virtual ~DisabledOdeintError() = default;
       virtual std::string what() const override { return msg; }
