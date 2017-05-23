@@ -4,6 +4,7 @@
 #include <complex>
 #include <iostream>
 #include <Eigen/Core>
+#include "error.hpp"
 
 namespace h3m {
 
@@ -66,6 +67,19 @@ inline std::ostream& operator<<(std::ostream& ostr, const Parameters& pars)
 
    return ostr;
 }
+
+/**
+ * @class H3mError
+ * @brief Error occurred in H3m routines
+ */
+class H3mError : public flexiblesusy::Error {
+public:
+   explicit H3mError(const std::string& message_) : message(message_) {}
+   virtual ~H3mError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
 
 }	//	h3m
 
