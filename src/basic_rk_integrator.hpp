@@ -39,13 +39,6 @@ namespace flexiblesusy {
 
 namespace runge_kutta {
 
-namespace {
-/// Returns |a| with sign of b in front
-inline double sign(double a, double b) noexcept {
-   return b >= 0 ? std::fabs(a) : -std::fabs(a);
-}
-} // anonymous namespace
-
 /**
  * @class Basic_rk_stepper
  * @brief Class to carry out a 5th order Runge-Kutta step
@@ -255,7 +248,7 @@ void Basic_rk_integrator<StateType, Derivs, Stepper>::operator()(
    const double TINY = 1.0e-16;
 
    double x = start;
-   double h = sign(guess, end - start);
+   double h = (end - start) >= 0 ? std::fabs(guess) : -std::fabs(guess);
 
    StateType yscal(nvar);
    StateType y(ystart);
