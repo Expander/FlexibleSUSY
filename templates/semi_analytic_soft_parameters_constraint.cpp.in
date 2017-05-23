@@ -63,7 +63,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::apply()
 
 @temporarySetting@
 
-   const double boundary_scale = (boundary_constraint ? boundary_constraint->get_scale() : scale);
+   const double boundary_scale = get_boundary_scale();
    model->calculate_semi_analytic_solutions(boundary_scale);
    model->calculate_DRbar_masses();
    update_scale();
@@ -91,7 +91,6 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::clear()
    initial_scale_guess = 0.;
    model = nullptr;
    qedqcd = softsusy::QedQcd();
-   boundary_constraint = nullptr;
 }
 
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::initialize()
@@ -108,6 +107,24 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::update_scale()
 
 @calculateScale@
 @restrictScale@
+}
+
+double @ModelName@_soft_parameters_constraint<Semi_analytic>::get_boundary_scale() const
+{
+   if (!boundary_scale_getter)
+      return scale;
+
+   return boundary_scale_getter();
+}
+
+void @ModelName@_soft_parameters_constraint<Semi_analytic>::set_boundary_scale(const Scale_getter& scale_getter_)
+{
+   boundary_scale_getter = scale_getter_;
+}
+
+void @ModelName@_soft_parameters_constraint<Semi_analytic>::set_boundary_scale(Scale_getter&& scale_getter_)
+{
+   boundary_scale_getter = std::move(scale_getter_);
 }
 
 void @ModelName@_soft_parameters_constraint<Semi_analytic>::check_model_ptr() const
