@@ -15,10 +15,10 @@ namespace h3m{
       std::pair<unsigned int, double> compareHierarchies(const bool isBottom);													// compares deviation of all hierarchies with the exact two-loop result and returns the hierarchy which minimizes the error
       Eigen::Matrix2d calculateHierarchy(const unsigned int tag, const bool isbottom, const unsigned int oneLoopFlagIn, const unsigned int twoLoopFlagIn,
 			      const unsigned int threeLoopFlagIn);											// calculates the hierarchy contributions for a specific hierarchy (tag) and a specific loop order
-      Eigen::Matrix2d calcDRbarToMDRbarShift(const unsigned int tag, const bool isBottom, const bool shiftOneLoop, const bool shiftTwoLoop);	// calculates the contribution to the order (alpha_t) and (alpha_s alpha_t) in the MDRbar scheme
-      double shiftMst1ToMDR(const unsigned int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst1 according to the hierarchy to the MDRbar scheme
-      double shiftMst2ToMDR(const unsigned int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst2 according to the hierarchy to the MDRbar scheme
-      double getExpansionError(const unsigned int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int loops);
+      Eigen::Matrix2d calcDRbarToMDRbarShift(unsigned int tag, const bool isBottom, const bool shiftOneLoop, const bool shiftTwoLoop);	// calculates the contribution to the order (alpha_t) and (alpha_s alpha_t) in the MDRbar scheme
+      double shiftMst1ToMDR(unsigned int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst1 according to the hierarchy to the MDRbar scheme
+      double shiftMst2ToMDR(unsigned int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst2 according to the hierarchy to the MDRbar scheme
+      double getExpansionError(unsigned int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int loops);
       void checkTerms();																// checks the expansion terms
    private:
       Parameters p;
@@ -27,11 +27,12 @@ namespace h3m{
       void init();
       bool isHierarchySuitable(const unsigned int tag, const bool isBottom);										// checks if the hierarchy is suitable to the spectrum
       std::vector<double> sortEigenvalues(const Eigen::EigenSolver<Eigen::Matrix2d> es);								// sorts the eigenvalus of a 2x2 matrix. The lower index is the lower eigenvalue
-      Eigen::Matrix2d getMt41L(const unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the one loop higgs mass matrix of the order alpha_t/b
-      Eigen::Matrix2d getMt42L(const unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the two loop higgs mass matrix of the order alpha_s * alpha_t
-      Eigen::Matrix2d getShift(const unsigned int tag, const bool isBottom);										// shifts the 1-loop terms to the MDRbar scheme to compare top level with different hierarchies
+      Eigen::Matrix2d getMt41L(unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the one loop higgs mass matrix of the order alpha_t/b
+      Eigen::Matrix2d getMt42L(unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the two loop higgs mass matrix of the order alpha_s * alpha_t
+      Eigen::Matrix2d getShift(unsigned int tag, const bool isBottom);										// shifts the 1-loop terms to the MDRbar scheme to compare top level with different hierarchies
       std::map<unsigned int, unsigned int> flagMap;
       std::string tf(const bool tf);															// returns "true" or "false" with respect to the bool tf
+      unsigned int getCorrectHierarchy(const unsigned int tag);												// gets the correct hierarchy according to hierarchy map
       //hierarchy keys
       static const unsigned int h3 		= 0;
       static const unsigned int h32q2g 		= 1;

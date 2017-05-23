@@ -152,15 +152,15 @@ std::pair<unsigned int, double> h3m::HierarchyCalculator::compareHierarchies(con
       // first, check if the hierarchy is suitable to the mass spectrum
       if(isHierarchySuitable(hierarchy, isBottom)){
 	 // calculate the exact 1-loop result (only alpha_t/b)
-	 Eigen::Matrix2d Mt41L = getMt41L(hierarchyMap.at(hierarchy), isBottom, 1, 0);
+	 Eigen::Matrix2d Mt41L = getMt41L(hierarchy, isBottom, 1, 0);
 	 
 	 // call the routine of Pietro Slavich to get the alpha_s alpha_t/b corrections with the MDRbar masses
-	 Eigen::Matrix2d Mt42L = getMt42L(hierarchyMap.at(hierarchy), isBottom, 1, 0);
+	 Eigen::Matrix2d Mt42L = getMt42L(hierarchy, isBottom, 1, 0);
 	 
 	 // check for spurious poles. If this is the case slightly change Mst2
 	 if(std::isnan(Mt42L(0,0)) || std::isnan(Mt42L(1,0)) || std::isnan(Mt42L(1,1))){
 	    deltaDSZ = 1.0E-6;
-	    Mt42L = getMt42L(hierarchyMap.at(hierarchy), isBottom, 1, 0);
+	    Mt42L = getMt42L(hierarchy, isBottom, 1, 0);
 	 }
 	 
 	 //DEPRECATED calc 1-loop shift for DRbar -> MDRbar
@@ -215,6 +215,7 @@ Eigen::Matrix2d h3m::HierarchyCalculator::calculateHierarchy(const unsigned int 
       const unsigned int oneLoopFlagIn,
          const unsigned int twoLoopFlagIn,
             const unsigned int threeLoopFlagIn) {
+   getCorrectHierarchy(tag);
    // the hierarchy files containing 1-, 2- and 3-loop terms (alpha_s^0 alpha_t/b, alpha_s alpha_t/b, alpha_s^2 alpha_t/b)
    double sigS1Full = 0., sigS2Full = 0., sigS12Full = 0.;
 
@@ -526,9 +527,6 @@ Eigen::Matrix2d h3m::HierarchyCalculator::calculateHierarchy(const unsigned int 
 		     break;
 	       }
 	       break;
-	    default:
-	       throw std::runtime_error("Hierarchy not included!");
-	       break;
 	 }
       }
       sigS1Full += curSig1;
@@ -591,7 +589,8 @@ bool h3m::HierarchyCalculator::isHierarchySuitable(const unsigned int tag, const
 /*
  * 	shifts Mst1/Msb1 according to the hierarchy to the MDRbar scheme, checked
  */
-double h3m::HierarchyCalculator::shiftMst1ToMDR(const unsigned int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
+double h3m::HierarchyCalculator::shiftMst1ToMDR(unsigned int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
+   tag = getCorrectHierarchy(tag);
    double Mst1mod = 0., Mst1, Mst2;
    if(!isBottom){
       Mst1 = p.MSt(0, 0);
@@ -636,7 +635,8 @@ double h3m::HierarchyCalculator::shiftMst1ToMDR(const unsigned int tag, const bo
 /*
  * 	shifts Mst2/Msb2 according to the hierarchy to the MDRbar scheme, checked
  */
-double h3m::HierarchyCalculator::shiftMst2ToMDR(const unsigned int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
+double h3m::HierarchyCalculator::shiftMst2ToMDR(unsigned int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
+   tag = getCorrectHierarchy(tag);
    double Mst2mod;
    double Mst1;
    double Mst2;
@@ -694,7 +694,8 @@ std::vector<double> h3m::HierarchyCalculator::sortEigenvalues(const Eigen::Eigen
 /*
  * 	calculates the 1-loop alpha_t/b Higgs mass matrix
  */
-Eigen::Matrix2d h3m::HierarchyCalculator::getMt41L(const unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop){
+Eigen::Matrix2d h3m::HierarchyCalculator::getMt41L(unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop){
+   tag = getCorrectHierarchy(tag);
    Eigen::Matrix2d Mt41L;
    double GF = 1/(sqrt(2) * (pow2(p.vu) + pow2(p.vd)));
    double Mst1;
@@ -764,7 +765,8 @@ Eigen::Matrix2d h3m::HierarchyCalculator::getMt41L(const unsigned int tag, const
  * 	DEPRECATED! Just use differences of Mt41L
  * 	calculates the DRbar -> MDRbar shift for the one loop contribution
  */
-Eigen::Matrix2d h3m::HierarchyCalculator::getShift(const unsigned int tag, const bool isBottom){
+Eigen::Matrix2d h3m::HierarchyCalculator::getShift(unsigned int tag, const bool isBottom){
+   tag = getCorrectHierarchy(tag);
    Eigen::Matrix2d shift;
    double GF = 1/(sqrt(2) * (pow2(p.vu) + pow2(p.vd)));
    double Mst1;
@@ -852,7 +854,8 @@ Eigen::Matrix2d h3m::HierarchyCalculator::getShift(const unsigned int tag, const
 /*
  * 	calculates the 2-loop higgs mass matrix according to Pietro Slavich
  */
-Eigen::Matrix2d h3m::HierarchyCalculator::getMt42L(const unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop){
+Eigen::Matrix2d h3m::HierarchyCalculator::getMt42L(unsigned int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop){
+   tag = getCorrectHierarchy(tag);
    Eigen::Matrix2d Mt42L;
    double S11, S12, S22;
    double Mt2;
@@ -898,7 +901,7 @@ Eigen::Matrix2d h3m::HierarchyCalculator::getMt42L(const unsigned int tag, const
  * 	the result is the difference in the Higgs mass matrix of the MDRbar and DRbar scheme
  */
 Eigen::Matrix2d h3m::HierarchyCalculator::calcDRbarToMDRbarShift(const unsigned int tag, const bool isBottom, const bool shiftOneLoop, const bool shiftTwoLoop){
-   const unsigned int hierarchyTag = hierarchyMap.at(tag);
+   const unsigned int hierarchyTag = getCorrectHierarchy(tag);
    if(shiftOneLoop && shiftTwoLoop){
       return getMt41L(hierarchyTag, isBottom, 1, 1) + getMt42L(hierarchyTag, isBottom, 1, 1) - getMt41L(hierarchyTag, isBottom, 0, 0) - getMt42L(hierarchyTag, isBottom, 0, 0);
    }
@@ -941,7 +944,7 @@ double h3m::HierarchyCalculator::getExpansionError(const unsigned int tag, const
    // reset flags
    flagMap.at(xxMst) = 1;
    Eigen::EigenSolver<Eigen::Matrix2d> es;
-   switch (hierarchyMap.at(tag)) {
+   switch (getCorrectHierarchy(tag)) {
    case h3:
       es.compute(massMatrix + calculateHierarchy(tag, isBottom, oneLoopFlag, twoLoopFlag, threeLoopFlag), false);
       Mh = sortEigenvalues(es).at(0);
@@ -1246,5 +1249,11 @@ std::string h3m::HierarchyCalculator::tf(const bool tf){
    return tf ? "true" : "false";
 }
 
+unsigned int h3m::HierarchyCalculator::getCorrectHierarchy(const unsigned int tag){
+   if(tag < 0 || tag > 13){
+      throw std::runtime_error("Hierarchy " + std::to_string(tag) + " not included!");
+   }
+   return hierarchyMap.at(tag);
+}
 
 

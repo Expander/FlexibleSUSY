@@ -1316,23 +1316,30 @@ if (pars.MSb(0) > pars.MSb(1)) {
 
 h3m::HierarchyCalculator hc(pars);
 
+//// O(alpha_t alpha_s^2) ////
+
+// select hierarchy
 const auto hierarchy_top = hc.compareHierarchies(false);
+// calculate the 2-loop shift DR -> MDR
+const auto DMh2Lt = hc.calcDRbarToMDRbarShift(hierarchy_top.first, false, true, true);
+// calculate the 3-loop corrections with the suitable hierarchy
+const auto DMh3Lt = hc.calculateHierarchy(hierarchy_top.first, false, 0, 0, 1);
+
+//// O(alpha_b alpha_s^2) ////
+
+// select hierarchy
 const auto hierarchy_bot = hc.compareHierarchies(true);
+// calculate the 2-loop shift DR -> MDR
+const auto DMh2Lb = hc.calcDRbarToMDRbarShift(hierarchy_bot.first, true, true, true);
+// calculate the 3-loop corrections with the suitable hierarchy
+const auto DMh3Lb = hc.calculateHierarchy(hierarchy_bot.first, true , 0, 0, 1);
 
 VERBOSE_MSG(\"H3m hiearchies  (t,b) = (\" << hierarchy_top.first << \",\" << hierarchy_bot.first << \")\");
 VERBOSE_MSG(\"H3m uncertainty (t,b) = (\" << hierarchy_top.second << \",\" << hierarchy_bot.second << \")\");
 
-// calculate the 2-loop shift DR -> MDR
-const auto DMh2Lt = hc.calcDRbarToMDRbarShift(hierarchy_top.first, false, true, true);
-const auto DMh2Lb = hc.calcDRbarToMDRbarShift(hierarchy_bot.first, true, true, true);
-
-// calculate the 3-loop corrections with the suitable hierarchy
-const auto DMh3Lt = hc.calculateHierarchy(hierarchy_top.first, false, 0, 0, 1);
-const auto DMh3Lb = hc.calculateHierarchy(hierarchy_bot.first, true , 0, 0, 1);
-
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
-self_energy_3l = - DMh2Lt - DMh2Lb - DMh3Lt - DMh3Lb;
+self_energy_3l = - DMh2Lt - DMh3Lt - DMh2Lb - DMh3Lb;
 
 return self_energy_3l;"
           ];
