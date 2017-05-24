@@ -32,7 +32,7 @@
 #include <cmath>
 #include <functional>
 
-#include <Eigen/Dense>
+#include <Eigen/Core>
 
 #include "logger.hpp"
 #include "error.hpp"
