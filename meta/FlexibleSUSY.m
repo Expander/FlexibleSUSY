@@ -1653,19 +1653,24 @@ WriteTwoScaleSpectrumGeneratorClass[files_List] :=
           ];
 
 WriteSemiAnalyticSpectrumGeneratorClass[files_List] :=
-    Module[{boundaryConstraint = "", fillSMFermionPoleMasses = ""},
+    Module[{boundaryConstraint = "", getBoundaryScale = "", fillSMFermionPoleMasses = ""},
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
            Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
-                 boundaryConstraint = "high_scale_constraint",
+                 boundaryConstraint = "high_scale_constraint";
+                 getBoundaryScale = "get_high_scale()";,
                  SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
-                 boundaryConstraint = "susy_scale_constraint",
+                 boundaryConstraint = "susy_scale_constraint";
+                 getBoundaryScale = "get_susy_scale()";,
                  SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
-                 boundaryConstraint = "low_scale_constraint",
+                 boundaryConstraint = "low_scale_constraint";
+                 getBoundaryScale = "get_low_scale();",
                  True,
-                 boundaryConstraint = "high_scale_constraint"
+                 boundaryConstraint = "high_scale_constraint";
+                 getBoundaryScale = "get_high_scale()";
                 ];
            WriteOut`ReplaceInFiles[files,
                           { "@boundaryConstraint@" -> boundaryConstraint,
+                            "@getBoundaryScale@" -> getBoundaryScale,
                             "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             Sequence @@ GeneralReplacementRules[]
                           } ];

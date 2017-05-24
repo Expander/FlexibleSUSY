@@ -179,7 +179,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::write_running_couplings(
 void @ModelName@_spectrum_generator<Semi_analytic>::calculate_spectrum()
 {
    model.run_to(get_pole_mass_scale());
-   model.calculate_semi_analytic_solutions(get_high_scale());
+   model.calculate_semi_analytic_solutions(@getBoundaryScale@);
    model.solve_ewsb();
    model.calculate_spectrum();
 }
