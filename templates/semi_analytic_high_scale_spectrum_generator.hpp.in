@@ -41,8 +41,8 @@ public:
    @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() {}
 
-   std::tuple<@ModelName@<Semi_analytic> > get_models() const { return std::make_tuple(this->get_model()); }
-   std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> > > get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
+   std::tuple<@ModelName@<Semi_analytic> > get_models() const { return std::make_tuple(get_model()); }
+   std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> > > get_models_slha() const { return std::make_tuple(get_model_slha()); }
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }

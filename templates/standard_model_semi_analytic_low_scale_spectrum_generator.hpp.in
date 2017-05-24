@@ -42,9 +42,9 @@ public:
    virtual ~@ModelName@_spectrum_generator() {}
 
    std::tuple<@ModelName@<Semi_analytic>, standard_model::StandardModel<Two_scale> > get_models() const
-   { return std::make_tuple(this->get_model(), eft); }
+   { return std::make_tuple(get_model(), eft); }
    std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> >, standard_model::StandardModel<Two_scale> > get_models_slha() const
-   { return std::make_tuple(this->get_model_slha(), eft); }
+   { return std::make_tuple(get_model_slha(), eft); }
 
    const standard_model::StandardModel<Two_scale>& get_eft() const { return eft; }
    standard_model::StandardModel<Two_scale>& get_eft() { return eft; }
