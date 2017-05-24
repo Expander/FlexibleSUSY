@@ -111,28 +111,26 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    @ModelName@_susy_scale_constraint<Two_scale> susy_scale_constraint(&model, qedqcd);
    standard_model::Standard_model_low_scale_constraint<Two_scale>  low_scale_constraint(&eft, qedqcd);
 
-   const int index = settings.get(Spectrum_generator_settings::eft_higgs_index);
+   // note: to avoid large logarithms the downwards matching loop order
+   // is used for both matching conditions
+   const int matching_loop_order_up = settings.get(
+      Spectrum_generator_settings::eft_matching_loop_order_down);
+   const int matching_loop_order_down = settings.get(
+      Spectrum_generator_settings::eft_matching_loop_order_down);
+   const int index = settings.get(
+      Spectrum_generator_settings::eft_higgs_index);
    const auto scale_getter = [this,&susy_scale_constraint] () {
       return susy_scale_constraint.get_scale(); };
 
-   @ModelName@_standard_model_matching_up<Two_scale> matching_up;
-   @ModelName@_standard_model_matching_down<Two_scale> matching_down;
+   @ModelName@_standard_model_matching_up<Two_scale> matching_up(
+      &eft, &model, scale_getter, matching_loop_order_up, index);
+   @ModelName@_standard_model_matching_down<Two_scale> matching_down(
+      &eft, &model, scale_getter, matching_loop_order_down, index);
 
-   matching_up.set_models(&eft, &model);
-   matching_up.set_scale(scale_getter);
    matching_up.set_scale(
       settings.get(Spectrum_generator_settings::eft_matching_scale));
-   matching_up.set_loop_order(
-      settings.get(Spectrum_generator_settings::eft_matching_loop_order_down));
-   matching_up.set_higgs_index(index);
-
-   matching_down.set_models(&model, &eft);
-   matching_down.set_scale(scale_getter);
    matching_down.set_scale(
       settings.get(Spectrum_generator_settings::eft_matching_scale));
-   matching_down.set_loop_order(
-      settings.get(Spectrum_generator_settings::eft_matching_loop_order_down));
-   matching_down.set_higgs_index(index);
 
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
