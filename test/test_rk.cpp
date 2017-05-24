@@ -169,13 +169,11 @@ BOOST_AUTO_TEST_CASE( test_numerical_solution_gauge_one_loop )
    const double from = log(start);
    const double to = log(end);
    const double tol = 1.0e-7;
-   const double guess = (from - to) * 0.1; // first step size
-   const double hmin = (from - to) * tol * 1.0e-5; // min step size
 
    int error = 0;
    try {
-      runge_kutta::integrateOdes(parameters, from, to, tol, guess,
-                                 hmin, beta_gauge_one_loop);
+      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd> integrator;
+      integrator(from, to, parameters, beta_gauge_one_loop, tol);
    } catch (Error&) {
       error = 1;
    }
@@ -281,6 +279,40 @@ BOOST_AUTO_TEST_CASE( test_rkf_non_perturbative )
    }
 
    check_odeint_integrator(parameter, 100., 1.e10, beta_non_pert_rkf);
+}
+
+BOOST_AUTO_TEST_CASE( test_rkf_numerical_solution_gauge_one_loop )
+{
+   const int num_pars = 3;
+   Eigen::ArrayXd init_parameters(num_pars);
+   for (int i = 0; i < num_pars; ++i) {
+      init_parameters(i) = 1.2 / Power(2., i);
+   }
+
+   Eigen::ArrayXd parameters(init_parameters);
+   const double start = 100.;
+   const double end = 1.0e10;
+   const double from = log(start);
+   const double to = log(end);
+   const double tol = 1.0e-7;
+
+   int error = 0;
+   try {
+      runge_kutta::RKF_integrator integrator;
+      integrator(from, to, parameters, beta_gauge_one_loop, tol);
+   } catch (Error&) {
+      error = 1;
+   }
+
+   BOOST_CHECK_EQUAL(error, 0);
+
+   for (int i = 0; i < num_pars; ++i) {
+      const double g0 = init_parameters(i);
+      const double beta = oneOver16PiSqr * 9.0 / (3. * i - 2.);
+      const double exact = g0 / Sqrt(1.0 - 2. * beta * Sqr(g0) * (to - from));
+
+      BOOST_CHECK_CLOSE_FRACTION(parameters(i), exact, tol);
+   }
 }
 
 #endif
