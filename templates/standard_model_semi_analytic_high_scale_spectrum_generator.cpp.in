@@ -211,7 +211,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    solver.solve();
 
    // impose low-scale constraint one last time
-   model.run_to(low_scale_constraint.get_scale());
+   eft.run_to(low_scale_constraint.get_scale());
    low_scale_constraint.apply();
 
    high_scale = high_scale_constraint.get_scale();
