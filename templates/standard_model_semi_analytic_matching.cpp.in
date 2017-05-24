@@ -69,6 +69,8 @@ void CLASSNAME::match()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
+   model->calculate_semi_analytic_solutions(get_boundary_scale());
+
    if (model->get_thresholds() && loop_order)
       @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
    else
@@ -82,6 +84,8 @@ void CLASSNAME::match_tree_level()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
+
+   model->calculate_semi_analytic_solutions(get_boundary_scale());
 
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
@@ -184,6 +188,8 @@ void CLASSNAME::match()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
+   model->calculate_semi_analytic_solutions(get_boundary_scale());
+
    if (model->get_thresholds() && loop_order)
       @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order, higgs_idx);
    else
@@ -197,6 +203,8 @@ void CLASSNAME::match_tree_level()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
+
+   model->calculate_semi_analytic_solutions(get_boundary_scale());
 
    @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
 }
