@@ -145,7 +145,11 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
       settings.get(Spectrum_generator_settings::eft_matching_loop_order_down));
    matching_down.set_higgs_index(index);
 
-@setSemiAnalyticConstraint@
+
+   soft_constraint.set_boundary_scale(
+      [this,&@boundaryConstraint@] () {
+         return @boundaryConstraint@.get_scale(); });
+
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    soft_constraint.initialize();
