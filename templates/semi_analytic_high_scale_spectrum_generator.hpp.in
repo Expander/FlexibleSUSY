@@ -41,8 +41,10 @@ public:
    @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() = default;
 
-   std::tuple<@ModelName@<Semi_analytic> > get_models() const { return std::make_tuple(get_model()); }
-   std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> > > get_models_slha() const { return std::make_tuple(get_model_slha()); }
+   std::tuple<@ModelName@<Semi_analytic> > get_models() const
+   { return std::make_tuple(get_model()); }
+   std::tuple<@ModelName@_slha<@ModelName@<Semi_analytic> > > get_models_slha() const
+   { return std::make_tuple(get_model_slha()); }
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
@@ -55,7 +57,9 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   double high_scale{0.}, susy_scale{0.}, low_scale{0.};
+   double high_scale{0.};
+   double susy_scale{0.};
+   double low_scale{0.};
 
    void calculate_spectrum();
 };

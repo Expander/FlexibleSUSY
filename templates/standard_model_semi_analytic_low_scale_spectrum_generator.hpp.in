@@ -61,7 +61,8 @@ protected:
 
 private:
    standard_model::StandardModel<Two_scale> eft{};
-   double susy_scale{0.}, low_scale{0.};
+   double susy_scale{0.};
+   double low_scale{0.};
 
    void calculate_spectrum(double);
    double get_eft_pole_mass_scale(double, double) const;
