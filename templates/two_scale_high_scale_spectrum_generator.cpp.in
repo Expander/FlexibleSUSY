@@ -60,7 +60,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
 {
    VERBOSE_MSG("Solving BVP using two-scale solver");
 
-   @ModelName@<Two_scale>& model = this->model;
+   auto& model = this->model;
    model.clear();
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(

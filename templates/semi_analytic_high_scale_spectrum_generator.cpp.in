@@ -62,7 +62,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
 {
    VERBOSE_MSG("Solving BVP using semi-analytic solver");
 
-   @ModelName@<Semi_analytic>& model = this->model;
+   auto& model = this->model;
    model.clear();
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(
