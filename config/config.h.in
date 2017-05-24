@@ -83,6 +83,9 @@
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 
+/* Enable odeint */
+@DEFINE_ENABLE_ODEINT@
+
 /* Enable sqlite */
 @DEFINE_ENABLE_SQLITE@
 

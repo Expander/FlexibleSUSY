@@ -49,6 +49,11 @@ TEST_SRC := \
 		$(DIR)/test_which.cpp \
 		$(DIR)/test_wrappers.cpp
 
+ifeq ($(WITH_CMSSM) $(WITH_SoftsusyMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSM_database.cpp
+endif
+
 TEST_SH := \
 		$(DIR)/test_depgen.sh \
 		$(DIR)/test_run_examples.sh \
@@ -89,9 +94,9 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_higgs_iteration.cpp \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
 		$(DIR)/test_CMSSM_low_scale_constraint.cpp \
-		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_model.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp \
+		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp
 endif
 

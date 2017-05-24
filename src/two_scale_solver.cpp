@@ -230,7 +230,7 @@ int RGFlow<Two_scale>::get_max_iterations() const
  */
 Model* RGFlow<Two_scale>::get_model(double scale) const
 {
-   const std::vector<std::shared_ptr<Slider> > sorted_sliders(sort_sliders());
+   const auto sorted_sliders = sort_sliders();
 
    auto it = std::lower_bound(sorted_sliders.begin(), sorted_sliders.end(),
                               scale,

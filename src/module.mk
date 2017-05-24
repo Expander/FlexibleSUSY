@@ -30,13 +30,14 @@ LIBFLEXI_SRC := \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
-		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
+		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
+		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/split_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
@@ -52,6 +53,7 @@ LIBFLEXI_SRC := \
 
 LIBFLEXI_HDR := \
 		$(DIR)/array_view.hpp \
+		$(DIR)/basic_rk_integrator.hpp \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \
@@ -105,7 +107,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/pv.hpp \
 		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
-		$(DIR)/rk.hpp \
+		$(DIR)/rkf_integrator.hpp \
 		$(DIR)/root_finder.hpp \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
