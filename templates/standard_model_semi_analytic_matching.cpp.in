@@ -99,6 +99,13 @@ int CLASSNAME::get_loop_order() const
    return loop_order;
 }
 
+double CLASSNAME::get_boundary_scale() const
+{
+   if (!boundary_scale_getter)
+      return get_scale();
+   return boundary_scale_getter();
+}
+
 void CLASSNAME::set_higgs_index(int idx)
 {
    higgs_idx = idx;
@@ -122,6 +129,16 @@ void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
 void CLASSNAME::set_scale(double scale_)
 {
    scale = scale_;
+}
+
+void CLASSNAME::set_boundary_scale(const Scale_getter& scale_getter_)
+{
+   boundary_scale_getter = scale_getter_;
+}
+
+void CLASSNAME::set_boundary_scale(Scale_getter&& scale_getter_)
+{
+   boundary_scale_getter = std::move(scale_getter_);
 }
 
 #ifdef CLASSNAME
@@ -200,6 +217,13 @@ int CLASSNAME::get_loop_order() const
    return loop_order;
 }
 
+double CLASSNAME::get_boundary_scale() const
+{
+   if (!boundary_scale_getter)
+      return get_scale();
+   return boundary_scale_getter();
+}
+
 void CLASSNAME::set_higgs_index(int idx)
 {
    higgs_idx = idx;
@@ -230,6 +254,16 @@ void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
 void CLASSNAME::set_scale(double scale_)
 {
    scale = scale_;
+}
+
+void CLASSNAME::set_boundary_scale(const Scale_getter& scale_getter_)
+{
+   boundary_scale_getter = scale_getter_;
+}
+
+void CLASSNAME::set_boundary_scale(Scale_getter&& scale_getter_)
+{
+   boundary_scale_getter = std::move(scale_getter_);
 }
 
 } // namespace flexiblesusy

@@ -57,17 +57,21 @@ public:
 
    int get_higgs_index() const;
    int get_loop_order() const;
+   double get_boundary_scale() const;
    void set_higgs_index(int);
    void set_loop_order(int);
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
+   void set_boundary_scale(const Scale_getter&);
+   void set_boundary_scale(Scale_getter&&);
    void match_tree_level();
 
 private:
    @ModelName@<Semi_analytic>* model{nullptr};
    standard_model::StandardModel<Two_scale>* eft{nullptr};
    Scale_getter scale_getter{};
+   Scale_getter boundary_scale_getter{};
    double scale{0.};
    int loop_order{0};
    int higgs_idx{0}; ///< Higgs index
@@ -94,17 +98,21 @@ public:
 
    int get_higgs_index() const;
    int get_loop_order() const;
+   double get_boundary_scale() const;
    void set_higgs_index(int);
    void set_loop_order(int);
    void set_scale(double);
    void set_scale(const Scale_getter&);
    void set_scale(Scale_getter&&);
+   void set_boundary_scale(const Scale_getter&);
+   void set_boundary_scale(Scale_getter&&);
    void match_tree_level();
 
 private:
    @ModelName@<Semi_analytic>* model{nullptr};
    standard_model::StandardModel<Two_scale>* eft{nullptr};
    Scale_getter scale_getter{};
+   Scale_getter boundary_scale_getter{};
    double scale{0.};
    int loop_order{0};
    int higgs_idx{0}; ///< Higgs index
