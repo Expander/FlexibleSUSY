@@ -159,7 +159,7 @@ std::pair<int, double> h3m::HierarchyCalculator::compareHierarchies(const bool i
 	 
 	 // check for spurious poles. If this is the case slightly change Mst2
 	 if(std::isnan(Mt42L(0,0)) || std::isnan(Mt42L(1,0)) || std::isnan(Mt42L(1,1))){
-	    deltaDSZ = 1.0E-6;
+	    deltaDSZ = 1.0E-4;
 	    Mt42L = getMt42L(hierarchy, isBottom, 1, 0);
 	 }
 	 
@@ -181,15 +181,15 @@ std::pair<int, double> h3m::HierarchyCalculator::compareHierarchies(const bool i
 
 	 // estimate the error
 	 double twoLoopError = fabs((Mh2l - Mh2LExpanded));
-	 
+
 	 // estimate the error due to the expansion
-	 double expError = getExpansionError(hierarchy, isBottom, treelvl + Mt41L, 2);
+	 double expError = getExpansionError(hierarchy, isBottom, treelvl + Mt41L, 0, 1, 0);
 	 
 	 // add these errors to include the error of the expansion in the comparison
 	 double currError = sqrt(pow2(twoLoopError) + pow2(expError));
-
+	 
 	 // if the error is negative, it is the first iteration and there is no hierarchy which fits better
-	 if(error < 0 && twoLoopError){
+	 if(error < 0){
 	    error = currError;
 	    error2l = twoLoopError/Mh2l;
 	    suitableHierarchy = hierarchy;
@@ -205,7 +205,7 @@ std::pair<int, double> h3m::HierarchyCalculator::compareHierarchies(const bool i
    // reset the flags
    flagMap.at(xx) = 1;
    flagMap.at(xxMst) = 1;
-   return std::pair< int, double> (suitableHierarchy, error2l);
+   return std::pair<int, double> (suitableHierarchy, error2l);
 }
 
 /*
@@ -244,9 +244,7 @@ Eigen::Matrix2d h3m::HierarchyCalculator::calculateHierarchy(const int tag, cons
    // specific variables for hierarchies
    double Dmglst1, Dmglst2, Dmsqst1, Dmsqst2, Dmst12, lmMst1, lmMst2, Msusy, lmMsusy;
    int xDR2DRMOD;
-   Mst1 = p.MSt(0, 0);
-   Mst2 = p.MSt(1, 0);
-
+   
    // flags to truncate the expansion while comparing at 2-loop level or to estimate the error
    int x, xMst, xDmglst1, xDmsqst1, xDmst12, xAt, xlmMsusy, xMsq, xMsusy, xDmglst2, xDmsqst2, xMgl;
    x = flagMap.at(xx);
@@ -590,7 +588,6 @@ bool h3m::HierarchyCalculator::isHierarchySuitable(const int tag, const bool isB
  * 	shifts Mst1/Msb1 according to the hierarchy to the MDRbar scheme, checked
  */
 double h3m::HierarchyCalculator::shiftMst1ToMDR(int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
-   tag = getCorrectHierarchy(tag);
    double Mst1mod = 0., Mst1, Mst2;
    if(!isBottom){
       Mst1 = p.MSt(0, 0);
@@ -603,7 +600,7 @@ double h3m::HierarchyCalculator::shiftMst1ToMDR(int tag, const bool isBottom, co
    double lmMst2 = log(pow2(p.scale) / pow2(Mst2));
    double Dmglst2 = Mgl - Mst2;
    double mdr2mst1ka = (-8. * twoLoopFlag * pow2(Al4p) * (10 * pow2(Msq) * (-1 + 2 * lmMsq + 2 * z2) + pow2(Mst2) * (-1 + 2 * lmMst2 + 2 * z2))) / (3. * pow2(Mst1));
-   switch (tag) {
+   switch (getCorrectHierarchy(tag)) {
    case h3:
       Mst1mod = (1 + mdr2mst1ka);
       break;
@@ -636,7 +633,6 @@ double h3m::HierarchyCalculator::shiftMst1ToMDR(int tag, const bool isBottom, co
  * 	shifts Mst2/Msb2 according to the hierarchy to the MDRbar scheme, checked
  */
 double h3m::HierarchyCalculator::shiftMst2ToMDR(int tag, const bool isBottom, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
-   tag = getCorrectHierarchy(tag);
    double Mst2mod;
    double Mst1;
    double Mst2;
@@ -650,7 +646,7 @@ double h3m::HierarchyCalculator::shiftMst2ToMDR(int tag, const bool isBottom, co
    }
    double Dmglst2 = Mgl - Mst2;
    double mdr2mst2ka = (-80. * twoLoopFlag * pow2(Al4p) * pow2(Msq) * (-1 + 2 * lmMsq + 2 * z2)) / (3. * pow2(Mst2));
-   switch (tag) {
+   switch (getCorrectHierarchy(tag)) {
    case h3:
       Mst2mod = (1 + mdr2mst2ka);
       break;
@@ -918,29 +914,11 @@ Eigen::Matrix2d h3m::HierarchyCalculator::calcDRbarToMDRbarShift(const int tag, 
  * 	evaluates the error due to the expansion in mass ratios and differences
  * 	first calc the full 3-loop contribution and than truncate the expansion at different variable orders to estimate the expansion error
  */
-double h3m::HierarchyCalculator::getExpansionError(const int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int loops){
+double h3m::HierarchyCalculator::getExpansionError(const int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix,
+						   const unsigned int oneLoopFlag, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag){
    double Mh;
    double Mhcut;
    std::vector<double> errors;
-   unsigned int oneLoopFlag = 0, twoLoopFlag = 0, threeLoopFlag = 0;
-   //set loop flags
-   switch(loops){
-      case 1:
-	 oneLoopFlag = 1;
-      break;
-      case 2:
-	 oneLoopFlag = 1;
-	 twoLoopFlag = 1;
-      break;
-      case 3:
-	 oneLoopFlag = 1;
-	 twoLoopFlag = 1;
-	 threeLoopFlag = 1;
-      break;
-      default:
-	 throw std::runtime_error(std::to_string(loops) + " loop(s) not included in getExpansionError!");
-      break;
-   }
    // reset flags
    flagMap.at(xxMst) = 1;
    Eigen::EigenSolver<Eigen::Matrix2d> es;

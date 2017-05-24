@@ -4,7 +4,6 @@
 #include "H3m_interface.hpp"
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
-#include <complex>
 #include <map>
 #include <vector>
 
@@ -12,27 +11,28 @@ namespace h3m{
    class HierarchyCalculator{
    public:
       HierarchyCalculator(const Parameters& p);														// constructor
-      std::pair<int, double> compareHierarchies(const bool isBottom);													// compares deviation of all hierarchies with the exact two-loop result and returns the hierarchy which minimizes the error
+      std::pair<int, double> compareHierarchies(const bool isBottom);											// compares deviation of all hierarchies with the exact two-loop result and returns the hierarchy which minimizes the error
       Eigen::Matrix2d calculateHierarchy(const int tag, const bool isbottom, const unsigned int oneLoopFlagIn, const unsigned int twoLoopFlagIn,
 			      const unsigned int threeLoopFlagIn);											// calculates the hierarchy contributions for a specific hierarchy (tag) and a specific loop order
-      Eigen::Matrix2d calcDRbarToMDRbarShift(int tag, const bool isBottom, const bool shiftOneLoop, const bool shiftTwoLoop);	// calculates the contribution to the order (alpha_t) and (alpha_s alpha_t) in the MDRbar scheme
-      double shiftMst1ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst1 according to the hierarchy to the MDRbar scheme
-      double shiftMst2ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);		// shifts Mst2 according to the hierarchy to the MDRbar scheme
-      double getExpansionError(int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int loops);
+      Eigen::Matrix2d calcDRbarToMDRbarShift(int tag, const bool isBottom, const bool shiftOneLoop, const bool shiftTwoLoop);				// calculates the contribution to the order (alpha_t) and (alpha_s alpha_t) in the MDRbar scheme
+      Eigen::Matrix2d getMt41L(int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);				// calculates the one loop higgs mass matrix of the order alpha_t/b
+      Eigen::Matrix2d getMt42L(int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);				// calculates the two loop higgs mass matrix of the order alpha_s * alpha_t
+      double shiftMst1ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);				// shifts Mst1 according to the hierarchy to the MDRbar scheme
+      double shiftMst2ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);				// shifts Mst2 according to the hierarchy to the MDRbar scheme
+      double getExpansionError(int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int oneLoopFlag, 
+			       const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);
       void checkTerms();																// checks the expansion terms
    private:
       Parameters p;
       double Al4p,lmMgl, lmMsq, Mgl, Msq, prefac, z2, z3, z4, deltaDSZ = 0.;
       double B4, D3, DN, OepS2, S2, T1ep;
       void init();
-      bool isHierarchySuitable(const int tag, const bool isBottom);										// checks if the hierarchy is suitable to the spectrum
+      bool isHierarchySuitable(const int tag, const bool isBottom);											// checks if the hierarchy is suitable to the spectrum
       std::vector<double> sortEigenvalues(const Eigen::EigenSolver<Eigen::Matrix2d> es);								// sorts the eigenvalus of a 2x2 matrix. The lower index is the lower eigenvalue
-      Eigen::Matrix2d getMt41L(int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the one loop higgs mass matrix of the order alpha_t/b
-      Eigen::Matrix2d getMt42L(int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);		// calculates the two loop higgs mass matrix of the order alpha_s * alpha_t
-      Eigen::Matrix2d getShift(int tag, const bool isBottom);										// shifts the 1-loop terms to the MDRbar scheme to compare top level with different hierarchies
+      Eigen::Matrix2d getShift(int tag, const bool isBottom);												// shifts the 1-loop terms to the MDRbar scheme to compare top level with different hierarchies
       std::map<unsigned int, unsigned int> flagMap;
       std::string tf(const bool tf);															// returns "true" or "false" with respect to the bool tf
-      int getCorrectHierarchy(const int tag);												// gets the correct hierarchy according to hierarchy map
+      int getCorrectHierarchy(const int tag);														// gets the correct hierarchy according to hierarchy map
       //hierarchy keys
       static const int h3 		= 0;
       static const int h32q2g 		= 1;
