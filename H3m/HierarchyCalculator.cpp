@@ -159,7 +159,7 @@ std::pair<int, double> h3m::HierarchyCalculator::compareHierarchies(const bool i
 	 
 	 // check for spurious poles. If this is the case slightly change Mst2
 	 if(std::isnan(Mt42L(0,0)) || std::isnan(Mt42L(1,0)) || std::isnan(Mt42L(1,1))){
-	    deltaDSZ = 1.0E-4;
+	    deltaDSZ = 1.0E-6;
 	    Mt42L = getMt42L(hierarchy, isBottom, 1, 0);
 	 }
 	 
