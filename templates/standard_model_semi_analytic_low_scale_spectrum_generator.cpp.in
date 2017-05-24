@@ -131,6 +131,8 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
       Spectrum_generator_settings::eft_higgs_index);
    const auto scale_getter = [this,&susy_scale_constraint] () {
       return susy_scale_constraint.get_scale(); };
+   const auto boundary_scale_getter = [this,&@boundaryConstraint@] () {
+      return @boundaryConstraint@.get_scale(); };
 
    @ModelName@_standard_model_matching_up<Semi_analytic> matching_up(
       &eft, &model, scale_getter, matching_loop_order_up, index);
@@ -142,9 +144,9 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    matching_down.set_scale(
       settings.get(Spectrum_generator_settings::eft_matching_scale));
 
-   soft_constraint.set_boundary_scale(
-      [this,&@boundaryConstraint@] () {
-         return @boundaryConstraint@.get_scale(); });
+   soft_constraint.set_boundary_scale(boundary_scale_getter);
+   matching_up.set_boundary_scale(boundary_scale_getter);
+   matching_down.set_boundary_scale(boundary_scale_getter);
 
    susy_scale_constraint.initialize();
    soft_constraint.initialize();
