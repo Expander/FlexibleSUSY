@@ -37,11 +37,12 @@ class Semi_analytic;
 template<>
 class @ModelName@_low_scale_constraint<Semi_analytic> : public Single_scale_constraint {
 public:
+@usingSemiAnalyticScaleGetter@
    @ModelName@_low_scale_constraint() = default;
    @ModelName@_low_scale_constraint(@ModelName@<Semi_analytic>*, const softsusy::QedQcd&);
    virtual ~@ModelName@_low_scale_constraint() = default;
    virtual void apply() override;
-   virtual double get_scale() const override { return scale; }
+   virtual double get_scale() const override;
    virtual std::string name() const override { return "@ModelName@ low-scale constraint"; }
    virtual void set_model(Model*) override;
 
@@ -52,7 +53,7 @@ public:
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
-
+@setSemiAnalyticScaleGetter@
 private:
    double scale{0.};
    double initial_scale_guess{0.};
@@ -68,7 +69,7 @@ private:
    double ThetaWDRbar{0.};
    double new_g1{0.}, new_g2{0.}, new_g3{0.};
    double self_energy_w_at_mw{0.};
-
+@semiAnalyticScaleGetter@
    double calculate_theta_w(double);
    void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();

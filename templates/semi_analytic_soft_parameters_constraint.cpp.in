@@ -69,7 +69,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::apply()
    update_scale();
 
    // apply user-defined constraints
-@applyConstraint@
+@applyOuterConstraint@
 @temporaryResetting@
 }
 
@@ -97,7 +97,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::initialize()
 {
    check_model_ptr();
 
-@scaleGuess@
+@outerScaleGuess@
    scale = initial_scale_guess;
 }
 
@@ -105,8 +105,8 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::update_scale()
 {
    check_model_ptr();
 
-@calculateScale@
-@restrictScale@
+@calculateOuterScale@
+@restrictOuterScale@
 }
 
 double @ModelName@_soft_parameters_constraint<Semi_analytic>::get_boundary_scale() const

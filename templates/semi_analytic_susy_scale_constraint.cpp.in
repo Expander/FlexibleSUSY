@@ -58,6 +58,11 @@ namespace flexiblesusy {
    initialize();
 }
 
+double @ModelName@_susy_scale_constraint<Semi_analytic>::get_scale() const
+{
+@getConstraintScale@
+}
+
 void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();

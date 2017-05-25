@@ -342,6 +342,9 @@ CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(
    soft_constraint.set_boundary_scale(
       [&high_scale_constraint] () {
          return high_scale_constraint.get_scale(); });
+   susy_scale_constraint.set_scale(
+      [&soft_constraint] () {
+         return soft_constraint.get_scale(); });
 
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();

@@ -9,10 +9,11 @@ SemiAnalyticSolution[parameter, {basis}]";
 CheckSemiAnalyticBoundaryConditions::usage="";
 IsSemiAnalyticSetting::usage="";
 IsBasisParameterSetting::usage="";
-IsSemiAnalyticConstraint::usage="";
-IsSemiAnalyticConstraintScale::usage="Returns True if given constraint
+IsBoundaryConstraint::usage="Returns True if given constraint corresponds
+to the scale at which the semi-analytic boundary values are input.";
+IsSemiAnalyticConstraint::usage="Returns True if given constraint
 corresponds to the scale at which the semi-analytic solutions are evaluated.";
-SelectSemiAnalyticConstraint::usage="";
+SelectBoundaryConstraint::usage="";
 
 SetSemiAnalyticParameters::usage="";
 GetSemiAnalyticParameters::usage="";
@@ -155,7 +156,7 @@ IsBasisParameterSetting[setting_, solutions_List] :=
 
 RemoveUnusedSettings[constraints_List] := Select[constraints, IsSemiAnalyticSetting];
 
-IsSemiAnalyticConstraint[constraint_] :=
+IsBoundaryConstraint[constraint_] :=
     Module[{sortedPars, fixedPars},
            sortedPars = Sort[allSemiAnalyticParameters];
            fixedPars = Sort[Intersection[sortedPars,
@@ -163,16 +164,16 @@ IsSemiAnalyticConstraint[constraint_] :=
            fixedPars =!= {} && fixedPars === sortedPars
           ];
 
-SelectSemiAnalyticConstraint[constraints_List] :=
+SelectBoundaryConstraint[constraints_List] :=
     Module[{validConstraints, result = {}},
-           validConstraints = Select[constraints, IsSemiAnalyticConstraint];
+           validConstraints = Select[constraints, IsBoundaryConstraint];
            If[Length[validConstraints] >= 1,
               result = validConstraints[[1]];
              ];
            RemoveUnusedSettings[result]
           ];
 
-IsSemiAnalyticConstraintScale[settings_List] := MemberQ[settings, FlexibleSUSY`FSSolveEWSBFor[___]];
+IsSemiAnalyticConstraint[settings_List] := MemberQ[settings, FlexibleSUSY`FSSolveEWSBFor[___]];
 
 CheckSemiAnalyticBoundaryConditions[constraints_List] :=
     Module[{i, sortedPars, fixedPars, boundaryValueSettings, boundaryValuePars},
@@ -186,7 +187,7 @@ CheckSemiAnalyticBoundaryConditions[constraints_List] :=
                   Return[False];
                  ];
               ];
-           boundaryValueSettings = GetBoundaryValueSubstitutions[SelectSemiAnalyticConstraint[constraints]];
+           boundaryValueSettings = GetBoundaryValueSubstitutions[SelectBoundaryConstraint[constraints]];
            boundaryValuePars = Select[Parameters`FindAllParameters[#[[2]]& /@ boundaryValueSettings],
                                       !IsDimensionZero[#]&];
            And @@ (PolynomialQ[#[[2]], boundaryValuePars]& /@ boundaryValueSettings)

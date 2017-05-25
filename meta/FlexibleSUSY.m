@@ -848,9 +848,10 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
 
 WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                                  {minimumScale_, maximumScale_},
-                                 mustSetSemiAnalyticBCs_, semiAnalyticSolns_List, files_List] :=
-   Module[{applyConstraint = "", calculateScale, scaleGuess,
-           restrictScale,
+                                 isBoundaryConstraint_, isSemiAnalyticConstraint_, semiAnalyticSolns_List, files_List] :=
+   Module[{innerSettings = {}, outerSettings = {},
+           applyConstraint = "", applyOuterConstraint = "", calculateScale, scaleGuess,
+           restrictScale, calculateOuterScale, outerScaleGuess, restrictOuterScale,
            temporarySetting = "", temporaryResetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
@@ -859,22 +860,33 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateThetaW,
            recalculateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
-           saveBoundaryValueParameters = ""},
+           saveBoundaryValueParameters = "",
+           usingSemiAnalyticScaleGetter = "",
+           setSemiAnalyticScaleGetter = "",
+           semiAnalyticScaleGetter = "",
+           getConstraintScale = "return scale;"},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
-          applyConstraint = Constraint`ApplyConstraints[settings];
+          innerSettings = Select[settings, (!SemiAnalytic`IsSemiAnalyticSetting[#]
+                                            && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&];
+          If[isSemiAnalyticConstraint,
+             innerSettings = DeleteCases[innerSettings, FlexibleSUSY`FSSolveEWSBFor[___]];
+             outerSettings = Cases[settings, FlexibleSUSY`FSSolveEWSBFor[___]];
+             applyOuterConstraint = Constraint`ApplyConstraints[outerSettings];
+            ];
+          applyConstraint = Constraint`ApplyConstraints[innerSettings];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          temporarySetting   = Constraint`SetTemporarily[settings];
+          temporarySetting   = Constraint`SetTemporarily[innerSettings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleOptions];
           setDRbarYukawaCouplings = {
-              ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
-              ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
-              ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[innerSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[innerSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[innerSettings]
           };
           calculateDRbarMasses = {
               LoopMasses`CallCalculateDRbarMass["Up Quark"         , "Up-Quarks"  , 1, "upQuarksDRbar", "qedqcd.displayMass(softsusy::mUp)"      ],
@@ -897,14 +909,30 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      FlexibleSUSY`FSPerturbativityThreshold
                  ];
             ];
-          If[mustSetSemiAnalyticBCs,
+          If[isBoundaryConstraint,
              saveBoundaryValueParameters = SemiAnalytic`SaveBoundaryValueParameters[semiAnalyticSolns];
+            ];
+          If[isSemiAnalyticConstraint,
+             usingSemiAnalyticScaleGetter = "using Scale_getter = std::function<double()>;\n";
+             setSemiAnalyticScaleGetter = "void set_scale(const Scale_getter& s) { scale_getter = s; }\n"
+                                          <> "void set_scale(Scale_getter&& s) { scale_getter = std::move(s); }\n";
+             semiAnalyticScaleGetter = "Scale_getter scale_getter{};\n";
+             getConstraintScale = "if (!scale_getter) {\n" <> IndentText[getConstraintScale] <> "\n}\nreturn scale_getter();\n";
+             calculateOuterScale  = calculateScale;
+             outerScaleGuess      = scaleGuess;
+             restrictOuterScale   = restrictScale;
+             calculateScale = "";
+             restrictScale = "";
             ];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
+                   "@applyOuterConstraint@" -> IndentText[WrapLines[applyOuterConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
+                   "@calculateOuterScale@"       -> IndentText[WrapLines[calculateOuterScale]],
+                   "@outerScaleGuess@"           -> IndentText[WrapLines[outerScaleGuess]],
+                   "@restrictOuterScale@"        -> IndentText[WrapLines[restrictOuterScale]],
                    "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
                    "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
@@ -929,6 +957,10 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
                    "@saveBoundaryValueParameters@" -> IndentText[WrapLines[saveBoundaryValueParameters]],
+                   "@usingSemiAnalyticScaleGetter@" -> IndentText[usingSemiAnalyticScaleGetter],
+                   "@setSemiAnalyticScaleGetter@" -> IndentText[setSemiAnalyticScaleGetter],
+                   "@semiAnalyticScaleGetter@" -> IndentText[semiAnalyticScaleGetter],
+                   "@getConstraintScale@" -> IndentText[getConstraintScale],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -1653,24 +1685,34 @@ WriteTwoScaleSpectrumGeneratorClass[files_List] :=
           ];
 
 WriteSemiAnalyticSpectrumGeneratorClass[files_List] :=
-    Module[{boundaryConstraint = "", getBoundaryScale = "", fillSMFermionPoleMasses = ""},
+    Module[{boundaryConstraint = "", semiAnalyticConstraint = "", getBoundaryScale = "", fillSMFermionPoleMasses = ""},
            fillSMFermionPoleMasses = FlexibleEFTHiggsMatching`FillSMFermionPoleMasses[];
-           Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+           Which[SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`HighScaleInput],
                  boundaryConstraint = "high_scale_constraint";
                  getBoundaryScale = "get_high_scale()";,
-                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                 SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`SUSYScaleInput],
                  boundaryConstraint = "susy_scale_constraint";
                  getBoundaryScale = "get_susy_scale()";,
-                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                 SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`LowScaleInput],
                  boundaryConstraint = "low_scale_constraint";
                  getBoundaryScale = "get_low_scale();",
                  True,
                  boundaryConstraint = "high_scale_constraint";
                  getBoundaryScale = "get_high_scale()";
                 ];
+           Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+                 semiAnalyticConstraint = "high_scale_constraint";,
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                 semiAnalyticConstraint = "susy_scale_constraint";,
+                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                 semiAnalyticConstraint = "low_scale_constraint";,
+                 True,
+                 semiAnalyticConstraint = "susy_scale_constraint";
+                ];
            WriteOut`ReplaceInFiles[files,
                           { "@boundaryConstraint@" -> boundaryConstraint,
                             "@getBoundaryScale@" -> getBoundaryScale,
+                            "@semiAnalyticConstraint@" -> semiAnalyticConstraint,
                             "@fillSMFermionPoleMasses@" -> IndentText[fillSMFermionPoleMasses],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
@@ -2747,9 +2789,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             extraSLHAOutputBlocks, effectiveCouplings = {}, extraVertices = {},
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile,
-            semiAnalyticBCs, semiAnalyticSolns, semiAnalyticScale,
-            semiAnalyticScaleInput, semiAnalyticScaleGuess,
-            semiAnalyticScaleMinimum, semiAnalyticScaleMaximum,
+            semiAnalyticBCs, semiAnalyticSolns,
+            semiAnalyticHighScaleFiles, semiAnalyticSUSYScaleFiles, semiAnalyticLowScaleFiles,
             semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}, semiAnalyticInputScale = ""},
 
            PrintHeadline["Starting FlexibleSUSY"];
@@ -3048,9 +3089,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  Quit[1];
                 ];
 
-              semiAnalyticBCs = SemiAnalytic`SelectSemiAnalyticConstraint[{FlexibleSUSY`LowScaleInput,
-                                                                           FlexibleSUSY`SUSYScaleInput,
-                                                                           FlexibleSUSY`HighScaleInput}];
+              semiAnalyticBCs = SemiAnalytic`SelectBoundaryConstraint[{FlexibleSUSY`LowScaleInput,
+                                                                       FlexibleSUSY`SUSYScaleInput,
+                                                                       FlexibleSUSY`HighScaleInput}];
 
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
              ];
@@ -3408,38 +3449,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Writing semi-analytic solutions to ", semiAnalyticSolnsOutputFile];
               Put[SemiAnalytic`ExpandSemiAnalyticSolutions[semiAnalyticSolns], semiAnalyticSolnsOutputFile];
 
-              (* construct additional semi-analytic constraint from user-defined constraints *)
-              Which[SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`HighScaleInput],
-                    Print["found high-scale"];
-                    semiAnalyticScale = FlexibleSUSY`HighScale;
-                    semiAnalyticScaleGuess = FlexibleSUSY`HighScaleFirstGuess;
-                    semiAnalyticScaleMinimum = FlexibleSUSY`HighScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`HighScaleMaximum;
-                    semiAnalyticScaleInput = Cases[FlexibleSUSY`HighScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
-                    FlexibleSUSY`HighScaleInput = DeleteCases[FlexibleSUSY`HighScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
-                    SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`SUSYScaleInput],
-                    semiAnalyticScale = FlexibleSUSY`SUSYScale;
-                    semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
-                    semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;
-                    semiAnalyticScaleInput = Cases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
-                    FlexibleSUSY`SUSYScaleInput = DeleteCases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
-                    SemiAnalytic`IsSemiAnalyticConstraintScale[FlexibleSUSY`LowScaleInput],
-                    semiAnalyticScale = FlexibleSUSY`LowScale;
-                    semiAnalyticScaleGuess = FlexibleSUSY`LowScaleFirstGuess;
-                    semiAnalyticScaleMinimum = FlexibleSUSY`LowScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`LowScaleMaximum;
-                    semiAnalyticScaleInput = Cases[FlexibleSUSY`LowScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
-                    FlexibleSUSY`LowScaleInput = DeleteCases[FlexibleSUSY`LowScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];,
-                    True,
-                    semiAnalyticScale = FlexibleSUSY`SUSYScale;
-                    semiAnalyticScaleGuess = FlexibleSUSY`SUSYScaleFirstGuess;
-                    semiAnalyticScaleMinimum = FlexibleSUSY`SUSYScaleMinimum;
-                    semiAnalyticScaleMaximum = FlexibleSUSY`SUSYScaleMaximum;
-                    semiAnalyticScaleInput = Cases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
-                    FlexibleSUSY`SUSYScaleInput = DeleteCases[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`FSSolveEWSBFor[___]];
-                   ];
-
               Print["Creating classes for convergence testers ..."];
               WriteConvergenceTesterClass[Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]],
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_convergence_tester.hpp.in"}],
@@ -3458,62 +3467,62 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   }
                                          ];
 
+              semiAnalyticHighScaleFiles = {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.hpp.in"}],
+                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.hpp"}]},
+                                            {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.cpp.in"}],
+                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.cpp"}]}
+                                           };
+              semiAnalyticSUSYScaleFiles = {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.hpp.in"}],
+                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.hpp"}]},
+                                            {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.cpp.in"}],
+                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.cpp"}]}
+                                           };
+              semiAnalyticLowScaleFiles = {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.hpp.in"}],
+                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.hpp"}]},
+                                           {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.cpp.in"}],
+                                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.cpp"}]}
+                                          };
+              semiAnalyticConstraintFiles = {{FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters_constraint.hpp.in"}],
+                                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters_constraint.hpp"}]},
+                                             {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.hpp.in"}],
+                                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.hpp"}]},
+                                             {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.cpp.in"}],
+                                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.cpp"}]}
+                                            };
+
+              Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+                    semiAnalyticHighScaleFiles = Join[semiAnalyticHighScaleFiles, semiAnalyticConstraintFiles];,
+                    SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                    semiAnalyticSUSYScaleFiles = Join[semiAnalyticSUSYScaleFiles, semiAnalyticConstraintFiles];,
+                    SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                    semiAnalyticLowScaleFiles = Join[semiAnalyticLowScaleFiles, semiAnalyticConstraintFiles];,
+                    True,
+                    semiAnalyticSUSYScaleFiles = Join[semiAnalyticSUSYScaleFiles, semiAnalyticConstraintFiles];
+                   ];
+
               Print["Creating class for high-scale constraint ..."];
-              WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale,
-                                               Select[FlexibleSUSY`HighScaleInput,
-                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
-                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale, FlexibleSUSY`HighScaleInput,
                                                FlexibleSUSY`HighScaleFirstGuess,
                                                {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
+                                               SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`HighScaleInput],
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
-                                               semiAnalyticSolns,
-                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.hpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.hpp"}]},
-                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_high_scale_constraint.cpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_high_scale_constraint.cpp"}]}
-                                               }];
+                                               semiAnalyticSolns, semiAnalyticHighScaleFiles];
 
               Print["Creating class for susy-scale constraint ..."];
-              WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale,
-                                               Select[FlexibleSUSY`SUSYScaleInput,
-                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
-                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale, FlexibleSUSY`SUSYScaleInput,
                                                FlexibleSUSY`SUSYScaleFirstGuess,
                                                {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
+                                               SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`SUSYScaleInput],
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
-                                               semiAnalyticSolns,
-                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.hpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.hpp"}]},
-                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_scale_constraint.cpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_susy_scale_constraint.cpp"}]}
-                                               }];
+                                               semiAnalyticSolns, semiAnalyticSUSYScaleFiles];
 
               Print["Creating class for low-scale constraint ..."];
-              WriteSemiAnalyticConstraintClass[FlexibleSUSY`LowScale,
-                                               Select[FlexibleSUSY`LowScaleInput,
-                                                      (!SemiAnalytic`IsSemiAnalyticSetting[#]
-                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&],
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`LowScale, FlexibleSUSY`LowScaleInput,
                                                FlexibleSUSY`LowScaleFirstGuess,
                                                {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
+                                               SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`LowScaleInput],
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
-                                               semiAnalyticSolns,
-                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.hpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.hpp"}]},
-                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_low_scale_constraint.cpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_low_scale_constraint.cpp"}]}
-                                               }];
-
-              Print["Creating class for semi-analytic constraint ..."];
-              WriteSemiAnalyticConstraintClass[semiAnalyticScale, semiAnalyticScaleInput,
-                                               semiAnalyticScaleGuess,
-                                               {semiAnalyticScaleMinimum, semiAnalyticScaleMaximum}, False, semiAnalyticSolns,
-                                               {{FileNameJoin[{$flexiblesusyTemplateDir, "soft_parameters_constraint.hpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters_constraint.hpp"}]},
-                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.hpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.hpp"}]},
-                                                {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_soft_parameters_constraint.cpp.in"}],
-                                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_soft_parameters_constraint.cpp"}]}
-                                               }];
+                                               semiAnalyticSolns, semiAnalyticLowScaleFiles];
 
               Print["Creating class for initial guesser ..."];
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
@@ -3523,11 +3532,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               If[FlexibleSUSY`FlexibleEFTHiggs === True,
                  initialGuesserInputFile = "standard_model_" <> initialGuesserInputFile;
                 ];
-              Which[SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`HighScaleInput],
+              Which[SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`HighScaleInput],
                  semiAnalyticInputScale = "high_constraint.get_scale()",
-                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`SUSYScaleInput],
+                 SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`SUSYScaleInput],
                  semiAnalyticInputScale = "susy_constraint.get_scale()",
-                 SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
+                 SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`LowScaleInput],
                  semiAnalyticInputScale = "low_constraint.get_scale()",
                  True,
                  semiAnalyticInputScale = "high_constraint.get_scale()"
