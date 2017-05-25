@@ -53,7 +53,6 @@ public:
    const softsusy::QedQcd& get_sm_parameters() const { return qedqcd; }
    void set_sm_parameters(const softsusy::QedQcd& qedqcd_) { qedqcd = qedqcd_; }
 @setSemiAnalyticScaleGetter@
-
 protected:
    void update_scale();
 
@@ -63,7 +62,6 @@ private:
    @ModelName@<Semi_analytic>* model{nullptr};
    softsusy::QedQcd qedqcd{};
 @semiAnalyticScaleGetter@
-
    void check_model_ptr() const;
 };
 
