@@ -59,6 +59,7 @@ GetModelBoundaryValueParameters::usage="";
 SetModelBoundaryValueParameters::usage="";
 GetModelCoefficients::usage="";
 PrintModelCoefficients::usage="";
+GetSavedMatchingParameters::usage="";
 
 Begin["`Private`"];
 
@@ -1118,6 +1119,16 @@ CreateCoefficientsCalculations[solutions_List] :=
            prototypes = StringJoin[#[[1]]& /@ defs];
            functions = Utils`StringJoinWithSeparator[#[[2]]& /@ defs, "\n"];
            {prototypes, functions}
+          ];
+
+GetSavedMatchingParameters[matchingConstraints_List] :=
+    Module[{pars},
+           pars = Intersection[Join[{SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling,
+                                     SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+                                    First /@ matchingConstraints],
+                               Parameters`GetModelParameters[]
+                              ];
+           {#, #}& /@ pars
           ];
 
 DependsAtMostOn[num_?NumericQ, pars_List] := True;

@@ -24,6 +24,7 @@
 #include "@ModelName@_semi_analytic_ewsb_solver.hpp"
 #include "@ModelName@_semi_analytic_high_scale_constraint.hpp"
 #include "@ModelName@_semi_analytic_initial_guesser.hpp"
+#include "@ModelName@_semi_analytic_matching_constraint.hpp"
 #include "@ModelName@_semi_analytic_soft_parameters_constraint.hpp"
 #include "@ModelName@_semi_analytic_susy_convergence_tester.hpp"
 #include "@ModelName@_semi_analytic_susy_scale_constraint.hpp"
@@ -120,6 +121,7 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    @ModelName@_high_scale_constraint<Semi_analytic> high_scale_constraint(&model);
    @ModelName@_susy_scale_constraint<Semi_analytic> susy_scale_constraint(&model, qedqcd);
    @ModelName@_soft_parameters_constraint<Semi_analytic> soft_constraint(&model, qedqcd);
+   @ModelName@_matching_constraint<Semi_analytic> matching_constraint(&model);
    standard_model::Standard_model_low_scale_constraint<Two_scale> low_scale_constraint(&eft, qedqcd);
 
    // note: to avoid large logarithms the downwards matching loop order
@@ -146,7 +148,13 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
       settings.get(Spectrum_generator_settings::eft_matching_scale));
 
    soft_constraint.set_boundary_scale(boundary_scale_getter);
+   @semiAnalyticConstraint@.set_scale(
+      [this,&soft_constraint] () {
+         return soft_constraint.get_scale(); });
+
+   matching_constraint.set_matching_condition(&matching_up);
    matching_up.set_boundary_scale(boundary_scale_getter);
+   matching_up.set_matching_constraint(&matching_constraint);
    matching_down.set_boundary_scale(boundary_scale_getter);
 
    high_scale_constraint.initialize();
@@ -184,9 +192,11 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    cct.add_convergence_tester(&eft_ct);
 
    @ModelName@_standard_model_initial_guesser<Semi_analytic> initial_guesser(&model, &eft, qedqcd,
-                                                                         low_scale_constraint,
-                                                                         susy_scale_constraint,
-                                                                         high_scale_constraint);
+                                                                             low_scale_constraint,
+                                                                             susy_scale_constraint,
+                                                                             high_scale_constraint,
+                                                                             matching_constraint,
+                                                                             matching_up);
 
    Two_scale_increasing_precision precision(
       10.0, settings.get(Spectrum_generator_settings::precision));
@@ -196,13 +206,13 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    solver.set_outer_convergence_tester(&cct);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_inner(&low_scale_constraint, &eft);
-   solver.add_inner(&matching_up, &eft, &model);
-   solver.add_inner(&susy_scale_constraint, &model);
+   solver.add_inner(&matching_constraint, &model);
    solver.add_inner(&high_scale_constraint, &model);
    solver.add_inner(&susy_scale_constraint, &model);
-   solver.add_inner(&matching_down, &model, &eft);
    solver.add_outer(&soft_constraint, &model);
+   solver.add_outer(&matching_down, &model, &eft);
+   solver.add_outer(&low_scale_constraint, &eft);
+   solver.add_outer(&matching_up, &eft, &model);
 
    high_scale = susy_scale = low_scale = 0.;
    reached_precision = std::numeric_limits<double>::infinity();

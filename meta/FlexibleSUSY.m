@@ -2039,9 +2039,11 @@ WriteBVPSolverMakefile[files_List] :=
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               twoScaleSource = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}];
               twoScaleHeader = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}];
-              semiAnalyticSource = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}];
-              semiAnalyticHeader = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}];
-
+              semiAnalyticSource = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_matching_constraint.cpp"}]
+                                   <> " \\\n\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}];
+              semiAnalyticHeader = "\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_matching_constraint.hpp"}]
+                                   <> " \\\n\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_matching_constraint.hpp"}]
+                                   <> " \\\n\t\t" <> FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}];
              ];
            WriteOut`ReplaceInFiles[files,
                    { "@FlexibleEFTHiggsTwoScaleSource@" -> twoScaleSource,
@@ -3523,6 +3525,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`LowScaleInput],
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
                                                semiAnalyticSolns, semiAnalyticLowScaleFiles];
+
+              If[FlexibleSUSY`FlexibleEFTHiggs === True,
+                 Print["Creating class for matching constraint ..."];
+                 WriteConstraintClass[FlexibleSUSY`SUSYScale, SemiAnalytic`GetSavedMatchingParameters[FlexibleSUSY`SUSYScaleMatching],
+                                      FlexibleSUSY`SUSYScaleFirstGuess,
+                                      {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
+                                      {{FileNameJoin[{$flexiblesusyTemplateDir, "matching_constraint.hpp.in"}],
+                                        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_matching_constraint.hpp"}]},
+                                       {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_matching_constraint.hpp.in"}],
+                                        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_matching_constraint.hpp"}]},
+                                       {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_matching_constraint.cpp.in"}],
+                                        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_semi_analytic_matching_constraint.cpp"}]}
+                                      }];
+                ];
 
               Print["Creating class for initial guesser ..."];
               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,

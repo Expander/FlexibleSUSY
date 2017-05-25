@@ -31,6 +31,7 @@ class Two_scale;
 template <class T> class @ModelName@;
 template <class T> class @ModelName@_standard_model_matching_up;
 template <class T> class @ModelName@_standard_model_matching_down;
+template <class T> class @ModelName@_matching_constraint;
 
 namespace standard_model {
 template <class T> class StandardModel;
@@ -67,6 +68,9 @@ public:
    void set_boundary_scale(Scale_getter&&);
    void match_tree_level();
 
+   const @ModelName@<Semi_analytic>& get_model() const { return *model; }
+   void set_matching_constraint(@ModelName@_matching_constraint<Semi_analytic>* mc) { matching_constraint = mc; }
+
 private:
    @ModelName@<Semi_analytic>* model{nullptr};
    standard_model::StandardModel<Two_scale>* eft{nullptr};
@@ -75,6 +79,7 @@ private:
    double scale{0.};
    int loop_order{0};
    int higgs_idx{0}; ///< Higgs index
+   @ModelName@_matching_constraint<Semi_analytic>* matching_constraint{nullptr};
 };
 
 template<>

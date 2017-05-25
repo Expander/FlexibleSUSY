@@ -20,10 +20,10 @@
 
 #include "@ModelName@_standard_model_semi_analytic_matching.hpp"
 #include "@ModelName@_standard_model_matching.hpp"
+#include "@ModelName@_semi_analytic_matching_constraint.hpp"
 #include "@ModelName@_semi_analytic_model.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "error.hpp"
-#include "single_scale_constraint.hpp"
 
 namespace flexiblesusy {
 
@@ -69,12 +69,16 @@ void CLASSNAME::match()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
+   if (matching_constraint)
+      matching_constraint->set_scale(get_scale());
+
    model->calculate_semi_analytic_solutions(get_boundary_scale());
 
    if (model->get_thresholds() && loop_order)
       @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+
 }
 
 void CLASSNAME::match_tree_level()
@@ -84,6 +88,9 @@ void CLASSNAME::match_tree_level()
 
    eft->run_to(get_scale());
    model->run_to(get_scale());
+
+   if (matching_constraint)
+      matching_constraint->set_scale(get_scale());
 
    model->calculate_semi_analytic_solutions(get_boundary_scale());
 

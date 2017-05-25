@@ -97,6 +97,8 @@ SEMI_ANALYTIC_TEMPLATES := \
 		$(DIR)/semi_analytic_low_scale_initial_guesser.cpp.in \
 		$(DIR)/semi_analytic_low_scale_spectrum_generator.hpp.in \
 		$(DIR)/semi_analytic_low_scale_spectrum_generator.cpp.in \
+		$(DIR)/semi_analytic_matching_constraint.hpp.in \
+		$(DIR)/semi_analytic_matching_constraint.cpp.in \
 		$(DIR)/semi_analytic_model.hpp.in \
 		$(DIR)/semi_analytic_model.cpp.in \
 		$(DIR)/semi_analytic_soft_parameters_constraint.hpp.in \
