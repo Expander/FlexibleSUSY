@@ -460,11 +460,11 @@ GetSoftLinearsSolutions[softLinears_List, boundaryConditionSubs_List, dimOneSoln
           ];
 
 GetSemiAnalyticSolutions[settings_List] :=
-    Module[{boundaryValSubs, dimOnePars, dimOneBCs, dimOneSolns = {},
-            diracPars, diracBCs, diracSolns = {}, scalarMasses, scalarMassesBCs,
-            scalarMassesSolns = {}, softBilinears, softBilinearsBCs,
-            softBilinearsSolns = {}, softLinears, softLinearBCs,
-            softLinearSolns = {}, result = {}},
+    Module[{boundaryValSubs = {}, dimOnePars = {}, dimOneBCs = {}, dimOneSolns = {},
+            diracPars = {}, diracBCs = {}, diracSolns = {}, scalarMasses = {},
+            scalarMassesBCs = {}, scalarMassesSolns = {}, softBilinears = {},
+            softBilinearsBCs = {}, softBilinearsSolns = {}, softLinears = {},
+            softLinearBCs = {}, softLinearSolns = {}, result = {}},
 
            boundaryValSubs = GetBoundaryValueSubstitutions[settings];
 
