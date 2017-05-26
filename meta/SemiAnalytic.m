@@ -18,6 +18,8 @@ SelectBoundaryConstraint::usage="";
 SetSemiAnalyticParameters::usage="";
 GetSemiAnalyticParameters::usage="";
 GetBoundaryValueParameters::usage="";
+GetBoundaryValueParameterSymbol::usage="Returns the symbol for a given boundary
+value parameter.";
 
 IsAllowedSemiAnalyticParameter::usage="";
 IsSemiAnalyticParameter::usage="";
@@ -53,6 +55,7 @@ ApplySemiAnalyticBoundaryConditions::usage="";
 ReplacePreprocessorMacros::usage="";
 GetSemiAnalyticEWSBSubstitutions::usage="";
 EvaluateSemiAnalyticSolutions::usage="";
+GetExtraBoundaryParametersToSave::usage="";
 SaveBoundaryValueParameters::usage="";
 SetBoundaryValueParametersFromLocalCopies::usage="";
 GetModelBoundaryValueParameters::usage="";
@@ -515,13 +518,24 @@ GetSemiAnalyticSolutions[settings_List] :=
            result
           ];
 
-CreateBoundaryValue[parameter_] := Symbol[CConversion`ToValidCSymbolString[parameter] <> "Basis"];
+GetBoundaryValueParameterSymbol[parameter_?Parameters`IsInputParameter] := parameter;
+
+GetBoundaryValueParameterSymbol[parameter_?Parameters`IsExtraParameter] := parameter;
+
+GetBoundaryValueParameterSymbol[parameter_?Parameters`IsModelParameter] :=
+    Symbol[CConversion`ToValidCSymbolString[parameter] <> "BV"];
+
+GetBoundaryValueParameterSymbol[parameter_?Parameters`IsOutputParameter] :=
+    Symbol[CConversion`ToValidCSymbolString[parameter] <> "BV"];
+
+GetBoundaryValueParameterSymbol[parameter_?Parameters`IsPhase] :=
+    Symbol[CConversion`ToValidCSymbolString[parameter] <> "BV"];
 
 CreateBoundaryValueParameters[solutions_List] :=
-    {CreateBoundaryValue[#], {}, Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
+    {CreateBoundaryValueParameterSymbol[#], {}, Parameters`GetType[#]}& /@ (GetBoundaryValueParameters[solutions]);
 
 CreateBoundaryValueParameterName[par_] :=
-    CConversion`ToValidCSymbolString[CreateBoundaryValue[par]];
+    CConversion`ToValidCSymbolString[GetBoundaryValueParameterSymbol[par]];
 
 CreateCoefficients[SemiAnalyticSolution[par_, basis_]] :=
     Module[{i},
@@ -944,7 +958,7 @@ ExpandSemiAnalyticSolutions[solutions_List] :=
 
 GetSemiAnalyticParameterSubstitutions[solutions_List] :=
     Module[{boundaryValues, expanded},
-           boundaryValueRules = Rule[#, CreateBoundaryValue[#]]& /@ (GetBoundaryValueParameters[solutions]);
+           boundaryValueRules = Rule[#, GetBoundaryValueParameterSymbol[#]]& /@ (GetBoundaryValueParameters[solutions]);
            expanded = ExpandSemiAnalyticSolutions[solutions];
            {#[[1]], Parameters`ReplaceAllRespectingSARAHHeads[#[[2]], boundaryValueRules]}& /@ expanded
           ];
@@ -952,7 +966,7 @@ GetSemiAnalyticParameterSubstitutions[solutions_List] :=
 EvaluateSemiAnalyticSolution[solution_, class_String] :=
     Module[{parameter, basisRules, coeffs},
            parameter = GetName[solution];
-           basisRules = Rule[#, CreateBoundaryValue[#]]& /@ (GetBoundaryValueParameters[solution]);
+           basisRules = Rule[#, GetBoundaryValueParameterSymbol[#]]& /@ (GetBoundaryValueParameters[solution]);
            coeffs = CreateCoefficients[solution];
            Parameters`SetParameter[parameter, Dot[coeffs, GetBasis[solution]] /. basisRules, class]
           ];
@@ -964,7 +978,7 @@ EvaluateSemiAnalyticSolutions[solutions_List, class_String:"model."] :=
           ];
 
 SaveBoundaryValueParameter[parameter_, modelPrefix_String:"model->"] :=
-    Module[{basisPar = CreateBoundaryValue[parameter],
+    Module[{basisPar = GetBoundaryValueParameterSymbol[parameter],
             parStr = CConversion`ToValidCSymbolString[parameter],
             macro, value},
            Which[Parameters`IsModelParameter[parameter],
@@ -996,7 +1010,7 @@ SetBoundaryValueParametersFromLocalCopies[parameterCopies_List, solutions_List, 
     Module[{boundaryValues, parameters, result = ""},
            boundaryValues = GetBoundaryValueParameters[solutions];
            parameters = Select[parameterCopies, MemberQ[boundaryValues, #]&];
-           (result = result <> Parameters`SetParameter[CreateBoundaryValue[#], CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
+           (result = result <> Parameters`SetParameter[GetBoundaryValueParameterSymbol[#], CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
            Return[result];
           ];
 
@@ -1020,7 +1034,7 @@ SetTreeLevelEWSBSolution[ewsbSolution_, solutions_List, substitutions_List, stru
                   parStr = CConversion`ToValidCSymbolString[par];
                   body = body <> Parameters`SetParameter[par, parStr, struct, None];
                   If[MemberQ[boundaryValues, par],
-                     basisPar = CreateBoundaryValue[par];
+                     basisPar = GetBoundaryValueParameterSymbol[par];
                      basisSettings = basisSettings <> Parameters`SetParameter[basisPar, parStr, "solutions->", None];
                     ];
                  ];
