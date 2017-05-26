@@ -25,9 +25,6 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_tree_level_solution )
    CE6SSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 
@@ -65,9 +62,6 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_one_loop_solution )
    CE6SSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 
@@ -100,7 +94,7 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_one_loop_solution )
 
 BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_two_loop_solution )
 {
-   const double precision = 1.e-5;
+   const double precision = 1.e-4;
    CE6SSM_input_parameters input;
    CE6SSM_mass_eigenstates model(input);
    setup_CE6SSM(model, input);
@@ -114,9 +108,6 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_ewsb_two_loop_solution )
    CE6SSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 

@@ -21,6 +21,8 @@ void setup_high_scale_CE6SSM_const(
    flexiblesusy::CE6SSM_mass_eigenstates& model,
    const Boundary_values& values)
 {
+   model.get_input().BMuPrimeInput = values.BMuPr;
+
    model.set_Lambdax(values.Lambda);
    model.set_Lambda12(values.Lambda12 * UNITMATRIX(2));
    model.set_Kappa(values.Kappa * UNITMATRIX(3));
@@ -59,6 +61,7 @@ void setup_high_scale_CE6SSM_const(
    model.set_m0Sq(values.m0Sq);
    model.set_m12(values.m12);
    model.set_Azero(values.Azero);
+   model.set_MuPrBV(values.MuPr);
 }
 
 void setup_high_scale_CE6SSM(

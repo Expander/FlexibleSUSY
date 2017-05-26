@@ -31,20 +31,20 @@ FSAuxiliaryParameterInfo = {
 EWSBOutputParameters = { BMu0, m0Sq };
 
 TreeLevelEWSBSolution = {
-   {m0Sq, ((mHd2Coeff2 vd^2 - mHu2Coeff2 vu^2) m12Basis^2
-           + (mHd2Coeff3 vd^2 - mHu2Coeff3 vu^2) m12Basis AzeroBasis
-           + (mHd2Coeff4 vd^2 - mHu2Coeff4 vu^2) AzeroBasis^2
+   {m0Sq, ((mHd2Coeff2 vd^2 - mHu2Coeff2 vu^2) m12^2
+           + (mHd2Coeff3 vd^2 - mHu2Coeff3 vu^2) m12 Azero
+           + (mHd2Coeff4 vd^2 - mHu2Coeff4 vu^2) Azero^2
            + (Abs[\[Mu]]^2 + (g2^2 + GUTNormalization[g1]^2 g1^2)
               ( vd^2 + vu^2) / 8) (vd^2 - vu^2)
            - vd tadpole[1] + vu tadpole[2])
            / (mHu2Coeff1 vu^2 - mHd2Coeff1 vd^2)},
    {BMu0, vd vu ((mHd2Coeff1 + mHu2Coeff1) m0Sq
-                 + (mHd2Coeff2 + mHu2Coeff2) m12Basis^2
-                 + (mHd2Coeff3 + mHu2Coeff3) m12Basis AzeroBasis
-                 + (mHd2Coeff4 + mHu2Coeff4) AzeroBasis^2 + 2 Abs[\[Mu]]^2
+                 + (mHd2Coeff2 + mHu2Coeff2) m12^2
+                 + (mHd2Coeff3 + mHu2Coeff3) m12 Azero
+                 + (mHd2Coeff4 + mHu2Coeff4) Azero^2 + 2 Abs[\[Mu]]^2
                  - tadpole[1] / vd - tadpole[2] / vu)
-          / (BMuCoeff1 (vd^2 + vu^2)) - BMuCoeff2 MuBasis m12Basis / BMuCoeff1
-          - BMuCoeff3 MuBasis AzeroBasis / BMuCoeff1}
+          / (BMuCoeff1 (vd^2 + vu^2)) - BMuCoeff2 MuBV m12 / BMuCoeff1
+          - BMuCoeff3 MuBV Azero / BMuCoeff1}
 };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];

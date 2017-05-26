@@ -17,6 +17,9 @@ void setup_high_scale_CNMSSM_const(
    flexiblesusy::CNMSSM_mass_eigenstates& model,
    const Boundary_values& values)
 {
+   model.get_input().Azero = values.Azero;
+   model.get_input().m12 = values.m12;
+
    model.set_Lambdax(values.Lambda);
 
    model.set_TYu(model.get_Yu() * values.Azero);

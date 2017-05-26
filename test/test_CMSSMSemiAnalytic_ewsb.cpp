@@ -26,11 +26,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_tree_level_solution )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMu0Basis(values.BMu0);
-   solns.set_MuBasis(values.Mu);
 
    solns.calculate_coefficients(model);
 
@@ -67,11 +62,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_one_loop_solution )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMu0Basis(values.BMu0);
-   solns.set_MuBasis(values.Mu);
 
    solns.calculate_coefficients(model);
 
@@ -115,11 +105,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSMSemiAnalytic_ewsb_two_loop_solution )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMu0Basis(values.BMu0);
-   solns.set_MuBasis(values.Mu);
 
    solns.calculate_coefficients(model);
 
@@ -263,11 +248,6 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_ewsb_tree_level )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMu0Basis(values.BMu0);
-   solns.set_MuBasis(values.Mu);
 
    solns.calculate_coefficients(model);
 
@@ -323,11 +303,6 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_ewsb_one_loop )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMu0Basis(values.BMu0);
-   solns.set_MuBasis(values.Mu);
 
    solns.calculate_coefficients(model);
 

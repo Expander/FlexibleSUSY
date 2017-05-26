@@ -129,12 +129,7 @@ CMSSMSemiAnalytic<Semi_analytic> initialize_semi_analytic_model(
 
    semi_analytic_model.set_m0Sq(Sqr(two_scale_input.m0));
    semi_analytic_model.set_BMu0(BMu0);
-
-   semi_analytic_model.set_m0SqBasis(Sqr(two_scale_input.m0));
-   semi_analytic_model.set_m12Basis(two_scale_input.m12);
-   semi_analytic_model.set_AzeroBasis(two_scale_input.Azero);
-   semi_analytic_model.set_BMu0Basis(BMu0);
-   semi_analytic_model.set_MuBasis(Mu0);
+   semi_analytic_model.set_MuBV(Mu0);
 
    semi_analytic_model.calculate_semi_analytic_solutions(high_scale);
    semi_analytic_model.calculate_DRbar_masses();
@@ -531,7 +526,7 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       const double mass_rel_diff = max_mass_rel_diff(
          semi_analytic_model, single_iteration_model);
 
-      const double test_precision = 1.0e-3;
+      const double test_precision = 1.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);

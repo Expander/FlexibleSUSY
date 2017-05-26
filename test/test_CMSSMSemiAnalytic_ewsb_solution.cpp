@@ -77,11 +77,6 @@ BOOST_AUTO_TEST_CASE( test_tree_level_ewsb_solutions )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(bv.Azero);
-   solns.set_m12Basis(bv.m12);
-   solns.set_m0SqBasis(bv.m0Sq);
-   solns.set_BMu0Basis(bv.BMu0);
-   solns.set_MuBasis(bv.Mu);
 
    solns.calculate_coefficients(sa_model);
 
@@ -150,11 +145,6 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(bv.Azero);
-   solns.set_m12Basis(bv.m12);
-   solns.set_m0SqBasis(bv.m0Sq);
-   solns.set_BMu0Basis(bv.BMu0);
-   solns.set_MuBasis(bv.Mu);
 
    solns.calculate_coefficients(sa_model);
 
@@ -237,11 +227,6 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
    CMSSMSemiAnalytic_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(bv.Azero);
-   solns.set_m12Basis(bv.m12);
-   solns.set_m0SqBasis(bv.m0Sq);
-   solns.set_BMu0Basis(bv.BMu0);
-   solns.set_MuBasis(bv.Mu);
 
    solns.calculate_coefficients(sa_model);
 

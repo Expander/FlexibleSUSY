@@ -83,8 +83,6 @@ public:
     */
    void calculate_semi_analytic_solutions(double);
 
-@getBoundaryValueParameters@
-@setBoundaryValueParameters@
 @getSemiAnalyticCoefficients@
 private:
    /// semi-analytic solutions for the model soft parameters

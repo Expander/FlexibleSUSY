@@ -26,9 +26,6 @@ BOOST_AUTO_TEST_CASE( test_CNMSSM_ewsb_tree_level_solution )
    CNMSSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 
@@ -66,9 +63,6 @@ BOOST_AUTO_TEST_CASE( test_CNMSSM_ewsb_one_loop_solution )
    CNMSSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 
@@ -115,9 +109,6 @@ BOOST_AUTO_TEST_CASE( test_CNMSSM_ewsb_two_loop_solution )
    CNMSSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
 
    solns.calculate_coefficients(model);
 

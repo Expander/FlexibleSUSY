@@ -135,10 +135,6 @@ CNMSSM<Semi_analytic> initialize_semi_analytic_model(
 
    semi_analytic_model.set_m0Sq(Sqr(two_scale_input.m0));
 
-   semi_analytic_model.set_m0SqBasis(Sqr(two_scale_input.m0));
-   semi_analytic_model.set_m12Basis(two_scale_input.m12);
-   semi_analytic_model.set_AzeroBasis(two_scale_input.Azero);
-
    semi_analytic_model.calculate_semi_analytic_solutions(high_scale);
    semi_analytic_model.calculate_DRbar_masses();
 

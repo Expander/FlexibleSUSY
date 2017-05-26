@@ -19,6 +19,9 @@ void setup_high_scale_CMSSMSemiAnalytic_const(
    flexiblesusy::CMSSMSemiAnalytic_mass_eigenstates& model,
    const Boundary_values& values)
 {
+   model.get_input().m12 = values.m12;
+   model.get_input().Azero = values.Azero;
+
    model.set_TYu(model.get_Yu() * values.Azero);
    model.set_TYd(model.get_Yd() * values.Azero);
    model.set_TYe(model.get_Ye() * values.Azero);
@@ -40,6 +43,7 @@ void setup_high_scale_CMSSMSemiAnalytic_const(
 
    model.set_m0Sq(values.m0Sq);
    model.set_BMu0(values.BMu0);
+   model.set_MuBV(values.Mu);
 }
 
 void setup_high_scale_CMSSMSemiAnalytic(

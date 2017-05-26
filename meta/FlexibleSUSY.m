@@ -1308,7 +1308,7 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
             setEWSBSolution = "", fillArrayWithEWSBParameters = "",
             solveEwsbWithTadpoles = "", getEWSBParametersFromVector = "",
             setEWSBParametersFromLocalCopies = "", applyEWSBSubstitutions = "",
-            setModelParametersFromEWSB = "", setBoundaryValueParametersFromLocalCopies = ""},
+            setModelParametersFromEWSB = ""},
            semiAnalyticSubs = SemiAnalytic`GetSemiAnalyticEWSBSubstitutions[solutions];
            additionalEwsbSubs = Complement[ewsbSubstitutions, semiAnalyticSubs];
            independentEwsbEquations = EWSB`GetLinearlyIndependentEqs[ewsbEquations, parametersFixedByEWSB, ewsbSubstitutions];
@@ -1340,7 +1340,6 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
            setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model."];
            setModelParametersFromEWSB   = EWSB`SetModelParametersFromEWSB[parametersFixedByEWSB, additionalEwsbSubs, "model."];
            applyEWSBSubstitutions       = EWSB`ApplyEWSBSubstitutions[parametersFixedByEWSB, additionalEwsbSubs];
-           setBoundaryValueParametersFromLocalCopies = SemiAnalytic`SetBoundaryValueParametersFromLocalCopies[parametersFixedByEWSB, solutions];
            WriteOut`ReplaceInFiles[files,
                           { "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],
                             "@calculateTwoLoopTadpolesNoStruct@" -> IndentText[calculateTwoLoopTadpolesNoStruct],
@@ -1357,8 +1356,6 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             "@applyEWSBSubstitutions@"       -> IndentText[IndentText[WrapLines[applyEWSBSubstitutions]]],
                             "@setModelParametersFromEWSB@"   -> IndentText[WrapLines[setModelParametersFromEWSB]],
-                            "@setBoundaryValueParametersFromLocalCopies@" -> IndentText[IndentText[WrapLines[setBoundaryValueParametersFromLocalCopies]]],
-                            "@setBoundaryValueParametersFromSolution@" -> IndentText[WrapLines[setBoundaryValueParametersFromLocalCopies]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -1622,8 +1619,8 @@ WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
 WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
-    Module[{semiAnalyticSolutionsDefs = "", boundaryValueStructDefs = "", boundaryValuesDefs = "",
-            boundaryValueGetters = "", boundaryValueSetters = "", coefficientGetters = "",
+    Module[{semiAnalyticSolutionsDefs = "", boundaryValueStructDefs = "",
+            coefficientGetters = "",
             createBasisEvaluators = "", applyBoundaryConditions = "",
             datasets, numberOfTrialPoints, initializeTrialBoundaryValues = "",
             createLinearSystemSolvers = "", calculateCoefficients = "",
@@ -1631,10 +1628,7 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
             calculateCoefficientsPrototypes = "", calculateCoefficientsFunctions = ""},
            semiAnalyticSolutionsDefs = SemiAnalytic`CreateSemiAnalyticSolutionsDefinitions[semiAnalyticSolns];
            boundaryValueStructDefs = SemiAnalytic`CreateLocalBoundaryValuesDefinitions[semiAnalyticSolns];
-           boundaryValuesDefs = SemiAnalytic`CreateBoundaryValuesDefinitions[semiAnalyticSolns];
            coefficientGetters = SemiAnalytic`CreateSemiAnalyticCoefficientGetters[semiAnalyticSolns];
-           boundaryValueGetters = SemiAnalytic`CreateBoundaryValueGetters[semiAnalyticSolns];
-           boundaryValueSetters = SemiAnalytic`CreateBoundaryValueSetters[semiAnalyticSolns];
            createBasisEvaluators = SemiAnalytic`CreateBasisEvaluators[semiAnalyticSolns];
            datasets = SemiAnalytic`ConstructTrialDatasets[semiAnalyticSolns];
            createLinearSystemSolvers = SemiAnalytic`CreateLinearSystemSolvers[datasets, semiAnalyticSolns];
@@ -1646,8 +1640,6 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
            WriteOut`ReplaceInFiles[files, { "@semiAnalyticSolutionsDefs@" -> IndentText[WrapLines[semiAnalyticSolutionsDefs]],
                                             "@boundaryValuesDefs@" -> IndentText[WrapLines[boundaryValuesDefs]],
                                             "@boundaryValueStructDefs@" -> IndentText[IndentText[WrapLines[boundaryValueStructDefs]]],
-                                            "@boundaryValueGetters@" -> IndentText[WrapLines[boundaryValueGetters]],
-                                            "@boundaryValueSetters@" -> IndentText[WrapLines[boundaryValueSetters]],
                                             "@coefficientGetters@" -> IndentText[WrapLines[coefficientGetters]],
                                             "@numberOfTrialPoints@" -> ToString[numberOfTrialPoints],
                                             "@initializeTrialBoundaryValues@" -> IndentText[WrapLines[initializeTrialBoundaryValues]],
@@ -1662,15 +1654,10 @@ WriteSemiAnalyticSolutionsClass[semiAnalyticBCs_List, semiAnalyticSolns_List, fi
           ];
 
 WriteSemiAnalyticModelClass[semiAnalyticBCs_List, semiAnalyticSolns_List, files_List] :=
-    Module[{getBoundaryValueParameters = "", setBoundaryValueParameters = "",
-            getSemiAnalyticCoefficients = "", printSemiAnalyticCoefficients = ""},
-           getBoundaryValueParameters = SemiAnalytic`GetModelBoundaryValueParameters[semiAnalyticSolns];
-           setBoundaryValueParameters = SemiAnalytic`SetModelBoundaryValueParameters[semiAnalyticSolns];
+    Module[{getSemiAnalyticCoefficients = "", printSemiAnalyticCoefficients = ""},
            getSemiAnalyticCoefficients = SemiAnalytic`GetModelCoefficients[semiAnalyticSolns];
            printSemiAnalyticCoefficients = SemiAnalytic`PrintModelCoefficients[semiAnalyticSolns, "out"];
-           WriteOut`ReplaceInFiles[files, { "@getBoundaryValueParameters@"   -> IndentText[WrapLines[getBoundaryValueParameters]],
-                                            "@setBoundaryValueParameters@"   -> IndentText[WrapLines[setBoundaryValueParameters]],
-                                            "@getSemiAnalyticCoefficients@"  -> IndentText[WrapLines[getSemiAnalyticCoefficients]],
+           WriteOut`ReplaceInFiles[files, { "@getSemiAnalyticCoefficients@"  -> IndentText[WrapLines[getSemiAnalyticCoefficients]],
                                             "@printSemiAnalyticCoefficients@" -> IndentText[WrapLines[printSemiAnalyticCoefficients]],
                                             Sequence @@ GeneralReplacementRules[] }];
           ];
@@ -3096,6 +3083,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                                        FlexibleSUSY`HighScaleInput}];
 
               semiAnalyticSolns = SemiAnalytic`GetSemiAnalyticSolutions[semiAnalyticBCs];
+
+              (* add boundary values as additional extra parameters if necessary *)
+              Parameters`AddExtraParameters[SemiAnalytic`GetExtraBoundaryParametersToSave[semiAnalyticSolns]];
              ];
 
            PrintHeadline["Creating model parameter classes"];
@@ -3443,7 +3433,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
               PrintHeadline["Creating semi-analytic solver"];
 
-              Parameters`AddExtraParameters[SemiAnalytic`CreateBoundaryValueParameters[semiAnalyticSolns]];
               Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
 
               semiAnalyticSolnsOutputFile = FileNameJoin[{FSOutputDir,

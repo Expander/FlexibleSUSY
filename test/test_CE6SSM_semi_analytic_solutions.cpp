@@ -24,11 +24,6 @@ BOOST_AUTO_TEST_CASE( test_CE6SSM_coefficients )
    CE6SSM_semi_analytic_solutions solns;
    solns.set_input_scale(high_scale);
    solns.set_output_scale(Electroweak_constants::MZ);
-   solns.set_AzeroBasis(values.Azero);
-   solns.set_m12Basis(values.m12);
-   solns.set_m0SqBasis(values.m0Sq);
-   solns.set_BMuPrimeInputBasis(values.BMuPr);
-   solns.set_MuPrBasis(values.MuPr);
 
    solns.calculate_coefficients(model);
 

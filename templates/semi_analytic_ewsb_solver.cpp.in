@@ -64,7 +64,6 @@ int CLASSNAME::solve_iteratively(@ModelName@_mass_eigenstates& model_to_solve)
    auto ewsb_stepper = [this, model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-@setBoundaryValueParametersFromLocalCopies@
       solutions->evaluate_solutions(model);
 @applyEWSBSubstitutions@
       if (this->loop_order > 0)
@@ -76,7 +75,6 @@ int CLASSNAME::solve_iteratively(@ModelName@_mass_eigenstates& model_to_solve)
    auto tadpole_stepper = [this, model](const EWSB_vector_t& ewsb_pars) mutable -> EWSB_vector_t {
 @getEWSBParametersFromVector@
 @setEWSBParametersFromLocalCopies@
-@setBoundaryValueParametersFromLocalCopies@
       solutions->evaluate_solutions(model);
 @applyEWSBSubstitutions@
       if (this->loop_order > 0)
@@ -154,7 +152,6 @@ void CLASSNAME::set_ewsb_solution(@ModelName@_mass_eigenstates& model, const EWS
    const auto solution = solver->get_solution();
 
 @setEWSBSolution@
-@setBoundaryValueParametersFromSolution@
    solutions->evaluate_solutions(model);
 @setModelParametersFromEWSB@
    model.calculate_DRbar_masses();
