@@ -178,7 +178,7 @@ void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_susy_scale_parame
    susy_constraint.set_model(model);
    susy_constraint.apply();
 
-   // apply user-defined initial guess at the high scale
+   // apply user-defined initial guess at the SUSY-scale
 @initialGuessAtSUSYScale@
 }
 
