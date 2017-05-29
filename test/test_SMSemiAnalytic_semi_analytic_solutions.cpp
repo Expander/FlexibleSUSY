@@ -3,7 +3,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.hpp"
 #include "test_SMSemiAnalytic.hpp"
 #include "SMSemiAnalytic_semi_analytic_solutions.hpp"
 
