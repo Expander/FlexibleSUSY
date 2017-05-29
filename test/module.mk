@@ -80,7 +80,8 @@ endif
 
 ifeq ($(WITH_SM) $(WITH_SoftsusyMSSM),yes yes)
 TEST_SRC += \
-		$(DIR)/test_SM_weinberg_angle.cpp
+		$(DIR)/test_SM_weinberg_angle.cpp \
+		$(DIR)/test_SM_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM),yes yes)
@@ -98,7 +99,8 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_spectrum.cpp \
 		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
-		$(DIR)/test_CMSSM_weinberg_angle.cpp
+		$(DIR)/test_CMSSM_weinberg_angle.cpp \
+		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMMassWInput),yes yes)
@@ -178,7 +180,8 @@ ifeq ($(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
-		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
+		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp \
+		$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_CMSSM) $(WITH_cCMSSM),yes yes)
@@ -682,6 +685,8 @@ $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_CMSSM_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
 $(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -766,11 +771,15 @@ $(DIR)/test_SM_two_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOOPF
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI)
+
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

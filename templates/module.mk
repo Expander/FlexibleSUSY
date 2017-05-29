@@ -74,7 +74,9 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
-		$(DIR)/two_scale_susy_scale_constraint.cpp.in
+		$(DIR)/two_scale_susy_scale_constraint.cpp.in \
+		$(DIR)/weinberg_angle.hpp.in \
+		$(DIR)/weinberg_angle.cpp.in
 
 TEMPLATES    := \
 		$(BASE_TEMPLATES) \

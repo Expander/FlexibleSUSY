@@ -409,7 +409,7 @@ int number_of_problems(const P& problems)
       + problems.no_ewsb()
       + problems.no_convergence()
       + (problems.no_perturbative() || problems.have_non_perturbative_parameter())
-      + problems.no_rho_convergence()
+      + problems.no_sinThetaW_convergence()
       + problems.have_thrown()
       + problems.have_failed_pole_mass_convergence();
 }
@@ -485,8 +485,8 @@ void Model_data_impl<Solver_type>::put_problems(MLINK link) const
       MLPutRuleTo(link, "True", "NoConvergence");
    if (problems.no_perturbative() || problems.have_non_perturbative_parameter())
       MLPutRuleTo(link, "True", "NonPerturbative");
-   if (problems.no_rho_convergence())
-      MLPutRuleTo(link, "True", "NoRhoConvergence");
+   if (problems.no_sinThetaW_convergence())
+      MLPutRuleTo(link, "True", "NoSinThetaWConvergence");
    if (problems.have_thrown())
       MLPutRuleTo(link, "True", "Exceptions");
    if (problems.have_failed_pole_mass_convergence())

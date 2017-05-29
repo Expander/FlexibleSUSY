@@ -939,9 +939,9 @@ double Standard_model::calculate_theta_w(const softsusy::QedQcd& qedqcd, double 
    theta_w = ArcSin(weinberg.get_sin_theta());
 
    if (error)
-      problems.flag_no_rho_convergence();
+      problems.flag_no_sinThetaW_convergence();
    else
-      problems.unflag_no_rho_convergence();
+      problems.unflag_no_sinThetaW_convergence();
 
    return theta_w;
 }

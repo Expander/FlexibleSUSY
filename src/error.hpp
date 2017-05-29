@@ -71,29 +71,27 @@ private:
 };
 
 /**
- * @class NoRhoConvergenceError
- * @brief No convergence while calculating the rho-hat parameter
+ * @class NoSinThetaWConvergenceError
+ * @brief No convergence while calculating the sinThetaW parameter
  */
-class NoRhoConvergenceError : public Error {
+class NoSinThetaWConvergenceError : public Error {
 public:
-   NoRhoConvergenceError(int number_of_iterations_,
-                         double sin_theta_, double rho_hat_)
+   NoSinThetaWConvergenceError(int number_of_iterations_,
+                               double sin_theta_)
       : number_of_iterations(number_of_iterations_)
       , sin_theta(sin_theta_)
-      , rho_hat(rho_hat_)
       {}
-   virtual ~NoRhoConvergenceError() {}
+   virtual ~NoSinThetaWConvergenceError() {}
    virtual std::string what() const {
-      return "NoRhoConvergenceError: no convergence after "
+      return "NoSinThetaWConvergenceError: no convergence after "
          + std::to_string(number_of_iterations) + " iterations (sin(theta)="
-         + std::to_string(sin_theta) + ", rho-hat=" + std::to_string(rho_hat) + ")";
+         + std::to_string(sin_theta) + ")";
    }
    int get_number_of_iterations() const { return number_of_iterations; }
    double get_sin_theta() const { return sin_theta; }
-   double get_rho_hat() const { return rho_hat; }
 private:
    int number_of_iterations;
-   double sin_theta, rho_hat;
+   double sin_theta;
 };
 
 /**

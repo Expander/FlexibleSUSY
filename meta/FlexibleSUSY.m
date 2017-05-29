@@ -25,7 +25,8 @@ BeginPackage["FlexibleSUSY`",
               "EffectiveCouplings`",
               "FlexibleEFTHiggsMatching`",
               "FSMathLink`",
-              "FlexibleTower`"}];
+              "FlexibleTower`",
+              "WeinbergAngle`"}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -879,6 +880,28 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
           compareFunction = ConvergenceTester`CreateCompareFunction[parameters];
           WriteOut`ReplaceInFiles[files,
                  { "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
+                   Sequence @@ GeneralReplacementRules[]
+                 } ];
+          ];
+
+WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List] :=
+   Module[{deltaVBprototypes = "", deltaVBfunctions = "", deltaVBcalculation = ""},
+          {deltaVBprototypes, deltaVBfunctions} =
+             WeinbergAngle`CreateDeltaVBContributions[deltaVBcontributions, vertexRules];
+          deltaVBcalculation = WeinbergAngle`CreateDeltaVBCalculation[deltaVBcontributions];
+          WriteOut`ReplaceInFiles[files,
+                 { "@DefSMhyperCoupling@" -> WeinbergAngle`DefSMhyperCoupling[],
+                   "@DefSMleftCoupling@"  -> WeinbergAngle`DefSMleftCoupling[],
+                   "@DeltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRhoHat2LoopSM[]]]],
+                   "@DeltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngle`DeltaRHat2LoopSM[]]]],
+                   "@RhoHatTree@"         -> IndentText[WrapLines[WeinbergAngle`RhoHatTree[]]],
+                   "@GetBottomMass@"      -> WeinbergAngle`GetBottomMass[],
+                   "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
+                   "@DefVZSelfEnergy@"    -> WeinbergAngle`DefVZSelfEnergy[],
+                   "@DefVWSelfEnergy@"    -> WeinbergAngle`DefVWSelfEnergy[],
+                   "@DeltaVBprototypes@"  -> IndentText[deltaVBprototypes],
+                   "@DeltaVBfunctions@"   -> deltaVBfunctions,
+                   "@DeltaVBcalculation@" -> IndentText[deltaVBcalculation],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -2195,6 +2218,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks, effectiveCouplings ={}, extraVertices = {},
+            deltaVBwave, deltaVBvertex, deltaVBbox,
             vertexRules, vertexRuleFileName, effectiveCouplingsFileName,
             Lat$massMatrices, spectrumGeneratorFiles = {}, spectrumGeneratorInputFile},
 
@@ -2730,6 +2754,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{LowPoleMassPrecision}],
                FSEigenstates];
 
+           (*prepare Weinberg angle calculation*)
+           WeinbergAngle`InitMuonDecay[];
+           deltaVBwave = WeinbergAngle`DeltaVBwave[];
+           deltaVBvertex = WeinbergAngle`DeltaVBvertex[];
+           deltaVBbox = WeinbergAngle`DeltaVBbox[];
+
            vertexRuleFileName =
               GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
            effectiveCouplingsFileName =
@@ -2741,7 +2771,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
               Put[vertexRules =
-                      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices], Lat$massMatrices],
+                      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices, extraVertices, deltaVBwave,
+                                                deltaVBvertex, deltaVBbox], Lat$massMatrices],
                   vertexRuleFileName],
               vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
@@ -2831,6 +2862,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]}
                                    }];
+
+           Print["Creating class for calculation of weinberg angle ..."];
+           WriteWeinbergAngleClass[Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
+                                   }];
+
+           Print["MuonDecayTest: ", WeinbergAngle`CheckMuonDecayRunning[]];
 
            If[HaveBVPSolver[FlexibleSUSY`TwoScaleSolver],
               PrintHeadline["Creating two-scale solver"];

@@ -14,6 +14,9 @@ own format: SelfEnergies`FSSelfEnergy[particle, expression]";
 ConvertSarahTadpoles::usage="converts SARAH's tadpoles to our own
 format: SelfEnergies`Tadpole[particle, expression]";
 
+CreateVertexExpressions::usage="creates C/C++ functions for the
+given list of vertices";
+
 CreateNPointFunctions::usage="creates C/C++ functions for the
 given list of self-energies and tadpoles";
 
@@ -268,13 +271,13 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
-GetParticleIndices[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
+GetParticleIndicesInCoupling[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
 
-GetParticleIndices[Cp[a__][_]] := GetParticleIndices[Cp[a]];
+GetParticleIndicesInCoupling[Cp[a__][_]] := GetParticleIndicesInCoupling[Cp[a]];
 
 CreateCouplingSymbol[coupling_] :=
     Module[{symbol, indices},
-           indices = GetParticleIndices[coupling];
+           indices = GetParticleIndicesInCoupling[coupling];
            symbol = ToValidCSymbol[coupling /. a_[List[__]] :> a];
            symbol[Sequence @@ indices]
           ];
@@ -297,11 +300,11 @@ MakeUniqueIdx[] :=
  *   ...
  * }
  *)
-CreateCouplingFunction[coupling_, expr_] :=
+CreateCouplingFunction[coupling_, expr_, inModelClass_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
             type, typeStr},
-           indices = GetParticleIndices[coupling];
+           indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            cFunctionName = cFunctionName <> "(";
@@ -320,10 +323,14 @@ CreateCouplingFunction[coupling_, expr_] :=
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
+           body = If[inModelClass,
+                     Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"],
+                     Parameters`CreateLocalConstRefs[expr]
+                    ] <> "\n" <>
                   "const " <> typeStr <> " result = " <>
                   Parameters`ExpressionToString[expr] <> ";\n\n" <>
                   "return result;\n";
+
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
            {prototype, definition,
@@ -361,7 +368,7 @@ ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
 ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
-CreateVertexExpressions[vertexRules_List] :=
+CreateVertexExpressions[vertexRules_List, inModelClass_:True] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
             p, d, r, MakeIndex},
            MakeIndex[i_Integer] := MakeUniqueIdx[];
@@ -372,7 +379,7 @@ CreateVertexExpressions[vertexRules_List] :=
                coupling = Vertices`ToCp[vertexRules[[k,1]]] /. p_[{idx__}] :> p[MakeIndex /@ {idx}];
                expr = vertexRules[[k,2]];
                Utils`UpdateProgressBar[k, Length[vertexRules]];
-               {p,d,r} = CreateCouplingFunction[coupling, expr];
+               {p,d,r} = CreateCouplingFunction[coupling, expr, inModelClass];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
