@@ -1,0 +1,62 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#ifndef @ModelName@_SEMI_ANALYTIC_MATCHING_CONSTRAINT_H
+#define @ModelName@_SEMI_ANALYTIC_MATCHING_CONSTRAINT_H
+
+#include "@ModelName@_matching_constraint.hpp"
+#include "single_scale_constraint.hpp"
+
+namespace flexiblesusy {
+
+template <class T>
+class @ModelName@;
+
+template <class T>
+class @ModelName@_standard_model_matching_up;
+
+class Semi_analytic;
+
+template<>
+class @ModelName@_matching_constraint<Semi_analytic> : public Single_scale_constraint {
+public:
+   @ModelName@_matching_constraint() = default;
+   @ModelName@_matching_constraint(@ModelName@<Semi_analytic>*);
+   virtual ~@ModelName@_matching_constraint() = default;
+   virtual void apply() override;
+   virtual double get_scale() const override { return scale; }
+   virtual std::string name() const override { return "@ModelName@ matching constraint"; }
+   virtual void set_model(Model*) override;
+
+   void set_matching_condition(@ModelName@_standard_model_matching_up<Semi_analytic>* mc) { matching_condition = mc; }
+   void set_scale(double s) { scale = s; }
+private:
+   double scale{0.};
+   double initial_scale_guess{0.};
+   @ModelName@<Semi_analytic>* model{nullptr};
+   @ModelName@_standard_model_matching_up<Semi_analytic>* matching_condition{nullptr};
+
+   void check_model_ptr() const;
+   void check_matching_condition_ptr() const;
+};
+
+} // namespace flexiblesusy
+
+#endif
