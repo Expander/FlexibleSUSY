@@ -410,29 +410,29 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
  * Wrapper routines for Passarino-Veltman loop functions
  */
 
-double CLASSNAME::B0(double p, double m1, double m2) const
+double CLASSNAME::B0(double p2, double m12, double m22) const
 {
-   return passarino_veltman::ReB0(p*p, m1*m1, m2*m2, Sqr(model->get_scale()));
+   return passarino_veltman::ReB0(p2, m12, m22, Sqr(model->get_scale()));
 }
 
-double CLASSNAME::B1(double p, double m1, double m2) const
+double CLASSNAME::B1(double p2, double m12, double m22) const
 {
-   return -1. * passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(model->get_scale()));
+   return -1. * passarino_veltman::ReB1(p2, m12, m22, Sqr(model->get_scale()));
 }
 
-double CLASSNAME::C0(double m1, double m2, double m3) const
+double CLASSNAME::C0(double m12, double m22, double m32) const
 {
-   return softsusy::c0(m1, m2, m3);
+   return softsusy::c0(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32));
 }
 
-double CLASSNAME::D0(double m1, double m2, double m3, double m4) const
+double CLASSNAME::D0(double m12, double m22, double m32, double m42) const
 {
-   return softsusy::d0(m1, m2, m3, m4);
+   return softsusy::d0(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32), std::sqrt(m42));
 }
 
-double CLASSNAME::D27(double m1, double m2, double m3, double m4) const
+double CLASSNAME::D27(double m12, double m22, double m32, double m42) const
 {
-   return softsusy::d27(m1, m2, m3, m4);
+   return softsusy::d27(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32), std::sqrt(m42));
 }
 
 /**
