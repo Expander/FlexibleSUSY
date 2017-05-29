@@ -33,6 +33,7 @@ model_files/CMSSMMediumPrecision export-ignore
 model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
+model_files/CMSSMSemiAnalytic   export-ignore
 model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
@@ -56,6 +57,7 @@ model_files/SMHighScale         export-ignore
 model_files/SMHighPrecision     export-ignore
 model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
+model_files/SMSemiAnalytic      export-ignore
 model_files/TensorCoupling      export-ignore
 model_files/THDMIIMSSMBCApprox  export-ignore
 model_files/HGTHDMIIMSSMBCApprox export-ignore
