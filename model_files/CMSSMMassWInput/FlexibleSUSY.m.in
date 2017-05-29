@@ -69,10 +69,8 @@ InitialGuessAtHighScale = {
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 
-(* low-energy input to determine weak mixing angle
- * Possible values: FSFermiConstant (default), FSMassW
- *)
-FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
+(* determine weak mixing angle from MW *)
+FSWeakMixingAngleInput = FSMassW;
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 
