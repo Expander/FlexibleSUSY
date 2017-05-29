@@ -48,7 +48,7 @@ constexpr double sqr(double a) noexcept { return a*a; }
 constexpr double pow3(double a) noexcept { return a*a*a; }
 constexpr double pow6(double a) noexcept { return a*a*a*a*a*a; }
 
-bool is_close(double m1, double m2, double tol)
+bool is_close(double m1, double m2, double tol) noexcept
 {
   const double mmax = fabs(std::max(fabs(m1), fabs(m2)));
   const double mmin = fabs(std::min(fabs(m1), fabs(m2)));
@@ -71,7 +71,7 @@ double refnfn(double x, double p, double m1, double m2, double q) noexcept
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
 template <typename T>
-T divide_finite(T a, T b) {
+T divide_finite(T a, T b) noexcept {
    T result = a / b;
    if (!std::isfinite(result))
       result = std::numeric_limits<T>::max();
@@ -124,7 +124,7 @@ double fB(const std::complex<double>& a) noexcept
 
 } // anonymous namespace
 
-double a0(double m, double q) {
+double a0(double m, double q) noexcept {
    using std::fabs;
    using std::log;
    constexpr double TOL = 1e-4;
