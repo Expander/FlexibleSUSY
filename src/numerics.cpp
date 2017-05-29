@@ -246,7 +246,7 @@ double b1(double p, double m1, double m2, double q)
   if (pTest > pTolerance) {
     ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
 	   * b0(p, m1, m2, q)) / (2.0 * p2);
-  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) { ///< checked
+  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) {
     const double m14 = sqr(m12), m24 = sqr(m22);
     const double m16 = m12*m14 , m26 = m22*m24;
     const double m18 = sqr(m14), m28 = sqr(m24);
@@ -327,13 +327,15 @@ double b22(double p,  double m1, double m2, double q)
 	  answer = 0.375 * m12 - 0.25 * m12 * log(sqr(m1 / q));
 	}
   }
-  else {// checked
+  else {
     const double b0Save = b0(p, m1, m2, q);
+    const double a01 = a0(m1, q);
+    const double a02 = a0(m2, q);
 
     answer = 1.0 / 6.0 *
-      (0.5 * (a0(m1, q) + a0(m2, q)) + (m12 + m22 - 0.5 * p2)
+      (0.5 * (a01 + a02) + (m12 + m22 - 0.5 * p2)
        * b0Save + (m22 - m12) / (2.0 * p2) *
-       (a0(m2, q) - a0(m1, q) - (m22 - m12) * b0Save) +
+       (a02 - a01 - (m22 - m12) * b0Save) +
        m12 + m22 - p2 / 3.0);
   }
 
@@ -350,7 +352,6 @@ double b22(double p,  double m1, double m2, double q)
   return answer;
 }
 
-// debugged 23.01.07 - thanks to Shindou Tetsuo
 double d0(double m1, double m2, double m3, double m4)
 {
   using std::log;
@@ -389,8 +390,8 @@ double d0(double m1, double m2, double m3, double m4)
   return (c0(m1, m3, m4) - c0(m2, m3, m4)) / (sqr(m1) - sqr(m2));
 }
 
-double d27(double m1, double m2, double m3, double m4) {// checked
-
+double d27(double m1, double m2, double m3, double m4)
+{
   if (is_close(m1, m2, EPSTOL)) {
     const double m1n = m1 + TOL * 0.01;
     return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4))
@@ -400,7 +401,6 @@ double d27(double m1, double m2, double m3, double m4) {// checked
     / (4.0 * (sqr(m1) - sqr(m2)));
 }
 
-// Bug-fixed 14.10.02 by T. Watari and collaborators - many thanks!
 double c0(double m1, double m2, double m3)
 {
   using std::log;
@@ -446,17 +446,17 @@ double c0(double m1, double m2, double m3)
      }
   } else if (is_close(m2, m3, EPSTOL)) {
     if (is_close(m1, m2, EPSTOL)) {
-      ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
+      ans = ( - 0.5 / sqr(m2) );
     } else {
       ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
-               + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
+               + 1.0 / (sqr(m1) - sqr(m2)) );
     }
   } else if (is_close(m1, m2, EPSTOL)) {
      ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-             / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
+             / (sqr(m2)-sqr(m3)) );
   } else if (is_close(m1, m3, EPSTOL)) {
      ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
-             / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
+             / (sqr(m3)-sqr(m2)) );
   } else {
      ans = (1.0 / (sqr(m2) - sqr(m3)) *
             (sqr(m2) / (sqr(m1) - sqr(m2)) *
