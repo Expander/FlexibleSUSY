@@ -85,9 +85,9 @@ void setup_data(const CMSSM_mass_eigenstates& model,
    data.msve_drbar  = msve;
    data.msvm_drbar  = msvm;
 
-   const double pizztMZ = Re(model.self_energy_VZ(mz_pole));
-   const double piwwtMW = Re(model.self_energy_VWm(mw_pole));
-   const double piwwt0  = Re(model.self_energy_VWm(0.));
+   const double pizztMZ = Re(model.self_energy_VZ_1loop(mz_pole));
+   const double piwwtMW = Re(model.self_energy_VWm_1loop(mw_pole));
+   const double piwwt0  = Re(model.self_energy_VWm_1loop(0.));
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale    = scale;
