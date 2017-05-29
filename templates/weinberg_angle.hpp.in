@@ -66,27 +66,27 @@ private:
    double piwwt_MW{0.};               ///< transverse W self-energy at p^2 = MW^2
    double piwwt_0{0.};                ///< transverse W self-energy at p^2 = 0
 
-   double calculate_rho_hat_tree();
-   double calculate_delta_rho_hat(double);
-   double calculate_delta_r_hat(double, double);
-   double calculate_delta_vb(double, double);
-   double calculate_delta_vb_sm(double, double);
-   double calculate_delta_vb_bsm(double);
+   double calculate_rho_hat_tree() const;
+   double calculate_delta_rho_hat(double) const;
+   double calculate_delta_r_hat(double, double) const;
+   double calculate_delta_vb(double, double) const;
+   double calculate_delta_vb_sm(double, double) const;
+   double calculate_delta_vb_bsm(double) const;
 
 @DeltaVBprototypes@
    // Passarino-Veltman loop functions
-   double B0(double, double, double) const;
-   double B1(double, double, double) const;
-   double C0(double, double, double) const;
-   double D0(double, double, double, double) const;
-   double D27(double, double, double, double) const;
+   double B0(double, double, double) const noexcept;
+   double B1(double, double, double) const noexcept;
+   double C0(double, double, double) const noexcept;
+   double D0(double, double, double, double) const noexcept;
+   double D27(double, double, double, double) const noexcept;
 
    static double rho_2(double);
 
-   double calculate_self_energy_@VectorZ@(double);
-   double calculate_self_energy_@VectorW@(double);
-   double calculate_self_energy_@VectorZ@_top(double, double);
-   double calculate_self_energy_@VectorW@_top(double, double);
+   double calculate_self_energy_@VectorZ@(double) const;
+   double calculate_self_energy_@VectorW@(double) const;
+   double calculate_self_energy_@VectorZ@_top(double, double) const;
+   double calculate_self_energy_@VectorW@_top(double, double) const;
 };
 
 } // namespace flexiblesusy

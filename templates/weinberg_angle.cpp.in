@@ -146,12 +146,8 @@ double CLASSNAME::calculate(double sinThetaW_start)
          deltaRhoHat = 0.;
       }
 
-      double rhohat_ratio;
-
-      if (Abs(deltaRhoHat) < 1.0)
-         rhohat_ratio = 1.0 / (1.0 - deltaRhoHat);
-      else
-         rhohat_ratio = 1.0;
+      const double rhohat_ratio = Abs(deltaRhoHat) < 1.0 ?
+         1.0 / (1.0 - deltaRhoHat) : 1.0;
 
       double deltaRHat = calculate_delta_r_hat(rhohat_ratio, sinThetaW_old);
 
@@ -211,7 +207,7 @@ double CLASSNAME::calculate(double sinThetaW_start)
  *
  * @return tree-level value of \f$\hat{\rho}\f$
  */
-double CLASSNAME::calculate_rho_hat_tree()
+double CLASSNAME::calculate_rho_hat_tree() const
 {
    double rhohat_tree = 1.;
 @RhoHatTree@
@@ -227,17 +223,15 @@ double CLASSNAME::calculate_rho_hat_tree()
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.4) and (C.6) from hep-ph/9606211
  */
-double CLASSNAME::calculate_delta_rho_hat(double sinThetaW)
+double CLASSNAME::calculate_delta_rho_hat(double sinThetaW) const
 {
    const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
 
-   double deltaRhoHat1Loop = 0.;
-
-   if (number_of_loops > 0)
-      deltaRhoHat1Loop = 1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz));
+   const double deltaRhoHat1Loop = number_of_loops > 0 ?
+      1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz)) : 0.;
 
    std::complex<double> deltaRhoHat2LoopSM(0., 0.);
 
@@ -267,22 +261,18 @@ double CLASSNAME::calculate_delta_rho_hat(double sinThetaW)
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.3) and (C.5) from hep-ph/9606211
  */
-double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
+double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW) const
 {
    const double gfermi = sm_parameters.fermi_constant;
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
 
-   double dvb = 0.;
+   const double dvb = number_of_loops > 0 ?
+      calculate_delta_vb(rhohat_ratio, sinThetaW) : 0.;
 
-   if (number_of_loops > 0)
-      dvb = calculate_delta_vb(rhohat_ratio, sinThetaW);
-
-   double deltaRHat1Loop = 0.;
-
-   if (number_of_loops > 0)
-      deltaRHat1Loop = rhohat_ratio * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
+   const double deltaRHat1Loop = number_of_loops > 0 ?
+      rhohat_ratio * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb : 0.;
 
    std::complex<double> deltaRHat2LoopSM(0., 0.);
 
@@ -312,14 +302,12 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
  *
  * @return \f$\delta_{\text{VB}}\f$
  */
-double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
+double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW) const
 {
    const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
 
-   double deltaVbBSM = 0.;
-
-   if (include_dvb_bsm)
-      deltaVbBSM = calculate_delta_vb_bsm(sinThetaW);
+   const double deltaVbBSM = include_dvb_bsm ?
+      calculate_delta_vb_bsm(sinThetaW) : 0.;
 
    const double deltaVb = deltaVbSM + deltaVbBSM;
 
@@ -339,7 +327,7 @@ double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
  * from hep-ph/9606211
  */
 double CLASSNAME::calculate_delta_vb_sm(
-   double rhohat_ratio, double sinThetaW)
+   double rhohat_ratio, double sinThetaW) const
 {
    const double mz  = sm_parameters.mz_pole;
    const double mw  = sm_parameters.mw_pole;
@@ -371,7 +359,7 @@ double CLASSNAME::calculate_delta_vb_sm(
  *
  * @return \f$\delta_{\text{VB}}^{\text{BSM}}\f$
  */
-double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
+double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW) const
 {
    const double mz = sm_parameters.mz_pole;
    @DefSMhyperCoupling@
@@ -402,27 +390,27 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW)
  * Wrapper routines for Passarino-Veltman loop functions
  */
 
-double CLASSNAME::B0(double p2, double m12, double m22) const
+double CLASSNAME::B0(double p2, double m12, double m22) const noexcept
 {
    return passarino_veltman::ReB0(p2, m12, m22, Sqr(model->get_scale()));
 }
 
-double CLASSNAME::B1(double p2, double m12, double m22) const
+double CLASSNAME::B1(double p2, double m12, double m22) const noexcept
 {
    return -1. * passarino_veltman::ReB1(p2, m12, m22, Sqr(model->get_scale()));
 }
 
-double CLASSNAME::C0(double m12, double m22, double m32) const
+double CLASSNAME::C0(double m12, double m22, double m32) const noexcept
 {
    return softsusy::c0(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32));
 }
 
-double CLASSNAME::D0(double m12, double m22, double m32, double m42) const
+double CLASSNAME::D0(double m12, double m22, double m32, double m42) const noexcept
 {
    return softsusy::d0(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32), std::sqrt(m42));
 }
 
-double CLASSNAME::D27(double m12, double m22, double m32, double m42) const
+double CLASSNAME::D27(double m12, double m22, double m32, double m42) const noexcept
 {
    return softsusy::d27(std::sqrt(m12), std::sqrt(m22), std::sqrt(m32), std::sqrt(m42));
 }
@@ -438,6 +426,7 @@ double CLASSNAME::D27(double m12, double m22, double m32, double m42) const
 double CLASSNAME::rho_2(double r)
 {
    const double Pi2 = Pi * Pi;
+   const double logr = Log(r);
 
    if (r <= std::numeric_limits<double>::epsilon()) {
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
@@ -451,13 +440,13 @@ double CLASSNAME::rho_2(double r)
       const double r2 = Sqr(r);
       return 19.0 - 16.5 * r + 43.0 / 12.0 * r2 + 7.0 / 120.0 * r2 * r -
          Pi * Sqrt(r) * (4.0 - 1.5 * r + 3.0 / 32.0 * r2 + r2 * r / 256.0) -
-         Pi2 * (2.0 - 2.0 * r + 0.5 * r2) - Log(r) * (3.0 * r - 0.5 * r2);
+         Pi2 * (2.0 - 2.0 * r + 0.5 * r2) - logr * (3.0 * r - 0.5 * r2);
    } else {
       const double rm1 = 1.0 / r, rm2 = Sqr(rm1), rm3 = rm2 * rm1,
          rm4 = rm3 * rm1, rm5 = rm4 * rm1;
-      return Sqr(Log(r)) * (1.5 - 9.0 * rm1 - 15.0 * rm2 - 48.0 * rm3 -
+      return Sqr(logr) * (1.5 - 9.0 * rm1 - 15.0 * rm2 - 48.0 * rm3 -
                             168.0 * rm4 - 612.0 * rm5) -
-         Log(r) * (13.5 + 4.0 * rm1 - 125.0 / 4.0 * rm2 - 558.0 / 5.0 * rm3 -
+         logr * (13.5 + 4.0 * rm1 - 125.0 / 4.0 * rm2 - 558.0 / 5.0 * rm3 -
                    8307.0 / 20.0 * rm4 - 109321.0 / 70.0 * rm5) +
          Pi2 * (1.0 - 4.0 * rm1 - 5.0 * rm2 - 16.0 * rm3 -
                 56.0 * rm4 - 204.0 * rm5) +
@@ -474,7 +463,7 @@ double CLASSNAME::rho_2(double r)
  *
  * @return 1-loop transverse Z boson self-energy
  */
-double CLASSNAME::calculate_self_energy_@VectorZ@(double p)
+double CLASSNAME::calculate_self_energy_@VectorZ@(double p) const
 {
    const double mt      = sm_parameters.mt_pole;
    const double mtDRbar = @GetTopMass@;
@@ -499,7 +488,7 @@ double CLASSNAME::calculate_self_energy_@VectorZ@(double p)
  *
  * @return 1-loop transverse W boson self-energy
  */
-double CLASSNAME::calculate_self_energy_@VectorW@(double p)
+double CLASSNAME::calculate_self_energy_@VectorW@(double p) const
 {
    const double mt      = sm_parameters.mt_pole;
    const double mtDRbar = @GetTopMass@;
@@ -524,7 +513,7 @@ double CLASSNAME::calculate_self_energy_@VectorW@(double p)
  *
  * @return 1-loop top-quark contribution to Z boson self-energy
  */
-double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt)
+double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt) const
 {
    const double q  = model->get_scale();
    const double Nc = 3.0;
@@ -553,7 +542,7 @@ double CLASSNAME::calculate_self_energy_@VectorZ@_top(double p, double mt)
  *
  * @return 1-loop top-quark contribution to W boson self-energy
  */
-double CLASSNAME::calculate_self_energy_@VectorW@_top(double p, double mt)
+double CLASSNAME::calculate_self_energy_@VectorW@_top(double p, double mt) const
 {
    const double q  = model->get_scale();
    const double mb = @GetBottomMass@;
