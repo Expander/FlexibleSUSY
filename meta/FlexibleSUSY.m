@@ -1395,7 +1395,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             clearOutputParameters = "",
             clearPhases = "", clearExtraParameters = "",
             softScalarMasses, treeLevelEWSBOutputParameters,
-            saveEWSBOutputParameters,
+            parametersToSave, saveEWSBOutputParameters,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
@@ -1520,7 +1520,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            treeLevelEWSBOutputParameters = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[treeLevelEWSBOutputParameters]]];
            If[Head[treeLevelEWSBOutputParameters] === List && Length[treeLevelEWSBOutputParameters] > 0,
-              saveEWSBOutputParameters = Parameters`SaveParameterLocally[treeLevelEWSBOutputParameters];
+              parametersToSave = treeLevelEWSBOutputParameters;
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`FindSolutionAndFreePhases[independentEwsbEquationsTreeLevel,
                                                                                     treeLevelEWSBOutputParameters][[1]];
               If[solveTreeLevelEWSBviaSoftHiggsMasses === {},
@@ -1531,10 +1531,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`CreateMemberTreeLevelEwsbSolver[solveTreeLevelEWSBviaSoftHiggsMasses];
               solveEWSBTemporarily = IndentText["solve_ewsb_tree_level_custom();"];
               ,
-              saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersFixedByEWSB];
+              parametersToSave = parametersFixedByEWSB;
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
               solveEWSBTemporarily = EWSB`SolveEWSBIgnoringFailures[0];
              ];
+           parametersToSave = Join[parametersToSave,
+                                   #[[1]]& /@ (Select[ewsbSubstitutions,
+                                                      Function[sub, Or @@ (!FreeQ[sub[[2]], #]& /@ parametersToSave)]])];
+           saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersToSave];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
