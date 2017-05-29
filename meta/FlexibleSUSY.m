@@ -2473,6 +2473,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FileNameJoin[{FSOutputDir, "LesHouches.in." <> FlexibleSUSY`FSModelName <> "_generated"}]}}
                              ];
 
+           Print["Creating class for calculation of weinberg angle ..."];
+           WriteWeinbergAngleClass[Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
+                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
+                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
+                                   }];
+
+           Print["MuonDecayTest: ", WeinbergAngle`CheckMuonDecayRunning[]];
+
            PrintHeadline["Creating constraints"];
            Print["Creating class for high-scale constraint ..."];
            WriteConstraintClass[FlexibleSUSY`HighScale,
@@ -2600,16 +2610,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
-
-           Print["Creating class for calculation of weinberg angle ..."];
-           WriteWeinbergAngleClass[Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
-                                   {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
-                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
-                                    {FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
-                                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
-                                   }];
-
-           Print["MuonDecayTest: ", WeinbergAngle`CheckMuonDecayRunning[]];
 
             Print["Creating matching class ..."];
             WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching,
