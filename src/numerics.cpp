@@ -262,11 +262,13 @@ double b1(double p, double m1, double m2, double q)
                          0.007142857142857142*p4/m26)
           - 0.5*log(m22/q2);
     } else {
-       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*log(m12/m22))/(4.*sqr(m12 - m22))
+       const double l12 = log(m12/m22);
+
+       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*l12)/(4.*sqr(m12 - m22))
           + (p2*(4*pow3(m12 - m22)*
                  (2*m14 + 5*m12*m22 - m24) +
                  (3*m18 + 44*m16*m22 - 36*m14*m24 - 12*m12*m26 + m28)*p2
-                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*log(m12/m22)))/
+                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*l12))/
           (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
