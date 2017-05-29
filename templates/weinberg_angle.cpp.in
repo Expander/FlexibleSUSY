@@ -51,14 +51,6 @@ namespace flexiblesusy {
 #define PIZZTMZ pizzt_MZ
 const double ROOT2 = Sqrt(2.0);
 
-CLASSNAME::Sm_parameters::Sm_parameters()
-   : fermi_constant(0.)
-   , mw_pole(0.)
-   , mz_pole(0.)
-   , mt_pole(0.)
-{
-}
-
 /**
  * Sets the maximum number of iterations to 20, the number of loops to 2,
  * the precision goal to 1.0e-8, and the model pointer as well as the
@@ -70,15 +62,8 @@ CLASSNAME::Sm_parameters::Sm_parameters()
 CLASSNAME::@ModelName@_weinberg_angle(
    const @ModelName@_mass_eigenstates* model_,
    const Sm_parameters& sm_parameters_)
-   : number_of_iterations(20)
-   , number_of_loops(2)
-   , precision_goal(1.0e-8)
-   , include_dvb_bsm(true)
-   , model(model_)
+   : model(model_)
    , sm_parameters(sm_parameters_)
-   , pizzt_MZ(0.)
-   , piwwt_MW(0.)
-   , piwwt_0(0.)
 {
 }
 
@@ -162,6 +147,7 @@ double CLASSNAME::calculate(double sinThetaW_start)
       }
 
       double rhohat_ratio;
+
       if (Abs(deltaRhoHat) < 1.0)
          rhohat_ratio = 1.0 / (1.0 - deltaRhoHat);
       else
@@ -249,10 +235,12 @@ double CLASSNAME::calculate_delta_rho_hat(double sinThetaW)
    const double mt = sm_parameters.mt_pole;
 
    double deltaRhoHat1Loop = 0.;
+
    if (number_of_loops > 0)
       deltaRhoHat1Loop = 1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz));
 
    std::complex<double> deltaRhoHat2LoopSM(0., 0.);
+
    if (number_of_loops > 1) {
       if (Abs(1. - model->get_scale() / mz) > 0.1) {
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
@@ -287,14 +275,17 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW)
    const double mt = sm_parameters.mt_pole;
 
    double dvb = 0.;
+
    if (number_of_loops > 0)
       dvb = calculate_delta_vb(rhohat_ratio, sinThetaW);
 
    double deltaRHat1Loop = 0.;
+
    if (number_of_loops > 0)
       deltaRHat1Loop = rhohat_ratio * piwwt_0 / Sqr(mw) - pizzt_MZ / Sqr(mz) + dvb;
 
    std::complex<double> deltaRHat2LoopSM(0., 0.);
+
    if (number_of_loops > 1) {
       if (Abs(1. - model->get_scale() / mz) > 0.1) {
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
@@ -326,6 +317,7 @@ double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW)
    const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
 
    double deltaVbBSM = 0.;
+
    if (include_dvb_bsm)
       deltaVbBSM = calculate_delta_vb_bsm(sinThetaW);
 
@@ -489,6 +481,7 @@ double CLASSNAME::calculate_self_energy_@VectorZ@(double p)
    @DefVZSelfEnergy@
 
    double pizzt_corrected = pizzt;
+
    if (model->get_thresholds() > 1) {
       pizzt_corrected =
          pizzt - calculate_self_energy_@VectorZ@_top(p, mtDRbar)
@@ -513,6 +506,7 @@ double CLASSNAME::calculate_self_energy_@VectorW@(double p)
    @DefVWSelfEnergy@
 
    double piwwt_corrected = piwwt;
+
    if (model->get_thresholds() > 1) {
       piwwt_corrected =
          piwwt - calculate_self_energy_@VectorW@_top(p, mtDRbar)

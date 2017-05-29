@@ -36,11 +36,10 @@ public:
     * @brief SM parameters necessary for calculating the weak mixing angle
     */
    struct Sm_parameters {
-      Sm_parameters();
-      double fermi_constant; ///< Fermi constant
-      double mw_pole;        ///< W pole mass
-      double mz_pole;        ///< Z pole mass
-      double mt_pole;        ///< top quark pole mass
+      double fermi_constant{0.}; ///< Fermi constant
+      double mw_pole{0.};        ///< W pole mass
+      double mz_pole{0.};        ///< Z pole mass
+      double mt_pole{0.};        ///< top quark pole mass
    };
 
    @ModelName@_weinberg_angle(const @ModelName@_mass_eigenstates*, const Sm_parameters&);
@@ -57,15 +56,15 @@ public:
    double calculate(double sinThetaW_start = 0.48);
 
 private:
-   unsigned number_of_iterations; ///< maximum number of iterations
-   unsigned number_of_loops;      ///< number of loops
-   double precision_goal;         ///< precision goal
-   bool include_dvb_bsm;          ///< bsm wave, vertex and box corrections are included or not
-   const @ModelName@_mass_eigenstates* model; ///< pointer to investigated model
-   Sm_parameters sm_parameters;   ///< SM parameters
-   double pizzt_MZ;               ///< transverse Z self-energy at p^2 = MZ^2
-   double piwwt_MW;               ///< transverse W self-energy at p^2 = MW^2
-   double piwwt_0;                ///< transverse W self-energy at p^2 = 0
+   unsigned number_of_iterations{20}; ///< maximum number of iterations
+   unsigned number_of_loops{2};       ///< number of loops
+   double precision_goal{1e-8};       ///< precision goal
+   bool include_dvb_bsm{true};        ///< bsm wave, vertex and box corrections are included or not
+   const @ModelName@_mass_eigenstates* model{nullptr}; ///< pointer to investigated model
+   Sm_parameters sm_parameters{};     ///< SM parameters
+   double pizzt_MZ{0.};               ///< transverse Z self-energy at p^2 = MZ^2
+   double piwwt_MW{0.};               ///< transverse W self-energy at p^2 = MW^2
+   double piwwt_0{0.};                ///< transverse W self-energy at p^2 = 0
 
    double calculate_rho_hat_tree();
    double calculate_delta_rho_hat(double);
