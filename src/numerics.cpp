@@ -354,22 +354,24 @@ double b22(double p,  double m1, double m2, double q)
   return answer;
 }
 
-double d0(double m1, double m2, double m3, double m4)
+double d0(double m1, double m2, double m3, double m4) noexcept
 {
   using std::log;
 
+  const double m1sq = sqr(m1), m2sq = sqr(m2);
+
   if (is_close(m1, m2, EPSTOL)) {
-    double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
+    const double m3sq = m3sq, m4sq = sqr(m4);
 
     if (is_close(m2,0.,EPSTOL)) {
        // d0 is undefined for m1 == m2 == 0
        return 0.;
     } else if (is_close(m3,0.,EPSTOL)) {
-       return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
-          sqr(m2 * sqr(m2) - m2 * sqr(m4));
+       return (-m2sq + m4sq - m2sq * log(m4sq/m2sq))/
+          sqr(m2 * m2sq - m2 * m4sq);
     } else if (is_close(m4,0.,EPSTOL)) {
-       return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
-          sqr(m2 * sqr(m2) - m2 * sqr(m3));
+       return (-m2sq + m3sq - m2sq * log(m3sq/m2sq))/
+          sqr(m2 * m2sq - m2 * m3sq);
     } else if (is_close(m2, m3, EPSTOL) && is_close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
     } else if (is_close(m2, m3, EPSTOL)) {
@@ -389,19 +391,21 @@ double d0(double m1, double m2, double m3, double m4)
        m3sq / sqr(m2sq - m3sq) * log(m3sq / m2sq) -
        m3sq / (m2sq * (m2sq - m3sq))) / (m3sq - m4sq);
   }
-  return (c0(m1, m3, m4) - c0(m2, m3, m4)) / (sqr(m1) - sqr(m2));
+  return (c0(m1, m3, m4) - c0(m2, m3, m4)) / (m1sq - m2sq);
 }
 
-double d27(double m1, double m2, double m3, double m4)
+double d27(double m1, double m2, double m3, double m4) noexcept
 {
   if (is_close(m1, m2, EPSTOL))
     m1 += TOL * 0.01;
 
-  return (sqr(m1) * c0(m1, m3, m4) - sqr(m2) * c0(m2, m3, m4))
-    / (4.0 * (sqr(m1) - sqr(m2)));
+  const double m12 = sqr(m1), m22 = sqr(m2);
+
+  return (m12 * c0(m1, m3, m4) - m22 * c0(m2, m3, m4))
+    / (4.0 * (m12 - m22));
 }
 
-double c0(double m1, double m2, double m3)
+double c0(double m1, double m2, double m3) noexcept
 {
   using std::log;
 
