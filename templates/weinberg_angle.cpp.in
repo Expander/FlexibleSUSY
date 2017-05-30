@@ -40,6 +40,7 @@ namespace flexiblesusy {
 #define MODELPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define DERIVEDPARAMETER(p) model->p()
+#define PHASE(p) model->get_##p()
 #define SINTHETAW sinThetaW
 #define RHOHATRATIO rhohat_ratio
 #define GFERMI gfermi
@@ -49,7 +50,10 @@ namespace flexiblesusy {
 #define RHO2 rho_2
 #define DELTARHAT1LOOP deltaRHat1Loop
 #define PIZZTMZ pizzt_MZ
+
+namespace {
 const double ROOT2 = Sqrt(2.0);
+} // anonymous namespace
 
 /**
  * Sets the maximum number of iterations to 20, the number of loops to 2,
