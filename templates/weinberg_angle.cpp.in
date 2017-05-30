@@ -185,7 +185,7 @@ double CLASSNAME::calculate(double sinThetaW_start)
 
       const double precision = Abs(sinThetaW_old / sinThetaW_new - 1.0);
 
-      VERBOSE_MSG("Iteration step " << iteration
+      VERBOSE_MSG("\t\tIteration step " << iteration
                   << ": prec=" << precision
                   << " dRhoHat=" << deltaRhoHat
                   << " rhohat_ratio=" << rhohat_ratio
