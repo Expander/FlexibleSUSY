@@ -414,6 +414,8 @@ double c0(double m1, double m2, double m3)
   double c0l = C0(psq, psq, psq, m1*m1, m2*m2, m3*m3).real();
 #endif
 
+  const double m12 = sqr(m1), m22 = sqr(m2), m32 = sqr(m3);
+
   double ans = 0.;
 
   if (is_close(m1,0.,EPSTOL) && is_close(m2,0.,EPSTOL) && is_close(m3,0.,EPSTOL)) {
@@ -430,41 +432,41 @@ double c0(double m1, double m2, double m3)
      ans= 0.;
   } else if (is_close(m1,0.,EPSTOL)) {
      if (is_close(m2,m3,EPSTOL)) {
-        ans = -1./sqr(m2);
+        ans = -1./m22;
      } else {
-        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
+        ans = log(m32/m22)/(m22 - m32);
      }
   } else if (is_close(m2,0.,EPSTOL)) {
      if (is_close(m1,m3,EPSTOL)) {
-        ans = -1./sqr(m1);
+        ans = -1./m12;
      } else {
-        ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
+        ans = log(m32/m12)/(m12 - m32);
      }
   } else if (is_close(m3,0.,EPSTOL)) {
      if (is_close(m1,m2,EPSTOL)) {
-        ans = -1./sqr(m1);
+        ans = -1./m12;
      } else {
-        ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
+        ans = log(m22/m12)/(m12 - m22);
      }
   } else if (is_close(m2, m3, EPSTOL)) {
     if (is_close(m1, m2, EPSTOL)) {
-      ans = ( - 0.5 / sqr(m2) );
+      ans = ( - 0.5 / m22 );
     } else {
-      ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
-               + 1.0 / (sqr(m1) - sqr(m2)) );
+      ans = ( m12 / sqr(m12-m22) * log(m22/m12)
+               + 1.0 / (m12 - m22) );
     }
   } else if (is_close(m1, m2, EPSTOL)) {
-     ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-             / (sqr(m2)-sqr(m3)) );
+     ans = ( - ( 1.0 + m32 / (m22-m32) * log(m32/m22) )
+             / (m22-m32) );
   } else if (is_close(m1, m3, EPSTOL)) {
-     ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
-             / (sqr(m3)-sqr(m2)) );
+     ans = ( - (1.0 + m22 / (m32-m22) * log(m22/m32))
+             / (m32-m22) );
   } else {
-     ans = (1.0 / (sqr(m2) - sqr(m3)) *
-            (sqr(m2) / (sqr(m1) - sqr(m2)) *
-             log(sqr(m2) / sqr(m1)) -
-             sqr(m3) / (sqr(m1) - sqr(m3)) *
-             log(sqr(m3) / sqr(m1))) );
+     ans = (1.0 / (m22 - m32) *
+            (m22 / (m12 - m22) *
+             log(m22 / m12) -
+             m32 / (m12 - m32) *
+             log(m32 / m12)) );
   }
 
 #ifdef USE_LOOPTOOLS
