@@ -24,7 +24,6 @@ ParameterDefinitions = {
     {MassB,     { Description -> "Bino Mass parameter"}},
     {MassWB,    { Description -> "Wino Mass parameter"}},
     {MassG,     { Description -> "Gluino Mass parameter"}},
-    {v,         { Description -> "EW-VEV", DependenceSPheno -> 0 }},
     {\[Beta],   { Description -> "Pseudo Scalar mixing angle"}},
     {TanBeta,   { Description -> "Tan Beta" }},
     {\[Alpha],  { Description -> "Scalar mixing angle" }},
