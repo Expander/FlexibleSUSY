@@ -46,11 +46,6 @@ TEST_SRC := \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_which.cpp \
 
-ifeq ($(WITH_CMSSM) $(WITH_SoftsusyMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_CMSSM_database.cpp
-endif
-
 TEST_SH := \
 		$(DIR)/test_depgen.sh \
 		$(DIR)/test_run_examples.sh \
@@ -89,6 +84,7 @@ TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_sfermions.cpp \
 		$(DIR)/test_CMSSM_beta_function_benchmark.cpp \
+		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_higgs_iteration.cpp \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
@@ -160,7 +156,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_NMSSM_linking.cpp
 endif
 
-ifeq ($(WITH_CMSSMNoFV),yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
@@ -176,7 +172,7 @@ TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
 endif
 
-ifeq ($(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
