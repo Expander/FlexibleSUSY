@@ -839,9 +839,9 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
            relevantVertexRules = Cases[vertexRules, r:(Rule[a_, b_] /; !FreeQ[deltaVBcontris, a])];
            {prototypes, defs, vertexFunctionNames} =
               SelfEnergies`CreateVertexExpressions[relevantVertexRules, False];
-           Print["Generating C++ code for ..."];
+           Print["Generating C++ code for deltaVB ..."];
            For[k = 1, k <= Length[deltaVBcontris], k++,
-               Print["   ", PrintDeltaVBContributionName[deltaVBcontris[[k]]]];
+               DebugPrint["   ", PrintDeltaVBContributionName[deltaVBcontris[[k]]]];
                {p, d} = CreateDeltaVBContribution[deltaVBcontris[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
                defs = defs <> d];
