@@ -191,6 +191,12 @@ TEST_SRC += \
 		$(DIR)/test_SSMSemiAnalytic_semi_analytic_solutions.cpp
 endif
 
+ifeq ($(WITH_THDMIIEWSBAtMZSemiAnalytic), yes)
+TEST_SRC += \
+		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_ewsb.cpp \
+		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_semi_analytic_solutions.cpp
+endif
+
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 ifeq ($(WITH_CMSSM) $(WITH_CMSSMSemiAnalytic), yes yes)
 TEST_SH += \
@@ -236,6 +242,9 @@ endif
 ifeq ($(WITH_THDMII) $(WITH_THDMIIEWSBAtMZSemiAnalytic), yes yes)
 TEST_SH += \
 		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_spectrum.sh
+
+TEST_SRC += \
+		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.cpp
 endif
 endif
 
@@ -898,6 +907,12 @@ $(DIR)/test_SSMSemiAnalytic_ewsb.x: $(LIBSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGAC
 $(DIR)/test_SSMSemiAnalytic_semi_analytic_solutions.x: $(LIBSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SSMSemiAnalytic_consistent_solutions.x: $(LIBSSMSemiAnalytic) $(LIBSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_ewsb.x: $(LIBTHDMIIEWSBAtMZSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_semi_analytic_solutions.x: $(LIBTHDMIIEWSBAtMZSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAtMZSemiAnalytic) $(LIBTHDMII) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

@@ -26,11 +26,11 @@ EXTPAR = {
 };
 
 FSAuxiliaryParameterInfo = {
-    {M112IN, { ParameterDimensions -> {1},
-               MassDimension -> 2 } },
-    {M222IN, { ParameterDimensions -> {1},
-               MassDimension -> 2 } },
-    {M122IN, { MassDimension -> 2 } },
+    {M112IN,    { ParameterDimensions -> {1},
+                  MassDimension -> 2 } },
+    {M222IN,    { ParameterDimensions -> {1},
+                  MassDimension -> 2 } },
+    {M122IN,    { MassDimension -> 2 } },
     {Lambda1IN, { MassDimension -> 0 } },
     {Lambda2IN, { MassDimension -> 0 } },
     {Lambda3IN, { MassDimension -> 0 } },
