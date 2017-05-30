@@ -110,7 +110,6 @@ TEST_SRC += \
 endif
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSM),yes yes yes)
 TEST_SRC += \
-		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
 TEST_SH += \
 		$(DIR)/test_CMSSM_gluino.sh
@@ -161,8 +160,9 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_profile.sh
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMNoFV),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSMNoFV),yes yes yes)
 TEST_SRC += \
+		$(DIR)/test_CMSSMNoFV_benchmark.cpp \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
@@ -634,8 +634,8 @@ $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-ou
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
-$(DIR)/test_CMSSM_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
-$(DIR)/test_CMSSM_benchmark.x: $(DIR)/test_CMSSM_benchmark.cpp $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE) $(LIBTEST)
+$(DIR)/test_CMSSMNoFV_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
+$(DIR)/test_CMSSMNoFV_benchmark.x: $(DIR)/test_CMSSMNoFV_benchmark.cpp $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE) $(LIBTEST)
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$<) $(LIBTEST) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_compare_ewsb_solvers.x: $(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $(LIBCMSSMGSLBroyden) $(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
