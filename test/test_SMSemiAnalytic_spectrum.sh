@@ -10,19 +10,22 @@ print_block="$UTILSDIR/print_slha_block.awk"
 print_block_entry="$UTILSDIR/print_slha_block_entry.awk"
 remove_block="$UTILSDIR/remove_slha_block.awk"
 
-semi_analytic_slha="$BASEDIR/../model_files/SMSemiAnalytic/LesHouches.in.SMSemiAnalytic"
-semi_analytic_input="$BASEDIR/test_SMSemiAnalytic_spectrum.in.spc"
-semi_analytic_output="$BASEDIR/test_SMSemiAnalytic_spectrum.out.spc"
-two_scale_slha="$BASEDIR/../model_files/SM/LesHouches.in.SM"
-two_scale_input="$BASEDIR/test_SMSemiAnalytic_spectrum_SM.in.spc"
-two_scale_output="$BASEDIR/test_SMSemiAnalytic_spectrum_SM.out.spc"
+semi_analytic_model="SMSemiAnalytic"
+two_scale_model="SM"
+
+semi_analytic_slha="$BASEDIR/../model_files/${semi_analytic_model}/LesHouches.in.${semi_analytic_model}"
+semi_analytic_input="$BASEDIR/test_${semi_analytic_model}_spectrum.in.spc"
+semi_analytic_output="$BASEDIR/test_${semi_analytic_model}_spectrum.out.spc"
+two_scale_slha="$BASEDIR/../model_files/${two_scale_model}/LesHouches.in.${two_scale_model}"
+two_scale_input="$BASEDIR/test_${semi_analytic_model}_spectrum_${two_scale_model}.in.spc"
+two_scale_output="$BASEDIR/test_${semi_analytic_model}_spectrum_${two_scale_model}.out.spc"
 rel_error="1.7e-2"
 
 sed_cmd=`command -v sed`
 awk_cmd=`command -v awk`
 numdiff_cmd=`command -v numdiff`
-semi_analytic_exe="$BASEDIR/../models/SMSemiAnalytic/run_SMSemiAnalytic.x"
-two_scale_exe="$BASEDIR/../models/SM/run_SM.x"
+semi_analytic_exe="$BASEDIR/../models/${semi_analytic_model}/run_${semi_analytic_model}.x"
+two_scale_exe="$BASEDIR/../models/${two_scale_model}/run_${two_scale_model}.x"
 
 if [ -z "$sed_cmd" ]; then
     echo "Error: sed command not found"
@@ -40,12 +43,12 @@ if [ -z "$numdiff_cmd" ]; then
 fi
 
 if test ! -x "$semi_analytic_exe"; then
-    echo "Error: SMSemiAnalytic spectrum generator not found: $semi_analytic_exe"
+    echo "Error: $semi_analytic_model spectrum generator not found: $semi_analytic_exe"
     exit 1
 fi
 
 if test ! -x "$two_scale_exe"; then
-    echo "Error: SM spectrum generator not found: $two_scale_exe"
+    echo "Error: $two_scale_model spectrum generator not found: $two_scale_exe"
     exit 1
 fi
 
@@ -75,11 +78,11 @@ echo -n "running semi-analytic solver ..."
 $semi_analytic_exe --slha-input-file="$semi_analytic_input" \
                    --slha-output-file="$semi_analytic_output"
 echo "done"
-echo "SMSemiAnalytic SLHA input file: $semi_analytic_input"
-echo "SMSemiAnalytic SLHA output file: $semi_analytic_output"
+echo "$semi_analytic_model SLHA input file: $semi_analytic_input"
+echo "$semi_analytic_model SLHA output file: $semi_analytic_output"
 
 if test ! -r "${semi_analytic_output}"; then
-    echo "Error: generated SMSemiAnalytic spectrum not found: $semi_analytic_output"
+    echo "Error: generated $semi_analytic_model spectrum not found: $semi_analytic_output"
     exit 1
 fi
 
@@ -88,11 +91,11 @@ echo -n "running two-scale solver ..."
 $two_scale_exe --slha-input-file="$two_scale_input" \
                --slha-output-file="$two_scale_output"
 echo "done"
-echo "SM SLHA input file: $two_scale_input"
-echo "SM SLHA output file: $two_scale_output"
+echo "$two_scale_model SLHA input file: $two_scale_input"
+echo "$two_scale_model SLHA output file: $two_scale_output"
 
 if test ! -r "${two_scale_output}"; then
-    echo "Error: generated SM spectrum not found: $two_scale_output"
+    echo "Error: generated $two_scale_model spectrum not found: $two_scale_output"
     exit 1
 fi
 

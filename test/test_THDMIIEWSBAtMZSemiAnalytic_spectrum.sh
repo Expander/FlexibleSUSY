@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This script generates an SSM spectrum using both the semi-analytic
+# This script generates a THDM-II spectrum using both the semi-analytic
 # and two-scale solvers, and compares that the resulting spectrums are
 # the same.
 
@@ -10,8 +10,8 @@ print_block="$UTILSDIR/print_slha_block.awk"
 print_block_entry="$UTILSDIR/print_slha_block_entry.awk"
 remove_block="$UTILSDIR/remove_slha_block.awk"
 
-semi_analytic_model="SSMSemiAnalytic"
-two_scale_model="SSM"
+semi_analytic_model="THDMIIEWSBAtMZSemiAnalytic"
+two_scale_model="THDMII"
 
 semi_analytic_slha="$BASEDIR/../model_files/${semi_analytic_model}/LesHouches.in.${semi_analytic_model}"
 semi_analytic_input="$BASEDIR/test_${semi_analytic_model}_spectrum.in.spc"
@@ -60,6 +60,8 @@ remove_mixing_and_input_blocks() {
         | $awk_cmd -f "$remove_block" -v block=UELMIX \
         | $awk_cmd -f "$remove_block" -v block=UERMIX \
         | $awk_cmd -f "$remove_block" -v block=SCALARMIX \
+        | $awk_cmd -f "$remove_block" -v block=PSEUDOSCALARMIX \
+        | $awk_cmd -f "$remove_block" -v block=CHARGEMIX \
         | $awk_cmd -f "$remove_block" -v block=SMINPUTS \
         | $awk_cmd -f "$remove_block" -v block=MINPAR \
         | $awk_cmd -f "$remove_block" -v block=EXTPAR \

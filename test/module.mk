@@ -232,6 +232,11 @@ TEST_SH += \
 TEST_SRC += \
 		$(DIR)/test_SSMSemiAnalytic_consistent_solutions.cpp
 endif
+
+ifeq ($(WITH_THDMII) $(WITH_THDMIIEWSBAtMZSemiAnalytic), yes yes)
+TEST_SH += \
+		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_spectrum.sh
+endif
 endif
 
 endif # ifneq ($(findstring semi_analytic,$(SOLVERS)),)
