@@ -40,6 +40,8 @@ model_files/BLSMlightZp         export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/LRLR                export-ignore
+model_files/lowNUHMSSM          export-ignore
+model_files/lowNUHMSSMSemiAnalytic export-ignore
 model_files/MDM                 export-ignore
 model_files/MRSSM2              export-ignore
 model_files/MSSMNoEWVEVs        export-ignore

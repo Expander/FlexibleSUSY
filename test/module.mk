@@ -223,6 +223,11 @@ TEST_SRC += \
 		$(DIR)/test_CE6SSM_consistent_solutions.cpp
 endif
 
+ifeq ($(WITH_lowNUHMSSM) $(WITH_lowNUHMSSMSemiAnalytic), yes yes)
+TEST_SH += \
+		$(DIR)/test_lowNUHMSSMSemiAnalytic_spectrum.sh
+endif
+
 ifeq ($(WITH_SM) $(WITH_SMSemiAnalytic), yes yes)
 TEST_SH += \
 		$(DIR)/test_SMSemiAnalytic_spectrum.sh
