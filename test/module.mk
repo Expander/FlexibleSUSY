@@ -179,6 +179,12 @@ TEST_SRC += \
 		$(DIR)/test_CE6SSM_semi_analytic_solutions.cpp
 endif
 
+ifeq ($(WITH_lowNUHMSSMSemiAnalytic), yes)
+TEST_SRC += \
+		$(DIR)/test_lowNUHMSSMSemiAnalytic_ewsb.cpp \
+		$(DIR)/test_lowNUHMSSMSemiAnalytic_semi_analytic_solutions.cpp
+endif
+
 ifeq ($(WITH_SMSemiAnalytic), yes)
 TEST_SRC += \
 		$(DIR)/test_SMSemiAnalytic_ewsb.cpp \
@@ -226,6 +232,9 @@ endif
 ifeq ($(WITH_lowNUHMSSM) $(WITH_lowNUHMSSMSemiAnalytic), yes yes)
 TEST_SH += \
 		$(DIR)/test_lowNUHMSSMSemiAnalytic_spectrum.sh
+
+TEST_SRC += \
+		$(DIR)/test_lowNUHMSSMSemiAnalytic_consistent_solutions.cpp
 endif
 
 ifeq ($(WITH_SM) $(WITH_SMSemiAnalytic), yes yes)
@@ -900,6 +909,12 @@ $(DIR)/test_CE6SSM_ewsb.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%
 $(DIR)/test_CE6SSM_semi_analytic_solutions.x: $(LIBCE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CE6SSM_consistent_solutions.x: $(LIBCE6SSM) $(LIBE6SSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_lowNUHMSSMSemiAnalytic_ewsb.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_lowNUHMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_lowNUHMSSMSemiAnalytic_consistent_solutions.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBlowNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SMSemiAnalytic_ewsb.x: $(LIBSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
