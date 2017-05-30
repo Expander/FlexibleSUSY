@@ -394,11 +394,9 @@ double d0(double m1, double m2, double m3, double m4)
 
 double d27(double m1, double m2, double m3, double m4)
 {
-  if (is_close(m1, m2, EPSTOL)) {
-    const double m1n = m1 + TOL * 0.01;
-    return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4))
-      / (4.0 * (sqr(m1n) - sqr(m2)));
-  }
+  if (is_close(m1, m2, EPSTOL))
+    m1 += TOL * 0.01;
+
   return (sqr(m1) * c0(m1, m3, m4) - sqr(m2) * c0(m2, m3, m4))
     / (4.0 * (sqr(m1) - sqr(m2)));
 }
