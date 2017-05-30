@@ -720,7 +720,7 @@ GetSemiAnalyticEWSBSubstitutions[solution_SemiAnalyticSolution] :=
     Module[{parameter, basisRules, basisPars, coeffs, replacement, result},
            parameter = GetName[solution];
            dim = Parameters`GetParameterDimensions[parameter];
-           basisRules = Rule[#, #]& /@ (GetBoundaryValueParameters[solution]);
+           basisRules = Rule[#, GetBoundaryValueParameterSymbol[#]]& /@ (GetBoundaryValueParameters[solution]);
            basisPars = #[[2]]& /@ basisRules;
            coeffs = CreateCoefficients[solution];
            replacement = Dot[coeffs, GetBasis[solution]] /. basisRules;
