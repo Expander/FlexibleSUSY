@@ -156,6 +156,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_NMSSM_linking.cpp
 endif
 
+ifeq ($(WITH_CMSSMNoFV),yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMNoFV_profile.sh
+endif
+
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
