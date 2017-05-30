@@ -182,11 +182,11 @@ std::pair<int, double> h3m::HierarchyCalculator::compareHierarchies(const bool i
 	 // estimate the error
 	 double twoLoopError = fabs((Mh2l - Mh2LExpanded));
 
-	 // estimate the error due to the expansion
-	 double expError = getExpansionError(hierarchy, isBottom, treelvl + Mt41L, 0, 1, 0);
+	 // estimate the uncertainty of the expansion
+	 double expUncertainty = getExpansionUncertainty(hierarchy, isBottom, treelvl + Mt41L, 0, 1, 0);
 	 
 	 // add these errors to include the error of the expansion in the comparison
-	 double currError = sqrt(pow2(twoLoopError) + pow2(expError));
+	 double currError = sqrt(pow2(twoLoopError) + pow2(expUncertainty));
 	 
 	 // if the error is negative, it is the first iteration and there is no hierarchy which fits better
 	 if(error < 0){
@@ -914,7 +914,7 @@ Eigen::Matrix2d h3m::HierarchyCalculator::calcDRbarToMDRbarShift(const int tag, 
  * 	evaluates the error due to the expansion in mass ratios and differences
  * 	first calc the full 3-loop contribution and than truncate the expansion at different variable orders to estimate the expansion error
  */
-double h3m::HierarchyCalculator::getExpansionError(const int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix,
+double h3m::HierarchyCalculator::getExpansionUncertainty(const int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix,
 						   const unsigned int oneLoopFlag, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag){
    double Mh;
    double Mhcut;

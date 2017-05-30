@@ -19,7 +19,7 @@ namespace h3m{
       Eigen::Matrix2d getMt42L(int tag, const bool isBottom, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop);				// calculates the two loop higgs mass matrix of the order alpha_s * alpha_t
       double shiftMst1ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);				// shifts Mst1 according to the hierarchy to the MDRbar scheme
       double shiftMst2ToMDR(int tag, const bool isBottom, const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);				// shifts Mst2 according to the hierarchy to the MDRbar scheme
-      double getExpansionError(int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int oneLoopFlag, 
+      double getExpansionUncertainty(int tag, const bool isBottom, const Eigen::Matrix2d& massMatrix, const unsigned int oneLoopFlag, 
 			       const unsigned int twoLoopFlag, const unsigned int threeLoopFlag);
       void checkTerms();																// checks the expansion terms
    private:
