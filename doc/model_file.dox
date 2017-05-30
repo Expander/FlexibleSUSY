@@ -386,9 +386,6 @@ three gauge couplings from the SLHA input parameters
 
 \note `LowScaleInput` is ignored if `FlexibleEFTHiggs == True`
 
-_TODO_: Add note about how the the user can chose between \f$G_F\f$ or
-\f$M_W\f$ as input.
-
 Example: In the CMSSM `LowScaleInput` is given as follows:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -400,6 +397,30 @@ LowScaleInput = {
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The method to determine the weak mixing angle can be chosen by setting
+the variable `FSWeakMixingAngleInput` to either `Automatic`,
+`FSFermiConstant` or `FSMassW`.  `FSWeakMixingAngleInput` is set to
+`Automatic` by default.
+
+| Value of `FSWeakMixingAngleInput`  | Parameters from which weak mixing angle is determined |
+|------------------------------------|-------------------------------------------------------|
+| `FSFermiConstant`                  | \f$G_F\f$ and \f$M_Z\f$                               |
+| `FSMassW`                          | \f$M_W\f$ and \f$M_Z\f$                               |
+| `Automatic` (default) (recommended)| chose most precise method automatically               |
+
+Example: Automatically chose most precise method to determine the weak
+mixing angle
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+FSWeakMixingAngleInput = Automatic; (* recommended *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note If `FSWeakMixingAngleInput = FSMassW;` is chosen, FlexibleSUSY
+looks for the definition of the weak mixing angle in the symbol \c
+SARAH\`Weinberg.  If \c SARAH\`Weinberg is not defined, FlexibleSUSY
+uses the expression assigned to `FSWeakMixingAngleExpr`, which is by
+default set to \c ArcSin[Sqrt[1-Mass[SARAH`VectorW]^2/Mass[SARAH`VectorZ]^2]].
 
 _____________________________________________________________________
 
