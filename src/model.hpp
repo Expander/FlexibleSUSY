@@ -40,7 +40,7 @@ template <class TargetModel, class InputModel>
 TargetModel cast_model(InputModel abstract_model)
 {
 #ifdef ENABLE_DEBUG
-   TargetModel tmp = dynamic_cast<InputModel>(abstract_model);
+   TargetModel tmp = dynamic_cast<TargetModel>(abstract_model);
    if (!tmp) {
       FATAL("model " << abstract_model << " is not of type "
             << typeid(TargetModel).name());
