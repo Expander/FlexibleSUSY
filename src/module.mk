@@ -107,6 +107,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/pv.hpp \
 		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
+		$(DIR)/rk.hpp \
 		$(DIR)/rkf_integrator.hpp \
 		$(DIR)/root_finder.hpp \
 		$(DIR)/scan.hpp \
