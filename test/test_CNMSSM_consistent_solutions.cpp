@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_to_two_scale )
 
 BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
 {
-   const double precision = 1.0e-4;
+   const double precision = 1.0e-6;
 
    const std::vector<NMSSM_input_parameters> two_scale_inputs(
       initialize_two_scale_inputs());
