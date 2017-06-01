@@ -10,7 +10,6 @@ struct Boundary_values {
    double m12{};
    double Azero{};
    double m0Sq{};
-   double Lambda{};
 };
 
 void setup_high_scale_CNMSSM_const(
@@ -19,13 +18,12 @@ void setup_high_scale_CNMSSM_const(
 {
    model.get_input().Azero = values.Azero;
    model.get_input().m12 = values.m12;
-
-   model.set_Lambdax(values.Lambda);
+   model.get_input().LambdaInput = model.get_Lambdax();
 
    model.set_TYu(model.get_Yu() * values.Azero);
    model.set_TYd(model.get_Yd() * values.Azero);
    model.set_TYe(model.get_Ye() * values.Azero);
-   model.set_TLambdax(values.Lambda * values.Azero);
+   model.set_TLambdax(model.get_Lambdax() * values.Azero);
    model.set_TKappa(model.get_Kappa() * values.Azero);
 
    model.set_mq2(values.m0Sq * UNITMATRIX(3));
@@ -53,7 +51,6 @@ void setup_high_scale_CNMSSM(
    values.m12 = 133.33;
    values.Azero = -300.;
    values.m0Sq = Sqr(40.);
-   values.Lambda = -0.05;
 
    setup_high_scale_CNMSSM_const(model, values);
 }
