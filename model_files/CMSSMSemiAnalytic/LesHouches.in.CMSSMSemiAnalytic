@@ -52,4 +52,4 @@ Block MINPAR                 # Input parameters
     3   1.000000000e+01      # TanBeta
     5   0.000000000e+00      # Azero
 Block EXTPAR
-   23   6.233596560e+02      # MuInput
+   23   6.226419300e+02      # MuInput
