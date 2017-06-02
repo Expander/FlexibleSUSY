@@ -358,10 +358,12 @@ double d0(double m1, double m2, double m3, double m4) noexcept
 {
   using std::log;
 
-  const double m1sq = sqr(m1), m2sq = sqr(m2);
+  const double m1sq = sqr(m1);
+  const double m2sq = sqr(m2);
 
   if (is_close(m1, m2, EPSTOL)) {
-    const double m3sq = m3sq, m4sq = sqr(m4);
+    const double m3sq = sqr(m3);
+    const double m4sq = sqr(m4);
 
     if (is_close(m2,0.,EPSTOL)) {
        // d0 is undefined for m1 == m2 == 0
