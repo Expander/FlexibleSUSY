@@ -191,10 +191,10 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_threshold_correc
 
    AlphaS = alpha_s_drbar;
    e_run = e_drbar;
-   ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
+   ThetaWDRbar = calculate_theta_w();
 }
 
-double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_theta_w(double alpha_em_drbar)
+double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_theta_w()
 {
    check_model_ptr();
 

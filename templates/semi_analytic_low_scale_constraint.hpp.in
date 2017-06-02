@@ -70,7 +70,7 @@ private:
    double new_g1{0.}, new_g2{0.}, new_g3{0.};
    double self_energy_w_at_mw{0.};
 @semiAnalyticScaleGetter@
-   double calculate_theta_w(double);
+   double calculate_theta_w();
    void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();
