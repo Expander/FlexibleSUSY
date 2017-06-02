@@ -1614,8 +1614,22 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 WriteBVPSolverTemplates[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
 
-WriteSolverMatchingClass[files_List] :=
-    WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
+WriteSolverMatchingClass[susyScaleMatching_List, files_List] :=
+    Module[{fixedPars, parNames, savedParameterDefs = "", savedParameterGetters = "",
+            saveMatchedParameters = ""},
+           fixedPars = Parameters`StripIndices /@ FlexibleEFTHiggsMatching`GetFixedBSMParameters[susyScaleMatching];
+           parNames = CConversion`ToValidCSymbolString /@ fixedPars;
+           savedParameterDefs = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[{#, Parameters`GetType[#]}]& /@ fixedPars];
+           savedParameterGetters = StringJoin[CConversion`CreateInlineGetter[CConversion`ToValidCSymbolString[#],
+                                                                             Parameters`GetType[#]]& /@ fixedPars];
+           saveMatchedParameters = StringJoin[(# <> " = model->get_" <> # <> "();\n")& /@ parNames];
+           WriteOut`ReplaceInFiles[files,
+                          { "@savedParameterGetters@" -> IndentText[WrapLines[savedParameterGetters]],
+                            "@savedParameterDefs@" -> IndentText[savedParameterDefs],
+                            "@saveMatchedParameters@" -> IndentText[WrapLines[saveMatchedParameters]],
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
 
 WriteTwoScaleModelClass[files_List] :=
     WriteOut`ReplaceInFiles[files, { Sequence @@ GeneralReplacementRules[] }];
@@ -3405,7 +3419,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               If[FlexibleSUSY`FlexibleEFTHiggs === True,
                  Print["Creating two-scale matching class ..."];
-                 WriteSolverMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
+                 WriteSolverMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+                                          {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.hpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.hpp"}]},
                                            {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_two_scale_matching.cpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_two_scale_matching.cpp"}]}
@@ -3587,7 +3602,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               If[FlexibleSUSY`FlexibleEFTHiggs === True,
                  Print["Creating semi-analytic matching class ..."];
-                 WriteSolverMatchingClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.hpp.in"}],
+                 WriteSolverMatchingClass[FlexibleSUSY`SUSYScaleMatching,
+                                          {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.hpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.hpp"}]},
                                            {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_semi_analytic_matching.cpp.in"}],
                                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_semi_analytic_matching.cpp"}]}

@@ -79,6 +79,7 @@ void CLASSNAME::match()
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 
+   save_matched_parameters();
 }
 
 void CLASSNAME::match_tree_level()
@@ -95,6 +96,13 @@ void CLASSNAME::match_tree_level()
    model->calculate_semi_analytic_solutions(get_boundary_scale());
 
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
+
+   save_matched_parameters();
+}
+
+void CLASSNAME::save_matched_parameters()
+{
+@saveMatchedParameters@
 }
 
 int CLASSNAME::get_higgs_index() const
