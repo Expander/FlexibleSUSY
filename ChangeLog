@@ -1,5 +1,27 @@
 FlexibleSUSY 2.0.0 [not released yet]
 
+ * Feature: The weak mixing angle can now be calculated from the muon
+   decay constant at the full 1-loop level (including flavour mixing
+   effects) in a wide range of models.  2-loop corrections of the
+   order O(alpha_em*alpha_s + alpha_t^2) are taken into account, if
+   applicable.
+
+   The method to calculate the weak mixing angle can be chosen in the
+   model file by setting the variable FSWeakMixingAngleInput to either
+   Automatic, FSFermiConstant or FSMassW.  If FSWeakMixingAngleInput
+   == FSFermiConstant, then the muon decay constant will be used to
+   determine the weak mixing angle.  If FSWeakMixingAngleInput ==
+   FSMassW, then the W mass will be used.  If FSWeakMixingAngleInput
+   == Automatic (this is the default), then most precise applicable
+   method is chosen automatically.
+
+   Example:
+
+   FSWeakMixingAngleInput = Automatic; (* recommended *)
+
+   The variable FSWeakMixingAngleOptions has been removed and can no
+   longer be used.
+
  * Feature: BSM contributions to the anomalous magnetic moment of the
    muon, a_mu, at the 1L level in any given BSM model.  Note: Diagrams
    with non-SM vector bosons are not taken into account.

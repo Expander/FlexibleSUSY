@@ -122,7 +122,7 @@ Block MSD2IN
   2  2     ${MS2}            # md2(2,2)
   3  3     ${MS2}            # md2(3,3)
 EOF
-    } | $exe --slha-input-file=- | \
+    } | $exe --slha-input-file=- 2>/dev/null | \
         awk -f "$print_block" -v block=MASS | \
         awk '{ if ($1 == 25) print $2 }')
 

@@ -223,8 +223,8 @@ void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem
    } catch (const NonPerturbativeRunningQedQcdError& error) {
       model.get_problems().flag_no_perturbative();
       model.get_problems().flag_thrown(error.what());
-   } catch (const NoRhoConvergenceError&) {
-      model.get_problems().flag_no_rho_convergence();
+   } catch (const NoSinThetaWConvergenceError&) {
+      model.get_problems().flag_no_sinThetaW_convergence();
    } catch (const Error& error) {
       model.get_problems().flag_thrown(error.what());
    } catch (const std::exception& error) {

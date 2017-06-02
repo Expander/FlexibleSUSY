@@ -97,10 +97,6 @@ Weinberg_angle::Weinberg_angle()
 {
 }
 
-Weinberg_angle::~Weinberg_angle()
-{
-}
-
 void Weinberg_angle::enable_susy_contributions()
 {
    susy_contributions = true;
@@ -565,9 +561,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
   Eigen::VectorXcd bChi0MuSmul, aChicMuSnul;
 
   bPsicNuSmul(0) = g;
-  bPsicNuSmul(1) = 0.;
   aPsicMuSnul(0) = g;
-  aPsicMuSnul(1) = 0.;
   bPsi0MuSmul(0) = -gp / ROOT2;
   bPsi0MuSmul(1) = -g * ROOT2 * 0.5;
 

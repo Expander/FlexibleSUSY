@@ -48,7 +48,7 @@ constexpr double sqr(double a) noexcept { return a*a; }
 constexpr double pow3(double a) noexcept { return a*a*a; }
 constexpr double pow6(double a) noexcept { return a*a*a*a*a*a; }
 
-bool is_close(double m1, double m2, double tol)
+bool is_close(double m1, double m2, double tol) noexcept
 {
   const double mmax = fabs(std::max(fabs(m1), fabs(m2)));
   const double mmin = fabs(std::min(fabs(m1), fabs(m2)));
@@ -71,7 +71,7 @@ double refnfn(double x, double p, double m1, double m2, double q) noexcept
 
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
 template <typename T>
-T divide_finite(T a, T b) {
+T divide_finite(T a, T b) noexcept {
    T result = a / b;
    if (!std::isfinite(result))
       result = std::numeric_limits<T>::max();
@@ -124,7 +124,7 @@ double fB(const std::complex<double>& a) noexcept
 
 } // anonymous namespace
 
-double a0(double m, double q) {
+double a0(double m, double q) noexcept {
    using std::fabs;
    using std::log;
    constexpr double TOL = 1e-4;
@@ -246,7 +246,7 @@ double b1(double p, double m1, double m2, double q)
   if (pTest > pTolerance) {
     ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
 	   * b0(p, m1, m2, q)) / (2.0 * p2);
-  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) { ///< checked
+  } else if (fabs(m1) > 1.0e-15 && fabs(m2) > 1.0e-15) {
     const double m14 = sqr(m12), m24 = sqr(m22);
     const double m16 = m12*m14 , m26 = m22*m24;
     const double m18 = sqr(m14), m28 = sqr(m24);
@@ -262,11 +262,13 @@ double b1(double p, double m1, double m2, double q)
                          0.007142857142857142*p4/m26)
           - 0.5*log(m22/q2);
     } else {
-       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*log(m12/m22))/(4.*sqr(m12 - m22))
+       const double l12 = log(m12/m22);
+
+       ans = (3*m14 - 4*m12*m22 + m24 - 2*m14*l12)/(4.*sqr(m12 - m22))
           + (p2*(4*pow3(m12 - m22)*
                  (2*m14 + 5*m12*m22 - m24) +
                  (3*m18 + 44*m16*m22 - 36*m14*m24 - 12*m12*m26 + m28)*p2
-                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*log(m12/m22)))/
+                 - 12*m14*m22*(2*sqr(m12 - m22) + (2*m12 + 3*m22)*p2)*l12))/
           (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
@@ -327,13 +329,15 @@ double b22(double p,  double m1, double m2, double q)
 	  answer = 0.375 * m12 - 0.25 * m12 * log(sqr(m1 / q));
 	}
   }
-  else {// checked
+  else {
     const double b0Save = b0(p, m1, m2, q);
+    const double a01 = a0(m1, q);
+    const double a02 = a0(m2, q);
 
     answer = 1.0 / 6.0 *
-      (0.5 * (a0(m1, q) + a0(m2, q)) + (m12 + m22 - 0.5 * p2)
+      (0.5 * (a01 + a02) + (m12 + m22 - 0.5 * p2)
        * b0Save + (m22 - m12) / (2.0 * p2) *
-       (a0(m2, q) - a0(m1, q) - (m22 - m12) * b0Save) +
+       (a02 - a01 - (m22 - m12) * b0Save) +
        m12 + m22 - p2 / 3.0);
   }
 
@@ -350,23 +354,24 @@ double b22(double p,  double m1, double m2, double q)
   return answer;
 }
 
-// debugged 23.01.07 - thanks to Shindou Tetsuo
-double d0(double m1, double m2, double m3, double m4)
+double d0(double m1, double m2, double m3, double m4) noexcept
 {
   using std::log;
 
+  const double m1sq = sqr(m1), m2sq = sqr(m2);
+
   if (is_close(m1, m2, EPSTOL)) {
-    double m2sq = sqr(m2), m3sq = sqr(m3), m4sq = sqr(m4);
+    const double m3sq = m3sq, m4sq = sqr(m4);
 
     if (is_close(m2,0.,EPSTOL)) {
        // d0 is undefined for m1 == m2 == 0
        return 0.;
     } else if (is_close(m3,0.,EPSTOL)) {
-       return (-sqr(m2) + sqr(m4) - sqr(m2) * log(sqr(m4/m2)))/
-          sqr(m2 * sqr(m2) - m2 * sqr(m4));
+       return (-m2sq + m4sq - m2sq * log(m4sq/m2sq))/
+          sqr(m2 * m2sq - m2 * m4sq);
     } else if (is_close(m4,0.,EPSTOL)) {
-       return (-sqr(m2) + sqr(m3) - sqr(m2) * log(sqr(m3/m2)))/
-          sqr(m2 * sqr(m2) - m2 * sqr(m3));
+       return (-m2sq + m3sq - m2sq * log(m3sq/m2sq))/
+          sqr(m2 * m2sq - m2 * m3sq);
     } else if (is_close(m2, m3, EPSTOL) && is_close(m2, m4, EPSTOL)) {
       return 1.0 / (6.0 * sqr(m2sq));
     } else if (is_close(m2, m3, EPSTOL)) {
@@ -386,22 +391,21 @@ double d0(double m1, double m2, double m3, double m4)
        m3sq / sqr(m2sq - m3sq) * log(m3sq / m2sq) -
        m3sq / (m2sq * (m2sq - m3sq))) / (m3sq - m4sq);
   }
-  return (c0(m1, m3, m4) - c0(m2, m3, m4)) / (sqr(m1) - sqr(m2));
+  return (c0(m1, m3, m4) - c0(m2, m3, m4)) / (m1sq - m2sq);
 }
 
-double d27(double m1, double m2, double m3, double m4) {// checked
+double d27(double m1, double m2, double m3, double m4) noexcept
+{
+  if (is_close(m1, m2, EPSTOL))
+    m1 += TOL * 0.01;
 
-  if (is_close(m1, m2, EPSTOL)) {
-    const double m1n = m1 + TOL * 0.01;
-    return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4))
-      / (4.0 * (sqr(m1n) - sqr(m2)));
-  }
-  return (sqr(m1) * c0(m1, m3, m4) - sqr(m2) * c0(m2, m3, m4))
-    / (4.0 * (sqr(m1) - sqr(m2)));
+  const double m12 = sqr(m1), m22 = sqr(m2);
+
+  return (m12 * c0(m1, m3, m4) - m22 * c0(m2, m3, m4))
+    / (4.0 * (m12 - m22));
 }
 
-// Bug-fixed 14.10.02 by T. Watari and collaborators - many thanks!
-double c0(double m1, double m2, double m3)
+double c0(double m1, double m2, double m3) noexcept
 {
   using std::log;
 
@@ -411,6 +415,8 @@ double c0(double m1, double m2, double m3)
   double psq = 0.;
   double c0l = C0(psq, psq, psq, m1*m1, m2*m2, m3*m3).real();
 #endif
+
+  const double m12 = sqr(m1), m22 = sqr(m2), m32 = sqr(m3);
 
   double ans = 0.;
 
@@ -428,41 +434,41 @@ double c0(double m1, double m2, double m3)
      ans= 0.;
   } else if (is_close(m1,0.,EPSTOL)) {
      if (is_close(m2,m3,EPSTOL)) {
-        ans = -1./sqr(m2);
+        ans = -1./m22;
      } else {
-        ans = (-log(sqr(m2)) + log(sqr(m3)))/(sqr(m2) - sqr(m3));
+        ans = log(m32/m22)/(m22 - m32);
      }
   } else if (is_close(m2,0.,EPSTOL)) {
      if (is_close(m1,m3,EPSTOL)) {
-        ans = -1./sqr(m1);
+        ans = -1./m12;
      } else {
-        ans = log(sqr(m3/m1))/(sqr(m1) - sqr(m3));
+        ans = log(m32/m12)/(m12 - m32);
      }
   } else if (is_close(m3,0.,EPSTOL)) {
      if (is_close(m1,m2,EPSTOL)) {
-        ans = -1./sqr(m1);
+        ans = -1./m12;
      } else {
-        ans = log(sqr(m2/m1))/(sqr(m1) - sqr(m2));
+        ans = log(m22/m12)/(m12 - m22);
      }
   } else if (is_close(m2, m3, EPSTOL)) {
     if (is_close(m1, m2, EPSTOL)) {
-      ans = ( - 0.5 / sqr(m2) ); // checked 14.10.02
+      ans = ( - 0.5 / m22 );
     } else {
-      ans = ( sqr(m1) / sqr(sqr(m1)-sqr(m2) ) * log(sqr(m2)/sqr(m1))
-               + 1.0 / (sqr(m1) - sqr(m2)) ) ; // checked 14.10.02
+      ans = ( m12 / sqr(m12-m22) * log(m22/m12)
+               + 1.0 / (m12 - m22) );
     }
   } else if (is_close(m1, m2, EPSTOL)) {
-     ans = ( - ( 1.0 + sqr(m3) / (sqr(m2)-sqr(m3)) * log(sqr(m3)/sqr(m2)) )
-             / (sqr(m2)-sqr(m3)) ) ; // checked 14.10.02
+     ans = ( - ( 1.0 + m32 / (m22-m32) * log(m32/m22) )
+             / (m22-m32) );
   } else if (is_close(m1, m3, EPSTOL)) {
-     ans = ( - (1.0 + sqr(m2) / (sqr(m3)-sqr(m2)) * log(sqr(m2)/sqr(m3)))
-             / (sqr(m3)-sqr(m2)) ); // checked 14.10.02
+     ans = ( - (1.0 + m22 / (m32-m22) * log(m22/m32))
+             / (m32-m22) );
   } else {
-     ans = (1.0 / (sqr(m2) - sqr(m3)) *
-            (sqr(m2) / (sqr(m1) - sqr(m2)) *
-             log(sqr(m2) / sqr(m1)) -
-             sqr(m3) / (sqr(m1) - sqr(m3)) *
-             log(sqr(m3) / sqr(m1))) );
+     ans = (1.0 / (m22 - m32) *
+            (m22 / (m12 - m22) *
+             log(m22 / m12) -
+             m32 / (m12 - m32) *
+             log(m32 / m12)) );
   }
 
 #ifdef USE_LOOPTOOLS

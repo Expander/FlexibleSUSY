@@ -187,8 +187,6 @@ InitialGuessAtLowScale = {
 
 OnlyLowEnergyFlexibleSUSY = True;
 
-FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
-
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh, Ah};
 MediumPoleMassPrecision  = {};

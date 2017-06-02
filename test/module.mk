@@ -49,11 +49,6 @@ TEST_SRC := \
 		$(DIR)/test_which.cpp \
 		$(DIR)/test_wrappers.cpp
 
-ifeq ($(WITH_CMSSM) $(WITH_SoftsusyMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_CMSSM_database.cpp
-endif
-
 TEST_SH := \
 		$(DIR)/test_depgen.sh \
 		$(DIR)/test_run_examples.sh \
@@ -82,7 +77,8 @@ endif
 
 ifeq ($(WITH_SM) $(WITH_SoftsusyMSSM),yes yes)
 TEST_SRC += \
-		$(DIR)/test_SM_weinberg_angle.cpp
+		$(DIR)/test_SM_weinberg_angle.cpp \
+		$(DIR)/test_SM_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM),yes yes)
@@ -90,6 +86,7 @@ TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_sfermions.cpp \
 		$(DIR)/test_CMSSM_beta_function_benchmark.cpp \
+		$(DIR)/test_CMSSM_database.cpp \
 		$(DIR)/test_CMSSM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_higgs_iteration.cpp \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
@@ -97,7 +94,8 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_model.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp \
 		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
-		$(DIR)/test_CMSSM_weinberg_angle.cpp
+		$(DIR)/test_CMSSM_weinberg_angle.cpp \
+		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMMassWInput),yes yes)
@@ -111,7 +109,6 @@ TEST_SRC += \
 endif
 ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSM),yes yes yes)
 TEST_SRC += \
-		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
 TEST_SH += \
 		$(DIR)/test_CMSSM_gluino.sh
@@ -271,6 +268,12 @@ endif
 
 ifeq ($(WITH_CMSSMNoFV),yes)
 TEST_SRC += \
+		$(DIR)/test_CMSSMNoFV_profile.sh
+endif
+
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSMNoFV),yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMNoFV_benchmark.cpp \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
@@ -285,11 +288,12 @@ TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
 endif
 
-ifeq ($(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
-		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
+		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp \
+		$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.cpp
 endif
 
 ifeq ($(WITH_CMSSM) $(WITH_cCMSSM),yes yes)
@@ -748,8 +752,8 @@ $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-ou
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
-$(DIR)/test_CMSSM_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
-$(DIR)/test_CMSSM_benchmark.x: $(DIR)/test_CMSSM_benchmark.cpp $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE) $(LIBTEST)
+$(DIR)/test_CMSSMNoFV_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
+$(DIR)/test_CMSSMNoFV_benchmark.x: $(DIR)/test_CMSSMNoFV_benchmark.cpp $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE) $(LIBTEST)
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$<) $(LIBTEST) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_compare_ewsb_solvers.x: $(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $(LIBCMSSMGSLBroyden) $(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -800,7 +804,9 @@ $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_CMSSM_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -884,11 +890,15 @@ $(DIR)/test_SM_two_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOOPF
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMNoFV_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI)
+
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_VCMSSM_ewsb.x: $(LIBVCMSSM) $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMSemiAnalytic_ewsb.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

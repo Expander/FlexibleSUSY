@@ -21,6 +21,7 @@
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
+#include "@ModelName@_weinberg_angle.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "error.hpp"
@@ -30,7 +31,6 @@
 #include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
-#include "weinberg_angle.hpp"
 
 #include <cmath>
 #include <limits>
@@ -217,10 +217,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
    AlphaS = alpha_s_drbar;
    e_run = e_drbar;
-   ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
+   ThetaWDRbar = calculate_theta_w();
 }
 
-double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
+double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w()
 {
    check_model_ptr();
 

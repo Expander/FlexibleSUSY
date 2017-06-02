@@ -79,7 +79,6 @@ public:
    };
 
    Weinberg_angle();
-   ~Weinberg_angle();
 
    void enable_susy_contributions(); ///< enable susy contributions
    void disable_susy_contributions(); ///< disable susy contributions
