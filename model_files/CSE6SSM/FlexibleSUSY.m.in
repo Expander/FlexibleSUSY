@@ -144,8 +144,6 @@ InitialGuessAtLowScale = {
 
 InitialGuessAtHighScale = {};
 
-FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSMassW];
-
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 
 DefaultPoleMassPrecision = MediumPrecision;
