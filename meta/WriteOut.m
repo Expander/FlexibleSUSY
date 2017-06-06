@@ -901,13 +901,13 @@ CreateSLHATrilinearCouplingName[c_] :=
     CConversion`ToValidCSymbolString[c] <> "_slha";
 
 GetSLHATrilinearCouplingType[c_] :=
-    CConversion`ToRealType[Parameters`GetType[c]];
+    Parameters`GetType[c];
 
 CreateSLHASoftSquaredMassName[c_] :=
     CConversion`ToValidCSymbolString[c] <> "_slha";
 
 GetSLHASoftSquaredMassType[c_] :=
-    CConversion`ToRealType[Parameters`GetType[c]];
+    Parameters`GetType[c];
 
 CreateSLHAYukawaDefinition[] :=
     StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize[
@@ -992,19 +992,24 @@ ConvertTrilinearCouplingsToSLHA[] :=
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
                      ParametersHaveSameDimension[{vL, vR, #}],
                      result = result <>
-                              CreateSLHATrilinearCouplingName[#] <> " = (" <>
-                              CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                              "MODELPARAMETER(" <>
-                              CConversion`ToValidCSymbolString[#] <> ") * " <>
-                              CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
-                              ").real();\n";
+                              CreateSLHATrilinearCouplingName[#] <> " = " <>
+                              CConversion`CastTo[
+                                  CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                                  "MODELPARAMETER(" <>
+                                  CConversion`ToValidCSymbolString[#] <> ") * " <>
+                                  CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()",
+                                  GetSLHATrilinearCouplingType[#]
+                              ] <> ";\n";
                      ,
                      Print["Warning: Cannot convert Trilinear coupling ", #,
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHATrilinearCouplingName[#] <> " = MODELPARAMETER(" <>
-                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
+                              CreateSLHATrilinearCouplingName[#] <> " = " <>
+                              CConversion`CastTo[
+                                  "MODELPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")",
+                                  GetSLHATrilinearCouplingType[#]
+                              ] <> ";\n";
                     ];
            ]& /@ tril;
            result
@@ -1054,28 +1059,35 @@ ConvertSoftSquaredMassesToSLHA[] :=
                      ParametersHaveSameDimension[{vL, vR, #}],
                      If[IsLeftHanded[#],
                         result = result <>
-                                 CreateSLHASoftSquaredMassName[#] <> " = (" <>
-                                 CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
-                                 "MODELPARAMETER(" <>
-                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
-                                 CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
-                                 ").real();\n";
+                                 CreateSLHASoftSquaredMassName[#] <> " = " <>
+                                 CConversion`CastTo[
+                                     CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
+                                     "MODELPARAMETER(" <>
+                                     CConversion`ToValidCSymbolString[#] <> ") * " <>
+                                     CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()",
+                                     GetSLHASoftSquaredMassType[#]
+                                 ] <> ";\n";
                         ,
                         result = result <>
-                                 CreateSLHASoftSquaredMassName[#] <> " = (" <>
-                                 CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                                 "MODELPARAMETER(" <>
-                                 CConversion`ToValidCSymbolString[#] <> ") * " <>
-                                 CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
-                                 ").real();\n";
+                                 CreateSLHASoftSquaredMassName[#] <> " = " <>
+                                 CConversion`CastTo[
+                                     CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                                     "MODELPARAMETER(" <>
+                                     CConversion`ToValidCSymbolString[#] <> ") * " <>
+                                     CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()",
+                                     GetSLHASoftSquaredMassType[#]
+                                 ] <> ";\n";
                        ];
                      ,
                      Print["Warning: Cannot convert soft squared mass ", #,
                            " to SLHA, because ", {vL,vR}, " are not defined",
                            " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = MODELPARAMETER(" <>
-                              CConversion`ToValidCSymbolString[#] <> ").real();\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = " <>
+                              CConversion`CastTo[
+                                  "MODELPARAMETER(" <> CConversion`ToValidCSymbolString[#] <> ")",
+                                  GetSLHASoftSquaredMassType[#]
+                              ] <> ";\n";
                     ];
            ]& /@ massSq;
            result
