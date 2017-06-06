@@ -1282,7 +1282,7 @@ double msb_1, msb_2, theta_b;
 " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
 
-h3m::Parameters pars;
+himalaya::Parameters pars;
 pars.scale = get_scale();
 pars.mu = Re(" <> muStr <> ");
 pars.g3 = " <> g3Str <> ";
@@ -1317,32 +1317,36 @@ if (pars.MSb(0) > pars.MSb(1)) {
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 try {
-   h3m::HierarchyCalculator hc(pars);
+   himalaya::HierarchyCalculator hc(pars);
 
-   // O(alpha_t alpha_s^2) hierarchy
-   const auto hierarchy_top = hc.compareHierarchies(false);
-   // calculate the 2-loop shift DR -> MDR
-   const auto DMh2Lt = hc.calcDRbarToMDRbarShift(hierarchy_top.first, false, true, true);
-   // calculate the 3-loop corrections with the suitable hierarchy
-   const auto DMh3Lt = hc.calculateHierarchy(hierarchy_top.first, false, 0, 0, 1);
+   // O(alpha_t alpha_s^2)
+   const auto top = hc.calculateDMh3L(false);
+   // calculate the 1- and 2-loop shift DR -> MDR
+   const auto DMh_top_shift = top.getDRToMDRShift();
+   // calculate the 3-loop corrections
+   const auto DMh_top_3L = top.getDMh3L();
 
-   VERBOSE_MSG(\"H3m top (hierarchy,uncertainty) = (\" << hierarchy_top.first << \",\" << hierarchy_top.second << \")\");
+   VERBOSE_MSG(\"Himalaya top (hierarchy,uncertainty) = (\"
+               << top.getSuitableHierarchy() << \",\"
+               << top.getExpUncertainty(3) << \")\");
 
-   // O(alpha_b alpha_s^2) hierarchy
-   const auto hierarchy_bot = hc.compareHierarchies(true);
-   // calculate the 2-loop shift DR -> MDR
-   const auto DMh2Lb = hc.calcDRbarToMDRbarShift(hierarchy_bot.first, true, true, true);
-   // calculate the 3-loop corrections with the suitable hierarchy
-   const auto DMh3Lb = hc.calculateHierarchy(hierarchy_bot.first, true , 0, 0, 1);
+   // O(alpha_b alpha_s^2)
+   const auto bot = hc.calculateDMh3L(true);
+   // calculate the 1- and 2-loop shift DR -> MDR
+   const auto DMh_bot_shift = bot.getDRToMDRShift();
+   // calculate the 3-loop corrections
+   const auto DMh_bot_3L = bot.getDMh3L();
 
-   VERBOSE_MSG(\"H3m bot (hierarchy,uncertainty) = (\" << hierarchy_bot.first << \",\" << hierarchy_bot.second << \")\");
+   VERBOSE_MSG(\"Himalaya bot (hierarchy,uncertainty) = (\"
+               << bot.getSuitableHierarchy() << \",\"
+               << bot.getExpUncertainty(3) << \")\");
 
-   self_energy_3l = - DMh2Lt - DMh3Lt - DMh2Lb - DMh3Lb;
+   self_energy_3l = - DMh_top_shift - DMh_top_3L - DMh_bot_shift - DMh_bot_3L;
 
 } catch (const std::exception& e) {
    VERBOSE_MSG(e.what());
    VERBOSE_MSG(pars);
-   throw h3m::H3mError(e.what());
+   throw himalaya::HimalayaError(e.what());
 }
 
 return self_energy_3l;"

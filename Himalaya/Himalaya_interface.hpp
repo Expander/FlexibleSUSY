@@ -1,12 +1,12 @@
-#ifndef H3m_interface_HPP
-#define H3m_interface_HPP
+#ifndef Himalaya_interface_HPP
+#define Himalaya_interface_HPP
 
 #include <complex>
 #include <iostream>
 #include <Eigen/Core>
 #include "error.hpp"
 
-namespace h3m {
+namespace himalaya {
 
 typedef Eigen::Matrix<double,2,1> V2;
 typedef Eigen::Matrix<double,2,2> RM22;
@@ -38,12 +38,25 @@ struct Parameters {
    // DR-bar mixing angles
    double s2t{};	   ///< sine of 2 times the stop mixing angle
    double s2b{};	   ///< sine of 2 times the sbot mixing angle
+   
+   // checks if all variables are ordered in the right way
+   void validate(){
+      if (MSt(0) > MSt(1)) {
+	 std::swap(MSt(0), MSt(1));
+	 s2t *= -1;
+      }
+
+      if (MSb(0) > MSb(1)) {
+	 std::swap(MSb(0), MSb(1));
+	 s2b *= -1;
+      }
+   };
 };
 
 inline std::ostream& operator<<(std::ostream& ostr, const Parameters& pars)
 {
    ostr <<
-      "H3m parameters:\n"
+      "Himalaya parameters:\n"
       "  Q   = " << pars.scale << '\n' <<
       "  mu  = " << pars.mu << '\n' <<
       "  g3  = " << pars.g3 << '\n' <<
@@ -69,18 +82,18 @@ inline std::ostream& operator<<(std::ostream& ostr, const Parameters& pars)
 }
 
 /**
- * @class H3mError
- * @brief Error occurred in H3m routines
+ * @class HimalayaError
+ * @brief Error occurred in Himalaya routines
  */
-class H3mError : public flexiblesusy::Error {
+class HimalayaError : public flexiblesusy::Error {
 public:
-   explicit H3mError(const std::string& message_) : message(message_) {}
-   virtual ~H3mError() {}
+   explicit HimalayaError(const std::string& message_) : message(message_) {}
+   virtual ~HimalayaError() {}
    virtual std::string what() const { return message; }
 private:
    std::string message;
 };
 
-}	//	h3m
+}	//	himalaya
 
-#endif	//	H3m_interface_HPP
+#endif	//	Himalaya_interface_HPP
