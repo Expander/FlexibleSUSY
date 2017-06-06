@@ -224,7 +224,7 @@ CastTo[expr_String, toType_] :=
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
            CConversion`MatrixType[CConversion`complexScalarCType,__]|
            CConversion`TensorType[CConversion`complexScalarCType,__],
-           "(" <> expr <> ").cast<" <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> " >()"
+           "(" <> expr <> ").template cast<" <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> " >()"
            ,
            _,
            Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
