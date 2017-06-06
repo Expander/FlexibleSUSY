@@ -1324,7 +1324,7 @@ try {
    // calculate the 1- and 2-loop shift DR -> MDR
    const auto DMh_top_shift = top.getDRToMDRShift();
    // calculate the 3-loop corrections
-   const auto DMh_top_3L = top.getDMh3L();
+   const auto DMh_top_3L = top.getDMh(3);
 
    VERBOSE_MSG(\"Himalaya top (hierarchy,uncertainty) = (\"
                << top.getSuitableHierarchy() << \",\"
@@ -1335,7 +1335,7 @@ try {
    // calculate the 1- and 2-loop shift DR -> MDR
    const auto DMh_bot_shift = bot.getDRToMDRShift();
    // calculate the 3-loop corrections
-   const auto DMh_bot_3L = bot.getDMh3L();
+   const auto DMh_bot_3L = bot.getDMh(3);
 
    VERBOSE_MSG(\"Himalaya bot (hierarchy,uncertainty) = (\"
                << bot.getSuitableHierarchy() << \",\"
