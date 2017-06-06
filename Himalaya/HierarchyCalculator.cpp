@@ -58,7 +58,6 @@ extern "C" void dszhiggs_(double *t, double *mg, double *T1, double *T2, double 
  * 	constructor
  */
 himalaya::HierarchyCalculator::HierarchyCalculator(const Parameters& p){
-   printInfo();
    this -> p = p;
    this -> p.validate();
    // init constants
