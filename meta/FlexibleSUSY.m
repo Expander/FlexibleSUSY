@@ -1345,6 +1345,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             printMasses = "", printMixingMatrices = "",
             getMixings = "", setMixings = "",
             getMasses = "", setMasses = "",
+            getExtraParameters = "", setExtraParameters = "",
             masses, mixingMatrices,
             dependencePrototypes, dependenceFunctions,
             clearOutputParameters = "",
@@ -1458,6 +1459,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setMixings                   = TreeMasses`CreateMixingArraySetter[massMatrices, "pars"];
            getMasses                    = TreeMasses`CreateMassArrayGetter[massMatrices];
            setMasses                    = TreeMasses`CreateMassArraySetter[massMatrices, "pars"];
+           getExtraParameters           = Parameters`CreateExtraParameterArrayGetter[Parameters`GetExtraParameters[]];
+           setExtraParameters           = Parameters`CreateExtraParameterArraySetter[Parameters`GetExtraParameters[]];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
@@ -1554,6 +1557,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@setMixings@"                   -> IndentText[setMixings],
                             "@getMasses@"                    -> IndentText[getMasses],
                             "@setMasses@"                    -> IndentText[setMasses],
+                            "@getExtraParameters@"           -> IndentText[getExtraParameters],
+                            "@setExtraParameters@"           -> IndentText[setExtraParameters],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependencePrototypes@"         -> IndentText[dependencePrototypes],
                             "@dependenceFunctions@"          -> WrapLines[dependenceFunctions],
@@ -2012,7 +2017,7 @@ WriteBVPSolverMakefile[files_List] :=
                    } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
+WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List, extraParameters_List,
                     lesHouchesParameters_List, extraSLHAOutputBlocks_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             minpar, extpar, imminpar, imextpar, extraSLHAInputParameters,
@@ -2023,6 +2028,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
             particleMixingEnum = "", particleMixingNames = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             inputParameterEnum = "", inputParameterNames = "",
+            extraParameterEnum = "", extraParameterNames = "",
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
             isFlexibleEFTHiggs = "false",
@@ -2063,6 +2069,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
            particleMixingNames= TreeMasses`CreateParticleMixingNames[massMatrices];
            inputParameterEnum  = Parameters`CreateInputParameterEnum[inputParameters];
            inputParameterNames = Parameters`CreateInputParameterNames[inputParameters];
+           extraParameterEnum  = Parameters`CreateExtraParameterEnum[extraParameters];
+           extraParameterNames = Parameters`CreateExtraParameterNames[extraParameters];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
            fillSpectrumVectorWithSMParticles   = TreeMasses`FillSpectrumVector[smParticles];
            numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
@@ -2107,6 +2115,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List,
                             "@particleMixingNames@"-> IndentText[WrapLines[particleMixingNames]],
                             "@inputParameterEnum@" -> IndentText[WrapLines[inputParameterEnum]],
                             "@inputParameterNames@"-> IndentText[WrapLines[inputParameterNames]],
+                            "@extraParameterEnum@" -> IndentText[WrapLines[extraParameterEnum]],
+                            "@extraParameterNames@"-> IndentText[WrapLines[extraParameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
                             "@isSupersymmetricModel@" -> isSupersymmetricModel,
                             "@isFlexibleEFTHiggs@" -> isFlexibleEFTHiggs,
@@ -3225,7 +3235,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating utilities"];
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               inputParameters, FlexibleSUSY`FSLesHouchesList, extraSLHAOutputBlocks,
+                               inputParameters, Parameters`GetExtraParameters[],
+                               FlexibleSUSY`FSLesHouchesList, extraSLHAOutputBlocks,
                {{FileNameJoin[{$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{$flexiblesusyTemplateDir, "info.cpp.in"}],

@@ -573,6 +573,16 @@ Eigen::ArrayXd CLASSNAME::get_DRbar_masses_and_mixings() const
    return pars;
 }
 
+void CLASSNAME::set_extra_parameters(const Eigen::ArrayXd& pars)
+{
+@setExtraParameters@
+}
+
+Eigen::ArrayXd CLASSNAME::get_extra_parameters() const
+{
+@getExtraParameters@
+}
+
 std::string CLASSNAME::name() const
 {
    return "@ModelName@";

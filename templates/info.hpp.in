@@ -33,6 +33,7 @@ namespace @ModelName@_info {
 @parameterEnum@
 @particleMixingEnum@
 @inputParameterEnum@
+@extraParameterEnum@
 @gaugeCouplingNormalizationDecls@
    extern const std::array<int, NUMBER_OF_PARTICLES> particle_multiplicities;
    extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_names;
@@ -40,6 +41,7 @@ namespace @ModelName@_info {
    extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;
    extern const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names;
    extern const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names;
+   extern const std::array<std::string, NUMBER_OF_EXTRA_PARAMETERS> extra_parameter_names;
    extern const std::string model_name;
    constexpr bool is_low_energy_model = @isLowEnergyModel@;
    constexpr bool is_supersymmetric_model = @isSupersymmetricModel@;

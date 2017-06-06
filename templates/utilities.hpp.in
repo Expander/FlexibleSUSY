@@ -101,6 +101,11 @@ public:
       return @ModelName@_info::input_parameter_names;
    }
 
+   /// returns names of input parameters
+   std::array<std::string, @ModelName@_info::NUMBER_OF_EXTRA_PARAMETERS> get_extra_parameter_names() const {
+      return @ModelName@_info::extra_parameter_names;
+   }
+
    /// returns number of particle masses
    decltype(@ModelName@_info::NUMBER_OF_MASSES) get_number_of_masses() const {
       return @ModelName@_info::NUMBER_OF_MASSES;

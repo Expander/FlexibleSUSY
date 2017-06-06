@@ -22,8 +22,12 @@ CreateParameterSARAHNames::usage="";
 CreateParameterEnums::usage="";
 CreateInputParameterEnum::usage="";
 CreateInputParameterNames::usage="";
+CreateExtraParameterEnum::usage="";
+CreateExtraParameterNames::usage="";
 CreateStdVectorNamesAssignment::usage="";
 
+CreateExtraParameterArrayGetter::usage="";
+CreateExtraParameterArraySetter::usage="";
 CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
 
@@ -1192,6 +1196,20 @@ CreateEnumName[par_] :=
 CreateParameterEnums[name_, type_] :=
     Utils`StringJoinWithSeparator[CreateEnumName /@ DecomposeParameter[name, type], ", "];
 
+CreateExtraParameterEnum[extraParameters_List] :=
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterEnums[#, GetType[#]]& /@ extraParameters, ", "];
+           If[Length[extraParameters] > 0, result = result <> ", ";];
+           "enum Extra_parameters : int { " <> result <> "NUMBER_OF_EXTRA_PARAMETERS };\n"
+          ];
+
+CreateExtraParameterNames[extraParameters_List] :=
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterSARAHNames[#,GetType[#]]& /@ extraParameters, ", "];
+           "const std::array<std::string, NUMBER_OF_EXTRA_PARAMETERS> extra_parameter_names = {" <>
+           result <> "};\n"
+          ];
+
 CreateInputParameterEnum[inputParameters_List] :=
     Module[{result},
            result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
@@ -1730,6 +1748,40 @@ GetIntermediateOutputParameterDependencies[expr_] :=
         GetAllOutputParameterDependenciesReplaced[expr],
         Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
     ];
+
+CreateExtraParameterArrayGetter[{}] :=
+    "return Eigen::ArrayXd();\n";
+
+CreateExtraParameterArrayGetter[extraParameters_List] :=
+    Module[{get = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[extraParameters], i++,
+               par  = extraParameters[[i]];
+               type = GetType[extraParameters[[i]]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               get = get <> assignment;
+               paramCount += nAssignments;
+              ];
+           get = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                 get <> "\n" <>
+                 "return pars;";
+           Return[get];
+          ];
+
+CreateExtraParameterArraySetter[extraParameters_List] :=
+    Module[{set = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[extraParameters], i++,
+               par  = extraParameters[[i]];
+               type = GetType[extraParameters[[i]]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
 
 CreateInputParameterArrayGetter[{}] :=
     "return Eigen::ArrayXd();\n";
