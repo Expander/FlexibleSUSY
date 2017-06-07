@@ -1465,25 +1465,23 @@ WriteGMuonMinus2Class[vertexRules_List, files_List] :=
 
 (* Write the EDM c++ files *)
 WriteEDMClass[vertexRules_List, files_List] :=
-Module[{fields, diagrams, interfaceFunctions,
-    vertexFunctionData, definitions},
-       fields = EDM`EDMCreateFields[];
-       diagrams = EDM`EDMCreateDiagrams[];
-       
-       interfaceFunctions = EDM`EDMCreateInterfaceFunctions[];
-       vertexFunctionData = EDM`EDMCreateVertexFunctionData[vertexRules];
-       definitions = EDM`EDMCreateDefinitions[vertexRules];
-       
-       WriteOut`ReplaceInFiles[files,
-                               { "@EDM_Fields@"                    -> fields,
-                                   "@EDM_Diagrams@"                -> diagrams,
-                                   "@EDM_VertexFunctionData@"      -> vertexFunctionData,
-                                   "@EDM_Definitions@"             -> definitions,
-                                   "@EDM_InterfaceFunctionPrototypes@"  -> interfaceFunctions[[1]],
-                                   "@EDM_InterfaceFunctionDefinitions@"  -> interfaceFunctions[[2]],
-                                   Sequence @@ GeneralReplacementRules[]
-                               } ];
-       ];
+    Module[{fields, diagrams, interfaceFunctions,
+            vertexFunctionData, definitions},
+           fields = EDM`EDMCreateFields[];
+           diagrams = EDM`EDMCreateDiagrams[];
+           interfaceFunctions = EDM`EDMCreateInterfaceFunctions[];
+           vertexFunctionData = EDM`EDMCreateVertexFunctionData[vertexRules];
+           definitions = EDM`EDMCreateDefinitions[vertexRules];
+           WriteOut`ReplaceInFiles[files,
+                                   { "@EDM_Fields@"                    -> fields,
+                                     "@EDM_Diagrams@"                -> diagrams,
+                                     "@EDM_VertexFunctionData@"      -> vertexFunctionData,
+                                     "@EDM_Definitions@"             -> definitions,
+                                     "@EDM_InterfaceFunctionPrototypes@"  -> interfaceFunctions[[1]],
+                                     "@EDM_InterfaceFunctionDefinitions@"  -> interfaceFunctions[[2]],
+                                     Sequence @@ GeneralReplacementRules[]
+                                   } ];
+          ];
 
 EnableForBVPSolver[solver_, statements_String] :=
     Module[{result = "#ifdef "},
@@ -2927,18 +2925,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                                   {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
-           
+
            Print["Creating class EDM"];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            EDM`EDMInitialize[];
            EDM`EDMSetEDMFields[edmFields];
-           
+
            WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`EDMNPointFunctions[], Lat$massMatrices]],
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
-               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
-                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
-                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
+                          {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
+                           FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
