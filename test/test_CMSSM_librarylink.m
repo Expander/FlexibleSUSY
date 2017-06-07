@@ -94,7 +94,8 @@ parameters = {
     {CpHGG1, {0}, {EFFHIGGSCOUPLINGS, 25, 21, 21}},
     {CpHGG2, {0}, {EFFHIGGSCOUPLINGS, 35, 21, 21}},
     {CpAPP, {0}, {EFFHIGGSCOUPLINGS, 36, 22, 22}},
-    {CpAGG, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}}
+    {CpAGG, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}},
+    {aMuon, {0}, {FlexibleSUSYLowEnergy, 21}}
 };
 
 slhaData = ReadSLHAString[slhaStr, parameters];
@@ -128,6 +129,7 @@ TestCloseRel[{CpHPP1, CpHPP2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsPho
 TestCloseRel[{CpHGG1, CpHGG2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGluonGluon] /. obsML, delta];
 TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton  /. obsML], delta];
 TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
+TestCloseRel[aMuon  /. slhaData, FlexibleSUSYObservable`aMuon /. obsML, delta];
 
 TestEquality[probML, {}];
 TestEquality[warnML, {}];
