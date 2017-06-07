@@ -4,6 +4,8 @@ MODNAME      := templates
 BASE_TEMPLATES := \
 		$(DIR)/a_muon.hpp.in \
 		$(DIR)/a_muon.cpp.in \
+		$(DIR)/edm.hpp.in \
+		$(DIR)/edm.cpp.in \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/effective_couplings.hpp.in \
 		$(DIR)/effective_couplings.cpp.in \

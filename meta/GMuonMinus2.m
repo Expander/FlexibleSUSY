@@ -1,15 +1,15 @@
 BeginPackage["GMuonMinus2`", {"SARAH`", "CConversion`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
-CreateParticles::usage="Returns the c++ code that contains all particle classes";
-CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
-CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
-CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
+GMuonMinus2CreateParticles::usage="Returns the c++ code that contains all particle classes";
+GMuonMinus2CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
+GMuonMinus2CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
+GMuonMinus2CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
 
-CreateCalculation::usage="Returns the c++ code that performs the actual calculation the magnetic moment";
+GMuonMinus2CreateCalculation::usage="Returns the c++ code that performs the actual calculation the magnetic moment";
 
-CreateDefinitions::usage="Returns the c++ that contains all function definitions"
+GMuonMinus2CreateDefinitions::usage="Returns the c++ that contains all function definitions"
 
-NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
+GMuonMinus2NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
 
 GetMSUSY::usage="returns minimum charged BSM mass";
 
@@ -49,7 +49,7 @@ CreateSMParticleFlags[particle_] :=
           ];
 
 (* Create c++ classes for all particles *)
-CreateParticles[] :=
+GMuonMinus2CreateParticles[] :=
     Module[{particles, code},
            (* Get a list of all particles *)
            particles = TreeMasses`GetParticles[];
@@ -111,7 +111,7 @@ CreateMuonChargeGetter[] :=
           ];
 
 muonFunctions = Null;
-CreateMuonFunctions[vertexRules_List] :=
+GMuonMinus2CreateMuonFunctions[vertexRules_List] :=
     Module[{muonIndex, muonFamily, prototypes = "", definitions,
             contextMuonPole},
            If[muonFunctions =!= Null, Return[muonFunctions]];
@@ -145,7 +145,7 @@ CreateMuonFunctions[vertexRules_List] :=
            {prototypes, definitions}
           ];
 
-CreateDiagrams[] :=
+GMuonMinus2CreateDiagrams[] :=
     Module[{diagramTypes, diagramTypeHeads, code},
            diagrams = contributingFeynmanDiagramTypes;
            diagramHeads = DeleteDuplicates @ (Head /@ diagrams);
@@ -167,7 +167,7 @@ CreateDiagrams[] :=
            Return[code];
           ];
 
-CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
+GMuonMinus2CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] :=
     ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
@@ -206,7 +206,7 @@ GetQED2L[] :=
     "return qed_2L;";
 
 calculationCode = Null;
-CreateCalculation[] :=
+GMuonMinus2CreateCalculation[] :=
     Module[{code},
            (* If we have been here before return the old result *)
            If[calculationCode =!= Null, Return[calculationCode]];
@@ -228,13 +228,13 @@ CreateCalculation[] :=
            Return[code];
           ];
 
-CreateDefinitions[vertexRules_List] :=
+GMuonMinus2CreateDefinitions[vertexRules_List] :=
     (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-     CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>
+     GMuonMinus2CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>
      CreateVertices[vertexRules][[2]]);
 
 nPointFunctions = Null;
-NPointFunctions[] :=
+GMuonMinus2NPointFunctions[] :=
     Module[{contributingDiagrams, vertices},
            If[nPointFunctions =!= Null, Return[nPointFunctions]];
 
