@@ -74,8 +74,8 @@ GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPho
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "effective H-Gluon-Gluon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "effective A-Photon-Photon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "effective A-Gluon-Gluon coupling";
-GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableDescription[FlexibleSUSYObservable`EDM[p]] <> "(" <> ToString[idx] <> ")";
-GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p];
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> "(" <> ToString[idx] <> ") [1/GeV]";
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> " [1/GeV]";
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
