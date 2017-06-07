@@ -42,7 +42,8 @@ void print_usage()
       "Usage: run_cmd_line_@ModelName@.x [options]\n"
       "Options:\n"
 @printCommandLineOptions@
-      "  --solver-type=<value>             select solver type\n"
+      "  --solver-type=<value>             an integer corresponding\n"
+      "                                    to the solver type to use\n"
       "  --help,-h                         print this help message"
              << std::endl;
 }
