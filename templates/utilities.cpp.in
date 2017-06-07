@@ -304,7 +304,7 @@ Eigen::ArrayXd extract_entry(const std::string& file_name, long long entry)
    offset += number_of_parameters;
 
    // restore extra parameters
-   model.set(values.block(offset, 0, number_of_extra_parameters, 1));
+   model.set_extra_parameters(values.block(offset, 0, number_of_extra_parameters, 1));
    offset += number_of_extra_parameters;
 
    // restore DR-bar masses and mixings
