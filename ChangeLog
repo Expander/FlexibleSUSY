@@ -40,6 +40,28 @@ FlexibleSUSY 2.0.0 [not released yet]
 
    Thanks to Jobst Ziebell.
 
+ * Feature: BSM contributions to the electric dipole moment of
+   fermions at the 1L level in any given BSM model.  Note: Diagrams
+   with non-SM vector bosons are not taken into account.
+
+   In order to let FlexibleSUSY calculate the EDM of a fermion F, the
+   symbol FlexibleSUSYObservable`EDM[F] must be written into an SLHA
+   output block in the ExtraSLHAOutputBlocks variable in the
+   FlexibleSUSY model file.  If F is a multiplet, the field index must
+   be specified, for example FlexibleSUSYObservable`EDM[F[1]] for the
+   first field in the multiplet.
+
+   Example:
+
+   ExtraSLHAOutputBlocks = {
+      {FlexibleSUSYLowEnergy,
+         {{23, FlexibleSUSYObservable`EDM[Fe[1]]},
+          {24, FlexibleSUSYObservable`EDM[Fe[2]]},
+          {25, FlexibleSUSYObservable`EDM[Fe[3]]} } }
+   };
+
+   Thanks to Jobst Ziebell.
+
  * Feature: New functions, FS<model>GetProblems[],
    FS<model>GetWarnings[] and FS<model>ToSLHA[], have been added to
    FlexibleSUSY's spectrum generator Mathematica interface.  The first
