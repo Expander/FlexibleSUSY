@@ -52,6 +52,30 @@ TEST_SH := \
 		$(DIR)/test_run_all_spectrum_generators.sh \
 		$(DIR)/test_space_dir.sh
 
+TEST_META := \
+		$(DIR)/test_BetaFunction.m \
+		$(DIR)/test_CConversion.m \
+		$(DIR)/test_Constraint.m \
+		$(DIR)/test_EWSB.m \
+		$(DIR)/test_LoopFunctions.m \
+		$(DIR)/test_MSSM_2L_analytic.m \
+		$(DIR)/test_MSSM_2L_mt.m \
+		$(DIR)/test_MSSM_2L_yb_softsusy.m \
+		$(DIR)/test_MSSM_2L_yt.m \
+		$(DIR)/test_MSSM_2L_yt_loopfunction.m \
+		$(DIR)/test_MSSM_2L_yt_softsusy.m \
+		$(DIR)/test_Parameters.m \
+		$(DIR)/test_ReadSLHA.m \
+		$(DIR)/test_RGIntegrator.m \
+		$(DIR)/test_SelfEnergies.m \
+		$(DIR)/test_TextFormatting.m \
+		$(DIR)/test_THDM_threshold_corrections.m \
+		$(DIR)/test_THDM_threshold_corrections_gauge.m \
+		$(DIR)/test_ThreeLoopQCD.m \
+		$(DIR)/test_ThresholdCorrections.m \
+		$(DIR)/test_TreeMasses.m \
+		$(DIR)/test_Vertices.m
+
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 TEST_SRC +=
 endif
@@ -273,6 +297,8 @@ endif
 ifeq ($(WITH_CMSSMCPV),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_ewsb.cpp
+TEST_META += \
+		$(DIR)/test_CMSSMCPV_librarylink.m
 endif
 
 ifeq ($(WITH_CMSSMCPV) $(WITH_CMSSM),yes yes)
@@ -378,30 +404,6 @@ ifeq ($(WITH_THDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBC),yes yes)
 TEST_META += \
 		$(DIR)/test_HGTHDM_THDM_threshold_corrections_scale_invariance.m
 endif
-
-TEST_META := \
-		$(DIR)/test_BetaFunction.m \
-		$(DIR)/test_CConversion.m \
-		$(DIR)/test_Constraint.m \
-		$(DIR)/test_EWSB.m \
-		$(DIR)/test_LoopFunctions.m \
-		$(DIR)/test_MSSM_2L_analytic.m \
-		$(DIR)/test_MSSM_2L_mt.m \
-		$(DIR)/test_MSSM_2L_yb_softsusy.m \
-		$(DIR)/test_MSSM_2L_yt.m \
-		$(DIR)/test_MSSM_2L_yt_loopfunction.m \
-		$(DIR)/test_MSSM_2L_yt_softsusy.m \
-		$(DIR)/test_Parameters.m \
-		$(DIR)/test_ReadSLHA.m \
-		$(DIR)/test_RGIntegrator.m \
-		$(DIR)/test_SelfEnergies.m \
-		$(DIR)/test_TextFormatting.m \
-		$(DIR)/test_THDM_threshold_corrections.m \
-		$(DIR)/test_THDM_threshold_corrections_gauge.m \
-		$(DIR)/test_ThreeLoopQCD.m \
-		$(DIR)/test_ThresholdCorrections.m \
-		$(DIR)/test_TreeMasses.m \
-		$(DIR)/test_Vertices.m
 
 ifeq ($(WITH_SM),yes)
 TEST_META += \
