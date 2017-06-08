@@ -44,8 +44,7 @@ Module[{fields, code},
                                                               ToString @ TreeMasses`GetDimension[#] <> ";\n"] <>
                                     "};\n" &) /@ fields, "\n"] <> "\n\n" <>
                "// Special field families\n" <>
-               "using Photon = " <> CXXNameOfField @ SARAH`Photon <> ";\n" <>
-               "using Electron = " <> CXXNameOfField @ SARAH`Electron <> ";\n\n" <>
+               "using Photon = " <> CXXNameOfField @ GetPhoton[] <> ";\n\n" <>
                
                "// Fields that are their own anti fields\n" <>
                StringJoin @ Riffle[("template<> struct " <>
@@ -195,7 +194,7 @@ CXXNameOfField[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::typ
 
 (**************** Other Functions ***************)
 
-GetElectronIndex[] := If[TreeMasses`GetDimension[SARAH`Electron] =!= 1, 1, Null];
+GetPhoton[] := SARAH`Photon;
 
 IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __];
 
@@ -215,8 +214,7 @@ CleanFieldInfo[field_] := Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY
                                  ];
 
 CreateEvaluationContextSpecializations[] :=
-Module[{fields, contributingDiagrams, photonEmitters,
-        electronDimension = TreeMasses`GetDimension[SARAH`Electron]},
+Module[{fields, contributingDiagrams, photonEmitters},
        fields = Select[TreeMasses`GetParticles[], (! TreeMasses`IsGhost[#] &)];
        
        contributingDiagrams = ContributingDiagrams[];
@@ -233,7 +231,7 @@ Module[{fields, contributingDiagrams, photonEmitters,
                                    ] &) /@ fields, "\n\n"] <> "\n\n" <>
        
        StringJoin @ Riffle[(Module[{fieldInfo = CleanFieldInfo[#],
-                                    photonVertexType = VertexTypeForFields[{SARAH`Photon, #, SARAH`AntiField @ #}],
+                                    photonVertexType = VertexTypeForFields[{GetPhoton[], #, SARAH`AntiField @ #}],
                                     numberOfIndices},
                                    numberOfIndices = Length @ fieldInfo[[5]];
                                    
@@ -263,7 +261,7 @@ ContributingDiagramsOfType[OneLoopDiagram] :=
     Module[{edmField = #, diagrams = SARAH`InsFields[
                            {{C[#, SARAH`AntiField[SARAH`FieldToInsert[1]],
                                SARAH`AntiField[SARAH`FieldToInsert[2]]],
-                             C[SARAH`FieldToInsert[1], SARAH`Photon,
+                             C[SARAH`FieldToInsert[1], GetPhoton[],
                                SARAH`AntiField[SARAH`FieldToInsert[1]]],
                              C[SARAH`FieldToInsert[1], SARAH`FieldToInsert[2],
                                SARAH`AntiField[#]]},
@@ -313,7 +311,7 @@ CreateVertices[vertexRules_List] :=
 VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_, exchangeField_]] :=
     Module[{edmVertex, photonVertex},
            edmVertex = {SARAH`AntiField[edmField], photonEmitter, exchangeField};
-           photonVertex = {SARAH`Photon, photonEmitter, SARAH`AntiField[photonEmitter]};
+           photonVertex = {GetPhoton[], photonEmitter, SARAH`AntiField[photonEmitter]};
            {edmVertex, photonVertex}
            ];
 
