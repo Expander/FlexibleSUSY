@@ -68,6 +68,8 @@ void print_version_info(std::ostream& ostr)
       "Eigen version:                          " << EIGEN_WORLD_VERSION
         << '.' << EIGEN_MAJOR_VERSION << '.' << EIGEN_MINOR_VERSION << "\n"
       "GSL version:                            " << GSL_VERSION "\n"
+      "GM2Calc version:                        " << GM2CALC_VERSION "\n"
+      "Himalaya version:                       " << HIMALAYA_VERSION "\n"
       ;
 }
 

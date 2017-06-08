@@ -21,6 +21,7 @@
 #define MATHEMATICA_VERSION   @MATH_VERSION@
 
 #define GM2CALC_VERSION       "@GM2CALC_VERSION@"
+#define HIMALAYA_VERSION      "@HIMALAYA_VERSION@"
 
 /* System information */
 #define OPERATING_SYSTEM      "@OPERATING_SYSTEM@"
