@@ -3600,7 +3600,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               WriteBVPSolverMakefile[{{FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic.mk.in"}],
                                        FileNameJoin[{FSOutputDir, "semi_analytic.mk"}]}}];
 
-              Parameters`RemoveExtraParameters[SemiAnalytic`CreateBoundaryValueParameters[semiAnalyticSolns]];
               Parameters`RemoveExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
              ]; (* If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver] *)
 
