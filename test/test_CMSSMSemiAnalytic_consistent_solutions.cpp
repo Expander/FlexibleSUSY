@@ -376,27 +376,22 @@ CMSSMSemiAnalytic<Semi_analytic> run_single_semi_analytic_iteration(
 
 std::vector<CMSSMSemiAnalytic_input_parameters> initialize_semi_analytic_inputs()
 {
-   std::vector<CMSSMSemiAnalytic_input_parameters> inputs{4};
+   std::vector<CMSSMSemiAnalytic_input_parameters> inputs{3};
 
    inputs[0].m12 = 660.;
    inputs[0].TanBeta = 40.;
    inputs[0].Azero = 0.;
-   inputs[0].MuInput = 497.;
+   inputs[0].MuInput = 550.;
 
-   inputs[1].m12 = 660.;
-   inputs[1].TanBeta = 40.;
+   inputs[1].m12 = 500.;
+   inputs[1].TanBeta = 10.;
    inputs[1].Azero = 0.;
-   inputs[1].MuInput = -535.;
+   inputs[1].MuInput = 623.4;
 
-   inputs[2].m12 = 500.;
-   inputs[2].TanBeta = 10.;
+   inputs[2].m12 = 920.;
+   inputs[2].TanBeta = 40.;
    inputs[2].Azero = 0.;
-   inputs[2].MuInput = 623.4;
-
-   inputs[3].m12 = 920.;
-   inputs[3].TanBeta = 40.;
-   inputs[3].Azero = 0.;
-   inputs[3].MuInput = 286.667;
+   inputs[2].MuInput = 700.;
 
    return inputs;
 }
