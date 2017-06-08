@@ -1,4 +1,4 @@
-#include <HierarchyObject.hpp>
+#include "HierarchyObject.hpp"
 
 himalaya::HierarchyObject::HierarchyObject(bool isAlphab){
    this -> isAlphab = isAlphab;

@@ -123,14 +123,14 @@ void himalaya::HierarchyCalculator::init(){
    // lmMgl, checked
    lmMgl = log(pow2(p.scale / Mgl));
 
-   // prefactor, GF = 1/(sqrt(2) * (vu^2 + vd^2)) (here GF is calculated in the DRbar scheme, checked)
+   // prefactor, GF = 1/(sqrt(2) * (vu^2 + vd^2)) (here, GF is calculated in the DRbar scheme, checked)
    prefac = (3. / (sqrt(2) * (pow2(p.vu) + pow2(p.vd)) * sqrt(2) * pow2(Pi) * pow2(sin(beta))));
 }
 
 /*
  * 	calculates everything that is needed for the 3-loop Higgs mass matrix and returns these results in the hierarchy object ho
  */
-himalaya::HierarchyObject himalaya::HierarchyCalculator::calculateDMh3L(const bool& isAlphab){
+himalaya::HierarchyObject himalaya::HierarchyCalculator::calculateDMh3L(bool isAlphab){
    HierarchyObject ho (isAlphab);
    
    // compare hierarchies and get the best fitting hierarchy
@@ -239,9 +239,6 @@ int himalaya::HierarchyCalculator::compareHierarchies(himalaya::HierarchyObject&
 	    ho.setRelDiff2L(twoLoopError/Mh2l);
 	    ho.setExpUncertainty(2, expUncertainty);
 	 }
-      }
-      else{
-	 ho.setSuitableHierarchy(suitableHierarchy);	// captures the case if no hierarchy is fitting
       }
    }
    ho.setSuitableHierarchy(suitableHierarchy);
@@ -1276,7 +1273,9 @@ int himalaya::HierarchyCalculator::getCorrectHierarchy(const int hierarchy){
 }
 
 void himalaya::HierarchyCalculator::printInfo(){
-   //std::cout << ".  .         .          \n|__|*._ _  _.| _.  . _.\n|  ||[ | )(_]|(_]\\_|(_]\n                 ._|   " << std::endl;
-   std::cout << "Himalaya contains code by: P. Slavich et al. (2-loop rMSSM Higgs self-energies)" << std::endl;
-   std::cout << "Himalaya uses the 3-loop contributions of Kant et al." << std::endl;
+   std::cout << "......................................................................." << std::endl;
+   std::cout << "Himalaya 1.0.0" << std::endl;
+   std::cout << "Contains code by: P. Slavich et al. (2-loop rMSSM Higgs self-energies)." << std::endl;
+   std::cout << "Uses the 3-loop contributions of Kant et al." << std::endl;
+   std::cout << "......................................................................." << std::endl;
 }
