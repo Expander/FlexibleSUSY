@@ -154,7 +154,7 @@ CE6SSM_input_parameters initialize_semi_analytic_input(
 CE6SSM<Semi_analytic> initialize_semi_analytic_model(
    const E6SSM<Two_scale>& two_scale_model,
    const E6SSM_input_parameters& two_scale_input,
-   double Azero, double m12, double m0, double MuPr, double BMuPr, double high_scale)
+   double MuPr, double BMuPr, double high_scale)
 {
    CE6SSM<Semi_analytic> semi_analytic_model
       = copy_parameters_from_model<CE6SSM<Semi_analytic> >(two_scale_model);
@@ -625,9 +625,6 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
 
       const CE6SSM<Semi_analytic> semi_analytic_model(
          initialize_semi_analytic_model(two_scale_model, two_scale_input,
-                                        two_scale_input.Azero,
-                                        two_scale_input.m12,
-                                        two_scale_input.m0,
                                         high_scale_model.get_MuPr(),
                                         high_scale_model.get_BMuPr(),
                                         high_scale));
