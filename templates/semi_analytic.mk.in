@@ -44,9 +44,3 @@ LIB@ModelName@_HDR += \
 		$(DIR)/@ModelName@_semi_analytic_susy_scale_constraint.hpp \
 		$(DIR)/@ModelName@_soft_parameters_constraint.hpp \
 		$(DIR)/@ModelName@_susy_convergence_tester.hpp
-
-LIB@ModelName@_SRC += \
-@FlexibleEFTHiggsSemiAnalyticSource@
-
-LIB@ModelName@_HDR += \
-@FlexibleEFTHiggsSemiAnalyticHeader@
