@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       const double mass_rel_diff = max_mass_rel_diff(
          semi_analytic_model, single_iteration_model);
 
-      const double test_precision = 1.0e-2;
+      const double test_precision = 2.0e-2;
       BOOST_CHECK_LT(susy_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(soft_pars_rel_diff, test_precision);
       BOOST_CHECK_LT(mass_rel_diff, test_precision);
