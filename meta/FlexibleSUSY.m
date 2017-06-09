@@ -459,6 +459,13 @@ CheckModelFileSettings[] :=
                        " {{par, {property -> value, ...}}, ... }"];
                 ];
              ];
+           If[FlexibleSUSY`FlexibleEFTHiggs === True && HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
+              Print["Error: the use of FlexibleEFTHiggs with the semi-analytic solver"];
+              Print["   is not yet supported.  Please either set FlexibleEFTHiggs = False"];
+              Print["   or remove the entry SemiAnalyticSolver from FSBVPSolvers in the"];
+              Print["   model file."];
+              Quit[1];
+             ];
            CheckEWSBSolvers[FlexibleSUSY`FSEWSBSolvers];
            CheckBVPSolvers[FlexibleSUSY`FSBVPSolvers];
           ];
