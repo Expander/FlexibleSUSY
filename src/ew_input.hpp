@@ -80,7 +80,7 @@ namespace Electroweak_constants {
       const double PMNS_DELTA   = 0.;
       const double PMNS_ALPHA1  = 0.;
       const double PMNS_ALPHA2  = 0.;
-      const double gfermi = 1.16637e-5; ///< Fermi constant G_F
+      const double gfermi = 1.1663787e-5; ///< Fermi constant G_F
       const double yeSM = 2.85784368E-06; ///< Ye(1,1) MS-bar in the SM at Q = MZ
       const double ymSM = 5.90911374E-04; ///< Ye(2,2) MS-bar in the SM at Q = MZ
       const double ylSM = 9.95869693E-03; ///< Ye(3,3) MS-bar in the SM at Q = MZ
