@@ -1317,10 +1317,11 @@ if (pars.MSb(0) > pars.MSb(1)) {
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 try {
+   const int mdrScheme = 1;
    himalaya::HierarchyCalculator hc(pars);
 
    // O(alpha_t alpha_s^2)
-   const auto top = hc.calculateDMh3L(false);
+   const auto top = hc.calculateDMh3L(false, mdrScheme);
    // calculate the 1- and 2-loop shift DR -> MDR
    const auto DMh_top_shift = top.getDRToMDRShift();
    // calculate the 3-loop corrections
@@ -1331,7 +1332,7 @@ try {
                << top.getExpUncertainty(3) << \")\");
 
    // O(alpha_b alpha_s^2)
-   const auto bot = hc.calculateDMh3L(true);
+   const auto bot = hc.calculateDMh3L(true, mdrScheme);
    // calculate the 1- and 2-loop shift DR -> MDR
    const auto DMh_bot_shift = bot.getDRToMDRShift();
    // calculate the 3-loop corrections
