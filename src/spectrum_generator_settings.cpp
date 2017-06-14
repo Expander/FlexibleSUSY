@@ -139,26 +139,26 @@ void Spectrum_generator_settings::reset()
    values[threshold_corrections]            = Threshold_corrections().get();
 }
 
-Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const
+Loop_corrections Spectrum_generator_settings::get_loop_corrections() const
 {
-   Two_loop_corrections two_loop_corrections;
-   two_loop_corrections.higgs_at_as     = get(higgs_2loop_correction_at_as);
-   two_loop_corrections.higgs_ab_as     = get(higgs_2loop_correction_ab_as);
-   two_loop_corrections.higgs_at_at     = get(higgs_2loop_correction_at_at);
-   two_loop_corrections.higgs_atau_atau = get(higgs_2loop_correction_atau_atau);
-   two_loop_corrections.top_qcd         = get(top_pole_qcd_corrections);
+   Loop_corrections loop_corrections;
+   loop_corrections.higgs_at_as     = get(higgs_2loop_correction_at_as);
+   loop_corrections.higgs_ab_as     = get(higgs_2loop_correction_ab_as);
+   loop_corrections.higgs_at_at     = get(higgs_2loop_correction_at_at);
+   loop_corrections.higgs_atau_atau = get(higgs_2loop_correction_atau_atau);
+   loop_corrections.top_qcd         = get(top_pole_qcd_corrections);
 
-   return two_loop_corrections;
+   return loop_corrections;
 }
 
-void Spectrum_generator_settings::set_two_loop_corrections(
-   const Two_loop_corrections& two_loop_corrections)
+void Spectrum_generator_settings::set_loop_corrections(
+   const Loop_corrections& loop_corrections)
 {
-   set(higgs_2loop_correction_at_as, two_loop_corrections.higgs_at_as);
-   set(higgs_2loop_correction_ab_as, two_loop_corrections.higgs_ab_as);
-   set(higgs_2loop_correction_at_at, two_loop_corrections.higgs_at_at);
-   set(higgs_2loop_correction_atau_atau, two_loop_corrections.higgs_atau_atau);
-   set(top_pole_qcd_corrections, two_loop_corrections.top_qcd);
+   set(higgs_2loop_correction_at_as, loop_corrections.higgs_at_as);
+   set(higgs_2loop_correction_ab_as, loop_corrections.higgs_ab_as);
+   set(higgs_2loop_correction_at_at, loop_corrections.higgs_at_at);
+   set(higgs_2loop_correction_atau_atau, loop_corrections.higgs_atau_atau);
+   set(top_pole_qcd_corrections, loop_corrections.top_qcd);
 }
 
 Threshold_corrections Spectrum_generator_settings::get_threshold_corrections() const

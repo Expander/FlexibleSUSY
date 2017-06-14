@@ -31,7 +31,7 @@
 #include "logger.hpp"
 #include "lowe.h"
 #include "spectrum_generator_settings.hpp"
-#include "two_loop_corrections.hpp"
+#include "loop_corrections.hpp"
 
 #include <string>
 
@@ -93,9 +93,9 @@ public:
    void set_threshold_corrections_loop_order(int t) {
       settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, t);
    }
-   void set_two_loop_corrections(const Two_loop_corrections& c) {
-      settings.set_two_loop_corrections(c);
-      model.set_two_loop_corrections(c);
+   void set_loop_corrections(const Loop_corrections& c) {
+      settings.set_loop_corrections(c);
+      model.set_loop_corrections(c);
    }
    void set_threshold_corrections(const Threshold_corrections& c) {
       settings.set_threshold_corrections(c);
@@ -129,7 +129,7 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
    settings = settings_;
    model.set_pole_mass_loop_order(settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    model.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
-   model.set_two_loop_corrections(settings.get_two_loop_corrections());
+   model.set_loop_corrections(settings.get_loop_corrections());
    model.set_threshold_corrections(settings.get_threshold_corrections());
 }
 

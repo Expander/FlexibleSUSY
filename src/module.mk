@@ -79,7 +79,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gsl_vector.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/two_loop_corrections.hpp \
+		$(DIR)/loop_corrections.hpp \
 		$(DIR)/if.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \

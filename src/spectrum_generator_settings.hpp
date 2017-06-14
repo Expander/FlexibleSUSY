@@ -20,7 +20,7 @@
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
 #include "threshold_corrections.hpp"
-#include "two_loop_corrections.hpp"
+#include "loop_corrections.hpp"
 #include <array>
 #include <iosfwd>
 #include <string>
@@ -73,8 +73,8 @@ public:
    void set(Settings, double); ///< set value of spectrum generator setting
    void reset();               ///< resets all settings to their defaults
 
-   Two_loop_corrections get_two_loop_corrections() const;
-   void set_two_loop_corrections(const Two_loop_corrections&);
+   Loop_corrections get_loop_corrections() const;
+   void set_loop_corrections(const Loop_corrections&);
    Threshold_corrections get_threshold_corrections() const;
    void set_threshold_corrections(const Threshold_corrections&);
 

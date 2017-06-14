@@ -35,7 +35,7 @@
 #include "@ModelName@_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
-#include "two_loop_corrections.hpp"
+#include "loop_corrections.hpp"
 #include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
@@ -82,8 +82,8 @@ public:
    void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(int);
-   void set_two_loop_corrections(const Two_loop_corrections&);
-   const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_loop_corrections(const Loop_corrections&);
+   const Loop_corrections& get_loop_corrections() const;
    void set_threshold_corrections(const Threshold_corrections&);
    const Threshold_corrections& get_threshold_corrections() const;
    void set_DRbar_masses(const Eigen::ArrayXd&);
@@ -153,7 +153,7 @@ private:
    double ewsb_iteration_precision; ///< precision goal of EWSB solution
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems; ///< problems
-   Two_loop_corrections two_loop_corrections; ///< used 2-loop pole mass corrections
+   Loop_corrections loop_corrections; ///< used pole mass corrections
    Threshold_corrections threshold_corrections; ///< used threshold corrections
 
    int get_number_of_ewsb_iterations() const;

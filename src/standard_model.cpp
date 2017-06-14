@@ -141,11 +141,11 @@ const int Standard_model::numberOfParameters;
 
 #define PHYSICAL(parameter) physical.parameter
 
-#define HIGGS_2LOOP_CORRECTION_AT_AS     two_loop_corrections.higgs_at_as
-#define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
-#define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
-#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
-#define TOP_POLE_QCD_CORRECTION          two_loop_corrections.top_qcd
+#define HIGGS_2LOOP_CORRECTION_AT_AS     loop_corrections.higgs_at_as
+#define HIGGS_2LOOP_CORRECTION_AB_AS     loop_corrections.higgs_ab_as
+#define HIGGS_2LOOP_CORRECTION_AT_AT     loop_corrections.higgs_at_at
+#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU loop_corrections.higgs_atau_atau
+#define TOP_POLE_QCD_CORRECTION          loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 Standard_model::Standard_model()
@@ -183,14 +183,14 @@ void Standard_model::set_ewsb_loop_order(int loop_order)
    ewsb_loop_order = loop_order;
 }
 
-void Standard_model::set_two_loop_corrections(const Two_loop_corrections& two_loop_corrections_)
+void Standard_model::set_loop_corrections(const Loop_corrections& loop_corrections_)
 {
-   two_loop_corrections = two_loop_corrections_;
+   loop_corrections = loop_corrections_;
 }
 
-const Two_loop_corrections& Standard_model::get_two_loop_corrections() const
+const Loop_corrections& Standard_model::get_loop_corrections() const
 {
-   return two_loop_corrections;
+   return loop_corrections;
 }
 
 void Standard_model::set_threshold_corrections(const Threshold_corrections& tc)
