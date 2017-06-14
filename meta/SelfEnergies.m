@@ -1317,33 +1317,40 @@ if (pars.MSb(0) > pars.MSb(1)) {
 " <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 try {
-   const int mdrScheme = 1;
+   const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
    himalaya::HierarchyCalculator hc(pars);
 
-   // O(alpha_t alpha_s^2)
-   const auto top = hc.calculateDMh3L(false, mdrScheme);
-   // calculate the 1- and 2-loop shift DR -> MDR
-   const auto DMh_top_shift = top.getDRToMDRShift();
-   // calculate the 3-loop corrections
-   const auto DMh_top_3L = top.getDMh(3);
+   if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+      const auto hier = hc.calculateDMh3L(false, mdrScheme);
 
-   VERBOSE_MSG(\"Himalaya top (hierarchy,uncertainty) = (\"
-               << top.getSuitableHierarchy() << \",\"
-               << top.getExpUncertainty(3) << \")\");
+      VERBOSE_MSG(\"Himalaya top (hierarchy,uncertainty) = (\"
+                  << hier.getSuitableHierarchy() << \",\"
+                  << hier.getExpUncertainty(3) << \")\");
 
-   // O(alpha_b alpha_s^2)
-   const auto bot = hc.calculateDMh3L(true, mdrScheme);
-   // calculate the 1- and 2-loop shift DR -> MDR
-   const auto DMh_bot_shift = bot.getDRToMDRShift();
-   // calculate the 3-loop corrections
-   const auto DMh_bot_3L = bot.getDMh(3);
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
 
-   VERBOSE_MSG(\"Himalaya bot (hierarchy,uncertainty) = (\"
-               << bot.getSuitableHierarchy() << \",\"
-               << bot.getExpUncertainty(3) << \")\");
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
 
-   self_energy_3l = - DMh_top_shift - DMh_top_3L - DMh_bot_shift - DMh_bot_3L;
+   if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
+      const auto hier = hc.calculateDMh3L(true, mdrScheme);
 
+      VERBOSE_MSG(\"Himalaya bottom (hierarchy,uncertainty) = (\"
+                  << hier.getSuitableHierarchy() << \",\"
+                  << hier.getExpUncertainty(3) << \")\");
+
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
+
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
 } catch (const std::exception& e) {
    VERBOSE_MSG(e.what());
    VERBOSE_MSG(pars);
