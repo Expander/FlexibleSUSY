@@ -313,21 +313,20 @@ double b22(double p,  double m1, double m2, double q)
     // m1 == m2 with good accuracy
     if (is_close(m1, m2, EPSTOL)) {
       answer = -m12 * log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
-    }
-    else
+    } else {
       /// This zero p limit is good
       if (fabs(m1) > EPSTOL && fabs(m2) > EPSTOL) {
 	answer = 0.375 * (m12 + m22) - 0.25 *
 	  (sqr(m22) * log(sqr(m2 / q)) - sqr(m12) *
 	   log(sqr(m1 / q))) / (m22 - m12);
-      }
-      else
+      } else {
 	if (fabs(m1) < EPSTOL) {
 	  answer = 0.375 * m22 - 0.25 * m22 * log(sqr(m2 / q));
-	}
-	else {
+	} else {
 	  answer = 0.375 * m12 - 0.25 * m12 * log(sqr(m1 / q));
 	}
+      }
+    }
   }
   else {
     const double b0Save = b0(p, m1, m2, q);
