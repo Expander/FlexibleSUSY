@@ -362,7 +362,7 @@ SetExtraParameterSLHABlock[par_?IsExtraParameter, block_] :=
 SetExtraParameterSLHABlock[par_, block_] :=
     Print["Error: ", par, " is not a defined parameter!"];
 
-ProcessParameterInfo[{parameter_ /; (IsModelParameter[paramater] || IsOutputParameter[parameter]), {__}}] :=
+ProcessParameterInfo[{parameter_ /; (IsModelParameter[parameter] || IsOutputParameter[parameter]), {__}}] :=
     Block[{},
           Print["Warning: the properties of ", parameter, " are set"];
           Print["   in the SARAH model files and cannot be overridden."];
