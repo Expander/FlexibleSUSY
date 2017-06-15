@@ -788,14 +788,14 @@ CheckLinearlyIndependentInputs[SemiAnalyticSolution[par_, basis_], inputs_List] 
              ];
           ];
 
-AreEquivalentInputSets[inputSetOne_, inputSetTwo_] :=
+AreEquivalentInputSets[inputSetOne_List, inputSetTwo_List] :=
     Module[{sortedSetOne, sortedSetTwo},
-           sortedSetOne = Sort[Sort /@ inputSetOne];
-           sortedSetTwo = Sort[Sort /@ inputSetTwo];
+           sortedSetOne = Sort[inputSetOne];
+           sortedSetTwo = Sort[inputSetTwo];
            sortedSetOne === sortedSetTwo
           ];
 
-RequireSameInput[{parOne_, basisOne_}, {parTwo_, basisTwo_}] :=
+RequireSameInput[{parOne_, basisOne_List}, {parTwo_, basisTwo_List}] :=
     Module[{parOneType, parTwoType, sortedBasisOne, sortedBasisTwo},
            parOneType = CConversion`GetScalarElementType[Parameters`GetType[parOne]];
            parTwoType = CConversion`GetScalarElementType[Parameters`GetType[parTwo]];
@@ -838,11 +838,11 @@ InitializeTrialInputValues[datasets_List] :=
            {Length[distinctInputs], Utils`StringJoinWithSeparator[initialization, "\n"]}
           ];
 
-CreateBasisEvaluator[name_String, basis_List] :=
+CreateBasisEvaluator[name_String, parameters_List, basis_List] :=
     Module[{i, dim, boundaryValues, setBoundaryValues, returnType, body = "", result = ""},
            dim = Length[basis];
            boundaryValues = Parameters`FindAllParameters[basis];
-           If[And @@ (Parameters`IsRealExpression[#]& /@ basis),
+           If[(And @@ (Parameters`IsRealParameter /@ parameters)) && (And @@ (Parameters`IsRealExpression /@ basis)),
               returnType = CConversion`MatrixType[CConversion`realScalarCType, 1, dim];,
               returnType = CConversion`MatrixType[CConversion`complexScalarCType, 1, dim];
              ];
@@ -859,9 +859,11 @@ CreateBasisEvaluator[name_String, basis_List] :=
           ];
 
 CreateBasisEvaluators[solutions_List] :=
-    Module[{bases, evaluators = ""},
-           bases = DeleteDuplicates[GetBasis[#]& /@ solutions];
-           evaluators = MapIndexed[CreateBasisEvaluator["basis_" <> ToString[First[#2]], #1]&, bases];
+    Module[{basisSets, bases, evaluators = ""},
+           basisSets = Gather[{GetName[#], GetBasis[#]}& /@ solutions, RequireSameInput];
+           bases = With[{equivalentBases = #}, {#[[1]]& /@ equivalentBases,
+                                                Flatten[DeleteDuplicates[#[[2]]& /@ equivalentBases]]}]& /@ basisSets;
+           evaluators = MapIndexed[CreateBasisEvaluator["basis_" <> ToString[First[#2]], #1[[1]], #1[[2]]]&, bases];
            Utils`StringJoinWithSeparator[evaluators, "\n"] <> "\n"
           ];
 
