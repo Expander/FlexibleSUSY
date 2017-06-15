@@ -30,7 +30,7 @@ handle = FS@ModelName@OpenHandle[
     },
     fsSMParameters -> {
         alphaEmMZ -> 1/127.916, (* SMINPUTS[1] *)
-        GF -> 1.16637*^-5,      (* SMINPUTS[2] *)
+        GF -> 1.166378700*^-5,  (* SMINPUTS[2] *)
         alphaSMZ -> 0.1184,     (* SMINPUTS[3] *)
         MZ -> 91.1876,          (* SMINPUTS[4] *)
         mbmb -> 4.18,           (* SMINPUTS[5] *)
