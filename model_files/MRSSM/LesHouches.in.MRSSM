@@ -4,7 +4,7 @@ Block MODSEL     #
     6 1          # Generation Mixing
 #   12 1000       # output scale
 Block SMINPUTS   # Standard Model inputs
-    2 1.166370E-05       # G_F,Fermi constant
+    2 1.1663787e-05      # G_Fermi
     3 1.187000E-01       # alpha_s(MZ) SM MSbar
     4 9.118870E+01       # Z-boson pole mass
     5 4.180000E+00       # m_b(mb) SM MSbar
