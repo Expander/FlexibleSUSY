@@ -125,8 +125,22 @@ inline void MLPutRule(MLINK link, const std::string& name, const std::vector<std
    MLPutUTF8Symbol(link, reinterpret_cast<const unsigned char*>(name.c_str()), name.size());
 }
 
-template <class T>
-void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std::string>& heads = {})
+inline void MLPutRule(MLINK link, int number, const std::vector<std::string>& heads = {})
+{
+   MLPutFunction(link, "Rule", 2);
+   MLPutHeads(link, heads);
+   MLPutInteger(link, number);
+}
+
+inline void MLPutRule(MLINK link, long number, const std::vector<std::string>& heads = {})
+{
+   MLPutFunction(link, "Rule", 2);
+   MLPutHeads(link, heads);
+   MLPutLongInteger(link, number);
+}
+
+template <class T1, class T2>
+void MLPutRuleTo(MLINK link, T1 t, const T2& name, const std::vector<std::string>& heads = {})
 {
    MLPutRule(link, name, heads);
    MLPut(link, t);

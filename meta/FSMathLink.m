@@ -164,9 +164,20 @@ PutParameter[par_, link_String] :=
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];
 
-PutObservable[obs_, type_, link_String] :=
-    "MLPutRuleTo(" <> link <> ", OBSERVABLE(" <> Observables`GetObservableName[obs] <>
-    "), \"" <> ToString[obs] <> "\");\n";
+ObsToStr[obs_?NumericQ] := ToString[obs];
+ObsToStr[obs_] := "\"" <> ToString[obs] <> "\"";
+
+HeadToStr[sym_]    := "\"" <> ToString[sym] <> "\"";
+HeadsToStr[{}]     := "";
+HeadsToStr[l_List] := ", {" <> StringJoin[Riffle[HeadToStr /@ l, ", "]] <> "}";
+
+PutObservable[obs_[sub_], type_, link_String, heads_:{}] :=
+    PutObservable[sub, type, link, Join[heads, {obs}]];
+
+PutObservable[obs_, type_, link_String, heads_:{}] :=
+    "MLPutRuleTo(" <> link <> ", OBSERVABLE(" <>
+    Observables`GetObservableName[Composition[Sequence @@ heads][obs]] <>
+    "), " <> ObsToStr[obs] <> HeadsToStr[heads] <> ");\n";
 
 PutObservables[obs_List, link_String] :=
     StringJoin[PutObservable[#, Observables`GetObservableType[#], link]& /@ obs];

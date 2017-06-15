@@ -3,7 +3,7 @@ Block MODSEL                 # Select model
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
-    2   0                    # solver (0 = all, 1 = two_scale, 2 = semi_analytic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   0                    # calculate SM pole masses
     4   2                    # pole mass loop order
     5   2                    # EWSB loop order
@@ -16,29 +16,22 @@ Block FlexibleSUSY
    12   0                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1.000000000e-11      # beta-function zero threshold
-   15   0                    # calculate observables (a_muon, ...)
+   15   1                    # calculate observables (a_muon, ...)
    16   0                    # force positive majorana masses
    17   0                    # pole mass renormalization scale (0 = SUSY scale)
-   18   0                    # pole mass renormalization scale in the EFT (0 = min(SUSY scale, Mt))
-   19   0                    # EFT matching scale (0 = SUSY scale)
-   20   2                    # EFT loop order for upwards matching
-   21   1                    # EFT loop order for downwards matching
-   22   0                    # EFT index of SM-like Higgs in the BSM model
-   23   1                    # calculate BSM pole masses
-   24   123111121            # individual threshold correction loop orders
 Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole
 Block SMINPUTS               # Standard Model inputs
-    1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
-    2   1.166378700e-05      # G_Fermi
-    3   1.184000000e-01      # alpha_s(MZ) SM MSbar
+    1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
+    2   1.166370000e-05      # G_Fermi
+    3   1.176000000e-01      # alpha_s(MZ) SM MSbar
     4   9.118760000e+01      # MZ(pole)
-    5   4.180000000e+00      # mb(mb) SM MSbar
-    6   1.733400000e+02      # mtop(pole)
+    5   4.200000000e+00      # mb(mb) SM MSbar
+    6   1.733000000e+02      # mtop(pole)
     7   1.777000000e+00      # mtau(pole)
     8   0.000000000e+00      # mnu3(pole)
-    9   80.385               # MW pole
+    9   80.404               # MW pole
    11   5.109989020e-04      # melectron(pole)
    12   0.000000000e+00      # mnu1(pole)
    13   1.056583570e-01      # mmuon(pole)
@@ -47,4 +40,15 @@ Block SMINPUTS               # Standard Model inputs
    22   2.400000000e-03      # mu(2 GeV) MS-bar
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
-@formattedSLHAInputBlocks@
+Block MINPAR                 # Input parameters
+    1   125.                 # m0
+    2   500.                 # m12
+    3   10.                  # TanBeta
+    4   1                    # SignMu
+    5   0                    # Azero
+Block IMMINPAR
+    2   10                   # Imm12
+    4   0                    # SinPhiMu
+    5   10                   # ImAzero
+Block EXTPAR
+  100   0.1                  # etaInput
