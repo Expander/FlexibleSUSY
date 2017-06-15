@@ -19,6 +19,7 @@ meta/SM/HSSUSY_corrections.m    export-ignore
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore
+model_files/CMSSMCPVSemiAnalytic export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
 model_files/CMSSMFPITadpole     export-ignore

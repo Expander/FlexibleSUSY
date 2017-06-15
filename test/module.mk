@@ -164,6 +164,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.cpp
 endif
 
+ifeq ($(WITH_CMSSMCPVSemiAnalytic), yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMCPVSemiAnalytic_ewsb.cpp \
+		$(DIR)/test_CMSSMCPVSemiAnalytic_semi_analytic_solutions.cpp
+endif
+
 ifeq ($(WITH_CNMSSM), yes)
 TEST_SRC += \
 		$(DIR)/test_CNMSSM_ewsb.cpp \
@@ -208,6 +214,11 @@ TEST_SH += \
 TEST_SRC += \
 		$(DIR)/test_CMSSMSemiAnalytic_consistent_solutions.cpp \
 		$(DIR)/test_CMSSMSemiAnalytic_ewsb_solution.cpp
+endif
+
+ifeq ($(WITH_CMSSMCPV) $(WITH_CMSSMCPVSemiAnalytic), yes yes)
+TEST_SH += \
+		$(DIR)/test_CMSSMCPVSemiAnalytic_spectrum.sh
 endif
 
 ifeq ($(WITH_NMSSM) $(WITH_CNMSSM), yes yes)
@@ -907,6 +918,10 @@ $(DIR)/test_CMSSMSemiAnalytic_consistent_solutions.x: $(LIBCMSSMSemiAnalytic) $(
 $(DIR)/test_CMSSMSemiAnalytic_ewsb_solution.x: $(LIBCMSSMSemiAnalytic) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMCPVSemiAnalytic_ewsb.x: $(LIBCMSSMCPVSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMCPVSemiAnalytic_semi_analytic_solutions.x: $(LIBCMSSMCPVSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CNMSSM_ewsb.x: $(LIBCNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
