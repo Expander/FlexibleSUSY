@@ -68,6 +68,56 @@ FlexibleSUSY 2.0.0 [not released yet]
    The default value is 123111121, which corresponds to the loop
    orders given in the above table.
 
+ * Feature: In the MSSM, the 3-loop corrections O(alpha_t*alpha_s^2)
+   and O(alpha_b*alpha_s^2) to the Higgs pole mass from Ref.
+   [arxiv:hep-ph/1005.5709] can be taken into account.  The
+   corrections are taken from the Himalaya package.  To enable them,
+   set the following flag in the FlexibleSUSY model file:
+
+      UseHiggs3LoopMSSM = True;
+
+   In addition, we strongly recommend to set
+
+      UseHiggs2LoopMSSM = True;
+      EffectiveMu = \[Mu]; (* chose sign convention for mu parameter *)
+      UseMSSMYukawa2LoopSQCD = True;
+      UseMSSM3LoopRGEs = True;
+
+   To enable the 3-loop corrections at run-time, the following flags
+   should be set in the SLHA input:
+
+      Block FlexibleSUSY
+          4   3          # pole mass loop order
+          5   3          # EWSB loop order
+          6   3          # beta-functions loop order
+          7   2          # threshold corrections loop order
+          8   1          # Higgs 2-loop corrections O(alpha_t alpha_s)
+          9   1          # Higgs 2-loop corrections O(alpha_b alpha_s)
+         10   1          # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+         11   1          # Higgs 2-loop corrections O(alpha_tau^2)
+         24   123111121  # individual threshold correction loop orders
+         25   1          # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
+         26   1          # Higgs 3-loop corrections O(alpha_t alpha_s^2)
+         27   1          # Higgs 3-loop corrections O(alpha_b alpha_s^2)
+
+   In FlexibleSUSY's Mathematica interface, the following settings
+   should be used:
+
+      fsSettings -> {
+          poleMassLoopOrder -> 3,            (* FlexibleSUSY[4] *)
+          ewsbLoopOrder -> 3,                (* FlexibleSUSY[5] *)
+          betaFunctionLoopOrder -> 3,        (* FlexibleSUSY[6] *)
+          thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
+          higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+          higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+          higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+          higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+          thresholdCorrections -> 123111121, (* FlexibleSUSY[24] *)
+          higgs3loopCorrectionRenScheme -> 1,(* FlexibleSUSY[25] *)
+          higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
+          higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
+      }
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
