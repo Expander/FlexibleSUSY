@@ -62,7 +62,7 @@ Block ESIXRUNIN
     1   9.151810000e-04      # Lambdax
    30   0.000000000e+00      # Bmu_phi (soft breaking singlet mass term)
    42   0.000000000e+00      # sigma_L (singlet-L_4-L_4bar coupling)
-  101   1.000000000e+04      # B_mu prime
+  101   0.000000000e+00      # B_mu prime
 Block ESIXLAMBDAIN
   1  1  1.000000000e-03      # Lambda12(1,1)
   1  2  0.000000000e+00      # Lambda12(1,2)
