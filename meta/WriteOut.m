@@ -97,6 +97,20 @@ TransposeIfVector[p:FlexibleSUSY`Phase[parameter_], _] :=
 
 TransposeIfVector[parameter_, _] := parameter;
 
+TransposeIfVector[parameter_, CConversion`ArrayType[__], macro_] :=
+    SARAH`Tp[macro[parameter]];
+
+TransposeIfVector[parameter_, CConversion`VectorType[__], macro_] :=
+    SARAH`Tp[macro[parameter]];
+
+TransposeIfVector[p:Sign[parameter_], type_, macro_] :=
+    CConversion`ToValidCSymbolString[macro[p]];
+
+TransposeIfVector[p:FlexibleSUSY`Phase[parameter_], type_, macro_] :=
+    CConversion`ToValidCSymbolString[macro[p]];
+
+TransposeIfVector[parameter_, type_, macro_] := macro[parameter];
+
 PrintParameter[Null, streamName_String] := "";
 
 PrintParameter[parameter_, streamName_String] :=
@@ -129,17 +143,17 @@ PrintInputParameters[parameters_List, streamName_String] :=
            Return[result];
           ];
 
-PrintExtraParameter[{parameter_, type_}, streamName_String, macro_String:"EXTRAPARAMETER"] :=
+PrintExtraParameter[{parameter_, type_}, streamName_String, macro_:Global`EXTRAPARAMETER] :=
     Module[{parameterName, parameterNameWithoutIndices, expr},
            parameterNameWithoutIndices = parameter /.
                                          a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
            parameterName = CConversion`ToValidCSymbolString[parameterNameWithoutIndices];
-           expr = TransposeIfVector[parameterNameWithoutIndices, type];
+           expr = TransposeIfVector[parameterNameWithoutIndices, type, macro];
            Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
-                  macro <> "(" <> CConversion`RValueToCFormString[expr] <> ") << '\\n';\n"];
+                  CConversion`RValueToCFormString[expr] <> " << '\\n';\n"];
           ];
 
-PrintExtraParameters[parameters_List, streamName_String, macro_String:"EXTRAPARAMETER"] :=
+PrintExtraParameters[parameters_List, streamName_String, macro_:Global`EXTRAPARAMETER] :=
     Module[{result = ""},
            (result = result <> PrintExtraParameter[#,streamName,macro])& /@ parameters;
            Return[result];

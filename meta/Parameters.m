@@ -167,6 +167,7 @@ ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
 
 StripIndices::usage="removes indices from model parameter";
+CreateIndices::usage="creates indices in C++ expression for parameter";
 
 StripIndicesRules::usage="removes given indices from a symbol";
 

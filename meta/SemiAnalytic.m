@@ -618,7 +618,7 @@ PrintModelCoefficients[solutions_List, streamName_String, struct_String:"solutio
            result = streamName <> " << \"input_scale = \" << " <> struct <> "get_input_scale() << '\\n';\n";
            result = result <> streamName <> " << \"output_scale = \" << " <> struct
                     <> "get_output_scale() << '\\n';\n";
-           result <> WriteOut`PrintExtraParameters[{#[[1]], #[[3]]}& /@ coeffs, streamName, "COEFFICIENT"]
+           result <> WriteOut`PrintExtraParameters[{#[[1]], #[[3]]}& /@ coeffs, streamName, Global`COEFFICIENT]
           ];
 
 CreateLocalBoundaryValuesDefinitions[solutions_List] :=
@@ -730,16 +730,53 @@ GetSemiAnalyticEWSBSubstitutions[solution_SemiAnalyticSolution] :=
 GetSemiAnalyticEWSBSubstitutions[solutions_List] :=
     Join[Sequence @@ (GetSemiAnalyticEWSBSubstitutions /@ solutions)]
 
-GetDefaultSettings[parameters_List] := {#, 0}& /@ parameters;
+GetDefaultSettings[parameters_List] :=
+    Module[{generateIndices, defaultSettings},
+           generateIndices[p_] :=
+               Module[{dims, i},
+                      dims = Parameters`GetParameterDimensions[p];
+                      If[dims === {1},
+                         {p},
+                         ((p @@ #) & /@ Tuples[Table[i, {i, 1, #}] & /@ GetParameterDimensions[p]])
+                        ]
+                     ];
+           {#, 0}& /@ (Flatten[generateIndices /@ parameters])
+          ];
+
+ReplaceIndicesFromMonomial[pars_List, monomial_] :=
+    Module[{i, par, indexedParCases, parsWithIndices},
+           parsWithIndices = Last[Reap[
+               For[i = 1, i <= Length[pars], i++,
+                   par = pars[[i]];
+                   indexedParCases = Cases[monomial, p_[__] /; p === par, {0, Infinity}];
+                   If[Parameters`GetParameterDimensions[par] =!= {1} &&
+                      indexedParCases =!= {},
+                      Sow[indexedParCases],
+                      Sow[par]
+                     ];
+                  ];
+               ]];
+  Flatten[parsWithIndices]
+  ];
+
+GetParametersIncludingIndices[monomial_] :=
+    Module[{pars},
+           pars = Parameters`FindAllParameters[monomial];
+           ReplaceIndicesFromMonomial[pars, monomial]
+          ];
 
 HaveEquivalentZeroSet[monomialOne_, monomialTwo_] :=
-    Sort[Parameters`FindAllParameters[monomialOne]] === Sort[Parameters`FindAllParameters[monomialTwo]];
+    Module[{monomialOnePars, monomialTwoPars},
+           monomialOnePars = GetParametersIncludingIndices[monomialOne];
+           monomialTwoPars = GetParametersIncludingIndices[monomialTwo];
+           Sort[monomialOnePars] === Sort[monomialTwoPars]
+          ];
 
 RemoveConjugates[expr_] := expr //. (Conjugate | SARAH`Conj | Susyno`LieGroups`conj)[p_] :> p;
 
 GetTrialInputsForSubset[monomials_List, defaultSettings_List] :=
     Module[{i, j, nEq, pars, equivalentRealTerms, realValues, complexValues, trialValues, evaluateSettings},
-           pars = DeleteDuplicates[Flatten[Parameters`FindAllParameters[monomials]]];
+           pars = DeleteDuplicates[Flatten[GetParametersIncludingIndices /@ monomials]];
            incr = 1 / Length[pars];
            equivalentRealTerms = Gather[monomials, RemoveConjugates[#1] === RemoveConjugates[#2]&];
            trialValues = Reap[
@@ -814,7 +851,8 @@ ConstructTrialDatasets[solutions_List, trialValues_List:{}] :=
 InitializeTrialInput[index_, basisValues_List, keys_List, struct_String:"trial_data"] :=
     Module[{result = ""},
            (result = result <> struct <> "[" <> ToString[index-1] <> "].boundary_values."
-                    <> CConversion`ToValidCSymbolString[#[[1]]]
+                    <> CConversion`ToValidCSymbolString[Parameters`StripIndices[#[[1]]]]
+                    <> Parameters`CreateIndices[#[[1]]]
                     <> " = " <> CConversion`RValueToCFormString[#[[2]]]
                     <> ";\n")& /@ basisValues;
            (result = result <> struct <> "[" <> ToString[index-1] <> "].basis_sets.push_back("
