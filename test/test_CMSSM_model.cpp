@@ -6,7 +6,6 @@
 #include "conversion.hpp"
 #include "fixed_point_iterator.hpp"
 #include "root_finder.hpp"
-#include "test.h"
 #include "wrappers.hpp"
 
 #include <cmath>
