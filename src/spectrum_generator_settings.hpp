@@ -63,6 +63,9 @@ public:
       eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
       calculate_bsm_masses,  ///< [23] calculate BSM pole masses
       threshold_corrections, ///< [24] individual threshold correction loop orders
+      higgs_3loop_ren_scheme_atb_as2,///< [25] Renormalization scheme for Higgs 3-loop corrections O(alpha_t alpha_s^2 + alpha_b alpha_s^2)
+      higgs_3loop_correction_at_as2, ///< [26] Higgs 3-loop correction O(alpha_t alpha_s^2)
+      higgs_3loop_correction_ab_as2, ///< [27] Higgs 3-loop correction O(alpha_b alpha_s^2)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

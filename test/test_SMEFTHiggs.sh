@@ -78,6 +78,9 @@ Block FlexibleSUSY
    22   0                    # EFT index of SM-like Higgs in the BSM model
    23   1                    # calculate BSM pole masses
    24   123111121            # individual threshold correction loop orders
+   25   1                    # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
+   26   1                    # Higgs 3-loop corrections O(alpha_t alpha_s^2)
+   27   1                    # Higgs 3-loop corrections O(alpha_b alpha_s^2)
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
