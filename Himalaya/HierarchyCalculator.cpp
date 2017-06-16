@@ -98,7 +98,7 @@ himalaya::HierarchyCalculator::HierarchyCalculator(const Parameters& p){
 void himalaya::HierarchyCalculator::init(){
    // fill flag list
    flagMap.clear();
-   for(int i = xx; i <= xxMgl; i++){
+   for(unsigned int i = xx; i <= xxMgl; i++){
       flagMap.insert(std::pair<unsigned int, unsigned int> (i, 1));
    }
    // beta
@@ -271,7 +271,7 @@ int himalaya::HierarchyCalculator::compareHierarchies(himalaya::HierarchyObject&
  * 	@throws runtime_error Throws a runtime_error if the tree-level is requested in terms of hierarchies.
  * 	@return The loop corrected Higgs mass matrix which contains the expanded corrections at the given order.
  */
-Eigen::Matrix2d himalaya::HierarchyCalculator::calculateHierarchy(himalaya::HierarchyObject& ho, const unsigned int oneLoopFlagIn, const unsigned int twoLoopFlagIn, const unsigned int threeLoopFlagIn) {
+Eigen::Matrix2d himalaya::HierarchyCalculator::calculateHierarchy(himalaya::HierarchyObject& ho, const int oneLoopFlagIn, const int twoLoopFlagIn, const int threeLoopFlagIn) {
    // get the hierarchy
    const int hierarchy = ho.getSuitableHierarchy();
 
@@ -618,6 +618,7 @@ bool himalaya::HierarchyCalculator::isHierarchySuitable(const himalaya::Hierarch
       case h9q2:
 	 return (Msq > Mst2) && ((Mst1 - Mst1) < (Mst1 - Mgl));
    }
+   return false;
 }
 
 /**
@@ -678,14 +679,11 @@ double himalaya::HierarchyCalculator::shiftMst1ToMDR(const himalaya::HierarchyOb
  */
 double himalaya::HierarchyCalculator::shiftMst2ToMDR(const himalaya::HierarchyObject& ho, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
    double Mst2mod;
-   double Mst1;
    double Mst2;
    if(!ho.getIsAlphab()){
-      Mst1 = p.MSt(0);
       Mst2 = p.MSt(1);
    }
    else{
-      Mst1 = p.MSb(0);
       Mst2 = p.MSb(1);
    }
    double Dmglst2 = Mgl - Mst2;
@@ -901,7 +899,6 @@ Eigen::Matrix2d himalaya::HierarchyCalculator::getShift(const himalaya::Hierarch
  * 	@return The loop corrected Higgs mass matrix at the order O(alpha_x*alpha_s).
  */
 Eigen::Matrix2d himalaya::HierarchyCalculator::getMt42L(const himalaya::HierarchyObject& ho, const unsigned int shiftOneLoop, const unsigned int shiftTwoLoop){
-   const int hierarchy = getCorrectHierarchy(ho.getSuitableHierarchy());
    Eigen::Matrix2d Mt42L;
    double S11, S12, S22;
    double Mt2;
