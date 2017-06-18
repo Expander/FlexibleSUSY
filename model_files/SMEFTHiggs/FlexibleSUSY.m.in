@@ -38,7 +38,7 @@ InitialGuessAtSUSYScale = {
     {Ye, Automatic}
 }
 
-SUSYScaleMatching = {
+MatchingScaleInput = {
     {v, VEV}
 };
 

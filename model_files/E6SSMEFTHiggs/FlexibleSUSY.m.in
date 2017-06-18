@@ -115,7 +115,7 @@ InitialGuessAtSUSYScale = {
     {T[Ye], AeInput Ye}
 };
 
-SUSYScaleMatching = {
+MatchingScaleInput = {
     {vu, VEV Sin[ArcTan[vu/vd]]},
     {vd, VEV Cos[ArcTan[vu/vd]]}
 };
