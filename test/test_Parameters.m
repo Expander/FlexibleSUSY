@@ -66,6 +66,7 @@ TestEquality[Parameters`IsComplexParameter[FlexibleSUSY`Phase[p]], True];
 Print["testing IsRealExpression[] ..."];
 
 TestEquality[Parameters`IsRealExpression[a], True];
+TestEquality[Parameters`IsRealExpression[a[1]], True];
 TestEquality[Parameters`IsRealExpression[x], False];
 
 TestEquality[Parameters`IsRealExpression[a^2], True];

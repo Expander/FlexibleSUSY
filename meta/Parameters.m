@@ -693,10 +693,18 @@ IsRealParameter[sym_] :=
     (IsExtraParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
     MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
+IsRealParameter[sym_[indices__?IsIndex]] := IsRealParameter[sym];
+
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
 
-IsRealExpression[parameter_ /; IsModelParameter[parameter]] :=
+IsRealExpression[parameter_?IsModelParameter] :=
+    IsRealParameter[parameter];
+
+IsRealExpression[parameter_?IsInputParameter] :=
+    IsRealParameter[parameter];
+
+IsRealExpression[parameter_?IsExtraParameter] :=
     IsRealParameter[parameter];
 
 IsRealExpression[expr_?NumericQ] :=
