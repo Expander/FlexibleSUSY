@@ -178,6 +178,10 @@ FlexibleSUSY 2.0.0 [not released yet]
  * Change (commit 9bfd5f1): tan(beta)-enhanced contributions to the
    down-lepton Yukawa couplings are now resummed.
 
+ * Change (commit 52faaa7): The symbol SUSYScaleMatching has been
+   renamed to MatchingScaleInput, to express that it is imposed at the
+   matching scale, which is in general not equal to the SUSYScale.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
