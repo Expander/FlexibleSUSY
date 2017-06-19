@@ -28,7 +28,7 @@ Block FlexibleSUSY
    24   123111121            # individual threshold correction loop orders
 Block SMINPUTS               # Standard Model inputs
     1   127.944	             # ALPHA_EM^-1(MZ)
-    2   1.1663787E-5         # GF
+    2   1.166378700e-05      # G_Fermi
     3   1.18500000E-01       # ALPHA_S(MZ)
     4   91.1876              # MZ
     5   4.18000000E+00       # MB(MB)

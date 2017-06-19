@@ -68,12 +68,12 @@ requires the knowledge of the running VEVs.  These VEVs are sometimes
 related to the SM-like VEV \f$v = \sqrt{v_u^2 + v_d^2}\f$.  For
 example in the MSSM the relation reads, \f{align*}{ v_u &= v \sin\beta
 , \\ v_d &= v \cos\beta . \f} Such a matching condition can be set
-using the `SUSYScaleMatching` variable, see @ref boundary_conditions .
+using the `MatchingScaleInput` variable, see @ref boundary_conditions .
 
 _Example:_ in the MSSM
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-SUSYScaleMatching = {
+MatchingScaleInput = {
     {vu, VEV Sin[ArcTan[TanBeta]]},
     {vd, VEV Cos[ArcTan[TanBeta]]}
 };
@@ -133,7 +133,7 @@ SUSYScaleInput = {
 
 InitialGuessAtSUSYScale = SUSYScaleInput;
 
-SUSYScaleMatching = {
+MatchingScaleInput = {
     {vu, VEV Sin[ArcTan[TanBeta]]},
     {vd, VEV Cos[ArcTan[TanBeta]]}
 };

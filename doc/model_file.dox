@@ -799,15 +799,15 @@ output parameters are chosen automatically as follows:
 
 _____________________________________________________________________
 
-__Symbol__: `SUSYScaleMatching`
+__Symbol__: `MatchingScaleInput`
 
 __Default value__: `{}`
 
 __Description__:
 
-\note `SUSYScaleMatching` is only used if `FlexibleEFTHiggs == True`
+\note `MatchingScaleInput` is only used if `FlexibleEFTHiggs == True`
 
-In the `SUSYScaleMatching` variable, relations between the parameters
+In the `MatchingScaleInput` variable, relations between the parameters
 of the full model and the Standard Model (the EFT) at the `SUSYScale`
 can be specified.
 
@@ -817,7 +817,7 @@ Model: In `FlexibleEFTHiggs` the running Yukawa couplings of the full
 model are determined from a pole mass matching of the Standard Model
 fermions (which need to be present in both models).  For this
 determination the running VEVs of the full model must be known and
-non-zero.  `SUSYScaleMatching` allows the user for example to fix the
+non-zero.  `MatchingScaleInput` allows the user for example to fix the
 running VEVs of the full model as a function of the running SM-like
 VEV \f$v\f$ in the full model.
 
@@ -830,10 +830,10 @@ v_d^2}\f$ as
 \f}
 
 To fix \f$v_u\f$ and \f$v_d\f$ in the MSSM in this way,
-`SUSYScaleMatching` can be used:
+`MatchingScaleInput` can be used:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-SUSYScaleMatching = {
+MatchingScaleInput = {
     {vu, VEV Sin[ArcTan[TanBeta]]},
     {vd, VEV Cos[ArcTan[TanBeta]]}
 };

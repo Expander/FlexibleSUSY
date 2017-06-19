@@ -69,7 +69,6 @@ LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Tp[Sqrt[2] electronDRbar / vd]},
-   {Yv, ZEROMATRIX[3,1]},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };

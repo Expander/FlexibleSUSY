@@ -113,7 +113,7 @@ InitialGuessAtSUSYScale = {};
 InitialGuessAtHighScale = {};
 OnlyLowEnergyFlexibleSUSY = False;
 FlexibleEFTHiggs = False;
-SUSYScaleMatching={};
+MatchingScaleInput={};
 AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
@@ -414,6 +414,11 @@ CheckModelFileSettings[] :=
              ];
            If[Head[FlexibleSUSY`SUSYScaleInput] =!= List,
               FlexibleSUSY`SUSYScaleInput = {};
+             ];
+           If[Head[FlexibleSUSY`SUSYScaleMatching] === List &&
+              Head[FlexibleSUSY`MatchingScaleInput] =!= List,
+              Print["Warning: SUSYScaleMatching is deprecated.  Please use MatchingScaleInput instead!"];
+              FlexibleSUSY`MatchingScaleInput = FlexibleSUSY`SUSYScaleMatching;
              ];
 
            If[Head[SARAH`MINPAR] =!= List,
@@ -2518,7 +2523,7 @@ EnsureEWSBConstraintApplied[] :=
                       FlexibleSUSY`FSSolveEWSBFor[___]],
                 AppendTo[FlexibleSUSY`SUSYScaleInput,
                          FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]];
-                ];
+               ];
              ,
              If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
                       FlexibleSUSY`FSSolveEWSBFor[___]],
@@ -2585,7 +2590,7 @@ FindFixedParameters[] :=
     If[FlexibleSUSY`FlexibleEFTHiggs === True,
        Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
             Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput],
-            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleMatching],
+            Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`MatchingScaleInput],
             {SARAH`hyperchargeCoupling, SARAH`leftCoupling, SARAH`strongCoupling,
              SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}]
        ,
@@ -3265,7 +3270,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[FlexibleSUSY`FlexibleEFTHiggs === True,
               Print["Creating matching class ..."];
-              WriteMatchingClass[FlexibleSUSY`SUSYScaleMatching, massMatrices,
+              WriteMatchingClass[FlexibleSUSY`MatchingScaleInput, massMatrices,
                                  {{FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.hpp.in"}],
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.hpp"}]},
                                   {FileNameJoin[{$flexiblesusyTemplateDir, "standard_model_matching.cpp.in"}],
