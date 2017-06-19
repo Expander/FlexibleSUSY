@@ -83,7 +83,7 @@ DebugPrint[msg___] :=
        Print["Debug<EWSB>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
-    FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
+    FreeQ[equation /. function[parameter] :> Unique[CConversion`ToValidCSymbolString[parameter]], parameter];
 
 AppearsOnlySquaredInEquation[parameter_, equation_] :=
     AppearsInEquationOnlyAs[parameter, equation, Power[#,2]&];
@@ -141,7 +141,7 @@ CreateEWSBEqPrototype[higgs_] :=
            ctype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
            For[i = 1, i <= TreeMasses`GetDimension[higgs], i++,
                result = result <> ctype <> " get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <>
+                        CConversion`ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const;\n";
               ];
            Return[result];
@@ -177,7 +177,7 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
            For[i = 1, i <= dim, i++,
                result = result <>
                         ctype <> " CLASSNAME::get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <>
+                        CConversion`ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const\n{\n";
                If[i <= dimEq,
                   eq = equation[[i]];,
@@ -218,7 +218,7 @@ FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <> "_" <>
+                        CConversion`ToValidCSymbolString[higgs] <> "_" <>
                         ToString[i] <> "();\n";
               ];
            Return[result];
