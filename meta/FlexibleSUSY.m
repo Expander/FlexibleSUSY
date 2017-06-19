@@ -3040,13 +3040,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            CheckExtraParametersUsage[Parameters`GetExtraParameters[],
                                      {FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput}];
 
-           (* replace all indices in the user-defined model file variables *)
-           EvaluateUserInput[];
-           ReplaceIndicesInUserInput[allIndexReplacementRules];
-           ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
-           ReplaceIndicesInUserInput[allExtraParameterIndexReplacementRules];
-
            (* replace LHInput[p] by pInput in the constraints *)
+           EvaluateUserInput[];
            RenameSLHAInputParametersInUserInput[lesHouchesInputParameters];
 
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
@@ -3074,6 +3069,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               (* add boundary values as additional extra parameters if necessary *)
               Parameters`AddExtraParameters[SemiAnalytic`GetExtraBoundaryParametersToSave[semiAnalyticSolns]];
              ];
+
+           (* replace all indices in the user-defined model file variables *)
+           ReplaceIndicesInUserInput[allIndexReplacementRules];
+           ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
+           ReplaceIndicesInUserInput[allExtraParameterIndexReplacementRules];
 
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];

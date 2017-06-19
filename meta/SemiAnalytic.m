@@ -490,6 +490,7 @@ GetSemiAnalyticSolutions[settings_List] :=
               scalarMasses = Complement[scalarMasses, softBilinears];
              ];
            scalarMassesBCs = GetBoundaryConditionsFor[scalarMasses, boundaryValSubs];
+
            scalarMassesSolns
                = GetScalarMassesSolutions[scalarMasses, scalarMassesBCs, dimOneSolns];
            result = Join[result, scalarMassesSolns];
@@ -509,7 +510,8 @@ GetSemiAnalyticSolutions[settings_List] :=
               result = Join[result, softLinearsSolns];
              ];
 
-           result
+           (* convert to C index convention in basis parameters *)
+           (SemiAnalyticSolution[GetName[#], Parameters`DecreaseIndexLiterals[GetBasis[#]]])& /@ result
           ];
 
 GetBoundaryValueParameterSymbol[parameter_?Parameters`IsInputParameter] := parameter;
@@ -737,7 +739,7 @@ GetDefaultSettings[parameters_List] :=
                       dims = Parameters`GetParameterDimensions[p];
                       If[dims === {1},
                          {p},
-                         ((p @@ #) & /@ Tuples[Table[i, {i, 1, #}] & /@ GetParameterDimensions[p]])
+                         ((p @@ #) & /@ Tuples[Table[i, {i, 0, #-1}] & /@ GetParameterDimensions[p]])
                         ]
                      ];
            {#, 0}& /@ (Flatten[generateIndices /@ parameters])
