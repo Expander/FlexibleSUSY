@@ -26,7 +26,7 @@ handle = FS@ModelName@OpenHandle[
         eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
         calculateBSMMasses -> 1,           (* FlexibleSUSY[23] *)
         thresholdCorrections -> 123111121, (* FlexibleSUSY[24] *)
-        higgs3loopCorrectionRenScheme -> 1,(* FlexibleSUSY[25] *)
+        higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
         higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
         higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
         parameterOutputScale -> 0          (* MODSEL[12] *)

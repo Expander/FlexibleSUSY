@@ -111,7 +111,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | eft_higgs_index                  | any integer >= 0             | 0 (= lightest)  |
  * | calculate_bsm_masses             | 0 (no) or 1 (yes)            | 1 (= yes)       |
  * | threshold_corrections            | positive integer             | 123111121       |
- * | higgs_3loop_ren_scheme_atb_as2   | 0 (DR-bar) or 1 (MDR-bar)    | 1 (= MDR-bar)   |
+ * | higgs_3loop_ren_scheme_atb_as2   | 0 (DR-bar) or 1 (MDR-bar)    | 0 (= MDR-bar)   |
  * | higgs_3loop_correction_at_as2    | 0, 1                         | 1 (= enabled)   |
  * | higgs_3loop_correction_ab_as2    | 0, 1                         | 1 (= enabled)   |
  */
@@ -143,7 +143,7 @@ void Spectrum_generator_settings::reset()
    values[eft_higgs_index]                  = 0;
    values[calculate_bsm_masses]             = 1.;
    values[threshold_corrections]            = Threshold_corrections().get();
-   values[higgs_3loop_ren_scheme_atb_as2]   = 1.;
+   values[higgs_3loop_ren_scheme_atb_as2]   = 0.;
    values[higgs_3loop_correction_at_as2]    = 1.;
    values[higgs_3loop_correction_ab_as2]    = 1.;
 }
