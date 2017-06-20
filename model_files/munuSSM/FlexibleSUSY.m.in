@@ -68,7 +68,7 @@ LowScaleFirstGuess = LowEnergyConstant[MZ];
 LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
-   {Ye, Tp[Sqrt[2] electronDRbar / vd]},
+   {Ye, Tp[Sqrt[2] downLeptonsDRbar / vd]},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
@@ -81,7 +81,7 @@ InitialGuessAtLowScale = {
    {\[Kappa], 0.1},
    {Yu, Automatic},
    {Yd, Automatic},
-   {Ye, Tp[Sqrt[2] electronDRbar / vd]}
+   {Ye, Tp[Sqrt[2] downLeptonsDRbar / vd]}
 };
 
 InitialGuessAtHighScale = {};
