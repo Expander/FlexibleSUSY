@@ -214,6 +214,10 @@ FSMaximumExpressionSize = 100;
 *)
 FSConvergenceCheck = Automatic;
 
+(* list of parameters used by the semi-analytic solver to
+   check for convergence of the inner two-scale iteration *)
+SemiAnalyticSolverInnerConvergenceCheck = Automatic;
+
 (* EWSB solvers *)
 GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
@@ -3439,7 +3443,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Put[SemiAnalytic`ExpandSemiAnalyticSolutions[semiAnalyticSolns], semiAnalyticSolnsOutputFile];
 
               Print["Creating classes for convergence testers ..."];
-              WriteConvergenceTesterClass[Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]],
+              If[FlexibleSUSY`SemiAnalyticSolverInnerConvergenceCheck === Automatic,
+                 FlexibleSUSY`SemiAnalyticSolverInnerConvergenceCheck = Complement[Parameters`GetModelParameters[], SemiAnalytic`GetSemiAnalyticParameters[]];
+                ];
+              WriteConvergenceTesterClass[FlexibleSUSY`SemiAnalyticSolverInnerConvergenceCheck,
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_convergence_tester.hpp.in"}],
                     FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_convergence_tester.hpp"}]},
                    {FileNameJoin[{$flexiblesusyTemplateDir, "semi_analytic_susy_convergence_tester.hpp.in"}],
