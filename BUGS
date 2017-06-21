@@ -25,8 +25,29 @@ via
 Tensor couplings
 ----------------
 
-FlexibleSUSY cannot yet deal with tensor couplings (couplings with 3
-or more indices) in the Lagrangian/Superpotential.  In order to make
-such models work in FlexibleSUSY, please split the tensor coupling
-terms in the Lagrangian/Superpotential into a sum of terms with a
-matrix coupling structure.
+FlexibleSUSY cannot yet deal with tensor couplings (matrix-like
+couplings with rank 3, i.e. with 3 or more indices) in the
+Lagrangian/Superpotential.  In order to make such models work in
+FlexibleSUSY, please split the tensor coupling terms in the
+Lagrangian/Superpotential into a sum of terms with a matrix-like
+coupling structure of rank 2 or less.
+
+
+4th generation
+--------------
+
+FlexibleSUSY cannot yet include all effects from fermions, which mix
+with the Standard Model fermions, in the extraction of the running
+Yukawa couplings.  In such models, the Yukawa couplings have to be
+fixed by hand in one boundary condition.  FlexibleSUSY provides the
+symbols
+
+ * upQuarksDRbar = (m_u, m_s, m_t)
+ * downQuarksDRbar = (m_d, m_c,m_b)
+ * downLeptonsDRbar = (m_e, m_\mu, m_\tau)
+
+to access the running Standard Model fermion masses in such models.
+See the munuSSM model file for an example, where the charginos mix
+with the Standard Model fermions.  In this model the down-type lepton
+Yukawa matrix is fixed in an approximated form at the low-energy scale
+given the running SM charged lepton masses.
