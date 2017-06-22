@@ -104,8 +104,8 @@ public:
    void calculate_spectrum();
    void clear_problems();
    std::string name() const;
-   void run_to(double scale, double eps = -1.0);
-   void print(std::ostream& out = std::cout) const;
+   void run_to(double scale, double eps = -1.0) override;
+   void print(std::ostream& out = std::cout) const override;
    void set_precision(double);
    double get_precision() const;
 
