@@ -48,6 +48,7 @@ model_files/MRSSM2              export-ignore
 model_files/MSSMNoEWVEVs        export-ignore
 model_files/MSSMNoFVSLHA2       export-ignore
 model_files/minMSSM             export-ignore
+model_files/munuSSMSemiAnalytic export-ignore
 model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
