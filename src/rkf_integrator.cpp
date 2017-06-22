@@ -31,7 +31,8 @@
 
 #include <boost/numeric/odeint/algebra/algebra_dispatcher.hpp>
 #include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
-#include <boost/numeric/odeint/external/eigen/eigen.hpp>
+#include <boost/numeric/odeint/external/eigen/eigen_algebra_dispatcher.hpp>
+#include <boost/numeric/odeint/external/eigen/eigen_resize.hpp>
 #include <boost/numeric/odeint/integrate/integrate_adaptive.hpp>
 #include <boost/numeric/odeint/stepper/generation.hpp>
 #include <boost/numeric/odeint/stepper/runge_kutta_fehlberg78.hpp>
@@ -40,10 +41,10 @@ namespace boost {
 namespace numeric {
 namespace odeint {
 
-template<>
-struct vector_space_norm_inf<Eigen::ArrayXd> {
-   using result_type = double;
-   double operator()(const Eigen::ArrayXd& x) const
+template <typename Scalar, int R, int C, int O, int MR, int MC>
+struct vector_space_norm_inf<Eigen::Array<Scalar,R,C,O,MR,MC> > {
+   using result_type = typename Eigen::NumTraits<Scalar>::Real;
+   result_type operator()(const Eigen::Array<Scalar,R,C,O,MR,MC>& x) const
       {
          return x.cwiseAbs().maxCoeff();
       }
