@@ -213,6 +213,12 @@ TEST_SRC += \
 		$(DIR)/test_lowNUHMSSMSemiAnalytic_semi_analytic_solutions.cpp
 endif
 
+ifeq ($(WITH_munuSSMSemiAnalytic), yes)
+TEST_SRC += \
+		$(DIR)/test_munuSSMSemiAnalytic_ewsb.cpp \
+		$(DIR)/test_munuSSMSemiAnalytic_semi_analytic_solutions.cpp
+endif
+
 ifeq ($(WITH_SMSemiAnalytic), yes)
 TEST_SRC += \
 		$(DIR)/test_SMSemiAnalytic_ewsb.cpp \
@@ -268,6 +274,11 @@ TEST_SH += \
 
 TEST_SRC += \
 		$(DIR)/test_lowNUHMSSMSemiAnalytic_consistent_solutions.cpp
+endif
+
+ifeq ($(WITH_munuSSM) $(WITH_munuSSMSemiAnalytic), yes yes)
+TEST_SH += \
+		$(DIR)/test_munuSSMSemiAnalytic_spectrum.sh
 endif
 
 ifeq ($(WITH_SM) $(WITH_SMSemiAnalytic), yes yes)
@@ -942,6 +953,10 @@ $(DIR)/test_lowNUHMSSMSemiAnalytic_ewsb.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBFLE
 $(DIR)/test_lowNUHMSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_lowNUHMSSMSemiAnalytic_consistent_solutions.x: $(LIBlowNUHMSSMSemiAnalytic) $(LIBlowNUHMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_munuSSMSemiAnalytic_ewsb.x: $(LIBmunuSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_munuSSMSemiAnalytic_semi_analytic_solutions.x: $(LIBmunuSSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SMSemiAnalytic_ewsb.x: $(LIBSMSemiAnalytic) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
