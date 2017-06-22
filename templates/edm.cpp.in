@@ -337,11 +337,6 @@ struct EvaluationContext {
  */
 template<class ...Args> struct DiagramEvaluator;
 
-double OneLoopFunctionF1C(double);
-double OneLoopFunctionF2C(double);
-double OneLoopFunctionF1N(double);
-double OneLoopFunctionF2N(double);
-
 @EDM_Diagrams@
 
 /**
