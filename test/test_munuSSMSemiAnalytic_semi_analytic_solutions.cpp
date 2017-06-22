@@ -36,17 +36,17 @@ BOOST_AUTO_TEST_CASE( test_munuSSMSemiAnalytic_coefficients )
    BOOST_CHECK_CLOSE_FRACTION(model.get_MassWB(), coeffs_model.get_MassWB(), 1.0e-3);
    BOOST_CHECK_CLOSE_FRACTION(model.get_MassG(), coeffs_model.get_MassG(), 1.0e-3);
 
-   BOOST_CHECK_CLOSE_FRACTION(model.get_TLambdax(), coeffs_model.get_TLambdax(), 1.0e-3);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_TLambdax(), coeffs_model.get_TLambdax(), 2.0e-3);
    BOOST_CHECK_CLOSE_FRACTION(model.get_TKappa(), coeffs_model.get_TKappa(), 1.0e-3);
 
    BOOST_CHECK_CLOSE_FRACTION(model.get_mHd2(), coeffs_model.get_mHd2(), 1.0e-3);
-   BOOST_CHECK_CLOSE_FRACTION(model.get_mHu2(), coeffs_model.get_mHu2(), 1.0e-3);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_mHu2(), coeffs_model.get_mHu2(), 5.0e-3);
    BOOST_CHECK_CLOSE_FRACTION(model.get_mv2(), coeffs_model.get_mv2(), 1.0e-3);
 
    TEST_CLOSE_REL(model.get_TYu(), coeffs_model.get_TYu(), 1.0e-3);
    TEST_CLOSE_REL(model.get_TYd(), coeffs_model.get_TYd(), 1.0e-3);
    TEST_CLOSE_REL(model.get_TYe(), coeffs_model.get_TYe(), 1.0e-3);
-   TEST_CLOSE_REL(model.get_TYv(), coeffs_model.get_TYv(), 1.0e-3);
+   TEST_CLOSE_REL(model.get_TYv(), coeffs_model.get_TYv(), 2.0e-3);
 
    TEST_CLOSE_REL(model.get_mq2(), coeffs_model.get_mq2(), 1.0e-2);
    TEST_CLOSE_REL(model.get_mu2(), coeffs_model.get_mu2(), 1.0e-2);
