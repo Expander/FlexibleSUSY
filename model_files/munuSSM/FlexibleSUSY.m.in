@@ -15,7 +15,6 @@ MINPAR = {
 EXTPAR = {
     {61, LambdaInput},
     {62, KappaInput},
-    {63, ALambdaInput},
     {65, vRInput},
     {200, vL1Input},
     {201, vL2Input},
