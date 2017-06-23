@@ -35,8 +35,13 @@ namespace flexiblesusy {
 namespace @ModelName@_standard_model_matching {
 
 #define MODELPARAMETER(p) model.get_##p()
+#define EXTRAPARAMETER(parameter) model.get_##parameter()
 #define SMPARAMETER(p) sm.get_##p()
 #define INPUTPARAMETER(p) model.get_input().p
+#define PHASE(p) model.get_##p()
+#define LowEnergyConstant(p) Electroweak_constants::p
+#define Pole(p) model.get_physical().p
+#define SCALE model.get_scale()
 
 namespace {
 
