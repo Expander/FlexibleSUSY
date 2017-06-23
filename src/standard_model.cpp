@@ -149,7 +149,6 @@ const int Standard_model::numberOfParameters;
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
 
 Standard_model::Standard_model()
-   : Beta_function()
 {
    set_number_of_parameters(numberOfParameters);
 }

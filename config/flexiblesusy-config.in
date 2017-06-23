@@ -35,6 +35,7 @@ module_make_lib_cmd="@MODULE_MAKE_LIB_CMD@"
 module_lib_ext="@MODULE_LIBEXT@"
 optional_modules="@OPTIONAL_MODULES@"
 shared_lib_cmd="@SHARED_LIB_CMD@"
+solvers="@SOLVERS@"
 sqliteflags="@SQLITEFLAGS@"
 sqlitelibs="@SQLITELIBS@"
 static_lib_cmd="@STATIC_LIB_CMD@"
@@ -202,6 +203,7 @@ while test $# -gt 0; do
         --module-make-lib-cmd)   out="$out $module_make_lib_cmd" ;;
         --module-lib-ext)        out="$out $module_lib_ext" ;;
         --shared-lib-cmd)        out="$out $shared_lib_cmd" ;;
+        --solvers)               out="$out $solvers" ;;
         --sqliteflags)           out="$out $sqliteflags" ;;
         --sqlitelibs)            out="$out $sqlitelibs" ;;
         --static-lib-cmd)        out="$out $static_lib_cmd" ;;

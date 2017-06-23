@@ -45,7 +45,7 @@ MODULES            += @OPTIONAL_MODULES@
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
-ALGORITHMS         := @ALGORITHMS@
+SOLVERS            := @SOLVERS@
 
 # Variables for compilation
 CXX                := @CXX@
@@ -235,7 +235,7 @@ showbuild:
 	@echo "MATH               = $(MATH)"
 	@echo "MODELS             = $(MODELS)"
 	@echo "ADDONS             = $(ADDONS)"
-	@echo "ALGORITHMS         = $(ALGORITHMS)"
+	@echo "SOLVERS            = $(SOLVERS)"
 	@echo ""
 	@echo "CXX                = $(CXX)"
 	@echo "CPPFLAGS           = $(CPPFLAGS)"

@@ -40,7 +40,7 @@ MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
    const CMSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
    const CMSSM_high_scale_constraint<Two_scale>& high_constraint_
 )
-   : Initial_guesser<Two_scale>()
+   : Initial_guesser()
    , model(model_)
    , qedqcd(qedqcd_)
    , mu_guess(0.)

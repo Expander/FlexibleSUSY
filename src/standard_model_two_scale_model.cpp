@@ -37,7 +37,7 @@ using namespace standard_model_info;
 
 
 StandardModel<Two_scale>::StandardModel()
-   : Two_scale_model()
+   : Model()
    , Standard_model()
 {
 }

@@ -25,18 +25,51 @@ IMEXTPAR = {
     {23, ImMuInput}
 };
 
-FSExtraInputParameters = {
-    {mq2Input, MSQ2IN, {3,3}},
-    {mu2Input, MSU2IN, {3,3}},
-    {md2Input, MSD2IN, {3,3}},
-    {ml2Input, MSL2IN, {3,3}},
-    {me2Input, MSE2IN, {3,3}},
-    {ReAuInput, AUIN, {3,3}},
-    {ReAdInput, ADIN, {3,3}},
-    {ReAeInput, AEIN, {3,3}},
-    {ImAuInput, IMAUIN, {3,3}},
-    {ImAdInput, IMADIN, {3,3}},
-    {ImAeInput, IMAEIN, {3,3}}
+FSAuxiliaryParameterInfo = {
+    {mq2Input,  { LesHouches -> MSQ2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {mu2Input,  { LesHouches -> MSU2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {md2Input,  { LesHouches -> MSD2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ml2Input,  { LesHouches -> MSL2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {me2Input,  { LesHouches -> MSE2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAuInput, { LesHouches -> AUIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAdInput, { LesHouches -> ADIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAeInput, { LesHouches -> AEIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAuInput, { LesHouches -> IMAUIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAdInput, { LesHouches -> IMADIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAeInput, { LesHouches -> IMAEIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } }
 };
 
 RealParameters = {};

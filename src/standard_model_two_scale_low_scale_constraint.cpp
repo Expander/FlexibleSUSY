@@ -36,7 +36,7 @@ namespace standard_model {
 
 Standard_model_low_scale_constraint<Two_scale>::Standard_model_low_scale_constraint(
    StandardModel<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , model(model_)
    , qedqcd(qedqcd_)
 {
@@ -110,7 +110,7 @@ double Standard_model_low_scale_constraint<Two_scale>::get_scale() const
    return scale;
 }
 
-void Standard_model_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
+void Standard_model_low_scale_constraint<Two_scale>::set_model(Model* model_)
 {
    model = cast_model<StandardModel<Two_scale>*>(model_);
 }

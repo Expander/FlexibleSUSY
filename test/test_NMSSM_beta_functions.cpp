@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.h"
+#include "test_legacy.hpp"
 #include "test_NMSSM.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"

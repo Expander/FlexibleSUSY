@@ -19,15 +19,39 @@ EXTPAR = {
     {100, LambdaLoopOrder}
 };
 
-FSExtraInputParameters = {
-    {AeInput, AeIN, {3,3}},
-    {AdInput, AdIN, {3,3}},
-    {AuInput, AuIN, {3,3}},
-    {mslInput, MSLIN, {3}},
-    {mseInput, MSEIN, {3}},
-    {msqInput, MSQIN, {3}},
-    {msdInput, MSDIN, {3}},
-    {msuInput, MSUIN, {3}}
+FSAuxiliaryParameterInfo = {
+    {AeInput, { LesHouches -> AeIN,
+                ParameterDimensions -> {3,3},
+                InputParameter -> True
+              } },
+    {AdInput, { LesHouches -> AdIN,
+                ParameterDimensions -> {3,3},
+                InputParameter -> True
+              } },
+    {AuInput, { LesHouches -> AuIN,
+                ParameterDimensions -> {3,3},
+                InputParameter -> True
+              } },
+    {mslInput, { LesHouches -> MSLIN,
+                 ParameterDimensions -> {3},
+                 InputParameter -> True
+               } },
+    {mseInput, { LesHouches -> MSEIN,
+                 ParameterDimensions -> {3},
+                 InputParameter -> True
+               } },
+    {msqInput, { LesHouches -> MSQIN,
+                 ParameterDimensions -> {3},
+                 InputParameter -> True
+               } },
+    {msdInput, { LesHouches -> MSDIN,
+                 ParameterDimensions -> {3},
+                 InputParameter -> True
+               } },
+    {msuInput, { LesHouches -> MSUIN,
+                 ParameterDimensions -> {3},
+                 InputParameter -> True
+               } }
 };
 
 EWSBOutputParameters = { M112, M222 };

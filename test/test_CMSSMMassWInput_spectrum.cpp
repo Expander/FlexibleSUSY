@@ -19,6 +19,7 @@
 #include "two_scale_running_precision.hpp"
 #include "CMSSMMassWInput_two_scale_model.hpp"
 #include "CMSSMMassWInput_input_parameters.hpp"
+#include "CMSSMMassWInput_two_scale_ewsb_solver.hpp"
 #include "CMSSMMassWInput_two_scale_high_scale_constraint.hpp"
 #include "CMSSMMassWInput_two_scale_susy_scale_constraint.hpp"
 #include "CMSSMMassWInput_two_scale_low_scale_constraint.hpp"
@@ -551,6 +552,10 @@ public:
       setup_default_constaints(pp, qedqcd);
 
       const double precision_goal = softsusy::TOLERANCE;
+
+      CMSSMMassWInput_ewsb_solver<Two_scale> ewsb_solver;
+      mssm.set_ewsb_solver(
+         std::make_shared<CMSSMMassWInput_ewsb_solver<Two_scale> >(ewsb_solver));
 
       mssm.clear();
       mssm.set_loops(2);

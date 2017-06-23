@@ -21,7 +21,7 @@ Print["testing GuessExtraParameterType[] ..."];
 extraPars = {t, u, FlexibleSUSY`Phase[v]};
 
 TestEquality[Parameters`GuessExtraParameterType[t],
-             CConversion`ScalarType[CConversion`complexScalarCType]];
+             CConversion`ScalarType[CConversion`realScalarCType]];
 TestEquality[Parameters`GuessExtraParameterType[FlexibleSUSY`Phase[v]],
              CConversion`ScalarType[CConversion`complexScalarCType]];
 
@@ -52,7 +52,7 @@ TestEquality[Parameters`IsRealParameter[Sign[o]], True];
 TestEquality[Parameters`IsRealParameter[FlexibleSUSY`Phase[p]], False];
 TestEquality[Parameters`IsRealParameter[q], True];
 TestEquality[Parameters`IsRealParameter[t], True];
-TestEquality[Parameters`IsRealParameter[u], False];
+TestEquality[Parameters`IsRealParameter[u], True];
 TestEquality[Parameters`IsRealParameter[FlexibleSUSY`Phase[v]], False];
 TestEquality[Parameters`IsRealParameter[w], True];
 
@@ -66,6 +66,7 @@ TestEquality[Parameters`IsComplexParameter[FlexibleSUSY`Phase[p]], True];
 Print["testing IsRealExpression[] ..."];
 
 TestEquality[Parameters`IsRealExpression[a], True];
+TestEquality[Parameters`IsRealExpression[a[1]], True];
 TestEquality[Parameters`IsRealExpression[x], False];
 
 TestEquality[Parameters`IsRealExpression[a^2], True];
@@ -140,6 +141,23 @@ expr = 2 * Mu SARAH`B[Mu] + WOp SARAH`Q[WOp] + a;
 TestEquality[Sort[Parameters`FindAllParameters[expr]],
              Sort[modelParameters]
             ];
+
+expr = 2 * Mu Re[SARAH`B[Mu]] + Im[WOp] SARAH`Q[WOp] + a;
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[modelParameters]
+            ];
+
+expr = 2 * SARAH`B[Mu] + SARAH`Q[WOp];
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[{SARAH`B[Mu], SARAH`Q[WOp]}]
+            ];
+
+expr = Which[WOp > 1, Sqrt[B[Mu]]];
+
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
+             Sort[{B[Mu], WOp}]];
 
 Print["testing GetType[] ..."];
 

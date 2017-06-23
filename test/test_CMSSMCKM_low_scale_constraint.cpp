@@ -15,7 +15,7 @@
 #include "ew_input.hpp"
 #include "ckm.hpp"
 #include "conversion.hpp"
-#include "test.h"
+#include "test_legacy.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;

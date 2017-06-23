@@ -19,6 +19,7 @@ meta/SM/HSSUSY_corrections.m    export-ignore
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore
+model_files/CMSSMCPVSemiAnalytic export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
 model_files/CMSSMFPITadpole     export-ignore
@@ -33,17 +34,21 @@ model_files/CMSSMMediumPrecision export-ignore
 model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
+model_files/CMSSMSemiAnalytic   export-ignore
 model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/LRLR                export-ignore
+model_files/lowNUHMSSM          export-ignore
+model_files/lowNUHMSSMSemiAnalytic export-ignore
 model_files/MDM                 export-ignore
 model_files/MRSSM2              export-ignore
 model_files/MSSMNoEWVEVs        export-ignore
 model_files/MSSMNoFVSLHA2       export-ignore
 model_files/minMSSM             export-ignore
+model_files/munuSSMSemiAnalytic export-ignore
 model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
@@ -56,8 +61,11 @@ model_files/SMHighScale         export-ignore
 model_files/SMHighPrecision     export-ignore
 model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
+model_files/SMSemiAnalytic      export-ignore
+model_files/SSMSemiAnalytic     export-ignore
 model_files/TensorCoupling      export-ignore
 model_files/THDMIIMSSMBCApprox  export-ignore
+model_files/THDMIIEWSBAtMZSemiAnalytic export-ignore
 model_files/HGTHDMIIMSSMBCApprox export-ignore
 model_files/SMtower             export-ignore
 

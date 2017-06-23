@@ -45,7 +45,7 @@ MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::MSSMD5O_MSSMRHN_initial_guesser(
    const MSSMD5O_MSSMRHN_matching_up<Two_scale>& matching_up_,
    const MSSMD5O_MSSMRHN_matching_down<Two_scale>& matching_down_
 )
-   : Initial_guesser<Two_scale>()
+   : Initial_guesser()
    , model_1(model_1_), model_2(model_2_)
    , input_pars(input_pars_)
    , qedqcd(qedqcd_)

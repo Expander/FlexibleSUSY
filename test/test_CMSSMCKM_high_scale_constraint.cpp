@@ -3,7 +3,7 @@
 #define BOOST_TEST_MODULE test_CMSSMCKM_high_scale_constraint
 
 #include <boost/test/unit_test.hpp>
-#include "test.h"
+#include "test_legacy.hpp"
 #include <functional>
 #include <Eigen/Dense>
 

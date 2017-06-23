@@ -227,7 +227,8 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    stopwatch.stop();
    const double time_1 = stopwatch.get_time_in_seconds();
    BOOST_REQUIRE(error == 0);
-   BOOST_MESSAGE("calculation with Weinberg_angle       took " << time_1 << " seconds" << '\n');
+   BOOST_TEST_MESSAGE("calculation with Weinberg_angle took "
+                      << time_1 << " seconds" << '\n');
 
    stopwatch.start();
    CMSSM_weinberg_angle::Sm_parameters sm_parameters;
@@ -242,7 +243,8 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start));
    stopwatch.stop();
    const double time_2 = stopwatch.get_time_in_seconds();
-   BOOST_MESSAGE("calculation with CMSSM_weinberg_angle took " << time_2 << " seconds");
+   BOOST_TEST_MESSAGE("calculation with CMSSM_weinberg_angle took "
+                      << time_2 << " seconds");
 
    BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 4.0e-8);
 }

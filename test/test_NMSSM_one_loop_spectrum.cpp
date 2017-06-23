@@ -8,6 +8,7 @@
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "nmssmsoftsusy.h"
+#include "NMSSM_two_scale_ewsb_solver.hpp"
 #include "NMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -92,6 +93,10 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    NMSSM<Two_scale> m;
    NmssmSoftsusy s;
    setup_NMSSM_const(m, s, input);
+
+   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(
+      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    ensure_tree_level_ewsb(m, s, input);
 

@@ -21,24 +21,75 @@ EXTPAR = {
     {76, BMuPrInput}
 };
 
-FSExtraInputParameters = {
-    {mq2Input      , MSQ2IN     , {3,3}},
-    {mu2Input      , MSU2IN     , {3,3}},
-    {md2Input      , MSD2IN     , {3,3}},
-    {ml2Input      , MSL2IN     , {3,3}},
-    {me2Input      , MSE2IN     , {3,3}},
-    {AuInput       , AUIN       , {3,3}},
-    {AdInput       , ADIN       , {3,3}},
-    {AeInput       , AEIN       , {3,3}},
-    {Lambda12Input , LAMBDA12IN , {2,2}},
-    {ALambda12Input, ALAMBDA12IN, {2,2}},
-    {KappaInput    , KAPPAIN    , {3,3}},
-    {AKappaInput   , AKAPPAIN   , {3,3}},
-    {mDx2Input     , MDX2IN     , {3,3}},
-    {mDxbar2Input  , MDXBAR2IN  , {3,3}},
-    {mH1I2Input    , MH1I2IN    , {2,2}},
-    {mH2I2Input    , MH2I2IN    , {2,2}},
-    {msI2Input     , MSI2IN     , {2,2}}
+FSAuxiliaryParameterInfo = {
+    {AeInput,        { LesHouches -> AEIN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {AdInput,        { LesHouches -> ADIN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {AuInput,        { LesHouches -> AUIN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {ml2Input,       { LesHouches -> MSL2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {me2Input,       { LesHouches -> MSE2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {mq2Input,       { LesHouches -> MSQ2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {md2Input,       { LesHouches -> MSD2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {mu2Input,       { LesHouches -> MSU2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {Lambda12Input,  { LesHouches -> LAMBDA12IN,
+                       ParameterDimensions -> {2,2},
+                       InputParameter -> True
+                     } },
+    {ALambda12Input, { LesHouches -> ALAMBDA12IN,
+                       ParameterDimensions -> {2,2},
+                       InputParameter -> True
+                     } },
+    {KappaInput,     { LesHouches -> KAPPAIN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {AKappaInput,    { LesHouches -> AKAPPAIN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {mDx2Input,      { LesHouches -> MDX2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {mDxbar2Input,   { LesHouches -> MDXBAR2IN,
+                       ParameterDimensions -> {3,3},
+                       InputParameter -> True
+                     } },
+    {mH1I2Input,     { LesHouches -> MH1I2IN,
+                       ParameterDimensions -> {2,2},
+                       InputParameter -> True
+                     } },
+    {mH2I2Input,     { LesHouches -> MH2I2IN,
+                       ParameterDimensions -> {2,2},
+                       InputParameter -> True
+                     } },
+    {msI2Input,      { LesHouches -> MSI2IN,
+                       ParameterDimensions -> {2,2},
+                       InputParameter -> True
+                     } }
 };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };

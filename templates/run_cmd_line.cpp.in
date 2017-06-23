@@ -42,7 +42,8 @@ void print_usage()
       "Usage: run_cmd_line_@ModelName@.x [options]\n"
       "Options:\n"
 @printCommandLineOptions@
-      "  --solver-type=<value>             select solver type\n"
+      "  --solver-type=<value>             an integer corresponding\n"
+      "                                    to the solver type to use\n"
       "  --help,-h                         print this help message"
              << std::endl;
 }
@@ -110,13 +111,16 @@ int run_solver(const @ModelName@_input_parameters& input)
 
 int run(int solver_type, const @ModelName@_input_parameters& input)
 {
-   int exit_code;
+   int exit_code = 0;
 
    switch (solver_type) {
+   case 0:
 @runEnabledCmdLineSolvers@
    default:
-      ERROR("unknown solver type: " << solver_type);
-      exit_code = -1;
+      if (solver_type != 0) {
+         ERROR("unknown solver type: " << solver_type);
+         exit_code = -1;
+      }
       break;
    }
 
@@ -131,7 +135,7 @@ int main(int argc, char* argv[])
    using namespace flexiblesusy;
 
    @ModelName@_input_parameters input;
-   int solver_type = @defaultSolverType@;
+   int solver_type = 0;
    set_command_line_parameters(make_dynamic_array_view(&argv[0], argc), input,
                                solver_type);
 

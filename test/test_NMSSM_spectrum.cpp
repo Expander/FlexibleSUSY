@@ -14,6 +14,7 @@
 #include "conversion.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
+#include "NMSSM_two_scale_ewsb_solver.hpp"
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_input_parameters.hpp"
 #include "NMSSM_two_scale_high_scale_constraint.hpp"
@@ -135,6 +136,10 @@ public:
    }
    void test(const NMSSM_input_parameters& pp, const QedQcd& qedqcd = QedQcd()) {
       setup_default_constaints(pp, qedqcd);
+
+      NMSSM_ewsb_solver<Two_scale> ewsb_solver;
+      mssm.set_ewsb_solver(
+         std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
       mssm.clear();
       mssm.set_loops(2);

@@ -26,7 +26,7 @@ namespace {
 const std::array<std::string, Spectrum_generator_settings::NUMBER_OF_OPTIONS> descriptions = {
    "precision goal",
    "max. iterations (0 = automatic)",
-   "solver (0 = two_scale)",
+   "solver (0 = all)",
    "calculate SM pole masses",
    "pole mass loop order",
    "EWSB loop order",
@@ -81,39 +81,39 @@ void Spectrum_generator_settings::set(Settings o, double value)
 /**
  * Resets all spectrum generator settings to their defaults.
  *
- * | enum                             | possible values              | default value   |
- * |----------------------------------|------------------------------|-----------------|
- * | precision                        | any positive double          | 1.0e-4          |
- * | max_iterations                   | any positive double          | 0 (= automatic) |
- * | solver                           | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
- * | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
- * | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
- * | beta_loop_order                  | 0, 1, 2, 3                   | 2 (= 2-loop)    |
- * | threshold_corrections_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
- * | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
- * | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
- * | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
- * | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
- * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | top_pole_qcd_corrections         | 0 (1L), 1 (2L), 2 (3L)       | 1 (= 2L QCD)    |
- * | beta_zero_threshold              | any positive double          | 1.0e-11         |
- * | calculate_observables            | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | force_positive_masses            | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | pole_mass_scale                  | any positive double          | 0 (= SUSY scale)|
- * | eft_pole_mass_scale              | any positive double          | 0 (= minimum of {Mt, SUSY scale})|
- * | eft_matching_scale               | any positive double          | 0 (= SUSY scale)|
- * | eft_matching_loop_order_up       | 0, 1, 2                      | 2 (= 2-loop)    |
- * | eft_matching_loop_order_down     | 0, 1                         | 1 (= 1-loop)    |
- * | eft_higgs_index                  | any integer >= 0             | 0 (= lightest)  |
- * | calculate_bsm_masses             | 0 (no) or 1 (yes)            | 1 (= yes)       |
+ * | enum                             | possible values                                 | default value   |
+ * |----------------------------------|-------------------------------------------------|-----------------|
+ * | precision                        | any positive double                             | 1.0e-4          |
+ * | max_iterations                   | any positive double                             | 0 (= automatic) |
+ * | solver                           | 0 (all), 1 (two-scale) or 2 (semi-analytic)     | 0 (= all)       |
+ * | calculate_sm_masses              | 0 (no) or 1 (yes)                               | 0 (= no)        |
+ * | pole_mass_loop_order             | 0, 1, 2                                         | 2 (= 2-loop)    |
+ * | ewsb_loop_order                  | 0, 1, 2                                         | 2 (= 2-loop)    |
+ * | beta_loop_order                  | 0, 1, 2, 3                                      | 2 (= 2-loop)    |
+ * | threshold_corrections_loop_order | 0, 1, 2                                         | 2 (= 2-loop)    |
+ * | higgs_2loop_correction_at_as     | 0, 1                                            | 1 (= enabled)   |
+ * | higgs_2loop_correction_ab_as     | 0, 1                                            | 1 (= enabled)   |
+ * | higgs_2loop_correction_at_at     | 0, 1                                            | 1 (= enabled)   |
+ * | higgs_2loop_correction_atau_atau | 0, 1                                            | 1 (= enabled)   |
+ * | force_output                     | 0 (no) or 1 (yes)                               | 0 (= no)        |
+ * | top_pole_qcd_corrections         | 0 (1L), 1 (2L), 2 (3L)                          | 1 (= 2L QCD)    |
+ * | beta_zero_threshold              | any positive double                             | 1.0e-11         |
+ * | calculate_observables            | 0 (no) or 1 (yes)                               | 0 (= no)        |
+ * | force_positive_masses            | 0 (no) or 1 (yes)                               | 0 (= no)        |
+ * | pole_mass_scale                  | any positive double                             | 0 (= SUSY scale)|
+ * | eft_pole_mass_scale              | any positive double                             | 0 (= minimum of {Mt, SUSY scale})|
+ * | eft_matching_scale               | any positive double                             | 0 (= SUSY scale)|
+ * | eft_matching_loop_order_up       | 0, 1, 2                                         | 2 (= 2-loop)    |
+ * | eft_matching_loop_order_down     | 0, 1                                            | 1 (= 1-loop)    |
+ * | eft_higgs_index                  | any integer >= 0                                | 0 (= lightest)  |
+ * | calculate_bsm_masses             | 0 (no) or 1 (yes)                               | 1 (= yes)       |
  * | threshold_corrections            | positive integer             | 123111121       |
  */
 void Spectrum_generator_settings::reset()
 {
    values[precision]             = 1.0e-4;
    values[max_iterations]        = 0.; // 0 = automatic
-   values[solver]                = 0.; // 0 = two-scale
+   values[solver]                = 0.; // 0 = all
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[pole_mass_loop_order]  = 2.;
    values[ewsb_loop_order]       = 2.;

@@ -5,11 +5,12 @@
 
 #include "CMSSM_mass_eigenstates.hpp"
 #include "CMSSM_input_parameters.hpp"
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_utilities.hpp"
 #include "ew_input.hpp"
 #include "CMSSM_observables.hpp"
 #include "physical_input.hpp"
-#include "test.h"
+#include "test.hpp"
 #include "lowe.h"
 
 using namespace flexiblesusy;
@@ -200,6 +201,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
    pp.Azero = 0.1;
 
    CMSSM_mass_eigenstates model(pp);
+   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
    setup_CMSSM(model, pp);
 
    const std::string db_file("test/test_CMSSM_database.db");

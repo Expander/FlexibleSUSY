@@ -77,6 +77,7 @@ META_SRC     := \
 		$(DIR)/ReadSLHA.m \
 		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
+		$(DIR)/SemiAnalytic.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThreeLoopMSSM.m \

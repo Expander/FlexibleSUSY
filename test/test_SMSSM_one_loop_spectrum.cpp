@@ -8,6 +8,7 @@
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "nmssmsoftsusy.h"
+#include "SMSSM_two_scale_ewsb_solver.hpp"
 #include "SMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -102,6 +103,10 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    setup_SMSSM_const(m, s, input);
+
+   SMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(
+      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    softsusy::Z3 = false;
    ensure_tree_level_ewsb(m, s, input);
@@ -252,6 +257,10 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    setup_SMSSM_const(m, s, input);
+
+   SMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(
+      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    softsusy::Z3 = false;
    softsusy::numHiggsMassLoops = 1;

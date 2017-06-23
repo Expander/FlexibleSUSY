@@ -6,14 +6,25 @@
 #include "conversion.hpp"
 #include "fixed_point_iterator.hpp"
 #include "root_finder.hpp"
-#include "test.h"
 #include "wrappers.hpp"
+
+#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <limits>
+#include <string>
 
 #define private public
 
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_model.hpp"
-#include "softsusy.h"
+#include "test_legacy.hpp"
 #include "test_CMSSM.hpp"
+#include "softsusy.h"
+#include "wrappers.hpp"
+#include "conversion.hpp"
+#include "root_finder.hpp"
+#include "fixed_point_iterator.hpp"
 
 void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
 {
@@ -22,28 +33,28 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    const int size = rows * cols;
 
    if (cols != 3) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 2 columns" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 2 columns" << std::endl;
       return;
    }
    if (rows != 2) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 3 rows" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 3 rows" << std::endl;
       return;
    }
    if (m.displayStart() != 1) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not begin"
-         " at index 1" << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not begin"
+         " at index 1" << std::endl;
       return;
    }
    if (m.displayEnd() != size) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not end"
-         " at index " << size << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not end"
+         " at index " << size << std::endl;
       return;
    }
    if (z.displayCols() != size || z.displayCols() != size) {
-      cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
-         " " << size << " rows or cols" << endl;
+      std::cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
+         " " << size << " rows or cols" << std::endl;
       return;
    }
 
@@ -1327,20 +1338,25 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    typedef Eigen::Matrix<double,2,1> EWSB_vector_t;
 
-   auto ewsb_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   ewsb_solver.set_loop_order(ewsb_loop_order);
+   ewsb_solver.set_number_of_iterations(number_of_ewsb_iterations);
+   ewsb_solver.set_precision(ewsb_iteration_precision);
+
+   auto ewsb_stepper = [&ewsb_solver, &model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
       model.set_BMu(ewsb_pars(0));
       model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
-      if (model.get_ewsb_loop_order() > 0)
+      if (ewsb_solver.get_loop_order() > 0)
          model.calculate_DRbar_masses();
-      return model.ewsb_step();
+      return ewsb_solver.ewsb_step(model);
    };
 
-   auto tadpole_stepper = [&model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+   auto tadpole_stepper = [&ewsb_solver, &model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
       model.set_BMu(ewsb_pars(0));
       model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
-      if (model.get_ewsb_loop_order() > 0)
+      if (ewsb_solver.get_loop_order() > 0)
          model.calculate_DRbar_masses();
-      return model.tadpole_equations();
+      return ewsb_solver.tadpole_equations(model);
    };
 
    // prepare solvers
@@ -1365,7 +1381,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))
    };
 
-   const auto x_init(model.ewsb_initial_guess());
+   const auto x_init(ewsb_solver.initial_guess(model));
 
    // starting values for Mu, BMu
    const double Mu_0 = model.get_Mu();
@@ -1375,7 +1391,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
       model.set_Mu(Mu_0);
       model.set_BMu(BMu_0);
 
-      const int status = model.solve_ewsb_iteratively_with(solvers[i], x_init);
+      const int status = ewsb_solver.solve_iteratively_with(model, solvers[i], x_init);
 
       TEST_EQUALITY(status, EWSB_solver::SUCCESS);
 
@@ -1612,6 +1628,10 @@ void compare_models(int loopLevel)
 
    CMSSM<Two_scale> m(input);
    MssmSoftsusy softSusy;
+
+   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   m.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    setup_models(m, softSusy, input, loopLevel);
 

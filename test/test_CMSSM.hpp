@@ -2,7 +2,7 @@
 #ifndef TEST_CMSSM_H
 #define TEST_CMSSM_H
 
-#include "test.h"
+#include "test_legacy.hpp"
 #include "softsusy.h"
 #include "CMSSM_two_scale_model.hpp"
 #include "wrappers.hpp"

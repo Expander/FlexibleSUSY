@@ -420,6 +420,7 @@ inline double Log(double a) noexcept
 }
 
 double MaxRelDiff(double, double);
+double MaxRelDiff(const std::complex<double>&, const std::complex<double>&);
 
 template <class Derived>
 double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,

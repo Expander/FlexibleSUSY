@@ -145,16 +145,19 @@ int run(
 {
    using namespace flexiblesusy;
 
-   int exit_code;
+   int exit_code = 0;
    const int solver_type
       = static_cast<int>(spectrum_generator_settings.get(
                             Spectrum_generator_settings::solver));
 
    switch (solver_type) {
+   case 0:
 @runEnabledSolvers@
    default:
-      ERROR("unknown solver type: " << solver_type);
-      exit_code = -1;
+      if (solver_type != 0) {
+         ERROR("unknown solver type: " << solver_type);
+         exit_code = -1;
+      }
       break;
    }
 

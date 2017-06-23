@@ -35,6 +35,7 @@
 namespace flexiblesusy {
 
 #define DERIVEDPARAMETER(p) model->p()
+#define EXTRAPARAMETER(p) model->get_##p()
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
@@ -53,8 +54,7 @@ namespace flexiblesusy {
 
 @ModelName@_susy_scale_constraint<Two_scale>::@ModelName@_susy_scale_constraint(
    @ModelName@<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
-   : Constraint<Two_scale>()
-   , model(model_)
+   : model(model_)
    , qedqcd(qedqcd_)
 {
    initialize();
@@ -95,7 +95,7 @@ const @ModelName@_input_parameters& @ModelName@_susy_scale_constraint<Two_scale>
    return model;
 }
 
-void @ModelName@_susy_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
+void @ModelName@_susy_scale_constraint<Two_scale>::set_model(Model* model_)
 {
    model = cast_model<@ModelName@<Two_scale>*>(model_);
 }

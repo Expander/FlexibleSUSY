@@ -7,6 +7,8 @@ BASE_TEMPLATES := \
 		$(DIR)/edm.hpp.in \
 		$(DIR)/edm.cpp.in \
 		$(DIR)/convergence_tester.hpp.in \
+		$(DIR)/ewsb_solver.hpp.in \
+		$(DIR)/ewsb_solver_interface.hpp.in \
 		$(DIR)/effective_couplings.hpp.in \
 		$(DIR)/effective_couplings.cpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
@@ -61,6 +63,8 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/standard_model_two_scale_matching.cpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \
+		$(DIR)/two_scale_ewsb_solver.hpp.in \
+		$(DIR)/two_scale_ewsb_solver.cpp.in \
 		$(DIR)/two_scale_high_scale_constraint.hpp.in \
 		$(DIR)/two_scale_high_scale_constraint.cpp.in \
 		$(DIR)/two_scale_high_scale_initial_guesser.hpp.in \
@@ -80,9 +84,40 @@ TWO_SCALE_TEMPLATES := \
 		$(DIR)/weinberg_angle.hpp.in \
 		$(DIR)/weinberg_angle.cpp.in
 
+SEMI_ANALYTIC_TEMPLATES := \
+		$(DIR)/semi_analytic_convergence_tester.hpp.in \
+		$(DIR)/semi_analytic_convergence_tester.cpp.in \
+		$(DIR)/semi_analytic_ewsb_solver.hpp.in \
+		$(DIR)/semi_analytic_ewsb_solver.cpp.in \
+		$(DIR)/semi_analytic_high_scale_constraint.hpp.in \
+		$(DIR)/semi_analytic_high_scale_constraint.cpp.in \
+		$(DIR)/semi_analytic_high_scale_initial_guesser.hpp.in \
+		$(DIR)/semi_analytic_high_scale_initial_guesser.cpp.in \
+		$(DIR)/semi_analytic_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/semi_analytic_high_scale_spectrum_generator.cpp.in \
+		$(DIR)/semi_analytic_low_scale_constraint.hpp.in \
+		$(DIR)/semi_analytic_low_scale_constraint.cpp.in \
+		$(DIR)/semi_analytic_low_scale_initial_guesser.hpp.in \
+		$(DIR)/semi_analytic_low_scale_initial_guesser.cpp.in \
+		$(DIR)/semi_analytic_low_scale_spectrum_generator.hpp.in \
+		$(DIR)/semi_analytic_low_scale_spectrum_generator.cpp.in \
+		$(DIR)/semi_analytic_model.hpp.in \
+		$(DIR)/semi_analytic_model.cpp.in \
+		$(DIR)/semi_analytic_soft_parameters_constraint.hpp.in \
+		$(DIR)/semi_analytic_soft_parameters_constraint.cpp.in \
+		$(DIR)/semi_analytic_solutions.hpp.in \
+		$(DIR)/semi_analytic_solutions.cpp.in \
+		$(DIR)/semi_analytic_susy_convergence_tester.hpp.in \
+		$(DIR)/semi_analytic_susy_convergence_tester.cpp.in \
+		$(DIR)/semi_analytic_susy_scale_constraint.hpp.in \
+		$(DIR)/semi_analytic_susy_scale_constraint.cpp.in \
+		$(DIR)/soft_parameters_constraint.hpp.in \
+		$(DIR)/susy_convergence_tester.hpp.in
+
 TEMPLATES    := \
 		$(BASE_TEMPLATES) \
-		$(TWO_SCALE_TEMPLATES)
+		$(TWO_SCALE_TEMPLATES) \
+		$(SEMI_ANALYTIC_TEMPLATES)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

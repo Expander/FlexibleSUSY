@@ -13,6 +13,7 @@ complexScalarCType::usage="represents a complex scalar C type";
 
 ToRealType::usage="converts a given type to a type with real elements";
 
+IsIntegerType::usage="Returns true if given type has integer elements";
 IsRealType::usage="Returns true if given type has real elements";
 
 GreekQ::usage = "Returns true if the given symbol contains one or more
@@ -21,11 +22,15 @@ GreekQ::usage = "Returns true if the given symbol contains one or more
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
+ZEROTENSOR3::usage="";
+ZEROTENSOR4::usage="";
 ZEROTENSOR::usage="";
 ZEROVECTOR::usage="";
 UNITMATRIXCOMPLEX::usage="";
 ZEROARRAYCOMPLEX::usage="";
 ZEROMATRIXCOMPLEX::usage="";
+ZEROTENSOR3COMPLEX::usage="";
+ZEROTENSOR4COMPLEX::usage="";
 ZEROTENSORCOMPLEX::usage="";
 ZEROVECTORCOMPLEX::usage="";
 PROJECTOR::usage="";
@@ -75,6 +80,7 @@ CreateZero::usage="creates a zero matrix for a given parameter
 type";
 
 CreateGetterPrototype::usage="creates C/C++ getter prototype";
+CreateSetterPrototype::usage="creates C/C++ setter prototype";
 
 CreateInlineSetter::usage="creates C/C++ inline setter"
 CreateInlineElementSetter::usage="creates C/C++ inline setter for a
@@ -89,6 +95,10 @@ CreateInlineGetters::usage="creates a C/C++ inline getter, and, if
 given a vector or matrix, a C/C++ inline getter for a single element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
+CreateSetterInputType::usage="creates C/C++ setter input type";
+
+CreateDefaultValue::usage="creates a default value for a given
+parameter type";
 
 CreateDefaultAggregateInitialization::usage = "creates C/C++ default
 aggregate initialization for a given parameter type";
@@ -175,6 +185,9 @@ ToRealType[CConversion`ArrayType[_,n_]] := CConversion`ArrayType[realScalarCType
 ToRealType[CConversion`VectorType[_,n_]] := CConversion`VectorType[realScalarCType, n];
 ToRealType[CConversion`MatrixType[_,m_,n_]] := CConversion`MatrixType[realScalarCType, m, n];
 ToRealType[CConversion`TensorType[_,n__]] := CConversion`TensorType[realScalarCType, n];
+
+IsIntegerType[_[CConversion`integerScalarCType, ___]] := True;
+IsIntegerType[_] := False;
 
 IsRealType[_[CConversion`realScalarCType, ___]] := True;
 IsRealType[_[CConversion`integerScalarCType, ___]] := True;
@@ -349,27 +362,32 @@ CreateGetterPrototype[parameter_String, type_String] :=
 CreateGetterPrototype[parameter_, type_] :=
     CreateGetterPrototype[parameter, CreateGetterReturnType[type]];
 
-(* create default constructor initialization list *)
-CreateDefaultConstructor[parameter_, type_] :=
+CreateSetterPrototype[parameter_String, type_String] :=
+    "void set_" <> parameter <> "(" <> type <> " " <> parameter <> "_);\n"
+
+CreateSetterPrototype[parameter_, type_] :=
+    CreateSetterPrototype[parameter, CreateSetterInputType[type]];
+
+(* create default value for given parameter *)
+CreateDefaultValue[type_] :=
     Block[{},
           Print["Error: unknown parameter type: " <> ToString[type]];
           Return[""];
          ];
 
-CreateDefaultConstructor[parameter_String, CConversion`ScalarType[_]] :=
-    parameter <> "(0)";
+CreateDefaultValue[CConversion`ScalarType[_]] := "0";
+CreateDefaultValue[CConversion`ArrayType[type_, entries_]] :=
+    CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero()";
+CreateDefaultValue[CConversion`VectorType[type_, entries_]] :=
+    CreateCType[CConversion`VectorType[type, entries]] <> "::Zero()";
+CreateDefaultValue[CConversion`MatrixType[type_, rows_, cols_]] :=
+    CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero()";
+CreateDefaultValue[CConversion`TensorType[type_, dims__]] :=
+    CreateCType[CConversion`TensorType[type, dims]] <> "::Zero()";
 
-CreateDefaultConstructor[parameter_String, CConversion`ArrayType[type_, entries_]] :=
-    parameter <> "(" <> CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
-
-CreateDefaultConstructor[parameter_String, CConversion`TensorType[type_, dims__]] :=
-    parameter <> "(" <> CreateCType[CConversion`TensorType[type, dims]] <> "::Zero())";
+(* create default constructor initialization list *)
+CreateDefaultConstructor[parameter_String, type_] :=
+    parameter <> "(" <> CreateDefaultValue[type] <> ")";
 
 CreateDefaultAggregateInitialization[type_] :=
     Block[{},

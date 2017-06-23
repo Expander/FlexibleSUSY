@@ -21,7 +21,7 @@
 namespace flexiblesusy {
 
 SoftsusyMSSM<Two_scale>::SoftsusyMSSM()
-   : Two_scale_model()
+   : Model()
    , precision(1.0e-5)
 {
 }

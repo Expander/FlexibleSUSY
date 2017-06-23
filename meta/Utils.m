@@ -1,6 +1,9 @@
 
 BeginPackage["Utils`"];
 
+AppendOrReplaceInList::usage="Replaces existing element in list,
+or appends it if not already present.";
+
 ApplyAndConcatenate::usage = "Applies a function to a list and
 concatenates the resulting list.";
 
@@ -109,6 +112,17 @@ FSFancyPrint::usage = "Print text in fancy headline style";
 FSFancyLine::usage = "Print separator line in command line mode";
 
 Begin["`Private`"];
+
+AppendOrReplaceInList[values_List, elem_, test_:SameQ] :=
+    Module[{matches, result},
+           matches = test[elem, #]& /@ values;
+           matches = (If[# =!= True && # =!= False, False, #])& /@ matches;
+           If[!Or @@ matches,
+              result = Append[values, elem];,
+              result = ReplacePart[values, Position[matches, True] -> elem];
+             ];
+           result
+          ];
 
 ApplyAndConcatenate[Func_, l_List] :=
     Module[{result = ""},

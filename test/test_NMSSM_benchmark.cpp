@@ -4,7 +4,7 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 
-#include "test.h"
+#include "test.hpp"
 #include "run_cmd.hpp"
 #include "slhaea.h"
 #include "stopwatch.hpp"

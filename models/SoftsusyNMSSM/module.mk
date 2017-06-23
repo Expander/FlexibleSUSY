@@ -10,7 +10,7 @@ LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmsusy.cpp \
 		$(DIR)/nmssm1loop.f
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBSoftsusyNMSSM_SRC  += \
 		$(DIR)/SoftsusyNMSSM_two_scale.cpp \
 		$(DIR)/SoftsusyNMSSM_two_scale_convergence_tester.cpp \

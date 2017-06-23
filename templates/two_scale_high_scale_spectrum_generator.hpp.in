@@ -21,12 +21,8 @@
 #ifndef @ModelName@_TWO_SCALE_SPECTRUM_GENERATOR_H
 #define @ModelName@_TWO_SCALE_SPECTRUM_GENERATOR_H
 
-#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
-#include "@ModelName@_two_scale_high_scale_constraint.hpp"
-#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_model_slha.hpp"
 
@@ -45,8 +41,10 @@ public:
    @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() = default;
 
-   std::tuple<@ModelName@<Two_scale> > get_models() const { return std::make_tuple(this->get_model()); }
-   std::tuple<@ModelName@_slha<@ModelName@<Two_scale> > > get_models_slha() const { return std::make_tuple(this->get_model_slha()); }
+   std::tuple<@ModelName@<Two_scale> > get_models() const
+   { return std::make_tuple(get_model()); }
+   std::tuple<@ModelName@_slha<@ModelName@<Two_scale> > > get_models_slha() const
+   { return std::make_tuple(get_model_slha()); }
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
@@ -59,7 +57,9 @@ protected:
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
 
 private:
-   double high_scale{0.}, susy_scale{0.}, low_scale{0.};
+   double high_scale{0.};
+   double susy_scale{0.};
+   double low_scale{0.};
 
    void calculate_spectrum();
 };

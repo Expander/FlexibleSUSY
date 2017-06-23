@@ -82,15 +82,15 @@ FindAllTracesOnlyAt[list_List, loopOrder_Integer] :=
           ];
 
 CreateTraceRules[traces_List] :=
-    (Rule[#, ToValidCSymbol[#]])& /@ FindAllTraces[traces];
+    (Rule[#, CConversion`ToValidCSymbol[#]])& /@ FindAllTraces[traces];
 
 CreateLocalCopiesOfSARAHTraces[expr_, sarahTraces_List, structName_String] :=
     Module[{defs = "", traces, traceExprs},
            traces = FindSARAHTraces[expr, sarahTraces];
            tracesAndExprs = Select[sarahTraces, MemberQ[traces, GetSARAHTraceName[#]]&];
            (defs = defs <> "const " <> GetTraceCType[GetSARAHTraceExpr[#]] <>
-            " " <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
-            " = " <> structName <> "." <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
+            " " <> CConversion`ToValidCSymbolString[GetSARAHTraceName[#]] <>
+            " = " <> structName <> "." <> CConversion`ToValidCSymbolString[GetSARAHTraceName[#]] <>
             ";\n")& /@ tracesAndExprs;
            Return[defs];
           ];
@@ -99,17 +99,17 @@ CreateLocalCopiesOfTraces[list_List, structName_String] :=
     Module[{defs = "", traces},
            traces = FindAllTraces[list];
            (defs = defs <> "const " <> GetTraceCType[#] <>
-            " " <> ToValidCSymbolString[#] <> " = " <>
-            structName <> "." <> ToValidCSymbolString[#] <> ";\n")& /@ traces;
+            " " <> CConversion`ToValidCSymbolString[#] <> " = " <>
+            structName <> "." <> CConversion`ToValidCSymbolString[#] <> ";\n")& /@ traces;
            Return[defs];
           ];
 
 CreateTraceDefs[list_List] :=
-    StringJoin[(GetTraceCType[#] <> " " <> ToValidCSymbolString[#] <> "{};\n")& /@ FindAllTraces[list]];
+    StringJoin[(GetTraceCType[#] <> " " <> CConversion`ToValidCSymbolString[#] <> "{};\n")& /@ FindAllTraces[list]];
 
 CreateSARAHTraceDefs[list_List] :=
     StringJoin[(GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
-                ToValidCSymbolString[GetSARAHTraceName[#]] <> "{};\n")& /@ list];
+                CConversion`ToValidCSymbolString[GetSARAHTraceName[#]] <> "{};\n")& /@ list];
 
 CreateCastedTraceExprStr[expr_] :=
     CConversion`CastTo[RValueToCFormString[expr], GetTraceType[expr]];
@@ -117,14 +117,14 @@ CreateCastedTraceExprStr[expr_] :=
 CreateTraceCalculation[list_List, structName_String] :=
     Module[{traces, Def},
            traces = {FindAllTracesOnlyAt[list,1], FindAllTracesOnlyAt[list,2], FindAllTracesOnlyAt[list,3]};
-           Def[expr_] := (structName <> "." <> ToValidCSymbolString[expr] <>
+           Def[expr_] := (structName <> "." <> CConversion`ToValidCSymbolString[expr] <>
                           " = " <> CreateCastedTraceExprStr[expr] <> ";\n");
            StringJoin /@ Map[Def, traces, {2}]
           ];
 
 CreateSARAHTraceCalculation[list_List, structName_String] :=
     Module[{defs = ""},
-           (defs = defs <> structName <> "." <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
+           (defs = defs <> structName <> "." <> CConversion`ToValidCSymbolString[GetSARAHTraceName[#]] <>
             " = " <> CreateCastedTraceExprStr[GetSARAHTraceExpr[#]] <> ";\n")& /@ list;
            defs = Parameters`CreateLocalConstRefsForInputParameters[list] <>
                   "\n" <> defs;

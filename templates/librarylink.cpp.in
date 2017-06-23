@@ -135,13 +135,56 @@ public:
    virtual std::string what() const override { return "Invalid spectrum"; }
 };
 
+class @ModelName@_spectrum {
+public:
+   virtual ~@ModelName@_spectrum() = default;
+
+   virtual void put_model_spectra(MLINK link) const = 0;
+
+   virtual const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const = 0;
+   virtual void fill_slha_io(@ModelName@_slha_io&) const = 0;
+   virtual double get_model_scale() const = 0;
+   virtual const @ModelName@_observables& get_observables() const = 0;
+
+   virtual void calculate_spectrum(
+      const Spectrum_generator_settings&, const SLHA_io::Modsel&,
+      const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
+   virtual void calculate_model_observables(const softsusy::QedQcd&, const Physical_input&) = 0;
+};
+
+template <typename Solver_type>
+class @ModelName@_spectrum_impl : public @ModelName@_spectrum
+{
+public:
+   virtual ~@ModelName@_spectrum_impl() = default;
+
+   virtual void put_model_spectra(MLINK link) const override;
+
+   virtual const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const override {
+      return std::get<0>(models).get_problems();
+   }
+   virtual void fill_slha_io(@ModelName@_slha_io&) const override;
+   virtual double get_model_scale() const override { return std::get<0>(models).get_scale(); }
+   virtual const @ModelName@_observables& get_observables() const override { return observables; }
+
+   virtual void calculate_spectrum(
+      const Spectrum_generator_settings&, const SLHA_io::Modsel&,
+      const softsusy::QedQcd&, const @ModelName@_input_parameters&) override;
+   virtual void calculate_model_observables(const softsusy::QedQcd&, const Physical_input&) override;
+
+private:
+   std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
+   @ModelName@_scales scales{};              ///< scale information
+   @ModelName@_observables observables{};    ///< observables
+};
+
 class Model_data {
 public:
    Model_data() = default;
-   Model_data(const Model_data&) = default;
+   Model_data(const Model_data&) = delete;
    Model_data(Model_data&&) = default;
-   virtual ~Model_data() = default;
-   Model_data& operator=(const Model_data&) = default;
+   ~Model_data() = default;
+   Model_data& operator=(const Model_data&) = delete;
    Model_data& operator=(Model_data&&) = default;
 
    void set_input_parameters(const @ModelName@_input_parameters& input_) { input = input_; }
@@ -156,52 +199,29 @@ public:
    void put_observables(MLINK link) const;
    void put_slha(MLINK link) const;
 
-   virtual void put_problems(MLINK link) const = 0;
-   virtual void put_warnings(MLINK link) const = 0;
-   virtual void put_model_spectra(MLINK link) const = 0;
-   virtual void calculate_spectrum() = 0;
-   virtual void check_spectrum(MLINK link) const = 0;
-   virtual void calculate_model_observables() = 0;
+   void put_problems(MLINK link) const;
+   void put_warnings(MLINK link) const;
+   void put_model_spectra(MLINK link) const;
+   void calculate_spectrum();
+   void check_spectrum(MLINK link) const;
+   void calculate_model_observables();
 
-   virtual double get_model_scale() const = 0;
-protected:
+   double get_model_scale() const { return spectrum->get_model_scale(); }
+private:
    @ModelName@_input_parameters input{};     ///< model input parameters
    Physical_input physical_input{};          ///< extra non-SLHA physical input
    softsusy::QedQcd qedqcd{};                ///< SLHA physical input
    Spectrum_generator_settings settings{};   ///< spectrum generator settings
    SLHA_io::Modsel modsel{};                 ///< MODSEL input
-   @ModelName@_observables observables{};    ///< observables
-   @ModelName@_scales scales{};              ///< scale information
+   std::unique_ptr<@ModelName@_spectrum> spectrum{nullptr};  ///< spectrum information
 
-   virtual @ModelName@_slha_io get_slha_io() const = 0;
-};
+   @ModelName@_slha_io get_slha_io() const;
 
-template <typename Solver_type>
-class Model_data_impl : public Model_data {
-public:
-   Model_data_impl() = default;
-   Model_data_impl(const Model_data_impl&) = default;
-   Model_data_impl(Model_data_impl&&) = default;
-   virtual ~Model_data_impl() = default;
-   Model_data_impl& operator=(const Model_data_impl&) = default;
-   Model_data_impl& operator=(Model_data_impl&&) = default;
-
-   virtual void put_problems(MLINK link) const override;
-   virtual void put_warnings(MLINK link) const override;
-   virtual void put_model_spectra(MLINK link) const override;
-   virtual void calculate_spectrum() override;
-   virtual void check_spectrum(MLINK link) const override;
-   virtual void calculate_model_observables() override;
-
-   virtual double get_model_scale() const override { return std::get<0>(models).get_scale(); }
-protected:
-   virtual @ModelName@_slha_io get_slha_io() const override;
-private:
-   std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
+   void check_spectrum_pointer() const;
 };
 
 /// current handles
-using Handle_map = std::map<Handle, std::unique_ptr<Model_data>>;
+using Handle_map = std::map<Handle, Model_data>;
 Handle_map handles;
 
 /******************************************************************/
@@ -236,7 +256,7 @@ auto find_handle(Handle hid) -> decltype(handles.find(hid))
 
 /******************************************************************/
 
-std::unique_ptr<Model_data>& find_data(Handle hid)
+Model_data& find_data(Handle hid)
 {
    return find_handle(hid)->second;
 }
@@ -307,6 +327,15 @@ void put_message(MLINK link,
    MLPutSymbol(link, function_name.c_str());
    MLPutString(link, message_tag.c_str());
    MLPutString(link, message_str.c_str());
+}
+
+/******************************************************************/
+
+void Model_data::check_spectrum_pointer() const
+{
+   if (!spectrum) {
+      throw SetupError("no spectrum generator set");
+   }
 }
 
 /******************************************************************/
@@ -467,10 +496,10 @@ void put_masses(MLINK link, const std::string& rule,
 
 /******************************************************************/
 
-template <typename Solver_type>
-void Model_data_impl<Solver_type>::put_problems(MLINK link) const
+void Model_data::put_problems(MLINK link) const
 {
-   const auto& problems = std::get<0>(models).get_problems();
+   check_spectrum_pointer();
+   const auto& problems = spectrum->get_problems();
    const auto n_problems = number_of_problems(problems);
 
    MLPutFunction(link, "List", n_problems);
@@ -497,10 +526,10 @@ void Model_data_impl<Solver_type>::put_problems(MLINK link) const
 
 /******************************************************************/
 
-template <typename Solver_type>
-void Model_data_impl<Solver_type>::put_warnings(MLINK link) const
+void Model_data::put_warnings(MLINK link) const
 {
-   const auto& problems = std::get<0>(models).get_problems();
+   check_spectrum_pointer();
+   const auto& problems = spectrum->get_problems();
    const auto n_warnings = number_of_warnings(problems);
 
    MLPutFunction(link, "List", n_warnings);
@@ -513,25 +542,20 @@ void Model_data_impl<Solver_type>::put_warnings(MLINK link) const
 
 /******************************************************************/
 
-template <typename Solver_type>
-@ModelName@_slha_io Model_data_impl<Solver_type>::get_slha_io() const
+@ModelName@_slha_io Model_data::get_slha_io() const
 {
-   const auto& problems = std::get<0>(models).get_problems();
-   const auto force_output = std::get<0>(models).do_force_output();
+   check_spectrum_pointer();
    @ModelName@_slha_io slha_io;
 
-   slha_io.set_spinfo(problems);
    slha_io.set_settings(settings);
    slha_io.set_sminputs(qedqcd);
    slha_io.set_physical_input(physical_input);
    slha_io.set_modsel(modsel);
    slha_io.set_input(input);
-   if (!problems.have_problem() || force_output) {
-      slha_io.set_print_imaginary_parts_of_majorana_mixings(
-         settings.get(Spectrum_generator_settings::force_positive_masses));
-      slha_io.set_spectrum(models);
-      slha_io.set_extra(std::get<0>(models), scales, observables);
-   }
+   slha_io.set_print_imaginary_parts_of_majorana_mixings(
+      settings.get(Spectrum_generator_settings::force_positive_masses));
+
+   spectrum->fill_slha_io(slha_io);
 
    return slha_io;
 }
@@ -642,44 +666,28 @@ void put_spectra(const std::tuple<Ts...>& models, MLINK link)
 /******************************************************************/
 
 template <typename Solver_type>
-void Model_data_impl<Solver_type>::put_model_spectra(MLINK link) const
+void @ModelName@_spectrum_impl<Solver_type>::put_model_spectra(MLINK link) const
 {
    put_spectra(models, link);
 }
 
 /******************************************************************/
 
-void Model_data::put_observables(MLINK link) const
+void Model_data::put_model_spectra(MLINK link) const
 {
-   MLPutFunction(link, "List", @numberOfObservables@);
-
-@putObservables@
-
-   MLEndPacket(link);
-}
-
-/******************************************************************/
-
-template <class Solver_type>
-void Model_data_impl<Solver_type>::check_spectrum(MLINK link) const
-{
-   const auto& problems = std::get<0>(models).get_problems();
-
-   for (const auto& s: problems.get_problem_strings())
-      put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
-
-   for (const auto& s: problems.get_warning_strings())
-      put_message(link, "FS@ModelName@CalculateSpectrum", "warning", s);
-
-   if (problems.have_problem() &&
-       !settings.get(Spectrum_generator_settings::force_output))
-      throw EInvalidSpectrum();
+   check_spectrum_pointer();
+   spectrum->put_model_spectra(link);
 }
 
 /******************************************************************/
 
 template <typename Solver_type>
-void Model_data_impl<Solver_type>::calculate_spectrum()
+void @ModelName@_spectrum_impl<Solver_type>::calculate_spectrum(
+   const Spectrum_generator_settings& settings,
+   const SLHA_io::Modsel& modsel,
+   const softsusy::QedQcd& qedqcd,
+   const @ModelName@_input_parameters& input
+)
 {
    @ModelName@_spectrum_generator<Solver_type> spectrum_generator;
    spectrum_generator.set_settings(settings);
@@ -696,15 +704,87 @@ void Model_data_impl<Solver_type>::calculate_spectrum()
 /******************************************************************/
 
 template <typename Solver_type>
-void Model_data_impl<Solver_type>::calculate_model_observables()
+void @ModelName@_spectrum_impl<Solver_type>::calculate_model_observables(
+   const softsusy::QedQcd& qedqcd, const Physical_input& physical_input)
 {
    observables = calculate_observables(std::get<0>(models), qedqcd, physical_input, scales.pole_mass_scale);
 }
 
 /******************************************************************/
 
+template <typename Solver_type>
+void @ModelName@_spectrum_impl<Solver_type>::fill_slha_io(@ModelName@_slha_io& slha_io) const
+{
+   const auto& problems = std::get<0>(models).get_problems();
+   const auto force_output = std::get<0>(models).do_force_output();
+
+   slha_io.set_spinfo(problems);
+   if (!problems.have_problem() || force_output) {
+      slha_io.set_spectrum(models);
+      slha_io.set_extra(std::get<0>(models), scales, observables);
+   }
+}
+
+/******************************************************************/
+
+void Model_data::put_observables(MLINK link) const
+{
+   check_spectrum_pointer();
+   @ModelName@_observables observables = spectrum->get_observables();
+
+   MLPutFunction(link, "List", @numberOfObservables@);
+
+@putObservables@
+
+   MLEndPacket(link);
+}
+
+/******************************************************************/
+
+void Model_data::check_spectrum(MLINK link) const
+{
+   check_spectrum_pointer();
+   const auto& problems = spectrum->get_problems();
+
+   for (const auto& s: problems.get_problem_strings())
+      put_message(link, "FS@ModelName@CalculateSpectrum", "error", s);
+
+   for (const auto& s: problems.get_warning_strings())
+      put_message(link, "FS@ModelName@CalculateSpectrum", "warning", s);
+
+   if (problems.have_problem() &&
+       !settings.get(Spectrum_generator_settings::force_output))
+      throw EInvalidSpectrum();
+}
+
+/******************************************************************/
+
+void Model_data::calculate_spectrum()
+{
+   const int solver_type = static_cast<int>(settings.get(
+                                               Spectrum_generator_settings::solver));
+   switch (solver_type) {
+   case 0:
+@runEnabledSolvers@
+   default:
+      if (solver_type != 0) {
+         throw SetupError("invalid solver type");
+      }
+   }
+}
+
+/******************************************************************/
+
+void Model_data::calculate_model_observables()
+{
+   check_spectrum_pointer();
+   spectrum->calculate_model_observables(qedqcd, physical_input);
+}
+
+/******************************************************************/
+
 template <typename Element_t>
-std::unique_ptr<Model_data> make_data(const Dynamic_array_view<Element_t>& pars)
+Model_data make_data(const Dynamic_array_view<Element_t>& pars)
 {
    using Index_t = typename Dynamic_array_view<Element_t>::Index_t;
 
@@ -805,18 +885,12 @@ std::unique_ptr<Model_data> make_data(const Dynamic_array_view<Element_t>& pars)
    @ModelName@_input_parameters input;
 @setInputParameters@
 
-   std::unique_ptr<Model_data> data;
-   switch (static_cast<int>(settings.get(Spectrum_generator_settings::solver))) {
-@initialiseDataPointer@
-   default:
-      throw SetupError("invalid solver type");
-   }
-
-   data->set_settings(settings);
-   data->set_modsel(modsel);
-   data->set_sm_input_parameters(qedqcd);
-   data->set_physical_input(physical_input);
-   data->set_input_parameters(input);
+   Model_data data;
+   data.set_settings(settings);
+   data.set_modsel(modsel);
+   data.set_sm_input_parameters(qedqcd);
+   data.set_physical_input(physical_input);
+   data.set_input_parameters(input);
 
    return data;
 }
@@ -852,7 +926,7 @@ DLLEXPORT int FS@ModelName@GetSettings(WolframLibraryData /* libData */, MLINK l
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_settings(link);
+      find_data(hid).put_settings(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -873,7 +947,7 @@ DLLEXPORT int FS@ModelName@GetSMInputParameters(WolframLibraryData /* libData */
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_sm_input_parameters(link);
+      find_data(hid).put_sm_input_parameters(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -894,7 +968,7 @@ DLLEXPORT int FS@ModelName@GetInputParameters(WolframLibraryData /* libData */, 
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_input_parameters(link);
+      find_data(hid).put_input_parameters(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -1001,7 +1075,7 @@ DLLEXPORT int FS@ModelName@GetProblems(
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_problems(link);
+      find_data(hid).put_problems(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -1022,7 +1096,7 @@ DLLEXPORT int FS@ModelName@ToSLHA(WolframLibraryData /* libData */, MLINK link)
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_slha(link);
+      find_data(hid).put_slha(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -1044,7 +1118,7 @@ DLLEXPORT int FS@ModelName@GetWarnings(
    const auto hid = get_handle_from(link);
 
    try {
-      find_data(hid)->put_warnings(link);
+      find_data(hid).put_warnings(link);
    } catch (const flexiblesusy::Error& e) {
       std::cerr << e.what() << std::endl;
       put_error_output(link);
@@ -1070,11 +1144,11 @@ DLLEXPORT int FS@ModelName@CalculateSpectrum(
 
       {
          Redirect_output crd(link);
-         data->calculate_spectrum();
+         data.calculate_spectrum();
       }
 
-      data->check_spectrum(link);
-      data->put_model_spectra(link);
+      data.check_spectrum(link);
+      data.put_model_spectra(link);
    } catch (const flexiblesusy::Error&) {
       put_error_output(link);
    }
@@ -1097,7 +1171,7 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
    try {
       auto& data = find_data(hid);
 
-      if (data->get_model_scale() == 0.) {
+      if (data.get_model_scale() == 0.) {
          put_message(link,
             "FS@ModelName@CalculateObservables", "warning",
             "Renormalization scale is 0.  Did you run "
@@ -1106,10 +1180,10 @@ DLLEXPORT int FS@ModelName@CalculateObservables(
 
       {
          Redirect_output crd(link);
-         data->calculate_model_observables();
+         data.calculate_model_observables();
       }
 
-      data->put_observables(link);
+      data.put_observables(link);
    } catch (const flexiblesusy::Error& e) {
       put_message(link, "FS@ModelName@CalculateObservables", "error", e.what());
       put_error_output(link);

@@ -10,6 +10,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/build_info.cpp \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
+		$(DIR)/composite_convergence_tester.cpp \
 		$(DIR)/database.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
@@ -87,9 +88,9 @@ LIBFLEXI_HDR := \
 		$(DIR)/linalg2.hpp \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
-		$(DIR)/matching.hpp \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
+		$(DIR)/model.hpp \
 		$(DIR)/mssm_twoloop_mb.hpp \
 		$(DIR)/mssm_twoloop_mt.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
@@ -111,6 +112,8 @@ LIBFLEXI_HDR := \
 		$(DIR)/root_finder.hpp \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
+		$(DIR)/single_scale_constraint.hpp \
+		$(DIR)/single_scale_matching.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
@@ -132,24 +135,31 @@ LIBFLEXI_HDR := \
 		$(DIR)/which.hpp \
 		$(DIR)/wrappers.hpp
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBFLEXI_SRC += \
-		$(DIR)/two_scale_composite_convergence_tester.cpp \
-		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_running_precision.cpp \
 		$(DIR)/two_scale_solver.cpp
 
 LIBFLEXI_HDR += \
-		$(DIR)/two_scale_composite_convergence_tester.hpp \
-		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester.hpp \
-		$(DIR)/two_scale_convergence_tester_drbar.hpp \
-		$(DIR)/two_scale_initial_guesser.hpp \
-		$(DIR)/two_scale_matching.hpp \
-		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_running_precision.hpp \
 		$(DIR)/two_scale_solver.hpp
 endif
+
+ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+LIBFLEXI_SRC += \
+		$(DIR)/semi_analytic_solver.cpp \
+		$(DIR)/two_scale_running_precision.cpp \
+		$(DIR)/two_scale_solver.cpp
+
+LIBFLEXI_HDR += \
+		$(DIR)/semi_analytic_solver.hpp \
+		$(DIR)/two_scale_running_precision.hpp \
+		$(DIR)/two_scale_solver.hpp
+endif
+
+# remove duplicates in case multiple solvers are used
+LIBFLEXI_SRC := $(sort $(LIBFLEXI_SRC))
+LIBFLEXI_HDR := $(sort $(LIBFLEXI_HDR))
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \

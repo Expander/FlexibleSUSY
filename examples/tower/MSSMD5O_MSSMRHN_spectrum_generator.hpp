@@ -19,6 +19,7 @@
 #ifndef MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 #define MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 
+#include "MSSMD5O_two_scale_ewsb_solver.hpp"
 #include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMD5O_two_scale_susy_scale_constraint.hpp"
 #include "MSSMD5O_two_scale_low_scale_constraint.hpp"
@@ -27,6 +28,7 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
 
+#include "MSSMRHN_two_scale_ewsb_solver.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_high_scale_constraint.hpp"
 #include "MSSMRHN_two_scale_convergence_tester.hpp"
@@ -34,12 +36,12 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_initial_guesser.hpp"
 
+#include "composite_convergence_tester.hpp"
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_composite_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
@@ -128,9 +130,17 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
    model_1.set_loops(2);
 
+   MSSMD5O_ewsb_solver<T> ewsb_solver_1;
+   model_1.set_ewsb_solver(
+      std::make_shared<MSSMD5O_ewsb_solver<T> >(ewsb_solver_1));
+
    model_2.clear();
    model_2.set_input_parameters(input_2);
    model_2.set_loops(2);
+
+   MSSMRHN_ewsb_solver<T> ewsb_solver_2;
+   model_2.set_ewsb_solver(
+      std::make_shared<MSSMRHN_ewsb_solver<T> >(ewsb_solver_2));
 
    // needed for constraint::initialize()
    high_scale_constraint_2.set_model(&model_2);
@@ -150,7 +160,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
       convergence_tester_1.set_max_iterations(max_iterations);
       convergence_tester_2.set_max_iterations(max_iterations);
    }
-   Composite_convergence_tester<T> convergence_tester;
+   Composite_convergence_tester convergence_tester;
    convergence_tester.add_convergence_tester(&convergence_tester_1);
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 

@@ -7,8 +7,9 @@
 #include "config.h"
 
 #include "basic_rk_integrator.hpp"
-#include "rk_legacy.hpp"
 #include "error.hpp"
+#include "rk_legacy.hpp"
+#include "wrappers.hpp"
 
 #ifdef ENABLE_ODEINT
 #include "rkf_integrator.hpp"
@@ -142,6 +143,52 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative )
                           beta_non_pert_legacy, beta_non_pert_eigen);
 }
 
+Eigen::ArrayXd beta_gauge_one_loop(double x, const Eigen::ArrayXd& parameters)
+{
+   const int num_pars = parameters.size();
+   Eigen::ArrayXd beta(num_pars);
+
+   for (int i = 0; i < num_pars; ++i) {
+      beta(i) = (9.0 / (3. * i - 2.)) * Cube(parameters(i));
+   }
+
+   return oneOver16PiSqr * beta;
+}
+
+BOOST_AUTO_TEST_CASE( test_numerical_solution_gauge_one_loop )
+{
+   const int num_pars = 3;
+   Eigen::ArrayXd init_parameters(num_pars);
+   for (int i = 0; i < num_pars; ++i) {
+      init_parameters(i) = 1.2 / Power(2., i);
+   }
+
+   Eigen::ArrayXd parameters(init_parameters);
+   const double start = 100.;
+   const double end = 1.0e10;
+   const double from = log(start);
+   const double to = log(end);
+   const double tol = 1.0e-7;
+
+   int error = 0;
+   try {
+      runge_kutta::Basic_rk_integrator<Eigen::ArrayXd> integrator;
+      integrator(from, to, parameters, beta_gauge_one_loop, tol);
+   } catch (Error&) {
+      error = 1;
+   }
+
+   BOOST_CHECK_EQUAL(error, 0);
+
+   for (int i = 0; i < num_pars; ++i) {
+      const double g0 = init_parameters(i);
+      const double beta = oneOver16PiSqr * 9.0 / (3. * i - 2.);
+      const double exact = g0 / Sqrt(1.0 - 2. * beta * Sqr(g0) * (to - from));
+
+      BOOST_CHECK_CLOSE_FRACTION(parameters(i), exact, tol);
+   }
+}
+
 #ifdef ENABLE_ODEINT
 
 template <typename Derivs>
@@ -232,6 +279,40 @@ BOOST_AUTO_TEST_CASE( test_rkf_non_perturbative )
    }
 
    check_odeint_integrator(parameter, 100., 1.e10, beta_non_pert_rkf);
+}
+
+BOOST_AUTO_TEST_CASE( test_rkf_numerical_solution_gauge_one_loop )
+{
+   const int num_pars = 3;
+   Eigen::ArrayXd init_parameters(num_pars);
+   for (int i = 0; i < num_pars; ++i) {
+      init_parameters(i) = 1.2 / Power(2., i);
+   }
+
+   Eigen::ArrayXd parameters(init_parameters);
+   const double start = 100.;
+   const double end = 1.0e10;
+   const double from = log(start);
+   const double to = log(end);
+   const double tol = 1.0e-7;
+
+   int error = 0;
+   try {
+      runge_kutta::RKF_integrator integrator;
+      integrator(from, to, parameters, beta_gauge_one_loop, tol);
+   } catch (Error&) {
+      error = 1;
+   }
+
+   BOOST_CHECK_EQUAL(error, 0);
+
+   for (int i = 0; i < num_pars; ++i) {
+      const double g0 = init_parameters(i);
+      const double beta = oneOver16PiSqr * 9.0 / (3. * i - 2.);
+      const double exact = g0 / Sqrt(1.0 - 2. * beta * Sqr(g0) * (to - from));
+
+      BOOST_CHECK_CLOSE_FRACTION(parameters(i), exact, tol);
+   }
 }
 
 #endif
