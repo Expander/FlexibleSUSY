@@ -112,6 +112,26 @@ FlexibleSUSY 2.0.0 [not released yet]
    The default value is 123111121, which corresponds to the loop
    orders given in the above table.
 
+ * Feature: An additional boundary value problem solution algorithm,
+   based on expanding the soft SUSY breaking or dimensionful
+   parameters in terms of semi-analytic solutions to the RGEs, can
+   now be used to calculate the spectrum in a model.
+
+   The boundary value solver algorithms to be used in a model can be
+   specified by setting the variable FSBVPSolvers to be a list
+   containing all of the desired solvers in the model file.  By
+   default, this is set to FSBVPSolvers = { TwoScaleSolver },
+   corresponding to only the two-scale solver being enabled.
+
+   Example: To enable only the semi-analytic solver instead, the
+   model file should contain the setting
+
+      FSBVPSolvers = { SemiAnalyticSolver };
+
+   Currently, the semi-analytic solver can be used in models where
+   all of the parameters to be expanded are fixed in the same
+   boundary condition, such as the CMSSM or CNMSSM.
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
