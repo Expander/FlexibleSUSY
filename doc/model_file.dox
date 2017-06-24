@@ -915,7 +915,7 @@ parameter input blocks are named after the model parameter output
 blocks concatenated with an additionan "IN" (see the SLHA-2 standard,
 arXiv:0801.0045, Section 4.1.3).  To refer to such an input model
 parameter on the r.h.s. of an assignment one can either add an entry
-in `FSExtraInputParameters` or use the `LHInput[p]` symbol, where `p`
+in `FSAuxiliaryParameterInfo` or use the `LHInput[p]` symbol, where `p`
 is the name of the model parameter.
 
 Example:

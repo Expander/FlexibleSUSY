@@ -84,7 +84,7 @@ output = output <> WriteVariable[MINPAR, "MINPAR", {}];
 output = output <> WriteVariable[EXTPAR, "EXTPAR", {}];
 
 output = output <> "\
-FSExtraInputParameters = {};
+FSAuxiliaryParameterInfo = {};
 
 ";
 
