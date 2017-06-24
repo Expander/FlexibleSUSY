@@ -57,8 +57,6 @@ MINPAR = {
 
 EXTPAR = {};
 
-FSExtraInputParameters = {};
-
 EWSBOutputParameters = {muL2, muR2, mudL2, mudR2, muU, muD, muE};
 
 SUSYScale = LowScale;
