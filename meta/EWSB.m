@@ -429,26 +429,32 @@ EliminateOneParameter[{eq_}, {p_}] :=
 (* solves the two equations for `par' and returns the simpler solution *)
 SolveRest[eq1_, eq2_, par_] :=
     Module[{rest = {}, solution},
-           DebugPrint["solving rest for ", par, ": ", eq1];
-           solution = TimeConstrainedSolve[eq1, par];
-           If[IsNoSolution[solution],
-              DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", solution];
-              AppendTo[rest, solution];
+           If[FreeQ[eq1, par],
+              DebugPrint[par, " does not appear in equation: ", eq1];,
+              DebugPrint["solving rest for ", par, ": ", eq1];
+              solution = TimeConstrainedSolve[eq1, par];
+              If[IsNoSolution[solution],
+                 DebugPrint["Failed"];,
+                 DebugPrint["Solution found: ", solution];
+                 AppendTo[rest, solution];
+                ];
              ];
-           DebugPrint["solving rest for ", par, ": ", eq2];
-           solution = TimeConstrainedSolve[eq2, par];
-           If[IsNoSolution[solution],
-              DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", solution];
-              AppendTo[rest, solution];
+           If[FreeQ[eq2, par],
+              DebugPrint[par, " does not appear in equation: ", eq2];,
+              DebugPrint["solving rest for ", par, ": ", eq2];
+              solution = TimeConstrainedSolve[eq2, par];
+              If[IsNoSolution[solution],
+                 DebugPrint["Failed"];,
+                 DebugPrint["Solution found: ", solution];
+                 AppendTo[rest, solution];
+                ];
              ];
            FindMinimumByteCount[rest]
           ];
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, solution, rest},
-           DebugPrint["Tying to elimiate one of the parameters ",
+           DebugPrint["Trying to eliminate one of the parameters ",
                       {p1,p2}, " from the eqs.: ",
                       {eq1,eq2}];
            If[FreeQ[{eq1, eq2}, p1],
