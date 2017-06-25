@@ -108,14 +108,18 @@ bool starts_with(const std::string& str, const std::string& prefix)
 }
 
 /// removes whitespace from left side of string
-std::string trim_left(const std::string& s)
+void trim_left(std::string& str)
 {
-   std::string str(s);
-
    str.erase(str.begin(),
              std::find_if(str.begin(), str.end(),
                           [] (std::string::value_type c) { return !std::isspace(c); }));
+}
 
+/// returns copy of s with whitespace removed from left side of string
+std::string trim_left_copy(const std::string& s)
+{
+   std::string str(s);
+   trim_left(str);
    return str;
 }
 
@@ -165,19 +169,19 @@ void print_empty_phony_targets(const std::vector<std::string>& dependencies,
 /// returns file name from include "..." statement
 std::string get_filename_from_include(std::string line)
 {
-   line = trim_left(line);
+   trim_left(line);
 
    if (line.empty() || line[0] != '#')
       return "";
 
    // skip `#' and following whitespace
-   line = trim_left(line.substr(std::strlen("#")));
+   line = trim_left_copy(line.substr(std::strlen("#")));
 
    if (!starts_with(line, "include"))
       return "";
 
    // skip `include'
-   line = trim_left(line.substr(std::strlen("include")));
+   line = trim_left_copy(line.substr(std::strlen("include")));
 
    // extract file name from "file-name"
    std::size_t pos1 = line.find_first_of('"');
