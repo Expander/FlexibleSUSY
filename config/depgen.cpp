@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -170,13 +171,13 @@ std::string get_filename_from_include(std::string line)
       return "";
 
    // skip `#' and following whitespace
-   line = trim_left(line.substr(1));
+   line = trim_left(line.substr(std::strlen("#")));
 
    if (!starts_with(line, "include"))
       return "";
 
    // skip `include'
-   line = trim_left(line.substr(7));
+   line = trim_left(line.substr(std::strlen("include")));
 
    // extract file name from "file-name"
    std::size_t pos1 = line.find_first_of('"');
@@ -305,7 +306,7 @@ int main(int argc, char* argv[])
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
       if (starts_with(arg, "-I") && arg.length() > 2) {
-         paths.push_back(arg.substr(2));
+         paths.push_back(arg.substr(std::strlen("-I")));
          continue;
       }
       if (arg == "-MG") {
