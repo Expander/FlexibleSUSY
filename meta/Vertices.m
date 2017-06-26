@@ -397,8 +397,6 @@ FieldHead[field_Symbol[{__}]] := field;
 
 FieldHead[field_Symbol] := field;
 
-StripFieldIndices[field_] := field /. head_[{__}] :> head;
-
 ToCpPattern[cp : _SARAH`Cp|_SARAH`Cp[_]] := cp /.
     ((# -> (# /. Thread[(# -> If[Head[#] === Symbol, Pattern[#, _], #])& /@
 			FieldIndexList[#]]))& /@
