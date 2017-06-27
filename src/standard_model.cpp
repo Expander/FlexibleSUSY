@@ -41,6 +41,7 @@
 #include "weinberg_angle.hpp"
 
 #include "sm_twoloophiggs.hpp"
+#include "sm_threeloophiggs.hpp"
 
 #include <cmath>
 #include <functional>
@@ -147,6 +148,8 @@ const int Standard_model::numberOfParameters;
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_POLE_QCD_CORRECTION          two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AS  1
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AT  1
 
 Standard_model::Standard_model()
 {
@@ -4123,6 +4126,8 @@ std::complex<double> Standard_model::tadpole_hh_1loop() const
 
 double Standard_model::self_energy_hh_2loop() const
 {
+   using namespace flexiblesusy::sm_twoloophiggs;
+
    const double mt = MFu(2);
    const double yt = Yu(2,2);
    const double gs = g3;
@@ -4140,8 +4145,31 @@ double Standard_model::self_energy_hh_2loop() const
    return self_energy;
 }
 
+double Standard_model::self_energy_hh_3loop() const
+{
+   using namespace flexiblesusy::sm_threeloophiggs;
 
+   const double mt = MFu(2);
+   const double yt = Yu(2,2);
+   const double gs = g3;
+   const double mh = Mhh;
+   const double scale = get_scale();
+   double self_energy = 0.;
 
+   if (HIGGS_3LOOP_CORRECTION_AT_AT_AT) {
+      self_energy += self_energy_higgs_3loop_at_at_at_sm(scale, mt, yt, mh);
+   }
+
+   if (HIGGS_3LOOP_CORRECTION_AT_AT_AS) {
+      self_energy += self_energy_higgs_3loop_at_at_as_sm(scale, mt, yt, gs);
+   }
+
+   if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+      self_energy += self_energy_higgs_3loop_at_as_as_sm(scale, mt, yt, gs);
+   }
+
+   return self_energy;
+}
 
 
 
@@ -4175,6 +4203,8 @@ void Standard_model::calculate_Mhh_pole()
       double self_energy = Re(self_energy_hh_1loop(p));
       if (pole_mass_loop_order > 1)
          self_energy += self_energy_hh_2loop();
+      if (pole_mass_loop_order > 2)
+         self_energy += self_energy_hh_3loop();
       const double mass_sqr = M_tree - self_energy;
 
       PHYSICAL(Mhh) = SignedAbsSqrt(mass_sqr);

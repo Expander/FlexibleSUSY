@@ -12,6 +12,7 @@
 
 using namespace flexiblesusy;
 using namespace passarino_veltman;
+using namespace flexiblesusy::sm_twoloophiggs;
 
 BOOST_AUTO_TEST_CASE( test_SM_1loop_alpha_t )
 {

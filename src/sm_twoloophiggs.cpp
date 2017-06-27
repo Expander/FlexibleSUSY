@@ -23,8 +23,7 @@
 #include <cmath>
 
 namespace flexiblesusy {
-
-using namespace passarino_veltman;
+namespace sm_twoloophiggs {
 
 /**
  * Standard Model Higgs self-energy 1-loop (Landau gauge).
@@ -56,6 +55,8 @@ double self_energy_higgs_1loop_sm(
    double p, double scale, double mt, double yt,
    double v, double gY, double g2, double lambda)
 {
+   using namespace passarino_veltman;
+
    const double yt2 = Sqr(yt);
    const double mt2 = Sqr(mt);
    const double p2 = Sqr(p);
@@ -106,6 +107,8 @@ double self_energy_higgs_1loop_sm(
 double self_energy_higgs_1loop_at_sm(
    double p, double scale, double mt, double yt)
 {
+   using namespace passarino_veltman;
+
    const double yt2 = Sqr(yt);
    const double mt2 = Sqr(mt);
    const double p2 = Sqr(p);
@@ -274,4 +277,5 @@ double self_energy_higgs_2loop_sm_SUSYHD(
    return sigma;
 }
 
+} // namespace sm_twoloophiggs
 } // namespace flexiblesusy

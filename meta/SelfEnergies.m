@@ -845,6 +845,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            ytStr   = CConversion`RValueToCFormString[yt];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
+using namespace flexiblesusy::sm_twoloophiggs;
+
 const double mt = " <> mtStr <> ";
 const double yt = " <> ytStr <> ";
 const double gs = " <> g3Str <> ";
@@ -874,6 +876,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            mHiggs  = TreeMasses`GetMass[particle];
            mhStr   = CConversion`RValueToCFormString[mHiggs];
 "\
+using namespace flexiblesusy::sm_threeloophiggs;
+
 const double mt = " <> mtStr <> ";
 const double yt = " <> ytStr <> ";
 const double gs = " <> g3Str <> ";
@@ -908,6 +912,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            ytStr   = CConversion`RValueToCFormString[yt];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
+using namespace flexiblesusy::split_threeloophiggs;
+
 const double mt = " <> mtStr <> ";
 const double mg = " <> mgStr <> ";
 const double yt = " <> ytStr <> ";

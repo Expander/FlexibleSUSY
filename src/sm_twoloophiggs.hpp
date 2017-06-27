@@ -20,6 +20,7 @@
 #define SM_TWOLOOPHIGGS_H
 
 namespace flexiblesusy {
+namespace sm_twoloophiggs {
 
 /// SM Higgs self-energy 1-loop
 double self_energy_higgs_1loop_sm(
@@ -46,6 +47,7 @@ double self_energy_higgs_1loop_sm_SUSYHD(
 double self_energy_higgs_2loop_sm_SUSYHD(
    double vev, double Mt, double Mh, double g3);
 
+} // namespace sm_twoloophiggs
 } // namespace flexiblesusy
 
 #endif

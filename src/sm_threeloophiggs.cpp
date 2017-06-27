@@ -19,9 +19,8 @@
 #include "sm_threeloophiggs.hpp"
 #include "wrappers.hpp"
 
-#include <cmath>
-
 namespace flexiblesusy {
+namespace sm_threeloophiggs {
 
 /**
  * Standard Model Higgs self-energy 3-loop, \f$O(\alpha_t
@@ -127,4 +126,5 @@ double self_energy_higgs_3loop_at_at_at_sm(
    return - result * threeLoop;
 }
 
+} // namespace sm_threeloophiggs
 } // namespace flexiblesusy
