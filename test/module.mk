@@ -304,7 +304,8 @@ TEST_SH += \
 TEST_SRC += \
 		$(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.cpp
 endif
-endif
+
+endif # ifneq ($(findstring two_scale,$(SOLVERS)),)
 
 endif # ifneq ($(findstring semi_analytic,$(SOLVERS)),)
 
