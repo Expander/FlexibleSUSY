@@ -362,7 +362,7 @@ $(DIR)/test_pv_crosschecks.sh.log: $(TEST_PV_EXE)
 ifneq (,$(findstring test,$(MAKECMDGOALS)))
 ALLDEP += $(LIBFFLITE_DEP)
 endif
-endif
+endif # ifeq ($(ENABLE_LOOPTOOLS),yes)
 
 ifeq ($(WITH_BLSMlightZp),yes)
 TEST_SH += \
