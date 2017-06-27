@@ -143,6 +143,7 @@ UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2LoopSQCD = False;
 UseHiggs2LoopSM = False;
+UseHiggs3LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
@@ -1418,6 +1419,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[FlexibleSUSY`UseHiggs2LoopSM === True,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
               twoLoopHiggsHeaders = "#include \"sm_twoloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseHiggs3LoopSM === True,
+              {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
+              threeLoopHiggsHeaders = "#include \"sm_threeloophiggs.hpp\"\n";
              ];
            If[FlexibleSUSY`UseHiggs3LoopSplit === True,
               {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSplit[{SARAH`HiggsBoson}];

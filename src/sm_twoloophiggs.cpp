@@ -171,7 +171,7 @@ double self_energy_higgs_2loop_at_as_sm(
 double self_energy_higgs_2loop_at_at_sm(
    double scale, double mt, double yt)
 {
-   const double yt4 = Power(yt,4);
+   const double yt4 = Power4(yt);
    const double mt2 = Sqr(mt);
    const double Q2 = Sqr(scale);
    const double LogT = FiniteLog(mt2 / Q2);

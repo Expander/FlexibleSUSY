@@ -1398,6 +1398,14 @@ in the model file
 UseHiggs2LoopSM = True;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The Standard Model the three-loop Higgs pole mass corrections of the
+order \f$O(\alpha_t\alpha_s^2 + \alpha_t^2\alpha_s + \alpha_t^3)\f$
+[arxiv:1407.4336, Eq.(3.2)] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs3LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #### Split-MSSM (SplitMSSM) ####
 
 In the split-MSSM the two-loop Higgs pole mass corrections from

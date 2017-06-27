@@ -49,6 +49,7 @@ InitialGuessAtLowScale = {
 
 UseSM3LoopRGEs = True;
 UseHiggs2LoopSM = True;
+UseHiggs3LoopSM = True;
 
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh};

@@ -72,6 +72,8 @@ namespace flexiblesusy {
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
 #define TOP_POLE_QCD_CORRECTION          two_loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  1
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AS  1
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AT  1
 
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
