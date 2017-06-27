@@ -132,6 +132,17 @@ FlexibleSUSY 2.0.0 [not released yet]
    all of the parameters to be expanded are fixed in the same
    boundary condition, such as the CMSSM or CNMSSM.
 
+ * Feature: The 3-loop corrections to the Standard Model Higgs mass of
+   the order O(alpha_t^3 + alpha_t^2 alpha_s + alpha_t alpha_s^2) of
+   [arxiv:1407.4336] can be taken into account by setting
+
+      UseHiggs3LoopSM = True;
+
+   in the FlexibleSUSY model file.  In addition, the pole mass loop
+   order must be set to a value greater or equal to 3 to switch the
+   corrections on (SLHA input: FlexibleSUSY[4], Mathematica interface:
+   poleMassLoopOrder).
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
