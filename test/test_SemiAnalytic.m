@@ -144,24 +144,24 @@ TestEquality[Sort[(SortSolutionBasis[#])& /@ #]& @ SemiAnalytic`GetSemiAnalyticS
 
 boundaryCondition = {{T[Yu], T[Yd]}, {T[Yd], Azero*Yd}, {T[Ye], Azero*Ye},
                      {MassB, m12}, {MassWB, m12}, {MassG, m12}};
-expected = Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[MassB, {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                    T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                    T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}],
-                                          SemiAnalytic`SemiAnalyticSolution[MassWB, {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                     T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                     T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}],
-                                          SemiAnalytic`SemiAnalyticSolution[MassG, {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                    T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                    T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}],
-                                          SemiAnalytic`SemiAnalyticSolution[T[Yu], {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                    T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                    T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}],
-                                          SemiAnalytic`SemiAnalyticSolution[T[Yd], {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                    T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                    T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}],
-                                          SemiAnalytic`SemiAnalyticSolution[T[Ye], {m12, Azero, T[Yd][1,1], T[Yd][1,2], T[Yd][1,3],
-                                                                                    T[Yd][2,1], T[Yd][2,2], T[Yd][2,3],
-                                                                                    T[Yd][3,1], T[Yd][3,2], T[Yd][3,3]}]}];
+expected = Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[MassB, {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                    T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                    T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}],
+                                          SemiAnalytic`SemiAnalyticSolution[MassWB, {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                     T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                     T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}],
+                                          SemiAnalytic`SemiAnalyticSolution[MassG, {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                    T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                    T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}],
+                                          SemiAnalytic`SemiAnalyticSolution[T[Yu], {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                    T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                    T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}],
+                                          SemiAnalytic`SemiAnalyticSolution[T[Yd], {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                    T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                    T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}],
+                                          SemiAnalytic`SemiAnalyticSolution[T[Ye], {m12, Azero, T[Yd][0,0], T[Yd][0,1], T[Yd][0,2],
+                                                                                    T[Yd][1,0], T[Yd][1,1], T[Yd][1,2],
+                                                                                    T[Yd][2,0], T[Yd][2,1], T[Yd][2,2]}]}];
 TestEquality[Sort[(SortSolutionBasis[#])& /@ #]& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
 
 SemiAnalytic`SetSemiAnalyticParameters[{T[Yu], T[Yd], T[Ye], MassB, MassWB, MassG, mHd2, mHu2}];
