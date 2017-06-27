@@ -64,9 +64,9 @@ HighScale = Qin;
 HighScaleFirstGuess = Qin;
 
 HighScaleInput = {
-   {T[Ye], Aeij*Ye + I ImAeij},
-   {T[Yd], Adij*Ye + I ImAdij},
-   {T[Yu], Auij*Ye + I ImAuij},
+   {T[Ye], Aeij*Ye + I ImAeij*Ye},
+   {T[Yd], Adij*Yd + I ImAdij*Yd},
+   {T[Yu], Auij*Yu + I ImAuij*Yu},
    {mHd2, mHd2IN},
    {mHu2, mHu2IN},
    {mq2, LHInput[mq2]},

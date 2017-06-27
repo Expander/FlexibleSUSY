@@ -82,9 +82,9 @@ SUSYScale = MSUSY;
 SUSYScaleFirstGuess = MSUSY;
 
 SUSYScaleInput = {
-    {T[Ye], (ReAeInput + I ImAeInput) Ye},
-    {T[Yd], (ReAdInput + I ImAdInput) Yd},
-    {T[Yu], (ReAuInput + I ImAuInput) Yu},
+    {T[Ye], ReAeInput Ye + I ImAeInput Ye},
+    {T[Yd], ReAdInput Yd + I ImAdInput Yd},
+    {T[Yu], ReAuInput Yu + I ImAuInput Yu},
     {mq2, mq2Input},
     {ml2, ml2Input},
     {md2, md2Input},
