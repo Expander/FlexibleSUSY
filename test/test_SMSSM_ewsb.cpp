@@ -10,7 +10,6 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 #include "nmssmsoftsusy.h"
-#include "SMSSM_two_scale_ewsb_solver.hpp"
 #include "SMSSM_two_scale_model.hpp"
 #include "logger.hpp"
 
@@ -23,10 +22,6 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
    setup_SMSSM_const(m, s, input);
-
-   SMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);
@@ -168,10 +163,6 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
    setup_SMSSM_const(m, s, input);
-
-   SMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<SMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    softsusy::Z3 = false;
    softsusy::numRewsbLoops = 1;

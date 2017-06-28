@@ -10,7 +10,6 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 #include "nmssmsoftsusy.h"
-#include "NMSSM_two_scale_ewsb_solver.hpp"
 #include "NMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -23,10 +22,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level )
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
    setup_NMSSM(m, s, input);
-
-   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);
@@ -124,10 +119,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
    setup_NMSSM_const(m, s, input);
-
-   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);
@@ -247,10 +238,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
    setup_NMSSM_const(m, s, input);
-
-   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_Kappa(0.1);

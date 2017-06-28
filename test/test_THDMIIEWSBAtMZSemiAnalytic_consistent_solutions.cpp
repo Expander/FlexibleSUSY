@@ -16,7 +16,6 @@
 
 #include "THDMII_input_parameters.hpp"
 #include "THDMII_slha_io.hpp"
-#include "THDMII_two_scale_ewsb_solver.hpp"
 #include "THDMII_two_scale_low_scale_constraint.hpp"
 #include "THDMII_two_scale_spectrum_generator.hpp"
 #include "THDMII_two_scale_susy_scale_constraint.hpp"
@@ -91,10 +90,6 @@ THDMII<Two_scale> initialize_two_scale_model(
 
    two_scale_model.set_input_parameters(
       copy_input_parameters<THDMII_input_parameters>(semi_analytic_input));
-
-   THDMII_ewsb_solver<Two_scale> ewsb_solver;
-   two_scale_model.set_ewsb_solver(
-      std::make_shared<THDMII_ewsb_solver<Two_scale> >(ewsb_solver));
 
    two_scale_model.calculate_DRbar_masses();
 
@@ -210,10 +205,6 @@ THDMII<Two_scale> run_single_two_scale_iteration(
    const THDMII<Two_scale>& model, const THDMII_scales& scales)
 {
    THDMII<Two_scale> next_model(model);
-
-   THDMII_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(
-      std::make_shared<THDMII_ewsb_solver<Two_scale> >(ewsb_solver));
 
    THDMII_susy_scale_constraint<Two_scale> susy_scale_constraint;
    THDMII_low_scale_constraint<Two_scale> low_scale_constraint;

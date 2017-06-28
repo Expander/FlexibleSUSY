@@ -17,7 +17,6 @@
 
 #include "lowNUHMSSM_input_parameters.hpp"
 #include "lowNUHMSSM_slha_io.hpp"
-#include "lowNUHMSSM_two_scale_ewsb_solver.hpp"
 #include "lowNUHMSSM_two_scale_high_scale_constraint.hpp"
 #include "lowNUHMSSM_two_scale_low_scale_constraint.hpp"
 #include "lowNUHMSSM_two_scale_spectrum_generator.hpp"
@@ -275,10 +274,6 @@ double max_mass_rel_diff(const Model& old_model, const Model& new_model)
 lowNUHMSSM<Two_scale> run_single_two_scale_iteration(const lowNUHMSSM<Two_scale>& model, const lowNUHMSSM_scales& scales)
 {
    lowNUHMSSM<Two_scale> next_model(model);
-
-   lowNUHMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(
-      std::make_shared<lowNUHMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    lowNUHMSSM_susy_scale_constraint<Two_scale> susy_scale_constraint;
    lowNUHMSSM_low_scale_constraint<Two_scale> low_scale_constraint;

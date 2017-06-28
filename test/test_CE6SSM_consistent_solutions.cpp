@@ -17,7 +17,6 @@
 
 #include "E6SSM_input_parameters.hpp"
 #include "E6SSM_slha_io.hpp"
-#include "E6SSM_two_scale_ewsb_solver.hpp"
 #include "E6SSM_two_scale_high_scale_constraint.hpp"
 #include "E6SSM_two_scale_low_scale_constraint.hpp"
 #include "E6SSM_two_scale_spectrum_generator.hpp"
@@ -386,10 +385,6 @@ double max_mass_rel_diff(const Model& old_model, const Model& new_model)
 E6SSM<Two_scale> run_single_two_scale_iteration(const E6SSM<Two_scale>& model, const E6SSM_scales& scales)
 {
    E6SSM<Two_scale> next_model(model);
-
-   E6SSM_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(
-      std::make_shared<E6SSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    E6SSM_high_scale_constraint<Two_scale> high_scale_constraint;
    E6SSM_susy_scale_constraint<Two_scale> susy_scale_constraint;

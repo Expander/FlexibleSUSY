@@ -64,7 +64,6 @@ BOOST_AUTO_TEST_CASE( test_THDMIIEWSBAtMZSemiAnalytic_ewsb_one_loop_solution )
    solns.calculate_coefficients(model);
 
    model.run_to(Electroweak_constants::MZ);
-   model.calculate_DRbar_masses();
 
    THDMIIEWSBAtMZSemiAnalytic_ewsb_solver<Semi_analytic> ewsb_solver;
    ewsb_solver.set_loop_order(1);

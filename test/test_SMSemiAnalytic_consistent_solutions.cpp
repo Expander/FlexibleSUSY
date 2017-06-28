@@ -17,7 +17,6 @@
 
 #include "SM_input_parameters.hpp"
 #include "SM_slha_io.hpp"
-#include "SM_two_scale_ewsb_solver.hpp"
 #include "SM_two_scale_high_scale_constraint.hpp"
 #include "SM_two_scale_low_scale_constraint.hpp"
 #include "SM_two_scale_spectrum_generator.hpp"
@@ -77,10 +76,6 @@ SM<Two_scale> initialize_two_scale_model(
 
    two_scale_model.set_input_parameters(
       copy_input_parameters<SM_input_parameters>(semi_analytic_input));
-
-   SM_ewsb_solver<Two_scale> ewsb_solver;
-   two_scale_model.set_ewsb_solver(
-      std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    two_scale_model.calculate_DRbar_masses();
 
@@ -176,10 +171,6 @@ double max_mass_rel_diff(const Model& old_model, const Model& new_model)
 SM<Two_scale> run_single_two_scale_iteration(const SM<Two_scale>& model, const SM_scales& scales)
 {
    SM<Two_scale> next_model(model);
-
-   SM_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(
-      std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    SM_high_scale_constraint<Two_scale> high_scale_constraint;
    SM_susy_scale_constraint<Two_scale> susy_scale_constraint;

@@ -17,7 +17,6 @@
 
 #include "NMSSM_input_parameters.hpp"
 #include "NMSSM_slha_io.hpp"
-#include "NMSSM_two_scale_ewsb_solver.hpp"
 #include "NMSSM_two_scale_high_scale_constraint.hpp"
 #include "NMSSM_two_scale_low_scale_constraint.hpp"
 #include "NMSSM_two_scale_spectrum_generator.hpp"
@@ -270,10 +269,6 @@ double max_mass_rel_diff(const Model& old_model, const Model& new_model)
 NMSSM<Two_scale> run_single_two_scale_iteration(const NMSSM<Two_scale>& model, const NMSSM_scales& scales)
 {
    NMSSM<Two_scale> next_model(model);
-
-   NMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   next_model.set_ewsb_solver(
-      std::make_shared<NMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
 
    NMSSM_high_scale_constraint<Two_scale> high_scale_constraint;
    NMSSM_susy_scale_constraint<Two_scale> susy_scale_constraint;

@@ -8,7 +8,6 @@
 #include "test_NMSSMCPV.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
-#include "NMSSMCPV_two_scale_ewsb_solver.hpp"
 #include "NMSSMCPV_two_scale_model.hpp"
 
 using namespace flexiblesusy;
@@ -36,10 +35,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_ewsb_tree_level )
    NMSSMCPV<Two_scale> m;
    const double precision = 1.0e-5;
    setup_NMSSMCPV(m, input);
-
-   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
@@ -80,10 +75,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_ewsb_one_loop )
    NMSSMCPV<Two_scale> m;
    const double precision = 1.0e-10;
    setup_NMSSMCPV(m, input);
-
-   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
@@ -207,10 +198,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles_real_limit )
    NMSSMCPV<Two_scale> m;
    setup_NMSSMCPV(m, input);
 
-   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
-
    // initial guess
    m.set_mHu2(-Sqr(input.m0));
    m.set_mHd2(Sqr(input.m0));
@@ -246,10 +233,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles )
    NMSSMCPV<Two_scale> m;
    const double precision = 1.0e-5;
    setup_NMSSMCPV(m, input);
-
-   NMSSMCPV_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<NMSSMCPV_ewsb_solver<Two_scale> >(ewsb_solver));
 
    // initial guess
    m.set_mHu2(-Sqr(input.m0));

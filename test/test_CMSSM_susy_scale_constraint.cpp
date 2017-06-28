@@ -9,7 +9,6 @@
 
 #define private public
 
-#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "softsusy.h"
@@ -21,9 +20,6 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    QedQcd qedqcd;
    CMSSM_input_parameters input;
    CMSSM<Two_scale> m; MssmSoftsusy s;
-   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
-   m.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ewsb_solver));
    setup_CMSSM(m, s, input);
 
    CMSSM_susy_scale_constraint<Two_scale> constraint(&m, qedqcd);

@@ -8,7 +8,6 @@
 #include "CMSSMSemiAnalytic_semi_analytic_solutions.hpp"
 
 #include "CMSSM_mass_eigenstates.hpp"
-#include "CMSSM_two_scale_ewsb_solver.hpp"
 
 using namespace flexiblesusy;
 
@@ -105,11 +104,6 @@ BOOST_AUTO_TEST_CASE( test_tree_level_ewsb_solutions )
 
    ts_model.run_to(Electroweak_constants::MZ);
 
-   CMSSM_ewsb_solver<Two_scale> ts_ewsb;
-   ts_ewsb.set_loop_order(0);
-   ts_model.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
-
    ts_model.set_ewsb_loop_order(0);
    ts_model.set_ewsb_iteration_precision(precision);
    const int ts_error = ts_model.solve_ewsb_tree_level();
@@ -180,11 +174,6 @@ BOOST_AUTO_TEST_CASE( test_one_loop_ewsb_solutions )
 
    ts_model.run_to(Electroweak_constants::MZ);
    ts_model.calculate_DRbar_masses();
-
-   CMSSM_ewsb_solver<Two_scale> ts_ewsb;
-   ts_ewsb.set_loop_order(1);
-   ts_model.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
 
    ts_model.set_ewsb_loop_order(1);
    ts_model.set_ewsb_iteration_precision(precision);
@@ -266,11 +255,6 @@ BOOST_AUTO_TEST_CASE( test_two_loop_ewsb_solutions )
 
    ts_model.run_to(Electroweak_constants::MZ);
    ts_model.calculate_DRbar_masses();
-
-   CMSSM_ewsb_solver<Two_scale> ts_ewsb;
-   ts_ewsb.set_loop_order(2);
-   ts_model.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(ts_ewsb));
 
    ts_model.set_ewsb_loop_order(2);
    ts_model.set_ewsb_iteration_precision(precision);

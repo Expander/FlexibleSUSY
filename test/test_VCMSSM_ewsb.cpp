@@ -15,9 +15,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level )
    VCMSSM_mass_eigenstates vcmssm(input);
    const double precision = 1.0e-5;
    setup_VCMSSM(vcmssm, input);
-   VCMSSM_ewsb_solver<Two_scale> vcmssm_solver;
-   vcmssm.set_ewsb_solver(
-      std::make_shared<VCMSSM_ewsb_solver<Two_scale> >(vcmssm_solver));
 
    // initial guess
    const double vev = Sqrt(Sqr(vcmssm.get_vd()) + Sqr(vcmssm.get_vu()));
@@ -41,9 +38,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level )
 
    CMSSM_mass_eigenstates cmssm;
    match_CMSSM_to_VCMSSM(cmssm, vcmssm);
-   CMSSM_ewsb_solver<Two_scale> cmssm_solver;
-   cmssm.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(cmssm_solver));
 
    // initial guess: VCMSSM solution with small perturbation
    const double shift = 5.;
@@ -71,9 +65,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level_negative_Mu )
    VCMSSM_mass_eigenstates vcmssm(input);
    const double precision = 1.0e-5;
    setup_VCMSSM(vcmssm, input);
-   VCMSSM_ewsb_solver<Two_scale> vcmssm_solver;
-   vcmssm.set_ewsb_solver(
-      std::make_shared<VCMSSM_ewsb_solver<Two_scale> >(vcmssm_solver));
 
    input.SignMu = -1;
    vcmssm.set_input_parameters(input);
@@ -100,9 +91,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_tree_level_negative_Mu )
 
    CMSSM_mass_eigenstates cmssm;
    match_CMSSM_to_VCMSSM(cmssm, vcmssm);
-   CMSSM_ewsb_solver<Two_scale> cmssm_solver;
-   cmssm.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(cmssm_solver));
 
    // initial guess: VCMSSM solution with small perturbation
    const double shift = 5.;
@@ -130,9 +118,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
    VCMSSM_mass_eigenstates vcmssm(vcmssm_input);
    const double precision = 1.0e-5;
    setup_VCMSSM(vcmssm, vcmssm_input);
-   VCMSSM_ewsb_solver<Two_scale> vcmssm_solver;
-   vcmssm.set_ewsb_solver(
-      std::make_shared<VCMSSM_ewsb_solver<Two_scale> >(vcmssm_solver));
 
    // initial guess
    const double vev = Sqrt(Sqr(vcmssm.get_vd()) + Sqr(vcmssm.get_vu()));
@@ -170,9 +155,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop )
    cmssm_input.SignMu = vcmssm_input.SignMu;
    CMSSM_mass_eigenstates cmssm(cmssm_input);
    match_CMSSM_to_VCMSSM(cmssm, vcmssm);
-   CMSSM_ewsb_solver<Two_scale> cmssm_solver;
-   cmssm.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(cmssm_solver));
 
    cmssm.calculate_DRbar_masses();
 
@@ -208,9 +190,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop_negative_Mu )
    VCMSSM_mass_eigenstates vcmssm(vcmssm_input);
    const double precision = 1.0e-5;
    setup_VCMSSM(vcmssm, vcmssm_input);
-   VCMSSM_ewsb_solver<Two_scale> vcmssm_solver;
-   vcmssm.set_ewsb_solver(
-      std::make_shared<VCMSSM_ewsb_solver<Two_scale> >(vcmssm_solver));
 
    vcmssm_input.SignMu = -1;
    vcmssm.set_input_parameters(vcmssm_input);
@@ -251,9 +230,6 @@ BOOST_AUTO_TEST_CASE( test_VCMSSM_ewsb_one_loop_negative_Mu )
    cmssm_input.SignMu = vcmssm_input.SignMu;
    CMSSM_mass_eigenstates cmssm(cmssm_input);
    match_CMSSM_to_VCMSSM(cmssm, vcmssm);
-   CMSSM_ewsb_solver<Two_scale> cmssm_solver;
-   cmssm.set_ewsb_solver(
-      std::make_shared<CMSSM_ewsb_solver<Two_scale> >(cmssm_solver));
 
    cmssm.calculate_DRbar_masses();
 
