@@ -68,6 +68,11 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    }
 }
 
+void test_default_settings(const CMSSM_mass_eigenstates& m)
+{
+   TEST(m.ewsb_solver != nullptr);
+}
+
 void test_weinberg_angle(CMSSM_mass_eigenstates m)
 {
    m.calculate_DRbar_masses();
@@ -1631,6 +1636,8 @@ void compare_models(int loopLevel)
 
    setup_models(m, softSusy, input, loopLevel);
 
+   std::cout << "testing default setup ...";
+   test_default_settings(m);
    std::cout << "comparing parameters ... ";
    test_parameter_equality(softSusy, m);
    std::cout << "done\n";
