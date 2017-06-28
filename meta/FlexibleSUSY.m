@@ -1331,6 +1331,25 @@ WriteSemiAnalyticEWSBSolverClass[ewsbEquations_List, parametersFixedByEWSB_List,
                           } ];
           ];
 
+CreateDefaultEWSBSolverConstructor[solvers_List] :=
+    Module[{i, makeSharedPointer, solver, body, init = ""},
+           If[Length[solvers] > 0,
+              makeSharedPointer[s_] := IndentText[WrapLines[", ewsb_solver(new " <> FlexibleSUSY`FSModelName
+                                                            <> "_ewsb_solver<" <> GetBVPSolverTemplateParameter[s]
+                                                            <> ">())\n"]];
+              solver = solvers[[1]];
+              body = makeSharedPointer[solver];
+              init = init <> "#if defined(" <> GetBVPSolverEnabledMacro[solver] <> ")\n" <> body;
+              For[i = 2, i <= Length[solvers], i++,
+                  solver = solvers[[i]];
+                  body = makeSharedPointer[solver];
+                  init = init <> "#elif defined(" <> GetBVPSolverEnabledMacro[solver] <> ")\n" <> body;
+                 ];
+              init = init <> "#endif";
+             ];
+           init
+          ];
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSubstitutions_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
@@ -1380,7 +1399,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             lspGetters = "", lspFunctions = "",
             convertMixingsToSLHAConvention = "",
             convertMixingsToHKConvention = "",
-            enablePoleMassThreads = True
+            enablePoleMassThreads = True,
+            ewsbSolverHeaders = "", defaultEWSBSolverCctor = ""
            },
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
@@ -1519,6 +1539,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                                    #[[1]]& /@ (Select[ewsbSubstitutions,
                                                       Function[sub, Or @@ (!FreeQ[sub[[2]], #]& /@ parametersToSave)]])];
            saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersToSave];
+           (ewsbSolverHeaders = ewsbSolverHeaders
+                                <> EnableForBVPSolver[#, ("#include \"" <> FlexibleSUSY`FSModelName
+                                                          <> "_" <> GetBVPSolverHeaderName[#] <> "_ewsb_solver.hpp\"\n")] <> "\n")&
+                                /@ FlexibleSUSY`FSBVPSolvers;
+           defaultEWSBSolverCctor = CreateDefaultEWSBSolverConstructor[FlexibleSUSY`FSBVPSolvers];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
@@ -1589,6 +1614,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@solveEWSBTemporarily@"         -> solveEWSBTemporarily,
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
+                            "@ewsbSolverHeaders@"            -> ewsbSolverHeaders,
+                            "@defaultEWSBSolverCctor@"       -> defaultEWSBSolverCctor,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -1822,6 +1849,15 @@ GetBVPSolverHeaderName[solver_] :=
               Quit[1];
           ];
 
+GetBVPSolverEnabledMacro[solver_] :=
+    Switch[solver,
+           FlexibleSUSY`TwoScaleSolver, "ENABLE_TWO_SCALE_SOLVER",
+           FlexibleSUSY`SemiAnalyticSolver, "ENABLE_SEMI_ANALYTIC_SOLVER",
+           FlexibleSUSY`LatticeSolver, "ENABLE_LATTICE_SOLVER",
+           _, Print["Error: invalid BVP solver requested: ", solver];
+              Quit[1];
+          ];
+
 GetBVPSolverSLHAOptionKey[solver_] :=
     Switch[solver,
            FlexibleSUSY`TwoScaleSolver, "1",
@@ -1841,19 +1877,7 @@ GetBVPSolverTemplateParameter[solver_] :=
           ];
 
 EnableForBVPSolver[solver_, statements_String] :=
-    Module[{result = "#ifdef "},
-           Switch[solver,
-                  FlexibleSUSY`TwoScaleSolver,
-                  result = result <> "ENABLE_TWO_SCALE_SOLVER\n" <> statements,
-                  FlexibleSUSY`SemiAnalyticSolver,
-                  result = result <> "ENABLE_SEMI_ANALYTIC_SOLVER\n" <> statements,
-                  FlexibleSUSY`LatticeSolver,
-                  result = result <> "ENABLE_LATTICE_SOLVER\n" <> statements,
-                  _, Print["Error: invalid BVP solver requested: ", solver];
-                     Quit[1];
-                 ];
-           result <> "#endif"
-          ];
+    "#ifdef " <> GetBVPSolverEnabledMacro[solver] <> "\n" <> statements <> "#endif";
 
 EnableSpectrumGenerator[solver_] :=
     Module[{header = "#include \"" <> FlexibleSUSY`FSModelName},

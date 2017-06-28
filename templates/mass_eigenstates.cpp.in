@@ -39,12 +39,14 @@
 #include "numerics2.hpp"
 #include "logger.hpp"
 #include "error.hpp"
-#include "config.h"
 #include "pv.hpp"
 #include "raii.hpp"
 #include "thread_pool.hpp"
 #include "functors.hpp"
 
+#include "config.h"
+
+@ewsbSolverHeaders@
 @twoLoopHiggsHeaders@
 @threeLoopHiggsHeaders@
 @twoLoopThresholdHeaders@
@@ -77,6 +79,7 @@ namespace flexiblesusy {
 
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
+@defaultEWSBSolverCctor@
 {
 }
 
