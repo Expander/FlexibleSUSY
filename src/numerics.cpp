@@ -29,13 +29,11 @@
 
 #include "numerics.h"
 #include "numerics2.hpp"
-#include "rk.hpp"
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
 #include <algorithm>
 #include <cmath>
-#include <Eigen/Dense>
 
 namespace softsusy {
 
@@ -59,16 +57,6 @@ bool is_close(double m1, double m2, double tol) noexcept
   return (mmax - mmin <= max_tol);
 }
 
-double refnfn(double x, double p, double m1, double m2, double q) noexcept
-{
-  using flexiblesusy::fast_log;
-  const static std::complex<double> iEpsilon(0.0, TOL * 1.0e-20);
-
-  return std::real(x *
-    fast_log(((1 - x) * sqr(m1) + x * sqr(m2)
-              - x * (1 - x) * sqr(p) - iEpsilon) / sqr(q)));
-}
-
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
 template <typename T>
 T divide_finite(T a, T b) noexcept {
@@ -76,41 +64,6 @@ T divide_finite(T a, T b) noexcept {
    if (!std::isfinite(result))
       result = std::numeric_limits<T>::max();
    return result;
-}
-
-double integrandThreshbnr(double x, double p, double m1, double m2, double q) noexcept
-{
-  return refnfn(x, p, m1, m2, q);
-}
-
-Eigen::Array<double,1,1> dd(double x, double p, double m1, double m2, double q) noexcept
-{
-  Eigen::Array<double,1,1> dydx;
-  dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
-  return dydx;
-}
-
-// Returns real part of integral
-double bIntegral(double p, double m1, double m2, double q) noexcept
-{
-  using namespace flexiblesusy;
-
-  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOL * 1.0e-5;
-  const double eps = TOL * 1.0e-3;
-  Eigen::Array<double,1,1> v;
-  v(0) = 1.0;
-
-  try {
-     runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
-                                [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
-                                   return dd(x, p, m1, m2, q);
-                                });
-  } catch (...) {
-     ERROR("B1 integral did not converge.");
-     v(0) = 1.;
-  }
-
-  return v(0) - 1.0;
 }
 
 double fB(const std::complex<double>& a) noexcept
@@ -277,7 +230,10 @@ double b1(double p, double m1, double m2, double q) noexcept
           (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
-    ans = bIntegral(p, m1, m2, q);
+     if (m12 > m22)
+        ans = -0.5*log(m12/q2) + 0.75;
+     else
+        ans = -0.5*log(m22/q2) + 0.25;
   }
 
 #ifdef USE_LOOPTOOLS
