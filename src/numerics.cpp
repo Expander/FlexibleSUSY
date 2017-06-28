@@ -91,7 +91,7 @@ Eigen::Array<double,1,1> dd(double x, double p, double m1, double m2, double q) 
 }
 
 // Returns real part of integral
-double bIntegral(double p, double m1, double m2, double q)
+double bIntegral(double p, double m1, double m2, double q) noexcept
 {
   using namespace flexiblesusy;
 
@@ -100,10 +100,15 @@ double bIntegral(double p, double m1, double m2, double q)
   Eigen::Array<double,1,1> v;
   v(0) = 1.0;
 
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
-                             [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
-                                return dd(x, p, m1, m2, q);
-                             });
+  try {
+     runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
+                                [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
+                                   return dd(x, p, m1, m2, q);
+                                });
+  } catch (...) {
+     ERROR("B1 integral did not converge.");
+     v(0) = 1.;
+  }
 
   return v(0) - 1.0;
 }
