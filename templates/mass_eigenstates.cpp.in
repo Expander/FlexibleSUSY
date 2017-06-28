@@ -283,11 +283,8 @@ int CLASSNAME::solve_ewsb_tree_level_custom()
 int CLASSNAME::solve_ewsb_tree_level()
 {
    if (!ewsb_solver) {
-#ifdef ENABLE_VERBOSE
-      ERROR("@ModelName@_mass_eigenstates::solve_ewsb_tree_level: "
-            "no EWSB solver set");
-#endif
-      return EWSB_solver::FAIL;
+      throw SetupError("@ModelName@_mass_eigenstates::solve_ewsb_tree_level: "
+                       "no EWSB solver set");
    }
 
    const int old_loop_order = ewsb_solver->get_loop_order();
@@ -318,11 +315,8 @@ int CLASSNAME::solve_ewsb_tree_level()
 int CLASSNAME::solve_ewsb_one_loop()
 {
    if (!ewsb_solver) {
-#ifdef ENABLE_VERBOSE
-      ERROR("@ModelName@_mass_eigenstates::solve_ewsb_one_loop: "
-            "no EWSB solver set");
-#endif
-      return EWSB_solver::FAIL;
+      throw SetupError("@ModelName@_mass_eigenstates::solve_ewsb_one_loop: "
+                       "no EWSB solver set");
    }
 
    const int old_loop_order = ewsb_solver->get_loop_order();
@@ -353,11 +347,8 @@ int CLASSNAME::solve_ewsb_one_loop()
 int CLASSNAME::solve_ewsb()
 {
    if (!ewsb_solver) {
-#ifdef ENABLE_VERBOSE
-      ERROR("@ModelName@_mass_eigenstates::solve_ewsb: "
-            "no EWSB solver set");
-#endif
-      return EWSB_solver::FAIL;
+      throw SetupError("@ModelName@_mass_eigenstates::solve_ewsb: "
+                       "no EWSB solver set");
    }
 
    VERBOSE_MSG("\t\tSolving @ModelName@ EWSB at " << ewsb_loop_order << "-loop order");
