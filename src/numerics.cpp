@@ -137,22 +137,22 @@ double a0(double m, double q) noexcept {
    return sqr(m) * (1.0 - 2. * log(fabs(m / q)));
 }
 
-double ffn(double p, double m1, double m2, double q) {
+double ffn(double p, double m1, double m2, double q) noexcept {
    return a0(m1, q) - 2.0 * a0(m2, q) -
       (2.0 * sqr(p) + 2.0 * sqr(m1) - sqr(m2)) *
       b0(p, m1, m2, q);
 }
 
-double gfn(double p, double m1, double m2, double q) {
+double gfn(double p, double m1, double m2, double q) noexcept {
    return (sqr(p) - sqr(m1) - sqr(m2)) * b0(p, m1, m2, q) - a0(m1, q)
       - a0(m2, q);
 }
 
-double hfn(double p, double m1, double m2, double q) {
+double hfn(double p, double m1, double m2, double q) noexcept {
    return 4.0 * b22(p, m1, m2, q) + gfn(p, m1, m2, q);
 }
 
-double b22bar(double p, double m1, double m2, double q) {
+double b22bar(double p, double m1, double m2, double q) noexcept {
    return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
 }
 
@@ -161,7 +161,7 @@ double b22bar(double p, double m1, double m2, double q) {
   From hep-ph/9606211
   Note it returns the REAL PART ONLY.
 */
-double b0(double p, double m1, double m2, double q)
+double b0(double p, double m1, double m2, double q) noexcept
 {
   using std::log;
 
@@ -225,7 +225,7 @@ double b0(double p, double m1, double m2, double q)
 }
 
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
-double b1(double p, double m1, double m2, double q)
+double b1(double p, double m1, double m2, double q) noexcept
 {
   using std::log;
 
@@ -294,7 +294,7 @@ double b1(double p, double m1, double m2, double q)
   return ans;
 }
 
-double b22(double p,  double m1, double m2, double q)
+double b22(double p,  double m1, double m2, double q) noexcept
 {
   using std::log;
 
