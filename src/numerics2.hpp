@@ -26,11 +26,20 @@
 #include <complex>
 #include <cstddef>
 #include <cstdlib>
+#include <type_traits>
 
 namespace flexiblesusy {
 
 template <typename T>
-bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+typename std::enable_if<std::is_unsigned<T>::value, bool>::type
+is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+{
+   return a <= prec;
+}
+
+template <typename T>
+typename std::enable_if<!std::is_unsigned<T>::value, bool>::type
+is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
 {
    return std::abs(a) <= prec;
 }
@@ -50,7 +59,8 @@ bool is_equal(std::complex<T> a, std::complex<T> b,
 }
 
 template <typename T>
-bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+typename std::enable_if<!std::is_unsigned<T>::value, bool>::type
+is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 {
    if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
       return true;
@@ -60,6 +70,18 @@ bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
       return false;
 
    return std::abs((a - b)/a) < prec;
+}
+
+template <typename T>
+typename std::enable_if<std::is_unsigned<T>::value, bool>::type
+is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+{
+   using ST = typename std::make_signed<T>::type;
+   const auto sa = static_cast<ST>(a);
+   const auto sb = static_cast<ST>(b);
+   const auto sprec = static_cast<ST>(prec);
+
+   return is_equal_rel(sa, sb, sprec);
 }
 
 bool is_finite(const double*, long length);

@@ -38,6 +38,15 @@ BOOST_AUTO_TEST_CASE(test_is_equal)
    BOOST_CHECK(is_equal(ui, 0U));
    BOOST_CHECK(is_equal(ul, 0UL));
    BOOST_CHECK(is_equal(ull, 0ULL));
+
+   // BOOST_CHECK(is_equal_rel(s, (short)0));
+   BOOST_CHECK(is_equal_rel(i, 0));
+   BOOST_CHECK(is_equal_rel(l, 0L));
+   BOOST_CHECK(is_equal_rel(ll, 0LL));
+   // BOOST_CHECK(is_equal_rel(us, (unsigned short)0));
+   BOOST_CHECK(is_equal_rel(ui, 0U));
+   BOOST_CHECK(is_equal_rel(ul, 0UL));
+   BOOST_CHECK(is_equal_rel(ull, 0ULL));
 }
 
 template <long N>

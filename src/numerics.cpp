@@ -29,13 +29,11 @@
 
 #include "numerics.h"
 #include "numerics2.hpp"
-#include "rk.hpp"
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
 #include <algorithm>
 #include <cmath>
-#include <Eigen/Dense>
 
 namespace softsusy {
 
@@ -59,16 +57,6 @@ bool is_close(double m1, double m2, double tol) noexcept
   return (mmax - mmin <= max_tol);
 }
 
-double refnfn(double x, double p, double m1, double m2, double q) noexcept
-{
-  using flexiblesusy::fast_log;
-  const static std::complex<double> iEpsilon(0.0, TOL * 1.0e-20);
-
-  return std::real(x *
-    fast_log(((1 - x) * sqr(m1) + x * sqr(m2)
-              - x * (1 - x) * sqr(p) - iEpsilon) / sqr(q)));
-}
-
 /// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
 template <typename T>
 T divide_finite(T a, T b) noexcept {
@@ -76,36 +64,6 @@ T divide_finite(T a, T b) noexcept {
    if (!std::isfinite(result))
       result = std::numeric_limits<T>::max();
    return result;
-}
-
-double integrandThreshbnr(double x, double p, double m1, double m2, double q) noexcept
-{
-  return refnfn(x, p, m1, m2, q);
-}
-
-Eigen::Array<double,1,1> dd(double x, double p, double m1, double m2, double q) noexcept
-{
-  Eigen::Array<double,1,1> dydx;
-  dydx(0) = -integrandThreshbnr(x, p, m1, m2, q);
-  return dydx;
-}
-
-// Returns real part of integral
-double bIntegral(double p, double m1, double m2, double q)
-{
-  using namespace flexiblesusy;
-
-  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOL * 1.0e-5;
-  const double eps = TOL * 1.0e-3;
-  Eigen::Array<double,1,1> v;
-  v(0) = 1.0;
-
-  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin,
-                             [p, m1, m2, q] (double x, const Eigen::Array<double,1,1>&) {
-                                return dd(x, p, m1, m2, q);
-                             });
-
-  return v(0) - 1.0;
 }
 
 double fB(const std::complex<double>& a) noexcept
@@ -132,22 +90,22 @@ double a0(double m, double q) noexcept {
    return sqr(m) * (1.0 - 2. * log(fabs(m / q)));
 }
 
-double ffn(double p, double m1, double m2, double q) {
+double ffn(double p, double m1, double m2, double q) noexcept {
    return a0(m1, q) - 2.0 * a0(m2, q) -
       (2.0 * sqr(p) + 2.0 * sqr(m1) - sqr(m2)) *
       b0(p, m1, m2, q);
 }
 
-double gfn(double p, double m1, double m2, double q) {
+double gfn(double p, double m1, double m2, double q) noexcept {
    return (sqr(p) - sqr(m1) - sqr(m2)) * b0(p, m1, m2, q) - a0(m1, q)
       - a0(m2, q);
 }
 
-double hfn(double p, double m1, double m2, double q) {
+double hfn(double p, double m1, double m2, double q) noexcept {
    return 4.0 * b22(p, m1, m2, q) + gfn(p, m1, m2, q);
 }
 
-double b22bar(double p, double m1, double m2, double q) {
+double b22bar(double p, double m1, double m2, double q) noexcept {
    return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
 }
 
@@ -156,7 +114,7 @@ double b22bar(double p, double m1, double m2, double q) {
   From hep-ph/9606211
   Note it returns the REAL PART ONLY.
 */
-double b0(double p, double m1, double m2, double q)
+double b0(double p, double m1, double m2, double q) noexcept
 {
   using std::log;
 
@@ -220,7 +178,7 @@ double b0(double p, double m1, double m2, double q)
 }
 
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
-double b1(double p, double m1, double m2, double q)
+double b1(double p, double m1, double m2, double q) noexcept
 {
   using std::log;
 
@@ -272,7 +230,10 @@ double b1(double p, double m1, double m2, double q)
           (24.*pow6(m12 - m22)) - 0.5*log(m22/q2);
     }
   } else {
-    ans = bIntegral(p, m1, m2, q);
+     if (m12 > m22)
+        ans = -0.5*log(m12/q2) + 0.75;
+     else
+        ans = -0.5*log(m22/q2) + 0.25;
   }
 
 #ifdef USE_LOOPTOOLS
@@ -289,7 +250,7 @@ double b1(double p, double m1, double m2, double q)
   return ans;
 }
 
-double b22(double p,  double m1, double m2, double q)
+double b22(double p,  double m1, double m2, double q) noexcept
 {
   using std::log;
 
