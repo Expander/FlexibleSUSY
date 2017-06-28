@@ -406,42 +406,42 @@ void CLASSNAME::print(std::ostream& ostr) const
  * @note: They take squared arguments!
  */
 
-double CLASSNAME::A0(double m) const
+double CLASSNAME::A0(double m) const noexcept
 {
    return passarino_veltman::ReA0(m, Sqr(get_scale()));
 }
 
-double CLASSNAME::B0(double p, double m1, double m2) const
+double CLASSNAME::B0(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReB0(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::B1(double p, double m1, double m2) const
+double CLASSNAME::B1(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReB1(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::B00(double p, double m1, double m2) const
+double CLASSNAME::B00(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReB00(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::B22(double p, double m1, double m2) const
+double CLASSNAME::B22(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReB22(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::H0(double p, double m1, double m2) const
+double CLASSNAME::H0(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReH0(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::F0(double p, double m1, double m2) const
+double CLASSNAME::F0(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReF0(p, m1, m2, Sqr(get_scale()));
 }
 
-double CLASSNAME::G0(double p, double m1, double m2) const
+double CLASSNAME::G0(double p, double m1, double m2) const noexcept
 {
    return passarino_veltman::ReG0(p, m1, m2, Sqr(get_scale()));
 }
