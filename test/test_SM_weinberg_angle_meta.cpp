@@ -5,7 +5,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "SM_mass_eigenstates.hpp"
-#include "SM_two_scale_ewsb_solver.hpp"
 #include "test_SM.hpp"
 
 #define private public
@@ -100,11 +99,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
    setup_SM_const(model, input);
    model.set_thresholds(2);
-
-   SM_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(
-      std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
-
    model.calculate_DRbar_masses();
 
    const double outrho = 1.0, outsin = 0.48;
@@ -133,11 +127,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
    setup_SM_const(model, input);
    model.set_thresholds(2);
-
-   SM_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(
-      std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
-
    model.calculate_DRbar_masses();
 
    const double outrho = 1.0, outsin = 0.48;
@@ -170,11 +159,6 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
 
    setup_SM_const(model, input);
    model.set_thresholds(2);
-
-   SM_ewsb_solver<Two_scale> ewsb_solver;
-   model.set_ewsb_solver(
-      std::make_shared<SM_ewsb_solver<Two_scale> >(ewsb_solver));
-
    model.calculate_DRbar_masses();
 
    const double tol = 1.0e-10;
