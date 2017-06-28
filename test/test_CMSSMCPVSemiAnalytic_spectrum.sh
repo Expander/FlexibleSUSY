@@ -160,7 +160,7 @@ echo "comparing files $semi_analytic_output and $two_scale_output ..."
 echo "required relative agreement: $rel_error"
 
 diff=`$numdiff_cmd\
- --absolute-tolerance=1.0e-12\
+ --absolute-tolerance=1.0e-09\
  --relative-tolerance=$rel_error\
  $semi_analytic_output $two_scale_output`
 
