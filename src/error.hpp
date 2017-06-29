@@ -189,6 +189,19 @@ private:
    std::string message;
 };
 
+/**
+ * @class PhysicalError
+ * @brief Exception class to be used in the FlexibleSUSY model file
+ */
+class PhysicalError : public Error {
+public:
+   explicit PhysicalError(const std::string& message_) : message(message_) {}
+   virtual ~PhysicalError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
+
 } // namespace flexiblesusy
 
 #endif

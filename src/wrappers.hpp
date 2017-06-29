@@ -749,6 +749,12 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
    Eigen::Matrix<double,M,N> Proj(Eigen::Matrix<double,M,N>::Zero());   \
    Proj((X)-1,(Y)-1) = 1;
 
+inline double FSThrow(const std::string& s)
+{
+   throw PhysicalError(s);
+   return 0.;
+}
+
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
 {

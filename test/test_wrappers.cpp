@@ -658,3 +658,8 @@ BOOST_AUTO_TEST_CASE(test_Print_functions)
 
    BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
 }
+
+BOOST_AUTO_TEST_CASE(test_FSThrow)
+{
+   BOOST_CHECK_THROW(FSThrow("msg"), flexiblesusy::PhysicalError);
+}
