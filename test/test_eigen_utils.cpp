@@ -146,3 +146,47 @@ BOOST_AUTO_TEST_CASE(test_Eval)
    BOOST_CHECK_EQUAL(typeid(Eval(i)).hash_code(), typeid(i).hash_code());
 
 }
+
+BOOST_AUTO_TEST_CASE(test_normalize_to_interval_real)
+{
+   Eigen::Matrix<double,2,2> m;
+   m << -2., -1., 0., 2;
+
+   normalize_to_interval(m, -1., 1.);
+
+   BOOST_CHECK_EQUAL(m(0,0), -1.);
+   BOOST_CHECK_EQUAL(m(0,1), -1.);
+   BOOST_CHECK_EQUAL(m(1,0),  0.);
+   BOOST_CHECK_EQUAL(m(1,1),  1.);
+}
+
+BOOST_AUTO_TEST_CASE(test_normalize_to_interval_complex)
+{
+   Eigen::Matrix<std::complex<double>,2,2> m;
+   m << -2., -1., 0., 2.;
+
+   normalize_to_interval(m, 1.);
+
+   BOOST_CHECK_CLOSE(std::real(m(0,0)), -1., 1e-15);
+   BOOST_CHECK_CLOSE(std::real(m(0,1)), -1., 1e-15);
+   BOOST_CHECK_SMALL(std::real(m(1,0)), 1e-15);
+   BOOST_CHECK_CLOSE(std::real(m(1,1)),  1., 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(0,0)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(0,1)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(1,0)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(1,1)), 1e-15);
+
+   m << std::polar(2.,1.), std::polar(1.,1.),
+        std::polar(0.5,1.), std::polar(2.,-1.);
+
+   normalize_to_interval(m, 1.);
+
+   BOOST_CHECK_CLOSE(std::abs(m(0,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(0,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(1,0)), 0.5, 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(1,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(0,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(0,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(1,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(1,1)), -1., 1e-15);
+}

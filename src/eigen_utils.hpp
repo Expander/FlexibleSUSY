@@ -21,6 +21,7 @@
 
 #include <Eigen/Core>
 #include <cassert>
+#include <complex>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -125,6 +126,50 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
       v.row(new_pos).swap(v.row(pos));
       z.row(new_pos).swap(z.row(pos));
       pos = new_pos;
+   }
+}
+
+/**
+ * Normalize each element of the given real matrix to be within the
+ * interval [min, max].  Values < min are set to min.  Values > max
+ * are set to max.
+ *
+ * @param m matrix
+ * @param min minimum
+ * @param max maximum
+ */
+template <int M, int N>
+void normalize_to_interval(Eigen::Matrix<double,M,N>& m, double min = -1., double max = 1.)
+{
+   auto data = m.data();
+   const auto size = m.size();
+
+   for (int i = 0; i < size; i++) {
+      if (data[i] < min)
+         data[i] = min;
+      else if (data[i] > max)
+         data[i] = max;
+   }
+}
+
+/**
+ * Normalize each element of the given complex matrix to have a
+ * magnitude within the interval [0, max].  If the magnitude of a
+ * matrix element is > max, then the magnitude is set to max.  The
+ * phase angles are not modified.
+ *
+ * @param m matrix
+ * @param max_mag maximum magnitude
+ */
+template <int M, int N>
+void normalize_to_interval(Eigen::Matrix<std::complex<double>,M,N>& m, double max_mag = 1.)
+{
+   auto data = m.data();
+   const auto size = m.size();
+
+   for (int i = 0; i < size; i++) {
+      if (std::abs(data[i]) > max_mag)
+         data[i] = std::polar(max_mag, std::arg(data[i]));
    }
 }
 
