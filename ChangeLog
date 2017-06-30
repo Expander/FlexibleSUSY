@@ -162,8 +162,9 @@ FlexibleSUSY 2.0.0 [not released yet]
  * Change: In FlexibleEFTHiggs models, the Standard Model parameters
    are written to the SLHA output in addition to the BSM parameters.
 
- * Change: The return value of FS<model>CalculateSpectrum[] has been
-   changed.  It has now the structure
+ * Change: The return value of FS<model>CalculateSpectrum[] and
+   FS<model>CalculateObservables[] has been changed.  They have now
+   the structure
 
       { <model> -> { model parameters ... } }
 
