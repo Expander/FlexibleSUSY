@@ -50,6 +50,9 @@ Block MINPAR                 # Input parameters
     2   300                  # m12
     3   35                   # TanBeta
     5   -800                 # Azero
+Block IMMINPAR
+    2   0                    # Imm12
+    5   0                    # ImAzero
 Block EXTPAR  # Input parameters
    61   0.1                  # LambdaInput
    62   0.1                  # KappaInput
