@@ -226,6 +226,10 @@ FlexibleSUSY 2.0.0 [not released yet]
    (as in Mathematica).  For genuine matrix products use MatMul[A,B]
    or A.B.
 
+ * Bugfix (commits 9738ba1, 118a9a70): Catch potential numerical
+   instabilities during mass matrix diagonalization, which may result
+   in eigenvectors with magnitude larger than 1.
+
 FlexibleSUSY-1.7.4 [April, 12 2017]
 
  * Bugfix (commit f434e30): Rename internal IndexSum symbol which
