@@ -1430,19 +1430,18 @@ fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
 ";
 
 CallDiagonalizationFunction[particle_, matrix_String, eigenvalue_String, U_String, function_String] :=
-    "\
-#ifdef CHECK_EIGENVALUE_ERROR
+"#ifdef CHECK_EIGENVALUE_ERROR
 " <> IndentText[
 "double eigenvalue_error;
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);\n" <>
-    If[IsVector[particle], U <> ".transposeInPlace();\n", ""] <>
     If[ContainsMassless[particle],"",FlagBadMass[particle, eigenvalue]]
 ] <> "#else
-" <> IndentText["\
-" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");\n" <>
-    If[IsVector[particle], U <> ".transposeInPlace();\n", ""]
-] <> "#endif
-";
+" <> IndentText["\n" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");\n"
+] <> "#endif\n" <>
+IndentText[
+    If[IsVector[particle], U <> ".transposeInPlace();\n", ""] <>
+"normalize_to_interval(" <> U <> ");"
+] <> "\n";
 
 CallDiagonalizeSymmetricFunction[particle_, matrix_String, eigenvector_String, U_String] :=
     CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_symmetric"];
