@@ -732,6 +732,8 @@ void Model_data::put_observables(MLINK link) const
    check_spectrum_pointer();
    @ModelName@_observables observables = spectrum->get_observables();
 
+   MLPutFunction(link, "List", 1);
+   MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", @numberOfObservables@);
 
 @putObservables@
