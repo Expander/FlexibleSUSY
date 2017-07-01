@@ -96,18 +96,18 @@ FlexibleSUSY 2.0.0 [not released yet]
    given value consists of 9 digits, each one representing the
    threshold correction loop order of a parameter:
 
-     digit position n    | default value | parameter
-     (prefactor of 10^n) |               |
-     -------------------:|---------------|-------------------------
-      0                  | 1 (1-loop)    | alpha_em
-      1                  | 2 (2-loop)    | sin(theta_W)
-      2                  | 1 (1-loop)    | alpha_s
-      3                  | 1 (1-loop)    | m_Z
-      4                  | 1 (1-loop)    | m_W
-      5                  | 1 (1-loop)    | m_h
-      6                  | 3 (3-loop)    | m_t
-      7                  | 2 (2-loop)    | m_b
-      8                  | 1 (1-loop)    | m_\tau
+     digit position n    | default value       | parameter
+                         | (prefactor of 10^n) |
+     -------------------:|---------------------|-------------------
+      0                  | 1 (1-loop)          | alpha_em
+      1                  | 2 (2-loop)          | sin(theta_W)
+      2                  | 1 (1-loop)          | alpha_s
+      3                  | 1 (1-loop)          | m_Z
+      4                  | 1 (1-loop)          | m_W
+      5                  | 1 (1-loop)          | m_h
+      6                  | 3 (3-loop)          | m_t
+      7                  | 2 (2-loop)          | m_b
+      8                  | 1 (1-loop)          | m_\tau
 
    The default value is 123111121, which corresponds to the loop
    orders given in the above table.

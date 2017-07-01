@@ -343,17 +343,17 @@ is composed of several digits, each one specifying a threshold
 correction loop order of a parameter.  The following table shows which
 digit is associated with which parameter.
 
-digit position \f$n\f$ (prefactor of \f$10^n\f$) | default value | parameter
-------------------------------------------------:|---------------|-------------------------
- 0                                               | 1 (1-loop)    | \f$\alpha_{\text{em}}\f$
- 1                                               | 2 (2-loop)    | \f$\sin\theta_W\f$
- 2                                               | 1 (1-loop)    | \f$\alpha_{s}\f$
- 3                                               | 1 (1-loop)    | \f$m_Z\f$
- 4                                               | 1 (1-loop)    | \f$m_W\f$
- 5                                               | 1 (1-loop)    | \f$m_h\f$
- 6                                               | 3 (3-loop)    | \f$m_t\f$
- 7                                               | 2 (2-loop)    | \f$m_b\f$
- 8                                               | 1 (1-loop)    | \f$m_{\tau}\f$
+digit position \f$n\f$ | default value (prefactor of \f$10^n\f$) | parameter
+----------------------:|-----------------------------------------|-------------------------
+ 0                     | 1 (1-loop)                              | \f$\alpha_{\text{em}}\f$
+ 1                     | 2 (2-loop)                              | \f$\sin\theta_W\f$
+ 2                     | 1 (1-loop)                              | \f$\alpha_{s}\f$
+ 3                     | 1 (1-loop)                              | \f$m_Z\f$
+ 4                     | 1 (1-loop)                              | \f$m_W\f$
+ 5                     | 1 (1-loop)                              | \f$m_h\f$
+ 6                     | 3 (3-loop)                              | \f$m_t\f$
+ 7                     | 2 (2-loop)                              | \f$m_b\f$
+ 8                     | 1 (1-loop)                              | \f$m_{\tau}\f$
 
 \note Note, that the threshold correction loop order of a parameter is
 not higher than the "global" threshold correction loop order,
