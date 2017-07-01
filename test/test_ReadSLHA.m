@@ -66,6 +66,12 @@ Block V
     1   10.1
     2   20.2
     3   a
+Block  V2
+    1   1.1
+    2   2.2
+Block
+    1   3.1
+    2   4.2
 Block M
     1 1  10.1
     1 2  1
@@ -85,6 +91,7 @@ pars = {
     {Qin  , {0}            , {EXTPAR, 0}},
     {QEWSB, {0}            , {EXTPAR, 1}},
     {V    , {3}            , V},
+    {V2   , {2}            , V2},
     {M    , {3, 3}         , M},
     {T3   , {3, 3, 3}      , T3},
     {T4   , {3, 3, 3, 3}   , T4},
@@ -96,6 +103,7 @@ values = ReadSLHAString[slha, pars];
 TestEquality[Qin /. values, 1.1];
 TestEquality[QEWSB /. values, 2.2];
 TestEquality[V /. values, {10.1, 20.2, 0}];
+TestEquality[V2 /. values, {1.1, 2.2}];
 TestEquality[M /. values, {{10.1, 1, 0}, {0, 20.2, 0}, {0, 0, 30.3}}];
 TestEquality[T3 /. values, {{{10.1, 0, 0}, {0, 0, 0}, {0, 0, 0}},
                             {{0, 0, 0}, {0, 20.2, 0}, {0, 0, 0}},

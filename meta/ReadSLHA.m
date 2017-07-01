@@ -49,11 +49,11 @@ IsDataLine[str_String] :=
     !StringMatchQ[str, StartOfString ~~ "#" ~~ ___];
 
 BlockStarts[str_String, blockName_String] :=
-    StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ Whitespace ~~ blockName ~~ ___,
+    StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ Whitespace ~~ blockName ~~ WordBoundary ~~ ___,
                  IgnoreCase -> True];
 
 BlockStarts[str_String] :=
-    StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ Whitespace ~~ ___,
+    StringMatchQ[str, StartOfString ~~ "BLOCK" ~~ WordBoundary ~~ ___,
                  IgnoreCase -> True];
 
 floatRegex = "[+\-]?(?:[0-9]*)(?:\\.[0-9]*)?(?:[eE][+\-]?[0-9]+)?";
