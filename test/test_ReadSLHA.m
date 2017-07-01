@@ -2,6 +2,9 @@ Needs["TestSuite`", "TestSuite.m"];
 Needs["ReadSLHA`", "ReadSLHA.m"];
 
 slha = "
+    1 1 1  10.1
+    2 2 2  20.2
+    3 3 3  30.3
 Block MODSEL                 # Select model
 #   12    1000                # parameter output scale (GeV)
 Block FlexibleSUSY

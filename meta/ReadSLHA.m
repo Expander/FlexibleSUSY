@@ -59,7 +59,7 @@ BlockStarts[str_String] :=
 floatRegex = "[+\-]?(?:[0-9]*)(?:\\.[0-9]*)?(?:[eE][+\-]?[0-9]+)?";
 
 ReadBlock[stream_, blockName_String] :=
-    Module[{line = "", block = "", inBlock = True},
+    Module[{line = "", block = "", inBlock = False},
            SetStreamPosition[stream, 0];
            While[(line = Read[stream, String]) =!= EndOfFile,
                  If[BlockStarts[line, blockName],
