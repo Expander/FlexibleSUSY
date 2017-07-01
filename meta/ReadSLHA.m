@@ -1,13 +1,47 @@
 BeginPackage["ReadSLHA`"];
 
-ReadSLHAFile::usage="reads SLHA file and returns list of input and
- output parameters";
+ReadSLHAFile::usage="Reads SLHA file and returns list of input and
+ output parameters.
 
-ReadSLHAStream::usage="reads stream with SLHA input and returns list
- of input and output parameters";
+ Usage:  ReadSLHAFile[fileName, parameters]
 
-ReadSLHAString::usage="reads string with SLHA input and returns list
- of input and output parameters";
+ - fileName - name of SLHA file to be read
+ - parameters - list of 3-component lists specifying how
+   to interpret the SLHA file content:
+   #1 is the parameter name (a symbol)
+   #2 is the parameter dimension (a list of positive integers)
+   #3 is the {block, entry, ...} in the SLHA input
+
+ Example:
+
+ parameters = {
+    {Qin  , {0}   , {EXTPAR, 0}},
+    {m0   , {0}   , {MINPAR, 1}},
+    {CpHPP, {0}   , {EFFHIGGSCOUPLINGS, 25, 22, 22}},
+    {k    , {3}   , KappaIn},
+    {Yu   , {3, 3}, YuIN}
+ };
+
+ ReadSLHAFile[\"file.slha\", parameters]
+";
+
+ReadSLHAStream::usage="Reads stream with SLHA input and returns list
+ of input and output parameters.
+
+ Usage:  ReadSLHAStream[streamName, parameters]
+
+ - streamName - name of the stream
+ - parameters - see documentation of ReadSLHAFile[].
+";
+
+ReadSLHAString::usage="Reads string with SLHA input and returns list
+ of input and output parameters.
+
+ Usage:  ReadSLHAString[str, parameters]
+
+ - str - string in SLHA format (set of blocks)
+ - parameters - see documentation of ReadSLHAFile[].
+";
 
 Begin["`Private`"];
 
@@ -99,20 +133,6 @@ ReadParameter[stream_, par_, {dims__}, block_] :=
 ReadParameter[stream_, {par_, type_, block_}] :=
     par -> ReadParameter[stream, par, type, block];
 
-(*
- The elements of the parameters list are 3-component lists, where
- #1 is the parameter name
- #2 is the parameter type
- #3 is the block / entry in the SLHA input
-
- parameters = {
-    {Qin  , {0}   , {EXTPAR, 0}},
-    {m0   , {0}   , {MINPAR, 1}},
-    {CpHPP, {0}   , {EFFHIGGSCOUPLINGS, 25, 22, 22}},
-    {k    , {3}   , KappaIn},
-    {Yu   , {3, 3}, YuIN}
- };
- *)
 ReadSLHAStream[stream_, parameters_List] :=
     ReadParameter[stream, #]& /@ parameters;
 
