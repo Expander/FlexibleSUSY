@@ -55,7 +55,7 @@ handle = FSCMSSMCPVOpenHandle[
 ];
 
 specML = CMSSMCPV /. FSCMSSMCPVCalculateSpectrum[handle];
-obsML = FSCMSSMCPVCalculateObservables[handle];
+obsML  = CMSSMCPV /. FSCMSSMCPVCalculateObservables[handle];
 probML = FSCMSSMCPVGetProblems[handle];
 warnML = FSCMSSMCPVGetWarnings[handle];
 

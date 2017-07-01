@@ -53,7 +53,7 @@ handle = FSCMSSMOpenHandle[
 ];
 
 specML = CMSSM /. FSCMSSMCalculateSpectrum[handle];
-obsML = FSCMSSMCalculateObservables[handle];
+obsML  = CMSSM /. FSCMSSMCalculateObservables[handle];
 probML = FSCMSSMGetProblems[handle];
 warnML = FSCMSSMGetWarnings[handle];
 
