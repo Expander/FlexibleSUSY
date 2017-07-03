@@ -141,6 +141,12 @@ BOOST_AUTO_TEST_CASE( test_ReB1_integral )
       Values(1e-3, 1.  , 0., 1.),
       Values(1e-4, 1.  , 0., 1.),
       Values(1e-5, 1.  , 0., 1.),
+      Values(0.  , 1.  , 1e-15, 1.),
+      Values(1e-1, 1.  , 1e-15, 1.),
+      Values(1e-2, 1.  , 1e-15, 1.),
+      Values(1e-3, 1.  , 1e-15, 1.),
+      Values(1e-4, 1.  , 1e-15, 1.),
+      Values(1e-5, 1.  , 1e-15, 1.),
       Values(0.  , 1e20, 0., 1.),
       Values(1e-1, 1e20, 0., 1.),
       Values(1e-2, 1e20, 0., 1.),
@@ -159,6 +165,12 @@ BOOST_AUTO_TEST_CASE( test_ReB1_integral )
       Values(1e-3, 1e20, 1., 1.),
       Values(1e-4, 1e20, 1., 1.),
       Values(1e-5, 1e20, 1., 1.),
+      Values(0.  , 0., 1e20, 1.),
+      Values(1e-1, 0., 1e20, 1.),
+      Values(1e-2, 0., 1e20, 1.),
+      Values(1e-3, 0., 1e20, 1.),
+      Values(1e-4, 0., 1e20, 1.),
+      Values(1e-5, 0., 1e20, 1.),
       Values(1.  , 1.  , 1., 1.)
    };
 
