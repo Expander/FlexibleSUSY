@@ -16,8 +16,7 @@ MINPAR = {
 };
 
 EXTPAR = {
-   {65, sInput},
-   {72, QSInput}
+   {65, sInput}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -30,8 +29,7 @@ FSAuxiliaryParameterInfo = {
                 MassDimension -> 0 } },
    {LXiF0,    { ParameterDimensions -> {1},
                 MassDimension -> 3 } },
-   {sInput,   { MassDimension -> 1 } },
-   {QSInput,  { MassDimension -> 0 } }
+   {sInput,   { MassDimension -> 1 } }
 };
 
 EWSBOutputParameters = { m0Sq, TanTheta, vphi, \[Xi]F, LXiF0 };
