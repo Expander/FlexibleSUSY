@@ -52,7 +52,6 @@ Block MINPAR
     5  -7.000000000e+03      # Azero
 Block EXTPAR
    65   6.500000000e+05      # sInput
-   72   5.000000000e+00      # QSInput
 Block HMIXIN
    31   0.000000000e+00      # mu_phi (pure singlet mass term)
    32   1.000000000e-02      # kappa prime (singlet cubic coupling)
