@@ -68,7 +68,6 @@ private:
    double e_run{0.};
    double ThetaWDRbar{0.};
    double new_g1{0.}, new_g2{0.}, new_g3{0.};
-   double self_energy_w_at_mw{0.};
 @semiAnalyticScaleGetter@
    double calculate_theta_w();
    void calculate_threshold_corrections();

@@ -119,7 +119,6 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::clear()
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
-   self_energy_w_at_mw = 0.;
 }
 
 void @ModelName@_low_scale_constraint<Semi_analytic>::initialize()
@@ -140,7 +139,6 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::initialize()
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
-   self_energy_w_at_mw = 0.;
 }
 
 void @ModelName@_low_scale_constraint<Semi_analytic>::update_scale()

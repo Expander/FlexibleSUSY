@@ -1,5 +1,5 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`", "Utils`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`", "SelfEnergies`", "Utils`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
@@ -383,7 +383,8 @@ RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
 MODEL->calculate_" <> mwStr <> "();
 
 const double mw_drbar    = MODEL->get_" <> mwStr <> "();
-const double mw_pole_sqr = Sqr(mw_drbar) - self_energy_w_at_mw;
+const double self_energy = Re(MODEL->" <> SelfEnergies`CreateSelfEnergyFunctionName[w,1] <> "(mw_pole));
+const double mw_pole_sqr = Sqr(mw_drbar) - self_energy;
 
 if (mw_pole_sqr < 0.)
    " <> TreeMasses`FlagPoleTachyon[wStr, "MODEL->get_problems()."] <> "
