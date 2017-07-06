@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00008);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00013);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.002);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.002);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.013);
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 4.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(vs     , ss.displaySvev(), 0.004);
 
@@ -313,14 +313,14 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi(5), mn(5), 0.0040);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.00023);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0003);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.00024);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0003);
    BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0003);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00024);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.0003);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0007);
 
    BOOST_TEST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
