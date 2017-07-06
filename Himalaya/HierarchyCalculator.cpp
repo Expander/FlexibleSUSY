@@ -56,6 +56,23 @@ extern "C" void dszhiggs_(double *t, double *mg, double *T1, double *T2, double 
 
 static bool isInfoPrinted; /**< If this bool is true, than no info will be printed in further runs */
 
+namespace himalaya {
+   const int HierarchyCalculator::h3      = 0;
+   const int HierarchyCalculator::h32q2g  = 1;
+   const int HierarchyCalculator::h3q22g  = 2;
+   const int HierarchyCalculator::h4      = 3;
+   const int HierarchyCalculator::h5      = 4;
+   const int HierarchyCalculator::h5g1    = 5;
+   const int HierarchyCalculator::h6      = 6;
+   const int HierarchyCalculator::h6b     = 7;
+   const int HierarchyCalculator::h6b2qg2 = 8;
+   const int HierarchyCalculator::h6bq22g = 9;
+   const int HierarchyCalculator::h6bq2g2 = 10;
+   const int HierarchyCalculator::h6g2    = 11;
+   const int HierarchyCalculator::h9      = 12;
+   const int HierarchyCalculator::h9q2    = 13;
+} // namespace himalaya
+
 /**
  * 	Constructor 
  * 	@param p a HimalayaInterface struct
