@@ -46,6 +46,26 @@ StripFieldIndices::usage;
 
 Begin["`Private`"]
 
+(* There is a sign ambiguity when SARAH`Vertex[] factors an SSV-type
+   vertex into a coefficient and a Lorentz part even though the
+   product of the two is always the same.  SARAH seems to have an
+   internal convention such that the Lorentz part always takes the
+   form
+
+      Mom[S1[{gt1,___}], _] - Mom[S2[{gt2,___}], _]
+
+   if it is the result of SARAH`Vertex[{S1, S2, V}] where S1 and S2
+   are scalars without (generation) indices.  This alone does not yet
+   determine how the scalars in Cp[] are mapped to S1 and S2 above:
+   which of conj[Sd] and Sd becomes S1 in Cp[VG, conj[Sd[{gI1}]],
+   Sd[{gI2}]] for instance.  This seems to be fixed by another
+   internal rule: all SARAH/SPheno subroutines to calculate couplings
+   are generated with the fields sorted by SortCoup[] in
+   SARAH/Package/deriveModel.m.  The same ordering is performed by
+   Vertices`SortCps[] in FlexibleSUSY, which normalizes e.g. the above
+   coupling to Cp[Sd[{gI2}], conj[Sd[{gI1}]], VG] so that the mapping
+   is determined to be {Sd -> S1, conj[Sd] -> S2}. *)
+
 VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	UnitaryMatrixQ,
 	nCpPatterns,
@@ -205,15 +225,14 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	fields, vertices,
 	lorentzTag, lorentz, vertex,
 	strippedIndices,
-	contraction
+	contraction,
+	factor
     },
     rotatedCp = ReplaceUnrotatedFields[cp];
     fieldsInRotatedCp = GetParticleList[rotatedCp];
-    sarahVertex = SARAH`Vertex[fieldsInRotatedCp];
-    Assert[MatchQ[sarahVertex, {_, __}]];
+    sarahVertex = SARAHVertex[fieldsInRotatedCp];
     fields = First[sarahVertex];
     vertices = Rest[sarahVertex];
-    Assert[StripFieldIndices[fields] === StripFieldIndices[fieldsInRotatedCp]];
     lorentzTag = GetLorentzStructure[rotatedCp];
     {vertex, lorentz} = FindVertexWithLorentzStructure[vertices, lorentzTag];
     strippedIndices = Complement[Flatten[FieldIndexList /@ fields],
@@ -230,9 +249,26 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	InTermsOfRotatedVertex[
 	    vertex, lorentz,
 	    GetParticleList[cp], massMatrices]];
-    (* Q: is the factor -I right? *)
-    -I TreeMasses`ReplaceDependencies[contraction] /.
+    (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
+       for the following sign factor *)
+    factor = If[SARAH`getType /@ fieldsInRotatedCp === {S,S,V}, -1, 1];
+    -I factor TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
+];
+
+SARAHVertex[fieldsInRotatedCp_List] := Module[{
+	sarahVertex = SARAH`Vertex @ StripFieldIndices[fieldsInRotatedCp],
+	fields,
+	restoreIndicesRules
+    },
+    Assert[MatchQ[sarahVertex, {_, __}]];
+    fields = First[sarahVertex];
+    Assert[StripFieldIndices[fields] === StripFieldIndices[fieldsInRotatedCp]];
+    restoreIndicesRules = Flatten[
+	Thread[Take[Last[#], Length @ First[#]] -> First[#]]& /@
+	Transpose[{FieldIndexList /@ fieldsInRotatedCp,
+		   FieldIndexList /@ fields}]];
+    sarahVertex /. restoreIndicesRules
 ];
 
 StripGroupStructure[expr_, indices_List] := Module[{

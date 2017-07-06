@@ -2853,10 +2853,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* get RGEs *)
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
-           nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
+           nPointFunctions = EnforceCpColorStructures @ SortCps @ StripInvalidFieldIndices @
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
-           gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
+           gmm2Vertices = SortCps @ StripInvalidFieldIndices @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", TreeMasses`GetParticles[]];
@@ -3249,9 +3249,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (*prepare Weinberg angle calculation*)
            WeinbergAngle`InitMuonDecay[];
-           deltaVBwave = WeinbergAngle`DeltaVBwave[];
-           deltaVBvertex = WeinbergAngle`DeltaVBvertex[];
-           deltaVBbox = WeinbergAngle`DeltaVBbox[];
+           deltaVBwave = SortCps @ WeinbergAngle`DeltaVBwave[];
+           deltaVBvertex = SortCps @ WeinbergAngle`DeltaVBvertex[];
+           deltaVBbox = SortCps @ WeinbergAngle`DeltaVBbox[];
 
            vertexRuleFileName =
               GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
@@ -3260,7 +3260,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[NeedToCalculateVertices[FSEigenstates],
               (* effectiveCouplings = {{coupling, {needed couplings}}, ...} *)
               Put[effectiveCouplings =
-                      EffectiveCouplings`InitializeEffectiveCouplings[],
+                      SortCps @ EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
               Put[vertexRules =
