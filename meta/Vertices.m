@@ -31,6 +31,7 @@ VertexRules::usage;
 ToCpPattern::usage="ToCpPattern[cp] converts field indices inside cp to patterns, e.g. ToCpPattern[Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL]] === Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL].";
 ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
 FieldIndexList::usage;
+SortCps::usage="SortCps[nPointFunctions] sorts all SARAH`Cp[] and SARAH`Cp[][] in nPointFunctions.";
 EnforceCpColorStructures::usage;
 EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
 StripInvalidFieldIndices::usage="StripInvalidFieldIndices[nPointFunctions] strips indices from fields appearing in nPointFunctions that are not really suppposed to have any index to work around Part::partw caused by a field having a spurious index in the argument to SARAH`Vertex[].";
@@ -61,6 +62,49 @@ VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	       "[",First[#2],"/",nCpPatterns,"] calculating ", #1, "... "]&,
 	cpPatterns]
 ];
+
+SortCps[nPointFunctions_List] := Module[{
+	exprs = nPointFunctions[[All,2]]
+    },
+    Fold[
+	Module[{sortedCp = SortCp[#2]},
+	    If[sortedCp =!= #2, #1 /. #2 -> sortedCp, #1]] &,
+	nPointFunctions,
+	Union @ Select[Cases[exprs, _SARAH`Cp|_SARAH`Cp[_], Infinity],
+		       UnresolvedColorFactorFreeQ[#, exprs] &]]
+];
+
+SortCp[SARAH`Cp[fields__]] := SARAH`Cp @@ SortFieldsInCp[{fields}];
+
+SortCp[SARAH`Cp[fields__][lor_]] := SortCp[SARAH`Cp[fields]][lor];
+
+SortFieldsInCp[fields_List] :=
+    SortBy[fields, (GetTypeSort[#][#]& @ ToRotatedField[#]) &];
+
+(* Same as SARAH`getTypeSort but works when
+   SARAH`CurrentStates =!= FSEigenstates *)
+GetTypeSort[Susyno`LieGroups`conj[x_]] :=
+    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+	S, Szc,
+	V, Vc ,
+	A, Ab ];
+
+GetTypeSort[SARAH`bar[x_]] :=
+    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+	F, Fb,
+	G, Gb];
+
+GetTypeSort[x_ /; SARAH`bar[x] === x] /;
+    SARAH`getType[x, False, FlexibleSUSY`FSEigenstates] === F :=
+	   Fm;
+
+GetTypeSort[x_] :=
+    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+	F, Fn,
+	S, Sn,
+	V, Vn,
+	G, Gn,
+	A, An];
 
 EnforceCpColorStructures[nPointFunctions_List] :=
     EnforceCpColorStructures /@ nPointFunctions;
