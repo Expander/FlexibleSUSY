@@ -1092,7 +1092,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               body = "return 0.0;\n";
               ,
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
-              qcdTwoLoop = N[Expand[(qcdOneLoop^2 - TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
+              qcdTwoLoop = N[Expand[TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme] /. Log[m_/Global`currentScale^2] :> -Log[Sqr[Global`currentScale]/m]]];
               If[FlexibleSUSY`UseYukawa3LoopQCD === True &&
                  FlexibleSUSY`FSRenormalizationScheme =!= FlexibleSUSY`MSbar,
                  Print["Warning: UseYukawa3LoopQCD == True, but the renormalization scheme is not MSbar!"];
@@ -1129,7 +1129,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               IndentText[
                   If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
                      CreateMSSM2LoopSQCDContributions[],
-                     "qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
+                     "const double q_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
+                     "qcd_2l = -q_2l + qcd_1l * qcd_1l;"
                     ]
               ] <> "\n" <>
               "}\n\n" <>
