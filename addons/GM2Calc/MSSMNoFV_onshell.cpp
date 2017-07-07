@@ -27,6 +27,7 @@
 #include <complex>
 #include <iostream>
 #include <algorithm>
+#include <limits>
 
 #include <boost/math/tools/roots.hpp>
 
@@ -638,7 +639,7 @@ double MSSMNoFV_onshell::convert_me2_root(
                 << precision << " GeV\n";
    }
 
-   return std::isfinite(precision) ? precision : 0.;
+   return std::isfinite(precision) ? precision : std::numeric_limits<double>::max();
 }
 
 /**
@@ -722,7 +723,7 @@ double MSSMNoFV_onshell::convert_me2_fpi(
                 << precision << " GeV\n";
    }
 
-   return std::isfinite(precision) ? precision : 0.;
+   return std::isfinite(precision) ? precision : std::numeric_limits<double>::max();
 }
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
