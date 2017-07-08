@@ -309,6 +309,8 @@ int main(int argc, char* argv[])
 
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
+      if (starts_with(arg, "-D"))
+         continue;
       if (starts_with(arg, "-I") && arg.length() > 2) {
          paths.push_back(arg.substr(std::strlen("-I")));
          continue;
