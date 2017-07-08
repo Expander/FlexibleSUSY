@@ -664,7 +664,7 @@ double MSSMNoFV_onshell::convert_me2_root(
    const double me2_save = get_me2(1,1);
    const double precision = convert_me2_root_modify(precision_goal, max_iterations);
 
-   if (!std::isfinite(precision_goal) ||
+   if (!std::isfinite(precision) ||
        !std::isfinite(get_me2(1,1)) ||
        !get_MSm().allFinite() ||
        !get_ZM().allFinite()) {
@@ -726,6 +726,17 @@ double MSSMNoFV_onshell::convert_me2_fpi_modify(
       set_me2(1,1,me211);
       calculate_MSm();
 
+      if (!std::isfinite(me211) || !get_MSm().allFinite() || !get_ZM().allFinite()) {
+         if (verbose_output) {
+            std::cout << "   NaN appearing in DR-bar to on-shell conversion"
+               " for mse with FPI:\n"
+               "      mse2(2,2) = " << me211 <<
+               ", MSm = " << get_MSm().transpose() <<
+               ", ZM = " << get_ZM().row(0) << ' ' << get_ZM().row(1) << '\n';
+         }
+         return std::numeric_limits<double>::max();
+      }
+
       right_index = find_right_like_smuon(get_ZM());
 
       MSm_goal = get_MSm();
@@ -781,7 +792,7 @@ double MSSMNoFV_onshell::convert_me2_fpi(
    const double me2_save = get_me2(1,1);
    const double precision = convert_me2_fpi_modify(precision_goal, max_iterations);
 
-   if (!std::isfinite(precision_goal) ||
+   if (!std::isfinite(precision) ||
        !std::isfinite(get_me2(1,1)) ||
        !get_MSm().allFinite() ||
        !get_ZM().allFinite()) {
