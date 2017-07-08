@@ -444,7 +444,7 @@ ParseVertex[fields_List, vertexRules_List] :=
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       expr = (SARAH`Cp @@ fields) /. vertexRules;
+                                       expr = Vertices`SortCp[SARAH`Cp @@ fields] /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
@@ -453,8 +453,8 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
-                                       exprL = SARAH`Cp[Sequence @@ fields][SARAH`PL] /. vertexRules;
-                                       exprR = SARAH`Cp[Sequence @@ fields][SARAH`PR] /. vertexRules;
+                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ fields][SARAH`PL] /. vertexRules;
+                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ fields][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>
