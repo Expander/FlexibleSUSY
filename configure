@@ -2283,7 +2283,6 @@ enable_defines() {
 
     if test "x$enable_silent" = "xyes" ; then
         DEFINE_ENABLE_SILENT="#define ENABLE_SILENT 1"
-        CPPFLAGS="$CPPFLAGS"
         message "Enabling silent mode"
         logmsg "   ${DEFINE_ENABLE_SILENT}"
     else
