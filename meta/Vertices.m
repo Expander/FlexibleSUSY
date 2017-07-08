@@ -31,6 +31,7 @@ VertexRules::usage;
 ToCpPattern::usage="ToCpPattern[cp] converts field indices inside cp to patterns, e.g. ToCpPattern[Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL]] === Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL].";
 ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
 FieldIndexList::usage;
+SortCp::usage="SortCp[cp] sorts fields in cp into SARAH internal order.";
 SortCps::usage="SortCps[nPointFunctions] sorts all SARAH`Cp[] and SARAH`Cp[][] in nPointFunctions.";
 EnforceCpColorStructures::usage;
 EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
@@ -62,9 +63,10 @@ Begin["`Private`"]
    internal rule: all SARAH/SPheno subroutines to calculate couplings
    are generated with the fields sorted by SortCoup[] in
    SARAH/Package/deriveModel.m.  The same ordering is performed by
-   Vertices`SortCps[] in FlexibleSUSY, which normalizes e.g. the above
-   coupling to Cp[Sd[{gI2}], conj[Sd[{gI1}]], VG] so that the mapping
-   is determined to be {Sd -> S1, conj[Sd] -> S2}. *)
+   Vertices`SortCp[] and Vertices`SortCps[] in FlexibleSUSY, which
+   normalize e.g. the above coupling to Cp[Sd[{gI2}], conj[Sd[{gI1}]],
+   VG] so that the mapping is determined to be {Sd -> S1, conj[Sd] ->
+   S2}. *)
 
 VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	UnitaryMatrixQ,
