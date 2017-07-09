@@ -1073,7 +1073,7 @@ check_platform() {
     logmsg ""
 
     IFS=":"
-    for p in $ld_library_path; do
+    for p in $LD_LIBRARY_PATH; do
         unset IFS
         logmsg "LD_LIBRARY_PATH: ${p}"
     done
