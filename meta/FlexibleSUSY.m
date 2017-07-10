@@ -2333,6 +2333,10 @@ PrepareSelfEnergies[eigenstates_] :=
              ];
            Print["Reading self-energies from file ", selfEnergiesFile, " ..."];
            selfEnergies = Get[selfEnergiesFile];
+           If[selfEnergies === Null,
+              Print["Error: Could not read self-energies from ", selfEnergiesFile];
+              Quit[1];
+             ];
            Print["Converting self-energies ..."];
            ConvertSarahSelfEnergies[selfEnergies]
           ];
@@ -2346,6 +2350,10 @@ PrepareTadpoles[eigenstates_] :=
              ];
            Print["Reading tadpoles from file ", tadpolesFile, " ..."];
            tadpoles = Get[tadpolesFile];
+           If[tadpoles === Null,
+              Print["Error: Could not read tadpoles from ", tadpolesFile];
+              Quit[1];
+             ];
            Print["Converting tadpoles ..."];
            ConvertSarahTadpoles[tadpoles]
           ];
