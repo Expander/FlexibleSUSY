@@ -892,7 +892,7 @@ $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBF
 
 $(DIR)/test_gm2calc.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBTEST)
 
-$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBGM2Calc) $(LIBFLEXI) $(LIBTEST)
+$(DIR)/test_MSSMNoFV_onshell.x: $(LIBGM2Calc) $(LIBFLEXI) $(LIBTEST)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
