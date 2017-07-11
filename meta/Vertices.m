@@ -104,27 +104,29 @@ SortFieldsInCp[fields_List] :=
 (* Same as SARAH`getTypeSort but works when
    SARAH`CurrentStates =!= FSEigenstates *)
 GetTypeSort[Susyno`LieGroups`conj[x_]] :=
-    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+    Switch[GetFieldType[x],
 	S, Szc,
 	V, Vc ,
 	A, Ab ];
 
 GetTypeSort[SARAH`bar[x_]] :=
-    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+    Switch[GetFieldType[x],
 	F, Fb,
 	G, Gb];
 
 GetTypeSort[x_ /; SARAH`bar[x] === x] /;
-    SARAH`getType[x, False, FlexibleSUSY`FSEigenstates] === F :=
+    GetFieldType[x] === F :=
 	   Fm;
 
 GetTypeSort[x_] :=
-    Switch[SARAH`getType[x, False, FlexibleSUSY`FSEigenstates],
+    Switch[GetFieldType[x],
 	F, Fn,
 	S, Sn,
 	V, Vn,
 	G, Gn,
 	A, An];
+
+GetFieldType[x_] := SARAH`getType[x, False, FlexibleSUSY`FSEigenstates];
 
 EnforceCpColorStructures[nPointFunctions_List] :=
     EnforceCpColorStructures /@ nPointFunctions;
@@ -251,7 +253,7 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	    GetParticleList[cp], massMatrices]];
     (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
        for the following sign factor *)
-    factor = If[SARAH`getType /@ fieldsInRotatedCp === {S,S,V}, -1, 1];
+    factor = If[GetFieldType /@ fieldsInRotatedCp === {S,S,V}, -1, 1];
     -I factor TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
 ];
