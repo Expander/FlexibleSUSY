@@ -98,6 +98,30 @@ SortCp[SARAH`Cp[fields__]] := SARAH`Cp @@ SortFieldsInCp[{fields}];
 
 SortCp[SARAH`Cp[fields__][lor_]] := SortCp[SARAH`Cp[fields]][lor];
 
+(* see OrderVVVV[] in SARAH/Package/SPheno/SPhenoFunc.m *)
+SortCp[SARAH`Cp[vectors : Repeated[_?(GetFieldType[#]===V&), {4}]][lor_]] :=
+Module[{
+	svs, lors,
+	sortedVectors = SortFieldsInCp[{vectors}],
+	ssvs, sortedLors,
+	map
+    },
+    svs  = StripFieldIndices[{vectors}];
+    ssvs = StripFieldIndices[sortedVectors];
+    lors = {
+	SARAH`g[ svs[[1]],  svs[[2]]] SARAH`g[ svs[[3]],  svs[[4]]],
+	SARAH`g[ svs[[1]],  svs[[3]]] SARAH`g[ svs[[2]],  svs[[4]]],
+	SARAH`g[ svs[[1]],  svs[[4]]] SARAH`g[ svs[[2]],  svs[[3]]]
+    };
+    sortedLors = {
+	SARAH`g[ssvs[[1]], ssvs[[2]]] SARAH`g[ssvs[[3]], ssvs[[4]]],
+	SARAH`g[ssvs[[1]], ssvs[[3]]] SARAH`g[ssvs[[2]], ssvs[[4]]],
+	SARAH`g[ssvs[[1]], ssvs[[4]]] SARAH`g[ssvs[[2]], ssvs[[3]]]
+    };
+    map = Ordering[sortedLors, 3, OrderedQ[First@Position[lors, #]& /@ {##}]&];
+    (SARAH`Cp @@ sortedVectors)[map[[lor]]]
+];
+
 SortFieldsInCp[fields_List] :=
     SortBy[fields, (GetTypeSort[#][#]& @ ToRotatedField[#]) &];
 
