@@ -51,3 +51,39 @@ See the munuSSM model file for an example, where the charginos mix
 with the Standard Model fermions.  In this model the down-type lepton
 Yukawa matrix is fixed in an approximated form at the low-energy scale
 given the running SM charged lepton masses.
+
+
+Compilation errors when using Eigen versions below 3.3.x
+--------------------------------------------------------
+
+When models with complex parameters are built using versions of
+Eigen 3.3.0, it may be the case that compilation of the generated
+code fails with an error message indicating that different numeric
+types have been mixed without using an appropriate cast.  This arises
+because of limitations in mixing different scalar types in earlier
+versions of Eigen.  In some cases, this problem can be worked around
+by reformulating the boundary conditions in the model file.
+For example, in a model such as the MSSMCPV, a boundary condition of
+the form
+
+   {T[Ye], (ReAeInput + I ImAeInput) Ye},
+   {T[Yd], (ReAdInput + I ImAdInput) Yd},
+   {T[Yu], (ReAuInput + I ImAuInput) Yu}
+
+may trigger this compilation error when compiled against versions of
+Eigen below 3.3.0, due to the terms in brackets involving addition of
+a real and complex matrix.  In cases such as this, the problem can be
+avoided by rewriting the boundary condition to avoid an operation
+involving mixed matrix types.  For example, in the equivalent form
+
+   {T[Ye], ReAeInput Ye + I ImAeInput Ye},
+   {T[Yd], ReAdInput Yd + I ImAdInput Yd},
+   {T[Yu], ReAuInput Yu + I ImAuInput Yu}
+
+all additions involve only complex matrices.
+
+If it is not possible to solve this compilation error by
+reformulating the boundary conditions of the model, it is recommended
+that the installed Eigen version be upgraded to at least 3.3.0, in
+which this problem no longer occurs due to better support for
+operations involving mixed numerical types.

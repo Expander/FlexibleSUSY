@@ -1578,7 +1578,7 @@ int main() {
 
     version_at_least "$eigen_version" "3.3.0" || {
         message "Warning: You are using Eigen ${eigen_version}."
-        message "   Compliation errors can occur with this Eigen version in models with"
+        message "   Compilation errors can occur with this Eigen version in models with"
         message "   complex parameters. We recommend to upgrade to Eigen 3.3.0 at least."
     }
 }
