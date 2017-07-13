@@ -432,22 +432,27 @@ ExpandSarahSum[expr_] := expr //.
 
 InTermsOfRotatedVertex[vertex_, lorentz_, uFields_List, massMatrices_] :=
 Block[{
-	fixedFields,
 	SARAH`bar
     },
-    (* reconstruct hidden bar applied on a Majorana spinor *)
-    fixedFields = MapIndexed[
-	If[MajoranaQ@FieldHead@ToRotatedField[#1] && First[#2] <= 2,
-	   SARAH`bar[#1], #1]&,
-	uFields];
     Fold[If[IsUnrotated[#2],
 	    RewriteUnrotatedField[
 		#1, lorentz, #2,
 		SingleCase[massMatrices,
 			   _[_,FieldHead@ToRotatedField[#2],z_] :> z]],
 	    #1]&,
-	 vertex, fixedFields]
+	 vertex, RestoreBarOnMajorana[uFields, lorentz]]
 ];
+
+RestoreBarOnMajorana[uFields_List, lorentz_] :=
+    RestoreBarOnMajoranaUntil[2, uFields];
+
+RestoreBarOnMajorana[uFields_List, LorentzProduct[gamma[_], PL|PR]] :=
+    RestoreBarOnMajoranaUntil[1, uFields];
+
+RestoreBarOnMajoranaUntil[lastPos_Integer, uFields_List] :=
+MapIndexed[If[First[#2] <= lastPos && MajoranaQ@FieldHead@ToRotatedField[#1],
+	      SARAH`bar[#1], #1]&,
+	   uFields];
 
 RewriteUnrotatedField[
     expr_, _,
