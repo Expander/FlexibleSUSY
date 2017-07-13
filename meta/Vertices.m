@@ -124,6 +124,19 @@ Module[{
     (SARAH`Cp @@ sortedVectors)[map[[lor]]]
 ];
 
+(* see WriteFermionProp[] in SARAH/Package/SPheno/SPhenoLoopMasses *)
+SortCp[SARAH`Cp[fields__][lor:PL|PR] ? (CpType[#] === FFV &)] := Module[{
+	sorted,
+	fermions, sortedFermions
+    },
+    sorted = SortFieldsInCp[{fields}];
+    fermions       = Select[{fields}, GetFieldType@ToRotatedField[#] === F &];
+    sortedFermions = Select[ sorted , GetFieldType@ToRotatedField[#] === F &];
+    If[First[fermions] === First[sortedFermions],
+	  (SARAH`Cp @@ sorted)[lor],
+	- (SARAH`Cp @@ sorted)[First @ Complement[{PL, PR}, {lor}]]]
+];
+
 SortFieldsInCp[fields_List] :=
     SortBy[fields, (GetTypeSort[#][#]& @ ToRotatedField[#]) &];
 
