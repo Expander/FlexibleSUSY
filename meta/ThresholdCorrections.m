@@ -340,7 +340,7 @@ try {
    THETAW = ArcSin(weinberg.calculate());
    MODEL->get_problems().unflag_no_sinThetaW_convergence();
 } catch (const Error& e) {
-   ERROR(e.what());
+   VERBOSE_MSG(e.what());
    MODEL->get_problems().flag_no_sinThetaW_convergence();
 }"
           ];
