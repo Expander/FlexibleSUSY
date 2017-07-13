@@ -71,12 +71,12 @@ CLASSNAME::@ModelName@_weinberg_angle(
 {
 }
 
-void CLASSNAME::set_number_of_iterations(unsigned n)
+void CLASSNAME::set_number_of_iterations(int n)
 {
    number_of_iterations = n;
 }
 
-void CLASSNAME::set_number_of_loops(unsigned n)
+void CLASSNAME::set_number_of_loops(int n)
 {
    number_of_loops = n;
 }
@@ -135,7 +135,7 @@ double CLASSNAME::calculate(double sinThetaW_start)
 
    const double rhohat_tree = calculate_rho_hat_tree();
 
-   unsigned iteration = 0;
+   int iteration = 0;
    bool not_converged = true;
    double sinThetaW_old = sinThetaW_start;
    double sinThetaW_new = sinThetaW_start;

@@ -44,8 +44,8 @@ public:
 
    @ModelName@_weinberg_angle(const @ModelName@_mass_eigenstates*, const Sm_parameters&);
 
-   void set_number_of_iterations(unsigned);  ///< set maximum number of iterations
-   void set_number_of_loops(unsigned);       ///< set number of loops
+   void set_number_of_iterations(int);       ///< set maximum number of iterations
+   void set_number_of_loops(int);            ///< set number of loops
    void set_precision_goal(double);          ///< set precision goal
    void enable_dvb_bsm();                    ///< enable bsm wave, vertex and box corrections
    void disable_dvb_bsm();                   ///< disable bsm wave, vertex and box corrections
@@ -56,8 +56,8 @@ public:
    double calculate(double sinThetaW_start = 0.48);
 
 private:
-   unsigned number_of_iterations{20}; ///< maximum number of iterations
-   unsigned number_of_loops{2};       ///< number of loops
+   int number_of_iterations{20};      ///< maximum number of iterations
+   int number_of_loops{2};            ///< number of loops
    double precision_goal{1e-8};       ///< precision goal
    bool include_dvb_bsm{true};        ///< bsm wave, vertex and box corrections are included or not
    const @ModelName@_mass_eigenstates* model{nullptr}; ///< pointer to investigated model
