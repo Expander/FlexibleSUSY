@@ -124,6 +124,7 @@ impl = "\
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <complex>
 #include <limits>
 
 namespace flexiblesusy {
