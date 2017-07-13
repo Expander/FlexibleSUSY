@@ -333,8 +333,12 @@ sm_pars.mw_pole = qedqcd.displayPoleMW();
 sm_pars.mz_pole = qedqcd.displayPoleMZ();
 sm_pars.mt_pole = qedqcd.displayPoleMt();
 
+const int number_of_iterations =
+    std::max(20, static_cast<int>(std::abs(-log10(MODEL->get_precision()) * 10)));
+
 " <> FlexibleSUSY`FSModelName <> "_weinberg_angle weinberg(MODEL, sm_pars);
 weinberg.set_number_of_loops(MODEL->get_threshold_corrections().sin_theta_w);
+weinberg.set_number_of_iterations(number_of_iterations);
 
 try {
    THETAW = ArcSin(weinberg.calculate());
