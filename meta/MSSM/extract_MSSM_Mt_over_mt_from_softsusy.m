@@ -5,7 +5,7 @@
    The GiNaC expression in "dmtas2.expr" has been extracted from
    SOFTSUSY 3.7.4 by adding the following C++ code snippet into the
    file
-   src/two_loop_thresholds/two_loop_archives/tquark_2loop_strong_pole.gar
+   src/two_loop_thresholds/tquark_corrections.cpp
    right after the cache has been filled:
 
    if (cache.size() == 1) {
