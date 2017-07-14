@@ -533,9 +533,8 @@ ToCp[cpPattern : _SARAH`Cp|_SARAH`Cp[_]] := cpPattern /. p_Pattern :> First[p];
 CpType[cp : _SARAH`Cp|_SARAH`Cp[_]] := RotatedCpType @
     ReplaceUnrotatedFields[cp];
 
-RotatedCpType[SARAH`Cp[fields__]] := SARAH`getVertexType[{fields}];
-
-RotatedCpType[SARAH`Cp[fields__][_]] := SARAH`getVertexType[{fields}];
+RotatedCpType[SARAH`Cp[fields__] | SARAH`Cp[fields__][_]] :=
+    SARAH`VType @@ GetFieldType /@ {fields};
 
 RenumberCpIndices[SARAH`Cp[fields__]] :=
     SARAH`Cp @@ RenumberFieldIndices[{fields}]
