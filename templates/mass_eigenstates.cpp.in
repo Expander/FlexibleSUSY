@@ -601,6 +601,7 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @selfEnergyFunctions@
 
+@secondGenerationHelperFunctions@
 @thirdGenerationHelperFunctions@
 
 @twoLoopSelfEnergyFunctions@

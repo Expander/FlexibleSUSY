@@ -652,13 +652,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -741,13 +741,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -957,13 +957,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1043,13 +1043,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1133,13 +1133,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1231,13 +1231,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);

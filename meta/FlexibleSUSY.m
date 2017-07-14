@@ -142,6 +142,7 @@ EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2LoopSQCD = False;
+UseMSSMAlphaS2Loop = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSM = False;
 UseHiggs3LoopSplit = False;
@@ -704,7 +705,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateGaugeCouplings,
            calculateThetaW,
            recalculateMWPole,
-           checkPerturbativityForDimensionlessParameters = ""},
+           checkPerturbativityForDimensionlessParameters = "",
+           twoLoopThresholdHeaders = "" },
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
@@ -754,6 +756,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
             ];
           calculateThetaW   = ThresholdCorrections`CalculateThetaW[FlexibleSUSY`FSWeakMixingAngleInput];
           recalculateMWPole = ThresholdCorrections`RecalculateMWPole[FlexibleSUSY`FSWeakMixingAngleInput];
+          twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
@@ -781,6 +784,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
+                   "@twoLoopThresholdHeaders@" -> twoLoopThresholdHeaders,
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -1371,6 +1375,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
+            secondGenerationHelperPrototypes = "", secondGenerationHelperFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
             extraParameterDefs = "",
@@ -1458,13 +1463,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n#include \"nmssm_twoloophiggs.hpp\"\n";
              ];
-           If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
-              twoLoopThresholdHeaders = "#include \"mssm_twoloop_mb.hpp\"\n#include \"mssm_twoloop_mt.hpp\"";
-             ];
+           twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
-              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
-              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
+              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True ||
+              FlexibleSUSY`UseMSSMAlphaS2Loop === True,
+              {secondGenerationHelperPrototypes, secondGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[2];
+              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[3];
              ];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
@@ -1585,6 +1590,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
                             "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
                             "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,
+                            "@secondGenerationHelperPrototypes@"-> IndentText[secondGenerationHelperPrototypes],
+                            "@secondGenerationHelperFunctions@" -> secondGenerationHelperFunctions,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],

@@ -58,7 +58,7 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
 
 FillMt2LStruct[] := "\
 double mst_1, mst_2, theta_t;
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
 
 mssm_twoloop_mt::Parameters pars;
 pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";
@@ -129,9 +129,9 @@ AddMbRun2LSQCDCorrections[] :=
 "
 if (get_thresholds() > 1 && threshold_corrections.mb > 1) {
    double mst_1, mst_2, theta_t;
-   " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
+   " <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
    double msb_1, msb_2, theta_b;
-   " <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <> ";
+   " <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <> ";
 
    mssm_twoloop_mb::Parameters pars;
    pars.g3 = " <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> ";

@@ -131,6 +131,7 @@ public:
    /// calculates the tadpoles divided by VEVs at current loop order
    Eigen::Matrix<double,number_of_ewsb_equations,1> tadpole_equations_over_vevs() const;
 
+@secondGenerationHelperPrototypes@
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@

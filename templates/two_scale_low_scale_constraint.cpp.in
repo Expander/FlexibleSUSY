@@ -31,6 +31,7 @@
 #include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
+@twoLoopThresholdHeaders@
 
 #include <algorithm>
 #include <cmath>

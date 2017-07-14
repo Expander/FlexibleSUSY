@@ -29,6 +29,7 @@
 #include "minimizer.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
+@twoLoopThresholdHeaders@
 
 #include <cmath>
 #include <limits>

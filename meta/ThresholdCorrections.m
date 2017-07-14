@@ -13,6 +13,7 @@ SetDRbarYukawaCouplingElectron::usage="";
 CalculateColorCoupling::usage="";
 CalculateElectromagneticCoupling::usage="";
 SetDRbarYukawaCouplings::usage="";
+GetTwoLoopThresholdHeaders::usage="";
 
 CalculateGaugeCouplings::MissingRelation = "Warning: Coupling `1` is not\
  releated to `2` via DependenceNum: `1` = `3`"
@@ -95,19 +96,71 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
            Return[result];
           ];
 
+CalculateDeltaAlpha2L[] :=
+"if (model->get_thresholds() && model->get_threshold_corrections().alpha_s > 1) {\n" <>
+IndentText["\
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double msd_1, msd_2, theta_d;
+
+model->" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <> ";
+model->" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <> ";
+model->" <> TreeMasses`CallGenerationHelperFunctionName[2, SARAH`BottomSquark, "msd_1", "msd_2", "theta_d"] <> ";
+
+mssm_twoloop_as::Parameters pars;
+pars.g3   = model->get_" <> CConversion`RValueToCFormString[SARAH`strongCoupling /. Parameters`ApplyGUTNormalization[]] <> "();
+pars.yt   = model->get_" <> CConversion`RValueToCFormString[Parameters`GetThirdGeneration[SARAH`UpYukawa]] <> ";
+pars.yb   = model->get_" <> CConversion`RValueToCFormString[Parameters`GetThirdGeneration[SARAH`DownYukawa]] <> ";
+pars.mt   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]] <> ";
+pars.mb   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMBottomQuarkMultiplet[]]] <> ";
+pars.mg   = model->get_" <> CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]] <> "();
+pars.mst1 = mst_1;
+pars.mst2 = mst_2;
+pars.msb1 = msb_1;
+pars.msb2 = msb_2;
+pars.msd1 = msd_1;
+pars.msd2 = msd_2;
+pars.xt   = Sin(2*theta_t) * (Sqr(mst_1) - Sqr(mst_2)) / (2. * pars.mt);
+pars.xb   = Sin(2*theta_b) * (Sqr(msb_1) - Sqr(msb_2)) / (2. * pars.mb);
+pars.mw   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorW]] <> "();
+pars.mz   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorZ]] <> "();
+pars.mh   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`HiggsBoson]] <>"(0);
+pars.mH   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`HiggsBoson]] <> "(1);
+pars.mC   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`ChargedHiggs]] <>
+   "(" <> ToString[TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`ChargedHiggs]-1] <> ");
+pars.mA   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`PseudoScalar]] <>
+   "(" <> ToString[TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar]-1] <> ");
+pars.mu   = model->get_" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> "();
+pars.tb   = model->get_" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <>
+   "() / model->get_" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> "();
+pars.Q    = model->get_scale();
+
+delta_alpha_s_2loop =
+   - Sqr(delta_alpha_s_1loop)/4.
+   - 2.*(
+      + mssm_twoloop_as::delta_alpha_s_2loop_as_as(pars)
+      + mssm_twoloop_as::delta_alpha_s_2loop_at_as(pars)
+      + mssm_twoloop_as::delta_alpha_s_2loop_ab_as(pars)
+     );"] <> "
+}
+
+";
+
 CalculateDeltaAlphaS[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
            topQuark = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateColorCoupling[renormalizationScheme];
-           result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
-                    "const double delta_alpha_s_SM = " <>
-                    CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
-                    "const double delta_alpha_s = " <>
-                    CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
-                    "return delta_alpha_s + delta_alpha_s_SM;\n";
-           Return[result];
+           Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+           "const double delta_alpha_s_SM = " <>
+           CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
+           "const double delta_alpha_s = " <>
+           CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
+           "const double delta_alpha_s_1loop = delta_alpha_s + delta_alpha_s_SM;\n" <>
+           "double delta_alpha_s_2loop = 0.;\n\n" <>
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True, CalculateDeltaAlpha2L[], ""] <>
+           "return delta_alpha_s_1loop + delta_alpha_s_2loop;\n"
           ];
 
 GetPrefactor[expr_Plus, _] := 1;
@@ -438,6 +491,17 @@ CalculateGaugeCouplings[] :=
            "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n" <>
            If[ValueQ[SARAH`hyperchargeCoupling], CheckPerturbativityOf[SARAH`hyperchargeCoupling, "g1"], ""] <> "\n" <>
            If[ValueQ[SARAH`leftCoupling]       , CheckPerturbativityOf[SARAH`leftCoupling, "g2"], ""]
+          ];
+
+GetTwoLoopThresholdHeaders[] :=
+    Module[{result = ""},
+           If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+              result = "#include \"mssm_twoloop_mb.hpp\"\n#include \"mssm_twoloop_mt.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True,
+              result = result <> "#include \"mssm_twoloop_as.hpp\"\n";
+             ];
+           result
           ];
 
 End[];
