@@ -26,8 +26,14 @@ namespace gm2calc {
 /// real dilogarithm
 double dilog(double);
 
+/// real dilogarithm
+long double dilog(long double);
+
 /// complex dilogarithm
 std::complex<double> dilog(const std::complex<double>&);
+
+/// complex dilogarithm
+std::complex<long double> dilog(const std::complex<long double>&);
 
 } // namespace gm2calc
 
