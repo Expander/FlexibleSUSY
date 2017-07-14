@@ -99,6 +99,8 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
 CalculateDeltaAlpha2L[] :=
 "if (model->get_thresholds() && model->get_threshold_corrections().alpha_s > 1) {\n" <>
 IndentText["\
+" <> Parameters`CreateLocalConstRefs[Parameters`GetEffectiveMu[]] <> "
+
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
 double msd_1, msd_2, theta_d;
@@ -130,7 +132,7 @@ pars.mC   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARA
    "(" <> ToString[TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`ChargedHiggs]-1] <> ");
 pars.mA   = model->get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`PseudoScalar]] <>
    "(" <> ToString[TreeMasses`GetDimensionStartSkippingGoldstones[SARAH`PseudoScalar]-1] <> ");
-pars.mu   = model->get_" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> "();
+pars.mu   = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
 pars.tb   = model->get_" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <>
    "() / model->get_" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> "();
 pars.Q    = model->get_scale();
