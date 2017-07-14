@@ -1470,4 +1470,14 @@ the MSSM [arxiv:0707.0650] can be used by setting in the model file
 UseMSSMYukawa2LoopSQCD = True; (* use two-loop threshold for yt and yb *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The known MSSM two-loop corrections of order \f$O(\alpha_s^2 +
+\alpha_s\alpha_t + \alpha_s\alpha_b)\f$ to the strong coupling
+constant are known by [hep-ph/0509048, arXiv:0810.5101,
+arXiv:1009.5455] They can be taken into account by setting in the
+model file:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseMSSMAlphaS2Loop = True; (* use two-loop threshold for alpha_s *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 */
