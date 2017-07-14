@@ -101,7 +101,7 @@ SortCp[SARAH`Cp[fields__]] := SARAH`Cp @@ SortFieldsInCp[{fields}];
 SortCp[SARAH`Cp[fields__][lor_]] := SortCp[SARAH`Cp[fields]][lor];
 
 (* see OrderVVVV[] in SARAH/Package/SPheno/SPhenoFunc.m *)
-SortCp[SARAH`Cp[vectors : Repeated[_?(GetFieldType[#]===V&), {4}]][lor_]] :=
+SortCp[cp : SARAH`Cp[vectors__][lor_Integer]] /; CpType[cp] === VVVV :=
 Module[{
 	svs, lors,
 	sortedVectors = SortFieldsInCp[{vectors}],
@@ -125,7 +125,7 @@ Module[{
 ];
 
 (* see WriteFermionProp[] in SARAH/Package/SPheno/SPhenoLoopMasses *)
-SortCp[SARAH`Cp[fields__][lor:PL|PR] ? (CpType[#] === FFV &)] := Module[{
+SortCp[cp : SARAH`Cp[fields__][lor:PL|PR]] /; CpType[cp] === FFV := Module[{
 	sorted,
 	fermions, sortedFermions
     },
