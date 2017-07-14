@@ -107,7 +107,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | eft_matching_loop_order_down     | 0, 1                                            | 1 (= 1-loop)    |
  * | eft_higgs_index                  | any integer >= 0                                | 0 (= lightest)  |
  * | calculate_bsm_masses             | 0 (no) or 1 (yes)                               | 1 (= yes)       |
- * | threshold_corrections            | positive integer             | 123111121       |
+ * | threshold_corrections            | positive integer                                | 123111221       |
  */
 void Spectrum_generator_settings::reset()
 {

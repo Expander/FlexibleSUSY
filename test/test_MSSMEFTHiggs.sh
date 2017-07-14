@@ -103,7 +103,7 @@ Block FlexibleSUSY
    21   1                    # EFT loop order for downwards matching
    22   0                    # EFT index of SM-like Higgs in the BSM model
    23   1                    # calculate BSM pole masses
-   24   123111121            # individual threshold correction loop orders
+   24   123111221            # individual threshold correction loop orders
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu

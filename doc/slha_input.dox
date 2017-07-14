@@ -34,7 +34,7 @@ Block FlexibleSUSY
    21   1         # EFT loop order for downwards matching (BSM -> SM)
    22   0         # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
    23   1         # calculate BSM pole masses
-   24   123111121 # individual threshold correction loop orders
+   24   123111221 # individual threshold correction loop orders
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -70,7 +70,7 @@ index | description                            | possible values                
 21    | EFT loop order for downwards matching  | 0, 1                                        | 1 (= 1-loop)
 22    | EFT Higgs index                        | any integer >= 0                            | 0 (= lightest)
 23    | calculate pole masses of BSM particles | 0 (no) or 1 (yes)                           | 1 (= yes)
-24    | individual threshold corrections       | positive integer                            | 123111121
+24    | individual threshold corrections       | positive integer                            | 123111221
 
 ### Precision goal (`FlexibleSUSY[0]`) ###
 

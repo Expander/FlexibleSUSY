@@ -58,7 +58,7 @@ fsDefaultSettings = {
       eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
       eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
       calculateBSMMasses -> 1,           (* FlexibleSUSY[23] *)
-      thresholdCorrections -> 123111121, (* FlexibleSUSY[24] *)
+      thresholdCorrections -> 123111221, (* FlexibleSUSY[24] *)
       parameterOutputScale -> 0          (* MODSEL[12] *)
 };
 
