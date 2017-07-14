@@ -2,9 +2,9 @@ Needs["TestSuite`", "TestSuite.m"];
 Needs["SemiAnalytic`", "SemiAnalytic.m"];
 
 workingDirectory = Directory[];
-$sarahOutputDir = CreateDirectory[];
+SARAH`SARAH[OutputDirectory] = CreateDirectory[];
 Print["Current working directory: ", workingDirectory];
-Print["SARAH output directory: ", $sarahOutputDir];
+Print["SARAH output directory: ", SARAH`SARAH[OutputDirectory]];
 
 Start["MSSM"];
 SARAH`CalcRGEs[];
@@ -220,6 +220,6 @@ expected = Sort[SortSolutionBasis[#]& /@ {SemiAnalytic`SemiAnalyticSolution[Mass
                                           SemiAnalytic`SemiAnalyticSolution[B[\[Mu]], {\[Mu] B0, \[Mu] Azero, \[Mu] m12}]}];
 TestEquality[Sort[(SortSolutionBasis[#])& /@ #]& @ SemiAnalytic`GetSemiAnalyticSolutions[boundaryCondition], expected];
 
-DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
+DeleteDirectory[SARAH`SARAH[OutputDirectory], DeleteContents -> True];
 
 PrintTestSummary[];
