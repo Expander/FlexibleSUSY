@@ -2,9 +2,9 @@ Needs["TestSuite`", "TestSuite.m"];
 Needs["Vertices`", "Vertices.m"];
 
 workingDirectory = Directory[];
-$sarahOutputDir = CreateDirectory[];
+SARAH`SARAH[OutputDirectory] = CreateDirectory[];
 Print["Current working directory: ", workingDirectory];
-Print["SARAH output directory: ", $sarahOutputDir];
+Print["SARAH output directory: ", SARAH`SARAH[OutputDirectory]];
 
 Start["MSSM"];
 
@@ -70,6 +70,6 @@ TestEquality[RBOM[{bar[Cha[{gI1}]], UChi[{gO1}], VWm},
 
 ];
 
-DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
+DeleteDirectory[SARAH`SARAH[OutputDirectory], DeleteContents -> True];
 
 PrintTestSummary[];
