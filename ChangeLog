@@ -113,7 +113,7 @@ FlexibleSUSY 2.0.0 [not released yet]
      -------------------:|---------------------|-------------------
       0                  | 1 (1-loop)          | alpha_em
       1                  | 2 (2-loop)          | sin(theta_W)
-      2                  | 1 (1-loop)          | alpha_s
+      2                  | 2 (2-loop)          | alpha_s
       3                  | 1 (1-loop)          | m_Z
       4                  | 1 (1-loop)          | m_W
       5                  | 1 (1-loop)          | m_h
