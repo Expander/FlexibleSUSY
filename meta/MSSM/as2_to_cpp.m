@@ -326,11 +326,11 @@ namespace {
    /// shift gluino mass away from mst1 and mst2 if too close
    Real shift_mg(Real mg, Real mst1, Real mst2)
    {
-      if (is_equal_rel(std::min(mst1, mst2), mg, 0.003l))
-         return mg * 0.995l;
+      if (is_equal_rel(std::min(mst1, mst2), mg, 0.01l))
+         return mg * 0.98l;
 
-      if (is_equal_rel(std::max(mst1, mst2), mg, 0.003l))
-         return mg * 1.005l;
+      if (is_equal_rel(std::max(mst1, mst2), mg, 0.01l))
+         return mg * 1.02l;
 
       return mg;
    }
