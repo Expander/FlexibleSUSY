@@ -1477,7 +1477,7 @@ arXiv:1009.5455] They can be taken into account by setting in the
 model file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSMAlphaS2Loop = True; (* use two-loop threshold for alpha_s *)
+UseMSSMAlphaS2LoopSQCD = True; (* use two-loop threshold for alpha_s *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 */

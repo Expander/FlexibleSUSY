@@ -142,7 +142,7 @@ EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2LoopSQCD = False;
-UseMSSMAlphaS2Loop = False;
+UseMSSMAlphaS2LoopSQCD = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSM = False;
 UseHiggs3LoopSplit = False;
@@ -1467,7 +1467,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
               FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True ||
-              FlexibleSUSY`UseMSSMAlphaS2Loop === True,
+              FlexibleSUSY`UseMSSMAlphaS2LoopSQCD === True,
               {secondGenerationHelperPrototypes, secondGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[2];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[3];
              ];
