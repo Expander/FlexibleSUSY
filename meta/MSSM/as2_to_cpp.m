@@ -323,6 +323,18 @@ namespace {
       return 0.5*std::asin(sin_2alpha);
    }
 
+   /// shift gluino mass away from mst1 and mst2 if too close
+   Real shift_mg(Real mg, Real mst1, Real mst2)
+   {
+      if (is_equal_rel(std::min(mst1, mst2), mg, 0.003l))
+         return mg * 0.995l;
+
+      if (is_equal_rel(std::max(mst1, mst2), mg, 0.003l))
+         return mg * 1.005l;
+
+      return mg;
+   }
+
 } // anonymous namespace
 
 /// 2-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0509048,arXiv:0810.5101]
@@ -335,8 +347,8 @@ Real delta_alpha_s_2loop_as_as(const Parameters& pars)
    const Real mt    = pars.mt;
    const Real mt2   = power2(pars.mt);
    const Real mb    = pars.mb;
-   const Real mg    = pars.mg;
-   const Real mg2   = power2(pars.mg);
+   const Real mg    = shift_mg(pars.mg, pars.mst1, pars.mst2);
+   const Real mg2   = power2(mg);
    const Real mst1  = pars.mst1;
    const Real mst12 = power2(pars.mst1);
    const Real mst14 = power4(pars.mst1);
