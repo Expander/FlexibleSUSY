@@ -807,7 +807,8 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
            usingSemiAnalyticScaleGetter = "",
            setSemiAnalyticScaleGetter = "",
            semiAnalyticScaleGetter = "",
-           getConstraintScale = "return scale;"},
+           getConstraintScale = "return scale;",
+           twoLoopThresholdHeaders = "" },
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           innerSettings = Select[settings, (!SemiAnalytic`IsSemiAnalyticSetting[#]
                                             && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&];
@@ -879,6 +880,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
              calculateScale = "";
              restrictScale = "";
             ];
+          twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@applyOuterConstraint@" -> IndentText[WrapLines[applyOuterConstraint]],
@@ -916,6 +918,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setSemiAnalyticScaleGetter@" -> IndentText[setSemiAnalyticScaleGetter],
                    "@semiAnalyticScaleGetter@" -> IndentText[semiAnalyticScaleGetter],
                    "@getConstraintScale@" -> IndentText[getConstraintScale],
+                   "@twoLoopThresholdHeaders@" -> twoLoopThresholdHeaders,
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
