@@ -241,11 +241,8 @@ int himalaya::HierarchyCalculator::compareHierarchies(himalaya::HierarchyObject&
 	 // call the routine of Pietro Slavich to get the alpha_s alpha_t/b corrections with the MDRbar masses
 	 Eigen::Matrix2d Mt42L = getMt42L(ho, ho.getMDRFlag(), 0);
 	 
-	 // check for spurious poles. If this is the case slightly change Mst2
-	 if(std::isnan(Mt42L(0,0)) || std::isnan(Mt42L(1,0)) || std::isnan(Mt42L(1,1))){
-	    deltaDSZ = 1.0E-6;
-	    Mt42L = getMt42L(ho, 1, 0);
-	 }
+	 // Note: spurious poles are handeld by the validate method
+	 // of the Himalaya_Interface struct
 	 
 	 //DEPRECATED calc 1-loop shift for DRbar -> MDRbar
 	 //calc difference of Mt41L or Mt41L in the MDRbar scheme directly
@@ -315,7 +312,7 @@ Eigen::Matrix2d himalaya::HierarchyCalculator::calculateHierarchy(himalaya::Hier
    double sigS1Full = 0., sigS2Full = 0., sigS12Full = 0.;
 
    // common variables
-   double At, Mt, s2t, Mst1, Mst2;
+   double At, Mt, s2t, Mst1 = 0., Mst2 = 0.;
    if (!ho.getIsAlphab()) {
       At = p.At;
       Mt = p.Mt;
@@ -714,8 +711,7 @@ double himalaya::HierarchyCalculator::shiftMst1ToMDR(const himalaya::HierarchyOb
  * 	@return A double which is the MDR sx_2 mass.
  */
 double himalaya::HierarchyCalculator::shiftMst2ToMDR(const himalaya::HierarchyObject& ho, const unsigned int oneLoopFlag, const unsigned int twoLoopFlag) {
-   double Mst2mod;
-   double Mst2;
+   double Mst2mod = 0., Mst2;
    if(!ho.getIsAlphab()){
       Mst2 = p.MSt(1);
    }
