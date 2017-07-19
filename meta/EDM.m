@@ -27,6 +27,8 @@ EDMNPointFunctions::usage="Returns a list of all n point functions that are need
  - Write the necessary c++ code: loop functions, DiagramEvaluator<> specialisations
  **********)
 
+Begin["`Private`"];
+
 (************* Begin public interface *******************)
 
 EDMInitialize[] := (subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);)
@@ -164,7 +166,6 @@ Module[{contributingDiagrams, vertices},
        ];
 
 (**************** End public interface *****************)
-Begin["`Private`"];
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)
