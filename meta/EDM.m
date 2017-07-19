@@ -313,7 +313,7 @@ VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_
     Module[{edmVertex, photonVertex},
            edmVertex = {SARAH`AntiField[edmField], photonEmitter, exchangeField};
            photonVertex = {GetPhoton[], photonEmitter, SARAH`AntiField[photonEmitter]};
-           {edmVertex, photonVertex}
+           IndexFields /@ {edmVertex, photonVertex}
            ];
 
 (* Returns the vertex type for a vertex with a given list of fields *)
@@ -350,10 +350,11 @@ CouplingsForFields[fields_List] :=
 (* Creates the actual c++ code for a vertex with given fields.
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
-CreateVertexFunction[fields_List, vertexRules_List] :=
-    Module[{prototype, definition,
+CreateVertexFunction[indexedFields_List, vertexRules_List] :=
+    Module[{prototype, definition, fields,
         parsedVertex, dataClassName, functionClassName, fieldIndexStartF,
         fieldIndexStart, indexBounds},
+           fields = Vertices`StripFieldIndices /@ indexedFields;
            parsedVertex = ParseVertex[fields, vertexRules];
            
            dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
@@ -441,7 +442,7 @@ ParseVertex[fields_List, vertexRules_List] :=
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       expr = Vertices`SortCp[SARAH`Cp @@ fields] /. vertexRules;
+                                       expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
@@ -450,8 +451,8 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
-                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ fields][SARAH`PL] /. vertexRules;
-                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ fields][SARAH`PR] /. vertexRules;
+                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PL] /. vertexRules;
+                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>

@@ -3667,7 +3667,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            EDM`EDMInitialize[];
            EDM`EDMSetEDMFields[edmFields];
 
-           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`EDMNPointFunctions[], Lat$massMatrices]],
+           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[SortCps @ EDM`EDMNPointFunctions[], Lat$massMatrices]],
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
                           {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
