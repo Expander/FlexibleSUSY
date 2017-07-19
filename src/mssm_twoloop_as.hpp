@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Sat 15 Jul 2017 16:46:30
+// This file has been generated at Wed 19 Jul 2017 09:45:55
 // with the script "as2_to_cpp.m".
 
 #ifndef MSSM_TWO_LOOP_AS_H
@@ -55,13 +55,13 @@ struct Parameters {
     Real Q{};     ///< renormalization scale
 };
 
-/// 2-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0509048,arXiv:0810.5101]
+/// 2-loop O(alpha_s^2) contributions to Delta g_3 [hep-ph/0509048,arXiv:0810.5101]
 Real delta_alpha_s_2loop_as_as(const Parameters&);
 
-/// 2-loop O(alpha_t*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/// 2-loop O(alpha_t*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
 Real delta_alpha_s_2loop_at_as(const Parameters&);
 
-/// 2-loop O(alpha_b*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/// 2-loop O(alpha_b*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
 Real delta_alpha_s_2loop_ab_as(const Parameters&);
 
 std::ostream& operator<<(std::ostream&, const Parameters&);

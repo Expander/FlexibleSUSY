@@ -114,13 +114,13 @@ struct Parameters {
     Real Q{};     ///< renormalization scale
 };
 
-/// 2-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0509048,arXiv:0810.5101]
+/// 2-loop O(alpha_s^2) contributions to Delta g_3 [hep-ph/0509048,arXiv:0810.5101]
 Real delta_alpha_s_2loop_as_as(const Parameters&);
 
-/// 2-loop O(alpha_t*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/// 2-loop O(alpha_t*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
 Real delta_alpha_s_2loop_at_as(const Parameters&);
 
-/// 2-loop O(alpha_b*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/// 2-loop O(alpha_b*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
 Real delta_alpha_s_2loop_ab_as(const Parameters&);
 
 std::ostream& operator<<(std::ostream&, const Parameters&);
@@ -337,7 +337,22 @@ namespace {
 
 } // anonymous namespace
 
-/// 2-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0509048,arXiv:0810.5101]
+/**
+ * @brief 2-loop \\f$O(\alpha_s^2)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [hep-ph/0509048, arXiv:0810.5101]
+ *
+ * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
+ * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
+ * of the Standard Model with 5 active quark flavours,
+ * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
+ * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
+ * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
+ * \\f{align*}{
+  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
+  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
+     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
+  \\right]
+ * \\f}
+ */
 Real delta_alpha_s_2loop_as_as(const Parameters& pars)
 {
    using std::log;
@@ -373,7 +388,22 @@ Real delta_alpha_s_2loop_as_as(const Parameters& pars)
    return power4(g3) * result * twoLoop;
 }
 
-/// 2-loop O(alpha_t*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/**
+ * @brief 2-loop \\f$O(\alpha_t\alpha_s)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [arXiv:1009.5455]
+ *
+ * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
+ * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
+ * of the Standard Model with 5 active quark flavours,
+ * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
+ * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
+ * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
+ * \\f{align*}{
+  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
+  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
+     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
+  \\right]
+ * \\f}
+ */
 Real delta_alpha_s_2loop_at_as(const Parameters& pars)
 {
    using std::log;
@@ -420,7 +450,22 @@ Real delta_alpha_s_2loop_at_as(const Parameters& pars)
    return power2(g3) * power2(yt) * result * twoLoop;
 }
 
-/// 2-loop O(alpha_b*alpha_s) contributions to Delta alpha_s [arXiv:1009.5455]
+/**
+ * @brief 2-loop \\f$O(\alpha_b\alpha_s)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [arXiv:1009.5455]
+ *
+ * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
+ * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
+ * of the Standard Model with 5 active quark flavours,
+ * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
+ * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
+ * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
+ * \\f{align*}{
+  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
+  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
+     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
+  \\right]
+ * \\f}
+ */
 Real delta_alpha_s_2loop_ab_as(const Parameters& pars)
 {
    using std::log;
