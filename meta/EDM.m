@@ -432,11 +432,7 @@ ParseVertex[fields_List, vertexRules_List] :=
         parsedVertex, vertexClassName, vertexFunctionBody,
         fieldInfo, trIndexBounds, indexBounds,
         expr, exprL, exprR},
-           indexedFields = MapIndexed[(Module[{field = #1,
-                                               index = #2[[1]]},
-                                              SARAH`getFull[#1] /. SARAH`subGC[index] /. SARAH`subIndFinal[index,index]
-                                              ] &), fields];
-           indexedFields = StripLorentzIndices /@ indexedFields;
+           indexedFields = IndexFields[fields];
            
            
            numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
@@ -488,6 +484,15 @@ ParseVertex[fields_List, vertexRules_List] :=
 
            parsedVertex
            ];
+
+IndexFields[fields_List] :=
+    MapIndexed[
+	Module[{field = #1,
+		index = #2[[1]]},
+	       StripLorentzIndices[
+		   SARAH`getFull[field] /. SARAH`subGC[index] /.
+		   SARAH`subIndFinal[index,index]]
+               ] &, fields];
 
 (** Getters to the ParsedVertex structure **)
 NumberOfIndices[parsedVertex_ParsedVertex] := Total @ parsedVertex[[1]];
