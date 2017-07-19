@@ -235,6 +235,8 @@ FlexibleSUSY 2.0.0 [not released yet]
    field FlexibleSUSY[3] is non-zero or `calculateStandardModelMasses'
    is non-zero in the Mathematica interface.
 
+ * Change: Update to GM2Calc 1.3.3.
+
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable
    algorithm leads to a faster convergece of the overall iteration in
