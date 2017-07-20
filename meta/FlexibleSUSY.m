@@ -36,9 +36,9 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
-FS`Authors = {"P. Athron", "T. Kwasnitza", "D. Harries",
-              "J.-h. Park", "T. Steudtner", "D. Stöckinger",
-              "A. Voigt", "J. Ziebell"};
+FS`Authors = {"P. Athron", "M. Bach", "D. Harries",
+              "T. Kwasnitza", "J.-h. Park", "T. Steudtner",
+              "D. Stöckinger", "A. Voigt", "J. Ziebell"};
 FS`Contributors = {};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
