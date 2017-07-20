@@ -41,7 +41,7 @@ fpart[m1_, m2_, m3_, Q_]      := Fin3[m1^2, m2^2, m3^2, Q^2];
 delta3[m1_, m2_, m3_]         := Delta[m1^2, m2^2, m3^2, -1]; 
 Delta[m1_, m2_, m3_, -1]      := DeltaInv[m1,m2,m3];
 
-Simp[expr_] := Collect[expr, {xt, xb, Fin3[__]}] //. {
+Simp[expr_] := Collect[expr, {xt, xb, Fin3[__]}, Simplify[#,TimeConstraint->3600]&] //. {
         Power[x_,n_] /; n > 0 :> Symbol["power" <> ToString[n]][x],
         Power[x_,-2]          :> 1/Symbol["power" <> ToString[2]][x],
         Power[x_,-3]          :> 1/Symbol["power" <> ToString[3]][x],
@@ -364,18 +364,14 @@ Real delta_alpha_s_2loop_as_as(const Parameters& pars)
    const Real mb    = pars.mb;
    const Real mg    = shift_mg(pars.mg, pars.mst1, pars.mst2);
    const Real mg2   = power2(mg);
-   const Real mst1  = pars.mst1;
    const Real mst12 = power2(pars.mst1);
    const Real mst14 = power4(pars.mst1);
-   const Real mst2  = pars.mst2;
    const Real mst22 = power2(pars.mst2);
    const Real mst24 = power4(pars.mst2);
    const Real msb12 = power2(pars.msb1);
    const Real msb22 = power2(pars.msb2);
-   const Real msd1  = pars.msd1;
    const Real msd12 = power2(pars.msd1);
    const Real msd14 = power4(pars.msd1);
-   const Real msd2  = pars.msd2;
    const Real msd22 = power2(pars.msd2);
    const Real msd24 = power4(pars.msd2);
    const Real Q2    = power2(pars.Q);
@@ -420,10 +416,8 @@ Real delta_alpha_s_2loop_at_as(const Parameters& pars)
    const Real mst2  = pars.mst2;
    const Real mst22 = power2(pars.mst2);
    const Real mst24 = power4(pars.mst2);
-   const Real msb1  = pars.msb1;
    const Real msb12 = power2(pars.msb1);
    const Real msb14 = power4(pars.msb1);
-   const Real msb2  = pars.msb2;
    const Real msb22 = power2(pars.msb2);
    const Real msb24 = power4(pars.msb2);
    const Real mw2   = power2(pars.mw);
