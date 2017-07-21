@@ -190,7 +190,7 @@ namespace {
 
 } // anonymous namespace
 
-double delta_mb_2loop_atau_atau(const Parameters& pars)
+double delta_mtau_2loop_atau_atau(const Parameters& pars)
 {
    using std::log;
    const Real ytau  = pars.ytau;
@@ -11401,7 +11401,7 @@ double delta_mb_2loop_atau_atau(const Parameters& pars)
    return result * power4(ytau) * twoLoop;
 }
 
-double delta_mb_2loop_atau_at(const Parameters& pars)
+double delta_mtau_2loop_atau_at(const Parameters& pars)
 {
    using std::log;
    const Real ytau  = pars.ytau;
@@ -16955,7 +16955,7 @@ double delta_mb_2loop_atau_at(const Parameters& pars)
    return result * power2(ytau) * power2(yt) * twoLoop;
 }
 
-double delta_mb_2loop_atau_ab(const Parameters& pars)
+double delta_mtau_2loop_atau_ab(const Parameters& pars)
 {
    using std::log;
    const Real ytau  = pars.ytau;
