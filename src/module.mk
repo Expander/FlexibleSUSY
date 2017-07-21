@@ -25,6 +25,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/mssm_twoloop_as.cpp \
 		$(DIR)/mssm_twoloop_mb.cpp \
 		$(DIR)/mssm_twoloop_mt.cpp \
+		$(DIR)/mssm_twoloop_mtau.cpp \
 		$(DIR)/mssm_twoloophiggs.cpp \
 		$(DIR)/mssm_twoloophiggs_impl.f \
 		$(DIR)/nmssm_twoloophiggs.cpp \
@@ -96,6 +97,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/mssm_twoloop_as.hpp \
 		$(DIR)/mssm_twoloop_mb.hpp \
 		$(DIR)/mssm_twoloop_mt.hpp \
+		$(DIR)/mssm_twoloop_mtau.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
 		$(DIR)/nmssm_twoloophiggs.hpp \
