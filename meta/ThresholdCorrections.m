@@ -161,7 +161,7 @@ CalculateDeltaAlphaS[renormalizationScheme_] :=
            CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
            "const double delta_alpha_s_1loop = delta_alpha_s + delta_alpha_s_SM;\n" <>
            "double delta_alpha_s_2loop = 0.;\n\n" <>
-           If[FlexibleSUSY`UseMSSMAlphaS2LoopSQCD === True, CalculateDeltaAlpha2L[], ""] <>
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True, CalculateDeltaAlpha2L[], ""] <>
            "return delta_alpha_s_1loop + delta_alpha_s_2loop;\n"
           ];
 
@@ -497,10 +497,10 @@ CalculateGaugeCouplings[] :=
 
 GetTwoLoopThresholdHeaders[] :=
     Module[{result = ""},
-           If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+           If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
               result = "#include \"mssm_twoloop_mb.hpp\"\n#include \"mssm_twoloop_mt.hpp\"\n";
              ];
-           If[FlexibleSUSY`UseMSSMAlphaS2LoopSQCD === True,
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True,
               result = result <> "#include \"mssm_twoloop_as.hpp\"\n";
              ];
            result

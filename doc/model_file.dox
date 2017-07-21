@@ -1467,7 +1467,7 @@ MS-bar bottom mass in the Standard Model and the DR-bar bottom mass in
 the MSSM [arxiv:0707.0650] can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSMYukawa2LoopSQCD = True; (* use two-loop threshold for yt and yb *)
+UseMSSMYukawa2Loop = True; (* use two-loop threshold for yt and yb *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The known MSSM two-loop corrections of order \f$O(\alpha_s^2 +
@@ -1477,7 +1477,7 @@ arXiv:1009.5455] They can be taken into account by setting in the
 model file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseMSSMAlphaS2LoopSQCD = True; (* use two-loop threshold for alpha_s *)
+UseMSSMAlphaS2Loop = True; (* use two-loop threshold for alpha_s *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 */
