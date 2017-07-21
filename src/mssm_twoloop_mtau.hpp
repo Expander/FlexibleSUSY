@@ -16,11 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// This file has been generated at Thu 20 Jul 2017 13:16:33
+// This file has been generated at Fri 21 Jul 2017 09:50:44
 // with the script "tau_to_cpp.m".
 
 #ifndef MSSM_TWO_LOOP_MTAU_H
 #define MSSM_TWO_LOOP_MTAU_H
+
+#include <iosfwd>
 
 namespace flexiblesusy {
 namespace mssm_twoloop_mtau {
@@ -63,6 +65,8 @@ double delta_mtau_2loop_atau_at(const Parameters&);
 
 /// 2-loop contribution to mtau O(alpha_tau*alpha_b) [0912.4652]
 double delta_mtau_2loop_atau_ab(const Parameters&);
+
+std::ostream& operator<<(std::ostream&, const Parameters&);
 
 } // namespace mssm_twoloop_mtau
 } // namespace flexiblesusy

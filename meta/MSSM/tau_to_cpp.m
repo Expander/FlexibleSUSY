@@ -42,6 +42,7 @@ tau2lyl4    = Coefficient[tau2l, ytau^4];
 tau2lyl2yt2 = Coefficient[tau2l, ytau^2 yt^2];
 tau2lyl2yb2 = Coefficient[tau2l, ytau^2 yb^2];
 
+fpart[0, m1_, m2_, scale_]    := Fin20[m1^2, m2^2, scale^2];
 fpart[m1_, m2_, m3_, Q_]      := Fin3[m1^2, m2^2, m3^2, Q^2];
 delta3[m1_, m2_, m3_]         := Delta[m1^2, m2^2, m3^2, -1]; 
 Delta[m1_, m2_, m3_, -1]      := DeltaInv[m1,m2,m3];
@@ -86,6 +87,8 @@ header = "\
 #ifndef MSSM_TWO_LOOP_MTAU_H
 #define MSSM_TWO_LOOP_MTAU_H
 
+#include <iosfwd>
+
 namespace flexiblesusy {
 namespace mssm_twoloop_mtau {
 
@@ -128,6 +131,8 @@ double delta_mtau_2loop_atau_at(const Parameters&);
 /// 2-loop contribution to mtau O(alpha_tau*alpha_b) [0912.4652]
 double delta_mtau_2loop_atau_ab(const Parameters&);
 
+std::ostream& operator<<(std::ostream&, const Parameters&);
+
 } // namespace mssm_twoloop_mtau
 } // namespace flexiblesusy
 
@@ -163,6 +168,7 @@ impl = "\
 #include <cmath>
 #include <complex>
 #include <limits>
+#include <ostream>
 
 namespace flexiblesusy {
 namespace mssm_twoloop_mtau {
@@ -207,6 +213,28 @@ namespace {
          return false;
 
       return std::abs((a - b)/a) < prec;
+   }
+
+   /**
+    * Fin20[] function from twoloopbubble.m .
+    *
+    * @param mm1 squared mass \\f$m_1^2\\f$
+    * @param mm2 squared mass \\f$m_2^2\\f$
+    * @param mmu squared renormalization scale
+    *
+    * @return Fin20(m12, m22, mmu)
+    */
+   Real Fin20(Real mm1, Real mm2, Real mmu)
+   {
+      using std::log;
+      using gm2calc::dilog;
+
+      return (6*(mm1*log(mm1/mmu) + mm2*log(mm2/mmu)) +
+         (-mm1 - mm2)*(7 + power2(Pi)/6.) +
+         (mm1 - mm2)*(2*dilog(1 - mm1/mm2) +
+            power2(log(mm1/mm2))/2.) +
+         ((mm1 + mm2)*power2(log(mm1/mm2)))/2. -
+         2*(mm1*power2(log(mm1/mmu)) + mm2*power2(log(mm2/mmu))))/2.;
    }
 
    Real LambdaSquared(Real x, Real y)
@@ -332,6 +360,7 @@ double delta_mtau_2loop_atau_atau(const Parameters& pars)
    using std::log;
    const Real ytau  = pars.ytau;
    const Real xtau  = pars.xtau;
+   const Real mstau1 = pars.mstau1;
    const Real mstau12 = power2(pars.mstau1);
    const Real mstau2  = pars.mstau2;
    const Real mstau22 = power2(pars.mstau2);
@@ -445,6 +474,39 @@ double delta_mtau_2loop_atau_ab(const Parameters& pars)
 " <> WrapText @ IndentText[ToCPP[tau2lyl2yb2] <> ";"] <> "
 
    return result * power2(ytau) * power2(yb) * twoLoop;
+}
+
+std::ostream& operator<<(std::ostream& out, const Parameters& pars)
+{
+   out <<
+      \"Delta m_tau 2L parameters:\\n\"
+      \"yt     = \" << pars.yt     << '\\n' <<
+      \"yb     = \" << pars.yb     << '\\n' <<
+      \"ytau   = \" << pars.ytau   << '\\n' <<
+      \"mt     = \" << pars.mt     << '\\n' <<
+      \"mb     = \" << pars.mb     << '\\n' <<
+      \"mtau   = \" << pars.mtau   << '\\n' <<
+      \"mst1   = \" << pars.mst1   << '\\n' <<
+      \"mst2   = \" << pars.mst2   << '\\n' <<
+      \"msb1   = \" << pars.msb1   << '\\n' <<
+      \"msb2   = \" << pars.msb2   << '\\n' <<
+      \"mstau1 = \" << pars.mstau1 << '\\n' <<
+      \"mstau2 = \" << pars.mstau2 << '\\n' <<
+      \"msntau = \" << pars.msntau << '\\n' <<
+      \"xt     = \" << pars.xt     << '\\n' <<
+      \"xb     = \" << pars.xb     << '\\n' <<
+      \"xtau   = \" << pars.xtau   << '\\n' <<
+      \"mw     = \" << pars.mw     << '\\n' <<
+      \"mz     = \" << pars.mz     << '\\n' <<
+      \"mh     = \" << pars.mh     << '\\n' <<
+      \"mH     = \" << pars.mH     << '\\n' <<
+      \"mC     = \" << pars.mC     << '\\n' <<
+      \"mA     = \" << pars.mA     << '\\n' <<
+      \"mu     = \" << pars.mu     << '\\n' <<
+      \"tb     = \" << pars.tb     << '\\n' <<
+      \"Q      = \" << pars.Q      << '\\n';
+
+   return out;
 }
 
 } // namespace mssm_twoloop_mtau
