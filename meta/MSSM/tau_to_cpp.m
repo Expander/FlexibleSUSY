@@ -332,7 +332,6 @@ double delta_mb_2loop_atau_atau(const Parameters& pars)
    using std::log;
    const Real ytau  = pars.ytau;
    const Real xtau  = pars.xtau;
-   const Real mstau1  = pars.mstau1;
    const Real mstau12 = power2(pars.mstau1);
    const Real mstau2  = pars.mstau2;
    const Real mstau22 = power2(pars.mstau2);
