@@ -47,7 +47,7 @@ fpart[m1_, m2_, m3_, Q_]      := Fin3[m1^2, m2^2, m3^2, Q^2];
 delta3[m1_, m2_, m3_]         := Delta[m1^2, m2^2, m3^2, -1]; 
 Delta[m1_, m2_, m3_, -1]      := DeltaInv[m1,m2,m3];
 
-Simp[expr_] := Collect[expr, {xt, xb, xtau, Fin3[__]}, Simplify[#,TimeConstraint->3600]&] //. {
+Simp[expr_] := Collect[expr, {xt, xb, xtau, Fin3[__]}, Simplify[#,TimeConstraint->1200]&] //. {
         Power[x_,n_] /; n > 0 :> Symbol["power" <> ToString[n]][x],
         Power[x_,-2]          :> 1/Symbol["power" <> ToString[2]][x],
         Power[x_,-3]          :> 1/Symbol["power" <> ToString[3]][x],
