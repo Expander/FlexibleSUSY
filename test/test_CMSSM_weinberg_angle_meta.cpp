@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    CMSSM_weinberg_angle wein(&model, sm_parameters);
    const double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
-   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 4.0e-6);
+   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 3.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_r )
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    wein.piwwt_0  = wein.calculate_self_energy_VWm(0.);
    const double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
 
-   BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 4.0e-6);
 }
 
 BOOST_AUTO_TEST_CASE( test_sin_theta )
@@ -246,5 +246,5 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    BOOST_TEST_MESSAGE("calculation with CMSSM_weinberg_angle took "
                       << time_2 << " seconds");
 
-   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 4.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 2.0e-8);
 }
