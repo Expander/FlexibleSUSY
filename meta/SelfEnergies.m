@@ -1323,9 +1323,11 @@ try {
    if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
       const auto hier = hc.calculateDMh3L(false, mdrScheme);
 
-      VERBOSE_MSG(\"Himalaya top (hierarchy,uncertainty) = (\"
-                  << hier.getSuitableHierarchy() << \",\"
-                  << hier.getExpUncertainty(3) << \")\");
+      VERBOSE_MSG(\"Himalaya top (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
@@ -1339,9 +1341,11 @@ try {
    if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
       const auto hier = hc.calculateDMh3L(true, mdrScheme);
 
-      VERBOSE_MSG(\"Himalaya bottom (hierarchy,uncertainty) = (\"
-                  << hier.getSuitableHierarchy() << \",\"
-                  << hier.getExpUncertainty(3) << \")\");
+      VERBOSE_MSG(\"Himalaya bottom (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
