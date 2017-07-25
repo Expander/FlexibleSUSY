@@ -35,7 +35,6 @@ SortCp::usage="SortCp[cp] sorts fields in cp into SARAH internal order.";
 SortCps::usage="SortCps[nPointFunctions] sorts all SARAH`Cp[] and SARAH`Cp[][] in nPointFunctions.";
 EnforceCpColorStructures::usage;
 EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
-StripInvalidFieldIndices::usage="StripInvalidFieldIndices[nPointFunctions] strips indices from fields appearing in nPointFunctions that are not really suppposed to have any index to work around Part::partw caused by a field having a spurious index in the argument to SARAH`Vertex[].";
 
 GetLorentzStructure::usage;
 GetParticleList::usage;
@@ -251,13 +250,6 @@ PullExternalFieldsToLeft[f_, lst_] := (
 	  f, ", ", lst, "] failed."];
     Abort[]
 );
-
-StripInvalidFieldIndices[nPointFunctions_List] :=
-    nPointFunctions /. Flatten@Last@Reap[
-	If[SARAH`getIndizes @ FieldHead[#] === {} && !FreeQ[#, _[_?VectorQ]],
-	   Sow[# -> StripFieldIndices[#]]]& /@
-	Union@Cases[nPointFunctions, SARAH`Cp[fields__]|SARAH`Cp[fields__][_]:>
-		    fields, {0, Infinity}]];
 
 StripExtraFieldIndices[fields_List] := StripExtraFieldIndices /@ fields;
 

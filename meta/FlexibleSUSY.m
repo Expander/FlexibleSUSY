@@ -2853,10 +2853,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* get RGEs *)
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
-           nPointFunctions = EnforceCpColorStructures @ SortCps @ StripInvalidFieldIndices @
+           nPointFunctions = EnforceCpColorStructures @ SortCps @
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
-           gmm2Vertices = SortCps @ StripInvalidFieldIndices @ PrepareGMuonMinus2[];
+           gmm2Vertices = SortCps @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", TreeMasses`GetParticles[]];
