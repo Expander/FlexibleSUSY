@@ -96,19 +96,22 @@ SortCps[nPointFunctions_List] := Module[{
 		       UnresolvedColorFactorFreeQ[#, exprs] &]]
 ];
 
-SortCp[SARAH`Cp[fields__]] := SARAH`Cp @@ SortFieldsInCp[{fields}];
+SortCp[SARAH`Cp[fields__]] :=
+    SARAH`Cp @@ SortFieldsInCp @ StripExtraFieldIndices[{fields}];
 
 SortCp[SARAH`Cp[fields__][lor_]] := SortCp[SARAH`Cp[fields]][lor];
 
 (* see OrderVVVV[] in SARAH/Package/SPheno/SPhenoFunc.m *)
 SortCp[cp : SARAH`Cp[vectors__][lor_Integer]] /; CpType[cp] === VVVV :=
 Module[{
+	vs = StripExtraFieldIndices[{vectors}],
 	svs, lors,
-	sortedVectors = SortFieldsInCp[{vectors}],
+	sortedVectors,
 	ssvs, sortedLors,
 	map
     },
-    svs  = StripFieldIndices[{vectors}];
+    sortedVectors = SortFieldsInCp[vs];
+    svs  = StripFieldIndices[vs];
     ssvs = StripFieldIndices[sortedVectors];
     lors = {
 	SARAH`g[ svs[[1]],  svs[[2]]] SARAH`g[ svs[[3]],  svs[[4]]],
@@ -126,12 +129,13 @@ Module[{
 
 (* see WriteFermionProp[] in SARAH/Package/SPheno/SPhenoLoopMasses *)
 SortCp[cp : SARAH`Cp[fields__][lor:PL|PR]] /; CpType[cp] === FFV := Module[{
+	fs = StripExtraFieldIndices[{fields}],
 	sorted,
 	fermions, sortedFermions
     },
-    sorted = SortFieldsInCp[{fields}];
-    fermions       = Select[{fields}, GetFieldType@ToRotatedField[#] === F &];
-    sortedFermions = Select[ sorted , GetFieldType@ToRotatedField[#] === F &];
+    sorted = SortFieldsInCp[fs];
+    fermions       = Select[fs	   , GetFieldType@ToRotatedField[#] === F &];
+    sortedFermions = Select[sorted , GetFieldType@ToRotatedField[#] === F &];
     If[First[fermions] === First[sortedFermions],
 	  (SARAH`Cp @@ sorted)[lor],
 	- (SARAH`Cp @@ sorted)[First @ Complement[{PL, PR}, {lor}]]]
@@ -254,6 +258,22 @@ StripInvalidFieldIndices[nPointFunctions_List] :=
 	   Sow[# -> StripFieldIndices[#]]]& /@
 	Union@Cases[nPointFunctions, SARAH`Cp[fields__]|SARAH`Cp[fields__][_]:>
 		    fields, {0, Infinity}]];
+
+StripExtraFieldIndices[fields_List] := StripExtraFieldIndices /@ fields;
+
+StripExtraFieldIndices[field_] /; !FreeQ[field, _[{}]] :=
+    StripFieldIndices[field];
+
+StripExtraFieldIndices[field_] /; !FreeQ[field, _[_?VectorQ]] &&
+    SARAH`getIndizes @ FieldHead[#] === {} := StripFieldIndices[field];
+
+StripExtraFieldIndices[field_] /; !FreeQ[field, _[{_Integer, ___}?VectorQ]] &&
+    !MatchQ[SARAH`getIndizes @ FieldHead[field], {SARAH`generation, ___}] :=
+    StripExtraFieldIndices[
+	field /.
+	    head_Symbol[{_Integer, indices___}?VectorQ] :> head[{indices}]];
+
+StripExtraFieldIndices[field_] := field;
 
 DeleteRedundantCpPatterns[cpPatterns_] :=
     First @ Sort[#, MatchQ[#2, #1]&]& /@

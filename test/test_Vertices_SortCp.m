@@ -48,6 +48,12 @@ TestEquality[SortCp @ Cp[UChi[{gO1}], bar[Cha[{gI1}]], Hpm][PL],
 TestEquality[SortCp @ Cp[UChi[{gO1}], bar[Cha[{gI1}]], Hpm][PR],
 		      Cp[bar[Cha[{gI1}]], UChi[{gO1}], Hpm][PR]];
 
+TestEquality[SortCp @ Cp[conj[USd[{gO2}]], Glu[{1}], Fd[{gI2}]][PL],
+		      Cp[Glu, Fd[{gI2}], conj[USd[{gO2}]]][PL]];
+
+TestEquality[SortCp @ Cp[VZ, hh[{gI1}], Ah[{2}]],
+		      Cp[Ah[{2}], hh[{gI1}], VZ]];
+
 Print["testing Vertices`Private`RestoreBarOnMajorana[] ..."];
 
 RBOM := Vertices`Private`RestoreBarOnMajorana;
