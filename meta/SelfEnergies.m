@@ -472,6 +472,18 @@ ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
 ExpressionToStringSequentially[expr_, heads_, result_String] :=
     result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
 
+(* decreases literal indices in SARAH couplings *)
+DecreaseLiteralCouplingIndices[expr_, num_:1] :=
+    Module[{DecIdxLit},
+           DecIdxLit[p_[idx_Integer]]   := p[idx - num];
+           DecIdxLit[p_[{idx_Integer}]] := p[{idx - num}];
+           DecIdxLit[p_]                := p;
+           expr /. {
+               SARAH`Cp[a__][b_] :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})][b],
+               SARAH`Cp[a__]     :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})]
+           }
+          ];
+
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
     Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
@@ -480,7 +492,8 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = type <> " result;\n\n" <>
-                  ExpressionToStringSequentially[expr /.
+                  ExpressionToStringSequentially[
+                                     DecreaseLiteralCouplingIndices[expr] /.
                                      vertexRules /.
                                      a_[List[i__]] :> a[i] /.
                                      ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
