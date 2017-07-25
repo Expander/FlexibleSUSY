@@ -231,6 +231,8 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    low_constraint.set_sm_parameters(tmp_sm_parameters);
    susy_constraint.set_sm_parameters(tmp_sm_parameters);
 
+   low_constraint.set_is_initial_guess(true);
+
    @ModelName@_susy_convergence_tester<Semi_analytic> convergence_tester(
       model, running_precision);
    Two_scale_increasing_precision precision(10.0, running_precision);
@@ -241,6 +243,8 @@ void @ModelName@_initial_guesser<Semi_analytic>::solve_susy_parameters()
    initial_solver.add(&low_constraint, model);
    initial_solver.add(&high_constraint, model);
    initial_solver.solve();
+
+   low_constraint.set_is_initial_guess(false);
 }
 
 void @ModelName@_initial_guesser<Semi_analytic>::guess_soft_parameters()

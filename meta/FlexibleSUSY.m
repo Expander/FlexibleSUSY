@@ -789,10 +789,10 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  } ];
           ];
 
-WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
-                                 {minimumScale_, maximumScale_},
+WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings_List,
+                                 scaleFirstGuess_, {minimumScale_, maximumScale_},
                                  isBoundaryConstraint_, isSemiAnalyticConstraint_, semiAnalyticSolns_List, files_List] :=
-   Module[{innerSettings = {}, outerSettings = {},
+   Module[{innerSettings = {}, outerSettings = {}, innerInitialGuessSettings = {},
            applyConstraint = "", applyOuterConstraint = "", calculateScale, scaleGuess,
            restrictScale, calculateOuterScale, outerScaleGuess, restrictOuterScale,
            temporarySetting = "", temporaryResetting = "",
@@ -818,6 +818,13 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, scaleFirstGuess_,
              applyOuterConstraint = Constraint`ApplyConstraints[outerSettings];
             ];
           applyConstraint = Constraint`ApplyConstraints[innerSettings];
+          If[initialGuessSettings =!= {},
+             innerInitialGuessSettings = Select[initialGuessSettings, (!SemiAnalytic`IsSemiAnalyticSetting[#]
+                                                                       && !SemiAnalytic`IsBasisParameterSetting[#, semiAnalyticSolns])&];
+             applyConstraint = applyConstraint <> "if (is_initial_guess) {\n";
+             applyConstraint = applyConstraint <> IndentText[Constraint`ApplyConstraints[innerInitialGuessSettings]]
+                               <> "}\n";
+            ];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
@@ -3544,7 +3551,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                    ];
 
               Print["Creating class for high-scale constraint ..."];
-              WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale, FlexibleSUSY`HighScaleInput,
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`HighScale, FlexibleSUSY`HighScaleInput, {},
                                                FlexibleSUSY`HighScaleFirstGuess,
                                                {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
                                                SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`HighScaleInput],
@@ -3552,7 +3559,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                semiAnalyticSolns, semiAnalyticHighScaleFiles];
 
               Print["Creating class for susy-scale constraint ..."];
-              WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale, FlexibleSUSY`SUSYScaleInput,
+              WriteSemiAnalyticConstraintClass[FlexibleSUSY`SUSYScale, FlexibleSUSY`SUSYScaleInput, {},
                                                FlexibleSUSY`SUSYScaleFirstGuess,
                                                {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
                                                SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`SUSYScaleInput],
@@ -3561,7 +3568,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               Print["Creating class for low-scale constraint ..."];
               WriteSemiAnalyticConstraintClass[FlexibleSUSY`LowScale, FlexibleSUSY`LowScaleInput,
-                                               FlexibleSUSY`LowScaleFirstGuess,
+                                               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY, {},
+                                                  FlexibleSUSY`SUSYScaleInput], FlexibleSUSY`LowScaleFirstGuess,
                                                {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
                                                SemiAnalytic`IsBoundaryConstraint[FlexibleSUSY`LowScaleInput],
                                                SemiAnalytic`IsSemiAnalyticConstraint[FlexibleSUSY`LowScaleInput],
