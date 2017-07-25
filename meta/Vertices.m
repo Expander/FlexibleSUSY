@@ -257,7 +257,7 @@ StripExtraFieldIndices[field_] /; !FreeQ[field, _[{}]] :=
     StripFieldIndices[field];
 
 StripExtraFieldIndices[field_] /; !FreeQ[field, _[_?VectorQ]] &&
-    SARAH`getIndizes @ FieldHead[#] === {} := StripFieldIndices[field];
+    SARAH`getIndizes @ FieldHead[field] === {} := StripFieldIndices[field];
 
 StripExtraFieldIndices[field_] /; !FreeQ[field, _[{_Integer, ___}?VectorQ]] &&
     !MatchQ[SARAH`getIndizes @ FieldHead[field], {SARAH`generation, ___}] :=
