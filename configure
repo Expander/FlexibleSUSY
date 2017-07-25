@@ -11,7 +11,7 @@ FLEXIBLESUSY_EXTRA="-Himalaya"
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT=$(git rev-parse HEAD 2> /dev/null || echo unknown)
 GM2CALC_VERSION="1.3.2"
-HIMALAYA_VERSION="1.0.0"
+HIMALAYA_VERSION="unknown"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -1713,6 +1713,28 @@ check_blas_libs_using_options() {
 }
 
 #_____________________________________________________________________
+check_himalaya_version() {
+    checking_msg "Himalaya version"
+
+    try_compile_run_cpp_program "#include <iostream>
+#include \"version.hpp\"
+int main() {
+   std::cout << Himalaya_VERSION_MAJOR << '.' << Himalaya_VERSION_MINOR << '.' << Himalaya_VERSION_RELEASE << '\n';
+   return 0;
+}" "$CXX" "${HIMALAYAFLAGS}" && [ $cpp_exit = 0 ] || {
+        result "unknown"
+        message "Warning: could not determine Himalaya version because"
+        message "   compilation or execution of the Himalaya test program failed."
+	return 1
+    }
+
+    local HIMALAYA_VERSION="$cpp_output"
+
+    result "ok (version ${HIMALAYA_VERSION})"
+    logmsg "   Himalaya version found: ${HIMALAYA_VERSION}"
+}
+
+#_____________________________________________________________________
 check_himalaya_incl() {
     check_header "version.hpp" "$himalaya_inc_dir" \
 	"$default_inc_paths"
@@ -1731,6 +1753,8 @@ check_himalaya_incl() {
         if [ -n "$himalaya_inc_dir" ]; then
             HIMALAYAFLAGS="-I$himalaya_inc_dir"
         fi
+
+        check_himalaya_version
     fi
     return 0
 }

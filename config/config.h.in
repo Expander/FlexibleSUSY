@@ -39,6 +39,8 @@
 #define FC                    "@FC@"
 #define FFLAGS                "@FFLAGS@"
 #define FLIBS                 "@FLIBS@"
+#define HIMALAYAFLAGS         "@HIMALAYAFLAGS@"
+#define HIMALAYALIBS          "@HIMALAYALIBS@"
 #define GSLFLAGS              "@GSLFLAGS@"
 #define GSLLIBS               "@GSLLIBS@"
 #define LAPACKLIBS            "@LAPACKLIBS@"

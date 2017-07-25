@@ -86,6 +86,8 @@ void print_build_info(std::ostream& ostr)
       "Boost flags (BOOSTFLAGS):               " BOOSTFLAGS "\n"
       "Boost libraries:                        " BOOSTTESTLIBS " " BOOSTTHREADLIBS "\n"
       "Eigen flags (EIGENFLAGS):               " EIGENFLAGS "\n"
+      "Himalaya flags (HIMALAYAFLAGS):         " HIMALAYAFLAGS "\n"
+      "Himalaya libraries (HIMALAYALIBS):      " HIMALAYALIBS "\n"
       "GSL flags (GSLFLAGS):                   " GSLFLAGS "\n"
       "GSL libraries (GSLLIBS):                " GSLLIBS "\n"
       "LAPACK library (LAPACKLIBS):            " LAPACKLIBS "\n"
