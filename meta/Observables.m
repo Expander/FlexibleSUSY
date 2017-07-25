@@ -347,7 +347,7 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGl
            result
           ];
 
-CalculateObservable[FlexibleSUSYObservable`EDM[p_[idx_]], structName_String] :=
+CalculateObservable[FlexibleSUSYObservable`EDM[p_], structName_String] :=
     Module[{pStr = CConversion`ToValidCSymbolString[p]},
            structName <> ".EDM0(" <> pStr <> ") = " <>
            FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> pStr <> "(MODEL);"
