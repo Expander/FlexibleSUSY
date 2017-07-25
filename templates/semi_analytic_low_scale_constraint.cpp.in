@@ -85,9 +85,7 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::apply()
 
 @temporarySetting@
 
-   if (!is_initial_guess) {
-      model->calculate_DRbar_masses();
-   }
+   model->calculate_DRbar_masses();
    update_scale();
    qedqcd.run_to(scale, 1.0e-5);
    calculate_DRbar_gauge_couplings();
