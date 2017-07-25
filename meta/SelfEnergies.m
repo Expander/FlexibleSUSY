@@ -239,10 +239,6 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
            result = SplitFermionSelfEnergies[result];
            result = Remove1DimensionalFieldIndices[result];
-           (* Create W, Z self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles /@ heavySE];
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[
