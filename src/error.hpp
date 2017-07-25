@@ -191,6 +191,15 @@ private:
    std::string message;
 };
 
+class HimalayaError : public Error {
+public:
+   explicit HimalayaError(const std::string& message_) : message(message_) {}
+   virtual ~HimalayaError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
+
 } // namespace flexiblesusy
 
 #endif

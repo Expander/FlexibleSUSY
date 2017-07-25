@@ -91,6 +91,7 @@ options="                    \
    enable_compiler_warnings  \
    enable_debug              \
    enable_fflite             \
+   enable_himalaya           \
    enable_lapack             \
    enable_librarylink        \
    enable_looptools          \
@@ -116,6 +117,7 @@ enable_colors="no"
 enable_debug=""
 enable_mass_error_check="no"
 enable_fflite="no"
+enable_himalaya="yes"
 enable_lapack="automatic"
 enable_librarylink="automatic"
 enable_ilp64mkl_workaround="automatic"
@@ -137,6 +139,7 @@ DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
 DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
+DEFINE_ENABLE_HIMALAYA="#undef ENABLE_HIMALAYA"
 DEFINE_ENABLE_LAPACK="#undef ENABLE_LAPACK"
 DEFINE_ENABLE_LIBRARYLINK="#undef ENABLE_LIBRARYLINK"
 DEFINE_ENABLE_ILP64MKL_WORKAROUND="#undef ENABLE_ILP64MKL_WORKAROUND"
@@ -196,6 +199,8 @@ LOOPFUNCFLAGS=""
 LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
+himalaya_lib_dir=""
+himalaya_inc_dir=""
 sqlite_lib_dir=""
 sqlite_inc_dir=""
 tsil_lib_dir=""
@@ -1708,6 +1713,66 @@ check_blas_libs_using_options() {
 }
 
 #_____________________________________________________________________
+check_himalaya_incl() {
+    check_header "version.hpp" "$himalaya_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        if test "x$enable_himalaya" = "xyes" ; then
+            message "Error: Himalaya's version.hpp must be installed if you want"
+            message "   to use Himalaya, see https://github.com/jklappert/Himalaya"
+            message "   You can use the --with-himalaya-incdir= option to specify the"
+            message "   location of version.hpp and the other headers."
+            exit 1
+        else
+            return 1
+        fi
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$himalaya_inc_dir" ]; then
+            HIMALAYAFLAGS="-I$himalaya_inc_dir"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_himalaya_libs() {
+    check_library "libhimalaya" "$himalaya_lib_dir" \
+	"$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        if test "x$enable_himalaya" = "xyes" ; then
+            message "Error: libhimalaya must be installed if you want"
+            message "   to use Himalaya, see https://github.com/jklappert/Himalaya"
+            message "   You can use the --with-himalaya-libdir= option to specify the"
+            message "   location of the Himalaya library."
+            exit 1
+        else
+            return 1
+        fi
+    else
+        local HIMALAYALIBS_="-lhimalaya"
+        if [ -z "$himalaya_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            HIMALAYALIBS="$HIMALAYALIBS_"
+        else
+            HIMALAYALIBS="-L$himalaya_lib_dir $HIMALAYALIBS_"
+        fi
+    fi
+    return 0
+}
+
+#_____________________________________________________________________
+check_himalaya() {
+    if test "x$enable_himalaya" != "xno" ; then
+        if check_himalaya_incl && check_himalaya_libs ; then
+            enable_himalaya=yes
+        else
+            enable_himalaya=no
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 # Mathematica 9.0 or newer is shipped with Intel MKL with the ILP64
 # interface whereas LP64 is the standard 64 bit programming model
 # which external LAPACK/BLAS would also follow:
@@ -2199,6 +2264,15 @@ enable_defines() {
     fi
     logmsg "   ${DEFINE_ENABLE_FFLITE}"
 
+    if test "x$enable_himalaya" = "xyes" ; then
+        DEFINE_ENABLE_HIMALAYA="#define ENABLE_HIMALAYA 1"
+        message "Enabling usage of Himalaya"
+    else
+        DEFINE_ENABLE_HIMALAYA="#undef ENABLE_HIMALAYA"
+        logmsg "Disabling usage of Himalaya"
+    fi
+    logmsg "   ${DEFINE_ENABLE_HIMALAYA}"
+
     if test "x$enable_lapack" = "xno" ; then
         DEFINE_ENABLE_LAPACK="#undef ENABLE_LAPACK"
         message "Disabling LAPACK"
@@ -2382,6 +2456,8 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
+        -e "s|@HIMALAYALIBS@|$HIMALAYALIBS|"      \
+        -e "s|@HIMALAYAFLAGS@|$HIMALAYAFLAGS|"    \
 	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \
 	-e "s|@LOOPFUNCFLAGS@|$LOOPFUNCFLAGS|"    \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
@@ -2454,6 +2530,8 @@ Package directories, compilation settings and model selection
   --with-flibs=             Fortran libraries (default: $FLIBS)
                             If empty, FLIBS will be determined automatically.
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
+  --with-himalaya-libdir=   Path to search for Himalaya library
+  --with-himalaya-incdir=   Path to search for Himalaya header
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
@@ -2570,6 +2648,8 @@ if test $# -gt 0 ; then
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-flibs=*)          FLIBS=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
+            --with-himalaya-incdir=*) himalaya_inc_dir=$optarg ;;
+            --with-himalaya-libdir=*) himalaya_lib_dir=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
@@ -2636,6 +2716,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_eigen_version
     check_fortran_libs
     check_gsl_config
+    check_himalaya
     check_ilp64mkl_in_math
     check_blas_libs
     check_lapack_libs
@@ -2706,6 +2787,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLIBS@|$FLIBS|"                           \
     -e "s|@GSLLIBS@|$GSLLIBS|"                       \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"                     \
+    -e "s|@HIMALAYALIBS@|$HIMALAYALIBS|"             \
+    -e "s|@HIMALAYAFLAGS@|$HIMALAYAFLAGS|"           \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"                 \
     -e "s|@LDFLAGS@|$LDFLAGS|"                       \
     -e "s|@LDLIBS@|$LDLIBS|"                         \
@@ -2729,6 +2812,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
     -e "s|@DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@|$DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
+    -e "s|@DEFINE_ENABLE_HIMALAYA@|$DEFINE_ENABLE_HIMALAYA|" \
     -e "s|@DEFINE_ENABLE_LAPACK@|$DEFINE_ENABLE_LAPACK|" \
     -e "s|@DEFINE_ENABLE_LIBRARYLINK@|$DEFINE_ENABLE_LIBRARYLINK|" \
     -e "s|@DEFINE_ENABLE_ILP64MKL_WORKAROUND@|$DEFINE_ENABLE_ILP64MKL_WORKAROUND|" \

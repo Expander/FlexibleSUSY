@@ -1214,7 +1214,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            If[FlexibleSUSY`UseHiggs3LoopMSSM === True,
               {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesMSSM[{SARAH`HiggsBoson}];
-              threeLoopHiggsHeaders = threeLoopHiggsHeaders <> "#include \"HierarchyCalculator.hpp\"\n";
+              threeLoopHiggsHeaders = threeLoopHiggsHeaders <> "\
+#ifdef ENABLE_HIMALAYA
+#include \"HierarchyCalculator.hpp\"
+#endif
+";
              ];
            If[FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];

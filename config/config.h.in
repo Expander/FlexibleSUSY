@@ -72,6 +72,9 @@
 /* Enable fflite */
 @DEFINE_ENABLE_FFLITE@
 
+/* Enable Himalaya */
+@DEFINE_ENABLE_HIMALAYA@
+
 /* Enable LAPACK */
 @DEFINE_ENABLE_LAPACK@
 

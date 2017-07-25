@@ -24,6 +24,8 @@ fflags="@FFLAGS@"
 flibs="@FLIBS@"
 gslflags="@GSLFLAGS@"
 gsllibs="@GSLLIBS@"
+himalayaflags="@HIMALAYAFLAGS@"
+himalayalibs="@HIMALAYALIBS@"
 lapacklibs="@LAPACKLIBS@"
 ldflags="@LDFLAGS@"
 ldlibs="@LDLIBS@"
@@ -57,7 +59,7 @@ create_include_directives_for_FS_modules() {
 }
 
 create_include_directives_for_external_modules() {
-    local incl="$gslflags $eigenflags $boostflags"
+    local incl="$gslflags $eigenflags $boostflags $himalayaflags"
 
     [ "x@ENABLE_TSIL@" = xyes ] && \
         incl="$incl $tsilflags"
@@ -136,6 +138,8 @@ Options:
   --flibs               Print Fortran libraries, FLIBS
   --gslflags            Print compiler flags for GSL, GSLFLAGS
   --gsllibs             Print GSL libraries, GSLLIBS
+  --himalayaflags       Print compiler flags for Himalaya, HIMALAYAFLAGS
+  --himalayalibs        Print Himalaya library, HIMALAYALIBS
   --lapacklibs          Print LAPACK libraries, LAPACKLIBS
   --ldflags             Print flags for optional libraries, LDFLAGS
   --ldlibs              Print optional libraries, LDLIBS
@@ -190,6 +194,8 @@ while test $# -gt 0; do
         --flibs)                 out="$out $flibs" ;;
         --gslflags)              out="$out $gslflags" ;;
         --gsllibs)               out="$out $gsllibs" ;;
+        --himalayaflags)         out="$out $himalayaflags" ;;
+        --himalayalibs)          out="$out $himalayalibs" ;;
         --lapacklibs)            out="$out $lapacklibs" ;;
         --ldflags)               out="$out $ldflags" ;;
         --ldlibs)                out="$out $ldlibs" ;;

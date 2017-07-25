@@ -1272,7 +1272,9 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
            mu2Str  = CConversion`RValueToCFormString[SARAH`SoftUp];
            md2Str  = CConversion`RValueToCFormString[SARAH`SoftDown];
-"\
+CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
+
+#ifdef ENABLE_HIMALAYA
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
 double msb_1, msb_2, theta_b;
@@ -1313,8 +1315,6 @@ if (pars.MSb(0) > pars.MSb(1)) {
    std::swap(pars.MSb(0), pars.MSb(1));
    pars.s2b *= -1;
 }
-
-" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 try {
    const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
@@ -1358,8 +1358,9 @@ try {
 } catch (const std::exception& e) {
    VERBOSE_MSG(e.what());
    VERBOSE_MSG(pars);
-   throw himalaya::HimalayaError(e.what());
+   throw HimalayaError(e.what());
 }
+#endif // ENABLE_HIMALAYA
 
 return self_energy_3l;"
           ];
