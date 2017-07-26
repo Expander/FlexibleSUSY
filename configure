@@ -1760,11 +1760,11 @@ check_himalaya_incl() {
 
 #_____________________________________________________________________
 check_himalaya_libs() {
-    check_library "libhimalaya" "$himalaya_lib_dir" \
+    check_library "libHimalaya" "$himalaya_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         if test "x$enable_himalaya" = "xyes" ; then
-            message "Error: libhimalaya must be installed if you want"
+            message "Error: libHimalaya must be installed if you want"
             message "   to use Himalaya, see https://github.com/jklappert/Himalaya"
             message "   You can use the --with-himalaya-libdir= option to specify the"
             message "   location of the Himalaya library."
@@ -1773,7 +1773,7 @@ check_himalaya_libs() {
             return 1
         fi
     else
-        local HIMALAYALIBS_="-lhimalaya"
+        local HIMALAYALIBS_="-lHimalaya"
         if [ -z "$himalaya_lib_dir" ]; then
             # assume that the linker will look in the default paths
             HIMALAYALIBS="$HIMALAYALIBS_"
