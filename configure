@@ -1736,8 +1736,7 @@ int main() {
 
 #_____________________________________________________________________
 check_himalaya_incl() {
-    check_header "version.hpp" "$himalaya_inc_dir" \
-	"$default_inc_paths"
+    check_header "version.hpp" "$himalaya_inc_dir"
     if test "x$found_hdr" = "x" ; then
         if test "x$enable_himalaya" = "xyes" ; then
             message "Error: Himalaya's version.hpp must be installed if you want"
