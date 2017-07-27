@@ -2,9 +2,9 @@ Needs["TestSuite`", "TestSuite.m"];
 Needs["Vertices`", "Vertices.m"];
 
 workingDirectory = Directory[];
-$sarahOutputDir = CreateDirectory[];
+SARAH`SARAH[OutputDirectory] = CreateDirectory[];
 Print["Current working directory: ", workingDirectory];
-Print["SARAH output directory: ", $sarahOutputDir];
+Print["SARAH output directory: ", SARAH`SARAH[OutputDirectory]];
 
 Start["MRSSM"];
 
@@ -175,6 +175,6 @@ TestEquality[Cp[sigmaO, sigmaO, phiO, phiO] /. vertexRulesSigmaO,
     -6*g3^2];
 ]
 
-DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
+DeleteDirectory[SARAH`SARAH[OutputDirectory], DeleteContents -> True];
 
 PrintTestSummary[];

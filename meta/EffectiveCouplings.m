@@ -228,8 +228,8 @@ GetTwoBodyDecays[particle_] :=
                   fields = First[vertex];
                   coupling = Rest[vertex];
                   If[Length[coupling] > 1,
-                     coupling = (SARAH`Cp @@ (StripColorAndLorentzIndices @ fields))[SARAH`PL];,
-                     coupling = SARAH`Cp @@ (StripColorAndLorentzIndices @ fields);
+                     coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)][SARAH`PL];,
+                     coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)];
                     ];
                   candidate = Append[DeleteCases[fields /. head_[{__}] :> head, p_ /; p === AntiParticle[particle], {0, Infinity}, 1], coupling];
                   If[FreeQ[found, C[candidate[[1]], candidate[[2]]]] &&

@@ -622,7 +622,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
+                                       expr = Vertices`SortCp[SARAH`Cp @@ indexedParticles] /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
@@ -631,8 +631,8 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "return vertex_type(result);",
 
                                        "LeftAndRightComponentedVertex",
-                                       exprL = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
-                                       exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
+                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
+                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>
