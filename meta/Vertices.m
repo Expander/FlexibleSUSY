@@ -64,8 +64,9 @@ Begin["`Private`"]
    SARAH/Package/deriveModel.m.  The same ordering is performed by
    Vertices`SortCp[] and Vertices`SortCps[] in FlexibleSUSY, which
    normalize e.g. the above coupling to Cp[Sd[{gI2}], conj[Sd[{gI1}]],
-   VG] so that the mapping is determined to be {Sd -> S1, conj[Sd] ->
-   S2}. *)
+   VG].  VertexRules[] then passes the arguments of Cp[] to
+   SARAH`Vertex[] with the indices gI2 and gI1 omitted, so that the
+   mapping is determined to be {Sd -> S1, conj[Sd] -> S2}. *)
 
 VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	UnitaryMatrixQ,
