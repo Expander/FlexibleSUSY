@@ -164,7 +164,7 @@ PutParameter[par_, link_String] :=
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];
 
-ObsToStr[obs_?NumericQ] := ToString[obs];
+ObsToStr[obs_?NumericQ] := ToString[obs + 1]; (* +1 to convert to Mathematica's index convention *)
 ObsToStr[obs_] := "\"" <> ToString[obs] <> "\"";
 
 HeadToStr[sym_]    := "\"" <> ToString[sym] <> "\"";
