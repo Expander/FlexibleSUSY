@@ -36,9 +36,9 @@ $flexiblesusyTemplateDir = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], 
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
-FS`Authors = {"P. Athron", "T. Kwasnitza", "D. Harries",
-              "J.-h. Park", "T. Steudtner", "D. Stöckinger",
-              "A. Voigt", "J. Ziebell"};
+FS`Authors = {"P. Athron", "M. Bach", "D. Harries",
+              "T. Kwasnitza", "J.-h. Park", "T. Steudtner",
+              "D. Stöckinger", "A. Voigt", "J. Ziebell"};
 FS`Contributors = {};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
@@ -141,8 +141,8 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseMSSM3LoopRGEs = False;
-UseMSSMYukawa2LoopSQCD = False;
-UseMSSMAlphaS2LoopSQCD = False;
+UseMSSMYukawa2Loop = False;
+UseMSSMAlphaS2Loop = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSM = False;
 UseHiggs3LoopSplit = False;
@@ -1469,8 +1469,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
-              FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True ||
-              FlexibleSUSY`UseMSSMAlphaS2LoopSQCD === True,
+              FlexibleSUSY`UseMSSMYukawa2Loop === True ||
+              FlexibleSUSY`UseMSSMAlphaS2Loop === True,
               {secondGenerationHelperPrototypes, secondGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[2];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[3];
              ];

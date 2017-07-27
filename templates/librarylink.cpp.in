@@ -502,6 +502,8 @@ void Model_data::put_problems(MLINK link) const
    const auto& problems = spectrum->get_problems();
    const auto n_problems = number_of_problems(problems);
 
+   MLPutFunction(link, "List", 1);
+   MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", n_problems);
 
    if (problems.have_tachyon())
@@ -532,6 +534,8 @@ void Model_data::put_warnings(MLINK link) const
    const auto& problems = spectrum->get_problems();
    const auto n_warnings = number_of_warnings(problems);
 
+   MLPutFunction(link, "List", 1);
+   MLPutRule(link, @ModelName@_info::model_name);
    MLPutFunction(link, "List", n_warnings);
 
    if (problems.have_bad_mass())

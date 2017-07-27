@@ -80,7 +80,7 @@ FlexibleSUSY 2.0.0 [not released yet]
    arxiv:hep-ph/0507139, arxiv:hep-ph/0707.0650] can be added by
    setting
 
-     UseMSSMYukawa2LoopSQCD = True
+     UseMSSMYukawa2Loop = True
 
    in the model file.
    Thanks to Alexander Bednyakov for providing the expressions.
@@ -90,7 +90,7 @@ FlexibleSUSY 2.0.0 [not released yet]
    [hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455] can be added by
    setting
 
-     UseMSSMAlphaS2LoopSQCD = True
+     UseMSSMAlphaS2Loop = True
 
    in the model file.
 
@@ -234,6 +234,8 @@ FlexibleSUSY 2.0.0 [not released yet]
    the W pole mass is only written to the output if the SLHA input
    field FlexibleSUSY[3] is non-zero or `calculateStandardModelMasses'
    is non-zero in the Mathematica interface.
+
+ * Change: Update to GM2Calc 1.3.3.
 
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
    algorithm which solves the EWSB conditions.  The more stable

@@ -3848,16 +3848,6 @@ Eigen::Matrix<std::complex<double>,3,3> Standard_model::self_energy_Fe_1loop_PL(
    return self_energy;
 }
 
-std::complex<double> Standard_model::self_energy_VZ_1loop_heavy(double) const
-{
-   return 0.;
-}
-
-std::complex<double> Standard_model::self_energy_VWp_1loop_heavy(double) const
-{
-   return 0.;
-}
-
 std::complex<double> Standard_model::self_energy_Fd_1loop_1_heavy_rotated(double p , int gO1, int gO2) const
 {
    std::complex<double> result;

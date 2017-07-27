@@ -1,9 +1,10 @@
 Get[FileNameJoin[{"meta", "TextFormatting.m"}]];
 
-GS  = g3; mgl = mg; scale = Q;
+scale = Q;
 At  = xt + MUE CB/SB;
 Ab  = xb + MUE SB/CB;
-YT  = yt; YB = yb;
+Al  = xtau + MUE SB/CB;
+YT  = yt; YB = yb; YL = ytau;
 MW  = mw; MZ = mz;
 mh0 = mh; mH0 = mH; mA0 = mA; mHp = mC;
 MUE = mu; SB = sb; CB = cb; SA = sa; CA = ca;
@@ -11,7 +12,7 @@ MUE = mu; SB = sb; CB = cb; SA = sa; CA = ca;
 mw /: mw^n_ := mw2^(n/2) /; EvenQ[n];
 mz /: mz^n_ := mz2^(n/2) /; EvenQ[n];
 mt /: mt^n_ := mt2^(n/2) /; EvenQ[n];
-mg /: mg^n_ := mg2^(n/2) /; EvenQ[n];
+mtau /: mtau^n_ := mtau2^(n/2) /; EvenQ[n];
 mh /: mh^n_ := mh2^(n/2) /; EvenQ[n];
 mH /: mH^n_ := mH2^(n/2) /; EvenQ[n];
 mA /: mA^n_ := mA2^(n/2) /; EvenQ[n];
@@ -27,21 +28,26 @@ msb1 /: msb1^2 := msb12;
 msb2 /: msb2^2 := msb22;
 msb1 /: msb1^4 := msb14;
 msb2 /: msb2^4 := msb24;
-msd1 /: msd1^2 := msd12;
-msd2 /: msd2^2 := msd22;
-msd1 /: msd1^4 := msd14;
-msd2 /: msd2^4 := msd24;
+mstau1 /: mstau1^2 := mstau12;
+mstau2 /: mstau2^2 := mstau22;
+mstau1 /: mstau1^4 := mstau14;
+mstau2 /: mstau2^4 := mstau24;
+msntau /: msntau^2 := msntau2;
+msntau /: msntau^(-2) := 1/msntau2;
+msntau /: msntau^4 := msntau4;
 
-a2l     = Get[FileNameJoin[{"meta", "MSSM", "das2.m"}]];
-a2lsqcd = Coefficient[a2l, g3^4];
-a2latas = Coefficient[a2l, g3^2 yt^2];
-a2labas = Coefficient[a2l, g3^2 yb^2];
+tau2l = Get[FileNameJoin[{"meta", "MSSM", "dmtauas2.m"}]];
 
+tau2lyl4    = Coefficient[tau2l, ytau^4];
+tau2lyl2yt2 = Coefficient[tau2l, ytau^2 yt^2];
+tau2lyl2yb2 = Coefficient[tau2l, ytau^2 yb^2];
+
+fpart[0, m1_, m2_, scale_]    := Fin20[m1^2, m2^2, scale^2];
 fpart[m1_, m2_, m3_, Q_]      := Fin3[m1^2, m2^2, m3^2, Q^2];
 delta3[m1_, m2_, m3_]         := Delta[m1^2, m2^2, m3^2, -1]; 
 Delta[m1_, m2_, m3_, -1]      := DeltaInv[m1,m2,m3];
 
-Simp[expr_] := Collect[expr, {xt, xb, Fin3[__]}, Simplify[#,TimeConstraint->3600]&] //. {
+Simp[expr_] := Collect[expr, {xt, xb, xtau, Fin3[__]}, Simplify[#,TimeConstraint->1200]&] //. {
         Power[x_,n_] /; n > 0 :> Symbol["power" <> ToString[n]][x],
         Power[x_,-2]          :> 1/Symbol["power" <> ToString[2]][x],
         Power[x_,-3]          :> 1/Symbol["power" <> ToString[3]][x],
@@ -53,8 +59,8 @@ Simp[expr_] := Collect[expr, {xt, xb, Fin3[__]}, Simplify[#,TimeConstraint->3600
 
 ToCPP[expr_] := ToString[Simp[expr], CForm];
 
-headerName = "mssm_twoloop_as.hpp";
-implName   = "mssm_twoloop_as.cpp";
+headerName = "mssm_twoloop_mtau.hpp";
+implName   = "mssm_twoloop_mtau.cpp";
 
 header = "\
 // ====================================================================
@@ -76,56 +82,58 @@ header = "\
 // ====================================================================
 
 // This file has been generated at " <> DateString[] <> "
-// with the script \"as2_to_cpp.m\".
+// with the script \"tau_to_cpp.m\".
 
-#ifndef MSSM_TWO_LOOP_AS_H
-#define MSSM_TWO_LOOP_AS_H
+#ifndef MSSM_TWO_LOOP_MTAU_H
+#define MSSM_TWO_LOOP_MTAU_H
 
 #include <iosfwd>
 
 namespace flexiblesusy {
-namespace mssm_twoloop_as {
+namespace mssm_twoloop_mtau {
 
 using Real = long double;
 
 struct Parameters {
-    Real g3{};    ///< MSSM strong gauge coupling DR-bar
-    Real yt{};    ///< MSSM top Yukawa coupling DR-bar
-    Real yb{};    ///< MSSM bottom Yukawa coupling DR-bar
-    Real mt{};    ///< MSSM top mass DR-bar
-    Real mb{};    ///< MSSM bottom mass DR-bar
-    Real mg{};    ///< MSSM gluino mass DR-bar
-    Real mst1{};  ///< MSSM light stop mass DR-bar
-    Real mst2{};  ///< MSSM heavy stop mass DR-bar
-    Real msb1{};  ///< MSSM light sbottom mass DR-bar
-    Real msb2{};  ///< MSSM heavy sbottom mass DR-bar
-    Real msd1{};  ///< MSSM light sdown mass DR-bar
-    Real msd2{};  ///< MSSM heavy sdown mass DR-bar
-    Real xt{};    ///< MSSM stop mixing parameter DR-bar
-    Real xb{};    ///< MSSM sbottom mixing parameter DR-bar
-    Real mw{};    ///< MSSM W boson mass DR-bar
-    Real mz{};    ///< MSSM Z boson mass DR-bar
-    Real mh{};    ///< MSSM light CP-even Higgs mass DR-bar
-    Real mH{};    ///< MSSM heavy CP-even Higgs mass DR-bar
-    Real mC{};    ///< MSSM charged Higgs mass DR-bar
-    Real mA{};    ///< MSSM CP-odd Higgs mass DR-bar
-    Real mu{};    ///< MSSM mu superpotential parameter DR-bar
-    Real tb{};    ///< MSSM tan(beta) DR-bar
-    Real Q{};     ///< renormalization scale
+    Real yt{};     ///< MSSM top Yukawa coupling DR-bar
+    Real yb{};     ///< MSSM bottom Yukawa coupling DR-bar
+    Real ytau{};   ///< MSSM tau Yukawa coupling DR-bar
+    Real mt{};     ///< MSSM top mass DR-bar
+    Real mb{};     ///< MSSM bottom mass DR-bar
+    Real mtau{};   ///< MSSM tau mass DR-bar
+    Real mst1{};   ///< MSSM light stop mass DR-bar
+    Real mst2{};   ///< MSSM heavy stop mass DR-bar
+    Real msb1{};   ///< MSSM light sbottom mass DR-bar
+    Real msb2{};   ///< MSSM heavy sbottom mass DR-bar
+    Real mstau1{}; ///< MSSM light stau mass DR-bar
+    Real mstau2{}; ///< MSSM heavy stau mass DR-bar
+    Real msntau{}; ///< MSSM tau sneutrino mass DR-bar
+    Real xt{};     ///< MSSM stop mixing parameter DR-bar
+    Real xb{};     ///< MSSM sbottom mixing parameter DR-bar
+    Real xtau{};   ///< MSSM stau mixing parameter DR-bar
+    Real mw{};     ///< MSSM W boson mass DR-bar
+    Real mz{};     ///< MSSM Z boson mass DR-bar
+    Real mh{};     ///< MSSM light CP-even Higgs mass DR-bar
+    Real mH{};     ///< MSSM heavy CP-even Higgs mass DR-bar
+    Real mC{};     ///< MSSM charged Higgs mass DR-bar
+    Real mA{};     ///< MSSM CP-odd Higgs mass DR-bar
+    Real mu{};     ///< MSSM mu superpotential parameter DR-bar
+    Real tb{};     ///< MSSM tan(beta) DR-bar
+    Real Q{};      ///< renormalization scale
 };
 
-/// 2-loop O(alpha_s^2) contributions to Delta g_3 [hep-ph/0509048,arXiv:0810.5101]
-Real delta_alpha_s_2loop_as_as(const Parameters&);
+/// 2-loop contribution to mtau O(alpha_tau^2) [0912.4652]
+double delta_mtau_2loop_atau_atau(const Parameters&);
 
-/// 2-loop O(alpha_t*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
-Real delta_alpha_s_2loop_at_as(const Parameters&);
+/// 2-loop contribution to mtau O(alpha_tau*alpha_t) [0912.4652]
+double delta_mtau_2loop_atau_at(const Parameters&);
 
-/// 2-loop O(alpha_b*alpha_s) contributions to Delta g_3 [arXiv:1009.5455]
-Real delta_alpha_s_2loop_ab_as(const Parameters&);
+/// 2-loop contribution to mtau O(alpha_tau*alpha_b) [0912.4652]
+double delta_mtau_2loop_atau_ab(const Parameters&);
 
 std::ostream& operator<<(std::ostream&, const Parameters&);
 
-} // namespace mssm_twoloop_as
+} // namespace mssm_twoloop_mtau
 } // namespace flexiblesusy
 
 #endif
@@ -151,7 +159,7 @@ impl = "\
 // ====================================================================
 
 // This file has been generated at " <> DateString[] <> "
-// with the script \"as2_to_cpp.m\".
+// with the script \"tau_to_cpp.m\".
 
 #include \"" <> headerName <> "\"
 #include \"dilog.hpp\"
@@ -163,7 +171,7 @@ impl = "\
 #include <ostream>
 
 namespace flexiblesusy {
-namespace mssm_twoloop_as {
+namespace mssm_twoloop_mtau {
 
 namespace {
    const Real Pi = 3.1415926535897932384626433832795l;
@@ -205,6 +213,28 @@ namespace {
          return false;
 
       return std::abs((a - b)/a) < prec;
+   }
+
+   /**
+    * Fin20[] function from twoloopbubble.m .
+    *
+    * @param mm1 squared mass \\f$m_1^2\\f$
+    * @param mm2 squared mass \\f$m_2^2\\f$
+    * @param mmu squared renormalization scale
+    *
+    * @return Fin20(m12, m22, mmu)
+    */
+   Real Fin20(Real mm1, Real mm2, Real mmu)
+   {
+      using std::log;
+      using gm2calc::dilog;
+
+      return (6*(mm1*log(mm1/mmu) + mm2*log(mm2/mmu)) +
+         (-mm1 - mm2)*(7 + power2(Pi)/6.) +
+         (mm1 - mm2)*(2*dilog(1 - mm1/mm2) +
+            power2(log(mm1/mm2))/2.) +
+         ((mm1 + mm2)*power2(log(mm1/mm2)))/2. -
+         2*(mm1*power2(log(mm1/mmu)) + mm2*power2(log(mm2/mmu))))/2.;
    }
 
    Real LambdaSquared(Real x, Real y)
@@ -323,103 +353,19 @@ namespace {
       return 0.5*std::asin(sin_2alpha);
    }
 
-   /// shift gluino mass away from mst1 and mst2 if too close
-   Real shift_mg(Real mg, Real mst1, Real mst2)
-   {
-      if (is_equal_rel(std::min(mst1, mst2), mg, 0.01l))
-         return mg * 0.98l;
-
-      if (is_equal_rel(std::max(mst1, mst2), mg, 0.01l))
-         return mg * 1.02l;
-
-      return mg;
-   }
-
 } // anonymous namespace
 
-/**
- * @brief 2-loop \\f$O(\alpha_s^2)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [hep-ph/0509048, arXiv:0810.5101]
- *
- * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
- * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
- * of the Standard Model with 5 active quark flavours,
- * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
- * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
- * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
- * \\f{align*}{
-  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
-  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
-     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
-  \\right]
- * \\f}
- */
-Real delta_alpha_s_2loop_as_as(const Parameters& pars)
+double delta_mtau_2loop_atau_atau(const Parameters& pars)
 {
    using std::log;
-   const Real g3    = pars.g3;
-   const Real xt    = pars.xt;
-   const Real xb    = pars.xb;
-   const Real mt    = pars.mt;
-   const Real mt2   = power2(pars.mt);
-   const Real mb    = pars.mb;
-   const Real mg    = shift_mg(pars.mg, pars.mst1, pars.mst2);
-   const Real mg2   = power2(mg);
-   const Real mst12 = power2(pars.mst1);
-   const Real mst14 = power4(pars.mst1);
-   const Real mst22 = power2(pars.mst2);
-   const Real mst24 = power4(pars.mst2);
-   const Real msb12 = power2(pars.msb1);
-   const Real msb22 = power2(pars.msb2);
-   const Real msd12 = power2(pars.msd1);
-   const Real msd14 = power4(pars.msd1);
-   const Real msd22 = power2(pars.msd2);
-   const Real msd24 = power4(pars.msd2);
-   const Real Q2    = power2(pars.Q);
-   const Real snt   = calc_sin_theta(mt, xt, mst12, mst22);
-   const Real snb   = calc_sin_theta(mb, xb, msb12, msb22);
-
-   const Real result =
-" <> WrapText @ IndentText[ToCPP[a2lsqcd] <> ";"] <> "
-
-   return power4(g3) * result * twoLoop;
-}
-
-/**
- * @brief 2-loop \\f$O(\alpha_t\alpha_s)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [arXiv:1009.5455]
- *
- * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
- * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
- * of the Standard Model with 5 active quark flavours,
- * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
- * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
- * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
- * \\f{align*}{
-  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
-  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
-     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
-  \\right]
- * \\f}
- */
-Real delta_alpha_s_2loop_at_as(const Parameters& pars)
-{
-   using std::log;
-   const Real g3    = pars.g3;
-   const Real yt    = pars.yt;
-   const Real xt    = pars.xt;
-   const Real xb    = pars.xb;
-   const Real mt    = pars.mt;
-   const Real mt2   = power2(pars.mt);
-   const Real mb    = pars.mb;
-   const Real mst1  = pars.mst1;
-   const Real mst12 = power2(pars.mst1);
-   const Real mst14 = power4(pars.mst1);
-   const Real mst2  = pars.mst2;
-   const Real mst22 = power2(pars.mst2);
-   const Real mst24 = power4(pars.mst2);
-   const Real msb12 = power2(pars.msb1);
-   const Real msb14 = power4(pars.msb1);
-   const Real msb22 = power2(pars.msb2);
-   const Real msb24 = power4(pars.msb2);
+   const Real ytau  = pars.ytau;
+   const Real xtau  = pars.xtau;
+   const Real mstau1 = pars.mstau1;
+   const Real mstau12 = power2(pars.mstau1);
+   const Real mstau2  = pars.mstau2;
+   const Real mstau22 = power2(pars.mstau2);
+   const Real mstau24 = power4(pars.mstau2);
+   const Real msntau2 = power2(pars.msntau);
    const Real mw2   = power2(pars.mw);
    const Real mz2   = power2(pars.mz);
    const Real mh2   = power2(pars.mh);
@@ -432,44 +378,67 @@ Real delta_alpha_s_2loop_at_as(const Parameters& pars)
    const Real sb    = tb / std::sqrt(1. + power2(tb));
    const Real cb    = 1. / std::sqrt(1. + power2(tb));
    const Real Q2    = power2(pars.Q);
-   const Real snt   = calc_sin_theta(mt, xt, mst12, mst22);
-   const Real snb   = calc_sin_theta(mb, xb, msb12, msb22);
    const Real alpha = calc_alpha(mh2, mH2, tb);
    const Real sa    = std::sin(alpha);
    const Real ca    = std::cos(alpha);
 
-   const Real result =
-" <> WrapText @ IndentText[ToCPP[a2latas] <> ";"] <> "
+   const double result =
+" <> WrapText @ IndentText[ToCPP[tau2lyl4] <> ";"] <> "
 
-   return power2(g3) * power2(yt) * result * twoLoop;
+   return result * power4(ytau) * twoLoop;
 }
 
-/**
- * @brief 2-loop \\f$O(\alpha_b\alpha_s)\\f$ contributions to \\f$\Delta g_3^{(2L)}\\f$ [arXiv:1009.5455]
- *
- * The function returns \\f$\Delta g_3^{(2L)}\\f$ which appears in
- * conversion of the strong \\f$\overline{\\text{MS}}\\f$ gauge coupling
- * of the Standard Model with 5 active quark flavours,
- * \\f$g_3^{\\text{SM(5)},\overline{\\text{MS}}}\\f$, to the strong
- * \\f$\overline{\\text{DR}}\\f$ gauge coupling of the full MSSM
- * \\f$g_3^{\\text{MSSM},\overline{\\text{DR}}}\\f$,
- * \\f{align*}{
-  g_3^{\\text{SM(5)},\overline{\\text{MS}}} =
-  g_3^{\\text{MSSM},\overline{\\text{DR}}} \left[
-     1 + \Delta g_3^{(1L)} + \Delta g_3^{(2L)}
-  \\right]
- * \\f}
- */
-Real delta_alpha_s_2loop_ab_as(const Parameters& pars)
+double delta_mtau_2loop_atau_at(const Parameters& pars)
 {
    using std::log;
-   const Real g3    = pars.g3;
+   const Real ytau  = pars.ytau;
+   const Real yt    = pars.yt;
+   const Real xt    = pars.xt;
+   const Real xtau  = pars.xtau;
+   const Real mt    = pars.mt;
+   const Real mt2   = power2(pars.mt);
+   const Real mst1  = pars.mst1;
+   const Real mst12 = power2(pars.mst1);
+   const Real mst14 = power4(pars.mst1);
+   const Real mst2  = pars.mst2;
+   const Real mst22 = power2(pars.mst2);
+   const Real mst24 = power4(pars.mst2);
+   const Real msb1  = pars.msb1;
+   const Real msb12 = power2(pars.msb1);
+   const Real msb14 = power4(pars.msb1);
+   const Real mstau12 = power2(pars.mstau1);
+   const Real mstau22 = power2(pars.mstau2);
+   const Real msntau2 = power2(pars.msntau);
+   const Real mh2   = power2(pars.mh);
+   const Real mH2   = power2(pars.mH);
+   const Real mC2   = power2(pars.mC);
+   const Real mA2   = power2(pars.mA);
+   const Real mu    = pars.mu;
+   const Real mu2   = power2(pars.mu);
+   const Real tb    = pars.tb;
+   const Real sb    = tb / std::sqrt(1. + power2(tb));
+   const Real cb    = 1. / std::sqrt(1. + power2(tb));
+   const Real Q2    = power2(pars.Q);
+   const Real snt   = calc_sin_theta(mt, xt, mst12, mst22);
+   const Real alpha = calc_alpha(mh2, mH2, tb);
+   const Real sa    = std::sin(alpha);
+   const Real ca    = std::cos(alpha);
+
+   const double result =
+" <> WrapText @ IndentText[ToCPP[tau2lyl2yt2] <> ";"] <> "
+
+   return result * power2(ytau) * power2(yt) * twoLoop;
+}
+
+double delta_mtau_2loop_atau_ab(const Parameters& pars)
+{
+   using std::log;
+   const Real ytau  = pars.ytau;
    const Real yb    = pars.yb;
    const Real xt    = pars.xt;
    const Real xb    = pars.xb;
    const Real mt    = pars.mt;
    const Real mt2   = power2(pars.mt);
-   const Real mb    = pars.mb;
    const Real mst1  = pars.mst1;
    const Real mst12 = power2(pars.mst1);
    const Real mst14 = power4(pars.mst1);
@@ -482,8 +451,10 @@ Real delta_alpha_s_2loop_ab_as(const Parameters& pars)
    const Real msb2  = pars.msb2;
    const Real msb22 = power2(pars.msb2);
    const Real msb24 = power4(pars.msb2);
-   const Real mw2   = power2(pars.mw);
-   const Real mz2   = power2(pars.mz);
+   const Real mstau12 = power2(pars.mstau1);
+   const Real mstau22 = power2(pars.mstau2);
+   const Real msntau2 = power2(pars.msntau);
+   const Real msntau4 = power4(pars.msntau);
    const Real mh2   = power2(pars.mh);
    const Real mH2   = power2(pars.mH);
    const Real mC2   = power2(pars.mC);
@@ -495,49 +466,50 @@ Real delta_alpha_s_2loop_ab_as(const Parameters& pars)
    const Real cb    = 1. / std::sqrt(1. + power2(tb));
    const Real Q2    = power2(pars.Q);
    const Real snt   = calc_sin_theta(mt, xt, mst12, mst22);
-   const Real snb   = calc_sin_theta(mb, xb, msb12, msb22);
    const Real alpha = calc_alpha(mh2, mH2, tb);
    const Real sa    = std::sin(alpha);
    const Real ca    = std::cos(alpha);
 
-   const Real result =
-" <> WrapText @ IndentText[ToCPP[a2labas] <> ";"] <> "
+   const double result =
+" <> WrapText @ IndentText[ToCPP[tau2lyl2yb2] <> ";"] <> "
 
-   return power2(g3) * power2(yb) * result * twoLoop;
+   return result * power2(ytau) * power2(yb) * twoLoop;
 }
 
 std::ostream& operator<<(std::ostream& out, const Parameters& pars)
 {
    out <<
-      \"Delta alpha_s 2L parameters:\\n\"
-      \"g3   = \" <<  pars.g3   << '\\n' <<
-      \"yt   = \" <<  pars.yt   << '\\n' <<
-      \"yb   = \" <<  pars.yb   << '\\n' <<
-      \"mt   = \" <<  pars.mt   << '\\n' <<
-      \"mb   = \" <<  pars.mb   << '\\n' <<
-      \"mg   = \" <<  pars.mg   << '\\n' <<
-      \"mst1 = \" <<  pars.mst1 << '\\n' <<
-      \"mst2 = \" <<  pars.mst2 << '\\n' <<
-      \"msb1 = \" <<  pars.msb1 << '\\n' <<
-      \"msb2 = \" <<  pars.msb2 << '\\n' <<
-      \"msd1 = \" <<  pars.msd1 << '\\n' <<
-      \"msd2 = \" <<  pars.msd2 << '\\n' <<
-      \"xt   = \" <<  pars.xt   << '\\n' <<
-      \"xb   = \" <<  pars.xb   << '\\n' <<
-      \"mw   = \" <<  pars.mw   << '\\n' <<
-      \"mz   = \" <<  pars.mz   << '\\n' <<
-      \"mh   = \" <<  pars.mh   << '\\n' <<
-      \"mH   = \" <<  pars.mH   << '\\n' <<
-      \"mC   = \" <<  pars.mC   << '\\n' <<
-      \"mA   = \" <<  pars.mA   << '\\n' <<
-      \"mu   = \" <<  pars.mu   << '\\n' <<
-      \"tb   = \" <<  pars.tb   << '\\n' <<
-      \"Q    = \" <<  pars.Q    << '\\n';
+      \"Delta m_tau 2L parameters:\\n\"
+      \"yt     = \" << pars.yt     << '\\n' <<
+      \"yb     = \" << pars.yb     << '\\n' <<
+      \"ytau   = \" << pars.ytau   << '\\n' <<
+      \"mt     = \" << pars.mt     << '\\n' <<
+      \"mb     = \" << pars.mb     << '\\n' <<
+      \"mtau   = \" << pars.mtau   << '\\n' <<
+      \"mst1   = \" << pars.mst1   << '\\n' <<
+      \"mst2   = \" << pars.mst2   << '\\n' <<
+      \"msb1   = \" << pars.msb1   << '\\n' <<
+      \"msb2   = \" << pars.msb2   << '\\n' <<
+      \"mstau1 = \" << pars.mstau1 << '\\n' <<
+      \"mstau2 = \" << pars.mstau2 << '\\n' <<
+      \"msntau = \" << pars.msntau << '\\n' <<
+      \"xt     = \" << pars.xt     << '\\n' <<
+      \"xb     = \" << pars.xb     << '\\n' <<
+      \"xtau   = \" << pars.xtau   << '\\n' <<
+      \"mw     = \" << pars.mw     << '\\n' <<
+      \"mz     = \" << pars.mz     << '\\n' <<
+      \"mh     = \" << pars.mh     << '\\n' <<
+      \"mH     = \" << pars.mH     << '\\n' <<
+      \"mC     = \" << pars.mC     << '\\n' <<
+      \"mA     = \" << pars.mA     << '\\n' <<
+      \"mu     = \" << pars.mu     << '\\n' <<
+      \"tb     = \" << pars.tb     << '\\n' <<
+      \"Q      = \" << pars.Q      << '\\n';
 
    return out;
 }
 
-} // namespace mssm_twoloop_as
+} // namespace mssm_twoloop_mtau
 } // namespace flexiblesusy
 ";
 

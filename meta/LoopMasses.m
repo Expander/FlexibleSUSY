@@ -72,7 +72,7 @@ pars.Q = get_scale();";
 
 
 AddMtPoleQCDCorrections[1, expr_] :=
-    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+    If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
 "\
 double qcd_1l = 0.;
 
@@ -94,7 +94,7 @@ double qcd_1l = 0.;
     ];
 
 AddMtPoleQCDCorrections[2, expr_] :=
-    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+    If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
 "\
 double qcd_2l = 0.;
 
@@ -125,7 +125,7 @@ if (pole_mass_loop_order > 2 && TOP_POLE_QCD_CORRECTION > 1) {
 ";
 
 AddMbRun2LSQCDCorrections[] :=
-    If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+    If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
 "
 if (get_thresholds() > 1 && threshold_corrections.mb > 1) {
    double mst_1, mst_2, theta_t;
@@ -1120,14 +1120,14 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               body = body <>
               "const double currentScale = get_scale();\n" <>
               "double qcd_1l = 0., qcd_2l = 0., qcd_3l = 0.;\n\n" <>
-                  If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+                  If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
                      CreateMSSM1LoopSQCDContributions[],
                      "qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";"
                     ] <>
               "\n\n" <>
               "if (get_thresholds() > 1 && threshold_corrections.mt > 1) {\n" <>
               IndentText[
-                  If[FlexibleSUSY`UseMSSMYukawa2LoopSQCD === True,
+                  If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
                      CreateMSSM2LoopSQCDContributions[],
                      "const double q_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> treeLevelMass] <> ";\n\n" <>
                      "qcd_2l = -q_2l + qcd_1l * qcd_1l;"
