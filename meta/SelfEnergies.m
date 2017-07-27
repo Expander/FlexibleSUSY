@@ -1318,7 +1318,8 @@ if (pars.MSb(0) > pars.MSb(1)) {
 
 try {
    const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
-   himalaya::HierarchyCalculator hc(pars);
+   const bool verbose = false;
+   himalaya::HierarchyCalculator hc(pars, verbose);
 
    if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
       const auto hier = hc.calculateDMh3L(false, mdrScheme);
