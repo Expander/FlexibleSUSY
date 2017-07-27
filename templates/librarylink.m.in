@@ -168,7 +168,7 @@ FS@ModelName@Set[handle_Integer, a___, (fsSettings | fsSMParameters | fsModelPar
 FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
     FS@ModelName@SetLib[
         handle,
-        ReleaseHold[Hold[{
+        ReleaseHold[Hold[FS@ModelName@CheckIsNumeric /@ {
             (* spectrum generator settings *)
             OptionValue[precisionGoal],
             OptionValue[maxIterations],
@@ -227,7 +227,7 @@ FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
 
             (* @ModelName@ input parameters *)
 @setInputParameterArguments@
-        }] /. HoldPattern[OptionValue[param_]] :> FS@ModelName@CheckIsNumeric[param] /.
+        }] /. HoldPattern[OptionValue[param_]] :> param /.
         { p } /.
         FS@ModelName@GetSettings[handle] /.
         FS@ModelName@GetSMInputParameters[handle] /.
