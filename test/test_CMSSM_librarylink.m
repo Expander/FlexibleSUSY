@@ -131,8 +131,8 @@ TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhoton
 TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
 TestCloseRel[aMuon  /. slhaData, FlexibleSUSYObservable`aMuon /. obsML, delta];
 
-TestEquality[probML, {}];
-TestEquality[warnML, {}];
+TestEquality[CMSSM /. probML, {}];
+TestEquality[CMSSM /. warnML, {}];
 
 Print["Check re-calculation of spectrum yields the same"];
 

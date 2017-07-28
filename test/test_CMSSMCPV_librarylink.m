@@ -108,9 +108,9 @@ parameters = {
     {CpHGG2, {0}, {EFFHIGGSCOUPLINGS, 35, 21, 21}},
     {CpHGG3, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}},
     {aMuon, {0}, {FlexibleSUSYLowEnergy, 21}},
-    {EDM[Fe[0]], {0}, {FlexibleSUSYLowEnergy, 23}},
-    {EDM[Fe[1]], {0}, {FlexibleSUSYLowEnergy, 24}},
-    {EDM[Fe[2]], {0}, {FlexibleSUSYLowEnergy, 25}}
+    {EDM[Fe[1]], {0}, {FlexibleSUSYLowEnergy, 23}},
+    {EDM[Fe[2]], {0}, {FlexibleSUSYLowEnergy, 24}},
+    {EDM[Fe[3]], {0}, {FlexibleSUSYLowEnergy, 25}}
 };
 
 slhaData = ReadSLHAString[slhaStr, parameters];
@@ -143,11 +143,11 @@ delta = 1*^-5;
 TestCloseRel[{CpHPP1, CpHPP2, CpHPP3} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsPhotonPhoton /. obsML], delta];
 TestCloseRel[{CpHGG1, CpHGG2, CpHGG3} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGluonGluon] /. obsML, delta];
 TestCloseRel[aMuon  /. slhaData, FlexibleSUSYObservable`aMuon /. obsML, delta];
-TestCloseRel[EDM[Fe[0]] /. slhaData, FlexibleSUSYObservable`EDM[Fe[0]] /. obsML, delta];
 TestCloseRel[EDM[Fe[1]] /. slhaData, FlexibleSUSYObservable`EDM[Fe[1]] /. obsML, delta];
 TestCloseRel[EDM[Fe[2]] /. slhaData, FlexibleSUSYObservable`EDM[Fe[2]] /. obsML, delta];
+TestCloseRel[EDM[Fe[3]] /. slhaData, FlexibleSUSYObservable`EDM[Fe[3]] /. obsML, delta];
 
-TestEquality[probML, {}];
-TestEquality[warnML, {}];
+TestEquality[CMSSMCPV /. probML, {}];
+TestEquality[CMSSMCPV /. warnML, {}];
 
 PrintTestSummary[];
