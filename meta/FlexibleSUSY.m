@@ -2860,10 +2860,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* get RGEs *)
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
-           nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
+           nPointFunctions = EnforceCpColorStructures @ SortCps @
              Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            (* GMM2 vertices *)
-           gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
+           gmm2Vertices = SortCps @ PrepareGMuonMinus2[];
            PrepareUnrotatedParticles[FSEigenstates];
 
            DebugPrint["particles (mass eigenstates): ", TreeMasses`GetParticles[]];
@@ -3256,9 +3256,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (*prepare Weinberg angle calculation*)
            WeinbergAngle`InitMuonDecay[];
-           deltaVBwave = WeinbergAngle`DeltaVBwave[];
-           deltaVBvertex = WeinbergAngle`DeltaVBvertex[];
-           deltaVBbox = WeinbergAngle`DeltaVBbox[];
+           deltaVBwave = SortCps @ WeinbergAngle`DeltaVBwave[];
+           deltaVBvertex = SortCps @ WeinbergAngle`DeltaVBvertex[];
+           deltaVBbox = SortCps @ WeinbergAngle`DeltaVBbox[];
 
            vertexRuleFileName =
               GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
@@ -3267,7 +3267,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[NeedToCalculateVertices[FSEigenstates],
               (* effectiveCouplings = {{coupling, {needed couplings}}, ...} *)
               Put[effectiveCouplings =
-                      EffectiveCouplings`InitializeEffectiveCouplings[],
+                      SortCps @ EffectiveCouplings`InitializeEffectiveCouplings[],
                   effectiveCouplingsFileName];
               extraVertices = EffectiveCouplings`GetNeededVerticesList[effectiveCouplings];
               Put[vertexRules =
@@ -3675,7 +3675,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            EDM`EDMInitialize[];
            EDM`EDMSetEDMFields[edmFields];
 
-           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[EDM`EDMNPointFunctions[], Lat$massMatrices]],
+           WriteEDMClass[Join[vertexRules, Vertices`VertexRules[SortCps @ EDM`EDMNPointFunctions[], Lat$massMatrices]],
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "edm.hpp.in"}],
                            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
                           {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],

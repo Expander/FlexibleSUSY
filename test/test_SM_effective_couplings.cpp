@@ -18,11 +18,14 @@ using namespace effective_couplings;
 
 class Standard_model_tester {
 public:
-   Standard_model_tester(const SM_mass_eigenstates& model,
+   Standard_model_tester(const SM_mass_eigenstates& model_,
                          softsusy::QedQcd qedqcd_,
                          Physical_input physical_inputs_)
-      : model(model), qedqcd(qedqcd_), physical_inputs(physical_inputs_)
-      , rg_improve(true), include_qcd_corrections(true) {}
+      : model(model_)
+      , qedqcd(qedqcd_)
+      , physical_inputs(physical_inputs_)
+      , rg_improve(true)
+      , include_qcd_corrections(true) {}
    ~Standard_model_tester() {}
    void do_rg_improve(bool flag) { rg_improve = flag; }
    void do_include_qcd_corrections(bool flag) { include_qcd_corrections = flag; }

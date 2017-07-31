@@ -239,10 +239,6 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
            result = SplitFermionSelfEnergies[result];
            result = Remove1DimensionalFieldIndices[result];
-           (* Create W, Z self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles /@ heavySE];
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[
@@ -472,6 +468,18 @@ ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
 ExpressionToStringSequentially[expr_, heads_, result_String] :=
     result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
 
+(* decreases literal indices in SARAH couplings *)
+DecreaseLiteralCouplingIndices[expr_, num_:1] :=
+    Module[{DecIdxLit},
+           DecIdxLit[p_[idx_Integer]]   := p[idx - num];
+           DecIdxLit[p_[{idx_Integer}]] := p[{idx - num}];
+           DecIdxLit[p_]                := p;
+           expr /. {
+               SARAH`Cp[a__][b_] :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})][b],
+               SARAH`Cp[a__]     :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})]
+           }
+          ];
+
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
     Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
@@ -480,7 +488,8 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = type <> " result;\n\n" <>
-                  ExpressionToStringSequentially[expr /.
+                  ExpressionToStringSequentially[
+                                     DecreaseLiteralCouplingIndices[expr] /.
                                      vertexRules /.
                                      a_[List[i__]] :> a[i] /.
                                      ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.

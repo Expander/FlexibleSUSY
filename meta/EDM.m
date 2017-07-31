@@ -27,6 +27,8 @@ EDMNPointFunctions::usage="Returns a list of all n point functions that are need
  - Write the necessary c++ code: loop functions, DiagramEvaluator<> specialisations
  **********)
 
+Begin["`Private`"];
+
 (************* Begin public interface *******************)
 
 EDMInitialize[] := (subIndexPattern = (Alternatives @@ SARAH`subIndizes[[All, 1]] -> ___);)
@@ -164,7 +166,6 @@ Module[{contributingDiagrams, vertices},
        ];
 
 (**************** End public interface *****************)
-Begin["`Private`"];
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)
@@ -312,7 +313,7 @@ VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, edmField_, photonEmitter_
     Module[{edmVertex, photonVertex},
            edmVertex = {SARAH`AntiField[edmField], photonEmitter, exchangeField};
            photonVertex = {GetPhoton[], photonEmitter, SARAH`AntiField[photonEmitter]};
-           {edmVertex, photonVertex}
+           IndexFields /@ {edmVertex, photonVertex}
            ];
 
 (* Returns the vertex type for a vertex with a given list of fields *)
@@ -349,10 +350,11 @@ CouplingsForFields[fields_List] :=
 (* Creates the actual c++ code for a vertex with given fields.
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
-CreateVertexFunction[fields_List, vertexRules_List] :=
-    Module[{prototype, definition,
+CreateVertexFunction[indexedFields_List, vertexRules_List] :=
+    Module[{prototype, definition, fields,
         parsedVertex, dataClassName, functionClassName, fieldIndexStartF,
         fieldIndexStart, indexBounds},
+           fields = Vertices`StripFieldIndices /@ indexedFields;
            parsedVertex = ParseVertex[fields, vertexRules];
            
            dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
@@ -431,11 +433,7 @@ ParseVertex[fields_List, vertexRules_List] :=
         parsedVertex, vertexClassName, vertexFunctionBody,
         fieldInfo, trIndexBounds, indexBounds,
         expr, exprL, exprR},
-           indexedFields = MapIndexed[(Module[{field = #1,
-                                               index = #2[[1]]},
-                                              SARAH`getFull[#1] /. SARAH`subGC[index] /. SARAH`subIndFinal[index,index]
-                                              ] &), fields];
-           indexedFields = StripLorentzIndices /@ indexedFields;
+           indexedFields = IndexFields[fields];
            
            
            numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
@@ -444,7 +442,7 @@ ParseVertex[fields_List, vertexRules_List] :=
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       expr = (SARAH`Cp @@ fields) /. vertexRules;
+                                       expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
@@ -453,8 +451,8 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
-                                       exprL = SARAH`Cp[Sequence @@ fields][SARAH`PL] /. vertexRules;
-                                       exprR = SARAH`Cp[Sequence @@ fields][SARAH`PR] /. vertexRules;
+                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PL] /. vertexRules;
+                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>
@@ -487,6 +485,15 @@ ParseVertex[fields_List, vertexRules_List] :=
 
            parsedVertex
            ];
+
+IndexFields[fields_List] :=
+    MapIndexed[
+	Module[{field = #1,
+		index = #2[[1]]},
+	       StripLorentzIndices[
+		   SARAH`getFull[field] /. SARAH`subGC[index] /.
+		   SARAH`subIndFinal[index,index]]
+               ] &, fields];
 
 (** Getters to the ParsedVertex structure **)
 NumberOfIndices[parsedVertex_ParsedVertex] := Total @ parsedVertex[[1]];

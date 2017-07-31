@@ -440,8 +440,6 @@ public:
    std::complex<double> self_energy_Fe_1loop_1(double p , int gO1, int gO2) const;
    std::complex<double> self_energy_Fe_1loop_PR(double p , int gO1, int gO2) const;
    std::complex<double> self_energy_Fe_1loop_PL(double p , int gO1, int gO2) const;
-   std::complex<double> self_energy_VZ_1loop_heavy(double p ) const;
-   std::complex<double> self_energy_VWp_1loop_heavy(double p ) const;
    std::complex<double> self_energy_Fd_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
    std::complex<double> self_energy_Fd_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
    std::complex<double> self_energy_Fd_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;

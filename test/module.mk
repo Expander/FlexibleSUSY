@@ -78,7 +78,8 @@ TEST_META := \
 		$(DIR)/test_ThreeLoopQCD.m \
 		$(DIR)/test_ThresholdCorrections.m \
 		$(DIR)/test_TreeMasses.m \
-		$(DIR)/test_Vertices.m
+		$(DIR)/test_Vertices_SortCp.m \
+		$(DIR)/test_Vertices_colorsum.m
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
 TEST_SRC +=
@@ -314,8 +315,13 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_NMSSM_linking.cpp
 endif
 
-ifeq ($(WITH_CMSSMNoFV),yes)
+ifeq ($(WITH_CMSSM),yes)
 TEST_SRC += \
+		$(DIR)/test_CMSSM_effective_couplings.cpp
+endif
+
+ifeq ($(WITH_CMSSMNoFV),yes)
+TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_profile.sh
 endif
 
@@ -826,6 +832,8 @@ $(DIR)/test_CMSSMCKM_high_scale_constraint.x \
 $(DIR)/test_CMSSMCKM_low_scale_constraint.x \
 $(DIR)/test_CMSSMCKM_tree_level_spectrum.x: \
 	$(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSM_effective_couplings.x: $(LIBCMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 

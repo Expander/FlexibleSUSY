@@ -60,30 +60,6 @@ BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
    BOOST_CHECK_CLOSE(m.get_Mhh(), hh_tree, 1.0e-12);
 }
 
-BOOST_AUTO_TEST_CASE( test_SM_wz_self_energies )
-{
-   SM_input_parameters input;
-   input.LambdaIN = 0.25;
-   SM<Two_scale> m;
-   setup_SM_const(m, input);
-
-   m.calculate_DRbar_masses();
-
-   if (m.get_problems().have_problem()) {
-      std::ostringstream ostr;
-      m.get_problems().print_problems(ostr);
-      BOOST_FAIL(ostr.str());
-   }
-
-   const double p = 100.;
-
-   const double se_w_heavy = Re(m.self_energy_VWp_1loop_heavy(p));
-   const double se_z_heavy = Re(m.self_energy_VZ_1loop_heavy(p));
-
-   BOOST_CHECK_SMALL(se_w_heavy, 1.0e-10);
-   BOOST_CHECK_SMALL(se_z_heavy, 1.0e-10);
-}
-
 BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
 {
    SM_input_parameters input;
