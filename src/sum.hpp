@@ -98,23 +98,14 @@ struct create_zero<T, 1> {
     }
 };
 
-template<typename Idx, typename Function>
-struct loop_sum {
-    static auto eval(Idx ini, Idx fin, Function f) ->
-	decltype(EvalEigenXpr<Idx>(ini, f))
-    {
-	typedef decltype(EvalEigenXpr<Idx>(ini, f)) Evaled;
-	typedef typename std::remove_cv<Evaled>::type Acc;
-	Acc s = create_zero<Acc, IsEigenType<Evaled>::Is>::zero();
-	for (Idx i = ini; i <= fin; i++) s += f(i);
-	return s;
-    }
-};
-
 template<class Idx, class Function>
 auto sum(Idx ini, Idx fin, Function f) -> decltype(EvalEigenXpr<Idx>(ini, f))
 {
-    return loop_sum<Idx, Function>::eval(ini, fin, f);
+    typedef decltype(EvalEigenXpr<Idx>(ini, f)) Evaled;
+    typedef typename std::remove_cv<Evaled>::type Acc;
+    Acc s = create_zero<Acc, IsEigenType<Evaled>::Is>::zero();
+    for (Idx i = ini; i <= fin; i++) s += f(i);
+    return s;
 }
 
 } // namespace flexiblesusy
