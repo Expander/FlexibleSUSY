@@ -38,9 +38,10 @@ namespace flexiblesusy {
     sum<type>((ini), (fin), [&](type (idx)) { return (expr); })
 
 template<typename T>
-struct IsEigenType
+struct is_eigen_type
 {
-    enum { Is = std::is_base_of<Eigen::EigenBase<T>, T>::value };
+    static constexpr auto value =
+	std::is_base_of<Eigen::EigenBase<T>, T>::value;
 };
 
 template<typename Idx, typename Function, int isEigenType>
@@ -61,11 +62,13 @@ struct EvalEigenXprImpl<Idx, Function, 1> {
 
 template<typename Idx, typename Function>
 auto EvalEigenXpr(Idx i, Function f) ->
-    decltype(EvalEigenXprImpl<Idx, Function, IsEigenType<decltype(f(i))>::Is>::
-	     eval(i, f))
+    decltype(
+	EvalEigenXprImpl<Idx, Function, is_eigen_type<decltype(f(i))>::value>::
+	eval(i, f))
 {
-    return EvalEigenXprImpl<Idx, Function, IsEigenType<decltype(f(i))>::Is>::
-	   eval(i, f);
+    return
+	EvalEigenXprImpl<Idx, Function, is_eigen_type<decltype(f(i))>::value>::
+	eval(i, f);
 }
 
 template<typename T, int isEigenType>
@@ -89,7 +92,7 @@ auto sum(Idx ini, Idx fin, Function f) -> decltype(EvalEigenXpr<Idx>(ini, f))
 {
     typedef decltype(EvalEigenXpr<Idx>(ini, f)) Evaled;
     typedef typename std::remove_cv<Evaled>::type Acc;
-    Acc s = create_zero<Acc, IsEigenType<Evaled>::Is>::zero();
+    Acc s = create_zero<Acc, is_eigen_type<Evaled>::value>::zero();
     for (Idx i = ini; i <= fin; i++) s += f(i);
     return s;
 }
