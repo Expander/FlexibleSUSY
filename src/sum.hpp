@@ -37,24 +37,10 @@ namespace flexiblesusy {
 #define sum_user_t(type, idx, ini, fin, expr)	\
     sum<type>((ini), (fin), [&](type (idx)) { return (expr); })
 
-// see Example 4-3(a) of http://www.gotw.ca/publications/mxc++-item-4.htm
-template<typename Derived, typename Base>
-class IsDerivedFrom
-{
-    class No { };
-    class Yes { No no[3]; };
-
-    static Yes Test( Base* );	// declared, but not defined
-    static No Test( ... );	// declared, but not defined
-
-public:
-    enum { Is = sizeof(Test(static_cast<Derived*>(0))) == sizeof(Yes) };
-};
-
 template<typename T>
 struct IsEigenType
 {
-    enum { Is = IsDerivedFrom<T, Eigen::EigenBase<T>>::Is };
+    enum { Is = std::is_base_of<Eigen::EigenBase<T>, T>::value };
 };
 
 template<typename Idx, typename Function, int isEigenType>
