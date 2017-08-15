@@ -6,7 +6,7 @@ CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
 CalculateThetaW::usage="";
 GetParameter::usage="";
-RecalculateMWPole::usage="";
+UpdateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
@@ -434,23 +434,14 @@ CalculateThetaW[input_] :=
            CalculateThetaWFromMW[FlexibleSUSY`FSWeakMixingAngleExpr]
           ];
 
-RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
-    Module[{mwStr, wStr, w = SARAH`VectorW},
-           wStr = CConversion`RValueToCFormString[w];
-           mwStr = CConversion`RValueToCFormString[FlexibleSUSY`M[w]];
+UpdateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
+    Module[{},
            "\
-MODEL->calculate_" <> mwStr <> "();
-
-const double mw_drbar    = MODEL->get_" <> mwStr <> "();
-const double self_energy = Re(MODEL->" <> SelfEnergies`CreateSelfEnergyFunctionName[w,1] <> "(mw_pole));
-const double mw_pole_sqr = Sqr(mw_drbar) - self_energy;
-
-if (mw_pole_sqr < 0.)
-   " <> TreeMasses`FlagPoleTachyon[wStr, "MODEL->get_problems()."] <> "
-return AbsSqrt(mw_pole_sqr);"
+if (model->get_thresholds() && model->get_threshold_corrections().sin_theta_w > 0)
+   qedqcd.setPoleMW(weinberg.get_mw_pole());"
           ];
 
-RecalculateMWPole[_] := "return mw_pole;";
+UpdateMWPole[_] := "";
 
 WarnIfFreeQ[coupling_, expr_, sym_] :=
     If[FreeQ[expr, sym],

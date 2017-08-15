@@ -137,9 +137,6 @@ void compare_slha_files(const std::string& file1, const std::string& file2)
    // excluding sfermions because their ordering is different in
    // Softsusy
    int excluded_masses[] = {
-      1,2,3,4,5,6,
-      11,12,13,14,15,16,
-      21,22,23,
       1000001, // Sd_1
       1000003, // Sd_2
       1000005, // Sd_3

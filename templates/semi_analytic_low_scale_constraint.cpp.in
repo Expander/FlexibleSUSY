@@ -92,8 +92,6 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::apply()
 
 @applyConstraint@
 @saveBoundaryValueParameters@
-   if (model->get_thresholds() && model->get_threshold_corrections().sin_theta_w > 0)
-      qedqcd.setPoleMW(recalculate_mw_pole(qedqcd.displayPoleMW()));
 
 @temporaryResetting@
 }
@@ -202,6 +200,7 @@ double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_theta_w()
    double theta_w = 0.;
 
 @calculateThetaW@
+@updateMWPole@
 
    return theta_w;
 }
@@ -296,19 +295,6 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_MNeutrino_DRbar(
    neutrinoDRbar(0,0) = qedqcd.displayNeutrinoPoleMass(1);
    neutrinoDRbar(1,1) = qedqcd.displayNeutrinoPoleMass(2);
    neutrinoDRbar(2,2) = qedqcd.displayNeutrinoPoleMass(3);
-}
-
-/**
- * Recalculates the W boson pole mass using the new gauge couplings.
- *
- * @param mw_pole current W pole mass
- * @return new W pole mass
- */
-double @ModelName@_low_scale_constraint<Semi_analytic>::recalculate_mw_pole(double mw_pole)
-{
-   check_model_ptr();
-
-@recalculateMWPole@
 }
 
 void @ModelName@_low_scale_constraint<Semi_analytic>::check_model_ptr() const

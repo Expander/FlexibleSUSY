@@ -704,7 +704,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
            calculateThetaW,
-           recalculateMWPole,
+           updateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
            twoLoopThresholdHeaders = "" },
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
@@ -755,7 +755,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                ];
             ];
           calculateThetaW   = ThresholdCorrections`CalculateThetaW[FlexibleSUSY`FSWeakMixingAngleInput];
-          recalculateMWPole = ThresholdCorrections`RecalculateMWPole[FlexibleSUSY`FSWeakMixingAngleInput];
+          updateMWPole = ThresholdCorrections`UpdateMWPole[FlexibleSUSY`FSWeakMixingAngleInput];
           twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
@@ -767,7 +767,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
-                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
+                   "@updateMWPole@"          -> IndentText[WrapLines[updateMWPole]],
                    "@calculateDRbarMassUp@"      -> IndentText[IndentText[calculateDRbarMasses[[1]]]],
                    "@calculateDRbarMassCharm@"   -> IndentText[IndentText[calculateDRbarMasses[[2]]]],
                    "@calculateDRbarMassTop@"     -> IndentText[IndentText[calculateDRbarMasses[[3]]]],
@@ -801,7 +801,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
            calculateThetaW,
-           recalculateMWPole,
+           updateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
            saveBoundaryValueParameters = "",
            usingSemiAnalyticScaleGetter = "",
@@ -871,7 +871,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
                ];
             ];
           calculateThetaW   = ThresholdCorrections`CalculateThetaW[FlexibleSUSY`FSWeakMixingAngleInput];
-          recalculateMWPole = ThresholdCorrections`RecalculateMWPole[FlexibleSUSY`FSWeakMixingAngleInput];
+          updateMWPole = ThresholdCorrections`UpdateMWPole[FlexibleSUSY`FSWeakMixingAngleInput];
           If[isBoundaryConstraint,
              saveBoundaryValueParameters = SemiAnalytic`SaveBoundaryValueParameters[semiAnalyticSolns];
             ];
@@ -903,7 +903,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
-                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
+                   "@updateMWPole@"          -> IndentText[WrapLines[updateMWPole]],
                    "@calculateDRbarMassUp@"      -> IndentText[IndentText[calculateDRbarMasses[[1]]]],
                    "@calculateDRbarMassCharm@"   -> IndentText[IndentText[calculateDRbarMasses[[2]]]],
                    "@calculateDRbarMassTop@"     -> IndentText[IndentText[calculateDRbarMasses[[3]]]],

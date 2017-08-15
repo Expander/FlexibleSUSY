@@ -106,11 +106,17 @@ void CLASSNAME::set_sm_parameters(const Sm_parameters& sm_parameters_)
    sm_parameters = sm_parameters_;
 }
 
+double CLASSNAME::get_mw_pole()
+{
+   return mw_pole;
+}
+
 /**
  * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as input
  * and taking the tree-level value of the \f$\hat{\rho}\f$ parameter into account.
+ * Furthermore the W boson pole mass is determined from the final result.
  *
  * The function throws an exception of type NoSinThetaWConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
@@ -133,7 +139,14 @@ double CLASSNAME::calculate(double sinThetaW_start)
    piwwt_MW = calculate_self_energy_@VectorW@(mw);
    piwwt_0  = calculate_self_energy_@VectorW@(0.);
 
-   const double rhohat_tree = calculate_rho_hat_tree();
+   double rhohat_tree = calculate_rho_hat_tree();
+
+   if (!std::isfinite(rhohat_tree)) {
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+      WARNING("rhohat_tree non-finite");
+#endif
+      rhohat_tree = 1.;
+   }
 
    int iteration = 0;
    bool not_converged = true;
@@ -200,6 +213,11 @@ double CLASSNAME::calculate(double sinThetaW_start)
 
    if (not_converged)
       throw NoSinThetaWConvergenceError(number_of_iterations, sinThetaW_new);
+
+   const double rhohat_ratio_final =
+      1.0 / (1.0 - calculate_delta_rho_hat(sinThetaW_new));
+   mw_pole =
+      Sqrt(Sqr(mz) * rhohat_tree * rhohat_ratio_final * (1 - Sqr(sinThetaW_new)));
 
    return sinThetaW_new;
 }

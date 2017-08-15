@@ -134,6 +134,10 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    low_scale  = low_scale_constraint.get_scale();
    reached_precision = convergence_tester.get_current_accuracy();
 
+   // copy calculated W pole mass
+   model.get_physical().M@VectorW@
+      = low_scale_constraint.get_sm_parameters().displayPoleMW();
+
    calculate_spectrum();
 
    // run to output scale (if scale > 0)

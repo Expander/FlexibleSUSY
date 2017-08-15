@@ -455,15 +455,28 @@ IsIncomingFermion[particle_] := TreeMasses`IsFermion[particle] && FreeQ[particle
 
 (*calculates contribution from given vertex diagram with 1 internal fermion and 2 internal scalars*)
 VertexResultFSS[diagr_List, includeGoldstones_] :=
-    Module[{extparticles, extvectorindex, extoutindex, extinindex, couplSSV, couplFFSout, couplFFSin,
-            intparticles, intfermion, intscalars, result, intpartwithindex},
+    Module[{extparticles, extvectorindex, extoutindex, extinindex, inscalar, outscalar, couplSSV,
+            scalarsoutin, factor, couplFFSout, couplFFSin, intparticles, intfermion, intscalars,
+            result, intpartwithindex},
            extparticles = {SARAH`External[1], SARAH`External[2], SARAH`External[3]} /. diagr[[2]];
            extvectorindex = Position[extparticles, x_ /; TreeMasses`IsVector[x],
                                      {1}, Heads -> False][[1, 1]];
            extoutindex = Position[extparticles, x_ /; IsOutgoingFermion[x], {1}, Heads -> False][[1, 1]];
            extinindex = Complement[{1, 2, 3}, {extvectorindex, extoutindex}][[1]];
-           (*TODO: ensure correct momentum direction at SSV vertex*)
-           couplSSV = -diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
+           (*scalars with incoming and outgoing momentum at SSV vertex*)
+           inscalar = SARAH`AntiField[Select[List @@ diagr[[1, extinindex]], TreeMasses`IsScalar][[1]]];
+           outscalar = SARAH`AntiField[Select[List @@ diagr[[1, extoutindex]], TreeMasses`IsScalar][[1]]];
+           couplSSV = diagr[[1, extvectorindex]] /. C[a__] -> SARAH`Cp[a];
+           scalarsoutin = List @@ Take[Vertices`SortCp[couplSSV], 2];
+           (*momentum direction at SSV vertex has to be correct*)
+           (*coupling convention assumes first scalar to be outgoing and second one to be incoming*)
+           If[scalarsoutin === {outscalar, inscalar},
+              factor = 1,
+              If[scalarsoutin === {inscalar, outscalar},
+                 factor = -1,
+                 Print["Warning: scalar direction could not be determined"];
+                 Return[0]]];
+           couplSSV = factor couplSSV;
            couplFFSout = (diagr[[1, extoutindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PR];
            couplFFSin = (diagr[[1, extinindex]] /. C[a__] -> SARAH`Cp[a])[SARAH`PL];
            intparticles = ({SARAH`Internal[1], SARAH`Internal[2], SARAH`Internal[3]} /. diagr[[2]]) /.
