@@ -200,7 +200,6 @@ double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_theta_w()
    double theta_w = 0.;
 
 @calculateThetaW@
-@updateMWPole@
 
    return theta_w;
 }

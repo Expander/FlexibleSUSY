@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    pwein.set_number_of_iterations(maxTries);
    pwein.set_precision_goal(tol);
    double sin_theta_2;
-   BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start));
+   BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start).first);
 
    BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 6.0e-9);
 }

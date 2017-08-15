@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    pwein.set_number_of_iterations(maxTries);
    pwein.set_precision_goal(tol);
    double sin_theta_2;
-   BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start));
+   BOOST_REQUIRE_NO_THROW(sin_theta_2 = pwein.calculate(sin_start).first);
    stopwatch.stop();
    const double time_2 = stopwatch.get_time_in_seconds();
    BOOST_TEST_MESSAGE("calculation with CMSSM_weinberg_angle took "

@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    wein1.set_number_of_iterations(maxTries);
    wein1.set_precision_goal(tol);
    double sin_theta_1;
-   BOOST_REQUIRE_NO_THROW(sin_theta_1 = wein1.calculate(sin_start));
+   BOOST_REQUIRE_NO_THROW(sin_theta_1 = wein1.calculate(sin_start).first);
 
    CMSSM_weinberg_angle::Sm_parameters sm_parameters_2;
    sm_parameters_2.fermi_constant = Electroweak_constants::gfermi;
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    wein2.set_number_of_iterations(maxTries);
    wein2.set_precision_goal(tol);
    double sin_theta_2;
-   BOOST_REQUIRE_NO_THROW(sin_theta_2 = wein2.calculate(sin_start));
+   BOOST_REQUIRE_NO_THROW(sin_theta_2 = wein2.calculate(sin_start).first);
 
    BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 1.0e-10);
 }

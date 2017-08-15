@@ -6,7 +6,6 @@ CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
 CalculateThetaW::usage="";
 GetParameter::usage="";
-UpdateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
@@ -396,7 +395,12 @@ weinberg.set_number_of_loops(MODEL->get_threshold_corrections().sin_theta_w);
 weinberg.set_number_of_iterations(number_of_iterations);
 
 try {
-   THETAW = ArcSin(weinberg.calculate());
+   const auto result = weinberg.calculate();
+   THETAW = ArcSin(result.first);
+
+   if (MODEL->get_thresholds() && MODEL->get_threshold_corrections().sin_theta_w > 0)
+      qedqcd.setPoleMW(result.second);
+
    MODEL->get_problems().unflag_no_sinThetaW_convergence();
 } catch (const Error& e) {
    VERBOSE_MSG(e.what());
@@ -433,15 +437,6 @@ CalculateThetaW[input_] :=
            Print["   Using default input: ", FlexibleSUSY`FSMassW];
            CalculateThetaWFromMW[FlexibleSUSY`FSWeakMixingAngleExpr]
           ];
-
-UpdateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
-    Module[{},
-           "\
-if (model->get_thresholds() && model->get_threshold_corrections().sin_theta_w > 0)
-   qedqcd.setPoleMW(weinberg.get_mw_pole());"
-          ];
-
-UpdateMWPole[_] := "";
 
 WarnIfFreeQ[coupling_, expr_, sym_] :=
     If[FreeQ[expr, sym],
