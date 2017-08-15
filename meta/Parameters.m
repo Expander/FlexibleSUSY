@@ -1492,12 +1492,16 @@ DecreaseIndexLiterals[expr_, heads_List] :=
 DecreaseSumIndices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> FlexibleSUSY`SUM[idx, start - 1, stop - 1, exp];
 
+ReplaceThetaStep[expr_] := expr /; FreeQ[expr,ThetaStep];
+
 ReplaceThetaStep[expr_] :=
-    Expand[expr] //. {
-        Times[a__, ThetaStep[i1_, i2_], b__] :> FlexibleSUSY`IF[i1 < i2, a b, 0],
-        Times[a__, ThetaStep[i1_, i2_]] :> FlexibleSUSY`IF[i1 < i2, a, 0],
-        Times[ThetaStep[i1_, i2_], a__] :> FlexibleSUSY`IF[i1 < i2, a, 0]
-    };
+    Factor[
+        Expand[expr] //. {
+            Times[a__, ThetaStep[i1_, i2_], b__] :> FlexibleSUSY`IF[i1 < i2, a b, 0],
+            Times[a__, ThetaStep[i1_, i2_]] :> FlexibleSUSY`IF[i1 < i2, a, 0],
+            Times[ThetaStep[i1_, i2_], a__] :> FlexibleSUSY`IF[i1 < i2, a, 0]
+        }
+    ];
 
 (* Converts an expression to a valid C++ string. *)
 ExpressionToString[expr_] :=
