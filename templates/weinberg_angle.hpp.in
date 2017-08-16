@@ -72,7 +72,7 @@ private:
    double calculate_delta_rho_hat(double) const;
    double calculate_delta_r_hat(double, double) const;
    double calculate_delta_vb(double, double) const;
-   double calculate_delta_vb_sm(double, double) const;
+   double calculate_delta_vb_sm(double) const;
    double calculate_delta_vb_bsm(double) const;
 
 @DeltaVBprototypes@
