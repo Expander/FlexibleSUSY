@@ -53,6 +53,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    sm_parameters_1.mw_pole = Electroweak_constants::MW;
    sm_parameters_1.mz_pole = Electroweak_constants::MZ;
    sm_parameters_1.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSMNoFV_weinberg_angle wein1(&m1, sm_parameters_1);
    const double delta_vb_1 = wein1.calculate_delta_vb(outrho, outsin);
 
@@ -61,6 +62,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    sm_parameters_2.mw_pole = Electroweak_constants::MW;
    sm_parameters_2.mz_pole = Electroweak_constants::MZ;
    sm_parameters_2.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein2(&m2, sm_parameters_2);
    const double delta_vb_2 = wein2.calculate_delta_vb(outrho, outsin);
 
@@ -87,6 +89,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    sm_parameters_1.mw_pole = Electroweak_constants::MW;
    sm_parameters_1.mz_pole = Electroweak_constants::MZ;
    sm_parameters_1.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSMNoFV_weinberg_angle wein1(&m1, sm_parameters_1);
    // initialize self-energies
    wein1.pizzt_MZ = wein1.calculate_self_energy_VZ(Electroweak_constants::MZ);
@@ -99,6 +102,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    sm_parameters_2.mw_pole = Electroweak_constants::MW;
    sm_parameters_2.mz_pole = Electroweak_constants::MZ;
    sm_parameters_2.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein2(&m2, sm_parameters_2);
    // initialize self-energies
    wein2.pizzt_MZ = wein2.calculate_self_energy_VZ(Electroweak_constants::MZ);
@@ -129,6 +133,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    sm_parameters_1.mw_pole = Electroweak_constants::MW;
    sm_parameters_1.mz_pole = Electroweak_constants::MZ;
    sm_parameters_1.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSMNoFV_weinberg_angle wein1(&m1, sm_parameters_1);
    // initialize self-energies
    wein1.pizzt_MZ = wein1.calculate_self_energy_VZ(Electroweak_constants::MZ);
@@ -141,6 +146,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    sm_parameters_2.mw_pole = Electroweak_constants::MW;
    sm_parameters_2.mz_pole = Electroweak_constants::MZ;
    sm_parameters_2.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein2(&m2, sm_parameters_2);
    // initialize self-energies
    wein2.pizzt_MZ = wein2.calculate_self_energy_VZ(Electroweak_constants::MZ);
@@ -173,6 +179,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    sm_parameters_1.mw_pole = Electroweak_constants::MW;
    sm_parameters_1.mz_pole = Electroweak_constants::MZ;
    sm_parameters_1.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSMNoFV_weinberg_angle wein1(&m1, sm_parameters_1);
    wein1.set_number_of_iterations(maxTries);
    wein1.set_precision_goal(tol);
@@ -184,6 +191,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    sm_parameters_2.mw_pole = Electroweak_constants::MW;
    sm_parameters_2.mz_pole = Electroweak_constants::MZ;
    sm_parameters_2.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein2(&m2, sm_parameters_2);
    wein2.set_number_of_iterations(maxTries);
    wein2.set_precision_goal(tol);

@@ -47,6 +47,7 @@ namespace flexiblesusy {
 #define MW mw
 #define MZ mz
 #define MT mt
+#define ALPHAS alphaS
 #define RHO2 rho_2
 #define DELTARHAT1LOOP deltaRHat1Loop
 #define PIZZTMZ pizzt_MZ
@@ -246,6 +247,7 @@ double CLASSNAME::calculate_delta_rho_hat(double sinThetaW) const
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
+   const double alphaS = sm_parameters.alpha_s;
 
    const double deltaRhoHat1Loop = number_of_loops > 0 ?
       1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz)) : 0.;
@@ -284,6 +286,7 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW) c
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
+   const double alphaS = sm_parameters.alpha_s;
 
    const double dvb = number_of_loops > 0 ?
       calculate_delta_vb(rhohat_ratio, sinThetaW) : 0.;
@@ -321,12 +324,12 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW) c
  */
 double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW) const
 {
-   const double deltaVbSM = calculate_delta_vb_sm(rhohat_ratio, sinThetaW);
+   const double deltaVbSM = calculate_delta_vb_sm(sinThetaW);
 
    const double deltaVbBSM = include_dvb_bsm ?
       calculate_delta_vb_bsm(sinThetaW) : 0.;
 
-   const double deltaVb = deltaVbSM + deltaVbBSM;
+   const double deltaVb = rhohat_ratio * (deltaVbSM + deltaVbBSM);
 
    return deltaVb;
 }
@@ -337,14 +340,12 @@ double CLASSNAME::calculate_delta_vb(double rhohat_ratio, double sinThetaW) cons
  * hep-ph/9606211 taking the tree-level value of the rhohat parameter
  * into account.
  *
- * @param rhohat_ratio = rhohat / rhohat_tree
  * @param sinThetaW sin(theta_W)
  *
  * @return \f$\delta_{\text{VB}}^{\text{SM}}\f$ as defined in (C.12)
  * from hep-ph/9606211
  */
-double CLASSNAME::calculate_delta_vb_sm(
-   double rhohat_ratio, double sinThetaW) const
+double CLASSNAME::calculate_delta_vb_sm(double sinThetaW) const
 {
    const double mz  = sm_parameters.mz_pole;
    const double mw  = sm_parameters.mw_pole;
@@ -359,7 +360,7 @@ double CLASSNAME::calculate_delta_vb_sm(
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
-   const double deltaVbSM = rhohat_ratio * alphaDRbar / (4.0 * Pi * sinThetaW2) *
+   const double deltaVbSM = alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
        (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2))
        - 4. * Log(Sqr(mz/q)));

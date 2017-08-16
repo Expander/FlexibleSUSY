@@ -386,6 +386,7 @@ sm_pars.fermi_constant = qedqcd.displayFermiConstant();
 sm_pars.mw_pole = qedqcd.displayPoleMW();
 sm_pars.mz_pole = qedqcd.displayPoleMZ();
 sm_pars.mt_pole = qedqcd.displayPoleMt();
+sm_pars.alpha_s = qedqcd.displayAlpha(softsusy::ALPHAS);
 
 const int number_of_iterations =
     std::max(20, static_cast<int>(std::abs(-log10(MODEL->get_precision()) * 10)));
