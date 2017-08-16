@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    CMSSM_weinberg_angle wein(&model, sm_parameters);
    const double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
-   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 3.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 6.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_r )
