@@ -44,7 +44,7 @@ struct is_eigen_type
 	std::is_base_of<Eigen::EigenBase<T>, T>::value;
 };
 
-template<typename Idx, typename Function, int isEigenType>
+template<typename Idx, typename Function, bool isEigenType>
 struct EvalEigenXprImpl {
     static auto eval(Idx i, Function f) -> decltype(f(i)) {
 	return f(i);
@@ -52,7 +52,7 @@ struct EvalEigenXprImpl {
 };
 
 template<typename Idx, typename Function>
-struct EvalEigenXprImpl<Idx, Function, 1> {
+struct EvalEigenXprImpl<Idx, Function, true> {
     static auto eval(Idx i, Function f) ->
 	typename std::remove_reference<decltype(f(i).eval())>::type
     {
@@ -71,7 +71,7 @@ auto EvalEigenXpr(Idx i, Function f) ->
 	eval(i, f);
 }
 
-template<typename T, int isEigenType>
+template<typename T, bool isEigenType>
 struct create_zero {
     static const T zero() {
 	return T();
@@ -79,7 +79,7 @@ struct create_zero {
 };
 
 template<typename T>
-struct create_zero<T, 1> {
+struct create_zero<T, true> {
     static const T zero() {
 	T z;
 	z.setZero();
