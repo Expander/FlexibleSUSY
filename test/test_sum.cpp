@@ -48,6 +48,7 @@ BOOST_AUTO_TEST_CASE(test_SUM_double)
    BOOST_CHECK_EQUAL(SUM(i,1,3,1.*i), 6.);
 
    BOOST_CHECK_EQUAL(SUM(i,1,2,SUM(k,1,2,1.5*k*i)), 13.5);
+   BOOST_CHECK_EQUAL(SUM(i,1,2,SUM(k,i,3*(i+1),1.5*k*i)), 163.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_SUM_complex)
@@ -120,13 +121,12 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
 
 BOOST_AUTO_TEST_CASE(test_sum_eigen_vector)
 {
-#define UVec(i) Eigen::Matrix<double,2,1>::Unit(i)
+#define UVec(i) (Eigen::Matrix<double,2,1>::Unit(i))
 
    Eigen::Matrix<double,2,1> v;
    v.setZero();
 
-   // can this also work without calling eval()?
-   v += SUM(i,0,1, (2*(i+1)*UVec(i)).eval());
+   v += SUM(i,0,1, 2*(i+1)*UVec(i));
 
    BOOST_CHECK_EQUAL(v(0), 2.);
    BOOST_CHECK_EQUAL(v(1), 4.);
