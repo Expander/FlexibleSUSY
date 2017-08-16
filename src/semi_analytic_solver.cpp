@@ -127,19 +127,26 @@ void RGFlow<Semi_analytic>::solve()
 
    iteration = 0;
    bool accuracy_reached = false;
-
+   // flag for non-convergence in iteration
+   bool no_conv_inner_iteration = false;
    RGFlow<Two_scale> inner_solver;
    while (iteration < max_iterations && !accuracy_reached) {
       update_running_precision();
+      // reset problem flags on each iteration step
       clear_problems();
+      no_conv_inner_iteration = false;
       prepare_inner_iteration(inner_solver);
+      try {
       inner_solver.solve();
+      } catch (const NoConvergenceError&) {
+	no_conv_inner_iteration = true;
+      }
       run_outer_sliders();
       accuracy_reached = accuracy_goal_reached();
       ++iteration;
    }
 
-   if (!accuracy_reached)
+   if (!accuracy_reached || no_conv_inner_iteration)
       throw NoConvergenceError(max_iterations);
 
    VERBOSE_MSG("convergence reached after " << iteration << " iterations");
