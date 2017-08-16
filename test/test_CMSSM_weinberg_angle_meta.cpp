@@ -159,6 +159,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    sm_parameters.mw_pole = Electroweak_constants::MW;
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
    const double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
@@ -188,6 +189,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    sm_parameters.mw_pole = Electroweak_constants::MW;
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
    // initialize self-energies
    wein.pizzt_MZ = wein.calculate_self_energy_VZ(Electroweak_constants::MZ);
@@ -236,6 +238,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    sm_parameters.mw_pole = Electroweak_constants::MW;
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = 165.0;
+   sm_parameters.alpha_s = 0.1176;
    CMSSM_weinberg_angle pwein(&model, sm_parameters);
    pwein.set_number_of_iterations(maxTries);
    pwein.set_precision_goal(tol);
@@ -246,5 +249,5 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
    BOOST_TEST_MESSAGE("calculation with CMSSM_weinberg_angle took "
                       << time_2 << " seconds");
 
-   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 2.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(sin_theta_1, sin_theta_2, 2.0e-6);
 }
