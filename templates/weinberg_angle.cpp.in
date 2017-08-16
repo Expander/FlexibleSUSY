@@ -47,6 +47,7 @@ namespace flexiblesusy {
 #define MW mw
 #define MZ mz
 #define MT mt
+#define ALPHAS alphaS
 #define RHO2 rho_2
 #define DELTARHAT1LOOP deltaRHat1Loop
 #define PIZZTMZ pizzt_MZ
@@ -246,6 +247,7 @@ double CLASSNAME::calculate_delta_rho_hat(double sinThetaW) const
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
+   const double alphaS = sm_parameters.alpha_s;
 
    const double deltaRhoHat1Loop = number_of_loops > 0 ?
       1 - (1 + piwwt_MW / Sqr(mw)) / (1 + pizzt_MZ / Sqr(mz)) : 0.;
@@ -284,6 +286,7 @@ double CLASSNAME::calculate_delta_r_hat(double rhohat_ratio, double sinThetaW) c
    const double mw = sm_parameters.mw_pole;
    const double mz = sm_parameters.mz_pole;
    const double mt = sm_parameters.mt_pole;
+   const double alphaS = sm_parameters.alpha_s;
 
    const double dvb = number_of_loops > 0 ?
       calculate_delta_vb(rhohat_ratio, sinThetaW) : 0.;

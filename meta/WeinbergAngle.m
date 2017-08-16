@@ -219,7 +219,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[] :=
     Simplify[ArcCos[Sqrt[UnmixedWMass2[] / UnmixedZMass2[] / RhoZero[]]]];
 
 (*parameters and functions transferred directly to and defined on the C++ level*)
-extPars = {SINTHETAW, RHOHATRATIO, GFERMI, MW, MZ, MT, RHO2, DELTARHAT1LOOP, PIZZTMZ};
+extPars = {SINTHETAW, RHOHATRATIO, GFERMI, MW, MZ, MT, ALPHAS, RHO2, DELTARHAT1LOOP, PIZZTMZ};
 Do[Format[extPars[[i]], CForm] = Format[ToString[extPars[[i]]], OutputForm], {i, Length[extPars]}];
 
 (*returns coefficients of 1 and gamma5 in Higgs-top-top vertices*)
@@ -271,7 +271,7 @@ DeltaRhoHat2LoopSM[]:=
               Return[""]];
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = (alphaDRbar SARAH`strongCoupling^2 / (16 Pi^3 SINTHETAW^2) *
+           expr = (alphaDRbar ALPHAS / (4 Pi^2 SINTHETAW^2) *
                       (-2.145 MT^2/MW^2 + 1.262 Log[MT/MZ] - 2.24 - 0.85 MZ^2/MT^2) +
                    HiggsContributions2LoopSM[]) /
                   (1 + PIZZTMZ/MZ^2);
@@ -287,7 +287,7 @@ DeltaRHat2LoopSM[]:=
               Return[""]];
            gY = SARAH`hyperchargeCoupling FlexibleSUSY`GUTNormalization[SARAH`hyperchargeCoupling];
            alphaDRbar = gY^2 SARAH`leftCoupling^2 / (4 Pi (gY^2 + SARAH`leftCoupling^2));
-           expr = alphaDRbar SARAH`strongCoupling^2 / (16 Pi^3 SINTHETAW^2 (1 - SINTHETAW^2)) *
+           expr = alphaDRbar ALPHAS / (4 Pi^2 SINTHETAW^2 (1 - SINTHETAW^2)) *
                      (2.145 MT^2/MZ^2 + 0.575 Log[MT/MZ] - 0.224 - 0.144 MZ^2/MT^2) -
                   HiggsContributions2LoopSM[] (1 - DELTARHAT1LOOP) RHOHATRATIO;
            result = Parameters`CreateLocalConstRefs[expr] <> "\n";
