@@ -57,13 +57,10 @@ class RAII_guard {
 public:
    RAII_guard(F f_) : clean_up(std::move(f_)) {}
    RAII_guard(const RAII_guard&) = delete;
-   RAII_guard(RAII_guard&& other) : clean_up(std::move(other.clean_up)) {}
+   RAII_guard(RAII_guard&&) = default;
    ~RAII_guard() { clean_up(); }
    RAII_guard& operator=(const RAII_guard&) = delete;
-   RAII_guard& operator=(RAII_guard&& other) {
-      clean_up = std::move(other.clean_up);
-      return *this;
-   }
+   RAII_guard& operator=(RAII_guard&&) = default;
 private:
    F clean_up;
 };
