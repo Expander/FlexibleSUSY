@@ -147,11 +147,11 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
    low_scale  = low_scale_constraint.get_scale();
    reached_precision = outer_ct.get_current_accuracy();
 
+   calculate_spectrum();
+
    // copy calculated W pole mass
    model.get_physical().M@VectorW@
       = low_scale_constraint.get_sm_parameters().displayPoleMW();
-
-   calculate_spectrum();
 
    // run to output scale (if scale > 0)
    if (!is_zero(parameter_output_scale))
