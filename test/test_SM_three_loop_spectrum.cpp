@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
    SM_input_parameters input;
    input.LambdaIN = 0.25;
 
-   Two_loop_corrections tlc;
+   Loop_corrections tlc;
    tlc.top_qcd = 2;               // add 3L QCD correction
 
    SM<Two_scale> m;
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
    m.set_thresholds(3);           // add 3L QCD correction
    m.set_ewsb_loop_order(3);      // add 3L QCD correction
    m.set_pole_mass_loop_order(3); // add 3L QCD correction
-   m.set_two_loop_corrections(tlc);
+   m.set_loop_corrections(tlc);
 
    setup_SM_const(m, input);
 

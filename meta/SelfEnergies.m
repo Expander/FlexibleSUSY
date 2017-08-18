@@ -53,6 +53,9 @@ definitions for two-loop Higgs self-energies in the MSSM";
 CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the NMSSM";
 
+CreateThreeLoopSelfEnergiesMSSM::usage="Creates function prototypes
+and definitions for three-loop Higgs contribution in the MSSM";
+
 CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
 
@@ -1305,6 +1308,123 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
 return self_energy_2l;"
           ];
 
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "MSSM", 3] :=
+    Module[{g3Str, mtStr, mbStr, mTop, mBot,
+            vuStr, vdStr, muStr, m3Str, mA0Str,
+            AtStr, AbStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
+           AssertFieldDimension[particle, 2, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           muStr   = CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
+           AtStr   = CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2] / SARAH`UpYukawa[2,2]];
+           AbStr   = CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2] / SARAH`DownYukawa[2,2]];
+           mWStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorW]];
+           mZStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorZ]];
+           mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
+           mu2Str  = CConversion`RValueToCFormString[SARAH`SoftUp];
+           md2Str  = CConversion`RValueToCFormString[SARAH`SoftDown];
+CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
+
+#ifdef ENABLE_HIMALAYA
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+";
+
+himalaya::Parameters pars;
+pars.scale = get_scale();
+pars.mu = Re(" <> muStr <> ");
+pars.g3 = " <> g3Str <> ";
+pars.vd = " <> vdStr <> ";
+pars.vu = " <> vuStr <> ";
+pars.mq2 = Re(" <> mq2Str <> ");
+pars.md2 = Re(" <> md2Str <> ");
+pars.mu2 = Re(" <> mu2Str <> ");
+pars.At = Re(" <> AtStr <> ");
+pars.Ab = Re(" <> AbStr <> ");
+pars.MG = " <> m3Str <> ";
+pars.MW = " <> mWStr <> ";
+pars.MZ = " <> mZStr <> ";
+pars.Mt = " <> mtStr <> ";
+pars.Mb = " <> mbStr <> ";
+pars.MA = " <> mA0Str <> ";
+pars.MSt << mst_1, mst_2;
+pars.MSb << msb_1, msb_2;
+pars.s2t = Sin(2*theta_t);
+pars.s2b = Sin(2*theta_b);
+
+if (pars.MSt(0) > pars.MSt(1)) {
+   std::swap(pars.MSt(0), pars.MSt(1));
+   pars.s2t *= -1;
+}
+
+if (pars.MSb(0) > pars.MSb(1)) {
+   std::swap(pars.MSb(0), pars.MSb(1));
+   pars.s2b *= -1;
+}
+
+try {
+   const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
+   const bool verbose = false;
+   himalaya::HierarchyCalculator hc(pars, verbose);
+
+   if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+      const auto hier = hc.calculateDMh3L(false, mdrScheme);
+
+      VERBOSE_MSG(\"Himalaya top (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
+
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
+
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
+
+   if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
+      const auto hier = hc.calculateDMh3L(true, mdrScheme);
+
+      VERBOSE_MSG(\"Himalaya bottom (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
+
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
+
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
+} catch (const std::exception& e) {
+   VERBOSE_MSG(e.what());
+   VERBOSE_MSG(pars);
+   throw HimalayaError(e.what());
+}
+#endif // ENABLE_HIMALAYA
+
+return self_energy_3l;"
+          ];
+
 GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
     Module[{},
            Print["Error: ", loop,"-loop self-energy corrections not available for ",
@@ -1346,6 +1466,9 @@ CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
 
 CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "NMSSM", 2];
+
+CreateThreeLoopSelfEnergiesMSSM[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "MSSM", 3];
 
 CreateThreeLoopSelfEnergiesSplit[particles_List] :=
     CreateNLoopSelfEnergies[particles, "Split", 3];

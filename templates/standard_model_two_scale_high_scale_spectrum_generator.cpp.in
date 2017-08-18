@@ -102,7 +102,7 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
    eft.set_pole_mass_loop_order(this->model.get_pole_mass_loop_order());
    eft.set_ewsb_loop_order(this->model.get_ewsb_loop_order());
    eft.set_ewsb_iteration_precision(this->model.get_ewsb_iteration_precision());
-   eft.set_two_loop_corrections(this->model.get_two_loop_corrections());
+   eft.set_loop_corrections(this->model.get_loop_corrections());
    eft.set_threshold_corrections(this->model.get_threshold_corrections());
 
    @ModelName@_ewsb_solver<Two_scale> ewsb_solver;

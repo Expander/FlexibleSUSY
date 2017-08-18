@@ -428,7 +428,7 @@ DoFastDiagonalization[particle_Symbol, _] :=
 
 (* ********** medium diagonalization routines ********** *)
 
-DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List, calc2L_:True] :=
+DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List, calcEffPot_:True] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr,
@@ -480,11 +480,18 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
               If[(SARAH`UseHiggs2LoopMSSM === True ||
-                  FlexibleSUSY`UseHiggs2LoopNMSSM === True) &&
+                  FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
+                  FlexibleSUSY`UseHiggs3LoopMSSM === True) &&
                  MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                  addHigherLoopHiggsContributions = "self_energy += self_energy_2l;\n";
-                 If[calc2L,
+                 If[calcEffPot,
                     calcHigherLoopHiggsContributions = CalcEffPot2L[particle];
+                   ];
+                ];
+              If[FlexibleSUSY`UseHiggs3LoopMSSM === True && MemberQ[{SARAH`HiggsBoson}, particle],
+                 addHigherLoopHiggsContributions = addHigherLoopHiggsContributions <> "self_energy += self_energy_3l;\n";
+                 If[calcEffPot,
+                    calcHigherLoopHiggsContributions = calcHigherLoopHiggsContributions <> CalcEffPot3L[particle];
                    ];
                 ];
               result = tadpoleMatrix <>
@@ -703,7 +710,7 @@ CalcEffPot2L[particle_] :=
     Module[{dim = GetDimension[particle], dimStr, selfEnergyMatrixCType},
            dimStr = ToString[dim];
            selfEnergyMatrixCType = CreateCType[TreeMasses`GetMassMatrixType[particle]];
-           "\
+           "
 // two-loop Higgs self-energy contributions
 " <> selfEnergyMatrixCType <> " self_energy_2l(" <> selfEnergyMatrixCType <> "::Zero());
 
@@ -722,21 +729,45 @@ for (int i = 0; i < " <> dimStr <> "; i++) {
 "
           ];
 
+CalcEffPot3L[particle_] :=
+    Module[{selfEnergyMatrixCType},
+           selfEnergyMatrixCType = CreateCType[TreeMasses`GetMassMatrixType[particle]];
+           "
+// three-loop Higgs self-energy contributions
+" <> selfEnergyMatrixCType <> " self_energy_3l(" <> selfEnergyMatrixCType <> "::Zero());
+
+try {
+   if (pole_mass_loop_order > 2)
+   " <> IndentText["self_energy_3l = self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_3loop();"] <> "
+} catch (const flexiblesusy::Error& e) {
+   WARNING(\"3-loop Higgs mass calculation failed: \" << e.what());
+   problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+}
+"
+          ];
+
+
 DoSlowDiagonalization[particle_Symbol, tadpole_] :=
     Module[{result, dim, dimStr, massName, inputMomenta, outputMomenta,
-            body, particleStr, effPot2L = ""},
+            body, particleStr, effPot = ""},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleStr = CConversion`ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            inputMomenta = "old_" <> massName;
            outputMomenta = "new_" <> massName;
-           If[dim > 1 && (SARAH`UseHiggs2LoopMSSM === True ||
-                          FlexibleSUSY`UseHiggs2LoopNMSSM === True) &&
+           If[dim > 1 &&
+              (SARAH`UseHiggs2LoopMSSM === True ||
+               FlexibleSUSY`UseHiggs2LoopNMSSM === True) &&
               MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
-              effPot2L = CalcEffPot2L[particle];
+              effPot = effPot <> CalcEffPot2L[particle];
              ];
-           body = DoMediumDiagonalization[particle, inputMomenta, tadpole, effPot2L === ""] <> "\n" <>
+           If[dim > 1 &&
+              FlexibleSUSY`UseHiggs3LoopMSSM === True &&
+              MemberQ[{SARAH`HiggsBoson}, particle],
+              effPot = effPot <> CalcEffPot3L[particle];
+             ];
+           body = DoMediumDiagonalization[particle, inputMomenta, tadpole, effPot === ""] <> "\n" <>
                   outputMomenta <> " = PHYSICAL(" <> massName <> ");\n" <>
                   "diff = MaxRelDiff(" <> outputMomenta <> ", " <> inputMomenta <> ");\n" <>
                   inputMomenta <> " = " <> outputMomenta <> ";\n" <>
@@ -746,8 +777,8 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                     "double diff = 0.0;\n" <>
                     "decltype(" <> massName <> ") " <>
                     inputMomenta  <> "(" <> massName <> "), " <>
-                    outputMomenta <> "(" <> massName <> ");\n\n" <>
-                    effPot2L <> "\n" <>
+                    outputMomenta <> "(" <> massName <> ");\n" <>
+                    effPot <> "\n" <>
                     "do {\n" <>
                     IndentText[body] <>
                     "\

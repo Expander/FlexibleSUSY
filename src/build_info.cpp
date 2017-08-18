@@ -68,6 +68,8 @@ void print_version_info(std::ostream& ostr)
       "Eigen version:                          " << EIGEN_WORLD_VERSION
         << '.' << EIGEN_MAJOR_VERSION << '.' << EIGEN_MINOR_VERSION << "\n"
       "GSL version:                            " << GSL_VERSION "\n"
+      "GM2Calc version:                        " << GM2CALC_VERSION "\n"
+      "Himalaya version:                       " << HIMALAYA_VERSION "\n"
       ;
 }
 
@@ -84,6 +86,8 @@ void print_build_info(std::ostream& ostr)
       "Boost flags (BOOSTFLAGS):               " BOOSTFLAGS "\n"
       "Boost libraries:                        " BOOSTTESTLIBS " " BOOSTTHREADLIBS "\n"
       "Eigen flags (EIGENFLAGS):               " EIGENFLAGS "\n"
+      "Himalaya flags (HIMALAYAFLAGS):         " HIMALAYAFLAGS "\n"
+      "Himalaya libraries (HIMALAYALIBS):      " HIMALAYALIBS "\n"
       "GSL flags (GSLFLAGS):                   " GSLFLAGS "\n"
       "GSL libraries (GSLLIBS):                " GSLLIBS "\n"
       "LAPACK library (LAPACKLIBS):            " LAPACKLIBS "\n"

@@ -35,6 +35,9 @@ Block FlexibleSUSY
    22   0         # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
    23   1         # calculate BSM pole masses
    24   123111221 # individual threshold correction loop orders
+   25   0         # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
+   26   1         # Higgs 3-loop corrections O(alpha_t alpha_s^2)
+   27   1         # Higgs 3-loop corrections O(alpha_b alpha_s^2)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 __Description__:
@@ -71,6 +74,9 @@ index | description                            | possible values                
 22    | EFT Higgs index                        | any integer >= 0                            | 0 (= lightest)
 23    | calculate pole masses of BSM particles | 0 (no) or 1 (yes)                           | 1 (= yes)
 24    | individual threshold corrections       | positive integer                            | 123111221
+25    | ren. scheme for higgs 3L corrections   | 0 (DR-bar) or 1 (MDR-bar)                   | 0 (= DR-bar)
+26    | higgs 3-loop correction O(at as^2)     | 0, 1                                        | 1 (= enabled)
+27    | higgs 3-loop correction O(ab as^2)     | 0, 1                                        | 1 (= enabled)
 
 ### Precision goal (`FlexibleSUSY[0]`) ###
 
@@ -358,6 +364,84 @@ digit position \f$n\f$ | default value (prefactor of \f$10^n\f$) | parameter
 \note Note, that the threshold correction loop order of a parameter is
 not higher than the "global" threshold correction loop order,
 specified by `FlexibleSUSY[7]`.
+
+### 3-loop corrections to the Higgs pole mass (`FlexibleSUSY[25-27]`) ###
+
+In the MSSM, the 3-loop corrections to the Higgs pole mass of the
+order \f$O(\alpha_t \alpha_s^2 + \alpha_b \alpha_s^2)\f$
+[arxiv:hep-ph/1005.5709] can be taken into account.  To include them,
+the variable `UseHiggs3LoopMSSM` must be set to `True` in the model
+file:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UseHiggs3LoopMSSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note It is strongly recommended to also set `UseMSSMYukawa2Loop =
+True;` and `UseMSSM3LoopRGEs = True;` for consistency.
+
+To enable the 3-loop corrections at run-time in general, set both
+`FlexibleSUSY[4]` and `FlexibleSUSY[5]` to `3`.  To enable the
+specific \f$O(\alpha_t \alpha_s^2)\f$ correction at run-time, set the
+flag `FlexibleSUSY[26]` to `1`.  To enable the 3-loop correction
+\f$O(\alpha_b \alpha_s^2)\f$ at run-time, set the flag
+`FlexibleSUSY[27]` to `1`.
+
+The 3-loop corrections from [arxiv:hep-ph/1005.5709] can be calculated
+in the \f$\overline{DR}\f$ or \f$\overline{MDR}\f$ scheme.  To use the
+\f$\overline{DR}\f$ scheme, set `FlexibleSUSY[25]` to `0`.  To use the
+\f$\overline{MDR}\f$ scheme, set `FlexibleSUSY[25]` to `1`.
+
+We recommend to set the following model file options to enable the
+3-loop Higgs pole mass corrections in the MSSM:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UseHiggs2LoopMSSM = True;      (* enable 2-loop corrections *)
+EffectiveMu = \[Mu];           (* sign convention for MSSM mu parameter *)
+UseMSSM3LoopRGEs = True;       (* enable 3-loop RGEs *)
+UseHiggs3LoopMSSM = True;      (* enable 3-loop corrections *)
+UseMSSMYukawa2Loop = True;     (* enable 2-loop SQCD corrections to yt and yb *)
+UseMSSMAlphaS2Loop = True;     (* enable 2-loop SQCD corrections to alpha_s *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To run FlexibleSUSY with the 3-loop corrections, we recommend the
+settings in the SLHA input:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Block FlexibleSUSY
+    4   3                    # pole mass loop order
+    5   3                    # EWSB loop order
+    6   3                    # beta-functions loop order
+    7   2                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   24   123111221            # individual threshold correction loop orders
+   25   0                    # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
+   26   1                    # Higgs 3-loop corrections O(alpha_t alpha_s^2)
+   27   1                    # Higgs 3-loop corrections O(alpha_b alpha_s^2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In FlexibleSUSY's Mathematica interface, the following settings should
+be used:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fsSettings -> {
+    poleMassLoopOrder -> 3,            (* FlexibleSUSY[4] *)
+    ewsbLoopOrder -> 3,                (* FlexibleSUSY[5] *)
+    betaFunctionLoopOrder -> 3,        (* FlexibleSUSY[6] *)
+    thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
+    higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+    higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+    higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+    higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+    thresholdCorrections -> 123111221, (* FlexibleSUSY[24] *)
+    higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
+    higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
+    higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 \section FlexibleSUSY_input Additional physical input parameters (FlexibleSUSYInput)

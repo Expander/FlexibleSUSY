@@ -21,6 +21,7 @@
 #define MATHEMATICA_VERSION   @MATH_VERSION@
 
 #define GM2CALC_VERSION       "@GM2CALC_VERSION@"
+#define HIMALAYA_VERSION      "@HIMALAYA_VERSION@"
 
 /* System information */
 #define OPERATING_SYSTEM      "@OPERATING_SYSTEM@"
@@ -38,6 +39,8 @@
 #define FC                    "@FC@"
 #define FFLAGS                "@FFLAGS@"
 #define FLIBS                 "@FLIBS@"
+#define HIMALAYAFLAGS         "@HIMALAYAFLAGS@"
+#define HIMALAYALIBS          "@HIMALAYALIBS@"
 #define GSLFLAGS              "@GSLFLAGS@"
 #define GSLLIBS               "@GSLLIBS@"
 #define LAPACKLIBS            "@LAPACKLIBS@"
@@ -70,6 +73,9 @@
 
 /* Enable fflite */
 @DEFINE_ENABLE_FFLITE@
+
+/* Enable Himalaya */
+@DEFINE_ENABLE_HIMALAYA@
 
 /* Enable LAPACK */
 @DEFINE_ENABLE_LAPACK@

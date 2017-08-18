@@ -20,7 +20,7 @@
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
 #include "threshold_corrections.hpp"
-#include "two_loop_corrections.hpp"
+#include "loop_corrections.hpp"
 #include <array>
 #include <iosfwd>
 #include <string>
@@ -63,6 +63,9 @@ public:
       eft_higgs_index,       ///< [22] index of SM-Higgs in Higgs multiplet
       calculate_bsm_masses,  ///< [23] calculate BSM pole masses
       threshold_corrections, ///< [24] individual threshold correction loop orders
+      higgs_3loop_ren_scheme_atb_as2,///< [25] Renormalization scheme for Higgs 3-loop corrections O(alpha_t alpha_s^2 + alpha_b alpha_s^2)
+      higgs_3loop_correction_at_as2, ///< [26] Higgs 3-loop correction O(alpha_t alpha_s^2)
+      higgs_3loop_correction_ab_as2, ///< [27] Higgs 3-loop correction O(alpha_b alpha_s^2)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
@@ -73,8 +76,8 @@ public:
    void set(Settings, double); ///< set value of spectrum generator setting
    void reset();               ///< resets all settings to their defaults
 
-   Two_loop_corrections get_two_loop_corrections() const;
-   void set_two_loop_corrections(const Two_loop_corrections&);
+   Loop_corrections get_loop_corrections() const;
+   void set_loop_corrections(const Loop_corrections&);
    Threshold_corrections get_threshold_corrections() const;
    void set_threshold_corrections(const Threshold_corrections&);
 

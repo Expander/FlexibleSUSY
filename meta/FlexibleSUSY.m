@@ -137,6 +137,7 @@ SCALE;
 THRESHOLD;
 VEV::usage = "running SM-like VEV in the full model";
 UseHiggs2LoopNMSSM = False;
+UseHiggs3LoopMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
@@ -1462,6 +1463,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"mssm_twoloophiggs.hpp\"\n";
              ];
+           If[FlexibleSUSY`UseHiggs3LoopMSSM === True,
+              {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesMSSM[{SARAH`HiggsBoson}];
+              threeLoopHiggsHeaders = threeLoopHiggsHeaders <> "\
+#ifdef ENABLE_HIMALAYA
+#include \"HierarchyCalculator.hpp\"
+#endif
+";
+             ];
            If[FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
@@ -1471,7 +1480,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True ||
               FlexibleSUSY`UseMSSMYukawa2Loop === True ||
-              FlexibleSUSY`UseMSSMAlphaS2Loop === True,
+              FlexibleSUSY`UseMSSMAlphaS2Loop === True ||
+              FlexibleSUSY`UseHiggs3LoopMSSM === True,
               {secondGenerationHelperPrototypes, secondGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[2];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateGenerationHelpers[3];
              ];
@@ -2335,6 +2345,74 @@ FSCheckLoopCorrections[eigenstates_] :=
              ];
           ];
 
+FSCheckFlags[] :=
+    Module[{},
+           If[FlexibleSUSY`UseHiggs3LoopMSSM === True,
+              SARAH`UseHiggs2LoopMSSM = True;
+              FlexibleSUSY`UseMSSMYukawa2Loop = True;
+              FlexibleSUSY`UseMSSMAlphaS2Loop = True;
+              FlexibleSUSY`UseMSSM3LoopRGEs = True;
+             ];
+
+           If[FlexibleSUSY`UseYukawa3LoopQCD,
+              Print["Adding 3-loop SM QCD threshold corrections for yt from ",
+                    "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
+             ];
+
+           If[FlexibleSUSY`UseMSSMYukawa2Loop,
+              Print["Adding 2-loop MSSM SQCD threshold corrections for yt and yb from ",
+                    "[arxiv:hep-ph/0210258, arxiv:hep-ph/0507139, arxiv:hep-ph/0707.0650]"];
+             ];
+
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop,
+              Print["Adding 2-loop MSSM SQCD threshold corrections for \[Alpha]_s from ",
+                    "[hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455]"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs2LoopSM,
+              Print["Adding 2-loop SM Higgs mass contributions from ",
+                    "[arxiv:1205.6497, arxiv:1504.05200]"];
+             ];
+
+           If[SARAH`UseHiggs2LoopMSSM,
+              Print["Adding 2-loop MSSM Higgs mass contributions from ",
+                    "[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,",
+                    " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127]"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs2LoopNMSSM,
+              Print["Adding 2-loop NMSSM Higgs mass contributions from ",
+                    "[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,",
+                    " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127, arXiv:0907.4682]"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs3LoopSM,
+              Print["Adding 3-loop SM Higgs mass contributions from ",
+                    "[arxiv:1407.4336]"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs3LoopSplit,
+              Print["Adding 3-loop split-MSSM Higgs mass contributions from ",
+                    "[arxiv:1312.5220]"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs3LoopMSSM,
+              Print["Adding 3-loop MSSM Higgs mass contributions from ",
+                    "[arxiv:hep-ph/1005.5709, arxiv:XXXX.YYYY]"];
+             ];
+
+           If[FlexibleSUSY`UseSM3LoopRGEs,
+              Print["Adding 3-loop SM beta-functions from ",
+                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
+                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
+             ];
+
+           If[FlexibleSUSY`UseMSSM3LoopRGEs,
+              Print["Adding 3-loop MSSM beta-functions from ",
+                    "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
+             ];
+          ];
+
 PrepareSelfEnergies[eigenstates_] :=
     Module[{selfEnergies = {}, selfEnergiesFile},
            selfEnergiesFile = GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates];
@@ -2873,16 +2951,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
+           FSCheckFlags[];
+
            If[FlexibleSUSY`UseSM3LoopRGEs,
-              Print["Adding SM 3-loop beta-functions from ",
-                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
-                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
               AddSM3LoopRGEs[];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
-              Print["Adding MSSM 3-loop beta-functions from ",
-                    "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
               AddMSSM3LoopRGEs[];
              ];
 
