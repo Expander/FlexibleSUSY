@@ -149,8 +149,8 @@ const int Standard_model::numberOfParameters;
 #define TOP_POLE_QCD_CORRECTION          loop_corrections.top_qcd
 #define HIGGS_3LOOP_CORRECTION_AT_AS_AS  loop_corrections.higgs_at_as_as
 #define HIGGS_3LOOP_CORRECTION_AB_AS_AS  loop_corrections.higgs_ab_as_as
-#define HIGGS_3LOOP_CORRECTION_AT_AT_AS  1
-#define HIGGS_3LOOP_CORRECTION_AT_AT_AT  1
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AS  loop_corrections.higgs_at_at_as
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AT  loop_corrections.higgs_at_at_at
 
 Standard_model::Standard_model()
 {

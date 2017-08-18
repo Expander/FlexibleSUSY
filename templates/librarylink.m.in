@@ -62,6 +62,8 @@ fsDefaultSettings = {
       higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
       higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
       higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
+      higgs3loopCorrectionAtAtAs -> 1,   (* FlexibleSUSY[28] *)
+      higgs3loopCorrectionAtAtAt -> 1,   (* FlexibleSUSY[29] *)
       parameterOutputScale -> 0          (* MODSEL[12] *)
 };
 
@@ -141,6 +143,8 @@ FS@ModelName@OpenHandle[OptionsPattern[]] :=
             OptionValue[higgs3loopCorrectionRenScheme],
             OptionValue[higgs3loopCorrectionAtAsAs],
             OptionValue[higgs3loopCorrectionAbAsAs],
+            OptionValue[higgs3loopCorrectionAtAtAs],
+            OptionValue[higgs3loopCorrectionAtAtAt],
             OptionValue[parameterOutputScale],
 
             (* Standard Model input parameters *)
@@ -216,6 +220,8 @@ FS@ModelName@Set[handle_Integer, p:OptionsPattern[]] :=
             OptionValue[higgs3loopCorrectionRenScheme],
             OptionValue[higgs3loopCorrectionAtAsAs],
             OptionValue[higgs3loopCorrectionAbAsAs],
+            OptionValue[higgs3loopCorrectionAtAtAs],
+            OptionValue[higgs3loopCorrectionAtAtAt],
             OptionValue[parameterOutputScale],
 
             (* Standard Model input parameters *)

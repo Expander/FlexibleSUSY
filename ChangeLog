@@ -153,7 +153,16 @@ FlexibleSUSY 2.0.0 [not released yet]
    in the FlexibleSUSY model file.  In addition, the pole mass loop
    order must be set to a value greater or equal to 3 to switch the
    corrections on (SLHA input: FlexibleSUSY[4], Mathematica interface:
-   poleMassLoopOrder).
+   poleMassLoopOrder).  To switch on/off the individual 3-loop
+   contributions, the SLHA input flags FlexibleSUSY[26-29] or the
+   Mathematica symbols
+
+      higgs3loopCorrectionAtAsAs
+      higgs3loopCorrectionAbAsAs
+      higgs3loopCorrectionAtAtAs
+      higgs3loopCorrectionAtAtAt
+
+   can be used.
 
  * Feature: In the MSSM, the 3-loop corrections O(alpha_t*alpha_s^2)
    and O(alpha_b*alpha_s^2) to the Higgs pole mass from Ref.

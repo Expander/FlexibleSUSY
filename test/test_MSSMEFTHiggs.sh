@@ -107,6 +107,8 @@ Block FlexibleSUSY
    25   0                    # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
    26   1                    # Higgs 3-loop corrections O(alpha_t alpha_s^2)
    27   1                    # Higgs 3-loop corrections O(alpha_b alpha_s^2)
+   28   1                    # Higgs 3-loop corrections O(alpha_t^2 alpha_s)
+   29   1                    # Higgs 3-loop corrections O(alpha_t^3)
 ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
