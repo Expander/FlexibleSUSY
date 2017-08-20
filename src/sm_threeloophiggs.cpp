@@ -51,7 +51,8 @@ double self_energy_higgs_3loop_at_as_as_sm(
    const double LogT3 = Power3(LogT);
 
    const double result =
-      g34*yt2*mt2*(248.122 + 839.197*LogT + 160*LogT2 - 736*LogT3);
+      g34*yt2*mt2*(248.1215180432007 + 839.1966169377614*LogT
+                   + 160*LogT2 - 736*LogT3);
 
    return - result * threeLoop;
 }
@@ -85,7 +86,8 @@ double self_energy_higgs_3loop_at_at_as_sm(
    const double LogT3 = Power3(LogT);
 
    const double result =
-      g32*yt4*mt2*(2764.365 + 1283.716*LogT - 360*LogT2 + 240*LogT3);
+      g32*yt4*mt2*(2764.365124334015 + 1283.715638285500*LogT
+                   - 360*LogT2 + 240*LogT3);
 
    return - result * threeLoop;
 }
@@ -120,8 +122,8 @@ double self_energy_higgs_3loop_at_at_at_sm(
    const double LogT3 = Power3(LogT);
 
    const double result =
-      yt6*mt2*(-3199.017 + 36*LogH - 2653.511*LogT + 756*LogH*LogT
-               + 27.*0.5*LogT2 + 324*LogH*LogT2 - 225*LogT3);
+      yt6*mt2*(-3199.016554815089 + 36*LogH - 2653.510765697467*LogT
+               + 756*LogH*LogT + 27.*0.5*LogT2 + 324*LogH*LogT2 - 225*LogT3);
 
    return - result * threeLoop;
 }
