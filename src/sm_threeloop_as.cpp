@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "sm_twoloop_as.hpp"
+#include "sm_threeloop_as.hpp"
 #include <cmath>
 #include <ostream>
 
 namespace flexiblesusy {
-namespace sm_twoloop_as {
+namespace sm_threeloop_as {
 
 namespace {
    const double Pi = 3.1415926535897932384626433832795;
@@ -105,5 +105,5 @@ std::ostream& operator<<(std::ostream& out, const Parameters& pars)
    return out;
 }
 
-} // namespace sm_twoloop_as
+} // namespace sm_threeloop_as
 } // namespace flexiblesusy
