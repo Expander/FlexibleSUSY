@@ -101,7 +101,7 @@ FlexibleSUSY 2.0.0 [not released yet]
    + alpha_s^3) corrections to the strong coupling [hep-ph/0004189]
    can be added by setting
 
-     UseSMAlphaS2Loop = True
+     UseSMAlphaS3Loop = True
 
    in the model file.
 
