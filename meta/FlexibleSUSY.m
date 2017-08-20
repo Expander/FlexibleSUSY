@@ -141,6 +141,7 @@ UseHiggs3LoopMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
+UseSMAlphaS3Loop = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2Loop = False;
 UseMSSMAlphaS2Loop = False;
@@ -2354,9 +2355,19 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseMSSM3LoopRGEs = True;
              ];
 
+           If[FlexibleSUSY`UseHiggs3LoopSM === True,
+              FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseYukawa3LoopQCD = True;
+             ];
+
            If[FlexibleSUSY`UseYukawa3LoopQCD,
-              Print["Adding 3-loop SM QCD threshold corrections for yt from ",
+              Print["Adding 3-loop SM QCD corrections to yt from ",
                     "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
+             ];
+
+           If[FlexibleSUSY`UseSMAlphaS3Loop,
+              Print["Adding 3-loop SM QCD threshold corrections to alpha_s ",
+                    "[arxiv:hep-ph/0004189]"];
              ];
 
            If[FlexibleSUSY`UseMSSMYukawa2Loop,

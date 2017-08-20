@@ -1473,6 +1473,18 @@ UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 
 ### Two-loop threshold corrections ###
 
+#### SM ####
+
+The known SM 2- and 3-loop QCD threshold corrections of order
+\f$O(\alpha_s^2 + \alpha_s^3)\f$ to the strong coupling constant are
+known by [hep-ph/0004189].  They can be taken into account by setting
+in the model file:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseSMAlphaS3Loop = True; (* use 2- and 3- threshold for alpha_s *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 #### MSSM ####
 
 In the MSSM the known two-loop SQCD relation between the top pole mass

@@ -110,6 +110,7 @@ LowPoleMassPrecision     = {};
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
 UseHiggs3LoopSM = True;
+UseSMAlphaS3Loop = True;
 
 ExtraSLHAOutputBlocks = {
    {EFFHIGGSCOUPLINGS, NoScale,

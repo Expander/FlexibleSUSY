@@ -95,8 +95,43 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
            Return[result];
           ];
 
-CalculateDeltaAlpha2L[] :=
-"if (model->get_thresholds() && model->get_threshold_corrections().alpha_s > 1) {\n" <>
+CalculateDeltaAlpha2LSM[] :=
+"if (model->get_thresholds() > 1 && model->get_threshold_corrections().alpha_s > 1) {\n" <>
+IndentText["\
+sm_twoloop_as::Parameters pars;
+pars.as   = alphaS; // alpha_s(SM(5)) MS-bar
+pars.mt   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[],True,True]] <> ";
+pars.Q    = model->get_scale();
+
+const auto das_1L = sm_twoloop_as::delta_alpha_s_1loop_as(pars);
+const auto das_2L = sm_twoloop_as::delta_alpha_s_2loop_as_as(pars);
+
+delta_alpha_s_2loop = - das_2L + Sqr(das_1L);"
+] <> "
+}
+
+";
+
+CalculateDeltaAlpha3LSM[] :=
+"if (model->get_thresholds() > 2 && model->get_threshold_corrections().alpha_s > 2) {\n" <>
+IndentText["\
+sm_twoloop_as::Parameters pars;
+pars.as   = alphaS; // alpha_s(SM(5)) MS-bar
+pars.mt   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[],True,True]] <> ";
+pars.Q    = model->get_scale();
+
+const auto das_1L = sm_twoloop_as::delta_alpha_s_1loop_as(pars);
+const auto das_2L = sm_twoloop_as::delta_alpha_s_2loop_as_as(pars);
+const auto das_3L = sm_twoloop_as::delta_alpha_s_3loop_as_as_as(pars);
+
+delta_alpha_s_3loop = - das_3L - Power3(das_1L) + 2. * das_1L * das_2L;"
+] <> "
+}
+
+";
+
+CalculateDeltaAlpha2LMSSM[] :=
+"if (model->get_thresholds() > 1 && model->get_threshold_corrections().alpha_s > 1) {\n" <>
 IndentText["\
 " <> Parameters`CreateLocalConstRefs[Parameters`GetEffectiveMu[]] <> "
 
@@ -159,9 +194,12 @@ CalculateDeltaAlphaS[renormalizationScheme_] :=
            "const double delta_alpha_s = " <>
            CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
            "const double delta_alpha_s_1loop = delta_alpha_s + delta_alpha_s_SM;\n" <>
-           "double delta_alpha_s_2loop = 0.;\n\n" <>
-           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True, CalculateDeltaAlpha2L[], ""] <>
-           "return delta_alpha_s_1loop + delta_alpha_s_2loop;\n"
+           "double delta_alpha_s_2loop = 0.;\n" <>
+           "double delta_alpha_s_3loop = 0.;\n\n" <>
+           If[FlexibleSUSY`UseMSSMAlphaS2Loop === True, CalculateDeltaAlpha2LMSSM[], ""] <>
+           If[FlexibleSUSY`UseSMAlphaS3Loop === True, CalculateDeltaAlpha2LSM[], ""] <>
+           If[FlexibleSUSY`UseSMAlphaS3Loop === True, CalculateDeltaAlpha3LSM[], ""] <>
+           "return delta_alpha_s_1loop + delta_alpha_s_2loop + delta_alpha_s_3loop;\n"
           ];
 
 GetPrefactor[expr_Plus, _] := 1;
@@ -488,6 +526,9 @@ GetTwoLoopThresholdHeaders[] :=
               result = "#include \"mssm_twoloop_mb.hpp\"\n" <>
                        "#include \"mssm_twoloop_mt.hpp\"\n" <>
                        "#include \"mssm_twoloop_mtau.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseSMAlphaS3Loop === True,
+              result = result <> "#include \"sm_twoloop_as.hpp\"\n";
              ];
            If[FlexibleSUSY`UseMSSMAlphaS2Loop === True,
               result = result <> "#include \"mssm_twoloop_as.hpp\"\n";
