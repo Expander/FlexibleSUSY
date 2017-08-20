@@ -97,6 +97,14 @@ FlexibleSUSY 2.0.0 [not released yet]
    Thanks to Ben Allanach for providing the expressions, which have
    been extracted from SOFTSUSY 4.0.1.
 
+ * Feature: The 2- and 3-loop SM-QCD threshold corrections O(alpha_s^2
+   + alpha_s^3) corrections to the strong coupling [hep-ph/0004189]
+   can be added by setting
+
+     UseSMAlphaS2Loop = True
+
+   in the model file.
+
  * Feature: The SQLite database output now contains the MS-bar/DR-bar
    mass spectrum and mixing matrices, in addition to the pole mass
    spectrum.
@@ -113,7 +121,7 @@ FlexibleSUSY 2.0.0 [not released yet]
      -------------------:|---------------------|-------------------
       0                  | 1 (1-loop)          | alpha_em
       1                  | 2 (2-loop)          | sin(theta_W)
-      2                  | 2 (2-loop)          | alpha_s
+      2                  | 3 (3-loop)          | alpha_s
       3                  | 1 (1-loop)          | m_Z
       4                  | 1 (1-loop)          | m_W
       5                  | 1 (1-loop)          | m_h
@@ -121,7 +129,7 @@ FlexibleSUSY 2.0.0 [not released yet]
       7                  | 2 (2-loop)          | m_b
       8                  | 1 (1-loop)          | m_\tau
 
-   The default value is 123111121, which corresponds to the loop
+   The default value is 123111321, which corresponds to the loop
    orders given in the above table.
 
  * Feature: An additional boundary value problem solution algorithm,

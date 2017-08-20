@@ -34,7 +34,7 @@ Block FlexibleSUSY
    21   1         # EFT loop order for downwards matching (BSM -> SM)
    22   0         # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
    23   1         # calculate BSM pole masses
-   24   123111221 # individual threshold correction loop orders
+   24   123111321 # individual threshold correction loop orders
    25   0         # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
    26   1         # Higgs 3-loop corrections O(alpha_t alpha_s^2)
    27   1         # Higgs 3-loop corrections O(alpha_b alpha_s^2)
@@ -75,7 +75,7 @@ index | description                            | possible values                
 21    | EFT loop order for downwards matching  | 0, 1                                        | 1 (= 1-loop)
 22    | EFT Higgs index                        | any integer >= 0                            | 0 (= lightest)
 23    | calculate pole masses of BSM particles | 0 (no) or 1 (yes)                           | 1 (= yes)
-24    | individual threshold corrections       | positive integer                            | 123111221
+24    | individual threshold corrections       | positive integer                            | 123111321
 25    | ren. scheme for higgs 3L corrections   | 0 (DR-bar) or 1 (MDR-bar)                   | 0 (= DR-bar)
 26    | higgs 3-loop correction O(at as^2)     | 0, 1                                        | 1 (= enabled)
 27    | higgs 3-loop correction O(ab as^2)     | 0, 1                                        | 1 (= enabled)
@@ -357,7 +357,7 @@ digit position \f$n\f$ | default value (prefactor of \f$10^n\f$) | parameter
 ----------------------:|-----------------------------------------|-------------------------
  0                     | 1 (1-loop)                              | \f$\alpha_{\text{em}}\f$
  1                     | 2 (2-loop)                              | \f$\sin\theta_W\f$
- 2                     | 2 (2-loop)                              | \f$\alpha_{s}\f$
+ 2                     | 3 (3-loop)                              | \f$\alpha_{s}\f$
  3                     | 1 (1-loop)                              | \f$m_Z\f$
  4                     | 1 (1-loop)                              | \f$m_W\f$
  5                     | 1 (1-loop)                              | \f$m_h\f$
@@ -421,7 +421,7 @@ Block FlexibleSUSY
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
-   24   123111221            # individual threshold correction loop orders
+   24   123111321            # individual threshold correction loop orders
    25   0                    # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
    26   1                    # Higgs 3-loop corrections O(alpha_t alpha_s^2)
    27   1                    # Higgs 3-loop corrections O(alpha_b alpha_s^2)
@@ -442,7 +442,7 @@ fsSettings -> {
     higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
     higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
     higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
-    thresholdCorrections -> 123111221, (* FlexibleSUSY[24] *)
+    thresholdCorrections -> 123111321, (* FlexibleSUSY[24] *)
     higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
     higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
     higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)

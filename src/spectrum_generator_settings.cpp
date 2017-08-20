@@ -112,7 +112,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | eft_matching_loop_order_down     | 0, 1                                            | 1 (= 1-loop)    |
  * | eft_higgs_index                  | any integer >= 0                                | 0 (= lightest)  |
  * | calculate_bsm_masses             | 0 (no) or 1 (yes)                               | 1 (= yes)       |
- * | threshold_corrections            | positive integer                                | 123111221       |
+ * | threshold_corrections            | positive integer                                | 123111321       |
  * | higgs_3loop_ren_scheme_atb_as2   | 0 (DR-bar) or 1 (MDR-bar)                       | 0 (= MDR-bar)   |
  * | higgs_3loop_correction_at_as2    | 0, 1                                            | 1 (= enabled)   |
  * | higgs_3loop_correction_ab_as2    | 0, 1                                            | 1 (= enabled)   |
