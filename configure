@@ -1772,7 +1772,7 @@ check_himalaya_libs() {
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         if test "x$enable_himalaya" = "xyes" ; then
-            message "Error: libHimalaya must be installed if you want"
+            message "Error: The Himalaya library must be installed if you want"
             message "   to use Himalaya, see https://github.com/jklappert/Himalaya"
             message "   You can use the --with-himalaya-libdir= option to specify the"
             message "   location of the Himalaya library."
