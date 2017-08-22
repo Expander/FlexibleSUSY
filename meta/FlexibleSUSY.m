@@ -2377,7 +2377,7 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseMSSMAlphaS2Loop,
               Print["Adding 2-loop MSSM SQCD threshold corrections for \[Alpha]_s from ",
-                    "[hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455]"];
+                    "[arxiv:hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455]"];
              ];
 
            If[FlexibleSUSY`UseHiggs2LoopSM,
@@ -2409,7 +2409,8 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseHiggs3LoopMSSM,
               Print["Adding 3-loop MSSM Higgs mass contributions from ",
-                    "[arxiv:hep-ph/1005.5709, arxiv:XXXX.YYYY]"];
+                    "[arxiv:hep-ph/0803.0672, arxiv:hep-ph/1005.5709,",
+                    " arxiv:1409.2297, arxiv:1708.05720]"];
              ];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,

@@ -1361,10 +1361,11 @@ UseHiggs2LoopMSSM = True; (* use 2-loop Higgs corrections *)
 
 The known 3-loop Higgs pole mass corrections of the order
 \f$O(\alpha_t\alpha_s^2 + \alpha_b\alpha_s^2)\f$
-[arxiv:hep-ph/1005.5709] can be used by setting in the model file
+[arxiv:hep-ph/0803.0672, arxiv:hep-ph/1005.5709, arxiv:1409.2297,
+arxiv:1708.05720] can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
-UseHiggs3LoopMSSM = True; (* use 3-loop Higgs corrections of [arxiv:hep-ph/1005.5709] *)
+UseHiggs3LoopMSSM = True; (* use 3-loop Higgs corrections *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To make use of the 2-loop and/or 3-loop corrections the effective
