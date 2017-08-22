@@ -268,12 +268,12 @@ void Standard_model::set_physical(const Standard_model_physical& physical_)
    physical = physical_;
 }
 
-const Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& Standard_model::get_problems() const
+const Problems& Standard_model::get_problems() const
 {
    return problems;
 }
 
-Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& Standard_model::get_problems()
+Problems& Standard_model::get_problems()
 {
    return problems;
 }

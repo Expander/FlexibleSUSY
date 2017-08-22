@@ -98,8 +98,8 @@ public:
    double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
    @ModelName@_physical& get_physical();
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const;
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems();
+   const Problems& get_problems() const;
+   Problems& get_problems();
    void set_ewsb_solver(const std::shared_ptr<@ModelName@_ewsb_solver_interface>&);
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
@@ -149,7 +149,8 @@ private:
    double precision{1.e-3};               ///< RG running precision
    double ewsb_iteration_precision{1.e-5};///< precision goal of EWSB solution
    @ModelName@_physical physical{}; ///< contains the pole masses and mixings
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names}; ///< problems
+   Problems problems{&@ModelName@_info::particle_names_getter,
+                     &@ModelName@_info::parameter_names_getter}; ///< problems
    Loop_corrections loop_corrections{}; ///< used pole mass corrections
    std::shared_ptr<@ModelName@_ewsb_solver_interface> ewsb_solver{};
    Threshold_corrections threshold_corrections{}; ///< used threshold corrections

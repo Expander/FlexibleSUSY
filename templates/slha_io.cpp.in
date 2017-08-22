@@ -163,7 +163,7 @@ void @ModelName@_slha_io::set_sminputs(const softsusy::QedQcd& qedqcd)
  *
  * @param problems struct with parameter point problems
  */
-void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& problems)
+void @ModelName@_slha_io::set_spinfo(const Problems& problems)
 {
    set_spinfo(problems.get_problem_strings(), problems.get_warning_strings());
 }

@@ -532,7 +532,7 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    CMSSMMassWInput_physical get_physical() const { return mssm.get_physical(); }
-   const Problems<CMSSMMassWInput_info::NUMBER_OF_PARTICLES, CMSSMMassWInput_info::NUMBER_OF_PARAMETERS>& get_problems() const { return mssm.get_problems(); }
+   const Problems& get_problems() const { return mssm.get_problems(); }
    CMSSMMassWInput<Two_scale> get_model() const { return mssm; }
    void set_ewsb_loop_order(int l) { ewsb_loop_order = l; }
    void set_pole_mass_loop_order(int l) { pole_mass_loop_order = l; }

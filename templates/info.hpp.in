@@ -21,6 +21,8 @@
 #ifndef @ModelName@_INFO_H
 #define @ModelName@_INFO_H
 
+#include "problems.hpp"
+
 #include <array>
 #include <iosfwd>
 #include <string>
@@ -48,7 +50,33 @@ namespace @ModelName@_info {
    constexpr bool is_FlexibleEFTHiggs = @isFlexibleEFTHiggs@;
 
    void print(std::ostream&);
-}
+
+   class @ModelName@_particle_names : public Names {
+   public:
+      virtual ~@ModelName@_particle_names() = default;
+      virtual const std::string& get(int index) const {
+         return particle_names[index];
+      }
+      virtual int size() const {
+         return NUMBER_OF_PARTICLES;
+      }
+   };
+
+   class @ModelName@_parameter_names : public Names {
+   public:
+      virtual ~@ModelName@_parameter_names() = default;
+      virtual const std::string& get(int index) const {
+         return parameter_names[index];
+      }
+      virtual int size() const {
+         return NUMBER_OF_PARAMETERS;
+      }
+   };
+
+   const @ModelName@_particle_names  particle_names_getter;
+   const @ModelName@_parameter_names parameter_names_getter;
+
+} // namespace @ModelName@_info
 
 } // namespace flexiblesusy
 

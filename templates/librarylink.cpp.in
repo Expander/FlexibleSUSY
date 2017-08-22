@@ -141,7 +141,7 @@ public:
 
    virtual void put_model_spectra(MLINK link) const = 0;
 
-   virtual const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const = 0;
+   virtual const Problems& get_problems() const = 0;
    virtual void fill_slha_io(@ModelName@_slha_io&) const = 0;
    virtual double get_model_scale() const = 0;
    virtual const @ModelName@_observables& get_observables() const = 0;
@@ -160,7 +160,7 @@ public:
 
    virtual void put_model_spectra(MLINK link) const override;
 
-   virtual const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& get_problems() const override {
+   virtual const Problems& get_problems() const override {
       return std::get<0>(models).get_problems();
    }
    virtual void fill_slha_io(@ModelName@_slha_io&) const override;

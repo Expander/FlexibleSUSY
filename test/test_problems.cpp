@@ -8,10 +8,21 @@
 
 using namespace flexiblesusy;
 
+class Dummy_names : public Names {
+public:
+   Dummy_names(int size) : s(size) {}
+   virtual ~Dummy_names() = default;
+   virtual const std::string& get(int) const { return name; }
+   virtual int size() const { return s; }
+private:
+   int s{};
+   std::string name{"P"};
+};
+
 BOOST_AUTO_TEST_CASE( test_initialization )
 {
-   const std::array<std::string,3> names = {"", "", ""};
-   Problems<3,0> problems(names, {});
+   const Dummy_names dummy_names(3);
+   Problems problems(&dummy_names, &dummy_names);
 
    BOOST_CHECK(!problems.is_running_tachyon(0));
    BOOST_CHECK(!problems.is_running_tachyon(1));
