@@ -72,7 +72,8 @@ void set_command_line_parameters(const Dynamic_array_view<char*>& args,
 }
 
 struct @ModelName@_scan_result {
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES,@ModelName@_info::NUMBER_OF_PARAMETERS> problems{@ModelName@_info::particle_names, @ModelName@_info::parameter_names};
+   Problems problems{&@ModelName@_info::particle_names_getter,
+                     &@ModelName@_info::parameter_names_getter};
    double higgs{0.};
 };
 

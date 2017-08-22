@@ -34,6 +34,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics2.cpp \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
+		$(DIR)/problems.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \

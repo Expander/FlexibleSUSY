@@ -208,12 +208,12 @@ void CLASSNAME::set_physical(const @ModelName@_physical& physical_)
    physical = physical_;
 }
 
-const Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& CLASSNAME::get_problems() const
+const Problems& CLASSNAME::get_problems() const
 {
    return problems;
 }
 
-Problems<@ModelName@_info::NUMBER_OF_PARTICLES, @ModelName@_info::NUMBER_OF_PARAMETERS>& CLASSNAME::get_problems()
+Problems& CLASSNAME::get_problems()
 {
    return problems;
 }

@@ -86,6 +86,31 @@ namespace standard_model_info {
    constexpr bool is_low_energy_model = false;
    constexpr bool is_supersymmetric_model = false;
 
+   class Standard_model_particle_names : public Names {
+   public:
+      virtual ~Standard_model_particle_names() = default;
+      virtual const std::string& get(int index) const {
+         return particle_names[index];
+      }
+      virtual int size() const {
+         return NUMBER_OF_PARAMETERS;
+      }
+   };
+
+   class Standard_model_parameter_names : public Names {
+   public:
+      virtual ~Standard_model_parameter_names() = default;
+      virtual const std::string& get(int index) const {
+         return parameter_names[index];
+      }
+      virtual int size() const {
+         return NUMBER_OF_PARTICLES;
+      }
+   };
+
+   const Standard_model_particle_names  particle_names_getter;
+   const Standard_model_parameter_names parameter_names_getter;
+
 } // namespace standard_model_info
 
 namespace standard_model {
@@ -134,8 +159,8 @@ public:
    double get_ewsb_loop_order() const;
    const Standard_model_physical& get_physical() const;
    Standard_model_physical& get_physical();
-   const Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& get_problems() const;
-   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS>& get_problems();
+   const Problems& get_problems() const;
+   Problems& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
@@ -582,7 +607,8 @@ private:
    double precision{1e-3};        ///< RG running precision
    double ewsb_iteration_precision{1e-5};
    Standard_model_physical physical{}; ///< contains the pole masses and mixings
-   Problems<standard_model_info::NUMBER_OF_PARTICLES, standard_model_info::NUMBER_OF_PARAMETERS> problems{standard_model_info::particle_names, standard_model_info::parameter_names};
+   Problems problems{&standard_model_info::particle_names_getter,
+                     &standard_model_info::parameter_names_getter};
    Two_loop_corrections two_loop_corrections{}; ///< used 2-loop pole mass corrections
    Threshold_corrections threshold_corrections{}; ///< used low-energy threshold corrections
    Physical_input input{};

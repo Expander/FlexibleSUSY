@@ -70,9 +70,7 @@ public:
    double get_matching_scale() const { return matching_scale; }
    const MSSMD5O<T>& get_model_1() const { return model_1; }
    const MSSMRHN<T>& get_model_2() const { return model_2; }
-   const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES, MSSMD5O_info::NUMBER_OF_PARAMETERS>& get_problems() const {
-      return model_1.get_problems();
-   }
+   const Problems& get_problems() const { return model_1.get_problems(); }
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale_1(double s) { parameter_output_scale_1 = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }

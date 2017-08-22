@@ -59,9 +59,7 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const MSSMcbs<T>& get_model() const { return model; }
-   const Problems<CMSSM_info::NUMBER_OF_PARTICLES, CMSSM_info::NUMBER_OF_PARAMETERS>& get_problems() const {
-      return model.get_problems();
-   }
+   const Problems& get_problems() const { return model.get_problems(); }
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
