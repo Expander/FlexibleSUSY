@@ -51,8 +51,8 @@ public:
    std::tuple<@ModelName@_slha<@ModelName@<T>>, standard_model::StandardModel<T>> get_models_slha() const
    { return std::make_tuple(@ModelName@_slha<@ModelName@<T>>(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.), eft); }
 
-   Spectrum_generator_problems get_problems() const { return collect_problems(); }
-   int get_exit_code() const { return collect_problems().have_problem(); }
+   Spectrum_generator_problems get_problems() const { return problems; }
+   int get_exit_code() const { return problems.have_problem(); }
    double get_reached_precision() const { return reached_precision; }
    const Spectrum_generator_settings& get_settings() const { return settings; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
@@ -114,12 +114,6 @@ protected:
    double parameter_output_scale{0.}; ///< output scale for running parameters
    double reached_precision{std::numeric_limits<double>::infinity()}; ///< the precision that was reached
 
-   /// Collects all problems
-   Spectrum_generator_problems collect_problems() const {
-      auto sgp = problems;
-      sgp.set_model_problems({ model.get_problems(), eft.get_problems() });
-      return sgp;
-   }
    void translate_exception_to_problem(@ModelName@<T>& model);
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
 };
@@ -165,6 +159,8 @@ void @ModelName@_spectrum_generator_interface<T>::run(
    } catch (...) {
       this->translate_exception_to_problem(model);
    }
+
+   problems.set_model_problems({ model.get_problems(), eft.get_problems() });
 }
 
 /**
