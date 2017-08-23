@@ -3426,6 +3426,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating solver framework"];
            Print["Creating generic solver class templates ..."];
+           spectrumGeneratorInterfaceInputFile = If[
+               FlexibleSUSY`FlexibleEFTHiggs === True,
+               "standard_model_spectrum_generator_interface.hpp.in",
+               "spectrum_generator_interface.hpp.in"
+           ];
            WriteBVPSolverTemplates[{{FileNameJoin[{$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "ewsb_solver.hpp.in"}],
@@ -3442,7 +3447,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
-                                    {FileNameJoin[{$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
+                                    {FileNameJoin[{$flexiblesusyTemplateDir, spectrumGeneratorInterfaceInputFile}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                                     {FileNameJoin[{$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]}

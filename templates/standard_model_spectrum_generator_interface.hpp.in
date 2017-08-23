@@ -46,10 +46,10 @@ class @ModelName@_spectrum_generator_interface {
 public:
    virtual ~@ModelName@_spectrum_generator_interface() = default;
 
-   std::tuple<@ModelName@<T>> get_models() const
-   { return std::make_tuple(model); }
-   std::tuple<@ModelName@_slha<@ModelName@<T>>> get_models_slha() const
-   { return std::make_tuple(@ModelName@_slha<@ModelName@<T> >(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.)); }
+   std::tuple<@ModelName@<T>, standard_model::StandardModel<T>> get_models() const
+   { return std::make_tuple(model, eft); }
+   std::tuple<@ModelName@_slha<@ModelName@<T>>, standard_model::StandardModel<T>> get_models_slha() const
+   { return std::make_tuple(@ModelName@_slha<@ModelName@<T>>(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.), eft); }
 
    Spectrum_generator_problems get_problems() const { return collect_problems(); }
    int get_exit_code() const { return collect_problems().have_problem(); }
@@ -62,6 +62,7 @@ public:
    void set_pole_mass_loop_order(int l) {
       settings.set(Spectrum_generator_settings::pole_mass_loop_order, l);
       model.set_pole_mass_loop_order(l);
+      eft.set_pole_mass_loop_order(l);
    }
    void set_pole_scale(double q) {
       settings.set(Spectrum_generator_settings::pole_mass_scale, q);
@@ -69,6 +70,7 @@ public:
    void set_ewsb_loop_order(int l) {
       settings.set(Spectrum_generator_settings::ewsb_loop_order, l);
       model.set_ewsb_loop_order(l);
+      eft.set_ewsb_loop_order(l);
    }
    void set_beta_loop_order(int l) {
       settings.set(Spectrum_generator_settings::beta_loop_order, l);
@@ -91,10 +93,12 @@ public:
    void set_loop_corrections(const Loop_corrections& c) {
       settings.set_loop_corrections(c);
       model.set_loop_corrections(c);
+      eft.set_loop_corrections(c);
    }
    void set_threshold_corrections(const Threshold_corrections& c) {
       settings.set_threshold_corrections(c);
       model.set_threshold_corrections(c);
+      eft.set_threshold_corrections(c);
    }
    void set_settings(const Spectrum_generator_settings&);
 
@@ -104,6 +108,7 @@ public:
 
 protected:
    @ModelName@<T> model;
+   standard_model::StandardModel<T> eft{};
    Spectrum_generator_problems problems;
    Spectrum_generator_settings settings;
    double parameter_output_scale{0.}; ///< output scale for running parameters
@@ -112,7 +117,7 @@ protected:
    /// Collects all problems
    Spectrum_generator_problems collect_problems() const {
       auto sgp = problems;
-      sgp.set_model_problems({ model.get_problems() });
+      sgp.set_model_problems({ model.get_problems(), eft.get_problems() });
       return sgp;
    }
    void translate_exception_to_problem(@ModelName@<T>& model);
@@ -133,6 +138,10 @@ void @ModelName@_spectrum_generator_interface<T>::set_settings(
    model.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
    model.set_loop_corrections(settings.get_loop_corrections());
    model.set_threshold_corrections(settings.get_threshold_corrections());
+   eft.set_pole_mass_loop_order(settings.get(Spectrum_generator_settings::pole_mass_loop_order));
+   eft.set_ewsb_loop_order(settings.get(Spectrum_generator_settings::ewsb_loop_order));
+   eft.set_loop_corrections(settings.get_loop_corrections());
+   eft.set_threshold_corrections(settings.get_threshold_corrections());
 }
 
 /**
@@ -219,18 +228,24 @@ void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem
       problems.flag_no_convergence();
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
+      eft.get_problems().flag_no_perturbative();
       model.get_problems().flag_non_perturbative_parameter(
          error.get_parameter_index(), error.get_parameter_value(),
          error.get_scale());
    } catch (const NonPerturbativeRunningQedQcdError& error) {
       model.get_problems().flag_no_perturbative();
       model.get_problems().flag_thrown(error.what());
+      eft.get_problems().flag_no_perturbative();
+      eft.get_problems().flag_thrown(error.what());
    } catch (const NoSinThetaWConvergenceError&) {
       model.get_problems().flag_no_sinThetaW_convergence();
+      eft.get_problems().flag_no_sinThetaW_convergence();
    } catch (const Error& error) {
       model.get_problems().flag_thrown(error.what());
+      eft.get_problems().flag_thrown(error.what());
    } catch (const std::exception& error) {
       model.get_problems().flag_thrown(error.what());
+      eft.get_problems().flag_thrown(error.what());
    }
 }
 

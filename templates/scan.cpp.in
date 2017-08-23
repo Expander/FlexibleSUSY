@@ -88,7 +88,7 @@ template <class solver_type>
 
    spectrum_generator.run(qedqcd, input);
 
-   const auto model = spectrum_generator.get_model_slha();
+   const auto model = std::get<0>(spectrum_generator.get_models_slha());
    const auto& pole_masses = model.get_physical_slha();
 
    @ModelName@_scan_result result;

@@ -26,8 +26,6 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_model_slha.hpp"
 
-#include <tuple>
-
 namespace softsusy { class QedQcd; }
 
 namespace flexiblesusy {
@@ -40,11 +38,6 @@ class @ModelName@_spectrum_generator<Two_scale>
 public:
    @ModelName@_spectrum_generator() = default;
    virtual ~@ModelName@_spectrum_generator() = default;
-
-   std::tuple<@ModelName@<Two_scale> > get_models() const
-   { return std::make_tuple(get_model()); }
-   std::tuple<@ModelName@_slha<@ModelName@<Two_scale> > > get_models_slha() const
-   { return std::make_tuple(get_model_slha()); }
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }

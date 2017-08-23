@@ -41,6 +41,7 @@ BASE_TEMPLATES := \
 		$(DIR)/soft_parameters.cpp.in \
 		$(DIR)/spectrum_generator.hpp.in \
 		$(DIR)/spectrum_generator_interface.hpp.in \
+		$(DIR)/standard_model_spectrum_generator_interface.hpp.in \
 		$(DIR)/standard_model_matching.hpp.in \
 		$(DIR)/standard_model_matching.cpp.in \
 		$(DIR)/susy_beta_.cpp.in \
