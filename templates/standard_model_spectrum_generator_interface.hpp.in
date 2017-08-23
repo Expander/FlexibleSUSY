@@ -56,50 +56,6 @@ public:
    double get_reached_precision() const { return reached_precision; }
    const Spectrum_generator_settings& get_settings() const { return settings; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
-   void set_precision_goal(double precision_goal_) {
-      settings.set(Spectrum_generator_settings::precision, precision_goal_);
-   }
-   void set_pole_mass_loop_order(int l) {
-      settings.set(Spectrum_generator_settings::pole_mass_loop_order, l);
-      model.set_pole_mass_loop_order(l);
-      eft.set_pole_mass_loop_order(l);
-   }
-   void set_pole_scale(double q) {
-      settings.set(Spectrum_generator_settings::pole_mass_scale, q);
-   }
-   void set_ewsb_loop_order(int l) {
-      settings.set(Spectrum_generator_settings::ewsb_loop_order, l);
-      model.set_ewsb_loop_order(l);
-      eft.set_ewsb_loop_order(l);
-   }
-   void set_beta_loop_order(int l) {
-      settings.set(Spectrum_generator_settings::beta_loop_order, l);
-   }
-   void set_beta_zero_threshold(double t) {
-      settings.set(Spectrum_generator_settings::beta_zero_threshold, t);
-   }
-   void set_max_iterations(int n) {
-      settings.set(Spectrum_generator_settings::max_iterations, n);
-   }
-   void set_calculate_sm_masses(bool flag) {
-      settings.set(Spectrum_generator_settings::calculate_sm_masses, flag);
-   }
-   void set_force_output(bool flag) {
-      settings.set(Spectrum_generator_settings::force_output, flag);
-   }
-   void set_threshold_corrections_loop_order(int t) {
-      settings.set(Spectrum_generator_settings::threshold_corrections_loop_order, t);
-   }
-   void set_loop_corrections(const Loop_corrections& c) {
-      settings.set_loop_corrections(c);
-      model.set_loop_corrections(c);
-      eft.set_loop_corrections(c);
-   }
-   void set_threshold_corrections(const Threshold_corrections& c) {
-      settings.set_threshold_corrections(c);
-      model.set_threshold_corrections(c);
-      eft.set_threshold_corrections(c);
-   }
    void set_settings(const Spectrum_generator_settings&);
 
    void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);

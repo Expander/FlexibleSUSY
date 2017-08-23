@@ -420,11 +420,11 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_to_two_scale )
    for (const auto& semi_analytic_input: semi_analytic_inputs) {
       softsusy::QedQcd qedqcd;
 
-      CMSSMSemiAnalytic_spectrum_generator<Semi_analytic> spectrum_generator;
-      spectrum_generator.set_precision_goal(precision);
-      spectrum_generator.set_max_iterations(0);
-      spectrum_generator.set_calculate_sm_masses(0);
+      Spectrum_generator_settings settings;
+      settings.set(Spectrum_generator_settings::precision, precision);
 
+      CMSSMSemiAnalytic_spectrum_generator<Semi_analytic> spectrum_generator;
+      spectrum_generator.set_settings(settings);
       spectrum_generator.run(qedqcd, semi_analytic_input);
 
       const auto& semi_analytic_problems = spectrum_generator.get_problems();
@@ -435,7 +435,7 @@ BOOST_AUTO_TEST_CASE( test_semi_analytic_to_two_scale )
       const double susy_scale = spectrum_generator.get_susy_scale();
       const double low_scale = spectrum_generator.get_low_scale();
 
-      const CMSSMSemiAnalytic<Semi_analytic> semi_analytic_model = spectrum_generator.get_model();
+      const CMSSMSemiAnalytic<Semi_analytic> semi_analytic_model = std::get<0>(spectrum_generator.get_models());
 
       CMSSM_scales scales;
       scales.HighScale = high_scale;
@@ -474,11 +474,11 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
    for (const auto& two_scale_input: two_scale_inputs) {
       softsusy::QedQcd qedqcd;
 
-      CMSSM_spectrum_generator<Two_scale> spectrum_generator;
-      spectrum_generator.set_precision_goal(precision);
-      spectrum_generator.set_max_iterations(0);
-      spectrum_generator.set_calculate_sm_masses(0);
+      Spectrum_generator_settings settings;
+      settings.set(Spectrum_generator_settings::precision, precision);
 
+      CMSSM_spectrum_generator<Two_scale> spectrum_generator;
+      spectrum_generator.set_settings(settings);
       spectrum_generator.run(qedqcd, two_scale_input);
 
       const auto& two_scale_problems = spectrum_generator.get_problems();
@@ -489,7 +489,7 @@ BOOST_AUTO_TEST_CASE( test_two_scale_to_semi_analytic )
       const double susy_scale = spectrum_generator.get_susy_scale();
       const double low_scale = spectrum_generator.get_low_scale();
 
-      const CMSSM<Two_scale> two_scale_model = spectrum_generator.get_model();
+      const CMSSM<Two_scale> two_scale_model = std::get<0>(spectrum_generator.get_models());
 
       CMSSMSemiAnalytic_scales scales;
       scales.HighScale = high_scale;
