@@ -141,7 +141,7 @@ public:
 
    virtual void put_model_spectra(MLINK link) const = 0;
 
-   virtual const Problems& get_problems() const = 0;
+   virtual const Spectrum_generator_problems& get_problems() const = 0;
    virtual void fill_slha_io(@ModelName@_slha_io&) const = 0;
    virtual double get_model_scale() const = 0;
    virtual const @ModelName@_observables& get_observables() const = 0;
@@ -160,9 +160,7 @@ public:
 
    virtual void put_model_spectra(MLINK link) const override;
 
-   virtual const Problems& get_problems() const override {
-      return std::get<0>(models).get_problems();
-   }
+   virtual const Spectrum_generator_problems& get_problems() const override { return problems; }
    virtual void fill_slha_io(@ModelName@_slha_io&) const override;
    virtual double get_model_scale() const override { return std::get<0>(models).get_scale(); }
    virtual const @ModelName@_observables& get_observables() const override { return observables; }
@@ -174,6 +172,7 @@ public:
 
 private:
    std::tuple<@ModelTypes@> models{};        ///< running parameters and pole masses
+   Spectrum_generator_problems problems{};   ///< spectrum generator problems
    @ModelName@_scales scales{};              ///< scale information
    @ModelName@_observables observables{};    ///< observables
 };
@@ -200,7 +199,9 @@ public:
    void put_slha(MLINK link) const;
 
    void put_problems(MLINK link) const;
+   void put_problems(MLINK link, const Problems&) const;
    void put_warnings(MLINK link) const;
+   void put_warnings(MLINK link, const Problems&) const;
    void put_model_spectra(MLINK link) const;
    void calculate_spectrum();
    void check_spectrum(MLINK link) const;
@@ -436,12 +437,10 @@ void Model_data::put_input_parameters(MLINK link) const
 
 /******************************************************************/
 
-template <typename P>
-int number_of_problems(const P& problems)
+int number_of_problems(const Problems& problems)
 {
    return problems.have_tachyon()
       + problems.no_ewsb()
-      + problems.no_convergence()
       + (problems.no_perturbative() || problems.have_non_perturbative_parameter())
       + problems.no_sinThetaW_convergence()
       + problems.have_thrown()
@@ -450,8 +449,7 @@ int number_of_problems(const P& problems)
 
 /******************************************************************/
 
-template <typename P>
-int number_of_warnings(const P& problems)
+int number_of_warnings(const Problems& problems)
 {
    return problems.have_bad_mass();
 }
@@ -501,24 +499,14 @@ void put_masses(MLINK link, const std::string& rule,
 
 /******************************************************************/
 
-void Model_data::put_problems(MLINK link) const
+void Model_data::put_problems(MLINK link, const Problems& problems) const
 {
-   check_spectrum_pointer();
-   const auto& problems = spectrum->get_problems();
-   const auto n_problems = number_of_problems(problems);
-
-   MLPutFunction(link, "List", 1);
-   MLPutRule(link, @ModelName@_info::model_name);
-   MLPutFunction(link, "List", n_problems);
-
    if (problems.have_tachyon())
       put_masses(link, "Tachyons",
                  problems.get_running_tachyons(), {"M"},
                  problems.get_pole_tachyons(), {"Pole", "M"});
    if (problems.no_ewsb())
       MLPutRuleTo(link, "True", "NoEWSB");
-   if (problems.no_convergence())
-      MLPutRuleTo(link, "True", "NoConvergence");
    if (problems.no_perturbative() || problems.have_non_perturbative_parameter())
       MLPutRuleTo(link, "True", "NonPerturbative");
    if (problems.no_sinThetaW_convergence())
@@ -527,8 +515,39 @@ void Model_data::put_problems(MLINK link) const
       MLPutRuleTo(link, "True", "Exceptions");
    if (problems.have_failed_pole_mass_convergence())
       put_masses(link, "NoPoleMassConvergence", problems.get_failed_pole_mass_convergence(), {"Pole", "M"});
+}
+
+/******************************************************************/
+
+void Model_data::put_problems(MLINK link) const
+{
+   check_spectrum_pointer();
+   const auto problems = spectrum->get_problems();
+   const auto n_problems = problems.no_convergence();
+   const auto models = problems.get_model_problems();
+   const auto n_models = models.size();
+
+   MLPutFunction(link, "List", n_problems + n_models);
+
+   if (problems.no_convergence())
+      MLPutRuleTo(link, "True", "NoConvergence");
+
+   for (const auto& m: models) {
+      const auto np = number_of_problems(m);
+      MLPutRule(link, m.get_model_name());
+      MLPutFunction(link, "List", np);
+      put_problems(link, m);
+   }
 
    MLEndPacket(link);
+}
+
+/******************************************************************/
+
+void Model_data::put_warnings(MLINK link, const Problems& problems) const
+{
+   if (problems.have_bad_mass())
+      put_masses(link, "ImpreciseMasses", problems.get_bad_masses(), {"M"});
 }
 
 /******************************************************************/
@@ -536,15 +555,18 @@ void Model_data::put_problems(MLINK link) const
 void Model_data::put_warnings(MLINK link) const
 {
    check_spectrum_pointer();
-   const auto& problems = spectrum->get_problems();
-   const auto n_warnings = number_of_warnings(problems);
+   const auto problems = spectrum->get_problems();
+   const auto models = problems.get_model_problems();
+   const auto n_models = models.size();
 
-   MLPutFunction(link, "List", 1);
-   MLPutRule(link, @ModelName@_info::model_name);
-   MLPutFunction(link, "List", n_warnings);
+   MLPutFunction(link, "List", n_models);
 
-   if (problems.have_bad_mass())
-      put_masses(link, "ImpreciseMasses", problems.get_bad_masses(), {"M"});
+   for (const auto& m: models) {
+      const auto nw = number_of_warnings(m);
+      MLPutRule(link, m.get_model_name());
+      MLPutFunction(link, "List", nw);
+      put_warnings(link, m);
+   }
 
    MLEndPacket(link);
 }
@@ -704,6 +726,7 @@ void @ModelName@_spectrum_impl<Solver_type>::calculate_spectrum(
    spectrum_generator.run(qedqcd, input);
 
    models = spectrum_generator.get_models_slha();
+   problems = spectrum_generator.get_problems();
    scales.HighScale = spectrum_generator.get_high_scale();
    scales.SUSYScale = spectrum_generator.get_susy_scale();
    scales.LowScale  = spectrum_generator.get_low_scale();

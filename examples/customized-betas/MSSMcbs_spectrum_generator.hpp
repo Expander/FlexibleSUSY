@@ -161,7 +161,7 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
          model.run_to(parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
-      model.get_problems().flag_no_convergence();
+      model.get_problems().flag_thrown("no convergence");
    } catch (const NonPerturbativeRunningError&) {
       model.get_problems().flag_no_perturbative();
    } catch (const Error& error) {

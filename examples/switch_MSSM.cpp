@@ -392,7 +392,7 @@ void MSSM_runner<T>::run(const QedQcd& qedqcd,
       if (model.run_to(low_scale))
          throw NonPerturbativeRunningError(low_scale);
    } catch (const NoConvergenceError& error) {
-      model.get_problems().flag_no_convergence();
+      model.get_problems().flag_thrown("no convergence");
       ERROR(error.what());
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();

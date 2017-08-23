@@ -198,7 +198,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
          model_1.run_to(parameter_output_scale_1);
       }
    } catch (const NoConvergenceError&) {
-      model_1.get_problems().flag_no_convergence();
+      model_1.get_problems().flag_thrown("no convergence");
    } catch (const NonPerturbativeRunningError&) {
       model_1.get_problems().flag_no_perturbative();
    } catch (const Error& error) {

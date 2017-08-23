@@ -39,14 +39,13 @@ public:
  */
 class Problems {
 public:
-   Problems(const Names* particle_names_, const Names* parameter_names_);
+   Problems(const std::string& model_name_, const Names* particle_names_, const Names* parameter_names_);
 
    void flag_bad_mass(int particle, bool flag = true);
    void flag_running_tachyon(int particle, bool flag = true);
    void flag_pole_tachyon(int particle, bool flag = true);
    void flag_thrown(const std::string& msg = "unknown");
    void flag_no_ewsb();
-   void flag_no_convergence();
    void flag_no_perturbative();
    void flag_no_pole_mass_convergence(int particle);
    void flag_non_perturbative_parameter(int parameter, double value, double scale, double threshold = 0.);
@@ -58,7 +57,6 @@ public:
    void unflag_all_tachyons();
    void unflag_thrown();
    void unflag_no_ewsb();
-   void unflag_no_convergence();
    void unflag_no_perturbative();
    void unflag_no_pole_mass_convergence(int particle);
    void unflag_non_perturbative_parameter(int parameter);
@@ -75,7 +73,6 @@ public:
    bool have_non_perturbative_parameter() const;
    bool have_failed_pole_mass_convergence() const;
    bool no_ewsb() const;
-   bool no_convergence() const;
    bool no_perturbative() const;
    bool no_sinThetaW_convergence() const;
 
@@ -88,6 +85,7 @@ public:
    std::string get_warning_string() const;
    void print_problems(std::ostream& = std::cout) const;
    void print_warnings(std::ostream& = std::cout) const;
+   const std::string& get_model_name() const;
 
    std::vector<int> get_bad_masses() const;
    std::vector<int> get_running_tachyons() const;
@@ -102,6 +100,7 @@ private:
       double value{0.}, scale{0.}, threshold{0.};
    };
 
+   std::string model_name;             ///< model name
    const Names* particle_names;        ///< access to particle names
    const Names* parameter_names;       ///< access to parameter names
    std::vector<int> bad_masses;        ///< imprecise mass eigenvalues
@@ -111,12 +110,10 @@ private:
    std::map<int, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
    std::string exception_msg;          ///< exception message
    bool failed_ewsb{false};            ///< no EWSB
-   bool failed_convergence{false};     ///< no convergence
    bool non_perturbative{false};       ///< non-perturbative running
    bool failed_sinThetaW_convergence{false}; ///< sinThetaW-parameter not converged
 
    std::string get_parameter_name(int) const; ///< returns parameter name
-   static std::string concat(const std::vector<std::string>&, char); ///< concatenate strings
 };
 
 std::ostream& operator<<(std::ostream&, const Problems&);

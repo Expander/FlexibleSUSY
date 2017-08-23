@@ -30,6 +30,7 @@
 #include "coupling_monitor.hpp"
 #include "logger.hpp"
 #include "lowe.h"
+#include "spectrum_generator_problems.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "loop_corrections.hpp"
 
@@ -42,22 +43,14 @@ struct @ModelName@_input_parameters;
 template <class T>
 class @ModelName@_spectrum_generator_interface {
 public:
-   @ModelName@_spectrum_generator_interface()
-      : model()
-      , settings()
-      , parameter_output_scale(0.)
-      , reached_precision(std::numeric_limits<double>::infinity())
-   {}
    virtual ~@ModelName@_spectrum_generator_interface() = default;
 
    const @ModelName@<T>& get_model() const { return model; }
    @ModelName@<T>& get_model() { return model; }
    @ModelName@_slha<@ModelName@<T> > get_model_slha() const { return @ModelName@_slha<@ModelName@<T> >(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.); }
 
-   const Problems& get_problems() const {
-      return model.get_problems();
-   }
-   int get_exit_code() const { return get_problems().have_problem(); }
+   Spectrum_generator_problems get_problems() const { return collect_problems(); }
+   int get_exit_code() const { return collect_problems().have_problem(); }
    double get_reached_precision() const { return reached_precision; }
    const Spectrum_generator_settings& get_settings() const { return settings; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
@@ -109,10 +102,17 @@ public:
 
 protected:
    @ModelName@<T> model;
+   Spectrum_generator_problems problems;
    Spectrum_generator_settings settings;
-   double parameter_output_scale; ///< output scale for running parameters
-   double reached_precision; ///< the precision that was reached
+   double parameter_output_scale{0.}; ///< output scale for running parameters
+   double reached_precision{std::numeric_limits<double>::infinity()}; ///< the precision that was reached
 
+   /// Collects all problems
+   Spectrum_generator_problems collect_problems() const {
+      auto sgp = problems;
+      sgp.set_model_problems({ model.get_problems() });
+      return sgp;
+   }
    void translate_exception_to_problem(@ModelName@<T>& model);
    virtual void run_except(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
 };
@@ -214,7 +214,7 @@ void @ModelName@_spectrum_generator_interface<T>::translate_exception_to_problem
    try {
       throw;
    } catch (const NoConvergenceError&) {
-      model.get_problems().flag_no_convergence();
+      problems.flag_no_convergence();
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
       model.get_problems().flag_non_perturbative_parameter(

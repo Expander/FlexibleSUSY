@@ -607,7 +607,8 @@ private:
    double precision{1e-3};        ///< RG running precision
    double ewsb_iteration_precision{1e-5};
    Standard_model_physical physical{}; ///< contains the pole masses and mixings
-   Problems problems{&standard_model_info::particle_names_getter,
+   Problems problems{standard_model_info::model_name,
+                     &standard_model_info::particle_names_getter,
                      &standard_model_info::parameter_names_getter};
    Loop_corrections loop_corrections{}; ///< used loop pole mass corrections
    Threshold_corrections threshold_corrections{}; ///< used low-energy threshold corrections

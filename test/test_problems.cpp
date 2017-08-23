@@ -22,7 +22,7 @@ private:
 BOOST_AUTO_TEST_CASE( test_initialization )
 {
    const Dummy_names dummy_names(3);
-   Problems problems(&dummy_names, &dummy_names);
+   Problems problems("DummyModel", &dummy_names, &dummy_names);
 
    BOOST_CHECK(!problems.is_running_tachyon(0));
    BOOST_CHECK(!problems.is_running_tachyon(1));
@@ -30,6 +30,5 @@ BOOST_AUTO_TEST_CASE( test_initialization )
    BOOST_CHECK(!problems.have_tachyon());
 
    BOOST_CHECK(!problems.no_ewsb());
-   BOOST_CHECK(!problems.no_convergence());
    BOOST_CHECK(!problems.no_perturbative());
 }

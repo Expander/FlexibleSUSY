@@ -26,6 +26,8 @@
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_physical.hpp"
+#include "problems.hpp"
+#include "spectrum_generator_problems.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
@@ -93,6 +95,7 @@ public:
    template <class Model> void set_spectrum(const @ModelName@_slha<Model>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spectrum(const standard_model::Standard_model& m) { slha_io.set_spectrum(m); }
+   void set_spinfo(const Spectrum_generator_problems&);
    void set_spinfo(const Problems&);
    void set_spinfo(const std::vector<std::string>&, const std::vector<std::string>&);
    void set_print_imaginary_parts_of_majorana_mixings(bool);

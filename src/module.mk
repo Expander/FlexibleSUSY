@@ -41,6 +41,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/sm_threeloop_as.cpp \
 		$(DIR)/sm_threeloophiggs.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
+		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/split_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
@@ -50,6 +51,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/standard_model_two_scale_convergence_tester.cpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
+		$(DIR)/string_utils.cpp \
 		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -126,6 +128,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/split_threeloophiggs.hpp \
 		$(DIR)/splitmssm_thresholds.hpp \
+		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
 		$(DIR)/standard_model_convergence_tester.hpp \
@@ -135,6 +138,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model_two_scale_convergence_tester.hpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
 		$(DIR)/standard_model_two_scale_model.hpp \
+		$(DIR)/string_utils.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/thread_pool.hpp \
 		$(DIR)/threshold_corrections.hpp \

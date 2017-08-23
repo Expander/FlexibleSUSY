@@ -18,6 +18,7 @@
 
 #include "problems.hpp"
 #include "logger.hpp"
+#include "string_utils.hpp"
 #include "config.h"
 
 #include <algorithm>
@@ -25,8 +26,10 @@
 
 namespace flexiblesusy {
 
-Problems::Problems(const Names* particle_names_, const Names* parameter_names_)
-   : particle_names(particle_names_)
+Problems::Problems(const std::string& model_name_,
+                   const Names* particle_names_, const Names* parameter_names_)
+   : model_name(model_name_)
+   , particle_names(particle_names_)
    , parameter_names(parameter_names_)
    , bad_masses(particle_names_->size())
    , running_tachyons(particle_names_->size())
@@ -44,14 +47,13 @@ void Problems::clear()
    non_pert_pars.clear();
    exception_msg = "";
    failed_ewsb = false;
-   failed_convergence = false;
    non_perturbative = false;
    failed_sinThetaW_convergence = false;
 }
 
 bool Problems::have_problem() const
 {
-   return have_tachyon() || failed_ewsb || failed_convergence
+   return have_tachyon() || failed_ewsb
       || non_perturbative || failed_sinThetaW_convergence
       || have_thrown()
       || have_failed_pole_mass_convergence()
@@ -86,8 +88,6 @@ std::vector<std::string> Problems::get_problem_strings() const
    }
    if (failed_ewsb)
       strings.push_back("no ewsb");
-   if (failed_convergence)
-      strings.push_back("no convergence");
    if (non_perturbative)
       strings.push_back("non-perturbative");
    if (failed_sinThetaW_convergence)
@@ -149,7 +149,6 @@ void Problems::print_problems(std::ostream& ostr) const
    ostr << get_problem_string();
 }
 
-
 void Problems::print_warnings(std::ostream& ostr) const
 {
    if (!have_warning())
@@ -158,15 +157,9 @@ void Problems::print_warnings(std::ostream& ostr) const
    ostr << get_warning_string();
 }
 
-std::string Problems::concat(
-   const std::vector<std::string>& strings, char separator)
+const std::string& Problems::get_model_name() const
 {
-   std::string result;
-
-   for (const auto& s: strings)
-      result += s + separator;
-
-   return result;
+   return model_name;
 }
 
 void Problems::flag_bad_mass(int particle, bool flag)
@@ -200,11 +193,6 @@ void Problems::flag_thrown(const std::string& msg)
 void Problems::flag_no_ewsb()
 {
    failed_ewsb = true;
-}
-
-void Problems::flag_no_convergence()
-{
-   failed_convergence = true;
 }
 
 void Problems::flag_no_perturbative()
@@ -262,11 +250,6 @@ void Problems::unflag_thrown()
 void Problems::unflag_no_ewsb()
 {
    failed_ewsb = false;
-}
-
-void Problems::unflag_no_convergence()
-{
-   failed_convergence = false;
 }
 
 void Problems::unflag_no_perturbative()
@@ -347,11 +330,6 @@ bool Problems::have_failed_pole_mass_convergence() const
 bool Problems::no_ewsb() const
 {
    return failed_ewsb;
-}
-
-bool Problems::no_convergence() const
-{
-   return failed_convergence;
 }
 
 bool Problems::no_perturbative() const
