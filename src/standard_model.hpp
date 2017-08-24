@@ -108,8 +108,8 @@ namespace standard_model_info {
       }
    };
 
-   const Standard_model_particle_names  particle_names_getter;
-   const Standard_model_parameter_names parameter_names_getter;
+   const Standard_model_particle_names  particle_names_getter{};
+   const Standard_model_parameter_names parameter_names_getter{};
 
 } // namespace standard_model_info
 

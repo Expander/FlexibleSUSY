@@ -73,8 +73,8 @@ namespace @ModelName@_info {
       }
    };
 
-   const @ModelName@_particle_names  particle_names_getter;
-   const @ModelName@_parameter_names parameter_names_getter;
+   const @ModelName@_particle_names  particle_names_getter{};
+   const @ModelName@_parameter_names parameter_names_getter{};
 
 } // namespace @ModelName@_info
 
