@@ -41,7 +41,7 @@ bool BVP_solver_problems::have_problem() const
 
 bool BVP_solver_problems::have_warning() const
 {
-   return false;
+   return false; // no warnings yet
 }
 
 std::vector<std::string> BVP_solver_problems::get_problem_strings() const
@@ -56,7 +56,7 @@ std::vector<std::string> BVP_solver_problems::get_problem_strings() const
 
 std::vector<std::string> BVP_solver_problems::get_warning_strings() const
 {
-   return std::vector<std::string>();
+   return {};
 }
 
 std::string BVP_solver_problems::get_problem_string() const
