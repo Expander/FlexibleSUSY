@@ -59,6 +59,8 @@ void @ModelName@_spectrum_generator<Semi_analytic>::run_except(const softsusy::Q
 {
    VERBOSE_MSG("Solving BVP using semi-analytic solver");
 
+   problems.set_bvp_solver_problems({ BVP_solver_problems("SemiAnalyticSolver") });
+
    auto& model = this->model;
    model.clear();
    model.set_input_parameters(input);

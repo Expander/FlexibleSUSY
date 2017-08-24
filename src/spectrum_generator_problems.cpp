@@ -34,6 +34,16 @@ Spectrum_generator_problems::Spectrum_generator_problems(std::vector<Problems>&&
 {
 }
 
+Spectrum_generator_problems::Spectrum_generator_problems(const std::vector<BVP_solver_problems>& solver_problems_)
+   : solver_problems(solver_problems_)
+{
+}
+
+Spectrum_generator_problems::Spectrum_generator_problems(std::vector<BVP_solver_problems>&& solver_problems_)
+   : solver_problems(std::move(solver_problems_))
+{
+}
+
 void Spectrum_generator_problems::set_model_problems(const std::vector<Problems>& p)
 {
    problems = p;
@@ -44,22 +54,40 @@ void Spectrum_generator_problems::set_model_problems(std::vector<Problems>&& p)
    problems = std::move(p);
 }
 
+void Spectrum_generator_problems::set_bvp_solver_problems(const std::vector<BVP_solver_problems>& p)
+{
+   solver_problems = p;
+}
+
+void Spectrum_generator_problems::set_bvp_solver_problems(std::vector<BVP_solver_problems>&& p)
+{
+   solver_problems = std::move(p);
+}
+
 void Spectrum_generator_problems::clear()
 {
-   failed_convergence = false;
+   for (auto& p: problems)
+      p.clear();
+   for (auto& p: solver_problems)
+      p.clear();
 }
 
 bool Spectrum_generator_problems::have_problem() const
 {
-   return no_convergence() ||
+   return
       std::any_of(problems.cbegin(), problems.cend(),
-                  [] (const Problems& p) { return p.have_problem(); });
+                  [] (const Problems& p) { return p.have_problem(); }) ||
+      std::any_of(solver_problems.cbegin(), solver_problems.cend(),
+                  [] (const BVP_solver_problems& p) { return p.have_problem(); });
 }
 
 bool Spectrum_generator_problems::have_warning() const
 {
-   return std::any_of(problems.cbegin(), problems.cend(),
-                      [] (const Problems& p) { return p.have_warning(); });
+   return
+      std::any_of(problems.cbegin(), problems.cend(),
+                  [] (const Problems& p) { return p.have_warning(); }) ||
+      std::any_of(solver_problems.cbegin(), solver_problems.cend(),
+                  [] (const BVP_solver_problems& p) { return p.have_warning(); });
 }
 
 std::vector<std::string> Spectrum_generator_problems::get_problem_strings() const
@@ -71,8 +99,10 @@ std::vector<std::string> Spectrum_generator_problems::get_problem_strings() cons
       result.insert(result.end(), strings.cbegin(), strings.cend());
    }
 
-   if (no_convergence())
-      result.push_back("no convergence");
+   for (const auto& p: solver_problems) {
+      const auto strings = p.get_problem_strings();
+      result.insert(result.end(), strings.cbegin(), strings.cend());
+   }
 
    return result;
 }
@@ -82,6 +112,11 @@ std::vector<std::string> Spectrum_generator_problems::get_warning_strings() cons
    std::vector<std::string> result;
 
    for (const auto& p: problems) {
+      const auto strings = p.get_warning_strings();
+      result.insert(result.end(), strings.cbegin(), strings.cend());
+   }
+
+   for (const auto& p: solver_problems) {
       const auto strings = p.get_warning_strings();
       result.insert(result.end(), strings.cbegin(), strings.cend());
    }
@@ -125,19 +160,32 @@ std::vector<Problems>& Spectrum_generator_problems::get_model_problems()
    return problems;
 }
 
+const std::vector<BVP_solver_problems>& Spectrum_generator_problems::get_bvp_solver_problems() const
+{
+   return solver_problems;
+}
+
+std::vector<BVP_solver_problems>& Spectrum_generator_problems::get_bvp_solver_problems()
+{
+   return solver_problems;
+}
+
 void Spectrum_generator_problems::flag_no_convergence()
 {
-   failed_convergence = true;
+   for (auto& p: solver_problems)
+      p.flag_no_convergence();
 }
 
 void Spectrum_generator_problems::unflag_no_convergence()
 {
-   failed_convergence = false;
+   for (auto& p: solver_problems)
+      p.unflag_no_convergence();
 }
 
 bool Spectrum_generator_problems::no_convergence() const
 {
-   return failed_convergence;
+   return std::any_of(solver_problems.cbegin(), solver_problems.cend(),
+                      [] (const BVP_solver_problems& p) { return p.no_convergence(); });
 }
 
 std::ostream& operator<<(std::ostream& ostr, const Spectrum_generator_problems& problems)

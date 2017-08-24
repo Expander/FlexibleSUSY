@@ -16,21 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SPECTRUM_GENERATOR_PROBLEMS_H
-#define SPECTRUM_GENERATOR_PROBLEMS_H
+#ifndef BVP_SOLVER_PROBLEMS_H
+#define BVP_SOLVER_PROBLEMS_H
 
 #include "problems.hpp"
-#include "bvp_solver_problems.hpp"
 
 namespace flexiblesusy {
 
-class Spectrum_generator_problems {
+class BVP_solver_problems {
 public:
-   Spectrum_generator_problems() = default;
-   explicit Spectrum_generator_problems(const std::vector<Problems>&);
-   explicit Spectrum_generator_problems(std::vector<Problems>&&);
-   explicit Spectrum_generator_problems(const std::vector<BVP_solver_problems>&);
-   explicit Spectrum_generator_problems(std::vector<BVP_solver_problems>&&);
+   BVP_solver_problems(const std::string&);
 
    void clear();                      ///< clear all problems
    bool have_problem() const;         ///< problems which yield invalid spectrum
@@ -41,29 +36,18 @@ public:
    std::string get_warning_string() const;
    void print_problems(std::ostream& = std::cout) const;
    void print_warnings(std::ostream& = std::cout) const;
-
-   void set_model_problems(const std::vector<Problems>&); ///< (re)set all model problems
-   void set_model_problems(std::vector<Problems>&&);      ///< (re)set all model problems
-   const std::vector<Problems>& get_model_problems() const;
-   std::vector<Problems>& get_model_problems();
-   int get_number_of_models() const { return problems.size(); }
-
-   void set_bvp_solver_problems(const std::vector<BVP_solver_problems>&); ///< (re)set all BVP solver problems
-   void set_bvp_solver_problems(std::vector<BVP_solver_problems>&&);      ///< (re)set all BVP solver problems
-   const std::vector<BVP_solver_problems>& get_bvp_solver_problems() const;
-   std::vector<BVP_solver_problems>& get_bvp_solver_problems();
-   int get_number_of_bvp_solvers() const { return solver_problems.size(); }
+   const std::string& get_solver_name() const;
 
    void flag_no_convergence();
    void unflag_no_convergence();
    bool no_convergence() const;
 
 private:
-   std::vector<Problems> problems; ///< model problems
-   std::vector<BVP_solver_problems> solver_problems; ///< BVP solver problems
+   std::string name;               ///< BVP solver name
+   bool failed_convergence{false}; ///< no convergence
 };
 
-std::ostream& operator<<(std::ostream&, const Spectrum_generator_problems&);
+std::ostream& operator<<(std::ostream&, const BVP_solver_problems&);
 
 } // namespace flexiblesusy
 

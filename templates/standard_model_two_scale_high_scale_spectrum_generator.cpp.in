@@ -74,6 +74,8 @@ void @ModelName@_spectrum_generator<Two_scale>::run_except(const softsusy::QedQc
 {
    VERBOSE_MSG("Solving BVP using two-scale solver");
 
+   problems.set_bvp_solver_problems({ BVP_solver_problems("TwoScaleSolver") });
+
    auto& model = this->model;
    model.clear();
    model.set_input_parameters(input);

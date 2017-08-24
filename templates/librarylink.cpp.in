@@ -200,8 +200,10 @@ public:
 
    void put_problems(MLINK link) const;
    void put_problems(MLINK link, const Problems&) const;
+   void put_problems(MLINK link, const BVP_solver_problems&) const;
    void put_warnings(MLINK link) const;
    void put_warnings(MLINK link, const Problems&) const;
+   void put_warnings(MLINK link, const BVP_solver_problems&) const;
    void put_model_spectra(MLINK link) const;
    void calculate_spectrum();
    void check_spectrum(MLINK link) const;
@@ -449,9 +451,23 @@ int number_of_problems(const Problems& problems)
 
 /******************************************************************/
 
+int number_of_problems(const BVP_solver_problems& problems)
+{
+   return problems.no_convergence();
+}
+
+/******************************************************************/
+
 int number_of_warnings(const Problems& problems)
 {
    return problems.have_bad_mass();
+}
+
+/******************************************************************/
+
+int number_of_warnings(const BVP_solver_problems&)
+{
+   return 0; // no warnings yet
 }
 
 /******************************************************************/
@@ -519,22 +535,35 @@ void Model_data::put_problems(MLINK link, const Problems& problems) const
 
 /******************************************************************/
 
+void Model_data::put_problems(MLINK link, const BVP_solver_problems& problems) const
+{
+   if (problems.no_convergence())
+      MLPutRuleTo(link, "True", "NoConvergence");
+}
+
+/******************************************************************/
+
 void Model_data::put_problems(MLINK link) const
 {
    check_spectrum_pointer();
    const auto problems = spectrum->get_problems();
-   const auto n_problems = problems.no_convergence();
    const auto models = problems.get_model_problems();
    const auto n_models = models.size();
+   const auto solvers = problems.get_bvp_solver_problems();
+   const auto n_solvers = solvers.size();
 
-   MLPutFunction(link, "List", n_problems + n_models);
-
-   if (problems.no_convergence())
-      MLPutRuleTo(link, "True", "NoConvergence");
+   MLPutFunction(link, "List", n_models + n_solvers);
 
    for (const auto& m: models) {
       const auto np = number_of_problems(m);
       MLPutRule(link, m.get_model_name());
+      MLPutFunction(link, "List", np);
+      put_problems(link, m);
+   }
+
+   for (const auto& m: solvers) {
+      const auto np = number_of_problems(m);
+      MLPutRule(link, m.get_solver_name());
       MLPutFunction(link, "List", np);
       put_problems(link, m);
    }
@@ -552,18 +581,34 @@ void Model_data::put_warnings(MLINK link, const Problems& problems) const
 
 /******************************************************************/
 
+void Model_data::put_warnings(MLINK, const BVP_solver_problems&) const
+{
+   // no warnings yet
+}
+
+/******************************************************************/
+
 void Model_data::put_warnings(MLINK link) const
 {
    check_spectrum_pointer();
    const auto problems = spectrum->get_problems();
    const auto models = problems.get_model_problems();
    const auto n_models = models.size();
+   const auto solvers = problems.get_bvp_solver_problems();
+   const auto n_solvers = solvers.size();
 
-   MLPutFunction(link, "List", n_models);
+   MLPutFunction(link, "List", n_models + n_solvers);
 
    for (const auto& m: models) {
       const auto nw = number_of_warnings(m);
       MLPutRule(link, m.get_model_name());
+      MLPutFunction(link, "List", nw);
+      put_warnings(link, m);
+   }
+
+   for (const auto& m: solvers) {
+      const auto nw = number_of_warnings(m);
+      MLPutRule(link, m.get_solver_name());
       MLPutFunction(link, "List", nw);
       put_warnings(link, m);
    }

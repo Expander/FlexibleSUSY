@@ -150,6 +150,6 @@ private:
    void update_running_precision();    ///< update the RG running precision
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

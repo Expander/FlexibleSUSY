@@ -8,6 +8,7 @@ LIBFLEXI_MK  := \
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/build_info.cpp \
+		$(DIR)/bvp_solver_problems.cpp \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/composite_convergence_tester.cpp \
@@ -62,6 +63,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/basic_rk_integrator.hpp \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
+		$(DIR)/bvp_solver_problems.hpp \
 		$(DIR)/cextensions.hpp \
 		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
