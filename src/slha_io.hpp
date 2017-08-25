@@ -250,7 +250,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
    try {
       value = SLHAea::to<Scalar>(str);
    }  catch (const boost::bad_lexical_cast& error) {
-      const std::string msg("cannot convert string \"" + str + "\" to "
+      const std::string msg(R"(cannot convert string ")" + str + R"(" to )"
                             + typeid(Scalar).name());
       throw ReadError(msg);
    }

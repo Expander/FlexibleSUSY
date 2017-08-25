@@ -117,7 +117,7 @@ void SLHA_io::read_from_file(const std::string& file_name)
    if (ifs.good()) {
       read_from_stream(ifs);
    } else {
-      throw ReadError("cannot read SLHA file: \"" + file_name + "\"");
+      throw ReadError(R"(cannot read SLHA file: ")" + file_name + R"(")");
    }
 }
 

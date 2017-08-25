@@ -65,7 +65,7 @@ namespace standard_model_info {
       "VG", "Hp", "Fv", "Ah", "hh", "VP", "VZ", "Fd", "Fu", "Fe", "VWp"};
 
    const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names = {
-      "g", "H^+", "\\nu", "A^0", "h", "\\gamma", "Z", "d", "u", "e", "W^+"};
+      "g", "H^+", R"(\nu)", "A^0", "h", R"(\gamma)", "Z", "d", "u", "e", "W^+"};
 
    const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {
       "g1", "g2", "g3",
