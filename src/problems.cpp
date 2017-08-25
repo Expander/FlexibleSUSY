@@ -87,11 +87,11 @@ std::vector<std::string> Problems::get_problem_strings() const
          strings.push_back("pole tachyon " + particle_names->get(i));
    }
    if (failed_ewsb)
-      strings.push_back("no ewsb");
+      strings.emplace_back("no ewsb");
    if (non_perturbative)
-      strings.push_back("non-perturbative");
+      strings.emplace_back("non-perturbative");
    if (failed_sinThetaW_convergence)
-      strings.push_back("no sinThetaW convergence");
+      strings.emplace_back("no sinThetaW convergence");
    if (have_thrown())
       strings.push_back("exception thrown(" + exception_msg + ")");
    for (int i = 0; i < n_particles; ++i) {

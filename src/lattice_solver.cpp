@@ -69,7 +69,7 @@ void RGFlow<Lattice>::add_model
 (Lattice_model *model, InterTheoryConstraint *matching,
  const vector<SingleSiteConstraint*>& constraints)
 {
-    efts.push_back(EFTspec(model, constraints, matching, this));
+    efts.emplace_back(model, constraints, matching, this);
 }
 
 void RGFlow<Lattice>::add_model
