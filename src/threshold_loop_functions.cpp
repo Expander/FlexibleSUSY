@@ -1145,6 +1145,7 @@ namespace {
    /// u < 1 && v < 1, lambda^2(u,v) > 0
    double phi_pos(double u, double v)
    {
+      using std::log;
       using gm2calc::dilog;
       const auto lambda = std::sqrt(lambda_2(u,v));
 
