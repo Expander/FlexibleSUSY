@@ -1221,7 +1221,7 @@ double phixyz(double x, double y, double z)
       if (v > 1) {
          fac = z/y;
          my_x = z;
-         my_y = x; // should be equal to
+         // my_y = x; // should be equal to
          my_z = y;
 
          return std::real(
@@ -1239,8 +1239,8 @@ double phixyz(double x, double y, double z)
       else {
         fac = 1.;
         my_x = y;
-        my_y = x;
-        my_z = z; // should be equl to my_y
+        // my_y = x;
+        my_z = z; // should be equal to my_y
 
         return std::real(
             fac * 1. /
@@ -1269,7 +1269,7 @@ double phixyz(double x, double y, double z)
       if (u > 1) {
          fac = z/x;
          my_x = z;
-         my_y = y;
+         // my_y = y;
          my_z = x;
 
          return std::real(
@@ -1286,7 +1286,7 @@ double phixyz(double x, double y, double z)
       else {
         fac = 1.;
         my_x = x;
-        my_y = y;
+        // my_y = y;
         my_z = z; // should be equal to y
 
         return std::real(
@@ -1315,7 +1315,7 @@ double phixyz(double x, double y, double z)
       if (u > 1) {
          fac = z/x;
          my_x = z;
-         my_y = y;
+         // my_y = y;
          my_z = x;
 
          return std::real(
@@ -1340,7 +1340,7 @@ double phixyz(double x, double y, double z)
       else {
         fac = 1.;
         my_x = x;
-        my_y = y;
+        // my_y = y;
         my_z = z;
 
         return std::real(
