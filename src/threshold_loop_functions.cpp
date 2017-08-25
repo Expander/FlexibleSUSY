@@ -1210,7 +1210,7 @@ double phixyz(double x, double y, double z)
 
    // u and v is equal to one -> all arguments are the same
    if (devu < eps && devv < eps)
-      return 2.34391; // from Mathematica
+      return 2.343907238689459; // from Mathematica
 
    // u = 1
    if (devu < eps) {
