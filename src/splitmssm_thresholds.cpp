@@ -26,7 +26,7 @@
    do {                                         \
       if (is_zero(p))                           \
          FATAL(#fun ": " #p " is zero!");       \
-   } while (0)
+   } while (false)
 
 namespace flexiblesusy {
 namespace splitmssm_thresholds {

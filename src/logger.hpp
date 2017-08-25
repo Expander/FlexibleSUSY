@@ -73,7 +73,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                            \
          exit(EXIT_FAILURE);                          \
          assert(false);                               \
-      } while (0)
+      } while (false)
 #else
    #define FATAL(message)                                             \
       do {                                                            \
@@ -81,7 +81,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          std::cerr << "*** abort program execution" << std::endl;     \
          exit(EXIT_FAILURE);                                          \
          assert(false);                                               \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -96,7 +96,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                     \
             break;                                                    \
          }                                                            \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -112,7 +112,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                     \
             break;                                                    \
          }                                                            \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -130,7 +130,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                \
             break;                                               \
          }                                                       \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -152,7 +152,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                \
             break;                                               \
          }                                                       \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -174,7 +174,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                \
             break;                                               \
          }                                                       \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -196,7 +196,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                \
             break;                                               \
          }                                                       \
-      } while (0)
+      } while (false)
 #endif
 
 #ifdef ENABLE_SILENT
@@ -211,7 +211,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          PRINT_MESSAGE(level, message);                          \
          RESET_COLOR(level);                                     \
          PRINT_ENDL(level);                                      \
-      } while (0)
+      } while (false)
    #else
       #define LOG(level, message)                  \
       do {                                         \
@@ -219,7 +219,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          PRINT_FILE_LINE(level);                   \
          PRINT_MESSAGE(level, message);            \
          PRINT_ENDL(level);                        \
-      } while (0)
+      } while (false)
    #endif
 #endif
 
