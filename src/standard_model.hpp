@@ -89,10 +89,10 @@ namespace standard_model_info {
    class Standard_model_particle_names : public Names {
    public:
       virtual ~Standard_model_particle_names() = default;
-      virtual const std::string& get(int index) const {
+      virtual const std::string& get(int index) const override {
          return particle_names[index];
       }
-      virtual int size() const {
+      virtual int size() const override {
          return NUMBER_OF_PARAMETERS;
       }
    };
@@ -100,10 +100,10 @@ namespace standard_model_info {
    class Standard_model_parameter_names : public Names {
    public:
       virtual ~Standard_model_parameter_names() = default;
-      virtual const std::string& get(int index) const {
+      virtual const std::string& get(int index) const override {
          return parameter_names[index];
       }
-      virtual int size() const {
+      virtual int size() const override {
          return NUMBER_OF_PARTICLES;
       }
    };
