@@ -47,10 +47,6 @@ Standard_model_effective_couplings::Standard_model_effective_couplings(
 {
 }
 
-Standard_model_effective_couplings::~Standard_model_effective_couplings()
-{
-}
-
 void Standard_model_effective_couplings::calculate_effective_couplings()
 {
    const standard_model::Standard_model sm(initialise_SM());

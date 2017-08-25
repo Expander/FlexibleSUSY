@@ -70,7 +70,7 @@ public:
    Root_finder() = default;
    template <typename F>
    Root_finder(F&&, std::size_t, double, Solver_type solver_type_ = GSLHybrid);
-   virtual ~Root_finder() {}
+   virtual ~Root_finder() = default;
 
    template <typename F>
    void set_function(F&& f) { function = std::forward<F>(f); }

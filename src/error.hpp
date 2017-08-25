@@ -25,13 +25,13 @@ namespace flexiblesusy {
 
 class Error {
 public:
-   virtual ~Error() {}
+   virtual ~Error() = default;
    virtual std::string what() const = 0;
 };
 
 class FatalError {
 public:
-   virtual ~FatalError() {}
+   virtual ~FatalError() = default;
    virtual std::string what() const { return "Fatal error."; };
 };
 
@@ -42,7 +42,7 @@ public:
 class SetupError : public Error {
 public:
    explicit SetupError(const std::string& message_) : message(message_) {}
-   virtual ~SetupError() {}
+   virtual ~SetupError() = default;
    virtual std::string what() const { return message; }
 private:
    std::string message;
@@ -56,7 +56,7 @@ class NoConvergenceError : public Error {
 public:
    explicit NoConvergenceError(int number_of_iterations_, const std::string msg = "")
       : message(msg), number_of_iterations(number_of_iterations_) {}
-   virtual ~NoConvergenceError() {}
+   virtual ~NoConvergenceError() = default;
    virtual std::string what() const {
       if (!message.empty())
          return message;
@@ -81,7 +81,7 @@ public:
       : number_of_iterations(number_of_iterations_)
       , sin_theta(sin_theta_)
       {}
-   virtual ~NoSinThetaWConvergenceError() {}
+   virtual ~NoSinThetaWConvergenceError() = default;
    virtual std::string what() const {
       return "NoSinThetaWConvergenceError: no convergence after "
          + std::to_string(number_of_iterations) + " iterations (sin(theta)="
@@ -115,7 +115,7 @@ public:
       , value(value_)
       , parameter_index(parameter_index_)
       {}
-   virtual ~NonPerturbativeRunningError() {}
+   virtual ~NonPerturbativeRunningError() = default;
    virtual std::string what() const {
       if (parameter_index == -1)
          return "NonPerturbativeRunningError: scale Q = " + std::to_string(value);
@@ -142,7 +142,7 @@ public:
    explicit NonPerturbativeRunningQedQcdError(const std::string& msg_)
       : msg(msg_)
       {}
-   virtual ~NonPerturbativeRunningQedQcdError() {}
+   virtual ~NonPerturbativeRunningQedQcdError() = default;
    virtual std::string what() const { return msg; }
 private:
    std::string msg;
@@ -157,7 +157,7 @@ public:
    explicit OutOfMemoryError(const std::string& msg_)
       : msg(msg_)
       {}
-   virtual ~OutOfMemoryError() {}
+   virtual ~OutOfMemoryError() = default;
    virtual std::string what() const {
       return std::string("OutOfMemoryError: Not enought memory: ") + msg;
    }
@@ -174,7 +174,7 @@ public:
    OutOfBoundsError(const std::string& msg_)
       : msg(msg_)
       {}
-   virtual ~OutOfBoundsError() {}
+   virtual ~OutOfBoundsError() = default;
    virtual std::string what() const { return msg; }
 private:
    std::string msg;
@@ -183,7 +183,7 @@ private:
 class ReadError : public Error {
 public:
    explicit ReadError(const std::string& message_) : message(message_) {}
-   virtual ~ReadError() {}
+   virtual ~ReadError() = default;
    virtual std::string what() const { return message; }
 private:
    std::string message;
@@ -196,7 +196,7 @@ private:
 class PhysicalError : public Error {
 public:
    explicit PhysicalError(const std::string& message_) : message(message_) {}
-   virtual ~PhysicalError() {}
+   virtual ~PhysicalError() = default;
    virtual std::string what() const { return message; }
 private:
    std::string message;
@@ -205,7 +205,7 @@ private:
 class HimalayaError : public Error {
 public:
    explicit HimalayaError(const std::string& message_) : message(message_) {}
-   virtual ~HimalayaError() {}
+   virtual ~HimalayaError() = default;
    virtual std::string what() const { return message; }
 private:
    std::string message;

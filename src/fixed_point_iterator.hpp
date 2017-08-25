@@ -205,7 +205,7 @@ public:
    Fixed_point_iterator() = default;
    template <typename F>
    Fixed_point_iterator(F&&, std::size_t, const Convergence_tester&);
-   virtual ~Fixed_point_iterator() {}
+   virtual ~Fixed_point_iterator() = default;
 
    template <typename F>
    void set_function(F&& f) { function = std::forward<F>(f); }

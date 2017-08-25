@@ -36,7 +36,6 @@ public:
    Standard_model_effective_couplings(const Standard_model&,
                                    const softsusy::QedQcd&,
                                    const Physical_input&);
-   ~Standard_model_effective_couplings();
 
    void do_run_couplings(bool flag) { rg_improve = flag; }
    bool do_run_couplings() const { return rg_improve; }

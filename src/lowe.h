@@ -89,7 +89,7 @@ public:
   QedQcd(QedQcd&&) = default;
   QedQcd& operator=(const QedQcd&) = default;
   QedQcd& operator=(QedQcd&&) = default;
-  virtual ~QedQcd() {}
+  virtual ~QedQcd() = default;
 
   // Beta_function interface
   virtual Eigen::ArrayXd get() const override;

@@ -34,7 +34,7 @@ class Lattice;
 class Lattice_constraint {
 public:
     // Lattice_constraint() {}
-    virtual ~Lattice_constraint() {}
+    virtual ~Lattice_constraint() = default;
     virtual void init(RGFlow<Lattice> *flow) { f = flow; activate(); }
     virtual void deactivate();
     virtual void alloc_rows() = 0;

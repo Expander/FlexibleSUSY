@@ -90,7 +90,7 @@ public:
     class MemoryError : public Error {
     public:
 	MemoryError(const std::string& message_) : message(message_) {}
-	virtual ~MemoryError() {}
+	virtual ~MemoryError() = default;
 	virtual std::string what() const { return message; }
     private:
 	std::string message;
@@ -99,7 +99,7 @@ public:
     class SetupError : public Error {
     public:
 	SetupError(const std::string& message_) : message(message_) {}
-	virtual ~SetupError() {}
+	virtual ~SetupError() = default;
 	virtual std::string what() const { return message; }
     private:
 	std::string message;
@@ -109,7 +109,7 @@ public:
     public:
 	NonInvertibleMatrixError(const std::string& message_) :
 	    message(message_) {}
-	virtual ~NonInvertibleMatrixError() {}
+	virtual ~NonInvertibleMatrixError() = default;
 	virtual std::string what() const { return message; }
     private:
 	std::string message;
@@ -118,7 +118,7 @@ public:
     class DivergenceError : public Error {
     public:
 	DivergenceError(const std::string& message_) : message(message_) {}
-	virtual ~DivergenceError() {}
+	virtual ~DivergenceError() = default;
 	virtual std::string what() const { return message; }
     private:
 	std::string message;
@@ -128,7 +128,7 @@ public:
     public:
 	NoConvergenceError(size_t number_of_iterations_)
 	    : number_of_iterations(number_of_iterations_) {}
-	virtual ~NoConvergenceError() {}
+	virtual ~NoConvergenceError() = default;
 	virtual std::string what() const {
 	    std::stringstream message;
 	    message << "RGFlow<Lattice>::NoConvergenceError: no convergence"
@@ -145,7 +145,7 @@ public:
 	    : model(model_)
 	    , scale(scale_)
 	    {}
-	virtual ~NonPerturbativeRunningError() {}
+	virtual ~NonPerturbativeRunningError() = default;
 	virtual std::string what() const;
     private:
 	Lattice_model* model;
