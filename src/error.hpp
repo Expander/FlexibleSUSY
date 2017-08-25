@@ -29,10 +29,10 @@ public:
    virtual std::string what() const = 0;
 };
 
-class FatalError {
+class FatalError : public Error {
 public:
    virtual ~FatalError() = default;
-   virtual std::string what() const { return "Fatal error."; };
+   virtual std::string what() const override { return "Fatal error."; };
 };
 
 /**
@@ -43,7 +43,7 @@ class SetupError : public Error {
 public:
    explicit SetupError(const std::string& message_) : message(message_) {}
    virtual ~SetupError() = default;
-   virtual std::string what() const { return message; }
+   virtual std::string what() const override { return message; }
 private:
    std::string message;
 };
@@ -54,10 +54,10 @@ private:
  */
 class NoConvergenceError : public Error {
 public:
-   explicit NoConvergenceError(int number_of_iterations_, const std::string msg = "")
+   explicit NoConvergenceError(int number_of_iterations_, const std::string& msg = "")
       : message(msg), number_of_iterations(number_of_iterations_) {}
    virtual ~NoConvergenceError() = default;
-   virtual std::string what() const {
+   virtual std::string what() const override {
       if (!message.empty())
          return message;
 
@@ -82,7 +82,7 @@ public:
       , sin_theta(sin_theta_)
       {}
    virtual ~NoSinThetaWConvergenceError() = default;
-   virtual std::string what() const {
+   virtual std::string what() const override {
       return "NoSinThetaWConvergenceError: no convergence after "
          + std::to_string(number_of_iterations) + " iterations (sin(theta)="
          + std::to_string(sin_theta) + ")";
@@ -116,7 +116,7 @@ public:
       , parameter_index(parameter_index_)
       {}
    virtual ~NonPerturbativeRunningError() = default;
-   virtual std::string what() const {
+   virtual std::string what() const override {
       if (parameter_index == -1)
          return "NonPerturbativeRunningError: scale Q = " + std::to_string(value);
 
@@ -143,7 +143,7 @@ public:
       : msg(msg_)
       {}
    virtual ~NonPerturbativeRunningQedQcdError() = default;
-   virtual std::string what() const { return msg; }
+   virtual std::string what() const override { return msg; }
 private:
    std::string msg;
 };
@@ -158,7 +158,7 @@ public:
       : msg(msg_)
       {}
    virtual ~OutOfMemoryError() = default;
-   virtual std::string what() const {
+   virtual std::string what() const override {
       return std::string("OutOfMemoryError: Not enought memory: ") + msg;
    }
 private:
@@ -175,7 +175,7 @@ public:
       : msg(msg_)
       {}
    virtual ~OutOfBoundsError() = default;
-   virtual std::string what() const { return msg; }
+   virtual std::string what() const override { return msg; }
 private:
    std::string msg;
 };
@@ -184,7 +184,7 @@ class ReadError : public Error {
 public:
    explicit ReadError(const std::string& message_) : message(message_) {}
    virtual ~ReadError() = default;
-   virtual std::string what() const { return message; }
+   virtual std::string what() const override { return message; }
 private:
    std::string message;
 };
@@ -197,7 +197,7 @@ class PhysicalError : public Error {
 public:
    explicit PhysicalError(const std::string& message_) : message(message_) {}
    virtual ~PhysicalError() = default;
-   virtual std::string what() const { return message; }
+   virtual std::string what() const override { return message; }
 private:
    std::string message;
 };
@@ -206,7 +206,7 @@ class HimalayaError : public Error {
 public:
    explicit HimalayaError(const std::string& message_) : message(message_) {}
    virtual ~HimalayaError() = default;
-   virtual std::string what() const { return message; }
+   virtual std::string what() const override { return message; }
 private:
    std::string message;
 };
