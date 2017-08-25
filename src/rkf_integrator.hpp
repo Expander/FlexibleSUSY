@@ -46,7 +46,7 @@ public:
 
    /// Integrates the system over an interval
    void operator()(double start, double end, Eigen::ArrayXd& pars,
-                   Derivs derivs, double tol) const;
+                   const Derivs& derivs, double tol) const;
 private:
    class DisabledOdeintError : Error {
    public:

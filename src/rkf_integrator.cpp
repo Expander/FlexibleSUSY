@@ -71,7 +71,7 @@ namespace runge_kutta {
  * @param[in] tol desired accuracy to use in integration step
  */
 void RKF_integrator::operator()(double start, double end,
-                                Eigen::ArrayXd& pars, Derivs derivs,
+                                Eigen::ArrayXd& pars, const Derivs& derivs,
                                 double tol) const
 {
    using state_type = Eigen::ArrayXd;
@@ -131,7 +131,7 @@ namespace runge_kutta {
  * @param[in] derivs function calculating the derivatives
  * @param[in] tol desired accuracy to use in integration step
  */
-void RKF_integrator::operator()(double, double, Eigen::ArrayXd&, Derivs,
+void RKF_integrator::operator()(double, double, Eigen::ArrayXd&, const Derivs&,
                                 double) const
 {
    throw DisabledOdeintError("Cannot call operator(), because odeint support is disabled.");
