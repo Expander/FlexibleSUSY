@@ -1140,8 +1140,7 @@ double deltaxyz(double x, double y, double z) {
 double phixyz(double x, double y, double z)
 {
    using gm2calc::dilog;
-   double u = x/z, v = y/z, m = x/y;
-   std::complex<double> xminus_c, xplus_c, lambda_c;
+   const double u = x/z, v = y/z, m = x/y;
    double fac = 0., my_x = 0., my_y = 0., my_z = 0.;
    const double devu = std::fabs(u-1), devv = std::fabs(v-1), devm = std::fabs(m-1);
    const double eps = 0.000001;
@@ -1196,11 +1195,11 @@ double phixyz(double x, double y, double z)
          ERROR("unhandled case in phixyz function!");
       }
 
-      u = my_x/my_z;
-      v = my_y/my_z;
-      lambda_c = complex_sqrt(sqr(1-u-v)-4*u*v);
-      xminus_c = 0.5*(1-(u-v)-lambda_c);
-      xplus_c  = 0.5*(1+(u-v)-lambda_c);
+      const auto u = my_x/my_z;
+      const auto v = my_y/my_z;
+      const auto lambda_c = complex_sqrt(sqr(1-u-v)-4*u*v);
+      const auto xminus_c = 0.5*(1-(u-v)-lambda_c);
+      const auto xplus_c  = 0.5*(1+(u-v)-lambda_c);
 
       return std::real(fac * 1. / lambda_c *
                        (2. * std::log(xplus_c) * std::log(xminus_c) -
