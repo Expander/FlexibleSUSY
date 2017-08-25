@@ -35,6 +35,9 @@ std::complex<double> dilog(const std::complex<double>&);
 /// complex dilogarithm
 std::complex<long double> dilog(const std::complex<long double>&);
 
+/// Clausen function Cl_2(x)
+double clausen_2(double);
+
 } // namespace gm2calc
 
 #endif
