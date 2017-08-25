@@ -1136,6 +1136,7 @@ double delta_xyz(double x, double y, double z)
 }
 
 namespace {
+   /// lambda^2(u,v)
    double lambda_2(double u, double v)
    {
       return sqr(1 - u - v) - 4*u*v;
