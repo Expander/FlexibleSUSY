@@ -22,6 +22,8 @@
 #include <boost/test/unit_test.hpp>
 #include "threshold_loop_functions.hpp"
 #include "numerics.h"
+#include "dilog.hpp"
+#include "logger.hpp"
 
 #include <cmath>
 
@@ -925,4 +927,281 @@ BOOST_AUTO_TEST_CASE(test_f8)
    BOOST_CHECK(!std::isnan(f8(1,0)));
    BOOST_CHECK(!std::isnan(f8(1,1)));
    BOOST_CHECK(!std::isnan(f8(2,2)));
+}
+
+namespace {
+
+   std::complex<double> complex_sqrt(double x) {
+      return std::sqrt(std::complex<double>(x, 0));
+   }
+
+/// \f$phi_{xyz}(x,y,z)\f$ function (Author: Emanuele Bagnaschi)
+double phixyz(double x, double y, double z)
+{
+   using gm2calc::dilog;
+   const double u = x/z, v = y/z, m = x/y;
+   double fac = 0., my_x = 0., my_y = 0., my_z = 0.;
+   const double devu = std::fabs(u-1), devv = std::fabs(v-1), devm = std::fabs(m-1);
+   const double eps = 0.000001;
+   const double PI = M_PI;
+
+   // The defintion that we implement is valid when x/z < 1 and y/z < 1.
+   // We have to reshuffle the arguments to obtain the other branches
+   // u > 1 && v < 1 --> x > z && z > y -> y < z < x -> we want x as
+   // the third argument x * phi(x,y,z) = z*phi(z,y,x) -> phi(z,y,x) =
+   // x/z*phi(x,y,z)
+
+   if (devu >= eps && devv >= eps && devm >= eps) {
+      if (u > 1 && v < 1) {
+         fac = z/x;
+         my_x = z;
+         my_y = y;
+         my_z = x;
+      }
+      // u > 1 && v > 1 --> x > z && y > z -> z < y/x -> we want
+      // max(x,y) as the third argument
+      else if (u > 1 && v > 1) {
+         // x as a third argument
+         if (x > y) {
+            fac = z/x;
+            my_x = z;
+            my_y = y;
+            my_z = x;
+         }
+         // y as a third argument
+         else {
+            fac = z/y;
+            my_x = z;
+            my_y = x;
+            my_z = y;
+         }
+      }
+      // u < 1 && v > 1 --> x < z < y --> we want y as the third
+      // argument
+      else if (u < 1 && v > 1) {
+         fac = z/y;
+         my_x = z;
+         my_y = x;
+         my_z = y;
+      }
+      else if (u < 1 && v < 1) {
+         fac = 1.;
+         my_x = x;
+         my_y = y;
+         my_z = z;
+      }
+      else {
+         ERROR("unhandled case in phixyz function!");
+      }
+
+      const auto u = my_x/my_z;
+      const auto v = my_y/my_z;
+      const auto lambda_c = complex_sqrt(sqr(1-u-v)-4*u*v);
+      const auto xminus_c = 0.5*(1-(u-v)-lambda_c);
+      const auto xplus_c  = 0.5*(1+(u-v)-lambda_c);
+
+      return std::real(fac * 1. / lambda_c *
+                       (2. * std::log(xplus_c) * std::log(xminus_c) -
+                        std::log(u) * std::log(v) -
+                        2. * (dilog(xplus_c) + dilog(xminus_c)) +
+                        sqr(PI) / 3.));
+   }
+
+   // u and v is equal to one -> all arguments are the same
+   if (devu < eps && devv < eps)
+      return 2.343907238689459; // from Mathematica
+
+   // u = 1
+   if (devu < eps) {
+      // if v > 1 then y> z (= x) we have again to reshuffle the
+      // argument: here we have phi(z,y,z) with z < y and we want
+      // phi(z,z,y)
+      if (v > 1) {
+         fac = z/y;
+         my_x = z;
+         // my_y = x; // should be equal to
+         my_z = y;
+
+         return std::real(
+             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+             (sqr(PI) / 3. +
+              2. * sqr(std::log(0.5 -
+                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+              sqr(std::log(my_x / my_z)) -
+              4. * dilog(0.5 *
+                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                            4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+      // phi(z,y,z) with z > y, just need to reshufle to phi(y,z,z),
+      // i.e. do nothing since they are the same
+      else {
+        fac = 1.;
+        my_x = y;
+        // my_y = x;
+        my_z = z; // should be equal to my_y
+
+        return std::real(
+            fac * 1. /
+            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+            (sqr(PI) +
+             6. * std::log((my_x -
+                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                sqr(my_z))) /
+                           (2. * my_z)) *
+                 std::log(1. - my_x / (2. * my_z) -
+                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                             sqr(my_z))) -
+             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                 4. * my_x / my_z) -
+                               my_x / my_z)) -
+             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                             4. * my_x / my_z) +
+                               my_x / my_z))));
+      }
+   }
+
+   // v = 1
+   if (devv < eps) {
+      // if u > 1 we have again to reshuffle the arguments: here we
+      // start with phi(x,z,z) with z < x and we want phi(z,z,x)
+      if (u > 1) {
+         fac = z/x;
+         my_x = z;
+         // my_y = y;
+         my_z = x;
+
+         return std::real(
+             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+             (sqr(PI) / 3. +
+              2. * sqr(std::log(0.5 -
+                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+              sqr(std::log(my_x / my_z)) -
+              4. * dilog(0.5 *
+                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                            4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+      // phi(x,z,z) with z > x, ok as it is
+      else {
+        fac = 1.;
+        my_x = x;
+        // my_y = y;
+        my_z = z; // should be equal to y
+
+        return std::real(
+            fac * 1. /
+            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+            (sqr(PI) +
+             6. * std::log((my_x -
+                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                sqr(my_z))) /
+                           (2. * my_z)) *
+                 std::log(1. - my_x / (2. * my_z) -
+                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                             sqr(my_z))) -
+             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                 4. * my_x / my_z) -
+                               my_x / my_z)) -
+             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                             4. * my_x / my_z) +
+                               my_x / my_z))));
+      }
+   }
+
+   if (devm < eps) {
+      // if (v = ) u > 1, we are in the case phi(x,x,z) with x > z. We
+      // have to reshufle to phi(z,x,x)
+      if (u > 1) {
+         fac = z/x;
+         my_x = z;
+         // my_y = y;
+         my_z = x;
+
+         return std::real(
+             fac * 1. /
+             (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
+             (sqr(PI) +
+              6. * std::log((my_x -
+                             my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
+                                                 sqr(my_z))) /
+                            (2. * my_z)) *
+                  std::log(1. - my_x / (2. * my_z) -
+                           0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
+                                              sqr(my_z))) -
+              6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                                  4. * my_x / my_z) -
+                                my_x / my_z)) -
+              6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
+                                              4. * my_x / my_z) +
+                                my_x / my_z))));
+      }
+      // if (v = u) < 1 we can directly use phi(x,x,z)
+      else {
+        fac = 1.;
+        my_x = x;
+        // my_y = y;
+        my_z = z;
+
+        return std::real(
+            fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
+            (sqr(PI) / 3. +
+             2. * sqr(std::log(0.5 -
+                               0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
+             sqr(std::log(my_x / my_z)) -
+             4. * dilog(0.5 *
+                        (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
+                                           4. * sqr(my_x) / (sqr(my_z)))))));
+      }
+   }
+
+   FATAL("unhandled case in phixyz function!");
+}
+} // anonymous namespace
+
+struct XYZ {
+   XYZ(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
+   double x{}, y{}, z{};
+};
+
+BOOST_AUTO_TEST_CASE(test_phixyz)
+{
+   using namespace flexiblesusy::threshold_loop_functions;
+   double x = 0., y = 0., z = 0.;
+
+   const XYZ xyz[] = {
+      XYZ(1, 2, 3),
+      XYZ(2, 3, 1),
+      XYZ(3, 1, 2),
+      XYZ(2, 1, 3),
+      XYZ(1, 3, 2),
+      XYZ(3, 2, 1),
+
+      XYZ(1, 1, 2),
+      XYZ(1, 2, 1),
+      XYZ(2, 1, 1),
+
+      XYZ(1, 2, 2),
+      XYZ(2, 2, 1),
+      XYZ(2, 1, 2),
+
+      XYZ(1, 1, 1)
+   };
+
+   for (const auto s: xyz) {
+      const auto x = s.x, y = s.y, z = s.z;
+
+      BOOST_TEST_MESSAGE("x = " << x << ", y = " << y << ", z = " << z);
+
+      const double prec = 1e-15;
+
+      // test identities
+      BOOST_CHECK_CLOSE_FRACTION(phixyz(x,y,z)  , phixyz(y,x,z) , prec);
+      BOOST_CHECK_CLOSE_FRACTION(phi_xyz(x,y,z) , phi_xyz(y,x,z), prec);
+
+      // test identities
+      BOOST_CHECK_CLOSE_FRACTION(x*phixyz(x,y,z) , z*phixyz(z,y,x) , prec);
+      BOOST_CHECK_CLOSE_FRACTION(x*phi_xyz(x,y,z), z*phi_xyz(z,y,x), prec);
+
+      // compare implementations
+      BOOST_CHECK_CLOSE_FRACTION(phixyz(x,y,z), phi_xyz(x,y,z), prec);
+   }
 }
