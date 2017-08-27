@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["FlexibleSUSY`",
              {"SARAH`",
               "AnomalousDimension`",
@@ -38,7 +40,7 @@ FS`Version = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"ver
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{$flexiblesusyConfigDir,"git_commit"}]]];
 FS`Authors = {"P. Athron", "M. Bach", "D. Harries",
               "T. Kwasnitza", "J.-h. Park", "T. Steudtner",
-              "D. Stöckinger", "A. Voigt", "J. Ziebell"};
+              "D. St\[ODoubleDot]ckinger", "A. Voigt", "J. Ziebell"};
 FS`Contributors = {};
 FS`Years   = "2013-2017";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
@@ -1815,6 +1817,46 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
+           
+(* Write the CXXDiagrams c++ files *)
+WriteCXXDiagramClass[vertices_List,vertexRules_List,files_List] :=
+  Module[{fields, vertexData, vertexFunctions},
+    fields = CXXDiagrams`CreateFields[];
+    vertexData = CXXDiagrams`CreateVertexData[vertices,vertexRules];
+    vertexFunctions = CXXDiagrams`CreateVertexFunctions[vertices,vertexRules];
+
+    WriteOut`ReplaceInFiles[files,
+                            {"@CXXDiagrams_Fields@"          -> fields,
+                             "@CXXDiagrams_VertexData@"      -> vertexData,
+                             "@CXXDiagrams_VertexFunctions@" -> vertexFunctions,
+                             Sequence @@ GeneralReplacementRules[]
+                            }];
+ ]
+
+(* Write the EDM2 c++ files *)
+WriteEDM2Class[files_List] :=
+  Module[{edmFields,graphs,diagrams,vertices,nPointFunctions,
+          interfacePrototypes,interfaceDefinitions},
+    edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
+    graphs = EDM2`ContributingGraphs[];
+    diagrams = Transpose[{edmFields,
+              Flatten[Outer[EDM2`ContributingDiagramsForFieldAndGraph,edmFields,graphs,1],1]}];
+           
+    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams[[All,2]],1],1];
+    nPointFunctions = (Null[Null, #] &) /@ Flatten[CXXDiagrams`CouplingsForFields[#] & /@ vertices];
+    
+    {interfacePrototypes,interfaceDefinitions} = StringJoin @@@ 
+         (Riffle[#, "\n\n"] & /@ Transpose[EDM2`CreateInterfaceFunctionForField @@@ diagrams]);
+    
+    WriteOut`ReplaceInFiles[files,
+                            {"@EDM2_InterfacePrototypes@"       -> interfacePrototypes,
+                             "@EDM2_InterfaceDefinitions@"      -> interfaceDefinitions,
+                             Sequence @@ GeneralReplacementRules[]
+                            }];
+    
+    nPointFunctions
+  ]
 
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
@@ -2892,6 +2934,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
+            edm2Vertices,edm2NPointFunctions,cxxVertexRules,
             gmm2Vertices = {}, edmFields,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
@@ -3747,6 +3790,33 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
+                      
+                      
+           Print["Setting up CXXDiagrams..."];
+           CXXDiagrams`Initialize[];
+           
+           Print["Creating EDM2 class..."];
+           {edm2Vertices,edm2NPointFunctions} =
+             WriteEDM2Class[{{FileNameJoin[{$flexiblesusyTemplateDir, "edm2.hpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.hpp"}]},
+                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm2.cpp.in"}],
+                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.cpp"}]}}];
+           
+           cxxVertexRules = Vertices`VertexRules[SortCps @ edm2NPointFunctions, Lat$massMatrices];
+           
+           WriteCXXDiagramClass[edm2Vertices,cxxVertexRules,
+             {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
+               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]},
+              {FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.cpp.in"}],
+               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.cpp"}]}}];
+           
+           
+              
+           
+
+
+
+
 
            Print["Creating class GMuonMinus2 ..."];
            WriteGMuonMinus2Class[vertexRules,
