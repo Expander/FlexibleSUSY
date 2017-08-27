@@ -1169,7 +1169,12 @@ namespace {
                 + clausen_2(2*acos((-1 + u + v)/(2.*sqrt(u*v)))))/lambda;
    }
 
-   /// Phi(u,v) with u = x/z, v = y/z
+   /**
+    * Phi(u,v) with u = x/z, v = y/z.
+    *
+    * The following identities hold:
+    * Phi(u,v) = Phi(v,u) = Phi(1/u,v/u)/u = Phi(1/v,u/v)/v
+    */
    double phi_uv(double u, double v)
    {
       const auto lambda = lambda_2(u,v);
