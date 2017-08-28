@@ -39,6 +39,8 @@ using namespace flexiblesusy;
 using namespace cxx_diagrams;
 
 namespace {
+static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
+
 /**
  * @class EDMVertexCorrectionSF
  * @brief A template that calculate contributions to the EDM
@@ -170,7 +172,7 @@ double EDMVertexCorrectionFS<
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterCharge = context.charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -217,7 +219,7 @@ double EDMVertexCorrectionSF<
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterCharge = context.charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
