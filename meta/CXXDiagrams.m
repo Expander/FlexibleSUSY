@@ -45,25 +45,20 @@ CreateFields[] :=
             TextFormatting`IndentText["static constexpr unsigned numberOfGenerations = " <>
                                          ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
                                       "static constexpr unsigned numberOfFieldIndices = " <>
-                                         ToString @ NumberOfFieldIndices[#] <> ";\n"] <>
+                                         ToString @ NumberOfFieldIndices[#] <> ";\n"
+                                      "using lorentz_conjugate = " <>
+                                         CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
             "};\n" &) /@ fields, "\n"] <> "\n\n" <>
-              
-       "// Special field families\n" <>
-       "using Photon = " <> CXXNameOfField @ GetPhoton[] <> ";\n\n" <>
        
-       "// Fields that contract with themselves to form Lorentz scalars.\n" <>
+       "// Special fields" <>
+       "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
+       
+       "// Fields that are their own Lorentz conjugates.\n" <>
        StringJoin @ Riffle[
          ("template<> struct " <> LorentzConjugateOperation[#] <> "<" <> CXXNameOfField[#] <> ">" <>
             " { using type = " <> CXXNameOfField[#] <> "; };"
-            &) /@ Select[fields, (# == LorentzContractionPartner[#] &)],
-          "\n"] <> "\n\n" <>
-       
-       "// Declare a type that can hold the field indices for any given field\n" <>
-       "template<class Field> struct field_indices\n" <>
-       "{\n" <>
-          TextFormatting`IndentText[
-            "using type = std::array<unsigned, Field::numberOfFieldIndices>;\n"] <>
-       "};\n"
+            &) /@ Select[fields, (# == LorentzConjugate[#] &)],
+          "\n"] <> "\n"
   ]
 
 (* adjacencyMatrix must be undirected (i.e symmetric) *)
@@ -107,7 +102,7 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 
 VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 
-CreateVertexData[vertices_List,vertexRules_List] := 
+CreateVertexData[fields_List,vertexRules_List] := 
   Module[{dataClassName,indexBounds,parsedVertex,fieldIndexStartF,fieldIndexStart},
     parsedVertex = ParseVertex[fields, vertexRules];
     indexBounds = IndexBounds[parsedVertex];
@@ -118,7 +113,7 @@ CreateVertexData[vertices_List,vertexRules_List] :=
            
     fieldIndexStart = Table[fieldIndexStartF[i], {i, 1, Length[fields] + 1}];
     
-    dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
+    dataClassName = "VertexData<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
     
     "template<> struct " <> dataClassName <> "\n" <>
     "{\n" <>
@@ -139,19 +134,19 @@ CreateVertexData[vertices_List,vertexRules_List] :=
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
  The returned value is a list {prototypes, definitions}. *)
-CreateVertexFunctions[vertices_List,vertexRules_List] :=
-  StringJoin @\[NonBreakingSpace]Riffle[CreateVertexFunction[#, vertexRules] & /@ vertices,
+CreateVertices[vertices_List,vertexRules_List] :=
+  StringJoin @\[NonBreakingSpace]Riffle[CreateVertex[#, vertexRules] & /@ DeleteDuplicates[vertices],
                       "\n\n"]
 
 (* Creates the actual c++ code for a vertex with given fields.
  You should never need to change this code! *)
-CreateVertexFunction[fields_List, vertexRules_List] :=
+CreateVertex[fields_List, vertexRules_List] :=
   Module[{parsedVertex, functionClassName},
          parsedVertex = ParseVertex[fields, vertexRules];
-         functionClassName = "VertexFunction<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
+         functionClassName = "Vertex<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
          
          "template<> " <> functionClassName <> "::vertex_type\n" <>
-         functionClassName <> "::vertex(const indices_type &indices, const EvaluationContext &context)\n" <>
+         functionClassName <> "::evaluate(const indices_type &indices, const EvaluationContext &context)\n" <>
          "{\n" <>
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"
@@ -317,6 +312,23 @@ FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
            ];
 
 NPointFunctions[vertices_List] :=
-  Flatten[(Null[Null, #] &) /@ ((CouplingsForFields[#] &) /@ vertices)]
+  Module[{indexedVertices = IndexFields /@ vertices,
+          nPointFunctions},
+    nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForFields[#] &) /@ indexedVertices)];
+    nPointFunctions = Cases[nPointFunctions,Except[Null[Null,{}]]]; (* Remove unknown vertices *)
+    DeleteDuplicates[nPointFunctions]
+  ]
+  
+CreateMassFunctions[] :=
+  StringJoin @ Riffle[
+    Module[{fieldInfo = FieldInfo[#], numberOfIndices},
+           numberOfIndices = Length @ fieldInfo[[5]];
+                                 
+           "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
+           ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
+           "> &indices ) const\n" <>
+           "{ return model.get_M" <> CXXNameOfField[#] <>
+           If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
+          ] & /@ TreeMasses`GetParticles[], "\n\n"]
 
 EndPackage[];

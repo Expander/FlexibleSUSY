@@ -140,7 +140,7 @@ double EDMVertexCorrectionFS<
 {
    double res = 0.0;
 
-   using FermionVertex = VertexFunction<
+   using FermionVertex = Vertex<
       typename anti<EDMField>::type,
       PhotonEmitter,
       ExchangeField
@@ -156,7 +156,7 @@ double EDMVertexCorrectionFS<
 
       auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
-      auto vertex = FermionVertex::vertex(*indexIt, context);
+      auto vertex = FermionVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
@@ -187,7 +187,7 @@ double EDMVertexCorrectionSF<
 {
    double res = 0.0;
 
-   using FermionVertex = VertexFunction<
+   using FermionVertex = Vertex<
       typename anti<EDMField>::type,
       PhotonEmitter,
       ExchangeField
@@ -203,7 +203,7 @@ double EDMVertexCorrectionSF<
 
       auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
-      auto vertex = FermionVertex::vertex(*indexIt, context);
+      auto vertex = FermionVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );

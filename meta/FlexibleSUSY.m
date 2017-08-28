@@ -24,6 +24,8 @@ BeginPackage["FlexibleSUSY`",
               "ThreeLoopSM`",
               "ThreeLoopMSSM`",
               "Observables`",
+              "CXXDiagrams`",
+              "EDM2`",
               "GMuonMinus2`",
               "EDM`",
               "EffectiveCouplings`",
@@ -1820,34 +1822,38 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            
 (* Write the CXXDiagrams c++ files *)
 WriteCXXDiagramClass[vertices_List,vertexRules_List,files_List] :=
-  Module[{fields, vertexData, vertexFunctions},
+  Module[{fields, vertexData, cxxVertices, massFunctions},
     fields = CXXDiagrams`CreateFields[];
-    vertexData = CXXDiagrams`CreateVertexData[vertices,vertexRules];
-    vertexFunctions = CXXDiagrams`CreateVertexFunctions[vertices,vertexRules];
-
+    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] & /@ vertices,
+                                     "\n\n"];
+    cxxVertices = CXXDiagrams`CreateVertices[vertices,vertexRules];
+    massFunctions = CXXDiagrams`CreateMassFunctions[];
+    
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
                              "@CXXDiagrams_VertexData@"      -> vertexData,
-                             "@CXXDiagrams_VertexFunctions@" -> vertexFunctions,
+                             "@CXXDiagrams_Vertices@"        -> cxxVertices,
+                             "@CXXDiagrams_MassFunctions@"   -> massFunctions,
                              Sequence @@ GeneralReplacementRules[]
                             }];
  ]
 
 (* Write the EDM2 c++ files *)
-WriteEDM2Class[files_List] :=
-  Module[{edmFields,graphs,diagrams,vertices,nPointFunctions,
+WriteEDM2Class[edmFields_List,files_List] :=
+  Module[{graphs,diagrams,vertices,nPointFunctions,
           interfacePrototypes,interfaceDefinitions},
-    edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                                                FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
     graphs = EDM2`ContributingGraphs[];
-    diagrams = Transpose[{edmFields,
-              Flatten[Outer[EDM2`ContributingDiagramsForFieldAndGraph,edmFields,graphs,1],1]}];
-           
-    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams[[All,2]],1],1];
-    nPointFunctions = (Null[Null, #] &) /@ Flatten[CXXDiagrams`CouplingsForFields[#] & /@ vertices];
+    diagrams = Outer[EDM2`ContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
     
-    {interfacePrototypes,interfaceDefinitions} = StringJoin @@@ 
-         (Riffle[#, "\n\n"] & /@ Transpose[EDM2`CreateInterfaceFunctionForField @@@ diagrams]);
+    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
+    nPointFunctions = CXXDiagrams`NPointFunctions[vertices];
+    
+    {interfacePrototypes,interfaceDefinitions} = 
+      If[diagrams === {},
+         {"",""},
+         StringJoin @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[EDM2`CreateInterfaceFunctionForField @@@ 
+            Transpose[{edmFields,Transpose[{graphs,#}] & /@ diagrams}]])];
     
     WriteOut`ReplaceInFiles[files,
                             {"@EDM2_InterfacePrototypes@"       -> interfacePrototypes,
@@ -1855,7 +1861,7 @@ WriteEDM2Class[files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
     
-    nPointFunctions
+    {vertices,nPointFunctions}
   ]
 
 (* Write the GMM2 c++ files *)
@@ -3796,8 +3802,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            CXXDiagrams`Initialize[];
            
            Print["Creating EDM2 class..."];
+           edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            {edm2Vertices,edm2NPointFunctions} =
-             WriteEDM2Class[{{FileNameJoin[{$flexiblesusyTemplateDir, "edm2.hpp.in"}],
+             WriteEDM2Class[edmFields,
+                            {{FileNameJoin[{$flexiblesusyTemplateDir, "edm2.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "edm2.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.cpp"}]}}];
@@ -3806,9 +3815,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
            WriteCXXDiagramClass[edm2Vertices,cxxVertexRules,
              {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
-               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]},
-              {FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.cpp.in"}],
-               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.cpp"}]}}];
+               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
            
            
               
@@ -3826,8 +3833,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
 
            Print["Creating class EDM"];
-           edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                                                FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            EDM`EDMInitialize[];
            EDM`EDMSetEDMFields[edmFields];
 
