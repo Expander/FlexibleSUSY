@@ -41,16 +41,16 @@ CreateFields[] :=
        fields = TreeMasses`GetParticles[];
        
        StringJoin @ Riffle[
-         ("struct " <> CXXNameOfField[#] <> ": public Field {\n" <>
+         ("struct " <> CXXNameOfField[#] <> "{\n" <>
             TextFormatting`IndentText["static constexpr unsigned numberOfGenerations = " <>
                                          ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
                                       "static constexpr unsigned numberOfFieldIndices = " <>
-                                         ToString @ NumberOfFieldIndices[#] <> ";\n"
+                                         ToString @ NumberOfFieldIndices[#] <> ";\n" <>
                                       "using lorentz_conjugate = " <>
                                          CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
             "};\n" &) /@ fields, "\n"] <> "\n\n" <>
        
-       "// Special fields" <>
+       "// Special fields\n" <>
        "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
        
        "// Fields that are their own Lorentz conjugates.\n" <>
@@ -320,15 +320,18 @@ NPointFunctions[vertices_List] :=
   ]
   
 CreateMassFunctions[] :=
-  StringJoin @ Riffle[
-    Module[{fieldInfo = FieldInfo[#], numberOfIndices},
-           numberOfIndices = Length @ fieldInfo[[5]];
-                                 
-           "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
-           ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
-           "> &indices ) const\n" <>
-           "{ return model.get_M" <> CXXNameOfField[#] <>
-           If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
-          ] & /@ TreeMasses`GetParticles[], "\n\n"]
+  Module[{massiveFields},
+    massiveFields = Select[TreeMasses`GetParticles[],!TreeMasses`IsGhost[#] &];
+    StringJoin @ Riffle[
+      Module[{fieldInfo = FieldInfo[#], numberOfIndices},
+             numberOfIndices = Length @ fieldInfo[[5]];
+                                   
+             "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
+             ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
+             "> &indices ) const\n" <>
+             "{ return model.get_M" <> CXXNameOfField[#] <>
+             If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
+            ] & /@ massiveFields, "\n\n"]
+        ]
 
 EndPackage[];

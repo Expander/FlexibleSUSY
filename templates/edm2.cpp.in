@@ -36,6 +36,7 @@
 #define PHASE(p) context.model.get_##p()
 
 using namespace flexiblesusy;
+using namespace cxx_diagrams;
 
 namespace {
 /**
@@ -53,7 +54,12 @@ namespace {
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class ...Args> struct EDMVertexCorrectionSF;
+template<class EDMField, class PhotonEmitter, class ExchangeParticle>
+struct EDMVertexCorrectionSF
+{
+  double value(const typename field_indices<EDMField>::type &indices,
+               EvaluationContext &context);
+};
 
 /**
 * @class EDMVertexCorrectionFS
@@ -70,7 +76,12 @@ template<class ...Args> struct EDMVertexCorrectionSF;
 * dipole moment of a one loop diagram with fields given by
 * \a Args.
 */
-template<class ...Args> struct EDMVertexCorrectionFS;
+template<class EDMField, class PhotonEmitter, class ExchangeParticle>
+struct EDMVertexCorrectionFS
+{
+  double value(const typename field_indices<EDMField>::type &indices,
+             EvaluationContext &context);
+};
 }
 
 @EDM2_InterfaceDefinitions@
@@ -131,8 +142,6 @@ double OneLoopFunctionB(double r)
    return 1.0 / (2.0 * d * d) * (1.0 + r - 2.0 * r * std::log(r) / d);
 }
 
-@EDM2_Definitions@
-
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionFS<
    EDMField, PhotonEmitter, ExchangeField
@@ -141,7 +150,7 @@ double EDMVertexCorrectionFS<
    double res = 0.0;
 
    using FermionVertex = Vertex<
-      typename anti<EDMField>::type,
+      typename EDMField::lorentz_conjugate,
       PhotonEmitter,
       ExchangeField
    >;
@@ -188,7 +197,7 @@ double EDMVertexCorrectionSF<
    double res = 0.0;
 
    using FermionVertex = Vertex<
-      typename anti<EDMField>::type,
+      typename EDMField::lorentz_conjugate,
       PhotonEmitter,
       ExchangeField
    >;
