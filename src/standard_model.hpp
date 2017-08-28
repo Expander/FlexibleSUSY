@@ -494,7 +494,7 @@ public:
    Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
 
    /// calculates Higgs 2-loop self-energy
-   double self_energy_hh_2loop() const;
+   double self_energy_hh_2loop(double p) const;
    /// calculates Higgs 3-loop self-energy
    double self_energy_hh_3loop() const;
 

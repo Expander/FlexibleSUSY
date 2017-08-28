@@ -171,7 +171,7 @@ Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_Str
     "double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     If[FlexibleSUSY`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
        "if (pole_mass_loop_order > 1)\n" <>
-       IndentText["self_energy += self_energy_" <> particleName <> "_2loop();\n"], ""] <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_2loop(p);\n"], ""] <>
     If[FlexibleSUSY`UseHiggs3LoopSM === True && particle === SARAH`HiggsBoson,
        "if (pole_mass_loop_order > 2)\n" <>
        IndentText["self_energy += self_energy_" <> particleName <> "_3loop();\n"], ""] <>
