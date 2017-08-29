@@ -34,7 +34,7 @@ LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    FSRestrictParameter[\[Lambda], {0, 1}  , FSFlagProblem[FSNonPerturbativeParameter[\[Lambda]]], 0.5],
-   FSRestrictParameter[v        , {0, 100}, FSFlagProblem[FSNonPerturbativeParameter[v]]],
+   FSRestrictParameter[v        , {0, 400}, FSFlagProblem[FSNonPerturbativeParameter[v]]],
    FSRestrictParameter[v        , {0, 100}, FSNoProblem, v / 2],
    FSRestrictParameter[LambdaIN , {-1, 1} , FSFlagProblem[FSInvalidInputParameter[LambdaIN]]],
    {v, 2 MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
