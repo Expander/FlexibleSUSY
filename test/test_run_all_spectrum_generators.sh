@@ -99,6 +99,8 @@ SMEFTHiggs,_DEFAULT_,0
 SMSSM,_DEFAULT_,0
 SplitMSSM,_DEFAULT_,0
 SSM,_DEFAULT_,0
+SMThrow,${DEFAULT_SM_INPUT},0
+SMThrow,${HOMEDIR}/model_files/SMThrow/LesHouches.in.SMThrow_large_lambda,1
 HSSUSY,_DEFAULT_,0
 HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msq_msu_m3_msusy_degenerate.in.spc,0
 HSSUSY,${BASEDIR}/test_HSSUSY_SUSYHD_msq_msu_m3_degenerate.in.spc,0

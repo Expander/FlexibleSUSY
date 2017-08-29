@@ -247,6 +247,9 @@ inline constexpr int Delta(int i, int j) noexcept
    return i == j;
 }
 
+#define FSFlagProblem(p) [&](){ (p); return 0.; }()
+#define FSFlagWarning(p) [&](){ (p); return 0.; }()
+
 template <typename T>
 constexpr T If(bool c, T a, T b) noexcept { return c ? a : b; }
 

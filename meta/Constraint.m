@@ -22,7 +22,7 @@ CheckPerturbativityForParameters::usage="";
 
 GetSMMatchingScale::usage="returns SM matching scale from low-energy data set";
 
-SetTemporarily::usage="set temporary variables";
+InitialApplyConstraint::usage="apply constaints before calculating the mass spectrum";
 
 Begin["`Private`"];
 
@@ -172,6 +172,26 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelPr
 ApplyConstraint[FlexibleSUSY`FSSolveEWSBFor[___], modelPrefix_String] :=
     modelPrefix <> "solve_ewsb();\n";
 
+ExpandRestrictParameter[FlexibleSUSY`FSRestrictParameter[p_, interval_, FlexibleSUSY`FSNoProblem, expr___]] :=
+    ExpandRestrictParameter[FlexibleSUSY`FSRestrictParameter[p, interval, 0, expr]];
+
+ExpandRestrictParameter[FlexibleSUSY`FSRestrictParameter[p_, interval_, problem_]] :=
+    ExpandRestrictParameter[FlexibleSUSY`FSRestrictParameter[p, interval, problem, p]];
+
+ExpandRestrictParameter[FlexibleSUSY`FSRestrictParameter[p_, {istart_, iend_}, problem_, expr_]] :=
+    {p,
+     FlexibleSUSY`WHICH[
+         p < istart, expr + problem,
+         p > iend  , expr + problem,
+         True      , p
+     ]
+    };
+
+ExpandRestrictParameter[FlexibleSUSY`FSInitialSetting[p_, expr_]] := {p, expr};
+
+ApplyConstraint[patt:(FlexibleSUSY`FSRestrictParameter | FlexibleSUSY`FSInitialSetting)[__], modelPrefix_String] :=
+    ApplyConstraint[ExpandRestrictParameter[patt], modelPrefix];
+
 ApplyConstraint[Null, _] :=
     Block[{},
           Print["Error: Null is not a valid constraint setting!"];
@@ -192,11 +212,15 @@ ApplyConstraints[settings_List, modelPrefix_String:"MODEL->"] :=
                FlexibleSUSY`FSMinimize[__] | \
                FlexibleSUSY`FSFindRoot[__] | \
                FlexibleSUSY`FSSolveEWSBFor[__] | \
-               {FlexibleSUSY`Temporary[_], _}
+               {FlexibleSUSY`Temporary[_], _} | \
+               FlexibleSUSY`FSRestrictParameter[__] | \
+               FlexibleSUSY`FSInitialSetting[__]
            ];
            noTemp = DeleteCases[
                settings,
-               {FlexibleSUSY`Temporary[_], _}
+               {FlexibleSUSY`Temporary[_], _} | \
+               FlexibleSUSY`FSRestrictParameter[__] | \
+               FlexibleSUSY`FSInitialSetting[__]
            ];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> AddBetas[noMacros, modelPrefix];
@@ -232,6 +256,7 @@ FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
 FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, value_]] := parameters;
 FindFixedParametersFromSetting[FlexibleSUSY`FSSolveEWSBFor[parameters_List]] := parameters;
+FindFixedParametersFromSetting[_] := {};
 
 FindFixedParametersFromConstraint[settings_List] :=
     DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];
@@ -346,6 +371,18 @@ CheckSetting[patt:{parameter_, value_}, constraintName_String] :=
            If[MemberQ[outputParameters, parameter],
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   ", parameter, " is a output parameter!"];
+              Return[False];
+             ];
+           True
+          ];
+
+CheckSetting[patt:( FlexibleSUSY`FSRestrictParameter[p_,__] | FlexibleSUSY`FSInitialSetting[p_,__] ),
+             constraintName_String] :=
+    Module[{outputParameters},
+           outputParameters = Parameters`GetOutputParameters[];
+           If[MemberQ[outputParameters, p],
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", p, " is a output parameter!"];
               Return[False];
              ];
            True
@@ -531,6 +568,9 @@ IsFixedIn[par_, FlexibleSUSY`FSFindRoot[parameters_List, _]] :=
 IsFixedIn[par_, FlexibleSUSY`FSSolveEWSBFor[parameters___]] :=
     MemberQ[Parameters`StripIndices /@ Flatten[{parameters}], Parameters`StripIndices[par]];
 
+IsFixedIn[par_, (FlexibleSUSY`FSRestrictParameter | FlexibleSUSY`FSInitialSetting)[p_, ___]] :=
+    MemberQ[Parameters`StripIndices[p], Parameters`StripIndices[par]];
+
 IsFixedIn[par_, p___] :=
     Block[{},
           Print["Error: This is not a valid constraint setting: ", p];
@@ -622,12 +662,18 @@ SetTemporarily[settings_List] :=
            savedVals <> "\n{\n" <> IndentText[set] <> "}"
           ];
 
-ResetTemporarily[settings_List] :=
-    Module[{tempSettings = Cases[settings, {FlexibleSUSY`Temporary[p_], v_} :> {p,v}]},
-           If[tempSettings === {}, Return[""];];
-           "// reset temporary parameter re-definitons\n" <>
-           StringJoin[RestoreValue[#[[1]], "old_"]& /@ tempSettings]
+SetRestrictions[settings_List] :=
+    Module[{initSettings = Cases[settings, (FlexibleSUSY`FSRestrictParameter | FlexibleSUSY`FSInitialSetting)[__]]},
+           If[initSettings === {},
+              "",
+              "// initial settings / parameter restrictions\n{\n" <> IndentText[
+                  ApplyConstraints[ExpandRestrictParameter /@ initSettings]
+              ] <> "\n}"
+             ]
           ];
+
+InitialApplyConstraint[settings_List] :=
+    SetTemporarily[settings] <> "\n" <> SetRestrictions[settings];
 
 End[];
 

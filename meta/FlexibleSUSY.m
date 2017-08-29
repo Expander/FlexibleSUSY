@@ -121,6 +121,12 @@ LowEnergyConstant;
 LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
+FSFlagProblem;       (* flag a problem *)
+FSFlagWarning;       (* flag a problem *)
+(* potential problems *)
+{ FSNoProblem, FSNonPerturbativeParameter, FSInvalidInputParameter };
+FSRestrictParameter; (* restrict parameter to interval *)
+FSInitialSetting;    (* set parameter before calculating masses *)
 FSSolveEWSBFor;
 FSSolveEWSBTreeLevelFor = {};
 Temporary;
@@ -700,7 +706,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
-           temporarySetting = "",
+           initialSetting,
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -713,7 +719,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          temporarySetting   = Constraint`SetTemporarily[settings];
+          initialSetting  = Constraint`InitialApplyConstraint[settings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
@@ -762,7 +768,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
-                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@initialSetting@"       -> IndentText[WrapLines[initialSetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
@@ -794,7 +800,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
    Module[{innerSettings = {}, outerSettings = {}, innerInitialGuessSettings = {},
            applyConstraint = "", applyOuterConstraint = "", calculateScale, scaleGuess,
            restrictScale, calculateOuterScale, outerScaleGuess, restrictOuterScale,
-           temporarySetting = "", temporaryResetting = "",
+           initialSetting, temporaryResetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -826,7 +832,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          temporarySetting   = Constraint`SetTemporarily[innerSettings];
+          initialSetting  = Constraint`InitialApplyConstraint[innerSettings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
@@ -894,7 +900,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
                    "@calculateOuterScale@"       -> IndentText[WrapLines[calculateOuterScale]],
                    "@outerScaleGuess@"           -> IndentText[WrapLines[outerScaleGuess]],
                    "@restrictOuterScale@"        -> IndentText[WrapLines[restrictOuterScale]],
-                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@initialSetting@"       -> IndentText[WrapLines[initialSetting]],
                    "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
