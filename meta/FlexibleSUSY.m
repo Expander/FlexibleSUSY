@@ -2382,7 +2382,7 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseHiggs2LoopSM,
               Print["Adding 2-loop SM Higgs mass contributions from ",
-                    "[arxiv:1205.6497, arxiv:1504.05200]"];
+                    "[arxiv:1205.6497, arxiv:1407.4336]"];
              ];
 
            If[SARAH`UseHiggs2LoopMSSM,
