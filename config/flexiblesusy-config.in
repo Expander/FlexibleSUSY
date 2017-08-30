@@ -60,7 +60,10 @@ create_include_directives_for_FS_modules() {
 }
 
 create_include_directives_for_external_modules() {
-    local incl="$gslflags $eigenflags $boostflags $himalayaflags"
+    local incl="$gslflags $eigenflags $boostflags"
+
+    [ "x@ENABLE_HIMALAYA@" = xyes ] && \
+        incl="$incl $himalayaflags"
 
     [ "x@ENABLE_TSIL@" = xyes ] && \
         incl="$incl $tsilflags"
