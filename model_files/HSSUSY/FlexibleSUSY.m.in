@@ -101,6 +101,7 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
+UseSM3LoopRGEs = True;
 
 ExtraSLHAOutputBlocks = {
    {EFFHIGGSCOUPLINGS, NoScale,
