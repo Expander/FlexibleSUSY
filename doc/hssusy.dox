@@ -9,8 +9,8 @@ Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$.  At
 the SUSY scale, the quartic Higgs coupling,
 \f$\lambda(M_\text{SUSY})\f$ is predicted from the matching to the
 MSSM using the threshold corrections of [arXiv:1407.4081,
-arxiv:1504.05200].  The 3-loop renormalization group equations of
-[arxiv:1504.05200, arxiv:1303.4364] are used to run
+arxiv:1504.05200, arXiv:1703.08166].  The 3-loop renormalization group
+equations of [arxiv:1504.05200, arxiv:1303.4364] are used to run
 \f$\lambda(M_\text{SUSY})\f$ down to the electroweak scale.  At the
 electroweak scale, the gauge and Yukawa couplings as well as the SM
 vacuum expectation value (VEV) are calculated at the 1-loop level from
@@ -56,7 +56,8 @@ _High scale_
 The high scale (`HighScale`) is fixed \f$M_{\text{SUSY}}\f$.  At
 \f$M_{\text{SUSY}}\f$, the quartic Higgs coupling
 \f$\lambda(M_\text{SUSY})\f$ is fixed using the 1- and leading 2-loop
-threshold corrections of [arXiv:1407.4081, arxiv:1504.05200].
+threshold corrections of [arXiv:1407.4081, arxiv:1504.05200,
+arXiv:1703.08166].
 
 _EWSB scale_
 

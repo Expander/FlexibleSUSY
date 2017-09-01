@@ -110,7 +110,7 @@ lambda1LChi2 = 1/(4 Pi)^2 (
    We express the correction in terms of the bottom yukawa of the MSSM
    to resum tanb enhanced corrections
 *)
-lambda1LbottomMSSM = With[{
+lambda1Lbottom = With[{
     Nc = 3,
     mQ3  = Sqrt[msq2[3,3]],
     mQ32 = msq2[3,3],
