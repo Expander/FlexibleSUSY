@@ -77,7 +77,8 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
           unspecifiedEdgesLess,unspecifiedEdgesEqual,
           insertFieldRulesLess,insertFieldRulesGreater,insertFieldRulesEqual,
           fieldsToInsert,
-          unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings},
+          unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings,
+          diagrams},
    internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
    externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
                                {#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);
@@ -104,8 +105,12 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
    resolvedFieldCouplings = unresolvedFieldCouplings /.
      ((Rule @@@ Transpose[{fieldsToInsert,#}]) & /@ resolvedFields);
    
-   Table[k,{k,Length[adjacencyMatrix]}] /. externalFields /. 
-     ((Rule @@@ Transpose[{internalVertices,#}]) & /@ resolvedFieldCouplings)
+   diagrams = Table[k,{k,Length[adjacencyMatrix]}] /. externalFields /. 
+     ((Rule @@@ Transpose[{internalVertices,#}]) & /@ resolvedFieldCouplings);
+   
+   DeleteDuplicates[diagrams,
+     AllTrue[Cases[Transpose[{#1,#2}],{{___},{___}}], (* External lines *)
+             (Sort[#[[1]]] === Sort[#[[2]]]&)] &]
   ]
 
 VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
