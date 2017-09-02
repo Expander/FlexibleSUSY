@@ -59,8 +59,8 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF
 {
-  double value(const typename field_indices<EDMField>::type &indices,
-               EvaluationContext &context);
+  static double value(const typename field_indices<EDMField>::type &indices,
+                      EvaluationContext &context);
 };
 
 /**
@@ -81,8 +81,8 @@ struct EDMVertexCorrectionSF
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS
 {
-  double value(const typename field_indices<EDMField>::type &indices,
-             EvaluationContext &context);
+  static double value(const typename field_indices<EDMField>::type &indices,
+                      EvaluationContext &context);
 };
 }
 
@@ -153,8 +153,8 @@ double EDMVertexCorrectionFS<
 
    using FermionVertex = Vertex<
       typename EDMField::lorentz_conjugate,
-      PhotonEmitter,
-      ExchangeField
+      ExchangeField,
+      PhotonEmitter
    >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
@@ -200,8 +200,8 @@ double EDMVertexCorrectionSF<
 
    using FermionVertex = Vertex<
       typename EDMField::lorentz_conjugate,
-      PhotonEmitter,
-      ExchangeField
+      ExchangeField,
+      PhotonEmitter
    >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;

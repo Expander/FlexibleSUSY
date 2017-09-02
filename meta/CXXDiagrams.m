@@ -4,15 +4,23 @@ BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Verti
 
 (* This module generates c++ code intended to be used similarly to SARAH's fields and Vertex[] function *)
 
-Initialize[] := LoadVerticesIfNecessary[]
+Initialize::usage="";
+VertexTypes::usage="";
+CXXNameOfField::usage="";
+LorentzConjugateOperation::usage="";
+LorentzConjugate::usage="";
+CreateFields::usage="";
+FeynmanDiagramsOfType::usage="";
+VerticesForDiagram::usage="";
+CreateVertexData::usage="";
+CreateVertices::usage="";
+VertexRulesForVertices::usage="";
+CreateMassFunctions::usage="";
+NumberOfFieldIndices::usage="";
 
-LoadVerticesIfNecessary[] :=
-   If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
-        SA`CurrentStates = FlexibleSUSY`FSEigenstates; 
-        SARAH`InitVertexCalculation[FlexibleSUSY`FSEigenstates, False];
-        SARAH`ReadVertexList[FlexibleSUSY`FSEigenstates, False, False, True];
-        SARAH`MakeCouplingLists;
-   ]
+Begin["Private`"];
+
+Initialize[] := LoadVerticesIfNecessary[]
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)
@@ -20,6 +28,8 @@ vertexTypes = {
     SingleComponentedVertex,
     LeftAndRightComponentedVertex
 };
+
+VertexTypes[] := vertexTypes
 
 (* Return a string corresponding to the c++ class name of the field.
  Note that "bar" and "conj" get turned into bar<...>::type and
@@ -33,8 +43,6 @@ LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
                                         "bar",
                                         "conj"];
 LorentzConjugate[field_] := SARAH`AntiField[field]
-
-NumberOfFieldIndices[field_] := Length @ FieldInfo[field][[5]]
 
 CreateFields[] :=
   Module[{fields},
@@ -102,6 +110,19 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 
 VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 
+VertexRulesForVertices[vertices_List, massMatrices_] := 
+  Module[{nPointFunctions},
+    nPointFunctions = CXXDiagrams`NPointFunctions[IndexFields /@ vertices];
+    Vertices`VertexRules[SortCps @ nPointFunctions, massMatrices]
+    ]
+
+NPointFunctions[vertices_List] :=
+  Module[{nPointFunctions},
+    nPointFunctions = Flatten[(Null[Null, #] &) /@ (CouplingsForFields /@ vertices)];
+    nPointFunctions = Cases[nPointFunctions,Except[Null[Null,{}]]]; (* Remove unknown vertices *)
+    DeleteDuplicates[nPointFunctions]
+  ]
+
 CreateVertexData[fields_List,vertexRules_List] := 
   Module[{dataClassName,indexBounds,parsedVertex,fieldIndexStartF,fieldIndexStart},
     parsedVertex = ParseVertex[fields, vertexRules];
@@ -118,7 +139,7 @@ CreateVertexData[fields_List,vertexRules_List] :=
     "template<> struct " <> dataClassName <> "\n" <>
     "{\n" <>
     TextFormatting`IndentText[
-      "static constexpr IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <>
+      "static constexpr impl::IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <>
         "> index_bounds" <>
         If[NumberOfIndices[parsedVertex] =!= 0,
            " = { " <>
@@ -151,6 +172,31 @@ CreateVertex[fields_List, vertexRules_List] :=
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"
   ]
+  
+CreateMassFunctions[] :=
+  Module[{massiveFields},
+    massiveFields = Select[TreeMasses`GetParticles[],!TreeMasses`IsGhost[#] &];
+    StringJoin @ Riffle[
+      Module[{fieldInfo = FieldInfo[#], numberOfIndices},
+             numberOfIndices = Length @ fieldInfo[[5]];
+                                   
+             "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
+             ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
+             "> &indices ) const\n" <>
+             "{ return model.get_M" <> CXXNameOfField[#] <>
+             If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
+            ] & /@ massiveFields, "\n\n"]
+        ]
+
+NumberOfFieldIndices[field_] := Length @ FieldInfo[field][[5]]
+
+LoadVerticesIfNecessary[] :=
+   If[SARAH`VertexList3 =!= List || Length[SARAH`VertexList3] === 0,
+        SA`CurrentStates = FlexibleSUSY`FSEigenstates; 
+        SARAH`InitVertexCalculation[FlexibleSUSY`FSEigenstates, False];
+        SARAH`ReadVertexList[FlexibleSUSY`FSEigenstates, False, False, True];
+        SARAH`MakeCouplingLists;
+   ]
 
 (* ParsedVertex structure:
  ParsedVertex[
@@ -235,7 +281,7 @@ IndexFields[fields_List] :=
    from the elements of `arrayName'.
  *)
 DeclareIndices[indexedFields_List, arrayName_String] :=
-    Module[{p, total = 0, fieldIndexList, decl = "", idx},
+    Module[{p, total = 0, fieldIndexList, decl = ""},
            DeclareIndex[idx_, num_Integer, an_String] := (
                "const unsigned " <> CConversion`ToValidCSymbolString[idx] <>
                " = " <> an <> "[" <> ToString[num] <> "];\n");
@@ -263,7 +309,7 @@ VertexFunctionBody[parsedVertex_ParsedVertex] := parsedVertex[[4]];
 (* Returns the vertex type for a vertex with a given list of fields *)
 VertexTypeForFields[fields_List] :=
   Module[{fermions, scalarCount, vectorCount, fermionCount, vertexType = "UnknownVertexType"},
-    fermions = Select[fields, TreeMasses`IsFermion];
+    fermions = Vertices`StripFieldIndices /@ Select[fields, TreeMasses`IsFermion];
       
     scalarCount = Length @ Select[fields, TreeMasses`IsScalar];
     vectorCount = Length @ Select[fields, TreeMasses`IsVector];
@@ -272,7 +318,7 @@ VertexTypeForFields[fields_List] :=
     If[fermionCount === 2 && scalarCount === 1 && vectorCount === 0,
        vertexType = LeftAndRightComponentedVertex];
     If[fermionCount === 2 && scalarCount === 0 && vectorCount === 1,
-       If[fermions[[1]] === SARAH`AntiField[fermions[[2]]],
+       If[fermions[[1]] === LorentzConjugate[fermions[[2]]],
           vertexType = LeftAndRightComponentedVertex]];
     If[fermionCount === 0 && scalarCount === 2 && vectorCount === 1,
        vertexType = SingleComponentedVertex];
@@ -309,29 +355,7 @@ FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
             If[!OptionValue[includeLorentzIndices],
                DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
                fieldInfo]
-           ];
-
-NPointFunctions[vertices_List] :=
-  Module[{indexedVertices = IndexFields /@ vertices,
-          nPointFunctions},
-    nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForFields[#] &) /@ indexedVertices)];
-    nPointFunctions = Cases[nPointFunctions,Except[Null[Null,{}]]]; (* Remove unknown vertices *)
-    DeleteDuplicates[nPointFunctions]
-  ]
-  
-CreateMassFunctions[] :=
-  Module[{massiveFields},
-    massiveFields = Select[TreeMasses`GetParticles[],!TreeMasses`IsGhost[#] &];
-    StringJoin @ Riffle[
-      Module[{fieldInfo = FieldInfo[#], numberOfIndices},
-             numberOfIndices = Length @ fieldInfo[[5]];
-                                   
-             "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
-             ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
-             "> &indices ) const\n" <>
-             "{ return model.get_M" <> CXXNameOfField[#] <>
-             If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
-            ] & /@ massiveFields, "\n\n"]
-        ]
-
+          ]
+        
+End[];
 EndPackage[];

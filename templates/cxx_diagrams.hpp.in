@@ -29,6 +29,7 @@
 #define @ModelName@_CXXDIAGRAMS_H
 
 #include "numerics2.hpp"
+#include "wrappers.hpp"
 
 #include <array>
 #include <vector>
@@ -380,17 +381,10 @@ public:
 };
 
 /**
- * @class VertexFunctionData<F...>
- * @brief Vertex data for a vertex with the fields specified by F...
- *
- * All elements in F... have to be publicly derived from Field.
- * The data includes the type of the vertex, whether F... is in
- * canonical order or permuted as well as index bounds referring to
- * the specific fields (generation and colour indices, etc).
- * The intention is to have a program generate VertexFunctionData<>
- * specialisations that are then used by the VertexFunction<> template.
+ * @class VertexData<F...>
+ * @brief VertexData data for a vertex with the fields specified by F....
  */
-template<class ...F> struct VertexFunctionData;
+template<class ...Fields> struct VertexData;
 
 struct EvaluationContext;
 
@@ -399,11 +393,11 @@ struct EvaluationContext;
  * @brief A template that represents a vertex with open field indices.
  *
  * All elements in F... have to be publicly derived from Field.
- * To obtain a conrete value, use the static member function vertex()
+ * To obtain a conrete value, use the static member function evaluate()
  * along with the desired field indices.
  */
 template<class ...F> class Vertex {
-  using Data = VertexFunctionData<F...>;
+  using Data = VertexData<F...>;
   using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
 public:
   using vertex_type = typename Data::vertex_type;
@@ -437,7 +431,7 @@ public:
    * @param indices The field indices
    * @param context The evaluation context
    */
-  static vertex_type vertex(const indices_type &indices, const EvaluationContext &context);
+  static vertex_type evaluate(const indices_type &indices, const EvaluationContext &context);
 };
 
 
@@ -462,7 +456,7 @@ struct EvaluationContext {
   template<class Field>
   double electric_charge( const typename field_indices<Field>::type &indices ) const
   {
-    using PhotonVertex = Vertex<Photon, Field, typename Field::lorentz_conjugate>;
+    using PhotonVertex = Vertex<Photon, typename Field::lorentz_conjugate, Field>;
     auto vertexResult = PhotonVertex::evaluate( impl::concatenate( indices, indices ), *this );
     
     // Fixme: We assume the charge to be real and left/right symmetric

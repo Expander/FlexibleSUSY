@@ -1821,8 +1821,10 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,vertexRules_List,files_List] :=
-  Module[{fields, vertexData, cxxVertices, massFunctions},
+WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
+  Module[{fields, nPointFunctions, vertexRules, vertexData, cxxVertices, massFunctions},
+    vertexRules = CXXDiagrams`VertexRulesForVertices[vertices,massMatrices];
+
     fields = CXXDiagrams`CreateFields[];
     vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] & /@ vertices,
                                      "\n\n"];
@@ -1840,13 +1842,12 @@ WriteCXXDiagramClass[vertices_List,vertexRules_List,files_List] :=
 
 (* Write the EDM2 c++ files *)
 WriteEDM2Class[edmFields_List,files_List] :=
-  Module[{graphs,diagrams,vertices,nPointFunctions,
+  Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
     graphs = EDM2`ContributingGraphs[];
     diagrams = Outer[EDM2`ContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
-    nPointFunctions = CXXDiagrams`NPointFunctions[vertices];
     
     {interfacePrototypes,interfaceDefinitions} = 
       If[diagrams === {},
@@ -1861,7 +1862,7 @@ WriteEDM2Class[edmFields_List,files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
     
-    {vertices,nPointFunctions}
+    vertices
   ]
 
 (* Write the GMM2 c++ files *)
@@ -3804,16 +3805,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating EDM2 class..."];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
-           {edm2Vertices,edm2NPointFunctions} =
+           edm2Vertices =
              WriteEDM2Class[edmFields,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, "edm2.hpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.hpp"}]},
                              {FileNameJoin[{$flexiblesusyTemplateDir, "edm2.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.cpp"}]}}];
            
-           cxxVertexRules = Vertices`VertexRules[SortCps @ edm2NPointFunctions, Lat$massMatrices];
-           
-           WriteCXXDiagramClass[edm2Vertices,cxxVertexRules,
+           WriteCXXDiagramClass[edm2Vertices,Lat$massMatrices,
              {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
            
