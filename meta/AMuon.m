@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["AMuon`", {"SARAH`", "CConversion`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
+BeginPackage["AMuon`", {"SARAH`", "CXXDiagrams`", "TextFormatting`", "TreeMasses`", "LoopMasses`"}];
 
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
@@ -33,7 +33,7 @@ GetMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet
 ContributingDiagramsForGraph[graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> GetMuonFamily[], 2 -> SARAH`AntiField[GetMuonFamily[]], 3 -> GetPhoton[]}];
+         {1 -> GetMuon[], 2 -> SARAH`AntiField[GetMuon[]], 3 -> GetPhoton[]}];
          
     Select[diagrams,IsDiagramSupported[graph,#] &]
  ]
@@ -56,7 +56,7 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
 CreateInterfaceFunction[gTaggedDiagrams_List] :=
   Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
           prototype,definition,numberOfIndices},
-    numberOfIndices = NumberOfFieldIndices[muon];
+    numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
     prototype = "namespace " <> FlexibleSUSY`FSModelName <> "_a_muon {\n" <>
                  "double calculate_a_muon( " <>
                  "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );" <>
@@ -71,7 +71,7 @@ CreateInterfaceFunction[gTaggedDiagrams_List] :=
                    "std::array<unsigned, " <> ToString @ numberOfIndices <>
                      "> indices = {" <>
                        If[muonIndex =!= Null,
-                          ToString @ muonIndex <>
+                          " " <> ToString @ muonIndex <>
                           If[numberOfIndices =!= 1,
                              StringJoin @ Table[", 1", {numberOfIndices-1}],
                              ""] <> " ",

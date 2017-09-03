@@ -46,7 +46,7 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
   ]
 
 CreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
-  Module[{prototype,definition,numberOfIndices = NumberOfFieldIndices[field]},
+  Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
     prototype = "namespace " <> FlexibleSUSY`FSModelName <> "_edm {\n" <>
                  "double calculate_edm_" <> CXXNameOfField[field] <>
                  "(" <> If[TreeMasses`GetDimension[field] =!= 1,

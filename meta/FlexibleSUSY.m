@@ -1877,10 +1877,10 @@ WriteAMuonClass[vertexRules_List, files_List] :=
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
       {interfacePrototypes,interfaceDefinitions} = 
-        AMuon`CreateInterfaceFunction @@@ Transpose[{graphs,#}] & /@ diagrams;
+        AMuon`CreateInterfaceFunction @@@ Transpose[{graphs,diagrams}];
             
-      getMSUSY = GMuonMinus2`GetMSUSY[];
-      getQED2L = GMuonMinus2`GetQED2L[];
+      getMSUSY = AMuon`GetMSUSY[];
+      getQED2L = AMuon`GetQED2L[];
       
       WriteOut`ReplaceInFiles[files,
                               {"@EDM2_InterfacePrototypes@"       -> interfacePrototypes,
