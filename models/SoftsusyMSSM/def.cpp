@@ -17,7 +17,7 @@ namespace softsusy {
   /// neutrino masses
   double TOLERANCE = 1.0e-4;
   /// decay constant of muon
-  double GMU = 1.16637e-5; 
+  double GMU = flexiblesusy::Electroweak_constants::gfermi;
   /// there are two possible conventions: if QEWSB > MZ, its value is assumed
   /// in GeV and used as a constant MSUSY. Otherwise, it MULTIPLIES the usual 
   /// MSUSY value, of root(mstop1 mstop2)
