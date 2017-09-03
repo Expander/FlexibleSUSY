@@ -44,7 +44,7 @@ LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
                                         "conj"];
 LorentzConjugate[field_] := SARAH`AntiField[field]
 
-CreateFields[] :=
+CreateFields[specialFields_List] :=
   Module[{fields},
        fields = TreeMasses`GetParticles[];
        
@@ -60,6 +60,9 @@ CreateFields[] :=
        
        "// Special fields\n" <>
        "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
+       StrinJoin @ Riffle[
+         ("using " <> #[[1]] <> " = " <> CXXNameOfField @ #[[2]] <> ";" &) /@
+           Cases[specialFields,Except[{"Photon",_}]],"\n"] <> "\n\n" <>
        
        "// Fields that are their own Lorentz conjugates.\n" <>
        StringJoin @ Riffle[

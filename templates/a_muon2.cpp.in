@@ -57,10 +57,10 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class AMuonField, class PhotonEmitter, class ExchangeParticle>
+template<class PhotonEmitter, class ExchangeParticle>
 struct AMuonVertexCorrectionSF
 {
-  static double value(const typename field_indices<AMuonField>::type &indices,
+  static double value(const typename field_indices<Muon>::type &indices,
                       EvaluationContext &context);
 };
 
@@ -80,10 +80,10 @@ struct AMuonVertexCorrectionSF
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class AMuonField, class PhotonEmitter, class ExchangeParticle>
+template<class PhotonEmitter, class ExchangeParticle>
 struct AMuonVertexCorrectionFS
 {
-  static double value(const typename field_indices<AMuonField>::type &indices,
+  static double value(const typename field_indices<Muon>::type &indices,
                       EvaluationContext &context);
 };
 }
@@ -346,13 +346,13 @@ double get_QED_2L(EvaluationContext& context)
 
 template<class PhotonEmitter, class ExchangeField>
 double AMuonVertexCorrectionFS<
-   EDMField, PhotonEmitter, ExchangeField
+   PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
    using MuonVertex = Vertex<
-      typename MuonFamily::lorentz_conjugate,
+      typename Muon::lorentz_conjugate,
       ExchangeField,
       PhotonEmitter
    >;
@@ -371,7 +371,7 @@ double AMuonVertexCorrectionFS<
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
-      auto muonMass = context.mass<MuonFamily>( muonIndices );
+      auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
 
@@ -400,13 +400,13 @@ double AMuonVertexCorrectionFS<
 
 template<class PhotonEmitter, class ExchangeField>
 double AMuonVertexCorrectionFS<
-   EDMField, PhotonEmitter, ExchangeField
+   PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
    using MuonVertex = Vertex<
-      typename MuonFamily::lorentz_conjugate,
+      typename Muon::lorentz_conjugate,
       ExchangeField,
       PhotonEmitter
    >;
@@ -425,7 +425,7 @@ double AMuonVertexCorrectionFS<
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
-      auto muonMass = context.mass<MuonFamily>( muonIndices );
+      auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
 

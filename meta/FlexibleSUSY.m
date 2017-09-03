@@ -1822,12 +1822,13 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
+WriteCXXDiagramClass[specialFields_List,vertices_List,massMatrices_,files_List] :=
   Module[{fields, nPointFunctions, vertexRules, vertexData, cxxVertices, massFunctions},
     vertexRules = CXXDiagrams`VertexRulesForVertices[vertices,massMatrices];
 
-    fields = CXXDiagrams`CreateFields[];
-    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] & /@ vertices,
+    fields = CXXDiagrams`CreateFields[specialFields];
+    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] &
+                                     /@ DeleteDuplicates[vertices],
                                      "\n\n"];
     cxxVertices = CXXDiagrams`CreateVertices[vertices,vertexRules];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
