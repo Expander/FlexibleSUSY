@@ -152,13 +152,10 @@ if (get_thresholds() > 1 && threshold_corrections.mb > 1) {
    pars.xb = Sin(2*theta_b) * (Sqr(msb_1) - Sqr(msb_2)) / (2. * pars.mb);
    pars.Q = get_scale();
 
-   qcd_2l = mssm_twoloop_mb::delta_mb_2loop(pars);
-
    const double alpha_s = Sqr(pars.g3) / (4.*Pi);
 
-   // subtract 2-loop epsilon scalar contributions
-   qcd_2l -= 31./72. * Sqr(alpha_s / Pi)
-      + alpha_s/(3.*Pi) * delta_mb_1loop;
+   qcd_2l = mssm_twoloop_mb::delta_mb_2loop(pars)
+            - alpha_s/(3.*Pi) * delta_mb_1loop;
 }
 "
        ,
@@ -963,7 +960,6 @@ GetConversionFactorMSbarTo[particle_,
     Which[(* down-type quarks *)
           TreeMasses`IsSMDownQuark[particle],
           (1 - alphaS / (3 Pi)
-           - 23 / 72 alphaS^2 / Pi^2
            + 3 gWeak^2 / (128 Pi^2)
            + 13 gPrime^2 / (1152 Pi^2)),
           (* down-type leptons *)
