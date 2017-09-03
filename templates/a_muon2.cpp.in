@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_a_muon.cpp
+ * @file @ModelName@_a_muon2.cpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
@@ -37,6 +37,8 @@
 
 using namespace flexiblesusy;
 using namespace cxx_diagrams;
+
+using Muon = @AMuon_MuonField@;
 
 namespace {
 static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
@@ -61,7 +63,7 @@ template<class PhotonEmitter, class ExchangeParticle>
 struct AMuonVertexCorrectionSF
 {
   static double value(const typename field_indices<Muon>::type &indices,
-                      EvaluationContext &context);
+                      const EvaluationContext &context);
 };
 
 /**
@@ -84,11 +86,9 @@ template<class PhotonEmitter, class ExchangeParticle>
 struct AMuonVertexCorrectionFS
 {
   static double value(const typename field_indices<Muon>::type &indices,
-                      EvaluationContext &context);
+                      const EvaluationContext &context);
 };
-}
 
-namespace {
 /**
 * @defgroup LoopFunctions LoopFunctions
 * @brief The loop functions necessary for \f$a_\mu\f$ one-loop calculations.
@@ -300,9 +300,13 @@ std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
    return std::make_pair(*(minmax.first), *(minmax.second));
 }
 
+double muonPhysicalMass( const EvaluationContext &context )
+{
+@AMuon_MuonPhysicalMass@
+}
 } // anonymous namespace
 
-double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
+double @ModelName@_a_muon2::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
 {
    @ModelName@_mass_eigenstates model(model_);
 
@@ -316,10 +320,16 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
       return std::numeric_limits<double>::quiet_NaN();
    }
 
+   double m_muon_pole = muonPhysicalMass( EvaluationContext{ model } );
+   if (m_muon_pole == 0.0) {
+      model.solve_ewsb();
+      @AMuon_CalculateMuonPoleMass@
+   }
+
    return calculate_a_muon_impl(model);
 }
 
-double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
+double @ModelName@_a_muon2::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
 {
    @ModelName@_mass_eigenstates model(model_);
 
@@ -339,6 +349,7 @@ double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_e
    return delta_amu_scale;
 }
 
+namespace {
 double get_QED_2L(EvaluationContext& context)
 {
 @AMuon_QED_2L@
@@ -347,7 +358,7 @@ double get_QED_2L(EvaluationContext& context)
 template<class PhotonEmitter, class ExchangeField>
 double AMuonVertexCorrectionFS<
    PhotonEmitter, ExchangeField
->::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
+>::value(const typename field_indices<Muon>::type &indices, const EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -357,7 +368,7 @@ double AMuonVertexCorrectionFS<
       PhotonEmitter
    >;
 
-   constexpr auto indexBounds = FermionVertex::index_bounds;
+   constexpr auto indexBounds = MuonVertex::index_bounds;
    for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
    {
       auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
@@ -367,21 +378,23 @@ double AMuonVertexCorrectionFS<
 
       auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
-      auto vertex = MuonVertex::evaluate(*indexIt, context);
+      auto muonVertex = MuonVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
       auto muonMass = context.mass<Muon>( muonIndices );
 
-      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterChargeCount =
+        - context.electric_charge<PhotonEmitter>( photonEmitterIndices ) /
+          context.electric_charge<Muon>( muonIndices );
 
-      const std::complex<double> zL = vertex.left();
-      const std::complex<double> zR = vertex.right();
+      const std::complex<double> zL = muonVertex.left();
+      const std::complex<double> zR = muonVertex.right();
 
       const double coeffA = std::norm(zL) + std::norm(zR);
       const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-      const double massRatioSquared = Sqr(photonEmitterMass / exchangeMass);
+      const double massRatioSquared = Sqr(photonEmitterMass / exchangeFieldMass);
 
       const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
 
@@ -399,9 +412,9 @@ double AMuonVertexCorrectionFS<
 }
 
 template<class PhotonEmitter, class ExchangeField>
-double AMuonVertexCorrectionFS<
+double AMuonVertexCorrectionSF<
    PhotonEmitter, ExchangeField
->::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
+>::value(const typename field_indices<Muon>::type &indices, const EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -411,7 +424,7 @@ double AMuonVertexCorrectionFS<
       PhotonEmitter
    >;
 
-   constexpr auto indexBounds = FermionVertex::index_bounds;
+   constexpr auto indexBounds = MuonVertex::index_bounds;
    for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
    {
       auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
@@ -421,13 +434,15 @@ double AMuonVertexCorrectionFS<
 
       auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
-      auto vertex = MuonVertex::evaluate(*indexIt, context);
+      auto muonVertex = MuonVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
       auto muonMass = context.mass<Muon>( muonIndices );
 
-      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterChargeCount =
+        - context.electric_charge<PhotonEmitter>( photonEmitterIndices ) /
+          context.electric_charge<Muon>( muonIndices );
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
@@ -435,10 +450,10 @@ double AMuonVertexCorrectionFS<
       const double coeffA = std::norm(zL) + std::norm(zR);
       const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-      const double massRatioSquared = Sqr(exchangeMass / photonEmitterMass);
+      const double massRatioSquared = Sqr(exchangeFieldMass / photonEmitterMass);
 
       const double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
-      const double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
+      const double part2 = exchangeFieldMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
       const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
             * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
@@ -449,4 +464,3 @@ double AMuonVertexCorrectionFS<
    return res;
 }
 } // anonymous namespace
-} // namespace flexiblesusy

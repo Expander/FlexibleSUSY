@@ -1822,11 +1822,11 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[specialFields_List,vertices_List,massMatrices_,files_List] :=
+WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
   Module[{fields, nPointFunctions, vertexRules, vertexData, cxxVertices, massFunctions},
     vertexRules = CXXDiagrams`VertexRulesForVertices[vertices,massMatrices];
 
-    fields = CXXDiagrams`CreateFields[specialFields];
+    fields = CXXDiagrams`CreateFields[];
     vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] &
                                      /@ DeleteDuplicates[vertices],
                                      "\n\n"];
@@ -1870,6 +1870,8 @@ WriteEDM2Class[edmFields_List,files_List] :=
 (* Write the AMuon c++ files *)
 WriteAMuonClass[vertexRules_List, files_List] :=
     Module[{graphs,diagrams,vertices,
+            muonPoleMass,
+            muonPhysicalMass,
             calculation,
             getMSUSY, getQED2L},
       graphs = AMuon`ContributingGraphs[];
@@ -1877,17 +1879,22 @@ WriteAMuonClass[vertexRules_List, files_List] :=
       
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
+      muonPoleMass = AMuon`CreateCalculateMuonPoleMass[];
+      muonPhysicalMass = AMuon`CreateMuonPhysicalMass[];
       calculation = AMuon`CreateCalculation @ Transpose[{graphs,diagrams}];
             
       getMSUSY = AMuon`GetMSUSY[];
       getQED2L = AMuon`GetQED2L[];
       
       WriteOut`ReplaceInFiles[files,
-                              {"@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
-                               "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],
-                               "@AMuon_QED_2L@"         -> IndentText[WrapLines[getQED2L]],
-                               Sequence @@ GeneralReplacementRules[]
-                              }];
+        {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`GetMuon[]],
+         "@AMuon_CalculateMuonPoleMass@"  -> muonPoleMass,
+         "@AMuon_MuonPhysicalMass@"       -> TextFormatting`IndentText[muonPhysicalMass],
+         "@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
+         "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],
+         "@AMuon_QED_2L@"         -> IndentText[WrapLines[getQED2L]],
+         Sequence @@ GeneralReplacementRules[]
+        }];
                               
       vertices
       ];
@@ -2968,7 +2975,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            edm2Vertices,aMuonVertices,edm2NPointFunctions,cxxVertexRules,
+            edm2Vertices,aMuonVertices,
             gmm2Vertices = {}, edmFields,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
@@ -3847,8 +3854,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon2.cpp"}]}}];
            
            WriteCXXDiagramClass[Join[edm2Vertices,aMuonVertices],Lat$massMatrices,
-             {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
-               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
+                                {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
+                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
            
            
               

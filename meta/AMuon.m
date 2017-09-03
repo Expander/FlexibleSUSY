@@ -52,7 +52,17 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     
     Return[False];
   ]
- 
+
+CreateCalculateMuonPoleMass[] := "model.calculate_M" <>
+                                 CXXDiagrams`CXXNameOfField[GetMuon[]] <>
+                                 "_pole();"
+CreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
+                             CXXDiagrams`CXXNameOfField[GetMuon[]] <>
+                             "(" <> If[GetMuonIndex[] =!= Null,
+                                       " " <> ToString @ GetMuonIndex[] <> " ",
+                                       ""] <>
+                             ");";
+
 CreateCalculation[gTaggedDiagrams_List] :=
   Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
           calculation,numberOfIndices},
@@ -132,7 +142,7 @@ GetMSUSY[] :=
 
 GetQED2L[] :=
   Module[{muonIndex = GetMuonIndex[],
-          numberOfIndices = CXXDiagrams`NumberOfFieldIndices[GetMuon]},
+          numberOfIndices = CXXDiagrams`NumberOfFieldIndices[GetMuon[]]},
     "const field_indices<Muon>::type muonIndices = {" <>
       If[muonIndex =!= Null,
          " " <> ToString @ muonIndex <>
@@ -148,7 +158,7 @@ GetQED2L[] :=
     
     "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
     "const double m_muon = muonPhysicalMass(context);\n" <>
-    "const double alpha_em = Sqr(context.charge<Muon>( muonIndices ))/(4*Pi);\n" <>
+    "const double alpha_em = Sqr(context.electric_charge<Muon>( muonIndices ))/(4*Pi);\n" <>
     "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
     "return qed_2L;"
   ]
