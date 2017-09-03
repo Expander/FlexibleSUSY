@@ -26,6 +26,7 @@ BeginPackage["FlexibleSUSY`",
               "Observables`",
               "CXXDiagrams`",
               "EDM2`",
+              "AMuon`",
               "GMuonMinus2`",
               "EDM`",
               "EffectiveCouplings`",
@@ -1865,6 +1866,31 @@ WriteEDM2Class[edmFields_List,files_List] :=
     vertices
   ]
 
+(* Write the AMuon c++ files *)
+WriteAMuonClass[vertexRules_List, files_List] :=
+    Module[{graphs,diagrams,vertices,
+            interfacePrototype,interfaceDefinition,
+            getMSUSY, getQED2L},
+      graphs = AMuon`ContributingGraphs[];
+      diagrams = AMuon`ContributingDiagramsForGraph /@ graphs;
+      
+      vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
+      
+      {interfacePrototypes,interfaceDefinitions} = 
+        AMuon`CreateInterfaceFunction @@@ Transpose[{graphs,#}] & /@ diagrams;
+            
+      getMSUSY = GMuonMinus2`GetMSUSY[];
+      getQED2L = GMuonMinus2`GetQED2L[];
+      
+      WriteOut`ReplaceInFiles[files,
+                              {"@EDM2_InterfacePrototypes@"       -> interfacePrototypes,
+                               "@EDM2_InterfaceDefinitions@"      -> interfaceDefinitions,
+                               "@GMuonMinus2_GetMSUSY@"           -> IndentText[WrapLines[getMSUSY]],
+                               "@GMuonMinus2_QED_2L@"             -> IndentText[WrapLines[getQED2L]],
+                               Sequence @@ GeneralReplacementRules[]
+                              }];
+      ];
+
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[vertexRules_List, files_List] :=
     Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
@@ -2941,7 +2967,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            edm2Vertices,edm2NPointFunctions,cxxVertexRules,
+            edm2Vertices,aMuonVertices,edm2NPointFunctions,cxxVertexRules,
             gmm2Vertices = {}, edmFields,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
@@ -3812,7 +3838,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "edm2.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm2.cpp"}]}}];
            
-           WriteCXXDiagramClass[edm2Vertices,Lat$massMatrices,
+           aMuonVertices = 
+             WriteAMuonClass[edmFields,
+                             {{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon2.hpp.in"}],
+                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon2.hpp"}]},
+                              {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon2.cpp.in"}],
+                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon2.cpp"}]}}];
+           
+           WriteCXXDiagramClass[Join[edm2Vertices,aMuonVertices],Lat$massMatrices,
              {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
            
