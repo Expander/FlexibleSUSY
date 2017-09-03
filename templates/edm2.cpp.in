@@ -165,8 +165,8 @@ double EDMVertexCorrectionFS<
       if( edmFieldIndices != indices )
          continue;
 
-      auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
-      auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto vertex = FermionVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
@@ -212,8 +212,8 @@ double EDMVertexCorrectionSF<
       if( edmFieldIndices != indices )
          continue;
 
-      auto photonEmitterIndices = FermionVertex::template fieldIndices<1>(*indexIt);
-      auto exchangeFieldIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
       auto vertex = FermionVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
