@@ -1869,26 +1869,26 @@ WriteEDM2Class[edmFields_List,files_List] :=
 (* Write the AMuon c++ files *)
 WriteAMuonClass[vertexRules_List, files_List] :=
     Module[{graphs,diagrams,vertices,
-            interfacePrototype,interfaceDefinition,
+            calculation,
             getMSUSY, getQED2L},
       graphs = AMuon`ContributingGraphs[];
       diagrams = AMuon`ContributingDiagramsForGraph /@ graphs;
       
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
-      {interfacePrototypes,interfaceDefinitions} = 
-        AMuon`CreateInterfaceFunction @@@ Transpose[{graphs,diagrams}];
+      calculation = AMuon`CreateCalculation @ Transpose[{graphs,diagrams}];
             
       getMSUSY = AMuon`GetMSUSY[];
       getQED2L = AMuon`GetQED2L[];
       
       WriteOut`ReplaceInFiles[files,
-                              {"@EDM2_InterfacePrototypes@"       -> interfacePrototypes,
-                               "@EDM2_InterfaceDefinitions@"      -> interfaceDefinitions,
-                               "@GMuonMinus2_GetMSUSY@"           -> IndentText[WrapLines[getMSUSY]],
-                               "@GMuonMinus2_QED_2L@"             -> IndentText[WrapLines[getQED2L]],
+                              {"@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
+                               "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],
+                               "@AMuon_QED_2L@"         -> IndentText[WrapLines[getQED2L]],
                                Sequence @@ GeneralReplacementRules[]
                               }];
+                              
+      vertices
       ];
 
 (* Write the GMM2 c++ files *)

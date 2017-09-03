@@ -88,8 +88,6 @@ struct AMuonVertexCorrectionFS
 };
 }
 
-@AMuon_InterfaceDefinitions@
-
 namespace {
 /**
 * @defgroup LoopFunctions LoopFunctions
@@ -214,7 +212,7 @@ double OneLoopFunctionF2N(double x)
 
 double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 {
-@GMuonMinus2_GetMSUSY@
+@AMuon_GetMSUSY@
 }
 
 void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
@@ -255,7 +253,7 @@ double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
 {
    VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
 
-@GMuonMinus2_Calculation@
+@AMuon_Calculation@
 }
 
 /// generates array with N scales from mean/factor to mean*factor
@@ -343,7 +341,7 @@ double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_e
 
 double get_QED_2L(EvaluationContext& context)
 {
-@GMuonMinus2_QED_2L@
+@AMuon_QED_2L@
 }
 
 template<class PhotonEmitter, class ExchangeField>

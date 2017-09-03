@@ -53,43 +53,32 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
  
-CreateInterfaceFunction[gTaggedDiagrams_List] :=
+CreateCalculation[gTaggedDiagrams_List] :=
   Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
-          prototype,definition,numberOfIndices},
+          calculation,numberOfIndices},
     numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
-    prototype = "namespace " <> FlexibleSUSY`FSModelName <> "_a_muon {\n" <>
-                 "double calculate_a_muon( " <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );" <>
-                 "\n}";
-                 
-    definition = "double " <> FlexibleSUSY`FSModelName <> "_edm::calculate_a_muon( " <> 
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model_ )\n" <>
-                 "{\n" <>
-                 IndentText[
-                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model = model_;\n" <>
-                   "EvaluationContext context{ model };\n" <>
-                   "std::array<unsigned, " <> ToString @ numberOfIndices <>
-                     "> indices = {" <>
-                       If[muonIndex =!= Null,
-                          " " <> ToString @ muonIndex <>
-                          If[numberOfIndices =!= 1,
-                             StringJoin @ Table[", 1", {numberOfIndices-1}],
-                             ""] <> " ",
-                          If[numberOfIndices =!= 0,
-                             StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
-                             ""]
-                         ] <> "};\n\n" <>
+    
+    "EvaluationContext context{ model };\n" <>
+    "std::array<unsigned, " <> ToString @ numberOfIndices <>
+    "> indices = {" <>
+      If[muonIndex =!= Null,
+         " " <> ToString @ muonIndex <>
+         If[numberOfIndices =!= 1,
+            StringJoin @ Table[", 1", {numberOfIndices-1}],
+            ""] <>
+         " ",
+         If[numberOfIndices =!= 0,
+            StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+            ""]
+        ] <> "};\n\n" <>
                                  
-                   "double val = 0.0;\n\n" <>
+    "double val = 0.0;\n\n" <>
                    
-                   StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
-                     Flatten[CXXEvaluatorsForDiagramsFromGraph[#[[2]],#[[1]]] & /@ gTaggedDiagrams],
+    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
+      Flatten[CXXEvaluatorsForDiagramsFromGraph[#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                    
-                   "return val;"
-                 ] <> "\n}";
-    
-    {prototype, definition}
+    "return val;"
   ];
 
 CXXEvaluatorsForDiagramsFromGraph[diagrams_,graph_] :=
