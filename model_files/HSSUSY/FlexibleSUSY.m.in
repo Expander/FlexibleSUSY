@@ -24,7 +24,7 @@ EXTPAR = {
     {103, TwoLoopAtAb},
     {104, TwoLoopAtauAtau},
     {105, TwoLoopAtAt},
-    {206, DeltaEFT}
+    {200, DeltaEFT}
 };
 
 FSAuxiliaryParameterInfo = {
