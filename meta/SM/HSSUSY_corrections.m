@@ -899,50 +899,6 @@ lambda2LHSSAlphaTAlphaBAllDegenerate = With[{
      sbe^2))
 ];
 
-(* SM-like Bottom yukawa of the MSSM *)
-gbMSSMATMS = With[{
-    k = 1/(4*Pi)^2,
-    sbe = Sqrt[TanBeta^2/(1+TanBeta^2)],
-    cbe = Sqrt[1/(1+TanBeta^2)],
-    Nc = 3, (* number of colors *)
-    Q  = msq2[3,3],
-    U  = msu2[3,3],
-    mD  = msd2[3,3],
-    mu2 = MuInput^2,
-    mQ3 = Sqrt[msq2[3,3]],
-    mU3 = Sqrt[msu2[3,3]],
-    mD3 = Sqrt[msd2[3,3]],
-    M3 = M3Input,
-    Mu = MuInput,
-    sgn = MuInput/Abs[MuInput],      
-    q2 = SCALE^2, (* renormalization/matching scale *)
-    Q2 = SCALE^2,
-    Xtildet = xtt,
-    Xtildeb = xbb,
-    cosb = Cos[ArcTan[TanBeta]],
-    sinb = Sin[ArcTan[TanBeta]],
-    MA = mAInput,
-    CF = 4/3,
-    gt = Yu[3,3], (* SM Yukawa coupling *)
-    gb = Yd[3,3],
-    A0 = mAInput^2,
-    Xt = xt,
-    Yt = yt,
-    Xb = xb,
-    Yb = yb
-      },
-      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
-        deltagsb   = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
-        deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
-        deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
-        deltagbyL3 = - gt^2/sinb^2*k*(1/2*TCF[6][mU3/Mu]+(Xt*TanBeta)/(2*Mu)*TCF[9][mQ3/Mu,mU3/Mu] );
-        deltagbyL4 = - 1/2*(-gt^2*Nc*k*Xtildet/6*TCF[5][xQU]-gb^2*Nc*k*Xtildeb/6*TCF[5][xQD]);
-        (gb/(1-deltagsb-(deltagbyL1+deltagbyL2+deltagbyL3+deltagbyL4)))
-       ];      
-      ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]
-];
-  
-
 (* Top and bottom Yukawa lambda 2-loop threshold correction, computation with general masses *)
 lambda2LHSSAlphaTAlphaBGeneric = With[{
     k = 1/(4*Pi)^2,
