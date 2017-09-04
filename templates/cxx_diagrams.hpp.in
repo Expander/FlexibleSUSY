@@ -310,6 +310,19 @@ template<class Field> struct field_indices
   using type = std::array<unsigned, Field::numberOfFieldIndices>;
 };
 
+template<class Field>
+typename std::enable_if<Field::numberOfGenerations != 1, bool>::type
+isSMField( const typename field_indices<Field>::type &indices )
+{
+  return Field::isSMField[indices[0]];
+}
+
+template<class Field>
+typename std::enable_if<Field::numberOfGenerations == 1, bool>::type
+isSMField( const typename field_indices<Field>::type &indices )
+{
+  return Field::isSMField[0];
+}
 
 @CXXDiagrams_Fields@
 

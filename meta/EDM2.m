@@ -26,7 +26,7 @@ ContributingDiagramsForFieldAndGraph[field_,graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
          {1 -> field, 2 -> SARAH`AntiField[field], 3 -> GetPhoton[]}];
-         
+
     Select[diagrams,IsDiagramSupported[field,graph,#] &]
  ]
 

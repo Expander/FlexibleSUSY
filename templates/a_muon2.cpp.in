@@ -378,6 +378,11 @@ double AMuonVertexCorrectionFS<
 
       auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
+
+      if( isSMField<PhotonEmitter>( photonEmitterIndices ) &&
+          isSMField<ExchangeField>( exchangeFieldIndices ) )
+         continue;
+
       auto muonVertex = MuonVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
@@ -434,6 +439,11 @@ double AMuonVertexCorrectionSF<
 
       auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
+
+      if( isSMField<PhotonEmitter>( photonEmitterIndices ) &&
+          isSMField<ExchangeField>( exchangeFieldIndices ) )
+         continue;
+
       auto muonVertex = MuonVertex::evaluate(*indexIt, context);
 
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );

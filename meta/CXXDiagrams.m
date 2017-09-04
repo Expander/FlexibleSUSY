@@ -38,10 +38,13 @@ CXXNameOfField[p_] := SymbolName[p];
 CXXNameOfField[SARAH`bar[p_]] := "bar<" <> SymbolName[p] <> ">::type";
 CXXNameOfField[Susyno`LieGroups`conj[p_]] := "conj<" <> SymbolName[p] <> ">::type";
 
+CXXBoolValue[True] = "true"
+CXXBoolValue[False] = "false"
+
 (* TODO: Better name than LorentzConjugate *)
 LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
                                         "bar",
-                                        "conj"];
+                                        "conj"]
 LorentzConjugate[field_] := SARAH`AntiField[field]
 
 CreateFields[] :=
@@ -50,12 +53,20 @@ CreateFields[] :=
        
        StringJoin @ Riffle[
          ("struct " <> CXXNameOfField[#] <> "{\n" <>
-            TextFormatting`IndentText["static constexpr unsigned numberOfGenerations = " <>
-                                         ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
-                                      "static constexpr unsigned numberOfFieldIndices = " <>
-                                         ToString @ NumberOfFieldIndices[#] <> ";\n" <>
-                                      "using lorentz_conjugate = " <>
-                                         CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
+            TextFormatting`IndentText[
+              "static constexpr unsigned numberOfGenerations = " <>
+                 ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
+                   "static constexpr unsigned isSMField[] = { " <>
+                      If[TreeMasses`GetDimension[#] === 1,
+                         CXXBoolValue @ TreeMasses`IsSMParticle[#],
+                         StringJoin @ Riffle[CXXBoolValue /@
+                           (TreeMasses`IsSMParticle[#] & /@ Table[#[{k}],{k,TreeMasses`GetDimension[#]}]),
+                                             ", "]] <>
+                      " };\n" <>
+              "static constexpr unsigned numberOfFieldIndices = " <>
+                 ToString @ NumberOfFieldIndices[#] <> ";\n" <>
+              "using lorentz_conjugate = " <>
+                 CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
             "};\n" &) /@ fields, "\n"] <> "\n\n" <>
        
        "// Named fields\n" <>
