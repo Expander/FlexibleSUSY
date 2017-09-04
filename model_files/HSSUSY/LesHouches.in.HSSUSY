@@ -68,6 +68,7 @@ Block EXTPAR                 # Input parameters
   103   1                    # TwoLoopAtAb
   104   1                    # TwoLoopAtauAtau
   105   1                    # TwoLoopAtAt
+  200   0                    # DeltaEFT
 Block MSQ2IN
   1  1     4.00000000E+06   # mq2(1,1)
   2  2     4.00000000E+06   # mq2(2,2)
