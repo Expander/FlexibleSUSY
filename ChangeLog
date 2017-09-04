@@ -285,6 +285,18 @@ FlexibleSUSY 2.0.0 [not released yet]
          }
       ]
 
+ * Feature: Adding the new input parameter DeltaEFT to the HSSUSY
+   spectrum generator to allow the user to estimate the EFT
+   uncertainty.  Each 1-loop term in the threshold correction for
+   lambda(MS) is multiplied by the factor
+
+      (1 + DeltaEFT v^2/MS^2)
+
+   Thus, the standard calculation of HSSUSY is obtained by DeltaEFT =
+   0 (default).  Set DeltaEFT = 1 to obtain an alternative Higgs pole
+   mass with a shifted threshold correction to estimate the effect of
+   the missing terms of O(v^2/MS^2).
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()
