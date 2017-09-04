@@ -32,7 +32,7 @@ lambdaTree = 1/4 (g2^2 + 3/5 g1^2) Cos[2 ArcTan[TanBeta]]^2;
 
 (* arXiv:1407.4081, Eq. (9) *)
 lambda1LReg = 1/(4 Pi)^2 (
-    - 9/100 g1^4 - 0.3 g1^2 g2^2
+    - 9/100 g1^4 - 3/10 g1^2 g2^2
     - (3/4 - Cos[2 ArcTan[TanBeta]]^2/6) * g2^4
     );
 
