@@ -1,4 +1,4 @@
-FlexibleSUSY-1.7.5 [not released yet]
+FlexibleSUSY-1.7.5 [September, 05 2017]
 
  * Bugfix (commit 03e9265): Correcting wrong vertex between
    chargino-smuon-neutrino and chargino-muon-sneutrino in muon decay.
