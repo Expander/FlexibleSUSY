@@ -276,8 +276,10 @@ template<class Field> struct bar
 {
   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr auto isSMField = Field::isSMField;
+
   using type = bar<Field>;
-  using conjugate = Field;
+  using lorentz_conjugate = Field;
 };
 
 // Lorentz conjugate bosons
@@ -285,8 +287,10 @@ template<class Field> struct conj
 {
   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr auto isSMField = Field::isSMField;
+
   using type = conj<Field>;
-  using conjugate = Field;
+  using lorentz_conjugate = Field;
 };
 
 // Double Lorentz conjugation
