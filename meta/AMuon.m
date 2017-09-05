@@ -58,10 +58,10 @@ CreateCalculateMuonPoleMass[] := "model.calculate_M" <>
                                  "_pole();"
 CreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
                              CXXDiagrams`CXXNameOfField[GetMuon[]] <>
-                             "(" <> If[GetMuonIndex[] =!= Null,
-                                       " " <> ToString @ GetMuonIndex[] <> " ",
-                                       ""] <>
-                             ");";
+                             If[GetMuonIndex[] =!= Null,
+                                "( " <> ToString @ GetMuonIndex[] <> " )",
+                                ""] <>
+                             ";"
 
 CreateCalculation[gTaggedDiagrams_List] :=
   Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
