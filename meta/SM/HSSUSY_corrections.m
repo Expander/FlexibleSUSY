@@ -138,7 +138,7 @@ lambda1Lbottom = With[{
     k = 1/(4 Pi)^2,
     CF = 4/3
     },
-      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
         deltagsb   = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
         deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
         deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -843,7 +843,7 @@ lambda2LHSSAlphaTAlphaBAllDegenerate = With[{
     sinb = Sin[ArcTan[TanBeta]],
     MA = mAInput
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -935,7 +935,7 @@ lambda2LHSSAlphaTAlphaBGeneric = With[{
     Xb = xb,
     Yb = yb
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2108,7 +2108,7 @@ lambda2LHSSTau = With[{
     MA = mAInput,
     CF = 4/3
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2425,7 +2425,7 @@ lambda2LPhiHSSAlphaBAlphaSFull = With[{
     MA = mAInput,
     CF = 4/3
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2516,7 +2516,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerate = With[{
     MA = mAInput,
     CF = 4/3
   },
-  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2558,7 +2558,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerateSquark = With[{
     MA = mAInput,
     CF = 4/3
   },
-  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
