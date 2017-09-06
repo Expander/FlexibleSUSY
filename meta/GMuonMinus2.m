@@ -357,20 +357,12 @@ OrderVertex[vertex_, ordering_] :=
 (* Use of memoization gives ~30% speedup for the MSSM! *)
 memoizedVertices = {};
 MemoizingVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
-    Module[{memo, ordering, orderedParticles},
-           (* First we sort the particles *)
-           ordering = Ordering[particles];
-           orderedParticles = particles[[ordering]];
-
-           memo = Select[memoizedVertices, MatchesMemoizedVertex[orderedParticles], 1];
-           If[memo =!= {}, memo = memo[[1]],
+    Module[{memo = Select[memoizedVertices, MatchesMemoizedVertex[particles], 1]},
+           If[memo =!= {}, memo[[1]],
               (* Create a new entry *)
-              memo = SARAH`Vertex[orderedParticles, options];
-              AppendTo[memoizedVertices, memo];];
-
-           (* Now return the particles to their original order *)
-           memo = OrderVertex[memo, Ordering[ordering]];
-           Return[memo]];
+              memo = SARAH`Vertex[particles, options];
+              AppendTo[memoizedVertices, memo];
+	      memo]];
 
 MatchesMemoizedVertex[particles_List][vertex_] := MatchQ[particles, Vertices`StripFieldIndices /@ vertex[[1]]];
 
