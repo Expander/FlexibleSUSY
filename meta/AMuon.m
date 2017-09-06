@@ -68,7 +68,6 @@ CreateCalculation[gTaggedDiagrams_List] :=
           calculation,numberOfIndices},
     numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
     
-    "EvaluationContext context{ model };\n" <>
     "std::array<unsigned, " <> ToString @ numberOfIndices <>
     "> indices = {" <>
       If[muonIndex =!= Null,
@@ -82,13 +81,9 @@ CreateCalculation[gTaggedDiagrams_List] :=
             ""]
         ] <> "};\n\n" <>
                                  
-    "double val = 0.0;\n\n" <>
-                   
     StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
       Flatten[CXXEvaluatorsForDiagramsFromGraph[#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
-                   
-    "return val;"
+                                       "\n"]
   ];
 
 CXXEvaluatorsForDiagramsFromGraph[diagrams_,graph_] :=
