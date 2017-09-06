@@ -56,13 +56,13 @@ CreateFields[] :=
             TextFormatting`IndentText[
               "static constexpr unsigned numberOfGenerations = " <>
                  ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
-                   "static constexpr unsigned isSMField[] = { " <>
+                   "using smFlags = boost::mpl::vector_c<bool, " <>
                       If[TreeMasses`GetDimension[#] === 1,
                          CXXBoolValue @ TreeMasses`IsSMParticle[#],
                          StringJoin @ Riffle[CXXBoolValue /@
                            (TreeMasses`IsSMParticle[#] & /@ Table[#[{k}],{k,TreeMasses`GetDimension[#]}]),
                                              ", "]] <>
-                      " };\n" <>
+                      ">;\n" <>
               "static constexpr unsigned numberOfFieldIndices = " <>
                  ToString @ NumberOfFieldIndices[#] <> ";\n" <>
               "using lorentz_conjugate = " <>
