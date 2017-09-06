@@ -172,7 +172,7 @@ double EDMVertexCorrectionFS<
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = PhotonEmitter::electric_charge;
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -219,7 +219,7 @@ double EDMVertexCorrectionSF<
       auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
-      double photonEmitterCharge = context.electric_charge<PhotonEmitter>( photonEmitterIndices );
+      double photonEmitterCharge = PhotonEmitter::electric_charge;
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
