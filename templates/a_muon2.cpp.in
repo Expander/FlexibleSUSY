@@ -390,8 +390,7 @@ double AMuonVertexCorrectionFS<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        - context.electric_charge<PhotonEmitter>( photonEmitterIndices ) /
-          context.electric_charge<Muon>( muonIndices );
+        - PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
@@ -451,8 +450,7 @@ double AMuonVertexCorrectionSF<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        - context.electric_charge<PhotonEmitter>( photonEmitterIndices ) /
-          context.electric_charge<Muon>( muonIndices );
+        - PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();

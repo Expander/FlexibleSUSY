@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`"}];
+BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`","CConversion`"}];
 
 (* This module generates c++ code intended to be used similarly to SARAH's fields and Vertex[] function *)
 
@@ -52,22 +52,25 @@ CreateFields[] :=
        fields = TreeMasses`GetParticles[];
        
        StringJoin @ Riffle[
-         ("struct " <> CXXNameOfField[#] <> "{\n" <>
+         ("struct " <> CXXNameOfField[#] <> " {\n" <>
             TextFormatting`IndentText[
               "static constexpr unsigned numberOfGenerations = " <>
-                 ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
-                   "using smFlags = boost::mpl::vector_c<bool, " <>
-                      If[TreeMasses`GetDimension[#] === 1,
-                         CXXBoolValue @ TreeMasses`IsSMParticle[#],
-                         StringJoin @ Riffle[CXXBoolValue /@
-                           (TreeMasses`IsSMParticle[#] & /@ Table[#[{k}],{k,TreeMasses`GetDimension[#]}]),
-                                             ", "]] <>
-                      ">;\n" <>
-              "static constexpr unsigned numberOfFieldIndices = " <>
-                 ToString @ NumberOfFieldIndices[#] <> ";\n" <>
-              "using lorentz_conjugate = " <>
-                 CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
-            "};\n" &) /@ fields, "\n"] <> "\n\n" <>
+                   ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
+                     "using smFlags = boost::mpl::vector_c<bool, " <>
+                        If[TreeMasses`GetDimension[#] === 1,
+                           CXXBoolValue @ TreeMasses`IsSMParticle[#],
+                           StringJoin @ Riffle[CXXBoolValue /@
+                             (TreeMasses`IsSMParticle[#] & /@ Table[#[{k}],{k,TreeMasses`GetDimension[#]}]),
+                                               ", "]] <>
+                        ">;\n" <>
+                "static constexpr unsigned numberOfFieldIndices = " <>
+                   ToString @ NumberOfFieldIndices[#] <> ";\n" <>
+                "using lorentz_conjugate = " <>
+                   CXXNameOfField[LorentzConjugate[#]] <> ";\n\n" <>
+  
+                "static constexpr double electric_charge = " <>
+                   CConversion`RValueToCFormString[TreeMasses`GetElectricCharge[#]] <> ";\n"] <>
+              "};" &) /@ fields, "\n\n"] <> "\n\n" <>
        
        "// Named fields\n" <>
        "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>

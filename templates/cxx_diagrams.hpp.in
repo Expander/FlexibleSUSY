@@ -478,24 +478,9 @@ struct EvaluationContext {
     return mass_impl<CleanField>( indices );
   }
 
-  template<class Field>
-  double electric_charge( const typename field_indices<Field>::type &indices ) const
-  {
-    using PhotonVertex = Vertex<Photon, typename Field::lorentz_conjugate, Field>;
-    auto vertexResult = PhotonVertex::evaluate( impl::concatenate( indices, indices ), *this );
-    
-    // Fixme: We assume the charge to be real and left/right symmetric
-    return std::real( firstComponent( vertexResult ) );
-  }
-
 private:
   template<class Field>
   double mass_impl( const typename field_indices<Field>::type &indices ) const;
-  
-  static std::complex<double> firstComponent( const SingleComponentedVertex &vertex )
-  { return vertex.value(); }
-  static std::complex<double> firstComponent( const LeftAndRightComponentedVertex &vertex )
-  { return vertex.left(); }
 };
   
 
