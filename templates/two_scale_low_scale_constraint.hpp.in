@@ -78,6 +78,7 @@ private:
    void calculate_MNeutrino_DRbar();
    double calculate_delta_alpha_em(double) const;
    double calculate_delta_alpha_s(double) const;
+   double calculate_alpha_s_SM5_at(softsusy::QedQcd, double) const;
    void check_model_ptr() const;
    void update_scale();
 };
