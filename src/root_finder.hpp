@@ -172,9 +172,7 @@ int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
       status = gsl_multiroot_test_residual(solver->f, precision);
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-#ifdef ENABLE_VERBOSE
-   std::cout << "\t\t\tRoot_finder status = " << gsl_strerror(status) << '\n';
-#endif
+   VERBOSE_MSG("\t\t\tRoot_finder status = " << gsl_strerror(status));
 
    root = solver->x;
 
@@ -193,9 +191,9 @@ template <std::size_t dimension>
 void Root_finder<dimension>::print_state(const gsl_multiroot_fsolver* solver,
                                          std::size_t iteration) const
 {
-   std::cout << "\t\t\tIteration " << iteration
-             << ": x = " << GSL_vector(solver->x)
-             << ", f(x) = " << GSL_vector(solver->f) << '\n';
+   VERBOSE_MSG("\t\t\tIteration " << iteration
+               << ": x = " << GSL_vector(solver->x)
+               << ", f(x) = " << GSL_vector(solver->f));
 }
 
 template <std::size_t dimension>
