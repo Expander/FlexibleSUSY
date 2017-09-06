@@ -180,7 +180,7 @@ public:
    void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
    void write_to_file(const std::string&) const;
-   void write_to_stream(std::ostream& = std::cout) const;
+   void write_to_stream(std::ostream& = std::cerr) const;
 
    // Standard_model class interface
    void set_mass(const standard_model::Standard_model_physical&);

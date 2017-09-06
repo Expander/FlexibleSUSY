@@ -34,8 +34,8 @@ public:
    std::vector<std::string> get_warning_strings() const;
    std::string get_problem_string() const;
    std::string get_warning_string() const;
-   void print_problems(std::ostream& = std::cout) const;
-   void print_warnings(std::ostream& = std::cout) const;
+   void print_problems(std::ostream& = std::cerr) const;
+   void print_warnings(std::ostream& = std::cerr) const;
    const std::string& get_solver_name() const;
 
    void flag_no_convergence();

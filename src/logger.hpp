@@ -34,8 +34,7 @@
  * ERROR(message)
  * FATAL(message)        aborts program execution
  *
- * VERBOSE_MSG, DEBUG_MSG and INFO print to std::cout .
- * WARNING, ERROR and FATAL print to std::cerr .
+ * All macros print to std::cerr .
  *
  * All output can be disabled if ENABLE_SILENT is defined.
  *
@@ -121,7 +120,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
    #define PRINT_COLOR_CODE(level)                               \
       do {                                                       \
          switch (level) {                                        \
-         case flexiblesusy::kDebug:   std::cout << "\033[0;34m"; break; \
+         case flexiblesusy::kDebug:   std::cerr << "\033[0;34m"; break; \
          case flexiblesusy::kWarning: std::cerr << "\033[0;31m"; break; \
          case flexiblesusy::kError:   std::cerr << "\033[1;31m"; break; \
          case flexiblesusy::kFatal:   std::cerr << "\033[41;1;37m"; break; \
@@ -142,7 +141,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          case flexiblesusy::kDebug:                              \
          case flexiblesusy::kInfo:                               \
          case flexiblesusy::kVerbose:                            \
-            std::cout << "\033[0m";                              \
+            std::cerr << "\033[0m";                              \
             break;                                               \
          case flexiblesusy::kWarning:                            \
          case flexiblesusy::kError:                              \
@@ -164,7 +163,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          case flexiblesusy::kDebug:                              \
          case flexiblesusy::kInfo:                               \
          case flexiblesusy::kVerbose:                            \
-            std::cout << message;                                \
+            std::cerr << message;                                \
             break;                                               \
          case flexiblesusy::kWarning:                            \
          case flexiblesusy::kError:                              \
@@ -186,7 +185,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          case flexiblesusy::kDebug:                              \
          case flexiblesusy::kInfo:                               \
          case flexiblesusy::kVerbose:                            \
-            std::cout << std::endl;                              \
+            std::cerr << std::endl;                              \
             break;                                               \
          case flexiblesusy::kWarning:                            \
          case flexiblesusy::kError:                              \
