@@ -387,7 +387,8 @@ TEST_SH += \
 		$(DIR)/test_CMSSM_memory_leaks.sh \
 		$(DIR)/test_CMSSM_profile.sh \
 		$(DIR)/test_CMSSM_QedQcd_exception.sh \
-		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh
+		$(DIR)/test_CMSSM_QedQcd_no_convergence.sh \
+		$(DIR)/test_CMSSM_streams.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_slha.cpp \
 		$(DIR)/test_CMSSM_slha_input.cpp \

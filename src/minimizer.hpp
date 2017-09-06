@@ -164,9 +164,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
 #endif
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-#ifdef ENABLE_VERBOSE
-   std::cout << "\t\t\tMinimization status = " << gsl_strerror(status) << '\n';
-#endif
+   VERBOSE_MSG("\t\t\tMinimization status = " << gsl_strerror(status));
 
    // save minimum point and function value
    minimum_point = minimizer->x;
@@ -187,9 +185,9 @@ template <std::size_t dimension>
 void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
                                                std::size_t iteration) const
 {
-   std::cout << "\t\t\tIteration " << iteration
-             << ": x = " << GSL_vector(minimizer->x)
-             << ", f(x) = " << minimizer->fval << '\n';
+   VERBOSE_MSG("\t\t\tIteration " << iteration
+               << ": x = " << GSL_vector(minimizer->x)
+               << ", f(x) = " << minimizer->fval);
 }
 
 template <std::size_t dimension>

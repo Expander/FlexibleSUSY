@@ -165,15 +165,6 @@ double b0(double p, double m1, double m2, double q) noexcept
     }
   }
 
-#ifdef USE_LOOPTOOLS
-  if (!is_close(b0l, ans, 1.0e-3)) {
-    cout << "DEBUG Err: DB0(" << p << ", " << m1 << ", " << m2
-	 << ", "  << q << ")=" << 1.-b0l/ans << endl;
-    cout << "SOFTSUSY  B0=" << ans << endl;
-    cout << "LOOPTOOLS B0=" << b0l << endl;
-  }
-#endif
-
   return ans;
 }
 
@@ -236,17 +227,6 @@ double b1(double p, double m1, double m2, double q) noexcept
         ans = -0.5*log(m22/q2) + 0.25;
   }
 
-#ifdef USE_LOOPTOOLS
-  if (!is_close(b1l, ans, 1.0e-3)) {
-    cout << " Test=" << pTest << " ";
-    cout << "DEBUG Err: Db1(" << p << ", " << m1 << ", " << m2
-	 << ", "  << q << ")=" << 1.-b1l/ans << endl;
-    cout << "SOFTSUSY  B1=" << ans << " B0=" << b0(p, m1, m2, q) << endl;
-    cout << "LOOPTOOLS B1=" << b1l << " B0=" << B0(p*p, m1*m1, m2*m2).real()
-	 << endl;
-  }
-#endif
-
   return ans;
 }
 
@@ -300,16 +280,6 @@ double b22(double p,  double m1, double m2, double q) noexcept
        (a02 - a01 - (m22 - m12) * b0Save) +
        m12 + m22 - p2 / 3.0);
   }
-
-#ifdef USE_LOOPTOOLS
-  if (!is_close(b22l, answer, 1.0e-3)) {
-    cout << " DEBUG Err: Db22(" << p << ", " << m1 << ", " << m2
-	 << ", "  << q << ")=" << 1.-b22l/answer << endl;
-    cout << "SOFTSUSY  B22=" << answer << " B0=" << b0(p, m1, m2, q) << endl;
-    cout << "LOOPTOOLS B22=" << b22l << " B0=" << B0(p*p, m1*m1, m2*m2).real()
-	 << endl;
-  }
-#endif
 
   return answer;
 }
@@ -432,15 +402,6 @@ double c0(double m1, double m2, double m3) noexcept
              m32 / (m12 - m32) *
              log(m32 / m12)) );
   }
-
-#ifdef USE_LOOPTOOLS
-  if (!is_close(c0l, ans, 1.0e-3)) {
-    cout << " DEBUG Err: C0" << m1 << ", " << m2
-	 << ", "  << m3 << ")=" << 1.-c0l/ans << endl;
-    cout << "SOFTSUSY  C0=" << ans << endl;
-    cout << "LOOPTOOLS C0=" << c0l << endl;
-  }
-#endif
 
   return ans;
 }

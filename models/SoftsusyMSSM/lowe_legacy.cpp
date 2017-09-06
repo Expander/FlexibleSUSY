@@ -264,7 +264,7 @@ double QedQcd_legacy::qedBeta() const {
   // if (displayMu() > mf.display(mTop)) x += 8.0 / 9.0;
   if (displayMu() > mf.display(mBottom)) x += 2.0 / 9.0;
   if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
-  if (displayMu() > MW) x += -7.0 / 2.0;
+  if (displayMu() > displayPoleMW()) x += -7.0 / 2.0;
 
   return (x * sqr(a.display(ALPHA)) / PI);
 }

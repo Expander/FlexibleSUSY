@@ -349,7 +349,7 @@ inline double PrintTo(std::ostream& ostr)
 }
 } // anonymous namespace
 
-///< print information to cout
+///< print information to ostr
 template<typename T0, typename... Ts>
 double PrintTo(std::ostream& ostr, T0&& v, Ts&&... vs)
 {
@@ -357,12 +357,12 @@ double PrintTo(std::ostream& ostr, T0&& v, Ts&&... vs)
    return PrintTo(ostr, std::forward<Ts>(vs)...);
 }
 
-///< print debug information to cout
+///< print debug information to cerr
 template<typename... Ts>
 double PrintDEBUG(Ts&&... vs)
 {
 #ifdef ENABLE_DEBUG
-   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+   return PrintTo(std::cerr, std::forward<Ts>(vs)...);
 #else
    return 0.;
 #endif
@@ -386,19 +386,19 @@ double PrintFATAL(Ts&&... vs)
    return 0.;
 }
 
-///< print information to cout
+///< print information to cerr
 template<typename... Ts>
 double PrintINFO(Ts&&... vs)
 {
-   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+   return PrintTo(std::cerr, std::forward<Ts>(vs)...);
 }
 
-///< print verbose information to cout
+///< print verbose information to cerr
 template<typename... Ts>
 double PrintVERBOSE(Ts&&... vs)
 {
 #ifdef ENABLE_VERBOSE
-   return PrintTo(std::cout, std::forward<Ts>(vs)...);
+   return PrintTo(std::cerr, std::forward<Ts>(vs)...);
 #else
    return 0.;
 #endif

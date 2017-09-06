@@ -252,6 +252,51 @@ FlexibleSUSY 2.0.0 [not released yet]
           higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
       }
 
+ * Feature: Adding complete 1-loop O(alpha_tau + alpha_b) and complete
+   2-loop O((alpha_t + alpha_b)^2 + atau^2) threshold corrections for
+   lambda(MSUSY) to the HSSUSY model file from [arXiv:1703.08166].
+   Many thanks to Pietro Slavich and Emanuele Bagnaschi for providing
+   the expressions.
+
+   Note: 5 new flags are introduced to enable/disable the individual
+   2-loop corrections.  In the SLHA input the flags which control the
+   inclusion of 2-loop corrections are:
+
+      Block EXTPAR                 # Input parameters
+        100   2                    # LambdaLoopOrder
+        101   1                    # TwoLoopAtAs
+        102   1                    # TwoLoopAbAs
+        103   1                    # TwoLoopAtAb
+        104   1                    # TwoLoopAtauAtau
+        105   1                    # TwoLoopAtAt
+
+   In the Mathematica interface the flags which control the inclusion
+   of 2-loop corrections are:
+
+      handle = FSHSSUSYOpenHandle[
+         fsModelParameters -> {
+            ...
+            LambdaLoopOrder -> 2,
+            TwoLoopAtAs -> 1,
+            TwoLoopAbAs -> 1,
+            TwoLoopAtAb -> 1,
+            TwoLoopAtauAtau -> 1,
+            TwoLoopAtAt -> 1
+         }
+      ]
+
+ * Feature: Adding the new input parameter DeltaEFT to the HSSUSY
+   spectrum generator to allow the user to estimate the EFT
+   uncertainty.  Each 1-loop term in the threshold correction for
+   lambda(MS) is multiplied by the factor
+
+      (1 + DeltaEFT v^2/MS^2)
+
+   Thus, the standard calculation of HSSUSY is obtained by DeltaEFT =
+   0 (default).  Set DeltaEFT = 1 to obtain an alternative Higgs pole
+   mass with a shifted threshold correction to estimate the effect of
+   the missing terms of O(v^2/MS^2).
+
  * Change: The interface for adding constraints and matching
    conditions to the Two_scale_solver class has been simplified.
    Constrains and matching conditions are now added using the add()

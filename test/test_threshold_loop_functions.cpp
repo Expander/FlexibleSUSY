@@ -1179,6 +1179,14 @@ BOOST_AUTO_TEST_CASE(test_phixyz)
       XYZ(1, 2, 1),
       XYZ(2, 1, 1),
 
+      XYZ(1, 1, 10),
+      XYZ(1, 10, 1),
+      XYZ(10, 1, 1),
+
+      XYZ(1, 10, 20),
+      XYZ(10, 20, 1),
+      XYZ(20, 1, 10),
+
       XYZ(1, 2, 2),
       XYZ(2, 2, 1),
       XYZ(2, 1, 2),

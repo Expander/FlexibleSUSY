@@ -9,16 +9,20 @@ Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$.  At
 the SUSY scale, the quartic Higgs coupling,
 \f$\lambda(M_\text{SUSY})\f$ is predicted from the matching to the
 MSSM using the threshold corrections of [arXiv:1407.4081,
-arxiv:1504.05200].  The 3-loop renormalization group equations of
-[arxiv:1504.05200, arxiv:1303.4364] are used to run
+arxiv:1504.05200, arXiv:1703.08166].  The 3-loop renormalization group
+equations of [arxiv:1504.05200, arxiv:1303.4364] are used to run
 \f$\lambda(M_\text{SUSY})\f$ down to the electroweak scale.  At the
 electroweak scale, the gauge and Yukawa couplings as well as the SM
 vacuum expectation value (VEV) are calculated at the 1-loop level from
 the known low-energy couplings \f$\alpha_{\text{em}}(M_Z)\f$,
-\f$\alpha_s(M_Z)\f$ and Standard Model masses.  The top Yukawa
-coupling \f$y_t(M_Z)\f$ is calculated at the 1-loop level from the
-top pole mass, taking 2-loop [hep-ph/9803493] and 3-loop
-[arxiv:hep-ph/9911434] corrections into account.
+\f$\alpha_s(M_Z)\f$ and Standard Model masses.  The known 2-loop and
+3-loop QCD threshold corrections for \f$\alpha_s(M_Z)\f$ can also be
+taken into account [hep-ph/9305305, hep-ph/9708255, hep-ph/9707474,
+hep-ph/0004189] by setting the threshold corrections flag
+appropriately.  The top Yukawa coupling \f$y_t(M_Z)\f$ is calculated
+at the full 1-loop level from the top pole mass, taking optionally
+2-loop [hep-ph/9803493] and 3-loop [arxiv:hep-ph/9911434] corrections
+into account, see @ref FlexibleSUSY_config .
 
 __Input parameters__
 
@@ -52,7 +56,8 @@ _High scale_
 The high scale (`HighScale`) is fixed \f$M_{\text{SUSY}}\f$.  At
 \f$M_{\text{SUSY}}\f$, the quartic Higgs coupling
 \f$\lambda(M_\text{SUSY})\f$ is fixed using the 1- and leading 2-loop
-threshold corrections of [arXiv:1407.4081, arxiv:1504.05200].
+threshold corrections of [arXiv:1407.4081, arxiv:1504.05200,
+arXiv:1703.08166].
 
 _EWSB scale_
 
@@ -75,11 +80,23 @@ Depending on the given input flags, the top Yukawa coupling,
 2-loop [hep-ph/9803493] and 3-loop [arxiv:hep-ph/9911434] QCD
 corrections, see \ref FlexibleSUSY_config .
 
+Depending on the given input flags, the strong coupling constant,
+\f$\alpha_s(M_Z)\f$, is calculated at the 1-loop level plus additional
+2-loop and 3-loop QCD corrections [hep-ph/9305305, hep-ph/9708255,
+hep-ph/9707474, hep-ph/0004189], see \ref FlexibleSUSY_config .
+
 __Pole masses__
 
 The Standard Model pole mass spectrum is calculated at the 1-loop
 level.  Depending on the given input flags, 2-loop corrections
-\f$O(\alpha_t\alpha_s)\f$ [arxiv:1205.6497, Eq.(20)] and
-\f$O(\alpha_t^2)\f$ [arxiv:1504.05200, Eq.(20)] are included.
+\f$O(\alpha_t\alpha_s)\f$ [arxiv:1407.4336, Eq.(2.47)] and
+\f$O(\alpha_t^2)\f$ [arxiv:1205.6497, Eq.(20)], as well as 3-loop
+corrections \f$O(\alpha_t^3 + \alpha_t^2\alpha_s +
+\alpha_t\alpha_s^2)\f$ [arxiv:1407.4336] are included.
+
+@note Note, that the 3-loop contributions \f$O(\alpha_t^3 +
+\alpha_t^2\alpha_s)\f$ are incomplete, because the corresponding
+2-loop threshold corrections \f$O(\alpha_t^2 + \alpha_t\alpha_s)\f$
+for the running top Yukawa coupling are not implemented yet.
 
 */

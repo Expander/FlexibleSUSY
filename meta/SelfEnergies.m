@@ -859,6 +859,7 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
 "\
 using namespace flexiblesusy::sm_twoloophiggs;
 
+const double p2 = Sqr(p);
 const double mt = " <> mtStr <> ";
 const double yt = " <> ytStr <> ";
 const double gs = " <> g3Str <> ";
@@ -866,11 +867,11 @@ const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_2LOOP_CORRECTION_AT_AT) {
-   self_energy += self_energy_higgs_2loop_at_at_sm(scale, mt, yt);
+   self_energy += self_energy_higgs_2loop_at_at_sm(p2, scale, mt, yt);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
-   self_energy += self_energy_higgs_2loop_at_as_sm(scale, mt, yt, gs);
+   self_energy += self_energy_higgs_2loop_at_as_sm(p2, scale, mt, yt, gs);
 }
 
 return self_energy;"
@@ -1432,23 +1433,23 @@ GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
            ""
           ];
 
-CreateNLoopSelfEnergy[particle_, model_String, loop_] :=
+CreateNLoopSelfEnergy[particle_, model_String, loop_, args_String] :=
     Module[{prototype, function, functionName, dim, dimStr, cType},
            dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
            dimStr = ToString[dim];
            functionName = CreateSelfEnergyFunctionName[particle,loop];
            cType = CConversion`CreateCType[TreeMasses`GetMassMatrixType[particle]];
-           prototype = cType <> " " <> functionName <> "() const;\n";
+           prototype = cType <> " " <> functionName <> "(" <> args <> ") const;\n";
            body = GetNLoopSelfEnergyCorrections[particle, model, loop];
-           function = cType <> " CLASSNAME::" <> functionName <> "() const\n{\n" <>
+           function = cType <> " CLASSNAME::" <> functionName <> "(" <> args <> ") const\n{\n" <>
                       IndentText[body] <> "\n}\n";
            Return[{prototype, function}];
           ];
 
-CreateNLoopSelfEnergies[particles_List, model_String, loop_] :=
+CreateNLoopSelfEnergies[particles_List, model_String, loop_, args_String:""] :=
     Module[{prototype = "", function = "", i, p, f},
            For[i = 1, i <= Length[particles], i++,
-               {p, f} = CreateNLoopSelfEnergy[particles[[i]], model, loop];
+               {p, f} = CreateNLoopSelfEnergy[particles[[i]], model, loop, args];
                prototype = prototype <> p;
                function = function <> f <> "\n";
               ];
@@ -1456,7 +1457,7 @@ CreateNLoopSelfEnergies[particles_List, model_String, loop_] :=
           ];
 
 CreateTwoLoopSelfEnergiesSM[particles_List] :=
-    CreateNLoopSelfEnergies[particles, "SM", 2];
+    CreateNLoopSelfEnergies[particles, "SM", 2, "double p"];
 
 CreateThreeLoopSelfEnergiesSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "SM", 3];

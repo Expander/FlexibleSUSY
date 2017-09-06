@@ -69,7 +69,6 @@ CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
         },
         fsModelParameters -> {
             TanBeta -> TB,
-            LambdaLoopOrder -> 2,
             MEWSB -> 173.34,
             MSUSY -> MS,
             M1Input -> MS,
@@ -82,7 +81,13 @@ CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
             msu2 -> MS^2 IdentityMatrix[3],
             msd2 -> MS^2 IdentityMatrix[3],
             msl2 -> MS^2 IdentityMatrix[3],
-            mse2 -> MS^2 IdentityMatrix[3]
+            mse2 -> MS^2 IdentityMatrix[3],
+            LambdaLoopOrder -> 2,
+            TwoLoopAtAs -> 1,
+            TwoLoopAbAs -> 1,
+            TwoLoopAtAb -> 1,
+            TwoLoopAtauAtau -> 1,
+            TwoLoopAtAt -> 1
         }
     ];
     spec = HSSUSY /. FSHSSUSYCalculateSpectrum[handle];

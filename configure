@@ -2510,6 +2510,7 @@ replace_markers() {
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
+	-e "s|@ENABLE_HIMALAYA@|$enable_himalaya|" \
 	-e "s|@ENABLE_ILP64MKL_WORKAROUND@|$enable_ilp64mkl_workaround|" \
 	-e "s|@ENABLE_LAPACK@|$enable_lapack|" \
 	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \

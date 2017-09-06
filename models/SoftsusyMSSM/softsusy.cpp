@@ -2723,8 +2723,7 @@ double Softsusy<SoftPars>::calcRunMbDrBarConv() const {
    double    gp      = displayGaugeCoupling(1) * sqrt(0.6);
    double alphasMZ = sqr(displayGaugeCoupling(3)) / (4.0 * PI);
    double conversion = (1.0 - alphasMZ / (3.0 * PI) 
-                        - 23.0 / 72.0 * sqr(alphasMZ) / sqr(PI) +
-                        3.0 * sqr(g) / (128.0 * sqr(PI)) +
+                        + 3.0 * sqr(g) / (128.0 * sqr(PI)) +
                         13.0 * sqr(gp) / (1152. * sqr(PI)));
    return conversion;
 }

@@ -4144,10 +4144,11 @@ std::complex<double> Standard_model::tadpole_hh_1loop() const
 
 
 
-double Standard_model::self_energy_hh_2loop() const
+double Standard_model::self_energy_hh_2loop(double p) const
 {
    using namespace flexiblesusy::sm_twoloophiggs;
 
+   const double p2 = Sqr(p);
    const double mt = MFu(2);
    const double yt = Yu(2,2);
    const double gs = g3;
@@ -4155,11 +4156,11 @@ double Standard_model::self_energy_hh_2loop() const
    double self_energy = 0.;
 
    if (HIGGS_2LOOP_CORRECTION_AT_AT) {
-      self_energy += self_energy_higgs_2loop_at_at_sm(scale, mt, yt);
+      self_energy += self_energy_higgs_2loop_at_at_sm(p2, scale, mt, yt);
    }
 
    if (HIGGS_2LOOP_CORRECTION_AT_AS) {
-      self_energy += self_energy_higgs_2loop_at_as_sm(scale, mt, yt, gs);
+      self_energy += self_energy_higgs_2loop_at_as_sm(p2, scale, mt, yt, gs);
    }
 
    return self_energy;
@@ -4222,7 +4223,7 @@ void Standard_model::calculate_Mhh_pole()
       const double p = old_Mhh;
       double self_energy = Re(self_energy_hh_1loop(p));
       if (pole_mass_loop_order > 1)
-         self_energy += self_energy_hh_2loop();
+         self_energy += self_energy_hh_2loop(p);
       if (pole_mass_loop_order > 2)
          self_energy += self_energy_hh_3loop();
       const double mass_sqr = M_tree - self_energy;

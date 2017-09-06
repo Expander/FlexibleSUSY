@@ -292,10 +292,8 @@ int Fixed_point_iterator<dimension,Convergence_tester>::find_fixed_point(
 
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-#ifdef ENABLE_VERBOSE
-   std::cout << "\t\t\tFixed_point_iterator status = "
-             << gsl_strerror(status) << '\n';
-#endif
+   VERBOSE_MSG("\t\t\tFixed_point_iterator status = "
+               << gsl_strerror(status));
 
    return status;
 }
@@ -333,9 +331,9 @@ int Fixed_point_iterator<dimension,Convergence_tester>::fixed_point_iterator_ite
 template <std::size_t dimension, class Convergence_tester>
 void Fixed_point_iterator<dimension,Convergence_tester>::print_state(std::size_t iteration) const
 {
-   std::cout << "\t\t\tIteration n = " << iteration
-             << ": x_{n} = " << xn
-             << ", x_{n+1} = " << fixed_point << '\n';
+   VERBOSE_MSG("\t\t\tIteration n = " << iteration
+               << ": x_{n} = " << xn
+               << ", x_{n+1} = " << fixed_point);
 }
 
 template <std::size_t dimension, class Convergence_tester>

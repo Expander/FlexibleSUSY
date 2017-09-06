@@ -1169,20 +1169,32 @@ namespace {
                 + clausen_2(2*acos((-1 + u + v)/(2.*sqrt(u*v)))))/lambda;
    }
 
-   /// Phi(u,v) with u = x/z, v = y/z
+   /**
+    * Phi(u,v) with u = x/z, v = y/z.
+    *
+    * The following identities hold:
+    * Phi(u,v) = Phi(v,u) = Phi(1/u,v/u)/u = Phi(1/v,u/v)/v
+    */
    double phi_uv(double u, double v)
    {
       const auto lambda = lambda_2(u,v);
 
-      if (lambda > 0.)
-         return phi_pos(u,v);
+      if (lambda > 0.) {
+         if (u <= 1 && v <= 1)
+            return phi_pos(u,v);
+         if (u >= 1 && v/u <= 1)
+            return phi_pos(1./u,v/u)/u;
+         // v >= 1 && u/v <= 1
+         return phi_pos(1./v,u/v)/v;
+      }
 
       return phi_neg(u,v);
    }
 } // anonymous namespace
 
 /**
- * \f$\Phi(x,y,z)\f$ function
+ * \f$\Phi(x,y,z)\f$ function.  The arguments x, y and z are
+ * interpreted as squared masses.
  *
  * Davydychev and Tausk, Nucl. Phys. B397 (1993) 23
  *

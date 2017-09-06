@@ -17,6 +17,8 @@
 #endif
 
 #include <cmath>
+#include "ew_input.hpp"
+
 namespace softsusy{
   const char SOFTSUSY_VERSION[] = "3.5.2";
 
@@ -68,9 +70,9 @@ namespace softsusy{
   extern double MZ;  ///< Z boson mass
   
   /// LEPEWWG central value 14/06/06. Is just used for intialisation etc
-  const double MW = 80.404; 
+  const double MW = flexiblesusy::Electroweak_constants::MW;
   /// particle data book 2004 central value. Is just used for intialisation etc
-  const double MZCENT = 91.1876;
+  const double MZCENT = flexiblesusy::Electroweak_constants::MZ;
   /// variable for level of output and amount of quark: 0-3, higher numbers
   /// giving more diagnostics. Set by user in file "massIn"
   extern int PRINTOUT;
