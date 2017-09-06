@@ -559,7 +559,7 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
                           ">\n" <>
                           "{\n" <>
                           IndentText @
-                          ("static const bool is_permutation = true;\n" <>
+                          ("static const int permutation = " <> ToString[PermutationFactor[particles, ordering]] <> ";\n" <>
                            "typedef " <> orderedVertexFunction <> " orig_type;\n" <>
                            "typedef boost::mpl::vector_c<unsigned, " <>
                            StringJoin @ Riffle[ToString /@ (Ordering[ordering] - 1), ", "] <>
@@ -570,6 +570,15 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
             AppendTo[vertexFunctions, particles];
             Return[{prototypes, definitions}];
           ];
+
+PermutationFactor[particles_List, ordering_List] := Module[{
+	particleTypes = SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@
+			particles
+    },
+    Which[SARAH`VType @@ particleTypes =!= FFV, 1,
+	  OrderedQ @ Select[ordering, particleTypes[[#]] === F &], 1,
+	  True, -1]
+];
 
 (* Creates local declarations of field indices, whose values are taken
    from the elements of `arrayName'.
@@ -620,7 +629,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
                                        "const " <> GetComplexScalarCType[] <> " result = " <>
                                        Parameters`ExpressionToString[expr] <> ";\n\n" <>
-                                       "return vertex_type(result);",
+                                       "return vertex_type(result * permutationFactor);",
 
                                        "LeftAndRightComponentedVertex",
                                        exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
@@ -633,7 +642,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        Parameters`ExpressionToString[exprL] <> ";\n\n" <>
                                        "const " <> GetComplexScalarCType[] <> " right = " <>
                                        Parameters`ExpressionToString[exprR] <> ";\n\n" <>
-                                       "return vertex_type(left, right);"];
+                                       "return vertex_type(left * permutationFactor, right * permutationFactor);"];
 
            sarahParticles = SARAH`getParticleName /@ particles;
            particleInfo = Flatten[(Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates], {#, ___}] &) /@
@@ -691,7 +700,7 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
             prototype = ("template<> struct " <> dataClassName <> "\n" <>
                          "{\n" <>
                          IndentText @
-                         ("static const bool is_permutation = false;\n" <>
+                         ("static const int permutation = 0;\n" <>
                           "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
                           "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
                           "typedef boost::mpl::vector_c<unsigned, " <>
@@ -715,7 +724,7 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
                             );
               ];
             definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
-                          functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context)\n" <>
+                          functionClassName <> "::vertex(const indices_type &indices, EvaluationContext &context, int permutationFactor)\n" <>
                           "{\n" <>
                           IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
                           "}");

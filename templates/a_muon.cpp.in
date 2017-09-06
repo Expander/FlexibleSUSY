@@ -296,15 +296,15 @@ public:
 template<class ...P> struct VertexFunctionData;
 
 /**
- * @class VertexFunctionHelper<bool, P...>
+ * @class VertexFunctionHelper<int, P...>
  * @brief A helper template that is used by VertexFunction<P...>
  *
  * You should never have to use this class directly. It is just a
  * helper class.
  */
-template<bool, class ...P> class VertexFunctionHelper;
+template<int, class ...P> class VertexFunctionHelper;
 
-template<class ...P> class VertexFunctionHelper<false, P...>
+template<class ...P> class VertexFunctionHelper<0, P...>
    : public VertexFunctionData<P...> {
 private:
    typedef VertexFunctionData<P...> Base;
@@ -326,9 +326,11 @@ public:
       auto end = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex+1>::type::value;
       return std::vector<unsigned>(begin, end);
    }
+
+   static constexpr int permutationFactor = 1;
 };
 
-template<class ...P> class VertexFunctionHelper<true, P...>
+template<int permutation, class ...P> class VertexFunctionHelper
    : public VertexFunctionData<P...>::orig_type {
 private:
    typedef typename VertexFunctionData<P...>::orig_type orig_type;
@@ -345,6 +347,8 @@ public:
                 boost::mpl::at_c<particlePermutation, particleIndex>::type::value
                 > (indices);
    }
+
+   static constexpr int permutationFactor = permutation;
 };
 
 /**
@@ -359,9 +363,9 @@ public:
  * possible particle permutations.
  */
 template<class ...P> class VertexFunction
-   : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> {
+   : public VertexFunctionHelper<VertexFunctionData<P...>::permutation, P...> {
 private:
-   typedef VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> Base;
+   typedef VertexFunctionHelper<VertexFunctionData<P...>::permutation, P...> Base;
 public:
    typedef typename Base::indices_type indices_type;
    typedef typename Base::index_bounds index_bounds;
@@ -395,9 +399,9 @@ public:
     * For canonical P... the definitions have to be supplied separately.
     */
    template<class Q = Base>
-   static vertex_type vertex(const indices_type &indices, EvaluationContext &context)
+   static vertex_type vertex(const indices_type &indices, EvaluationContext &context, int permutationFactor = 1)
    {
-      return Q::vertex(indices, context);
+      return Q::vertex(indices, context, Base::permutationFactor);
    }
 };
 
