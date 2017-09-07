@@ -33,6 +33,12 @@
 #define TCW threshold_loop_functions::W
 #define TDelta threshold_loop_functions::delta_xyz
 #define TPhi threshold_loop_functions::phi_xyz
+#define TCD1F(n) threshold_loop_functions::D1F ## n
+#define TCD1f(n) threshold_loop_functions::D1f ## n
+#define TCD10f(n) threshold_loop_functions::D10f ## n
+#define TCD01f(n) threshold_loop_functions::D01f ## n
+#define TCD1f0 threshold_loop_functions::D1f
+#define TCD1g0 threshold_loop_functions::D1g
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
@@ -60,6 +66,28 @@ double f5(double, double);
 double f6(double, double);
 double f7(double, double);
 double f8(double, double);
+
+double D1F1(double);
+double D1F2(double);
+double D1F3(double);
+double D1F4(double);
+double D1F5(double);
+double D1F6(double);
+double D1F7(double);
+double D1f(double);
+double D1g(double);
+double D1f1(double);
+double D1f2(double);
+double D1f3(double);
+double D1f4(double);
+double D10f5(double, double);
+double D01f5(double, double);
+double D10f6(double, double);
+double D01f6(double, double);
+double D10f7(double, double);
+double D01f7(double, double);
+double D10f8(double, double);
+double D01f8(double, double);
 
 /// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
 double Iabc(double, double, double);

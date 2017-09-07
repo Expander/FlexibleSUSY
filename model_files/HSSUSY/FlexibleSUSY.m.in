@@ -24,7 +24,8 @@ EXTPAR = {
     {103, TwoLoopAtAb},
     {104, TwoLoopAtauAtau},
     {105, TwoLoopAtAt},
-    {200, DeltaEFT}
+    {200, DeltaEFT},
+    {201, Qmatch}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -114,6 +115,13 @@ HighScaleInput = {
                       ), 0]
                     + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
                 )
+                + If[Abs[Qmatch] > 1,
+                     Which[LambdaLoopOrder < 2, deltaLambdaQmatch2L,
+                           LambdaLoopOrder < 3, deltaLambdaQmatch3L,
+                           True, 0
+                          ],
+                     0
+                    ]
     }
 };
 
@@ -169,3 +177,4 @@ SARAH`ParameterDefinitions = Append[
 ];
 
 Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
+Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
