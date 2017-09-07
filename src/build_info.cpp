@@ -116,7 +116,7 @@ void print_build_info(std::ostream& ostr)
 #endif
       "\n"
       "Colored output:                         "
-#ifdef ENABLE_COLOR
+#ifdef ENABLE_COLORS
       "yes"
 #else
       "no"

@@ -57,7 +57,7 @@
 /* Switches */
 
 /* Enable colored printout */
-@DEFINE_ENABLE_COLOR_PRINTOUT@
+@DEFINE_ENABLE_COLORS@
 
 /* Enable eigenvalues error check */
 @DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@
