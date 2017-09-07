@@ -43,6 +43,13 @@ using Muon = @AMuon_MuonField@;
 namespace {
 static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 
+double OneLoopFunctionF1C(double);
+double OneLoopFunctionF2C(double);
+double OneLoopFunctionF1N(double);
+double OneLoopFunctionF2N(double);
+
+double get_QED_2L(EvaluationContext &);
+
 /**
  * @class AMuonVertexCorrectionSF
  * @brief A template that calculate contributions to the
@@ -296,6 +303,8 @@ std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
                         m.run_to(scale);
                         m.get_physical().clear();
                         m.calculate_DRbar_masses();
+                        m.solve_ewsb();
+                        m.calculate_M@AMuon_MuonField@_pole();
                         amu = calculate_a_muon_impl(m);
                      } catch(const Error& e) {
                         ERROR("@ModelName@_a_muon: scale variation: " << e.what());
@@ -331,7 +340,7 @@ double @ModelName@_a_muon2::calculate_a_muon(const @ModelName@_mass_eigenstates&
    double m_muon_pole = muonPhysicalMass( EvaluationContext{ model } );
    if (m_muon_pole == 0.0) {
       model.solve_ewsb();
-      @AMuon_CalculateMuonPoleMass@
+      model.calculate_M@AMuon_MuonField@_pole();
    }
 
    return calculate_a_muon_impl(model);
@@ -398,7 +407,7 @@ double AMuonVertexCorrectionFS<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        - PhotonEmitter::electric_charge / Muon::electric_charge;
+        PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
@@ -458,7 +467,7 @@ double AMuonVertexCorrectionSF<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        - PhotonEmitter::electric_charge / Muon::electric_charge;
+        PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();

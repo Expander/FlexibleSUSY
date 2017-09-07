@@ -1879,7 +1879,6 @@ WriteAMuonClass[vertexRules_List, files_List] :=
       
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
-      muonPoleMass = AMuon`CreateCalculateMuonPoleMass[];
       muonPhysicalMass = AMuon`CreateMuonPhysicalMass[];
       calculation = AMuon`CreateCalculation @ Transpose[{graphs,diagrams}];
             
@@ -1888,7 +1887,6 @@ WriteAMuonClass[vertexRules_List, files_List] :=
       
       WriteOut`ReplaceInFiles[files,
         {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`GetMuon[]],
-         "@AMuon_CalculateMuonPoleMass@"  -> muonPoleMass,
          "@AMuon_MuonPhysicalMass@"       -> TextFormatting`IndentText[muonPhysicalMass],
          "@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
          "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],

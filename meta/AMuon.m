@@ -53,9 +53,6 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-CreateCalculateMuonPoleMass[] := "model.calculate_M" <>
-                                 CXXDiagrams`CXXNameOfField[GetMuon[]] <>
-                                 "_pole();"
 CreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
                              CXXDiagrams`CXXNameOfField[GetMuon[]] <>
                              If[GetMuonIndex[] =!= Null,
