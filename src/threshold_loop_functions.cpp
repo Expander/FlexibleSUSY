@@ -1529,6 +1529,92 @@ double D01f8(double x, double y)
       sqr(y))))))/(2.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
 }
 
+/// Second derivative of F1
+double D2F1(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001))
+      return -1.3333333333333333 + x + 2*cube(-1 + x) - (31*quad(-1 + x))/14.
+         - (8*sqr(-1 + x))/5.;
+
+   return (2 - 6*quad(x) + 4*sqr(x) + 2*log(sqr(x))*sqr(x)*(3 +
+      sqr(x)))/(x*cube(-1 + sqr(x)));
+}
+
+/// Second derivative of F2
+double D2F2(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.01))
+      return (-381 + 832*x + 320*cube(x) - 55*quad(x) - 744*sqr(x))/35.;
+
+   return (12*(5 - 11*pow6(x) - 21*quad(x) + 27*sqr(x) + log(sqr(x))*(1 +
+      3*pow6(x) + 25*quad(x) + 19*sqr(x))))/pow5(-1 + sqr(x));
+}
+
+/// Second derivative of F3
+double D2F3(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001))
+      return (2*(-392 + 69*x - 465*cube(x) + 120*quad(x) + 528*sqr(x)))/315.;
+
+   return (4*(1 - 17*pow6(x) - 25*quad(x) + 41*sqr(x) +
+      2*log(sqr(x))*sqr(x)*(9 + 2*quad(x) + 19*sqr(x))))/(3.*x*quad(-1 +
+      sqr(x)));
+}
+
+/// Second derivative of F4
+double D2F4(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001))
+      return (-2*(174 - 529*x - 335*cube(x) + 70*quad(x) + 620*sqr(x)))/35.;
+
+   return (4*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x) +
+      sqr(x))))/(x*quad(-1 + sqr(x)));
+}
+
+/// Second derivative of F5
+double D2F5(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.01))
+      return (-334 + 793*x + 370*cube(x) - 70*quad(x) - 780*sqr(x))/35.;
+
+   return (6*x*(-19 + pow6(x) + 27*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(1 +
+      2*quad(x) + 5*sqr(x))))/pow5(-1 + sqr(x));
+}
+
+/// Second derivative of F6
+double D2F6(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001))
+      return (109 - 720*x - 560*cube(x) + 120*quad(x) + 981*sqr(x))/210.;
+
+   return (-7 - pow6(x) + 7*quad(x) + sqr(x) - 2*log(sqr(x))*(1 +
+      5*sqr(x)))/quad(-1 + sqr(x));
+}
+
+/// Second derivative of F7
+double D2F7(double x)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001))
+      return 10 - (208*x)/7. - 16*cube(x) + (22*quad(x))/7. + (1119*sqr(x))/35.;
+
+   return (-6*(2 + pow8(x) - 11*pow6(x) - 27*quad(x) + 35*sqr(x) +
+      6*log(sqr(x))*sqr(x)*(3 + 5*sqr(x))))/pow5(-1 + sqr(x));
+}
+
 /// Iabc(a,a,a)
 static double Iaaa(double a, double b, double c)
 {

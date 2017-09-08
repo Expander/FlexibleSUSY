@@ -34,6 +34,7 @@
 #define TDelta threshold_loop_functions::delta_xyz
 #define TPhi threshold_loop_functions::phi_xyz
 #define TCD1F(n) threshold_loop_functions::D1F ## n
+#define TCD2F(n) threshold_loop_functions::D2F ## n
 #define TCD1f(n) threshold_loop_functions::D1f ## n
 #define TCD10f(n) threshold_loop_functions::D10f ## n
 #define TCD01f(n) threshold_loop_functions::D01f ## n
@@ -67,6 +68,8 @@ double f6(double, double);
 double f7(double, double);
 double f8(double, double);
 
+// first derivatives
+
 double D1F1(double);
 double D1F2(double);
 double D1F3(double);
@@ -88,6 +91,16 @@ double D10f7(double, double);
 double D01f7(double, double);
 double D10f8(double, double);
 double D01f8(double, double);
+
+// second derivatives
+
+double D2F1(double);
+double D2F2(double);
+double D2F3(double);
+double D2F4(double);
+double D2F5(double);
+double D2F6(double);
+double D2F7(double);
 
 /// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
 double Iabc(double, double, double);
