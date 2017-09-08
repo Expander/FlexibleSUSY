@@ -1055,6 +1055,175 @@ double f8(double r1, double r2)
    return 1.5 * result;
 }
 
+/// First derivative of F1
+double D1F1(double x)
+{
+   if (is_equal(x, 1., 0.0001))
+      return (5 - 8*x + 3*sqr(x))/6.;
+
+   return (2*(-1 + sqr(x)) - std::log(sqr(x))*(1 + sqr(x)))/sqr(-1 + sqr(x));
+}
+
+/// First derivative of F2
+double D1F2(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (133 - 326*x - 138*cube(x) + 25*quad(x) + 306*sqr(x))/35.;
+
+   return (-12*x*(3 - 3*quad(x) + log(sqr(x))*(1 + quad(x) + 4*sqr(x)))) /
+      quad(-1 + sqr(x));
+}
+
+/// First derivative of F3
+double D1F3(double x)
+{
+   if (is_equal(x, 1., 0.0001))
+      return (1541 - 2048*x - 256*cube(x) + 15*quad(x) + 1098*sqr(x))/630.;
+
+   return (-2*(7 - 13*quad(x) + 6*sqr(x) + log(sqr(x))*(1 + 4*quad(x)
+      + 15*sqr(x))))/(3.*cube(-1 + sqr(x)));
+}
+
+/// First derivative of F4
+double D1F4(double x)
+{
+   if (is_equal(x, 1., 0.0001))
+      return -0.3333333333333333 - (2*cube(-1 + x))/3. + (11*quad(-1 + x))/14.
+         + (2*sqr(-1 + x))/5.;
+
+   return (-2*(-3 + quad(x) + 2*sqr(x)) + log(sqr(x))*(2 + 6*sqr(x))) /
+         cube(-1 + sqr(x));
+}
+
+/// First derivative of F5
+double D1F5(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
+
+   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x)
+      + sqr(x))))/quad(-1 + sqr(x));
+}
+
+/// First derivative of F6
+double D1F6(double x)
+{
+   if (is_equal(x, 1., 0.0001))
+      return (204 - 11*x + 87*cube(x) - 20*quad(x) - 120*sqr(x))/210.;
+
+   return (x*(3 + 2*log(sqr(x)) + quad(x) - 4*sqr(x)))/cube(-1 + sqr(x));
+}
+
+/// First derivative of F7
+double D1F7(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
+
+   return (6*x*(2 + pow6(x) - 6*quad(x) + 3*sqr(x)
+                + 6*log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
+}
+
+/// First derivative of f
+double D1f(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
+
+   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x)
+      + sqr(x))))/quad(-1 + sqr(x));
+}
+
+/// First derivative of g
+double D1g(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
+
+   return (6*x*(2 + pow6(x) - 6*quad(x) + 3*sqr(x)
+      + 6*log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
+}
+
+/// First derivative of f1
+double D1f1(double x)
+{
+   if (is_equal(x, 1., 0.01))
+      return (-2*(-71 - 315*x - 225*cube(x) + 45*quad(x) + 426*sqr(x)))/245.;
+
+   return (12*x*(3 + pow6(x) - 11*quad(x) + 7*sqr(x)
+      + 2*log(sqr(x))*sqr(x)*(5 + sqr(x))))/(7.*quad(-1 + sqr(x)));
+}
+
+/// First derivative of f2
+double D1f2(double x)
+{
+   if (is_equal(x, 1., 0.01))
+      return (-2*(-239 - 1275*x - 837*cube(x) + 165*quad(x) + 1626*sqr(x)))/945.;
+
+   return (4*x*(11 + 5*pow6(x) - 35*quad(x) + 19*sqr(x)
+      + 2*log(sqr(x))*sqr(x)*(17 + sqr(x))))/(9.*quad(-1 + sqr(x)));
+}
+
+/// First derivative of f3
+double D1f3(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (-2*(386 - 1143*x - 495*cube(x) + 90*quad(x) + 1092*sqr(x)))/315.;
+
+   return (4*x*(19 + pow6(x) - 19*quad(x) - sqr(x)
+      + log(sqr(x))*(6 + 4*quad(x) + 26*sqr(x))))/(3.*quad(-1 + sqr(x)));
+}
+
+/// First derivative of f4
+double D1f4(double x)
+{
+   if (is_equal(x, 1., 0.001))
+      return (-2*(1184 - 3099*x - 1323*cube(x) + 240*quad(x) + 2928*sqr(x)))/735.;
+
+   return (4*x*(55 + pow6(x) - 55*quad(x) - sqr(x)
+      + 2*log(sqr(x))*(9 + 8*quad(x) + 37*sqr(x))))/(7.*quad(-1 + sqr(x)));
+}
+
+/// First derivative of f5
+double D10f5(double x, double y)
+{
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (-117 + 306*y - 91*sqr(y) - 3*sqr(x)*(55 - 36*y + 9*sqr(y))
+         + x*(450 - 344*y + 90*sqr(y)))/560.;
+
+   if (is_equal(x, 1., 0.001))
+      return (30*cube(y)*log(sqr(y))*(1 + sqr(y))*(6 + 2*x*(-4 + y) - 4*y +
+         3*sqr(x) + sqr(y)) - (-1 + sqr(y))*(-12 + 71*y + 306*cube(y) +
+         43*pow5(y) - 164*quad(y) + 3*sqr(x)*(-4 + 17*y + 42*cube(y) + pow5(y)
+         + 12*quad(y) - 8*sqr(y)) - 64*sqr(y) + 2*x*(17 - 76*y - 176*cube(y) +
+         12*pow5(y) - 11*quad(y) + 54*sqr(y))))/(40.*pow6(-1 + y)*sqr(1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (-6*log(sqr(x))*sqr(x)*(y*pow5(x) + 3*cube(x)*(-5 + sqr(y)) + 3*(3 -
+         3*y + sqr(y)) + quad(x)*(6 - 3*y + 2*sqr(y)) + x*(-3 - 5*y +
+         3*sqr(y)) + sqr(x)*(23 - 24*y + 9*sqr(y))) + (-1 + sqr(x))*(3 - 4*y +
+         12*pow6(x) + sqr(y) + x*(1 - 4*y + 3*sqr(y)) + pow5(x)*(-35 + 20*y +
+         3*sqr(y)) + 2*sqr(x)*(69 - 68*y + 23*sqr(y)) + cube(x)*(-74 - 40*y +
+         30*sqr(y)) + quad(x)*(75 - 76*y + 37*sqr(y))))/(8.*cube(1 +
+         x)*pow6(-1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*y*log(sqr(y))*(y + 9*cube(y) + 205*pow5(y) + 247*pow7(y) +
+         18*pow9(y) - 2*x*(-1 + 203*pow6(y) + 12*pow8(y) + 245*quad(y) +
+         21*sqr(y)) + 3*y*sqr(x)*(15 + 3*pow6(y) + 57*quad(y) + 85*sqr(y))) +
+         (-1 + sqr(y))*(3*sqr(x)*(-3 - 92*pow6(y) + pow8(y) - 590*quad(y) -
+         276*sqr(y)) + (-7 - 548*pow6(y) + 13*pow8(y) - 2022*quad(y) -
+         316*sqr(y))*sqr(y) + 2*x*y*(-25 + 364*pow6(y) - 5*pow8(y) +
+         1950*quad(y) + 596*sqr(y))))/(8.*y*pow6(-1 + sqr(y)));
+
+   return (3*((-1 + sqr(x))*(-2*(cube(y) + cube(y)*quad(x) + 2*y*sqr(x)*(-2 +
+      sqr(y)) - 3*cube(x)*(-1 + sqr(y)) - pow5(x)*(-1 + sqr(y)))*(-1 +
+      sqr(y)) + cube(y)*log(sqr(y))*(1 + sqr(y))*sqr(-1 + sqr(x))) -
+      log(sqr(x))*sqr(x)*(2*x - 3*y + 6*cube(x) + y*quad(x) -
+      6*y*sqr(x))*sqr(-1 + sqr(y))))/(4.*cube(-1 + sqr(x))*sqr(x -
+      y)*sqr(-1 + sqr(y)));
+}
+
 /// Iabc(a,a,a)
 static double Iaaa(double a, double b, double c)
 {
