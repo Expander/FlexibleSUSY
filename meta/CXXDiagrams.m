@@ -133,7 +133,7 @@ VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 VertexRulesForVertices[vertices_List, massMatrices_, OptionsPattern[{sortCouplings -> True}]] := 
   Module[{nPointFunctions,sortCommand},
     nPointFunctions = CXXDiagrams`NPointFunctions[IndexFields /@ vertices];
-    sortCommand = If[sortCouplings,Vertices`SortCps,Identity];
+    sortCommand = If[OptionValue[sortCouplings],Vertices`SortCps,Identity];
     Vertices`VertexRules[sortCommand @ nPointFunctions, massMatrices]
     ]
 
@@ -214,11 +214,24 @@ CreateMassFunctions[] :=
 CreateUnitCharge[massMatrices_] :=
   Module[{vertex,vertexRules,parsedVertex},
          vertex = {SARAH`Photon, SARAH`Electron, SARAH`bar[SARAH`Electron]};
-         VertexRulesForVertices[{vertex}, massMatrices_, sortCouplings -> False];
-         parsedVertex = ParseVertex[vertex, sortCouplings -> False];
-         
-         "static LeftAndRightComponentedVertex unit_charge( void )\n" <> 
+         vertexRules = VertexRulesForVertices[{vertex}, massMatrices, sortCouplings -> False];
+         parsedVertex = ParseVertex[vertex, vertexRules, sortCouplings -> False];
+
+         "static LeftAndRightComponentedVertex unit_charge( const EvaluationContext &context )\n" <> 
          "{\n" <>
+         TextFormatting`IndentText @ 
+           ("std::array<unsigned, " <> ToString @ numberOfIndices <> "> indices = {" <>
+              If[TreeMasses`GetDimension[field] =!= 1,
+                 " generationIndex" <>
+                 If[numberOfIndices =!= 1,
+                    StringJoin @ Table[", 1", {numberOfIndices-1}],
+                    ""] <> " ",
+                 If[numberOfIndices =!= 0,
+                    StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+                    ""]
+                ] <>
+            "};\n\n") <>
+           
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"
   ]
@@ -258,7 +271,7 @@ ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True
            
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
 
-           sortCommand = If[sortCouplings,Vertices`SortCp,Identity];
+           sortCommand = If[OptionValue[sortCouplings],Vertices`SortCp,Identity];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        expr = sortCommand[SARAH`Cp @@ indexedFields] /. vertexRules;

@@ -79,11 +79,11 @@ AMuonCreateCalculation[gTaggedDiagrams_List] :=
       If[cxxMuonIndex =!= Null,
          " " <> ToString @ cxxMuonIndex <>
          If[numberOfIndices =!= 1,
-            StringJoin @ Table[", 1", {numberOfIndices-1}],
+            StringJoin @ Table[", 0", {numberOfIndices-1}],
             ""] <>
          " ",
          If[numberOfIndices =!= 0,
-            StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+            StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
             ""]
         ] <> "};\n\n" <>
                                  

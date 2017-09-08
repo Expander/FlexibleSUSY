@@ -73,10 +73,10 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                        If[TreeMasses`GetDimension[field] =!= 1,
                           " generationIndex" <>
                           If[numberOfIndices =!= 1,
-                             StringJoin @ Table[", 1", {numberOfIndices-1}],
+                             StringJoin @ Table[", 0", {numberOfIndices-1}],
                              ""] <> " ",
                           If[numberOfIndices =!= 0,
-                             StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
                                  

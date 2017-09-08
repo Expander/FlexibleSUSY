@@ -499,8 +499,8 @@ namespace impl {
 @CXXDiagrams_UnitCharge@
 }
 
-static double unit_charge( void ) {
-  return impl::unit_charge().left().real();
+static double unit_charge( const EvaluationContext &context ) {
+  return impl::unit_charge( context ).left().real();
 }
 }
 } // namespace flexiblesusy
