@@ -1058,6 +1058,8 @@ double f8(double r1, double r2)
 /// First derivative of F1
 double D1F1(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.0001))
       return (5 - 8*x + 3*sqr(x))/6.;
 
@@ -1067,6 +1069,8 @@ double D1F1(double x)
 /// First derivative of F2
 double D1F2(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (133 - 326*x - 138*cube(x) + 25*quad(x) + 306*sqr(x))/35.;
 
@@ -1077,6 +1081,8 @@ double D1F2(double x)
 /// First derivative of F3
 double D1F3(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.0001))
       return (1541 - 2048*x - 256*cube(x) + 15*quad(x) + 1098*sqr(x))/630.;
 
@@ -1087,6 +1093,8 @@ double D1F3(double x)
 /// First derivative of F4
 double D1F4(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.0001))
       return -0.3333333333333333 - (2*cube(-1 + x))/3. + (11*quad(-1 + x))/14.
          + (2*sqr(-1 + x))/5.;
@@ -1098,6 +1106,8 @@ double D1F4(double x)
 /// First derivative of F5
 double D1F5(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
 
@@ -1108,6 +1118,8 @@ double D1F5(double x)
 /// First derivative of F6
 double D1F6(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.0001))
       return (204 - 11*x + 87*cube(x) - 20*quad(x) - 120*sqr(x))/210.;
 
@@ -1117,6 +1129,8 @@ double D1F6(double x)
 /// First derivative of F7
 double D1F7(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
 
@@ -1127,6 +1141,8 @@ double D1F7(double x)
 /// First derivative of f
 double D1f(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
 
@@ -1137,6 +1153,8 @@ double D1f(double x)
 /// First derivative of g
 double D1g(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
 
@@ -1147,6 +1165,8 @@ double D1g(double x)
 /// First derivative of f1
 double D1f1(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.01))
       return (-2*(-71 - 315*x - 225*cube(x) + 45*quad(x) + 426*sqr(x)))/245.;
 
@@ -1157,6 +1177,8 @@ double D1f1(double x)
 /// First derivative of f2
 double D1f2(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.01))
       return (-2*(-239 - 1275*x - 837*cube(x) + 165*quad(x) + 1626*sqr(x)))/945.;
 
@@ -1167,6 +1189,8 @@ double D1f2(double x)
 /// First derivative of f3
 double D1f3(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (-2*(386 - 1143*x - 495*cube(x) + 90*quad(x) + 1092*sqr(x)))/315.;
 
@@ -1177,6 +1201,8 @@ double D1f3(double x)
 /// First derivative of f4
 double D1f4(double x)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001))
       return (-2*(1184 - 3099*x - 1323*cube(x) + 240*quad(x) + 2928*sqr(x)))/735.;
 
@@ -1184,9 +1210,11 @@ double D1f4(double x)
       + 2*log(sqr(x))*(9 + 8*quad(x) + 37*sqr(x))))/(7.*quad(-1 + sqr(x)));
 }
 
-/// First derivative of f5
+/// First derivative of f5 w.r.t. 1st argument
 double D10f5(double x, double y)
 {
+   using std::log;
+
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (-117 + 306*y - 91*sqr(y) - 3*sqr(x)*(55 - 36*y + 9*sqr(y))
          + x*(450 - 344*y + 90*sqr(y)))/560.;
@@ -1222,6 +1250,46 @@ double D10f5(double x, double y)
       log(sqr(x))*sqr(x)*(2*x - 3*y + 6*cube(x) + y*quad(x) -
       6*y*sqr(x))*sqr(-1 + sqr(y))))/(4.*cube(-1 + sqr(x))*sqr(x -
       y)*sqr(-1 + sqr(y)));
+}
+
+/// First derivative of f5 w.r.t. 2nd argument
+double D01f5(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (259 + 99*y - 43*sqr(y) - 3*sqr(x)*(22 - 21*y + 6*sqr(y))
+         + 2*x*(54 - 88*y + 27*sqr(y)))/490.;
+
+   if (is_equal(x, 1., 0.001))
+      return (30*log(sqr(y))*pow5(y)*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
+         + (-1 + sqr(y))*(-14 + 32*y - 223*cube(y) - 19*pow5(y) + 82*quad(y) +
+         52*sqr(y) + sqr(x)*(6 - 33*y - 63*cube(y) + 6*pow5(y) - 78*quad(y) +
+         72*sqr(y)) - 2*x*(6 - 38*y - 108*cube(y) + 26*pow5(y) - 73*quad(y) +
+         97*sqr(y))))/(35.*pow6(-1 + y)*sqr(1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (-6*log(sqr(x))*quad(x)*(y*cube(x) + 5*(3 - 3*y + sqr(y)) + 3*x*(-3
+         - y + sqr(y)) + sqr(x)*(4 - 3*y + 2*sqr(y))) + (-1 + sqr(x))*(-1 -
+         3*y + 12*pow6(x) + x*(-9 + 17*y - 5*sqr(y)) + sqr(y) + pow5(x)*(-36 +
+         17*y + 4*sqr(y)) + sqr(x)*(47 - 30*y + 7*sqr(y)) + cube(x)*(-9 - 46*y
+         + 19*sqr(y)) + quad(x)*(56 - 75*y + 34*sqr(y))))/(7.*cube(1 +
+         x)*pow6(-1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*y*log(sqr(y))*(3*sqr(x)*(5 + 2*pow6(y) + 33*quad(y) + 40*sqr(y))
+         + sqr(y)*(5 + 12*pow6(y) + 141*quad(y) + 82*sqr(y)) - 2*x*y*(5 +
+         8*pow6(y) + 117*quad(y) + 110*sqr(y))) + (-1 +
+         sqr(y))*(3*y*sqr(x)*(-107 + pow6(y) - 61*quad(y) - 313*sqr(y)) +
+         y*(-6 - 375*pow6(y) + 13*pow8(y) - 975*quad(y) - 97*sqr(y)) + x*(-12
+         + 486*pow6(y) - 10*pow8(y) + 2022*quad(y) + 394*sqr(y))))/(7.*pow6(-1
+         + sqr(y)));
+
+   return (6*((-1 + sqr(x))*(-((-1 + sqr(y))*(cube(y) + y*sqr(x)*(-3 + sqr(y))
+      - 2*cube(x)*(-1 + sqr(y)) - 2*pow5(x)*(-1 + sqr(y)) + y*quad(x)*(-1 +
+      2*sqr(y)))) + log(sqr(y))*pow5(y)*sqr(-1 + sqr(x))) -
+      log(sqr(x))*quad(x)*(4*x - 5*y + y*sqr(x))*sqr(-1 +
+      sqr(y))))/(7.*cube(-1 + sqr(x))*sqr(x - y)*sqr(-1 + sqr(y)));
 }
 
 /// Iabc(a,a,a)
