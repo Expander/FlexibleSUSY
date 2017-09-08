@@ -1,3 +1,26 @@
+deltaLambdaQmatch1L = With[{
+    k = 1/(4 Pi)^2
+    },
+    k Get["meta/SM/HSSUSY_scale_variation_1L.m"] /. {
+        ml2[a__] :> msl2[a],
+        me2[a__] :> mse2[a],
+        mq2[a__] :> msq2[a],
+        mu2[a__] :> msu2[a],
+        md2[a__] :> msd2[a],
+        MS -> MSUSY,
+        Q -> Qmatch,
+        gt -> Yu[3,3],
+        gb -> Yd[3,3],
+        gtau -> Ye[3,3],
+        tb -> TanBeta,
+        mA -> mAInput,
+        M1 -> M1Input,
+        M2 -> M2Input,
+        M3 -> M3Input,
+        \[Mu] -> MuInput
+    }
+];
+
 deltaLambdaQmatch2L = With[{
     k = 1/(4 Pi)^2
     },
@@ -34,4 +57,25 @@ deltaLambdaQmatch2L = With[{
     }
 ];
 
-deltaLambdaQmatch3L = 0;
+deltaLambdaQmatch3L = With[{
+    k = 1/(4 Pi)^2
+    },
+    k^3 Get["meta/SM/HSSUSY_scale_variation_3L.m"] /. {
+        Derivative[1][TCF[1]] -> TCD1F[1],
+        Derivative[1][TCF[2]] -> TCD1F[2],
+        Derivative[2][TCF[1]] -> TCD2F[1],
+        Derivative[2][TCF[2]] -> TCD2F[2],
+        ml2[a__] :> msl2[a],
+        me2[a__] :> mse2[a],
+        mq2[a__] :> msq2[a],
+        mu2[a__] :> msu2[a],
+        md2[a__] :> msd2[a],
+        MS -> MSUSY,
+        Q -> Qmatch,
+        gt -> Yu[3,3],
+        tb -> TanBeta,
+        mA -> mAInput,
+        M3 -> M3Input,
+        \[Mu] -> MuInput
+    }
+];
