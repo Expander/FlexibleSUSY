@@ -235,7 +235,7 @@ while test $# -gt 0; do
             fi
             ;;
       ### flags
-        --enable-colors)              out="$out @ENABLE_COLOR_PRINTOUT@" ;;
+        --enable-colors)              out="$out @ENABLE_COLORS@" ;;
         --enable-compile)             out="$out @ENABLE_COMPILE@" ;;
         --enable-compiler-warnings)   out="$out @ENABLE_COMPILER_WARNINGS@" ;;
         --enable-debug)               out="$out @ENABLE_DEBUG@" ;;

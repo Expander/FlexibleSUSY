@@ -135,7 +135,7 @@ enable_tsil="automatic"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
-DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
+DEFINE_ENABLE_COLORS="#undef ENABLE_COLORS"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
 DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
@@ -2275,13 +2275,13 @@ check_cygpath() {
 #_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
-        DEFINE_ENABLE_COLOR_PRINTOUT="#define ENABLE_COLOR_PRINTOUT 1"
+        DEFINE_ENABLE_COLORS="#define ENABLE_COLORS 1"
         message "Enabling colored output"
-        logmsg "   ${DEFINE_ENABLE_COLOR_PRINTOUT}"
+        logmsg "   ${DEFINE_ENABLE_COLORS}"
     else
-        DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR"
+        DEFINE_ENABLE_COLORS="#undef ENABLE_COLORS"
         logmsg "Disabling colored output"
-        logmsg "   ${DEFINE_ENABLE_COLOR_PRINTOUT}"
+        logmsg "   ${DEFINE_ENABLE_COLORS}"
     fi
 
     if test "x$enable_debug" = "xyes" ; then
@@ -2504,7 +2504,7 @@ replace_markers() {
         -e "s|@LDFLAGS@|$LDFLAGS|"         \
         -e "s|@LDLIBS@|$LDLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
-	-e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
+	-e "s|@ENABLE_COLORS@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_COMPILER_WARNINGS@|$enable_compiler_warnings|" \
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
@@ -2876,7 +2876,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \
-    -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
+    -e "s|@DEFINE_ENABLE_COLORS@|$DEFINE_ENABLE_COLORS|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
     -e "s|@DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@|$DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
