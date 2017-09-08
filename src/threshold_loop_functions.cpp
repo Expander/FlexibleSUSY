@@ -1258,6 +1258,48 @@ double D01f5(double x, double y)
    using std::log;
 
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (sqr(x)*(-91 + 90*y - 27*sqr(y)) + 2*x*(153 - 172*y + 54*sqr(y))
+         - 3*(39 - 150*y + 55*sqr(y)))/560.;
+
+   if (is_equal(x, 1., 0.001))
+      return (-6*log(sqr(y))*sqr(y)*(9 - 3*y - 15*cube(y) + 6*quad(y) + x*(-9 -
+         5*y + pow5(y) - 3*quad(y) - 24*sqr(y)) + 23*sqr(y) + sqr(x)*(3 + 3*y
+         + 3*cube(y) + 2*quad(y) + 9*sqr(y))) + (-1 + sqr(y))*(3 + y -
+         74*cube(y) - 35*pow5(y) + 12*pow6(y) + 75*quad(y) + 4*x*(-1 - y -
+         10*cube(y) + 5*pow5(y) - 19*quad(y) - 34*sqr(y)) + 138*sqr(y) +
+         sqr(x)*(1 + 3*y + 30*cube(y) + 3*pow5(y) + 37*quad(y) +
+         46*sqr(y))))/(8.*cube(1 + y)*pow6(-1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (30*cube(x)*log(sqr(x))*(1 + sqr(x))*(6 + 2*x*(-2 + y) - 8*y +
+         sqr(x) + 3*sqr(y)) - (-1 + sqr(x))*(pow5(x)*(43 + 24*y + 3*sqr(y)) -
+         4*sqr(x)*(16 - 27*y + 6*sqr(y)) - 2*(6 - 17*y + 6*sqr(y)) +
+         2*quad(x)*(-82 - 11*y + 18*sqr(y)) + x*(71 - 152*y + 51*sqr(y)) +
+         2*cube(x)*(153 - 176*y + 63*sqr(y))))/(40.*pow6(-1 + x)*sqr(1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return ((-1 + sqr(y))*(sqr(x)*(-3 - 92*pow6(y) + pow8(y) - 590*quad(y) -
+         276*sqr(y)) - 4*x*y*(7 - 68*pow6(y) + pow8(y) - 340*quad(y) -
+         80*sqr(y)) + sqr(y)*(-35 - 276*pow6(y) + 9*pow8(y) - 662*quad(y) +
+         4*sqr(y))) + 6*y*log(sqr(y))*(y*(2 + 101*pow6(y) + 9*pow8(y) +
+         45*quad(y) + 3*sqr(y)) - x*(-1 + 146*pow6(y) + 9*pow8(y) +
+         160*quad(y) + 6*sqr(y)) + y*sqr(x)*(15 + 3*pow6(y) + 57*quad(y) +
+         85*sqr(y))))/(8.*y*pow6(-1 + sqr(y)));
+
+   return (3*(cube(x)*cube(-1 + sqr(y))*log(sqr(x))*(1 + sqr(x)) - (-1 +
+      sqr(x))*(log(sqr(y))*sqr(y)*(-2*(y + 3*cube(y)) + 2*(y +
+      3*cube(y))*sqr(x) + cube(x)*(-3 + quad(y) - 6*sqr(y)) + x*(3 -
+      quad(y) + 6*sqr(y))) + 2*(-1 + sqr(y))*(-4*x*sqr(y) + cube(y)*(3 +
+      sqr(y)) - cube(y)*sqr(x)*(3 + sqr(y)) + cube(x)*sqr(1 +
+      sqr(y))))))/(4.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
+}
+
+/// First derivative of f6 w.r.t. 1st argument
+double D10f6(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (259 + 99*y - 43*sqr(y) - 3*sqr(x)*(22 - 21*y + 6*sqr(y))
          + 2*x*(54 - 88*y + 27*sqr(y)))/490.;
 
@@ -1290,6 +1332,201 @@ double D01f5(double x, double y)
       2*sqr(y)))) + log(sqr(y))*pow5(y)*sqr(-1 + sqr(x))) -
       log(sqr(x))*quad(x)*(4*x - 5*y + y*sqr(x))*sqr(-1 +
       sqr(y))))/(7.*cube(-1 + sqr(x))*sqr(x - y)*sqr(-1 + sqr(y)));
+}
+
+/// First derivative of f6 w.r.t. 2nd argument
+double D01f6(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (259 + 108*y + sqr(x)*(-43 + 54*y - 18*sqr(y)) - 66*sqr(y)
+         + x*(99 - 176*y + 63*sqr(y)))/490.;
+
+   if (is_equal(x, 1., 0.001))
+      return (-6*log(sqr(y))*quad(y)*(15 - 9*y + x*(-15 - 3*y + cube(y) -
+         3*sqr(y)) + 4*sqr(y) + sqr(x)*(5 + 3*y + 2*sqr(y))) + (-1 +
+         sqr(y))*(-1 - 9*y - 9*cube(y) - 36*pow5(y) + 12*pow6(y) + 56*quad(y)
+         + x*(-3 + 17*y - 46*cube(y) + 17*pow5(y) - 75*quad(y) - 30*sqr(y)) +
+         47*sqr(y) + sqr(x)*(1 - 5*y + 19*cube(y) + 4*pow5(y) + 34*quad(y) +
+         7*sqr(y))))/(7.*cube(1 + y)*pow6(-1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (30*log(sqr(x))*pow5(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+         + (-1 + sqr(x))*(quad(x)*(82 + 146*y - 78*sqr(y)) + cube(x)*(-223 +
+         216*y - 63*sqr(y)) + x*(32 + 76*y - 33*sqr(y)) + 2*(-7 - 6*y +
+         3*sqr(y)) + pow5(x)*(-19 - 52*y + 6*sqr(y)) + 2*sqr(x)*(26 - 97*y +
+         36*sqr(y))))/(35.*pow6(-1 + x)*sqr(1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*log(sqr(y))*(cube(y)*(5 + 6*pow6(y) + 57*quad(y) + 12*sqr(y)) +
+         y*sqr(x)*(5 + 2*pow6(y) + 33*quad(y) + 40*sqr(y)) - 2*x*quad(y)*(35 +
+         3*quad(y) + 42*sqr(y))) + (-1 + sqr(y))*(y*sqr(x)*(-107 + pow6(y) -
+         61*quad(y) - 313*sqr(y)) + y*(-12 - 193*pow6(y) + 9*pow8(y) -
+         277*quad(y) - 7*sqr(y)) + x*(-6 + 182*pow6(y) - 4*pow8(y) +
+         698*quad(y) + 90*sqr(y))))/(7.*pow6(-1 + sqr(y)));
+
+   return (6*(cube(-1 + sqr(y))*log(sqr(x))*pow5(x) - (-1 +
+      sqr(x))*(log(sqr(y))*quad(y)*(-1 + sqr(x))*(4*y + x*(-5 + sqr(y))) +
+      (-1 + sqr(y))*(2*(cube(y) + pow5(y)) - 2*(cube(y) + pow5(y))*sqr(x) -
+      x*sqr(y)*(3 + sqr(y)) + cube(x)*(1 + 2*quad(y) +
+      sqr(y))))))/(7.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
+}
+
+/// First derivative of f7 w.r.t. 1st argument
+double D10f7(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (-376 + 207*y - 48*sqr(y) - 9*sqr(x)*(11 - 5*y + sqr(y))
+         + 6*x*(57 - 28*y + 6*sqr(y)))/70.;
+
+   if (is_equal(x, 1., 0.001))
+      return (30*cube(y)*log(sqr(y))*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
+         - (-1 + sqr(y))*(-26 + 103*y + 83*cube(y) + 24*pow5(y) - 82*quad(y) -
+         12*sqr(y) + 3*sqr(x)*(-2 + 6*y + 21*cube(y) + 3*pow5(y) - 14*quad(y)
+         + 16*sqr(y)) - 2*x*(-11 + 38*y + 68*cube(y) + 14*pow5(y) - 62*quad(y)
+         + 43*sqr(y))))/(5.*pow6(-1 + y)*sqr(1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return -(((-1 + sqr(x))*(-4 + y + sqr(x)*(-91 + 106*y - 39*sqr(y)) +
+         cube(x)*(65 - 6*y - 11*sqr(y)) + x*(-10 + 21*y - 8*sqr(y)) +
+         quad(x)*(-19 + y - 3*sqr(y)) + pow5(x)*(-1 - 3*y + sqr(y))) +
+         6*log(sqr(x))*sqr(x)*(3*(-2 + y)*cube(x) + 2*quad(x) + 3*(3 - 3*y +
+         sqr(y)) + x*(-3 - 5*y + 3*sqr(y)) + sqr(x)*(8 - 9*y +
+         4*sqr(y))))/(cube(1 + x)*pow6(-1 + x)));
+
+   if (is_equal(x, y, 0.001))
+      return (6*y*log(sqr(y))*(y + 4*cube(y) + 123*pow5(y) + 106*pow7(y) +
+         6*pow9(y) - 2*x*(-1 + 86*pow6(y) + 4*pow8(y) + 135*quad(y) +
+         16*sqr(y)) + 3*y*sqr(x)*(10 + pow6(y) + 24*quad(y) + 45*sqr(y))) -
+         (-1 + sqr(y))*(1047*pow6(y) + 173*pow8(y) + 219*quad(y) + sqr(y) -
+         2*x*y*(-19 + 121*pow6(y) + 939*quad(y) + 399*sqr(y)) + sqr(x)*(9 +
+         93*pow6(y) + 831*quad(y) + 507*sqr(y))))/(y*pow6(-1 + sqr(y)));
+
+   return (6*((-1 + sqr(x))*(-((-1 + sqr(y))*(cube(y) + y*quad(x) -
+      4*cube(x)*(-1 + sqr(y)) + y*sqr(x)*(-5 + 3*sqr(y)))) +
+      cube(y)*log(sqr(y))*sqr(-1 + sqr(x))) - log(sqr(x))*sqr(x)*(2*x - 3*y
+      + 2*cube(x) - y*sqr(x))*sqr(-1 + sqr(y))))/(cube(-1 + sqr(x))*sqr(x -
+      y)*sqr(-1 + sqr(y)));
+}
+
+/// First derivative of f7 w.r.t. 2nd argument
+double D01f7(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (-376 + 342*y + sqr(x)*(-48 + 36*y - 9*sqr(y)) - 99*sqr(y)
+         + 3*x*(69 - 56*y + 15*sqr(y)))/70.;
+
+   if (is_equal(x, 1., 0.001))
+      return -((6*log(sqr(y))*sqr(y)*(9 - 3*y - 6*cube(y) + 2*quad(y) + x*(-9 -
+         5*y + 3*cube(y) - 9*sqr(y)) + 8*sqr(y) + sqr(x)*(3 + 3*y + 4*sqr(y)))
+         + (-1 + sqr(y))*(-4 - 10*y + 65*cube(y) - pow5(y) - 19*quad(y) +
+         y*sqr(x)*(-8 - 39*y - 3*cube(y) + quad(y) - 11*sqr(y)) - 91*sqr(y) +
+         x*(1 + 21*y - 6*cube(y) - 3*pow5(y) + quad(y) + 106*sqr(y))))/(cube(1
+         + y)*pow6(-1 + y)));
+
+   if (is_equal(y, 1., 0.001))
+      return (30*cube(x)*log(sqr(x))*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+         - (-1 + sqr(x))*(-26 + 22*y - 6*sqr(y) + pow5(x)*(24 - 28*y +
+         9*sqr(y)) + x*(103 - 76*y + 18*sqr(y)) - 2*quad(x)*(41 - 62*y +
+         21*sqr(y)) + 2*sqr(x)*(-6 - 43*y + 24*sqr(y)) + cube(x)*(83 - 136*y +
+         63*sqr(y))))/(5.*pow6(-1 + x)*sqr(1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*y*log(sqr(y))*(y*(2 + 44*pow6(y) + 3*pow8(y) + 33*quad(y) -
+         2*sqr(y)) - x*(-1 + 62*pow6(y) + 3*pow8(y) + 90*quad(y) + 6*sqr(y)) +
+         y*sqr(x)*(10 + pow6(y) + 24*quad(y) + 45*sqr(y))) - (-1 +
+         sqr(y))*((23 + 83*pow6(y) + 385*quad(y) - 11*sqr(y))*sqr(y) -
+         2*x*y*(-11 + 45*pow6(y) + 331*quad(y) + 115*sqr(y)) + sqr(x)*(3 +
+         31*pow6(y) + 277*quad(y) + 169*sqr(y))))/(y*pow6(-1 + sqr(y)));
+
+   return (6*(cube(x)*cube(-1 + sqr(y))*log(sqr(x)) + (-1 +
+      sqr(x))*(log(sqr(y))*sqr(y)*(2*(y + cube(y)) - 2*(y + cube(y))*sqr(x)
+      - x*(3 + sqr(y)) + cube(x)*(3 + sqr(y))) - (-1 + sqr(y))*(4*cube(y) -
+      4*cube(y)*sqr(x) + x*(-5 + sqr(y))*sqr(y) + cube(x)*(1 +
+      3*sqr(y))))))/(cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
+}
+
+/// First derivative of f8 w.r.t. 1st argument
+double D10f8(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (288 - 232*y + x*(-356 + 234*y - 60*sqr(y)) + 63*sqr(y)
+         + 9*sqr(x)*(13 - 8*y + 2*sqr(y)))/280.;
+
+   if (is_equal(x, 1., 0.001))
+      return ((-24 + 122*y + 12*cube(y) - 14*pow5(y) + 37*quad(y) - 2*x*(-14 +
+         67*y - 43*cube(y) + 6*pow5(y) + 2*quad(y) - 108*sqr(y)) +
+         3*sqr(x)*(-3 + 14*y - 16*cube(y) + 2*pow5(y) - 6*quad(y) - 21*sqr(y))
+         - 223*sqr(y))*(-1 + sqr(y)) + 30*log(sqr(y))*quad(y)*(6 + 2*x*(-4 +
+         y) - 4*y + 3*sqr(x) + sqr(y)))/(20.*pow6(-1 + y)*sqr(1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (-6*cube(x)*log(sqr(x))*((-3 + 2*y)*cube(x) + quad(x) + 4*(3 - 3*y +
+         sqr(y)) + 3*sqr(x)*(2 - 2*y + sqr(y)) + x*(-6 - 4*y + 3*sqr(y))) +
+         (-1 + sqr(x))*(-6 + 4*y + (17 + 4*y)*pow5(x) - sqr(y) + x*(26 - 14*y
+         + 3*sqr(y)) + quad(x)*(-51 + 10*y + 8*sqr(y)) + sqr(x)*(3 - 26*y +
+         11*sqr(y)) + cube(x)*(71 - 98*y + 39*sqr(y))))/(4.*cube(1 +
+         x)*pow6(-1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*log(sqr(y))*(153*pow6(y) + 52*pow8(y) + 34*quad(y) + sqr(y) +
+         3*sqr(x)*(1 + 10*pow6(y) + 45*quad(y) + 24*sqr(y)) - 2*x*y*(-1 +
+         38*pow6(y) + 147*quad(y) + 56*sqr(y))) - (-1 + sqr(y))*(6 +
+         771*pow6(y) + 23*pow8(y) + 651*quad(y) - 11*sqr(y) - 2*x*y*(17 +
+         13*pow6(y) + 615*quad(y) + 795*sqr(y)) + sqr(x)*(93 + 9*pow6(y) +
+         507*quad(y) + 831*sqr(y))))/(4.*pow6(-1 + sqr(y)));
+
+   return (-3*(-((-1 + sqr(x))*(-((-1 + sqr(y))*(sqr(x)*(1 - 3*sqr(y)) +
+      quad(x)*(3 - 2*sqr(y)) + 2*x*y*(-1 + sqr(y)) + 2*y*cube(x)*(-1 +
+      sqr(y)) + sqr(y))) + log(sqr(y))*quad(y)*sqr(-1 + sqr(x)))) +
+      cube(x)*(3*x - 4*y + cube(x))*log(sqr(x))*sqr(-1 +
+      sqr(y))))/(2.*cube(-1 + sqr(x))*sqr(x - y)*sqr(-1 + sqr(y)));
+}
+
+/// First derivative of f8 w.r.t. 2nd argument
+double D01f8(double x, double y)
+{
+   using std::log;
+
+   if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
+      return (288 - 356*y + x*(-232 + 234*y - 72*sqr(y)) + 117*sqr(y)
+         + 3*sqr(x)*(21 - 20*y + 6*sqr(y)))/280.;
+
+   if (is_equal(x, 1., 0.001))
+      return (-6*cube(y)*log(sqr(y))*(12 - 6*y - 3*cube(y) + quad(y) + 2*x*(-6 -
+         2*y + cube(y) - 3*sqr(y)) + 6*sqr(y) + sqr(x)*(4 + 3*y + 3*sqr(y))) +
+         (-1 + sqr(y))*(-6 + 26*y + 71*cube(y) + 17*pow5(y) - 51*quad(y) +
+         2*x*(2 - 7*y - 49*cube(y) + 2*pow5(y) + 5*quad(y) - 13*sqr(y)) +
+         3*sqr(y) + sqr(x)*(-1 + 3*y + 39*cube(y) + 8*quad(y) +
+         11*sqr(y))))/(4.*cube(1 + y)*pow6(-1 + y));
+
+   if (is_equal(y, 1., 0.001))
+      return (30*log(sqr(x))*quad(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+         + (-1 + sqr(x))*(-24 + 28*y + sqr(x)*(-223 + 216*y - 63*sqr(y)) +
+         cube(x)*(12 + 86*y - 48*sqr(y)) + quad(x)*(37 - 4*y - 18*sqr(y)) -
+         9*sqr(y) + 2*pow5(x)*(-7 - 6*y + 3*sqr(y)) + 2*x*(61 - 67*y +
+         21*sqr(y))))/(20.*pow6(-1 + x)*sqr(1 + x));
+
+   if (is_equal(x, y, 0.001))
+      return (6*log(sqr(y))*(sqr(y)*(3 + 24*pow6(y) + 51*quad(y) + 2*sqr(y)) -
+         2*x*y*(-1 + 14*pow6(y) + 51*quad(y) + 16*sqr(y)) + sqr(x)*(1 +
+         10*pow6(y) + 45*quad(y) + 24*sqr(y))) - (-1 + sqr(y))*(6 +
+         325*pow6(y) + 13*pow8(y) + 133*quad(y) + 3*sqr(y) - 2*x*y*(-7 +
+         5*pow6(y) + 223*quad(y) + 259*sqr(y)) + sqr(x)*(31 + 3*pow6(y) +
+         169*quad(y) + 277*sqr(y))))/(4.*pow6(-1 + sqr(y)));
+
+   return (-3*(-(cube(-1 + sqr(y))*log(sqr(x))*quad(x)) + (-1 + sqr(x))*((-1 +
+      sqr(y))*(-2*x*(y + cube(y)) + 2*cube(x)*(y + cube(y)) + 3*quad(y) +
+      sqr(x)*(1 - 2*quad(y) - 3*sqr(y)) + sqr(y)) +
+      cube(y)*log(sqr(y))*(4*x - 4*cube(x) - y*(3 + sqr(y)) + y*sqr(x)*(3 +
+      sqr(y))))))/(2.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
 }
 
 /// Iabc(a,a,a)
