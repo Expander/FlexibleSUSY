@@ -36,14 +36,14 @@ AMuonGetMuon[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet
                 Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
                       {p_, {Description -> "Muon", ___}} -> p, 1][[1]]
                ]
-GetMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
-                     2,
-                     Null]
+GetCXXMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
+                        1,
+                        Null]
 
 AMuonContributingDiagramsForGraph[graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> GetMuon[], 2 -> SARAH`AntiField[GetMuon[]], 3 -> GetPhoton[]}];
+         {1 -> AMuonGetMuon[], 2 -> SARAH`AntiField[AMuonGetMuon[]], 3 -> GetPhoton[]}];
          
     Select[diagrams,IsDiagramSupported[graph,#] &]
  ]
@@ -64,21 +64,21 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
   ]
 
 AMuonCreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
-                             CXXDiagrams`CXXNameOfField[GetMuon[]] <>
-                             If[GetMuonIndex[] =!= Null,
-                                "( " <> ToString @ GetMuonIndex[] <> " )",
+                             CXXDiagrams`CXXNameOfField[AMuonGetMuon[]] <>
+                             If[GetCXXMuonIndex[] =!= Null,
+                                "( " <> ToString @ GetCXXMuonIndex[] <> " )",
                                 ""] <>
                              ";"
 
 AMuonCreateCalculation[gTaggedDiagrams_List] :=
-  Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
+  Module[{muon = AMuonGetMuon[], cxxMuonIndex = GetCXXMuonIndex[],
           calculation,numberOfIndices},
     numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
     
     "std::array<unsigned, " <> ToString @ numberOfIndices <>
     "> indices = {" <>
-      If[muonIndex =!= Null,
-         " " <> ToString @ muonIndex <>
+      If[cxxMuonIndex =!= Null,
+         " " <> ToString @ cxxMuonIndex <>
          If[numberOfIndices =!= 1,
             StringJoin @ Table[", 1", {numberOfIndices-1}],
             ""] <>
@@ -143,27 +143,11 @@ AMuonGetMSUSY[] :=
           ];
 
 AMuonGetQED2L[] :=
-  Module[{muonIndex = GetMuonIndex[],
-          numberOfIndices = CXXDiagrams`NumberOfFieldIndices[GetMuon[]]},
-    "const field_indices<Muon>::type muonIndices = {" <>
-      If[muonIndex =!= Null,
-         " " <> ToString @ muonIndex <>
-         If[numberOfIndices =!= 1,
-            StringJoin @ Table[", 1", {numberOfIndices-1}],
-            ""] <>
-         " ",
-         If[numberOfIndices =!= 0,
-            StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
-            ""]
-        ] <> 
-    "};\n\n" <>
-    
-    "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
-    "const double m_muon = muonPhysicalMass(context);\n" <>
-    "const double alpha_em = Sqr(Muon::electric_charge)/(4*Pi);\n" <>
-    "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
-    "return qed_2L;"
-  ]
+  "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
+  "const double m_muon = muonPhysicalMass(context);\n" <>
+  "const double alpha_em = Sqr(Muon::electric_charge)/(4*Pi);\n" <>
+  "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
+  "return qed_2L;"
 
 End[];
 EndPackage[];
