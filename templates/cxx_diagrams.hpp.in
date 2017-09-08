@@ -500,7 +500,7 @@ namespace impl {
 }
 
 static double unit_charge( const EvaluationContext &context ) {
-  return impl::unit_charge( context ).left().real();
+  return impl::unit_charge( context ).left().real() / Electron::electric_charge;
 }
 }
 } // namespace flexiblesusy

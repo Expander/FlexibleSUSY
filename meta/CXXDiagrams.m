@@ -75,6 +75,7 @@ CreateFields[] :=
        
        "// Named fields\n" <>
        "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
+       "using Electron = " <> CXXNameOfField[SARAH`Electron] <> ";\n\n" <>
        
        "// Fields that are their own Lorentz conjugates.\n" <>
        StringJoin @ Riffle[
