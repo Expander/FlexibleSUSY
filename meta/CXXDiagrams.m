@@ -16,6 +16,7 @@ CreateVertexData::usage="";
 CreateVertices::usage="";
 VertexRulesForVertices::usage="";
 CreateMassFunctions::usage="";
+CreateUnitCharge::usage="";
 NumberOfFieldIndices::usage="";
 
 Begin["Private`"];
@@ -129,10 +130,11 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 
 VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 
-VertexRulesForVertices[vertices_List, massMatrices_] := 
-  Module[{nPointFunctions},
+VertexRulesForVertices[vertices_List, massMatrices_, OptionsPattern[{sortCouplings -> True}]] := 
+  Module[{nPointFunctions,sortCommand},
     nPointFunctions = CXXDiagrams`NPointFunctions[IndexFields /@ vertices];
-    Vertices`VertexRules[SortCps @ nPointFunctions, massMatrices]
+    sortCommand = If[sortCouplings,Vertices`SortCps,Identity];
+    Vertices`VertexRules[sortCommand @ nPointFunctions, massMatrices]
     ]
 
 NPointFunctions[vertices_List] :=
@@ -209,6 +211,18 @@ CreateMassFunctions[] :=
             ] & /@ massiveFields, "\n\n"]
         ]
 
+CreateUnitCharge[massMatrices_] :=
+  Module[{vertex,vertexRules,parsedVertex},
+         vertex = {SARAH`Photon, SARAH`Electron, SARAH`bar[SARAH`Electron]};
+         VertexRulesForVertices[{vertex}, massMatrices_, sortCouplings -> False];
+         parsedVertex = ParseVertex[vertex, sortCouplings -> False];
+         
+         "static LeftAndRightComponentedVertex unit_charge( void )\n" <> 
+         "{\n" <>
+         TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
+         "}"
+  ]
+
 NumberOfFieldIndices[field_] := Length @ FieldInfo[field][[5]]
 
 LoadVerticesIfNecessary[] :=
@@ -232,20 +246,22 @@ LoadVerticesIfNecessary[] :=
  
 (* The heart of the algorithm! From the field content, determine all
  necessary information. *)
-ParseVertex[fields_List, vertexRules_List] :=
+ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True}]] :=
     Module[{indexedFields, numberOfIndices, declareIndices,
         parsedVertex, vertexClassName, vertexFunctionBody,
         fieldInfo, trIndexBounds, indexBounds,
-        expr, exprL, exprR},
+        expr, exprL, exprR, sortCommand},
            indexedFields = IndexFields[fields];
            
            numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
            declareIndices = DeclareIndices[indexedFields, "indices"];
            
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
+
+           sortCommand = If[sortCouplings,Vertices`SortCp,Identity];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
+                                       expr = sortCommand[SARAH`Cp @@ indexedFields] /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
@@ -254,8 +270,8 @@ ParseVertex[fields_List, vertexRules_List] :=
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
-                                       exprL = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PL] /. vertexRules;
-                                       exprR = Vertices`SortCp @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PR] /. vertexRules;
+                                       exprL = sortCommand @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PL] /. vertexRules;
+                                       exprR = sortCommand @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PR] /. vertexRules;
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>

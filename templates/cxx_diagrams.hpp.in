@@ -494,6 +494,14 @@ private:
   
 
 @CXXDiagrams_MassFunctions@
+
+namespace impl {
+@CXXDiagrams_UnitCharge@
+}
+
+static double unit_charge( void ) {
+  return impl::unit_charge().left().real();
+}
 }
 } // namespace flexiblesusy
 

@@ -369,7 +369,12 @@ double @ModelName@_a_muon2::calculate_a_muon_uncertainty(const @ModelName@_mass_
 namespace {
 double get_QED_2L(EvaluationContext& context)
 {
-@AMuon_QED_2L@
+   const double MSUSY = Abs(get_MSUSY(context.model))
+   const double m_muon = muonPhysicalMass(context);
+   const double alpha_em = Sqr(Muon::electric_charge * unit_charge())/(4*Pi);
+   const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);
+
+   return qed_2L;
 }
 
 template<class PhotonEmitter, class ExchangeField>

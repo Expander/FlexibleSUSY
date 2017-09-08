@@ -8,7 +8,6 @@ AMuonContributingDiagramsForGraph::usage="";
 AMuonCreateMuonPhysicalMass::usage="";
 AMuonCreateCalculation::usage="";
 AMuonGetMSUSY::usage="";
-AMuonGetQED2L::usage="";
 
 Begin["Private`"];
 
@@ -141,13 +140,6 @@ AMuonGetMSUSY[] :=
               ");"
              ]
           ];
-
-AMuonGetQED2L[] :=
-  "const double MSUSY = Abs(get_MSUSY(context.model));\n" <>
-  "const double m_muon = muonPhysicalMass(context);\n" <>
-  "const double alpha_em = Sqr(Muon::electric_charge)/(4*Pi);\n" <>
-  "const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);\n\n" <>
-  "return qed_2L;"
 
 End[];
 EndPackage[];
