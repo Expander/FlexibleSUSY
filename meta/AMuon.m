@@ -2,6 +2,16 @@
 
 BeginPackage["AMuon`", {"SARAH`", "CXXDiagrams`", "TextFormatting`", "TreeMasses`", "LoopMasses`"}];
 
+AMuonContributingGraphs::usage="";
+AMuonGetMuon::usage="";
+AMuonContributingDiagramsForGraph::usage="";
+AMuonCreateMuonPhysicalMass::usage="";
+AMuonCreateCalculation::usage="";
+AMuonGetMSUSY::usage="";
+AMuonGetQED2L::usage="";
+
+Begin["Private`"];
+
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
    and a photon.
@@ -18,10 +28,10 @@ vertexCorrectionGraph = {{0,0,0,1,0,0},
                          {0,0,1,1,1,0}};
 contributingGraphs = {vertexCorrectionGraph};
 
-ContributingGraphs[] := contributingGraphs
+AMuonContributingGraphs[] := contributingGraphs
 
 GetPhoton[] := SARAH`Photon
-GetMuon[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
+AMuonGetMuon[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
                 TreeMasses`GetSMMuonLeptonMultiplet[],
                 Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
                       {p_, {Description -> "Muon", ___}} -> p, 1][[1]]
@@ -30,7 +40,7 @@ GetMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet
                      2,
                      Null]
 
-ContributingDiagramsForGraph[graph_] :=
+AMuonContributingDiagramsForGraph[graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
          {1 -> GetMuon[], 2 -> SARAH`AntiField[GetMuon[]], 3 -> GetPhoton[]}];
@@ -53,14 +63,14 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-CreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
+AMuonCreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
                              CXXDiagrams`CXXNameOfField[GetMuon[]] <>
                              If[GetMuonIndex[] =!= Null,
                                 "( " <> ToString @ GetMuonIndex[] <> " )",
                                 ""] <>
                              ";"
 
-CreateCalculation[gTaggedDiagrams_List] :=
+AMuonCreateCalculation[gTaggedDiagrams_List] :=
   Module[{muon = GetMuon[], muonIndex = GetMuonIndex[],
           calculation,numberOfIndices},
     numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
@@ -121,7 +131,7 @@ GetMinMass[particle_] :=
              ]
           ];
 
-GetMSUSY[] :=
+AMuonGetMSUSY[] :=
     Module[{susyParticles},
            susyParticles = Select[TreeMasses`GetSusyParticles[], IsElectricallyCharged];
            If[susyParticles === {},
@@ -132,7 +142,7 @@ GetMSUSY[] :=
              ]
           ];
 
-GetQED2L[] :=
+AMuonGetQED2L[] :=
   Module[{muonIndex = GetMuonIndex[],
           numberOfIndices = CXXDiagrams`NumberOfFieldIndices[GetMuon[]]},
     "const field_indices<Muon>::type muonIndices = {" <>
@@ -155,5 +165,6 @@ GetQED2L[] :=
     "return qed_2L;"
   ]
 
+End[];
 EndPackage[];
 

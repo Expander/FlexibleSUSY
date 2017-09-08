@@ -1846,8 +1846,8 @@ WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
 WriteEDM2Class[edmFields_List,files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
-    graphs = EDM2`ContributingGraphs[];
-    diagrams = Outer[EDM2`ContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
+    graphs = EDM2`EDMContributingGraphs[];
+    diagrams = Outer[EDM2`EDMContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
@@ -1855,7 +1855,7 @@ WriteEDM2Class[edmFields_List,files_List] :=
       If[diagrams === {},
          {"",""},
          StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[EDM2`CreateInterfaceFunctionForField @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[EDM2`EDMCreateInterfaceFunctionForField @@@ 
             Transpose[{edmFields,Transpose[{graphs,#}] & /@ diagrams}]])];
     
     WriteOut`ReplaceInFiles[files,
@@ -1874,19 +1874,19 @@ WriteAMuonClass[vertexRules_List, files_List] :=
             muonPhysicalMass,
             calculation,
             getMSUSY, getQED2L},
-      graphs = AMuon`ContributingGraphs[];
-      diagrams = AMuon`ContributingDiagramsForGraph /@ graphs;
+      graphs = AMuon`AMuonContributingGraphs[];
+      diagrams = AMuon`AMuonContributingDiagramsForGraph /@ graphs;
       
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
-      muonPhysicalMass = AMuon`CreateMuonPhysicalMass[];
-      calculation = AMuon`CreateCalculation @ Transpose[{graphs,diagrams}];
+      muonPhysicalMass = AMuon`AMuonCreateMuonPhysicalMass[];
+      calculation = AMuon`AMuonCreateCalculation @ Transpose[{graphs,diagrams}];
             
-      getMSUSY = AMuon`GetMSUSY[];
-      getQED2L = AMuon`GetQED2L[];
+      getMSUSY = AMuon`AMuonGetMSUSY[];
+      getQED2L = AMuon`AMuonGetQED2L[];
       
       WriteOut`ReplaceInFiles[files,
-        {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`GetMuon[]],
+        {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]],
          "@AMuon_MuonPhysicalMass@"       -> TextFormatting`IndentText[muonPhysicalMass],
          "@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
          "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],

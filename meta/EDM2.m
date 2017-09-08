@@ -2,6 +2,12 @@
 
 BeginPackage["EDM2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}];
 
+EDMCreateInterfaceFunctionForField::usage="";
+EDMContributingDiagramsForFieldAndGraph::usage="";
+EDMContributingGraphs::usage="";
+
+Begin["Private`"];
+
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
    and a photon.
@@ -18,11 +24,11 @@ vertexCorrectionGraph = {{0,0,0,1,0,0},
                          {0,0,1,1,1,0}};
 contributingGraphs = {vertexCorrectionGraph};
 
-ContributingGraphs[] := contributingGraphs
+EDMContributingGraphs[] := contributingGraphs
 
 GetPhoton[] := SARAH`Photon
 
-ContributingDiagramsForFieldAndGraph[field_,graph_] :=
+EDMContributingDiagramsForFieldAndGraph[field_,graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
          {1 -> field, 2 -> SARAH`AntiField[field], 3 -> GetPhoton[]}];
@@ -45,7 +51,7 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-CreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
+EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
   Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
     prototype = "namespace " <> FlexibleSUSY`FSModelName <> "_edm {\n" <>
                  "double calculate_edm_" <> CXXNameOfField[field] <>
@@ -116,4 +122,5 @@ CXXEvaluatorSF[field_,photonEmitter_,exchangeParticle_] :=
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
+End[];
 EndPackage[];
