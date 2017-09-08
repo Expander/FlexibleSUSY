@@ -212,25 +212,43 @@ CreateMassFunctions[] :=
         ]
 
 CreateUnitCharge[massMatrices_] :=
-  Module[{vertex,vertexRules,parsedVertex},
+  Module[{vertex,vertexRules,parsedVertex,numberOfElectronIndices,numberOfPhotonIndices},
          vertex = {SARAH`Photon, SARAH`Electron, SARAH`bar[SARAH`Electron]};
          vertexRules = VertexRulesForVertices[{vertex}, massMatrices, sortCouplings -> False];
          parsedVertex = ParseVertex[vertex, vertexRules, sortCouplings -> False];
+         numberOfElectronIndices = NumberOfFieldIndices[SARAH`Electron];
+         numberOfPhotonIndices = NumberOfFieldIndices[SARAH`Photon];
 
          "static LeftAndRightComponentedVertex unit_charge( const EvaluationContext &context )\n" <> 
          "{\n" <>
+         TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;\n\n"] <>
          TextFormatting`IndentText @ 
-           ("std::array<unsigned, " <> ToString @ numberOfIndices <> "> indices = {" <>
-              If[TreeMasses`GetDimension[field] =!= 1,
-                 " generationIndex" <>
-                 If[numberOfIndices =!= 1,
-                    StringJoin @ Table[", 1", {numberOfIndices-1}],
+           ("std::array<unsigned, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
+              If[TreeMasses`GetDimension[SARAH`Electron] =!= 1,
+                 " " <> ToString @ FieldInfo[SARAH`Electron][[2]] <>
+                 If[numberOfElectronIndices =!= 1,
+                    StringJoin @ Table[", 0", {numberOfElectronIndices-1}],
                     ""] <> " ",
-                 If[numberOfIndices =!= 0,
-                    StringJoin @ Riffle[Table[" 1", {numberOfIndices}], ","] <> " ",
+                 If[numberOfElectronIndices =!= 0,
+                    StringJoin @ Riffle[Table[" 0", {numberOfElectronIndices}], ","] <> " ",
                     ""]
                 ] <>
-            "};\n\n") <>
+            "};\n") <>
+         TextFormatting`IndentText @ 
+           ("std::array<unsigned, " <> ToString @ numberOfPhotonIndices <> "> photon_indices = {" <>
+               If[TreeMasses`GetDimension[SARAH`Photon] =!= 1,
+                 " " <> ToString @ FieldInfo[SARAH`Photon][[2]] <>
+                 If[numberOfPhotonIndices =!= 1,
+                    StringJoin @ Table[", 0", {numberOfPhotonIndices-1}],
+                    ""] <> " ",
+                 If[numberOfPhotonIndices =!= 0,
+                    StringJoin @ Riffle[Table[" 0", {numberOfPhotonIndices}], ","] <> " ",
+                    ""]
+                ] <>
+            "};\n") <>
+         TextFormatting`IndentText @ 
+           ("std::array<unsigned, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices = " <>
+              "concatenate( concatenate( photon_indices, electron_indices ), electron_indices );\n\n") <>
            
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"
