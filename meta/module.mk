@@ -51,6 +51,7 @@ META_SM_SRC  := \
 		$(DIR)/SM/beta_m2.m \
 		$(DIR)/SM/HSSUSY_corrections.m \
 		$(DIR)/SM/HSSUSY_scale_variation.m \
+		$(DIR)/SM/HSSUSY_scale_variation_1L.m \
 		$(DIR)/SM/HSSUSY_scale_variation_2L.m \
 		$(DIR)/SM/HSSUSY_scale_variation_3L.m
 
