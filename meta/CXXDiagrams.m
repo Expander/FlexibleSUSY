@@ -185,7 +185,8 @@ CreateVertex[fields_List, vertexRules_List] :=
          parsedVertex = ParseVertex[fields, vertexRules];
          functionClassName = "Vertex<" <> StringJoin @ Riffle[CXXNameOfField /@ fields, ", "] <> ">";
          
-         "template<> " <> functionClassName <> "::vertex_type\n" <>
+         "template<> inline\n" <> 
+         functionClassName <> "::vertex_type\n" <>
          functionClassName <> "::evaluate(const indices_type &indices, const EvaluationContext &context)\n" <>
          "{\n" <>
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
@@ -199,7 +200,8 @@ CreateMassFunctions[] :=
       Module[{fieldInfo = FieldInfo[#], numberOfIndices},
              numberOfIndices = Length @ fieldInfo[[5]];
                                    
-             "template<> double EvaluationContext::mass_impl<" <> ToString[#] <>
+             "template<> inline\n" <>
+             "double EvaluationContext::mass_impl<" <> ToString[#] <>
              ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
              "> &indices ) const\n" <>
              "{ return model.get_M" <> CXXNameOfField[#] <>

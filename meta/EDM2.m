@@ -53,16 +53,13 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
 
 EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
   Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
-    prototype = "namespace " <> FlexibleSUSY`FSModelName <> "_edm {\n" <>
-                 "double calculate_edm_" <> CXXNameOfField[field] <>
+    prototype = "double calculate_edm_" <> CXXNameOfField[field] <>
                  "(" <> If[TreeMasses`GetDimension[field] =!= 1,
                            " unsigned generationIndex, ",
                            " "] <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );" <>
-                 "\n}";
+                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
                  
-    definition = "double " <> FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> 
-                    CXXNameOfField[field] <>
+    definition = "double calculate_edm_" <> CXXNameOfField[field] <>
                  "(" <> If[TreeMasses`GetDimension[field] =!= 1,
                            " unsigned generationIndex, ",
                            " "] <>

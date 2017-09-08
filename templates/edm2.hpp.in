@@ -31,7 +31,9 @@
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
+namespace @ModelName@_edm2 {
 @EDM2_InterfacePrototypes@
+}
 } // namespace flexiblesusy
 
 #endif

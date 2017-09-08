@@ -267,14 +267,13 @@ namespace impl
     using indices_type = const std::array<unsigned, 0>;
     using const_iterator = indices_type *;
     
-    static constexpr indices_type dummyIndex = {};
+    const indices_type dummyIndex = {};
     
     const_iterator begin() const
     { return &dummyIndex; }
     const_iterator end() const
     { return (begin()+1); }
   };
-  constexpr IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex;
 }
   
 // Lorentz conjugate fermions

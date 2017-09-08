@@ -86,7 +86,11 @@ struct EDMVertexCorrectionFS
 };
 }
 
+namespace flexiblesusy {
+namespace @ModelName@_edm2 {
 @EDM2_InterfaceDefinitions@
+}
+}
 
 namespace {
 /**
