@@ -197,15 +197,15 @@ void GSL_vector::set_all(double value) noexcept
 
 std::ostream& operator<<(std::ostream& ostr, const GSL_vector& vec)
 {
-   std::cout << "(";
+   ostr << "(";
 
    for (std::size_t i = 0; i < vec.size(); i++) {
-      std::cout << vec[i];
+      ostr << vec[i];
       if (i < vec.size() - 1)
-         std::cout << ", ";
+         ostr << ", ";
    }
 
-   std::cout << ")";
+   ostr << ")";
 
    return ostr;
 }

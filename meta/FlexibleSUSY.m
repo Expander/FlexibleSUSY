@@ -2362,16 +2362,18 @@ FSCheckFlags[] :=
              ];
 
            If[FlexibleSUSY`UseHiggs3LoopSM === True,
+              FlexibleSUSY`UseHiggs2LoopSM = True;
               FlexibleSUSY`UseSMAlphaS3Loop = True;
               FlexibleSUSY`UseYukawa3LoopQCD = True;
+              FlexibleSUSY`UseSM3LoopRGEs = True;
              ];
 
-           If[FlexibleSUSY`UseYukawa3LoopQCD,
+           If[FlexibleSUSY`UseYukawa3LoopQCD || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM QCD corrections to yt from ",
                     "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
              ];
 
-           If[FlexibleSUSY`UseSMAlphaS3Loop,
+           If[FlexibleSUSY`UseSMAlphaS3Loop || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM QCD threshold corrections to alpha_s ",
                     "[arxiv:hep-ph/0004189]"];
              ];
@@ -2386,9 +2388,9 @@ FSCheckFlags[] :=
                     "[arxiv:hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455]"];
              ];
 
-           If[FlexibleSUSY`UseHiggs2LoopSM,
+           If[FlexibleSUSY`UseHiggs2LoopSM || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 2-loop SM Higgs mass contributions from ",
-                    "[arxiv:1205.6497, arxiv:1504.05200]"];
+                    "[arxiv:1205.6497, arxiv:1407.4336]"];
              ];
 
            If[SARAH`UseHiggs2LoopMSSM,
@@ -2403,7 +2405,7 @@ FSCheckFlags[] :=
                     " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127, arXiv:0907.4682]"];
              ];
 
-           If[FlexibleSUSY`UseHiggs3LoopSM,
+           If[FlexibleSUSY`UseHiggs3LoopSM || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM Higgs mass contributions from ",
                     "[arxiv:1407.4336]"];
              ];
@@ -2419,7 +2421,7 @@ FSCheckFlags[] :=
                     " arxiv:1409.2297, arxiv:1708.05720]"];
              ];
 
-           If[FlexibleSUSY`UseSM3LoopRGEs,
+           If[FlexibleSUSY`UseSM3LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM beta-functions from ",
                     "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
                     " arXiv:1504.05200 (SUSYHD v1.0.1)]"];

@@ -197,7 +197,7 @@ double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_theta_w()
 {
    check_model_ptr();
 
-   double theta_w = 0.;
+   double theta_w = std::asin(Electroweak_constants::sinThetaW);
 
 @calculateThetaW@
 
@@ -226,6 +226,13 @@ double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_delta_alpha_s(
 
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaS@
+}
+
+double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_alpha_s_SM5_at(
+   softsusy::QedQcd qedqcd_tmp, double scale) const
+{
+   qedqcd_tmp.run_to(scale); // running in SM(5)
+   return qedqcd_tmp.displayAlpha(softsusy::ALPHAS);
 }
 
 void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_DRbar_yukawa_couplings()

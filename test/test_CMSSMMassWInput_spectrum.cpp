@@ -916,13 +916,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_Softsusy_gauge_coupling
    const double mH0 = ss.displayDrBarPars().mh0(2);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 8.e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 8.e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 3.e-6);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 4.e-6);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 8.e-5);
 }
 
 // ===== test with gauge couplings determined from the Rho parameter (FlexibleSUSY variant) =====
@@ -985,13 +985,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_weinberg_angle )
    const double mH0 = ss.displayDrBarPars().mh0(2);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 8.e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 8.e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 3.e-6);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 5.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 8.e-5);
 }
 
 

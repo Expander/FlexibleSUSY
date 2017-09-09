@@ -37,13 +37,13 @@ Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole
 Block SMINPUTS               # Standard Model inputs
-    1   1.279440000e+02      # alpha^(-1) SM MSbar(MZ)
+    1   1.279160000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166378700e-05      # G_Fermi
     3   1.184000000e-01      # alpha_s(MZ) SM MSbar
     4   9.118760000e+01      # MZ(pole)
     5   4.180000000e+00      # mb(mb) SM MSbar
     6   1.733400000e+02      # mtop(pole)
-    7   1.777000000e+00      # mtau(pole)
+    7   1.776990000e+00      # mtau(pole)
     8   0.000000000e+00      # mnu3(pole)
     9   80.385               # MW pole
    11   5.109989020e-04      # melectron(pole)

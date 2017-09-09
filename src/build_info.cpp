@@ -31,19 +31,19 @@ void print_all_info(std::ostream& ostr)
 {
    ostr <<
       "Version information\n"
-      "===================\n";
+      "===================\n\n";
    print_version_info(ostr);
 
    ostr <<
       "\n"
       "System information\n"
-      "==================\n";
+      "==================\n\n";
    print_system_info(ostr);
 
    ostr <<
       "\n"
       "Build information\n"
-      "=================\n";
+      "=================\n\n";
    print_build_info(ostr);
 }
 
@@ -101,18 +101,88 @@ void print_build_info(std::ostream& ostr)
       "TSIL libraries (TSILLIBS):              " TSILLIBS "\n"
       "Thread libraries (THREADLIBS):          " THREADLIBS "\n"
       "\n"
-      "Debug mode:                             "
-#ifdef ENABLE_DEBUG
+      "Two-scale solver:                       "
+#ifdef ENABLE_TWO_SCALE_SOLVER
       "enabled"
 #else
       "disabled"
 #endif
       "\n"
-      "Multi-threading:                        "
-#ifdef ENABLE_THREADS
+      "Semi-analytic solver:                   "
+#ifdef ENABLE_SEMI_ANALYTIC_SOLVER
       "enabled"
 #else
       "disabled"
+#endif
+      "\n"
+      "Colored output:                         "
+#ifdef ENABLE_COLORS
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Debug output:                           "
+#ifdef ENABLE_DEBUG
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Silent output:                          "
+#ifdef ENABLE_SILENT
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Verbose output:                         "
+#ifdef ENABLE_VERBOSE
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use Boost.Numeric.Odeint:               "
+#ifdef ENABLE_ODEINT
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use FFlite:                             "
+#ifdef ENABLE_FFLITE
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use GM2Calc:                            "
+#ifdef ENABLE_GM2Calc
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use Himalaya:                           "
+#ifdef ENABLE_HIMALAYA
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use LAPACK:                             "
+#ifdef ENABLE_LAPACK
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use LibraryLink:                        "
+#ifdef ENABLE_LIBRARYLINK
+      "yes"
+#else
+      "no"
 #endif
       "\n"
       "Use LoopTools:                          "
@@ -122,8 +192,22 @@ void print_build_info(std::ostream& ostr)
       "no"
 #endif
       "\n"
-      "Use FFlite:                             "
-#ifdef ENABLE_FFLITE
+      "Use MKL ILP64 workaround:               "
+#ifdef ENABLE_ILP64MKL_WORKAROUND
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use multi-threading:                    "
+#ifdef ENABLE_THREADS
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Use <random> header:                    "
+#ifdef ENABLE_RANDOM
       "yes"
 #else
       "no"
@@ -143,7 +227,7 @@ void print_build_info(std::ostream& ostr)
       "no"
 #endif
       "\n"
-      "Eigenvalue error check:                 "
+      "Mass eigenvalue error check:            "
 #ifdef CHECK_EIGENVALUE_ERROR
       "yes"
 #else

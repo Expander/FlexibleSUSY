@@ -31,7 +31,7 @@ public:
    virtual void calculate_spectrum() = 0;
    virtual void clear_problems() = 0;
    virtual std::string name() const = 0;
-   virtual void print(std::ostream& out = std::cout) const = 0;
+   virtual void print(std::ostream& out = std::cerr) const = 0;
    virtual void run_to(double, double eps = -1.0) = 0;
    virtual void set_precision(double) = 0;
 };

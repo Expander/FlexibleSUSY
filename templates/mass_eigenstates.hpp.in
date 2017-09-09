@@ -109,7 +109,7 @@ public:
    void clear_problems();
    std::string name() const;
    void run_to(double scale, double eps = -1.0) override;
-   void print(std::ostream& out = std::cout) const override;
+   void print(std::ostream& out = std::cerr) const override;
    void set_precision(double);
    double get_precision() const;
 

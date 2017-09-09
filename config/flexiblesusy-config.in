@@ -60,7 +60,10 @@ create_include_directives_for_FS_modules() {
 }
 
 create_include_directives_for_external_modules() {
-    local incl="$gslflags $eigenflags $boostflags $himalayaflags"
+    local incl="$gslflags $eigenflags $boostflags"
+
+    [ "x@ENABLE_HIMALAYA@" = xyes ] && \
+        incl="$incl $himalayaflags"
 
     [ "x@ENABLE_TSIL@" = xyes ] && \
         incl="$incl $tsilflags"
@@ -93,7 +96,7 @@ cppflags_without_modules="$cppflags_from_configure $incl_external_modules"
 cppflags="$cppflags_from_configure $incl_FS_modules $incl_external_modules"
 flexiblesusy_libs="$(create_flexiblesusy_libs)"
 compile_cmd="$cxx $cppflags $cxxflags"
-libs="$ldflags $flexiblesusy_libs $loopfunclibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
+libs="$ldflags $flexiblesusy_libs $loopfunclibs $himalayalibs $gsllibs $boostthreadlibs $lapacklibs $blaslibs $flibs $sqlitelibs $tsillibs $threadlibs $ldlibs"
 modules="$(create_module_list)"
 
 help() {
@@ -119,6 +122,7 @@ Options:
                         Test if compiler warnings are enabled
   --enable-debug        Test if debug mode is enabled
   --enable-fflite       Test if FFlite is enabled
+  --enable-himalaya     Test if Himalaya is enabled
   --enable-lapack       Test if LAPACK is enabled
   --enable-librarylink  Test if LibraryLink is enabled
   --enable-looptools    Test if LoopTools is enabled
@@ -231,11 +235,12 @@ while test $# -gt 0; do
             fi
             ;;
       ### flags
-        --enable-colors)              out="$out @ENABLE_COLOR_PRINTOUT@" ;;
+        --enable-colors)              out="$out @ENABLE_COLORS@" ;;
         --enable-compile)             out="$out @ENABLE_COMPILE@" ;;
         --enable-compiler-warnings)   out="$out @ENABLE_COMPILER_WARNINGS@" ;;
         --enable-debug)               out="$out @ENABLE_DEBUG@" ;;
         --enable-fflite)              out="$out @ENABLE_FFLITE@" ;;
+        --enable-himalaya)            out="$out @ENABLE_HIMALAYA@" ;;
         --enable-lapack)              out="$out @ENABLE_LAPACK@" ;;
         --enable-librarylink)         out="$out @ENABLE_LIBRARYLINK@" ;;
         --enable-looptools)           out="$out @ENABLE_LOOPTOOLS@" ;;

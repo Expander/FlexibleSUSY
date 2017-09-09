@@ -172,7 +172,7 @@ void Problems::flag_running_tachyon(int particle, bool flag)
    running_tachyons.at(particle) = flag;
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    if (flag)
-      WARNING("running " << particle_names[particle] << " tachyon");
+      WARNING("running " << particle_names->get(particle) << " tachyon");
 #endif
 }
 
@@ -181,7 +181,7 @@ void Problems::flag_pole_tachyon(int particle, bool flag)
    pole_tachyons.at(particle) = flag;
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    if (flag)
-      WARNING("pole " << particle_names[particle] << " tachyon");
+      WARNING("pole " << particle_names->get(particle) << " tachyon");
 #endif
 }
 

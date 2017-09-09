@@ -114,6 +114,11 @@ Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
   100   2                    # LambdaLoopOrder (HSSUSY)
+  101   1                    # 2-loop at*as
+  102   1                    # 2-loop ab*as
+  103   1                    # 2-loop at*ab
+  104   1                    # 2-loop atau*atau
+  105   1                    # 2-loop at*at
 "
 
 run_sg() {
