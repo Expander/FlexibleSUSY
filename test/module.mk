@@ -180,6 +180,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_database.cpp
 endif
 
+ifeq ($(WITH_MRSSM2),yes)
+TEST_SRC += \
+		$(DIR)/test_MRSSM2_gmm2.cpp
+endif
+
 endif # ifneq ($(findstring two_scale,$(SOLVERS)),)
 
 ifneq ($(findstring semi_analytic,$(SOLVERS)),)
@@ -799,6 +804,8 @@ $(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $
 
 $(DIR)/test_CMSSM_database.x: $(DIR)/test_CMSSM_database.o $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(THREADLIBS)
+
+$(DIR)/test_MRSSM2_gmm2.x: $(LIBMRSSM2) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_model.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
