@@ -87,6 +87,11 @@ InitialGuessAtLowScale = {
     {Ye, Automatic}
 };
 
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{21, FlexibleSUSYObservable`aMuon} } }
+};
+
 DefaultPoleMassPrecision = HighPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
 MediumPoleMassPrecision  = {};
