@@ -75,7 +75,7 @@ CreateFields[] :=
        
        "// Named fields\n" <>
        "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
-       "using Electron = " <> CXXNameOfField[SARAH`Electron] <> ";\n\n" <>
+       "using Electron = " <> CXXNameOfField[Vertices`StripFieldIndices[TreeMasses`GetSMElectronLepton[]]] <> ";\n\n" <>
        
        "// Fields that are their own Lorentz conjugates.\n" <>
        StringJoin @ Riffle[
@@ -213,20 +213,24 @@ CreateMassFunctions[] :=
         ]
 
 CreateUnitCharge[massMatrices_] :=
-  Module[{vertex,vertexRules,parsedVertex,numberOfElectronIndices,numberOfPhotonIndices},
-         vertex = {SARAH`Photon, SARAH`Electron, SARAH`bar[SARAH`Electron]};
+  Module[{electron,photon,vertex,
+          vertexRules,parsedVertex,
+          numberOfElectronIndices,numberOfPhotonIndices},
+         electron = Vertices`StripFieldIndices[TreeMasses`GetSMElectronLepton[]];
+         photon = SARAH`Photon;
+         vertex = {photon, electron, SARAH`bar[electron]};
          vertexRules = VertexRulesForVertices[{vertex}, massMatrices, sortCouplings -> False];
          parsedVertex = ParseVertex[vertex, vertexRules, sortCouplings -> False];
-         numberOfElectronIndices = NumberOfFieldIndices[SARAH`Electron];
-         numberOfPhotonIndices = NumberOfFieldIndices[SARAH`Photon];
+         numberOfElectronIndices = NumberOfFieldIndices[electron];
+         numberOfPhotonIndices = NumberOfFieldIndices[photon];
 
          "static LeftAndRightComponentedVertex unit_charge( const EvaluationContext &context )\n" <> 
          "{\n" <>
          TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;\n\n"] <>
          TextFormatting`IndentText @ 
            ("std::array<unsigned, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
-              If[TreeMasses`GetDimension[SARAH`Electron] =!= 1,
-                 " " <> ToString @ FieldInfo[SARAH`Electron][[2]] <>
+              If[TreeMasses`GetDimension[electron] =!= 1,
+                 " " <> ToString @ (FieldInfo[electron][[2]]-1) <> (* Electron has the lowest index *)
                  If[numberOfElectronIndices =!= 1,
                     StringJoin @ Table[", 0", {numberOfElectronIndices-1}],
                     ""] <> " ",
@@ -237,8 +241,8 @@ CreateUnitCharge[massMatrices_] :=
             "};\n") <>
          TextFormatting`IndentText @ 
            ("std::array<unsigned, " <> ToString @ numberOfPhotonIndices <> "> photon_indices = {" <>
-               If[TreeMasses`GetDimension[SARAH`Photon] =!= 1,
-                 " " <> ToString @ FieldInfo[SARAH`Photon][[2]] <>
+               If[TreeMasses`GetDimension[photon] =!= 1,
+                 " " <> ToString @ (FieldInfo[photon][[2]]-1) <>
                  If[numberOfPhotonIndices =!= 1,
                     StringJoin @ Table[", 0", {numberOfPhotonIndices-1}],
                     ""] <> " ",
@@ -287,7 +291,7 @@ ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True
            
            numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
            declareIndices = DeclareIndices[indexedFields, "indices"];
-           
+
            vertexClassName = SymbolName[VertexTypeForFields[fields]];
 
            sortCommand = If[OptionValue[sortCouplings],Vertices`SortCp,Identity];
@@ -319,7 +323,7 @@ ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True
            trIndexBounds = Cases[Flatten[(With[{fieldIndex = #},
                                              (If[#[[1]] === SARAH`generation,
                                                  {fieldInfo[[fieldIndex, 2]]-1, fieldInfo[[fieldIndex, 3]]},
-                                                 {1, #[[2]]}]
+                                                 {0, #[[2]]}]
                                               &) /@ fieldInfo[[fieldIndex, 5]]]
                                         &) /@ Table[i, {i, Length[fields]}],
                                        1],
