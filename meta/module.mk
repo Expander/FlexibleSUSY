@@ -84,6 +84,7 @@ META_SRC     := \
 		$(DIR)/ThreeLoopQCD.m \
 		$(DIR)/ThreeLoopSM.m \
 		$(DIR)/ThresholdCorrections.m \
+		$(DIR)/ThresholdCorrectionLoopFunctions.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
 		$(DIR)/TwoLoopSM.m \

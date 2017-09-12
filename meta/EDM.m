@@ -468,7 +468,7 @@ ParseVertex[fields_List, vertexRules_List] :=
            trIndexBounds = Cases[Flatten[(With[{fieldIndex = #},
                                              (If[#[[1]] === SARAH`generation,
                                                  {fieldInfo[[fieldIndex, 2]]-1, fieldInfo[[fieldIndex, 3]]},
-                                                 {1, #[[2]]}]
+                                                 {0, #[[2]]}]
                                               &) /@ fieldInfo[[fieldIndex, 5]]]
                                         &) /@ Table[i, {i, Length[fields]}],
                                        1],
