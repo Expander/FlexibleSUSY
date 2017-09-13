@@ -283,7 +283,7 @@ template<class Field> struct bar
   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
   using smFlags = typename Field::smFlags;
 
-  static constexpr double electric_charge = Field::electric_charge;
+  static constexpr double electric_charge = - Field::electric_charge;
 
   using type = bar<Field>;
   using lorentz_conjugate = Field;
@@ -296,7 +296,7 @@ template<class Field> struct conj
   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
   using smFlags = typename Field::smFlags;
 
-  static constexpr double electric_charge = Field::electric_charge;
+  static constexpr double electric_charge = - Field::electric_charge;
 
   using type = conj<Field>;
   using lorentz_conjugate = Field;
