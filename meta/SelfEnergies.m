@@ -509,7 +509,7 @@ CreateNPointFunctionMatrix[_SelfEnergies`Tadpole] := { "", "" };
 FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
     Module[{field = GetField[nPointFunction], dim, name},
            dim = GetDimension[field];
-           name = CreateSelfEnergyFunctionName[field, 1];
+           name = CreateFunctionName[nPointFunction, 1];
            "\
 for (int i = 0; i < " <> ToString[dim] <> "; i++)
    for (int k = i; k < " <> ToString[dim] <> "; k++)
@@ -522,7 +522,7 @@ Hermitianize(" <> sym <> ");
 FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
     Module[{field = GetField[nPointFunction], dim, name},
            dim = GetDimension[field];
-           name = CreateSelfEnergyFunctionName[field, 1];
+           name = CreateFunctionName[nPointFunction, 1];
            "\
 for (int i = 0; i < " <> ToString[dim] <> "; i++)
    for (int k = 0; k < " <> ToString[dim] <> "; k++)
