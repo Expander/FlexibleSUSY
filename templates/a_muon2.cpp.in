@@ -411,9 +411,6 @@ double AMuonVertexCorrectionFS<
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
       auto muonMass = context.mass<Muon>( muonIndices );
 
-      double photonEmitterChargeCount =
-        PhotonEmitter::electric_charge / Muon::electric_charge;
-
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
 
@@ -428,7 +425,7 @@ double AMuonVertexCorrectionFS<
             is_zero(massRatioSquared) ? 0. :
             photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
-      const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
+      const double preFactor = oneOver16PiSqr * PhotonEmitter::electric_charge
             * muonPhysicalMass(context) / (exchangeFieldMass * exchangeFieldMass);
 
       res += preFactor * (part1 + part2);
@@ -471,9 +468,6 @@ double AMuonVertexCorrectionSF<
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
       auto muonMass = context.mass<Muon>( muonIndices );
 
-      double photonEmitterChargeCount =
-        PhotonEmitter::electric_charge / Muon::electric_charge;
-
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
 
@@ -485,7 +479,7 @@ double AMuonVertexCorrectionSF<
       const double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
       const double part2 = exchangeFieldMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
-      const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
+      const double preFactor = - oneOver16PiSqr * PhotonEmitter::electric_charge
             * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
 
       res += preFactor * (part1 + part2);
