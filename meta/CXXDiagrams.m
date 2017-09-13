@@ -48,6 +48,8 @@ LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
                                         "conj"]
 LorentzConjugate[field_] := SARAH`AntiField[field]
 
+AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
+
 CreateFields[] :=
   Module[{fields},
        fields = TreeMasses`GetParticles[];
@@ -74,8 +76,8 @@ CreateFields[] :=
               "};" &) /@ fields, "\n\n"] <> "\n\n" <>
        
        "// Named fields\n" <>
-       "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n\n" <>
-       "using Electron = " <> CXXNameOfField[Vertices`StripFieldIndices[TreeMasses`GetSMElectronLepton[]]] <> ";\n\n" <>
+       "using Photon = " <> CXXNameOfField[SARAH`Photon] <> ";\n" <>
+       "using Electron = " <> CXXNameOfField[AtomHead @ TreeMasses`GetSMElectronLepton[]] <> ";\n\n" <>
        
        "// Fields that are their own Lorentz conjugates.\n" <>
        StringJoin @ Riffle[
@@ -216,7 +218,7 @@ CreateUnitCharge[massMatrices_] :=
   Module[{electron,photon,vertex,
           vertexRules,parsedVertex,
           numberOfElectronIndices,numberOfPhotonIndices},
-         electron = Vertices`StripFieldIndices[TreeMasses`GetSMElectronLepton[]];
+         electron = AtomHead @ TreeMasses`GetSMElectronLepton[];
          photon = SARAH`Photon;
          vertex = {photon, electron, SARAH`bar[electron]};
          vertexRules = VertexRulesForVertices[{vertex}, massMatrices, sortCouplings -> False];
@@ -226,7 +228,7 @@ CreateUnitCharge[massMatrices_] :=
 
          "static LeftAndRightComponentedVertex unit_charge( const EvaluationContext &context )\n" <> 
          "{\n" <>
-         TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;\n\n"] <>
+         TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;"] <> "\n\n" <>
          TextFormatting`IndentText @ 
            ("std::array<unsigned, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
               If[TreeMasses`GetDimension[electron] =!= 1,

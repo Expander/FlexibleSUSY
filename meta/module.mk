@@ -68,6 +68,9 @@ META_SRC     := \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
 		$(DIR)/GMuonMinus2.m \
+		$(DIR)/EDM.m \
+		$(DIR)/EDM2.m \
+		$(DIR)/AMuon.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \
