@@ -67,10 +67,9 @@ double get_QED_2L(EvaluationContext &);
  * \a Args.
  */
 template<class PhotonEmitter, class ExchangeParticle>
-struct AMuonVertexCorrectionSF
-{
-  static double value(const typename field_indices<Muon>::type &indices,
-                      const EvaluationContext &context);
+struct AMuonVertexCorrectionSF {
+   static double value(const typename field_indices<Muon>::type &indices,
+                       const EvaluationContext &context);
 };
 
 /**
@@ -90,10 +89,9 @@ struct AMuonVertexCorrectionSF
  * \a Args.
  */
 template<class PhotonEmitter, class ExchangeParticle>
-struct AMuonVertexCorrectionFS
-{
-  static double value(const typename field_indices<Muon>::type &indices,
-                      const EvaluationContext &context);
+struct AMuonVertexCorrectionFS {
+   static double value(const typename field_indices<Muon>::type &indices,
+                       const EvaluationContext &context);
 };
 
 /**
@@ -219,7 +217,7 @@ double OneLoopFunctionF2N(double x)
 
 double get_MSUSY(const @ModelName@_mass_eigenstates& model)
 {
-@AMuon_GetMSUSY@
+   @AMuon_GetMSUSY@
 }
 
 void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
@@ -245,7 +243,8 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
 
       precision = MaxRelDiff(MSUSY_old, MSUSY_new);
       MSUSY_old = MSUSY_new;
-   } while (precision > precision_goal && ++it < Nmax);
+   }
+   while (precision > precision_goal && ++it < Nmax);
 
    VERBOSE_MSG("@ModelName@_a_muon: iteration finished. MSUSY = " << MSUSY_new);
 
@@ -263,7 +262,7 @@ double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
    EvaluationContext context{ model };
    double val = 0.0;
 
-@AMuon_Calculation@
+   @AMuon_Calculation@
 
    // add 2-loop QED logarithms
    val *= 1. + get_QED_2L(context);
@@ -296,21 +295,22 @@ std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
    auto scales = generate_scales<7>(model.get_scale(), 2.);
 
    std::transform(scales.begin(), scales.end(), scales.begin(),
-                  [&model] (double scale) {
-                     double amu = 0.;
-                     try {
-                        auto m = model;
-                        m.run_to(scale);
-                        m.get_physical().clear();
-                        m.calculate_DRbar_masses();
-                        m.solve_ewsb();
-                        m.calculate_M@AMuon_MuonField@_pole();
-                        amu = calculate_a_muon_impl(m);
-                     } catch(const Error& e) {
-                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
-                     }
-                     return amu;
-                  });
+   [&model] (double scale) {
+      double amu = 0.;
+      try {
+         auto m = model;
+         m.run_to(scale);
+         m.get_physical().clear();
+         m.calculate_DRbar_masses();
+         m.solve_ewsb();
+         m.calculate_M@AMuon_MuonField@_pole();
+         amu = calculate_a_muon_impl(m);
+      }
+      catch(const Error& e) {
+         ERROR("@ModelName@_a_muon: scale variation: " << e.what());
+      }
+      return amu;
+   });
 
    const auto minmax = std::minmax_element(scales.cbegin(), scales.cend());
 
@@ -319,7 +319,7 @@ std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
 
 double muonPhysicalMass( const EvaluationContext &context )
 {
-@AMuon_MuonPhysicalMass@
+   @AMuon_MuonPhysicalMass@
 }
 } // anonymous namespace
 
@@ -332,7 +332,8 @@ double @ModelName@_a_muon2::calculate_a_muon(const @ModelName@_mass_eigenstates&
    try {
       run_to_MSUSY(model);
       model.get_physical().clear();
-   } catch (const Error& e) {
+   }
+   catch (const Error& e) {
       ERROR("@ModelName@_a_muon:" << e.what());
       return std::numeric_limits<double>::quiet_NaN();
    }
@@ -355,7 +356,8 @@ double @ModelName@_a_muon2::calculate_a_muon_uncertainty(const @ModelName@_mass_
    try {
       run_to_MSUSY(model);
       model.get_physical().clear();
-   } catch (const Error& e) {
+   }
+   catch (const Error& e) {
       ERROR("@ModelName@_a_muon uncertainty: " << e.what());
       return std::numeric_limits<double>::quiet_NaN();
    }
@@ -379,20 +381,19 @@ double get_QED_2L(EvaluationContext& context)
 
 template<class PhotonEmitter, class ExchangeField>
 double AMuonVertexCorrectionFS<
-   PhotonEmitter, ExchangeField
+PhotonEmitter, ExchangeField
 >::value(const typename field_indices<Muon>::type &indices, const EvaluationContext &context)
 {
    double res = 0.0;
 
    using MuonVertex = Vertex<
-      typename Muon::lorentz_conjugate,
-      ExchangeField,
-      PhotonEmitter
-   >;
+                      typename Muon::lorentz_conjugate,
+                      ExchangeField,
+                      PhotonEmitter
+                      >;
 
    constexpr auto indexBounds = MuonVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
-   {
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
       auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
 
       if( muonIndices != indices )
@@ -402,7 +403,7 @@ double AMuonVertexCorrectionFS<
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
 
       if( isSMField<PhotonEmitter>( photonEmitterIndices ) &&
-          isSMField<ExchangeField>( exchangeFieldIndices ) )
+            isSMField<ExchangeField>( exchangeFieldIndices ) )
          continue;
 
       auto muonVertex = MuonVertex::evaluate(*indexIt, context);
@@ -412,7 +413,7 @@ double AMuonVertexCorrectionFS<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        PhotonEmitter::electric_charge / Muon::electric_charge;
+         PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
@@ -425,11 +426,11 @@ double AMuonVertexCorrectionFS<
       const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
 
       const double part2 =
-            is_zero(massRatioSquared) ? 0. :
-            photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
+         is_zero(massRatioSquared) ? 0. :
+         photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
       const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
-            * muonPhysicalMass(context) / (exchangeFieldMass * exchangeFieldMass);
+                               * muonPhysicalMass(context) / (exchangeFieldMass * exchangeFieldMass);
 
       res += preFactor * (part1 + part2);
    }
@@ -439,20 +440,19 @@ double AMuonVertexCorrectionFS<
 
 template<class PhotonEmitter, class ExchangeField>
 double AMuonVertexCorrectionSF<
-   PhotonEmitter, ExchangeField
+PhotonEmitter, ExchangeField
 >::value(const typename field_indices<Muon>::type &indices, const EvaluationContext &context)
 {
    double res = 0.0;
 
    using MuonVertex = Vertex<
-      typename Muon::lorentz_conjugate,
-      ExchangeField,
-      PhotonEmitter
-   >;
+                      typename Muon::lorentz_conjugate,
+                      ExchangeField,
+                      PhotonEmitter
+                      >;
 
    constexpr auto indexBounds = MuonVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
-   {
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
       auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
 
       if( muonIndices != indices )
@@ -462,7 +462,7 @@ double AMuonVertexCorrectionSF<
       auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
 
       if( isSMField<PhotonEmitter>( photonEmitterIndices ) &&
-          isSMField<ExchangeField>( exchangeFieldIndices ) )
+            isSMField<ExchangeField>( exchangeFieldIndices ) )
          continue;
 
       auto muonVertex = MuonVertex::evaluate(*indexIt, context);
@@ -472,7 +472,7 @@ double AMuonVertexCorrectionSF<
       auto muonMass = context.mass<Muon>( muonIndices );
 
       double photonEmitterChargeCount =
-        PhotonEmitter::electric_charge / Muon::electric_charge;
+         PhotonEmitter::electric_charge / Muon::electric_charge;
 
       const std::complex<double> zL = muonVertex.left();
       const std::complex<double> zR = muonVertex.right();
@@ -486,7 +486,7 @@ double AMuonVertexCorrectionSF<
       const double part2 = exchangeFieldMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
       const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
-            * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
+                               * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
 
       res += preFactor * (part1 + part2);
    }

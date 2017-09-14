@@ -57,10 +57,9 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
  * \a Args.
  */
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
-struct EDMVertexCorrectionSF
-{
-  static double value(const typename field_indices<EDMField>::type &indices,
-                      EvaluationContext &context);
+struct EDMVertexCorrectionSF {
+   static double value(const typename field_indices<EDMField>::type &indices,
+                       EvaluationContext &context);
 };
 
 /**
@@ -79,10 +78,9 @@ struct EDMVertexCorrectionSF
 * \a Args.
 */
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
-struct EDMVertexCorrectionFS
-{
-  static double value(const typename field_indices<EDMField>::type &indices,
-                      EvaluationContext &context);
+struct EDMVertexCorrectionFS {
+   static double value(const typename field_indices<EDMField>::type &indices,
+                       EvaluationContext &context);
 };
 }
 
@@ -150,20 +148,19 @@ double OneLoopFunctionB(double r)
 
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionFS<
-   EDMField, PhotonEmitter, ExchangeField
+EDMField, PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
    using FermionVertex = Vertex<
-      typename EDMField::lorentz_conjugate,
-      ExchangeField,
-      PhotonEmitter
-   >;
+                         typename EDMField::lorentz_conjugate,
+                         ExchangeField,
+                         PhotonEmitter
+                         >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
-   {
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
       auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
 
       if( edmFieldIndices != indices )
@@ -177,7 +174,7 @@ double EDMVertexCorrectionFS<
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
       double photonEmitterCharge =
-        PhotonEmitter::electric_charge * unit_charge( context );
+         PhotonEmitter::electric_charge * unit_charge( context );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -198,20 +195,19 @@ double EDMVertexCorrectionFS<
 
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionSF<
-   EDMField, PhotonEmitter, ExchangeField
+EDMField, PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField>::type &indices, EvaluationContext &context)
 {
    double res = 0.0;
 
    using FermionVertex = Vertex<
-      typename EDMField::lorentz_conjugate,
-      ExchangeField,
-      PhotonEmitter
-   >;
+                         typename EDMField::lorentz_conjugate,
+                         ExchangeField,
+                         PhotonEmitter
+                         >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt )
-   {
+   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
       auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
 
       if( edmFieldIndices != indices )
@@ -225,7 +221,7 @@ double EDMVertexCorrectionSF<
       auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
 
       double photonEmitterCharge =
-        PhotonEmitter::electric_charge * unit_charge( context );
+         PhotonEmitter::electric_charge * unit_charge( context );
 
       constexpr double numericFactor = oneOver16PiSquared;
       double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);

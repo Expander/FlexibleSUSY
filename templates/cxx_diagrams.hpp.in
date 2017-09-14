@@ -48,295 +48,300 @@
 
 namespace flexiblesusy {
 namespace cxx_diagrams {
-namespace impl
-{
-  /** \brief Helper template for make_array
-   */
-  template<class ForwardIterator, std::size_t N, class T>
-  struct make_array_it
-  {
-    using decayed_type = typename std::decay<
-    typename std::iterator_traits<ForwardIterator>::value_type
-    >::type;
-    static constexpr bool use_cast = !std::is_same<decayed_type, T>::value;
-    
-    template<class... Args>
-    static auto iterate( ForwardIterator begin, Args &&...args )
-    -> typename std::enable_if<
-    !use_cast,
-    std::array<T, N + sizeof...(Args)>
-    >::type
-    {
+namespace impl {
+/** \brief Helper template for make_array
+ */
+template<class ForwardIterator, std::size_t N, class T>
+struct make_array_it {
+   using decayed_type = typename std::decay<
+                        typename std::iterator_traits<ForwardIterator>::value_type
+                        >::type;
+   static constexpr bool use_cast = !std::is_same<decayed_type, T>::value;
+
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   -> typename std::enable_if<
+   !use_cast,
+   std::array<T, N + sizeof...(Args)>
+   >::type {
       ForwardIterator copy( begin );
       return make_array_it<ForwardIterator, N-1, T>::iterate( ++begin,
-                                                             std::forward<Args>( args )..., *copy );
-    }
-    
-    template<class... Args>
-    static auto iterate( ForwardIterator begin, Args &&...args )
-    -> typename std::enable_if<
-    use_cast,
-    std::array<T, N + sizeof...(Args)>
-    >::type
-    {
+            std::forward<Args>( args )..., *copy );
+   }
+
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   -> typename std::enable_if<
+   use_cast,
+   std::array<T, N + sizeof...(Args)>
+   >::type {
       ForwardIterator copy( begin );
       return make_array_it<ForwardIterator, N-1, T>::iterate( ++begin,
-                                                             std::forward<Args>( args )..., T( *copy ) );
-    }
-  };
-  
-  /** \brief Specialized helper template for make_array */
-  template<class ForwardIterator, class T>
-  struct make_array_it<ForwardIterator, 0, T>
-  {
-    template<class... Args>
-    static auto iterate( ForwardIterator begin, Args &&...args )
-    -> std::array<T, sizeof...(Args)>
-    {
+            std::forward<Args>( args )..., T( *copy ) );
+   }
+};
+
+/** \brief Specialized helper template for make_array */
+template<class ForwardIterator, class T>
+struct make_array_it<ForwardIterator, 0, T> {
+   template<class... Args>
+   static auto iterate( ForwardIterator begin, Args &&...args )
+   -> std::array<T, sizeof...(Args)> {
       return std::array<T, sizeof...(Args)>{ std::forward<Args>( args )... };
-    }
-  };
-  
-  /** \class make_array
-   * \brief Facility for easy construction of \a std::array
-   *        objects.
-   * \tparam N The size of the to be constructed array
-   * \tparam T The type of the objects the array should hold
-   *           or void (by default) if the type should be
-   *           inferred.
-   */
-  template<std::size_t N, class T = void>
-  struct make_array
-  {
-    /** \brief Construct a \a std::array by copying values
-     *         from a range.
-     * \tparam ForwardIterator The iterator type (usually inferred)
-     * \param[in] begin The iterator marking the beginning of
-     *                  the range to be copied.
-     * \returns A \a std::array holding the desired objects.
-     * \warning \a begin must be incrementable sufficiently
-     *          often (\a N times) otherwise the behaviour
-     *          is undefined.
-     */
-    template<class ForwardIterator>
-    static auto iterate( ForwardIterator begin )
-    -> std::array<typename std::conditional<
-    std::is_void<T>::value,
-    typename std::iterator_traits<ForwardIterator>::value_type,
-    T
-    >::type, N>
-    {
+   }
+};
+
+/** \class make_array
+ * \brief Facility for easy construction of \a std::array
+ *        objects.
+ * \tparam N The size of the to be constructed array
+ * \tparam T The type of the objects the array should hold
+ *           or void (by default) if the type should be
+ *           inferred.
+ */
+template<std::size_t N, class T = void>
+struct make_array {
+   /** \brief Construct a \a std::array by copying values
+    *         from a range.
+    * \tparam ForwardIterator The iterator type (usually inferred)
+    * \param[in] begin The iterator marking the beginning of
+    *                  the range to be copied.
+    * \returns A \a std::array holding the desired objects.
+    * \warning \a begin must be incrementable sufficiently
+    *          often (\a N times) otherwise the behaviour
+    *          is undefined.
+    */
+   template<class ForwardIterator>
+   static auto iterate( ForwardIterator begin )
+   -> std::array<typename std::conditional<
+   std::is_void<T>::value,
+       typename std::iterator_traits<ForwardIterator>::value_type,
+       T
+   >::type, N> {
       using value_type = typename std::conditional<
       std::is_void<T>::value,
       typename std::iterator_traits<ForwardIterator>::value_type,
       T
       >::type;
-      
+
       return make_array_it<ForwardIterator, N, value_type>::iterate( begin );
-    }
-  };
-  
-  template<class Array1, class Array2>
-  auto concatenate( const Array1 &a1, const Array2 &a2 )
-  -> std::array<
-  typename std::common_type<
-  typename Array1::value_type,
-  typename Array1::value_type
-  >::type,
-  std::tuple_size<Array1>::value + std::tuple_size<Array2>::value>
-  {
-    using value_type = typename std::common_type<
-    typename Array1::value_type,
-    typename Array1::value_type
-    >::type;
-    constexpr auto size = std::tuple_size<Array1>::value + std::tuple_size<Array2>::value;
-    
-    auto range1 = boost::make_iterator_range( boost::begin(a1),
-                                             boost::end(a1) );
-    auto range2 = boost::make_iterator_range( boost::begin(a2),
-                                             boost::end(a2) );
-    auto joined = boost::join( range1, range2 );
-    
-    return make_array<size, value_type>::iterate( boost::begin( joined ) );
-  }
-  
-  /**
-   * @class IndexBounds<N>
-   * @brief A class representing multiple (N) index ranges.
-   *
-   * N is a non-negative integer.
-   * The ranges are specified the c++ way; The range begins are inclusive
-   * and the range ends are exclusive. Misspecified ranges result in
-   * undefined behaviour!
-   * The intended use is to iterate over an IndexBounds<N> using the normal
-   * begin()/end() syntax, which will iterate over every possible combination
-   * of the indices within their respective ranges.
-   * The ranges are const! Once they are initialized they cannot be changed.
-   * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
-   */
-  template<unsigned N> struct IndexBounds;
-  
-  /**
-   * @class IndexIterator<N>
-   * @brief The iterator class used by IndexBounds<N>.
-   *
-   * It only fulfils the input iterator requirements!
-   * The value_type is a const std::array<unsigned, N>
-   * containing the current indices.
-   * Incrementing the iterator results in a new index combination.
-   */
-  template<unsigned N> struct IndexIterator
-  {
-    using difference_type = typename std::array<unsigned, N>::difference_type;
-    using value_type = unsigned;
-    using pointer = unsigned *;
-    using reference = unsigned &;
-    using iterator_category = std::input_iterator_tag;
-    
-    friend class IndexBounds<N>;
-    private:
-    const IndexBounds<N> &bounds;
-    std::array<unsigned, N> indices;
-    
-    IndexIterator(const IndexBounds<N> &b, std::array<unsigned, N> &&i )
-    : bounds(b), indices( std::move(i) ) {}
-    public:
-    const std::array<unsigned, N> &operator*() const {
+   }
+};
+
+template<class Array1, class Array2>
+auto concatenate( const Array1 &a1, const Array2 &a2 )
+-> std::array<
+typename std::common_type<
+typename Array1::value_type,
+         typename Array1::value_type
+         >::type,
+         std::tuple_size<Array1>::value + std::tuple_size<Array2>::value>
+         {
+            using value_type = typename std::common_type<
+                               typename Array1::value_type,
+            typename Array1::value_type
+            >::type;
+            constexpr auto size = std::tuple_size<Array1>::value + std::tuple_size<Array2>::value;
+
+            auto range1 = boost::make_iterator_range( boost::begin(a1),
+                          boost::end(a1) );
+            auto range2 = boost::make_iterator_range( boost::begin(a2),
+                          boost::end(a2) );
+            auto joined = boost::join( range1, range2 );
+
+            return make_array<size, value_type>::iterate( boost::begin( joined ) );
+         }
+
+         /**
+          * @class IndexBounds<N>
+          * @brief A class representing multiple (N) index ranges.
+          *
+          * N is a non-negative integer.
+          * The ranges are specified the c++ way; The range begins are inclusive
+          * and the range ends are exclusive. Misspecified ranges result in
+          * undefined behaviour!
+          * The intended use is to iterate over an IndexBounds<N> using the normal
+          * begin()/end() syntax, which will iterate over every possible combination
+          * of the indices within their respective ranges.
+          * The ranges are const! Once they are initialized they cannot be changed.
+          * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
+          */
+         template<unsigned N> struct IndexBounds;
+
+/**
+ * @class IndexIterator<N>
+ * @brief The iterator class used by IndexBounds<N>.
+ *
+ * It only fulfils the input iterator requirements!
+ * The value_type is a const std::array<unsigned, N>
+ * containing the current indices.
+ * Incrementing the iterator results in a new index combination.
+ */
+template<unsigned N> struct IndexIterator {
+   using difference_type = typename std::array<unsigned, N>::difference_type;
+   using value_type = unsigned;
+   using pointer = unsigned *;
+   using reference = unsigned &;
+   using iterator_category = std::input_iterator_tag;
+
+   friend class IndexBounds<N>;
+private:
+   const IndexBounds<N> &bounds;
+   std::array<unsigned, N> indices;
+
+   IndexIterator(const IndexBounds<N> &b, std::array<unsigned, N> &&i )
+      : bounds(b), indices( std::move(i) ) {}
+public:
+   const std::array<unsigned, N> &operator*() const
+   {
       return indices;
-    }
-    
-    const std::array<unsigned, N> *operator->() const {
+   }
+
+   const std::array<unsigned, N> *operator->() const
+   {
       return &indices;
-    }
-    
-    IndexIterator &operator++() {
+   }
+
+   IndexIterator &operator++()
+   {
       for (unsigned i = 0; i != N; i++) {
-        indices[i]++;
-        if (indices[i] == bounds.indexEnd[i]) {
-          indices[i] = bounds.indexBegin[i];
-          continue;
-        }
-        
-        return *this;
+         indices[i]++;
+         if (indices[i] == bounds.indexEnd[i]) {
+            indices[i] = bounds.indexBegin[i];
+            continue;
+         }
+
+         return *this;
       }
-      
+
       indices = make_array<N>::iterate( bounds.indexEnd );
       return *this;
-    }
-    
-    IndexIterator operator++(int) {
+   }
+
+   IndexIterator operator++(int)
+   {
       IndexIterator it(*this);
       this->operator++();
       return it;
-    }
-    
-    template<unsigned M>
-    friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
-  };
-  
-  template<unsigned N>
-  bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
-  {
-    return it1.indices == it2.indices;
-  }
-  
-  template<unsigned N>
-  bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
-  {
-    return !(it1 == it2);
-  }
-  
-  template<unsigned N> struct IndexBounds {
-    typedef const std::array<unsigned, N> indices_type;
-    
-    unsigned indexBegin[N];
-    unsigned indexEnd[N];
-    
-    typedef IndexIterator<N> const_iterator;
-    
-    const_iterator begin() const {
-      return const_iterator(*this, make_array<N>::iterate( indexBegin ));
-    }
-    
-    const_iterator end() const {
-      return const_iterator(*this, make_array<N>::iterate( indexEnd ));
-    }
-  };
-  
-  template<> struct IndexBounds<0> {
-    using indices_type = const std::array<unsigned, 0>;
-    using const_iterator = indices_type *;
-    
-    const indices_type dummyIndex = {};
-    
-    const_iterator begin() const
-    { return &dummyIndex; }
-    const_iterator end() const
-    { return (begin()+1); }
-  };
-}
-  
-// Lorentz conjugate fermions
-template<class Field> struct bar
+   }
+
+   template<unsigned M>
+   friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
+};
+
+template<unsigned N>
+bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 {
-  static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
-  static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
-  using smFlags = typename Field::smFlags;
+   return it1.indices == it2.indices;
+}
 
-  static constexpr double electric_charge = - Field::electric_charge;
+template<unsigned N>
+bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
+{
+   return !(it1 == it2);
+}
 
-  using type = bar<Field>;
-  using lorentz_conjugate = Field;
+template<unsigned N> struct IndexBounds {
+   typedef const std::array<unsigned, N> indices_type;
+
+   unsigned indexBegin[N];
+   unsigned indexEnd[N];
+
+   typedef IndexIterator<N> const_iterator;
+
+   const_iterator begin() const
+   {
+      return const_iterator(*this, make_array<N>::iterate( indexBegin ));
+   }
+
+   const_iterator end() const
+   {
+      return const_iterator(*this, make_array<N>::iterate( indexEnd ));
+   }
+};
+
+template<> struct IndexBounds<0> {
+   using indices_type = const std::array<unsigned, 0>;
+   using const_iterator = indices_type *;
+
+   const indices_type dummyIndex = {};
+
+   const_iterator begin() const
+   {
+      return &dummyIndex;
+   }
+   const_iterator end() const
+   {
+      return (begin()+1);
+   }
+};
+}
+
+// Lorentz conjugate fermions
+template<class Field> struct bar {
+   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
+   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+   using smFlags = typename Field::smFlags;
+
+   static constexpr double electric_charge = - Field::electric_charge;
+
+   using type = bar<Field>;
+   using lorentz_conjugate = Field;
 };
 
 // Lorentz conjugate bosons
-template<class Field> struct conj
-{
-  static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
-  static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
-  using smFlags = typename Field::smFlags;
+template<class Field> struct conj {
+   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
+   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+   using smFlags = typename Field::smFlags;
 
-  static constexpr double electric_charge = - Field::electric_charge;
+   static constexpr double electric_charge = - Field::electric_charge;
 
-  using type = conj<Field>;
-  using lorentz_conjugate = Field;
+   using type = conj<Field>;
+   using lorentz_conjugate = Field;
 };
 
 // Double Lorentz conjugation
-template<class Field> struct bar<bar<Field>> { using type = Field; };
-template<class Field> struct conj<conj<Field>> { using type = Field; };
+template<class Field> struct bar<bar<Field>> {
+   using type = Field;
+};
+template<class Field> struct conj<conj<Field>> {
+   using type = Field;
+};
 
 // Remove Lorentz conjugation
-template<class Field> struct remove_lorentz_conjugation
-{ using type = Field; };
+template<class Field> struct remove_lorentz_conjugation {
+   using type = Field;
+};
 
-template<class Field> struct remove_lorentz_conjugation<bar<Field>>
-{ using type = Field; };
+template<class Field> struct remove_lorentz_conjugation<bar<Field>> {
+   using type = Field;
+};
 
-template<class Field> struct remove_lorentz_conjugation<conj<Field>>
-{ using type = Field; };
+template<class Field> struct remove_lorentz_conjugation<conj<Field>> {
+   using type = Field;
+};
 
 
 // Declare a type that can hold the field indices for any given field
-template<class Field> struct field_indices
-{
-  using type = std::array<unsigned, Field::numberOfFieldIndices>;
+template<class Field> struct field_indices {
+   using type = std::array<unsigned, Field::numberOfFieldIndices>;
 };
 
 template<class Field>
 typename std::enable_if<Field::numberOfGenerations != 1, bool>::type
 isSMField( const typename field_indices<Field>::type &indices )
 {
-  boost::array<bool,Field::numberOfGenerations> smFlags;
-  boost::fusion::move( typename Field::smFlags(), smFlags );
-  return smFlags[indices[0]];
+   boost::array<bool,Field::numberOfGenerations> smFlags;
+   boost::fusion::move( typename Field::smFlags(), smFlags );
+   return smFlags[indices[0]];
 }
 
 template<class Field>
 typename std::enable_if<Field::numberOfGenerations == 1, bool>::type
 isSMField( const typename field_indices<Field>::type &indices )
 {
-  return boost::mpl::at_c<typename Field::smFlags,0>::type::value;
+   return boost::mpl::at_c<typename Field::smFlags,0>::type::value;
 }
 
 @CXXDiagrams_Fields@
@@ -348,26 +353,28 @@ isSMField( const typename field_indices<Field>::type &indices )
 */
 class SingleComponentedVertex {
 private:
-  std::complex<double> val; ///< The value
+   std::complex<double> val; ///< The value
 public:
-  SingleComponentedVertex(std::complex<double> v)
-  : val(v) {}
+   SingleComponentedVertex(std::complex<double> v)
+      : val(v) {}
 
-  /**
-  * @fn value
-  * @brief Returns the value of the vertex.
-  */
-  std::complex<double> value() const {
-    return val;
-  }
+   /**
+   * @fn value
+   * @brief Returns the value of the vertex.
+   */
+   std::complex<double> value() const
+   {
+      return val;
+   }
 
-  /**
-  * @fn isZero
-  * @brief Tests whether the value is numerically significant
-  */
-  bool isZero() const {
-    return (is_zero(val.real()) && is_zero(val.imag()));
-  }
+   /**
+   * @fn isZero
+   * @brief Tests whether the value is numerically significant
+   */
+   bool isZero() const
+   {
+      return (is_zero(val.real()) && is_zero(val.imag()));
+   }
 };
 
 /**
@@ -376,36 +383,39 @@ public:
 */
 class LeftAndRightComponentedVertex {
 private:
-  std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
+   std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
 public:
-  LeftAndRightComponentedVertex(const std::complex<double> &left,
-                                const std::complex<double> &right)
-  : value(left, right) {}
+   LeftAndRightComponentedVertex(const std::complex<double> &left,
+                                 const std::complex<double> &right)
+      : value(left, right) {}
 
-  /**
-  * @fn left
-  * @brief Returns the left component of the vertex.
-  */
-  std::complex<double> left() const {
-    return value.first;
-  }
+   /**
+   * @fn left
+   * @brief Returns the left component of the vertex.
+   */
+   std::complex<double> left() const
+   {
+      return value.first;
+   }
 
-  /**
-  * @fn right
-  * @brief Returns the left component of the vertex.
-  */
-  std::complex<double> right() const {
-    return value.second;
-  }
+   /**
+   * @fn right
+   * @brief Returns the left component of the vertex.
+   */
+   std::complex<double> right() const
+   {
+      return value.second;
+   }
 
-  /**
-  * @fn isZero
-  * @brief Tests whether the values are numerically significant
-  */
-  bool isZero() const {
-    return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
-            is_zero(value.second.real()) && is_zero(value.second.imag()));
-  }
+   /**
+   * @fn isZero
+   * @brief Tests whether the values are numerically significant
+   */
+   bool isZero() const
+   {
+      return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
+              is_zero(value.second.real()) && is_zero(value.second.imag()));
+   }
 };
 
 /**
@@ -425,41 +435,41 @@ struct EvaluationContext;
  * along with the desired field indices.
  */
 template<class ...F> class Vertex {
-  using Data = VertexData<F...>;
-  using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
+   using Data = VertexData<F...>;
+   using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
 public:
-  using vertex_type = typename Data::vertex_type;
-  using indices_type = typename decltype(Data::index_bounds)::indices_type;
-  
-  static constexpr bounds_type index_bounds = Data::index_bounds;
-  
-  /**
-   * @fn fieldIndices
-   * @brief Returns the subset of indices belonging to
-   *        a field at a given index.
-   * @param indices The complete set of indices for all fields
-   *
-   * The field indexing is in the same order as the template arguments
-   * and starts at 0.
-   */
-  template<unsigned fieldIndex>
-  static
-  std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
-  fieldIndices(const indices_type &indices)
-  {
-    constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
-    constexpr auto offset = Data::fieldIndexStart[fieldIndex];
-    auto begin = indices.begin() + offset;
-    return impl::make_array<length>::iterate(begin);
-  }
-  
-  /**
-   * @fn vertex
-   * @brief Calculates the vertex for a given set of field indices.
-   * @param indices The field indices
-   * @param context The evaluation context
-   */
-  static vertex_type evaluate(const indices_type &indices, const EvaluationContext &context);
+   using vertex_type = typename Data::vertex_type;
+   using indices_type = typename decltype(Data::index_bounds)::indices_type;
+
+   static constexpr bounds_type index_bounds = Data::index_bounds;
+
+   /**
+    * @fn fieldIndices
+    * @brief Returns the subset of indices belonging to
+    *        a field at a given index.
+    * @param indices The complete set of indices for all fields
+    *
+    * The field indexing is in the same order as the template arguments
+    * and starts at 0.
+    */
+   template<unsigned fieldIndex>
+   static
+   std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
+   fieldIndices(const indices_type &indices)
+   {
+      constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
+      constexpr auto offset = Data::fieldIndexStart[fieldIndex];
+      auto begin = indices.begin() + offset;
+      return impl::make_array<length>::iterate(begin);
+   }
+
+   /**
+    * @fn vertex
+    * @brief Calculates the vertex for a given set of field indices.
+    * @param indices The field indices
+    * @param context The evaluation context
+    */
+   static vertex_type evaluate(const indices_type &indices, const EvaluationContext &context);
 };
 
 
@@ -472,26 +482,26 @@ public:
 * e.g. mass calculation functions.
 */
 struct EvaluationContext {
-  @ModelName@_mass_eigenstates& model; ///< The model object.
+   @ModelName@_mass_eigenstates& model; ///< The model object.
 
-  template<class Field>
-  double mass( typename field_indices<Field>::type &indices ) const
-  {
-    using CleanField = typename remove_lorentz_conjugation<Field>::type;
-    return mass_impl<CleanField>( indices );
-  }
+   template<class Field>
+   double mass( typename field_indices<Field>::type &indices ) const
+   {
+      using CleanField = typename remove_lorentz_conjugation<Field>::type;
+      return mass_impl<CleanField>( indices );
+   }
 
 private:
-  template<class Field>
-  double mass_impl( const typename field_indices<Field>::type &indices ) const;
+   template<class Field>
+   double mass_impl( const typename field_indices<Field>::type &indices ) const;
 };
-  
+
 
 @CXXDiagrams_VertexData@
 
 
 @CXXDiagrams_Vertices@
-  
+
 
 @CXXDiagrams_MassFunctions@
 
@@ -499,8 +509,9 @@ namespace impl {
 @CXXDiagrams_UnitCharge@
 }
 
-static double unit_charge( const EvaluationContext &context ) {
-  return impl::unit_charge( context ).left().real() / Electron::electric_charge;
+static double unit_charge( const EvaluationContext &context )
+{
+   return impl::unit_charge( context ).left().real() / Electron::electric_charge;
 }
 }
 } // namespace flexiblesusy
