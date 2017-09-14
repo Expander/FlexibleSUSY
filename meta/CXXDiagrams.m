@@ -57,7 +57,7 @@ CreateFields[] :=
        StringJoin @ Riffle[
          ("struct " <> CXXNameOfField[#] <> " {\n" <>
             TextFormatting`IndentText[
-              "static constexpr unsigned numberOfGenerations = " <>
+              "static constexpr int numberOfGenerations = " <>
                    ToString @ TreeMasses`GetDimension[#] <> ";\n" <>
                      "using smFlags = boost::mpl::vector_c<bool, " <>
                         If[TreeMasses`GetDimension[#] === 1,
@@ -66,7 +66,7 @@ CreateFields[] :=
                              (TreeMasses`IsSMParticle[#] & /@ Table[#[{k}],{k,TreeMasses`GetDimension[#]}]),
                                                ", "]] <>
                         ">;\n" <>
-                "static constexpr unsigned numberOfFieldIndices = " <>
+                "static constexpr int numberOfFieldIndices = " <>
                    ToString @ NumberOfFieldIndices[#] <> ";\n" <>
                 "using lorentz_conjugate = " <>
                    CXXNameOfField[LorentzConjugate[#]] <> ";\n\n" <>
@@ -171,7 +171,7 @@ CreateVertexData[fields_List,vertexRules_List] :=
              "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } }",
            "{}"
         ] <> ";\n" <>
-      "static constexpr unsigned fieldIndexStart[" <> ToString @ Length[fieldIndexStart] <>
+      "static constexpr int fieldIndexStart[" <> ToString @ Length[fieldIndexStart] <>
          "] = { " <> StringJoin @ Riffle[ToString /@ fieldIndexStart, ", "] <> " };\n" <>
       "using vertex_type = " <> VertexClassName[parsedVertex] <> ";"] <> "\n" <>
     "};"
@@ -207,7 +207,7 @@ CreateMassFunctions[] :=
                                    
              "template<> inline\n" <>
              "double EvaluationContext::mass_impl<" <> ToString[#] <>
-             ">( const std::array<unsigned, " <> ToString @ numberOfIndices <>
+             ">( const std::array<int, " <> ToString @ numberOfIndices <>
              "> &indices ) const\n" <>
              "{ return model.get_M" <> CXXNameOfField[#] <>
              If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
@@ -230,7 +230,7 @@ CreateUnitCharge[massMatrices_] :=
          "{\n" <>
          TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;"] <> "\n\n" <>
          TextFormatting`IndentText @ 
-           ("std::array<unsigned, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
+           ("std::array<int, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
               If[TreeMasses`GetDimension[electron] =!= 1,
                  " " <> ToString @ (FieldInfo[electron][[2]]-1) <> (* Electron has the lowest index *)
                  If[numberOfElectronIndices =!= 1,
@@ -242,7 +242,7 @@ CreateUnitCharge[massMatrices_] :=
                 ] <>
             "};\n") <>
          TextFormatting`IndentText @ 
-           ("std::array<unsigned, " <> ToString @ numberOfPhotonIndices <> "> photon_indices = {" <>
+           ("std::array<int, " <> ToString @ numberOfPhotonIndices <> "> photon_indices = {" <>
                If[TreeMasses`GetDimension[photon] =!= 1,
                  " " <> ToString @ (FieldInfo[photon][[2]]-1) <>
                  If[numberOfPhotonIndices =!= 1,
@@ -254,7 +254,7 @@ CreateUnitCharge[massMatrices_] :=
                 ] <>
             "};\n") <>
          TextFormatting`IndentText @ 
-           ("std::array<unsigned, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices = " <>
+           ("std::array<int, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices = " <>
               "concatenate( concatenate( photon_indices, electron_indices ), electron_indices );\n\n") <>
            
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
@@ -358,7 +358,7 @@ IndexFields[fields_List] :=
 DeclareIndices[indexedFields_List, arrayName_String] :=
     Module[{p, total = 0, fieldIndexList, decl = ""},
            DeclareIndex[idx_, num_Integer, an_String] := (
-               "const unsigned " <> CConversion`ToValidCSymbolString[idx] <>
+               "const int " <> CConversion`ToValidCSymbolString[idx] <>
                " = " <> an <> "[" <> ToString[num] <> "];\n");
            For[p = 1, p <= Length[indexedFields], p++,
                fieldIndexList = Vertices`FieldIndexList[indexedFields[[p]]];

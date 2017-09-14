@@ -55,20 +55,20 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
   Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
     prototype = "double calculate_edm_" <> CXXNameOfField[field] <>
                  "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " unsigned generationIndex, ",
+                           " int generationIndex, ",
                            " "] <>
                  "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
                  
     definition = "double calculate_edm_" <> CXXNameOfField[field] <>
                  "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " unsigned generationIndex, ",
+                           " int generationIndex, ",
                            " "] <>
                  "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
                  "{\n" <>
                  IndentText[
                    FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                    "EvaluationContext context{ model_ };\n" <>
-                   "std::array<unsigned, " <> ToString @ numberOfIndices <>
+                   "std::array<int, " <> ToString @ numberOfIndices <>
                      "> indices = {" <>
                        If[TreeMasses`GetDimension[field] =!= 1,
                           " generationIndex" <>

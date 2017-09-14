@@ -166,45 +166,45 @@ typename Array1::value_type,
           * The ranges are const! Once they are initialized they cannot be changed.
           * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
           */
-         template<unsigned N> struct IndexBounds;
+         template<int N> struct IndexBounds;
 
 /**
  * @class IndexIterator<N>
  * @brief The iterator class used by IndexBounds<N>.
  *
  * It only fulfils the input iterator requirements!
- * The value_type is a const std::array<unsigned, N>
+ * The value_type is a const std::array<int, N>
  * containing the current indices.
  * Incrementing the iterator results in a new index combination.
  */
-template<unsigned N> struct IndexIterator {
-   using difference_type = typename std::array<unsigned, N>::difference_type;
-   using value_type = unsigned;
-   using pointer = unsigned *;
-   using reference = unsigned &;
+template<int N> struct IndexIterator {
+   using difference_type = typename std::array<int, N>::difference_type;
+   using value_type = int;
+   using pointer = int *;
+   using reference = int &;
    using iterator_category = std::input_iterator_tag;
 
    friend class IndexBounds<N>;
 private:
    const IndexBounds<N> &bounds;
-   std::array<unsigned, N> indices;
+   std::array<int, N> indices;
 
-   IndexIterator(const IndexBounds<N> &b, std::array<unsigned, N> &&i )
+   IndexIterator(const IndexBounds<N> &b, std::array<int, N> &&i )
       : bounds(b), indices( std::move(i) ) {}
 public:
-   const std::array<unsigned, N> &operator*() const
+   const std::array<int, N> &operator*() const
    {
       return indices;
    }
 
-   const std::array<unsigned, N> *operator->() const
+   const std::array<int, N> *operator->() const
    {
       return &indices;
    }
 
    IndexIterator &operator++()
    {
-      for (unsigned i = 0; i != N; i++) {
+      for (int i = 0; i != N; i++) {
          indices[i]++;
          if (indices[i] == bounds.indexEnd[i]) {
             indices[i] = bounds.indexBegin[i];
@@ -225,27 +225,27 @@ public:
       return it;
    }
 
-   template<unsigned M>
+   template<int M>
    friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
 };
 
-template<unsigned N>
+template<int N>
 bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 {
    return it1.indices == it2.indices;
 }
 
-template<unsigned N>
+template<int N>
 bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 {
    return !(it1 == it2);
 }
 
-template<unsigned N> struct IndexBounds {
-   typedef const std::array<unsigned, N> indices_type;
+template<int N> struct IndexBounds {
+   typedef const std::array<int, N> indices_type;
 
-   unsigned indexBegin[N];
-   unsigned indexEnd[N];
+   int indexBegin[N];
+   int indexEnd[N];
 
    typedef IndexIterator<N> const_iterator;
 
@@ -261,7 +261,7 @@ template<unsigned N> struct IndexBounds {
 };
 
 template<> struct IndexBounds<0> {
-   using indices_type = const std::array<unsigned, 0>;
+   using indices_type = const std::array<int, 0>;
    using const_iterator = indices_type *;
 
    const indices_type dummyIndex = {};
@@ -279,8 +279,8 @@ template<> struct IndexBounds<0> {
 
 // Lorentz conjugate fermions
 template<class Field> struct bar {
-   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
-   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+   static constexpr int numberOfGenerations = Field::numberOfGenerations;
+   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
    using smFlags = typename Field::smFlags;
 
    static constexpr double electric_charge = - Field::electric_charge;
@@ -291,8 +291,8 @@ template<class Field> struct bar {
 
 // Lorentz conjugate bosons
 template<class Field> struct conj {
-   static constexpr unsigned numberOfGenerations = Field::numberOfGenerations;
-   static constexpr unsigned numberOfFieldIndices = Field::numberOfFieldIndices;
+   static constexpr int numberOfGenerations = Field::numberOfGenerations;
+   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
    using smFlags = typename Field::smFlags;
 
    static constexpr double electric_charge = - Field::electric_charge;
@@ -325,7 +325,7 @@ template<class Field> struct remove_lorentz_conjugation<conj<Field>> {
 
 // Declare a type that can hold the field indices for any given field
 template<class Field> struct field_indices {
-   using type = std::array<unsigned, Field::numberOfFieldIndices>;
+   using type = std::array<int, Field::numberOfFieldIndices>;
 };
 
 template<class Field>
@@ -452,9 +452,9 @@ public:
     * The field indexing is in the same order as the template arguments
     * and starts at 0.
     */
-   template<unsigned fieldIndex>
+   template<int fieldIndex>
    static
-   std::array<unsigned, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
+   std::array<int, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
    fieldIndices(const indices_type &indices)
    {
       constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];

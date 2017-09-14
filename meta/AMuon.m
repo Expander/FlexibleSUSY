@@ -74,7 +74,7 @@ AMuonCreateCalculation[gTaggedDiagrams_List] :=
           calculation,numberOfIndices},
     numberOfIndices = CXXDiagrams`NumberOfFieldIndices[muon];
     
-    "std::array<unsigned, " <> ToString @ numberOfIndices <>
+    "std::array<int, " <> ToString @ numberOfIndices <>
     "> indices = {" <>
       If[cxxMuonIndex =!= Null,
          " " <> ToString @ cxxMuonIndex <>
