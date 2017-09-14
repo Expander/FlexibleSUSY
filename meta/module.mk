@@ -67,9 +67,8 @@ META_SRC     := \
 		$(DIR)/FlexibleTower.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
-		$(DIR)/GMuonMinus2.m \
+		$(DIR)/CXXDiagrams.m \
 		$(DIR)/EDM.m \
-		$(DIR)/EDM2.m \
 		$(DIR)/AMuon.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
