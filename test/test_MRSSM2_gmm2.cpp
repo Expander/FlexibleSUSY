@@ -30,6 +30,7 @@ using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_amu )
 {
+   typedef Eigen::DiagonalMatrix<double, 3> DiagonalMatrix3;
    MRSSM2_input_parameters input;
 
    // chargino dominance
@@ -42,21 +43,11 @@ BOOST_AUTO_TEST_CASE( test_amu )
    input.MuDInput = 400;
    input.MuUInput = 400;
    input.BMuInput = Sqr(300);
-   input.mq2Input << Sqr(1000), 0, 0,
-		     0, Sqr(1000), 0,
-		     0, 0, Sqr(1000);
-   input.ml2Input << Sqr(500), 0, 0,
-		     0, Sqr(500), 0,
-		     0, 0, Sqr(500);
-   input.md2Input << Sqr(1000), 0, 0,
-		     0, Sqr(1000), 0,
-		     0, 0, Sqr(1000);
-   input.mu2Input << Sqr(1000), 0, 0,
-		     0, Sqr(1000), 0,
-		     0, 0, Sqr(1000);
-   input.me2Input << Sqr(500), 0, 0,
-		     0, Sqr(500), 0,
-		     0, 0, Sqr(500);
+   input.mq2Input = DiagonalMatrix3(Sqr(1000), Sqr(1000), Sqr(1000));
+   input.ml2Input = DiagonalMatrix3(Sqr( 500), Sqr( 500), Sqr( 500));
+   input.md2Input = DiagonalMatrix3(Sqr(1000), Sqr(1000), Sqr(1000));
+   input.mu2Input = DiagonalMatrix3(Sqr(1000), Sqr(1000), Sqr(1000));
+   input.me2Input = DiagonalMatrix3(Sqr( 500), Sqr( 500), Sqr( 500));
    input.mS2Input = Sqr(2000);
    input.mT2Input = Sqr(3000);
    input.moc2Input = Sqr(1000);
@@ -72,9 +63,7 @@ BOOST_AUTO_TEST_CASE( test_amu )
    BOOST_CHECK_CLOSE(amu, -8.30e-11, 1.0);
 
    // neutralino dominance
-   input.ml2Input << Sqr(8000), 0, 0,
-		     0, Sqr(8000), 0,
-		     0, 0, Sqr(8000);
+   input.ml2Input = DiagonalMatrix3(Sqr(8000), Sqr(8000), Sqr(8000));
    m = setup_MRSSM2(input);
 
    amu = MRSSM2_a_muon::calculate_a_muon(m);
