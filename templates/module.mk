@@ -2,6 +2,7 @@ DIR          := templates
 MODNAME      := templates
 
 BASE_TEMPLATES := \
+		$(DIR)/cxx_diagrams.hpp.in \
 		$(DIR)/a_muon.hpp.in \
 		$(DIR)/a_muon.cpp.in \
 		$(DIR)/edm.hpp.in \

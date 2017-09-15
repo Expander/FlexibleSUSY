@@ -25,8 +25,8 @@
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
-#ifndef @ModelName@_G_MUON_MINUS_2_H
-#define @ModelName@_G_MUON_MINUS_2_H
+#ifndef @ModelName@_A_MUON_H
+#define @ModelName@_A_MUON_H
 
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
