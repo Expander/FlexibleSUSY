@@ -393,20 +393,20 @@ PhotonEmitter, ExchangeField
 
    constexpr auto indexBounds = MuonVertex::index_bounds;
 
-   for (auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt) {
-      const auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
+   for (const auto& index: indexBounds) {
+      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
-      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
+      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))
          continue;
 
-      auto muonVertex = MuonVertex::evaluate(*indexIt, context);
+      auto muonVertex = MuonVertex::evaluate(index, context);
 
       const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
@@ -453,20 +453,20 @@ PhotonEmitter, ExchangeField
 
    constexpr auto indexBounds = MuonVertex::index_bounds;
 
-   for (auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt) {
-      const auto muonIndices = MuonVertex::template fieldIndices<0>(*indexIt);
+   for (const auto& index: indexBounds) {
+      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(*indexIt);
-      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(*indexIt);
+      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))
          continue;
 
-      const auto muonVertex = MuonVertex::evaluate(*indexIt, context);
+      const auto muonVertex = MuonVertex::evaluate(index, context);
 
       const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
