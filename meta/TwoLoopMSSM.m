@@ -105,11 +105,6 @@ GetDeltaMPoleOverMRunningMSSMSQCDDRbar::usage = "Returns the general
 
 Note: The 2-loop QCD contribution is not included in this expression!
 
-Note: The expression misses the axial contribution from the top quark
- self-energy.  This missing contribution has been included in the
- calculation performed in [arXiv:hep-ph/0507139].  The correct
- expression can be found at http://theor.jinr.ru/~varg/dist/ .
-
 Parameters:
 
 - loopOrder (optional): List of factors multiplied by each loop order.
