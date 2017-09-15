@@ -32,7 +32,6 @@
 #include "wrappers.hpp"
 
 #include <array>
-#include <vector>
 #include <boost/range/join.hpp>
 #include <boost/mpl/vector_c.hpp>
 #include <boost/fusion/adapted/mpl.hpp>
