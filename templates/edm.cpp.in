@@ -82,13 +82,13 @@ struct EDMVertexCorrectionFS {
    static double value(const typename field_indices<EDMField>::type &indices,
                        EvaluationContext &context);
 };
-}
+} // anonymous namespace
 
 namespace flexiblesusy {
 namespace @ModelName@_edm {
 @EDM_InterfaceDefinitions@
 }
-}
+} // namespace flexiblesusy
 
 namespace {
 /**
@@ -101,12 +101,12 @@ namespace {
 
 double OneLoopFunctionA(double r)
 {
-   if( is_zero(r) )
+   if (is_zero(r))
       return std::numeric_limits<double>::infinity();
 
    const double d = r - 1.0;
 
-   if( std::abs(d) < 0.15 ) {
+   if (std::abs(d) < 0.15) {
       return (-0.33333333333333333333 +
               0.25000000000000000000  * d -
               0.20000000000000000000  * d * d +
@@ -117,7 +117,7 @@ double OneLoopFunctionA(double r)
               0.10000000000000000000  * d * d * d * d * d * d * d -
               0.090909090909090909091 * d * d * d * d * d * d * d * d +
               0.083333333333333333333 * d * d * d * d * d * d * d * d * d -
-              0.076923076923076923077 * d * d * d * d * d * d * d * d * d * d );
+              0.076923076923076923077 * d * d * d * d * d * d * d * d * d * d);
    }
 
    return 1.0 / (2.0 * d * d) * (3.0 - r - 2.0 * std::log(r) / d);
@@ -125,12 +125,12 @@ double OneLoopFunctionA(double r)
 
 double OneLoopFunctionB(double r)
 {
-   if( is_zero(r) )
+   if (is_zero(r))
       return 1.0/2.0;
 
    const double d = r - 1.0;
 
-   if( std::abs(d) < 0.15 )
+   if (std::abs(d) < 0.15)
       return (0.16666666666666666667 -
               0.083333333333333333333  * d +
               0.050000000000000000000  * d * d -
@@ -141,7 +141,7 @@ double OneLoopFunctionB(double r)
               0.011111111111111111111  * d * d * d * d * d * d * d +
               0.0090909090909090909091 * d * d * d * d * d * d * d * d -
               0.0075757575757575757576 * d * d * d * d * d * d * d * d * d +
-              0.0064102564102564102564 * d * d * d * d * d * d * d * d * d * d );
+              0.0064102564102564102564 * d * d * d * d * d * d * d * d * d * d);
 
    return 1.0 / (2.0 * d * d) * (1.0 + r - 2.0 * r * std::log(r) / d);
 }
@@ -160,32 +160,30 @@ EDMField, PhotonEmitter, ExchangeField
                          >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
-      auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
 
-      if( edmFieldIndices != indices )
+   for (auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt) {
+      const auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
+
+      if (edmFieldIndices != indices)
          continue;
 
-      auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
-      auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
-      auto vertex = FermionVertex::evaluate(*indexIt, context);
+      const auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      const auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
+      const auto vertex = FermionVertex::evaluate(*indexIt, context);
 
-      auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
-      auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
 
-      double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge( context );
+      const double photonEmitterCharge =
+         PhotonEmitter::electric_charge * unit_charge(context);
 
       constexpr double numericFactor = oneOver16PiSquared;
-      double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
-      double couplingFactor = (std::conj( vertex.right() ) * vertex.left()).imag();
+      const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
+      const double couplingFactor = (std::conj(vertex.right()) * vertex.left()).imag();
 
-      double massRatioSquared = photonEmitterMass/exchangeFieldMass;
-      massRatioSquared *= massRatioSquared;
-
-      double loopFactor = photonEmitterCharge * OneLoopFunctionA( massRatioSquared );
-
-      double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+      const double massRatioSquared = Sqr(photonEmitterMass/exchangeFieldMass);
+      const double loopFactor = photonEmitterCharge * OneLoopFunctionA(massRatioSquared);
+      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
       res += contribution;
    }
@@ -207,36 +205,35 @@ EDMField, PhotonEmitter, ExchangeField
                          >;
 
    constexpr auto indexBounds = FermionVertex::index_bounds;
-   for( auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt ) {
-      auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
 
-      if( edmFieldIndices != indices )
+   for (auto indexIt = indexBounds.begin(); indexIt != indexBounds.end(); ++indexIt) {
+      const auto edmFieldIndices = FermionVertex::template fieldIndices<0>(*indexIt);
+
+      if (edmFieldIndices != indices)
          continue;
 
-      auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
-      auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
-      auto vertex = FermionVertex::evaluate(*indexIt, context);
+      const auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(*indexIt);
+      const auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(*indexIt);
+      const auto vertex = FermionVertex::evaluate(*indexIt, context);
 
-      auto photonEmitterMass = context.mass<PhotonEmitter>( photonEmitterIndices );
-      auto exchangeFieldMass = context.mass<ExchangeField>( exchangeFieldIndices );
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
 
-      double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge( context );
+      const double photonEmitterCharge =
+         PhotonEmitter::electric_charge * unit_charge(context);
 
       constexpr double numericFactor = oneOver16PiSquared;
-      double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
-      double couplingFactor = (std::conj( vertex.right() ) * vertex.left()).imag();
+      const double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
+      const double couplingFactor = (std::conj(vertex.right()) * vertex.left()).imag();
 
-      double massRatioSquared = exchangeFieldMass / photonEmitterMass;
-      massRatioSquared *= massRatioSquared;
-
-      double loopFactor = photonEmitterCharge * OneLoopFunctionB( massRatioSquared );
-
-      double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+      const double massRatioSquared = Sqr(exchangeFieldMass / photonEmitterMass);
+      const double loopFactor = photonEmitterCharge * OneLoopFunctionB(massRatioSquared);
+      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
       res += contribution;
    }
 
    return res;
 }
-}
+
+} // anonymous namespace
