@@ -227,10 +227,10 @@ CreateMassFunctions[] :=
                                    
              "template<> inline\n" <>
              "double EvaluationContext::mass_impl<" <> ToString[#] <>
-             ">( const std::array<int, " <> ToString @ numberOfIndices <>
-             "> &indices ) const\n" <>
+             ">(const std::array<int, " <> ToString @ numberOfIndices <>
+             ">& indices) const\n" <>
              "{ return model.get_M" <> CXXNameOfField[#] <>
-             If[TreeMasses`GetDimension[#] === 1, "()", "( indices[0] )"] <> "; }"
+             If[TreeMasses`GetDimension[#] === 1, "()", "(indices[0])"] <> "; }"
             ] & /@ massiveFields, "\n\n"]
         ]
 
@@ -246,7 +246,7 @@ CreateUnitCharge[massMatrices_] :=
          numberOfElectronIndices = NumberOfFieldIndices[electron];
          numberOfPhotonIndices = NumberOfFieldIndices[photon];
 
-         "static LeftAndRightComponentedVertex unit_charge( const EvaluationContext &context )\n" <> 
+         "static LeftAndRightComponentedVertex unit_charge(const EvaluationContext& context)\n" <>
          "{\n" <>
          TextFormatting`IndentText["using vertex_type = LeftAndRightComponentedVertex;"] <> "\n\n" <>
          TextFormatting`IndentText @ 
@@ -275,7 +275,7 @@ CreateUnitCharge[massMatrices_] :=
             "};\n") <>
          TextFormatting`IndentText @ 
            ("std::array<int, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices = " <>
-              "concatenate( concatenate( photon_indices, electron_indices ), electron_indices );\n\n") <>
+              "concatenate(concatenate(photon_indices, electron_indices), electron_indices);\n\n") <>
            
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"

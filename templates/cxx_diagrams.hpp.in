@@ -91,7 +91,7 @@ struct make_array_it {
 template<class ForwardIterator, class T>
 struct make_array_it<ForwardIterator, 0, T> {
    template<class... Args>
-   static auto iterate(ForwardIterator begin, Args &&...args)
+   static auto iterate(ForwardIterator /* begin */, Args &&...args)
    -> std::array<T, sizeof...(Args)> {
       return std::array<T, sizeof...(Args)>{ std::forward<Args>(args)... };
    }
