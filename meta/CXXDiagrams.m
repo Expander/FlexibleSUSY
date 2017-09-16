@@ -88,11 +88,10 @@ CreateFields[] :=
                         ">;\n" <>
                 "static constexpr int numberOfFieldIndices = " <>
                    ToString @ NumberOfFieldIndices[#] <> ";\n" <>
-                "using lorentz_conjugate = " <>
-                   CXXNameOfField[LorentzConjugate[#]] <> ";\n\n" <>
-  
                 "static constexpr double electric_charge = " <>
-                   CConversion`RValueToCFormString[TreeMasses`GetElectricCharge[#]] <> ";\n"] <>
+                   CConversion`RValueToCFormString[TreeMasses`GetElectricCharge[#]] <> ";\n" <>
+                "using lorentz_conjugate = " <>
+                   CXXNameOfField[LorentzConjugate[#]] <> ";\n"] <>
               "};" &) /@ fields, "\n\n"] <> "\n\n" <>
        
        "// Named fields\n" <>
@@ -212,7 +211,7 @@ CreateVertex[fields_List, vertexRules_List] :=
          
          "template<> inline\n" <> 
          functionClassName <> "::vertex_type\n" <>
-         functionClassName <> "::evaluate(const indices_type &indices, const EvaluationContext &context)\n" <>
+         functionClassName <> "::evaluate(const indices_type& indices, const EvaluationContext& context)\n" <>
          "{\n" <>
          TextFormatting`IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
          "}"

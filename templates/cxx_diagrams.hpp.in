@@ -135,7 +135,7 @@ struct make_array {
 };
 
 template<class Array1, class Array2>
-auto concatenate(const Array1 &a1, const Array2 &a2)
+auto concatenate(const Array1& a1, const Array2& a2)
 -> std::array<
 typename std::common_type<
 typename Array1::value_type,
@@ -186,29 +186,29 @@ typename Array1::value_type,
 template<int N> struct IndexIterator {
    using difference_type = typename std::array<int, N>::difference_type;
    using value_type = int;
-   using pointer = int *;
-   using reference = int &;
+   using pointer = int*;
+   using reference = int&;
    using iterator_category = std::input_iterator_tag;
 
    friend class IndexBounds<N>;
 private:
-   const IndexBounds<N> &bounds;
+   const IndexBounds<N>& bounds;
    std::array<int, N> indices;
 
-   IndexIterator(const IndexBounds<N> &b, std::array<int, N> &&i)
+   IndexIterator(const IndexBounds<N>& b, std::array<int, N>&& i)
       : bounds(b), indices(std::move(i)) {}
 public:
-   const std::array<int, N> &operator*() const
+   const std::array<int, N>& operator*() const
    {
       return indices;
    }
 
-   const std::array<int, N> *operator->() const
+   const std::array<int, N>* operator->() const
    {
       return &indices;
    }
 
-   IndexIterator &operator++()
+   IndexIterator& operator++()
    {
       for (int i = 0; i != N; i++) {
          indices[i]++;
@@ -232,17 +232,17 @@ public:
    }
 
    template<int M>
-   friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
+   friend bool operator==(const IndexIterator<M>& it1, const IndexIterator<M>& it2);
 };
 
 template<int N>
-bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
+bool operator==(const IndexIterator<N>& it1, const IndexIterator<N>& it2)
 {
    return it1.indices == it2.indices;
 }
 
 template<int N>
-bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
+bool operator!=(const IndexIterator<N>& it1, const IndexIterator<N>& it2)
 {
    return !(it1 == it2);
 }
@@ -268,7 +268,7 @@ template<int N> struct IndexBounds {
 
 template<> struct IndexBounds<0> {
    using indices_type = const std::array<int, 0>;
-   using const_iterator = indices_type *;
+   using const_iterator = indices_type*;
 
    const indices_type dummyIndex = {};
 
@@ -337,7 +337,7 @@ template<class Field> struct field_indices {
 
 template<class Field>
 typename std::enable_if<Field::numberOfGenerations != 1, bool>::type
-isSMField(const typename field_indices<Field>::type &indices)
+isSMField(const typename field_indices<Field>::type& indices)
 {
    boost::array<bool,Field::numberOfGenerations> smFlags;
 
@@ -352,7 +352,7 @@ isSMField(const typename field_indices<Field>::type &indices)
 
 template<class Field>
 typename std::enable_if<Field::numberOfGenerations == 1, bool>::type
-isSMField(const typename field_indices<Field>::type &indices)
+isSMField(const typename field_indices<Field>::type& /* indices */)
 {
    return boost::mpl::at_c<typename Field::smFlags,0>::type::value;
 }
@@ -398,8 +398,8 @@ class LeftAndRightComponentedVertex {
 private:
    std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
 public:
-   LeftAndRightComponentedVertex(const std::complex<double> &left,
-                                 const std::complex<double> &right)
+   LeftAndRightComponentedVertex(const std::complex<double>& left,
+                                 const std::complex<double>& right)
       : value(left, right) {}
 
    /**
@@ -468,7 +468,7 @@ public:
    template<int fieldIndex>
    static
    std::array<int, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
-   fieldIndices(const indices_type &indices)
+   fieldIndices(const indices_type& indices)
    {
       constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
       constexpr auto offset = Data::fieldIndexStart[fieldIndex];
@@ -482,7 +482,7 @@ public:
     * @param indices The field indices
     * @param context The evaluation context
     */
-   static vertex_type evaluate(const indices_type &indices, const EvaluationContext &context);
+   static vertex_type evaluate(const indices_type& indices, const EvaluationContext& context);
 };
 
 
@@ -498,7 +498,7 @@ struct EvaluationContext {
    @ModelName@_mass_eigenstates& model; ///< The model object.
 
    template<class Field>
-   double mass(const typename field_indices<Field>::type &indices) const
+   double mass(const typename field_indices<Field>::type& indices) const
    {
       using CleanField = typename remove_lorentz_conjugation<Field>::type;
       return mass_impl<CleanField>(indices);
@@ -506,7 +506,7 @@ struct EvaluationContext {
 
 private:
    template<class Field>
-   double mass_impl(const typename field_indices<Field>::type &indices) const;
+   double mass_impl(const typename field_indices<Field>::type& indices) const;
 };
 
 
@@ -522,7 +522,7 @@ namespace impl {
 @CXXDiagrams_UnitCharge@
 }
 
-static double unit_charge(const EvaluationContext &context)
+static double unit_charge(const EvaluationContext& context)
 {
    return impl::unit_charge(context).left().real() / Electron::electric_charge;
 }
