@@ -8,7 +8,7 @@ HSSUSY (high scale supersymmetry) is an implementation of the Standard
 Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$.  At
 the SUSY scale, the quartic Higgs coupling,
 \f$\lambda(M_\text{SUSY})\f$ is predicted from the matching to the
-MSSM using the threshold corrections of [arXiv:1407.4081,
+MSSM using the 1- and 2-loop threshold corrections of [arXiv:1407.4081,
 arxiv:1504.05200, arXiv:1703.08166].  The 3-loop renormalization group
 equations of [arxiv:1504.05200, arxiv:1303.4364] are used to run
 \f$\lambda(M_\text{SUSY})\f$ down to the electroweak scale.  At the
@@ -23,6 +23,9 @@ appropriately.  The top Yukawa coupling \f$y_t(M_Z)\f$ is calculated
 at the full 1-loop level from the top pole mass, taking optionally
 2-loop [hep-ph/9803493] and 3-loop [arxiv:hep-ph/9911434] corrections
 into account, see @ref FlexibleSUSY_config .
+
+In @ref librarylink an example Mathematica script can be found, which
+illustrates how to perform a parameter scan using the HSSUSY model.
 
 __Input parameters__
 

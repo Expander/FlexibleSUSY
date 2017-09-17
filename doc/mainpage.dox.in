@@ -76,7 +76,7 @@ href="https://inspirehep.net/record/1484857">JHEP 1701 (2017)
 079</a>].
 
 FlexibleSUSY depends on SARAH and contains components from
-Softsusy. Therefore, please also cite the following publications along
+SOFTSUSY. Therefore, please also cite the following publications along
 with FlexibleSUSY:
 
  - SARAH
@@ -85,7 +85,7 @@ with FlexibleSUSY:
     <a href="http://arxiv.org/abs/1207.0906">CPC 184 (2013) 1792-1809</a>,
     <a href="http://arxiv.org/abs/1309.7223">CPC 185 (2014) 1773-1790</a>]
 
- -  SoftSUSY
+ -  SOFTSUSY
     [<a href="http://arxiv.org/abs/hep-ph/0104145">CPC 143 (2002) 305-331</a>,
      <a href="http://arxiv.org/abs/1311.7659">CPC 185 (2014) 2322</a>]
 
