@@ -474,14 +474,16 @@ FSCMSSMCalculateObservables[handle]
 _Output_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-{ FlexibleSUSYObservable`CpHiggsPhotonPhoton ->
-    {0.0000296409 - 2.1245*10^-7 I, 7.82123*10^-7 + 9.1076*10^-7 I},
-  FlexibleSUSYObservable`CpHiggsGluonGluon ->
-    {-0.0000670724 - 2.65658*10^-6 I, 2.72135*10^-6 + 4.91993*10^-6 I},
-  FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ->
-    1.05105*10^-6 - 8.33068*10^-7 I,
-  FlexibleSUSYObservable`CpPseudoScalarGluonGluon ->
-    6.71448*10^-6 + 8.41625*10^-7 I }
+{CMSSM ->
+   { FlexibleSUSYObservable`CpHiggsPhotonPhoton ->
+       {0.0000296409 - 2.1245*10^-7 I, 7.82123*10^-7 + 9.1076*10^-7 I},
+     FlexibleSUSYObservable`CpHiggsGluonGluon ->
+       {-0.0000670724 - 2.65658*10^-6 I, 2.72135*10^-6 + 4.91993*10^-6 I},
+     FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton ->
+       1.05105*10^-6 - 8.33068*10^-7 I,
+     FlexibleSUSYObservable`CpPseudoScalarGluonGluon ->
+       6.71448*10^-6 + 8.41625*10^-7 I }
+}
 ~~~~~~~~~~~~~~~~~~~~
 
 \subsubsection FS_model_GetProblems FS<model>GetProblems and FS<model>GetWarnings
@@ -504,8 +506,10 @@ FSCMSSMGetProblems[handle]
 _Output_:
 
 ~~~~~~~~~~~~~~~~~~~~{.m}
-{ Tachyons -> {M[Sd], M[Su]},
-  NoPoleMassConvergence -> {Pole[M[hh]]} }
+{CMSSM ->
+  { Tachyons -> {M[Sd], M[Su]},
+    NoPoleMassConvergence -> {Pole[M[hh]]} }
+}
 ~~~~~~~~~~~~~~~~~~~~
 
 This list of problems states, that the running up-type and down-type
