@@ -96,8 +96,8 @@ options="                    \
    enable_librarylink        \
    enable_looptools          \
    enable_mass_error_check   \
-   enable_silent             \
    enable_shared_libs        \
+   enable_silent             \
    enable_sqlite             \
    enable_static             \
    enable_threads            \
@@ -2559,11 +2559,12 @@ enable/disable options, prefix with either --enable- or --disable-
   compile           Compile the source code (default: $enable_compile)
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
-  mass-error-check  Check mass eigenvalue precision (default: $enable_mass_error_check)
   fflite            Use fflite to compute the loop functions (default: $enable_fflite)
+  himalaya          Enable Himalaya (default: $enable_himalaya)
   lapack            Enable LAPACK (default: $enable_lapack)
   librarylink       Build LibraryLink library for Mathematica interface (default: $enable_librarylink)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
+  mass-error-check  Check mass eigenvalue precision (default: $enable_mass_error_check)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2571,9 +2572,9 @@ cat <<EOF
 EOF
 # END:   NOT EXPORTED ##########################################
 cat <<EOF
+  shared-libs       Create shared libraries (default: $enable_shared_libs)
   silent            Suppress all command line output (default: $enable_silent)
   sqlite            Enable SQLite (default: $enable_sqlite)
-  shared-libs       Create shared libraries (default: $enable_shared_libs)
   static            Create statically linked executables (default: $enable_static)
   threads           Enable multi-threading (default: $enable_threads)
   tsil              Enable TSIL (default: $enable_tsil)

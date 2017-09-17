@@ -116,12 +116,13 @@ _configure()
 --enable-compile
 --enable-compiler-warnings
 --enable-debug
---enable-mass-error-check
---enable-meta
 --enable-fflite
+--enable-himalaya
 --enable-lapack
 --enable-librarylink
 --enable-looptools
+--enable-mass-error-check
+--enable-meta
 --enable-shared-libs
 --enable-silent
 --enable-sqlite
@@ -134,12 +135,13 @@ _configure()
 --disable-compile
 --disable-compiler-warnings
 --disable-debug
---disable-mass-error-check
---disable-meta
 --disable-fflite
+--disable-himalaya
 --disable-lapack
 --disable-librarylink
 --disable-looptools
+--disable-mass-error-check
+--disable-meta
 --disable-shared-libs
 --disable-silent
 --disable-sqlite
@@ -149,7 +151,6 @@ _configure()
 --disable-verbose
 
 --with-addons=
---with-algorithms=
 --with-blas-libdir=
 --with-blas-libs=
 --with-boost-libdir=
@@ -163,6 +164,8 @@ _configure()
 --with-fflags=
 --with-flibs=
 --with-gsl-config=
+--with-himalaya-libdir=
+--with-himalaya-incdir=
 --with-install-dir=
 --with-lapack-libdir=
 --with-lapack-libs=
@@ -176,6 +179,7 @@ _configure()
 --with-shared-ldlibs=
 --with-shared-lib-cmd=
 --with-shared-lib-ext=
+--with-solvers=
 --with-sqlite-libdir=
 --with-sqlite-incdir=
 --with-static-ldflags=
@@ -196,9 +200,9 @@ _configure()
         return 0
     fi
 
-    # handle --with-algorithms=
-    if [[ ${prev}${cur} == "--with-algorithms=" || ${pprev}${prev} == "--with-algorithms=" ]] ; then
-        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-algorithms=" "two_scale lattice") )
+    # handle --with-solvers=
+    if [[ ${prev}${cur} == "--with-solvers=" || ${pprev}${prev} == "--with-solvers=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-solvers=" "two_scale lattice") )
         return 0
     fi
 
