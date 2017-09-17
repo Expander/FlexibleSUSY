@@ -92,7 +92,7 @@ namespace @ModelName@_edm {
 
 namespace {
 /**
-* @defgroup LoopFunctions
+* @defgroup LoopFunctions Loop functions
 * @brief The loop functions necessary for edm one-loop calculations.
 *
 * These are OneLoopFunctionA(), OneLoopFunctionB()
