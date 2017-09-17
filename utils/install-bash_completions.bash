@@ -367,4 +367,5 @@ for sg in ${spectrum_generators}
 do
     echo "installing bash completion for ${sg}"
     complete -o nospace -F _run_spectrum_generator "${sg}"
+    complete -o nospace -F _run_spectrum_generator "./${sg}"
 done
