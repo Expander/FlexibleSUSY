@@ -40,17 +40,19 @@ void print(std::ostream& ostr)
    ostr
       << "Model information\n"
       << "=================\n"
-      << "Model name:                " << model_name << '\n'
-      << "Is a low-energy model:     "
+      << "Model name:                  " << model_name << '\n'
+      << "Is a low-energy model:       "
       << (is_low_energy_model ? "yes" : "no") << '\n'
-      << "Is a supersymmetric model: "
+      << "Is a supersymmetric model:   "
       << (is_supersymmetric_model ? "yes" : "no") << '\n'
-      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
-      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
+      << "Is a FlexibleEFTHiggs model: "
+      << (is_FlexibleEFTHiggs ? "yes" : "no") << '\n'
+      << "Number of multiplets:        " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:        " << NUMBER_OF_PARAMETERS << '\n'
       ;
 
    ostr << "\n"
-      "Multiplets:                ";
+      "Multiplets:                  ";
    for (int i = 0; i < NUMBER_OF_PARTICLES; i++) {
       ostr << particle_names[i]
            << '[' << particle_multiplicities[i] << ']';
@@ -59,12 +61,21 @@ void print(std::ostream& ostr)
    }
 
    ostr << "\n\n"
-      "Parameters:                ";
+      "Parameters:                  ";
    for (int i = 0; i < NUMBER_OF_PARAMETERS; i++) {
       ostr << parameter_names[i];
       if (i + 1 < NUMBER_OF_PARAMETERS)
          ostr << ", ";
    }
+
+   ostr << "\n\n"
+      "Input parameters:            ";
+   for (int i = 0; i < NUMBER_OF_INPUT_PARAMETERS; i++) {
+      ostr << input_parameter_names[i];
+      if (i + 1 < NUMBER_OF_INPUT_PARAMETERS)
+         ostr << ", ";
+   }
+
    ostr << '\n';
 }
 
