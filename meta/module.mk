@@ -55,11 +55,14 @@ META_THDM_SRC:= \
 		$(DIR)/THDM/Thresholds_1L_full.m
 
 META_SRC     := \
+		$(DIR)/AMuon.m \
 		$(DIR)/AnomalousDimension.m \
 		$(DIR)/BetaFunction.m \
 		$(DIR)/CConversion.m \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
+		$(DIR)/CXXDiagrams.m \
+		$(DIR)/EDM.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \
@@ -67,9 +70,6 @@ META_SRC     := \
 		$(DIR)/FlexibleTower.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
-		$(DIR)/CXXDiagrams.m \
-		$(DIR)/EDM.m \
-		$(DIR)/AMuon.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \
@@ -89,9 +89,9 @@ META_SRC     := \
 		$(DIR)/ThresholdCorrectionLoopFunctions.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
-		$(DIR)/TwoLoopSM.m \
 		$(DIR)/TwoLoopMSSM.m \
 		$(DIR)/TwoLoopQCD.m \
+		$(DIR)/TwoLoopSM.m \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WeinbergAngle.m \
