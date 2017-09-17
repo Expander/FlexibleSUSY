@@ -39,7 +39,7 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/tquark_1loop_strong.m \
 		$(DIR)/MSSM/tquark_2loop_qcd.m \
 		$(DIR)/MSSM/tquark_2loop_strong.m \
-		$(DIR)/MMSM/twoloopbubble.m
+		$(DIR)/MSSM/twoloopbubble.m
 
 META_SM_SRC  := \
 		$(DIR)/SM/beta_g1.m \
