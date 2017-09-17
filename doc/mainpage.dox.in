@@ -4,9 +4,9 @@
 
 <a href="https://flexiblesusy.hepforge.org/">FlexibleSUSY</a> provides
 Mathematica and C++ code to create fast and modular spectrum
-generators for supersymmetric models. It is based on <a
-href="http://softsusy.hepforge.org/">SoftSUSY</a> and <a
-href="http://sarah.hepforge.org/">SARAH</a>.
+generators for supersymmetric and non-supersymmetric models. It is
+based on <a href="http://sarah.hepforge.org/">SARAH</a> and uses
+components from <a href="http://softsusy.hepforge.org/">SOFTSUSY</a>.
 
 \section quick_start Quick start
 
@@ -25,6 +25,10 @@ To run the NMSSM spectrum generator with an SLHA input file, run in
 the shell
 
     ./models/NMSSM/run_NMSSM.x --slha-input-file=model_files/NMSSM/LesHouches.in.NMSSM
+
+Alternatively, the Mathematica interface of FlexibleSUSY may be used:
+
+    math -run "<< \"models/NMSSM/run_NMSSM.m\""
 
 \section further_reading Documentation
 
