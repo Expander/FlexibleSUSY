@@ -168,14 +168,12 @@ looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2 -fPIC"
-CFLAGS="-O2"
 FFLAGS="-O2 -fPIC"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
 CXX="g++"
-CC="gcc"
 EIGENFLAGS=""
 FC="gfortran"
 GSLLIBS=""
@@ -1469,20 +1467,6 @@ get_clang_version() {
 }
 
 #_____________________________________________________________________
-check_cc() {
-    checking_msg "C compiler $CC"
-    exists_in_path "$CC"
-    if [ -z "$cmd" ] ; then
-        result "not found"
-        message "Error: A C compiler must be installed to compile FlexibleSUSY!"
-        message "   Use --with-cc= to specify the C compiler to be used."
-        exit 1
-    else
-        result "found $cmd"
-    fi
-}
-
-#_____________________________________________________________________
 check_cxx() {
     checking_msg "C++ compiler $CXX"
     exists_in_path "$CXX"
@@ -2491,8 +2475,6 @@ replace_markers() {
 	-e "s|@CPPFLAGS@|$CPPFLAGS|"       \
 	-e "s|@CXXFLAGS@|$CXXFLAGS|"       \
 	-e "s|@CXX@|$CXX|"                 \
-	-e "s|@CFLAGS@|$CFLAGS|"           \
-	-e "s|@CC@|$CC|"                   \
 	-e "s|@FC@|$FC|"                   \
 	-e "s|@FFLAGS@|$FFLAGS|"           \
 	-e "s|@FLIBS@|$FLIBS|"             \
@@ -2706,8 +2688,6 @@ if test $# -gt 0 ; then
             --with-blas-libs=*)      BLASLIBS=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
-            --with-cc=*)             CC=$optarg ;;
-            --with-cflags=*)         CFLAGS=$optarg ;;
             --with-cppflags=*)       CPPFLAGS=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
@@ -2772,7 +2752,6 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_compiler_version
     check_cxx_compiler_features
     check_cxxflags
-    check_cc
     check_fc
     check_fflags
     check_linking
@@ -2848,8 +2827,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"                     \
     -e "s|@CXX@|$CXX|"                               \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
-    -e "s|@CC@|$CC|"                                 \
-    -e "s|@CFLAGS@|$CFLAGS|"                         \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"                 \
     -e "s|@FC@|$FC|"                                 \
     -e "s|@FFLAGS@|$FFLAGS|"                         \

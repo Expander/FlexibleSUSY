@@ -155,8 +155,6 @@ _configure()
 --with-blas-libs=
 --with-boost-libdir=
 --with-boost-incdir=
---with-cc=
---with-cflags=
 --with-cxx=
 --with-cxxflags=
 --with-eigen-incdir=
@@ -203,18 +201,6 @@ _configure()
     # handle --with-solvers=
     if [[ ${prev}${cur} == "--with-solvers=" || ${pprev}${prev} == "--with-solvers=" ]] ; then
         COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-solvers=" "two_scale lattice") )
-        return 0
-    fi
-
-    # handle --with-cc=
-    if [[ ${prev}${cur} == "--with-cc=" || ${pprev}${prev} == "--with-cc=" ]] ; then
-        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-cc=" $(compgen -c)) )
-        return 0
-    fi
-
-    # handle --with-cflags=
-    if [[ ${prev}${cur} == "--with-cflags=" || ${pprev}${prev} == "--with-cflags=" ]] ; then
-        COMPREPLY=()
         return 0
     fi
 
