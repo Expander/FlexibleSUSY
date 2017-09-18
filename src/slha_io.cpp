@@ -722,6 +722,7 @@ void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, d
       break;
    case 5:
       pmns_parameters.alpha_1 = value;
+      break;
    case 6:
       pmns_parameters.alpha_2 = value;
       break;

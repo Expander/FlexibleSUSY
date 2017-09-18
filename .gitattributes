@@ -14,6 +14,16 @@ examples/lattice_numerical_fmssm.cpp        export-ignore
 examples/lattice_numerical_fmssm_fmssmn.cpp export-ignore
 examples/switch_MSSM.cpp                    export-ignore
 
+meta/MSSM/allgennb.log          export-ignore
+meta/MSSM/extract_*.m           export-ignore
+meta/MSSM/*.expr                export-ignore
+meta/MSSM/*_to_cpp.m            export-ignore
+meta/MSSM/dmbas2.m              export-ignore
+meta/MSSM/dmtas2.m              export-ignore
+
+meta/SM/beta_m2_1303.4364.m     export-ignore
+meta/SM/extract_*.m             export-ignore
+
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore

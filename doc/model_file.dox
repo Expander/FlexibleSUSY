@@ -1257,6 +1257,30 @@ ExtraSLHAOutputBlocks = {
 };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\subsection edm_FS BSM contributions to the electric dipole moment (EDM)
+
+Since version 2.0 FlexibleSUSY can calculate the BSM contributions to
+the electric dipole moments (EDM) of fermions at the 1-loop level in
+models with complex parameters.  The following table lists the
+Mathematica symbols to enable the calculation of the EDM
+\f$d_f^{\text{BSM}}\f$ of the fermion \f$f\f$.
+
+| Observable                      | Symbol                                      |
+|---------------------------------|---------------------------------------------|
+| \f$d_f^{\text{BSM}}\f$          | \c FlexibleSUSYObservable\`EDM[f]           |
+
+Example: To calculate the EDMs of the electron, muon and tau lepton in
+the CP-violating MSSM, add the following to the FlexibleSUSY model file:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{23, FlexibleSUSYObservable`EDM[Fe[1]]},
+            {24, FlexibleSUSYObservable`EDM[Fe[2]]},
+            {25, FlexibleSUSYObservable`EDM[Fe[3]]} } }
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 \section output_blocks Output blocks
 
@@ -1298,6 +1322,8 @@ ExtraSLHAOutputBlocks = {
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
+   {FlexibleSUSYLowEnergy,
+           {{21, FlexibleSUSYObservable`aMuon} } },
    {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
             {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
@@ -1368,6 +1394,21 @@ arxiv:1708.05720] can be used by setting in the model file
 UseHiggs3LoopMSSM = True; (* use 3-loop Higgs corrections *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\note The Himalaya library [<a
+href="https://github.com/jklappert/Himalaya">https://github.com/jklappert/Himalaya</a>]
+must be linked to FlexibleSUSY in order to enable the 3-loop
+contributions:
+\code{.sh}
+./configure \
+   --with-models=MSSMNoFVatMGUTHimalaya \
+   --enable-himalaya \
+   --with-himalaya-incdir=${HIMALAYA_DIR}/source/include \
+   --with-himalaya-libdir=${HIMALAYA_DIR}/build
+\endcode
+`MSSMNoFVatMGUTHimalaya` is a pre-defined FlexibleSUSY model which
+includes the 3-loop contributions to the light CP-even Higgs mass from
+Himalaya.  `${HIMALAYA_DIR}` is the path to the Himalaya directory.
+
 To make use of the 2-loop and/or 3-loop corrections the effective
 \f$\mu\f$ parameter must be specified using the `EffectiveMu`
 variable:
@@ -1376,10 +1417,13 @@ variable:
 EffectiveMu = \[Mu];
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\note When the 3-loop corrections are used, the following switch
-should be set to `True` for consistency:
+\note When the 3-loop corrections are used, the following switches
+will be set automatically for consistency:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+SARAH`UseHiggs2LoopMSSM = True;
 UseMSSMYukawa2Loop = True; (* use 2-loop SQCD corrections to yt and yb *)
+UseMSSMAlphaS2Loop = True; (* use 2-loop SQCD corrections to alpha_s *)
+UseMSSM3LoopRGEs = True;   (* use 3-loop RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #### NMSSM ####
@@ -1420,6 +1464,15 @@ order \f$O(\alpha_t\alpha_s^2 + \alpha_t^2\alpha_s + \alpha_t^3)\f$
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 UseHiggs3LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note When the 3-loop corrections are used, the following switches
+will be set automatically for consistency:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopSM = True;
+UseSMAlphaS3Loop = True;    (* use 2- and 3-loop QCD corrections to alpha_s *)
+UseYukawa3LoopQCD = True;   (* use 2- and 3-loop QCD corrections to m_t *)
+UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #### Split-MSSM (SplitMSSM) ####
@@ -1501,7 +1554,7 @@ UseMSSMYukawa2Loop = True; (* use two-loop threshold for yt and yb *)
 The known MSSM two-loop corrections of order \f$O(\alpha_s^2 +
 \alpha_s\alpha_t + \alpha_s\alpha_b)\f$ to the strong coupling
 constant are known by [hep-ph/0509048, arXiv:0810.5101,
-arXiv:1009.5455] They can be taken into account by setting in the
+arXiv:1009.5455]. They can be taken into account by setting in the
 model file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}

@@ -24,12 +24,12 @@ Optional:
 Before you setup a FlexibleSUSY model, you have to provide a SARAH
 model file.  To make it available in FlexibleSUSY, you can put it
 either into FlexibleSUSY's SARAH model directory
-`FlexibleSUSY/sarah/<model>/` or directly into SARAH's own model
-directly `SARAH/Models/<model>/`.
+(`FlexibleSUSY/sarah/<model>/`) or directly into SARAH's own model
+directly (`SARAH/Models/<model>/`).
 
-Here `<model>` is the name of your model (e.g. MSSM, NMSSM, etc.).
-Note, that there are already plenty of pre-installed model files under
-`SARAH/Models/` that can be used.
+Here `<model>` is the name of your SARAH model (e.g. SM, MSSM, NMSSM,
+etc.).  Note, that there are already plenty of pre-installed model
+files under `SARAH/Models/` that can be used.
 
 Setup a FlexibleSUSY model
 

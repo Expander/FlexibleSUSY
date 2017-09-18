@@ -28,511 +28,72 @@
 #include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
-#include "error.hpp"
-#include "logger.hpp"
-#include "numerics2.hpp"
-#include "wrappers.hpp"
-
-#include <array>
-#include <algorithm>
-#include <vector>
-#include <boost/mpl/vector_c.hpp>
-#include <boost/mpl/at.hpp>
+#include "@ModelName@_cxx_diagrams.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
-#define PHASE(p) context.model.get_##p()
 #define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
 
-namespace flexiblesusy {
+using namespace flexiblesusy;
+using namespace cxx_diagrams;
+
+using Muon = @AMuon_MuonField@;
+
 namespace {
-/**
- * @class IndexBounds<N>
- * @brief A class representing multiple (N) index ranges.
- *
- * N is a non-negative integer.
- * The ranges are specified the c++ way; The range begins are inclusive
- * and the range ends are exclusive. Misspecified ranges result in
- * undefined behaviour!
- * The intended use is to iterate over an IndexBounds<N> using the normal
- * begin()/end() syntax, which will iterate over every possible combination
- * of the indices within their respective ranges.
- * The ranges are const! Once they are initialized they cannot be changed.
- * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
- */
-template<unsigned N> struct IndexBounds;
-
-/**
- * @class IndexIterator<N>
- * @brief The iterator class used by IndexBounds<N>.
- *
- * It only fulfils the input iterator requirements!
- * The value_type is a const std::array<unsigned, N>
- * containing the current indices.
- * Incrementing the iterator results in a new index combination.
- */
-template<unsigned N> struct IndexIterator
-: public std::iterator<
-std::input_iterator_tag,
-const std::array<unsigned, N>>
-{
-   friend struct IndexBounds<N>;
-private:
-   const IndexBounds<N> *bounds;
-   std::array<unsigned, N> indices;
-
-   IndexIterator(const IndexBounds<N> &b, const unsigned *i)
-      : bounds(&b)
-   {
-      std::memcpy(indices.data(), i, N * sizeof(unsigned));
-   }
-public:
-   const std::array<unsigned, N> &operator*() const {
-      return indices;
-   }
-
-   const std::array<unsigned, N> *operator->() const {
-      return &indices;
-   }
-
-   IndexIterator &operator++() {
-      for (unsigned i = 0; i != N; i++) {
-         indices[i]++;
-         if (indices[i] == bounds->indexEnd[i]) {
-            indices[i] = bounds->indexBegin[i];
-            continue;
-         }
-
-         return *this;
-      }
-
-      std::memcpy(indices.data(), bounds->indexEnd, N * sizeof(unsigned));
-      return *this;
-   }
-
-   IndexIterator operator++(int) {
-      IndexIterator it(*this);
-      this->operator++();
-      return it;
-   }
-
-   template<unsigned M>
-   friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
-};
-
-template<unsigned N>
-bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
-{
-   return it1.indices == it2.indices;
-}
-
-template<unsigned N>
-bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
-{
-   return !(it1 == it2);
-}
-
-template<unsigned N> struct IndexBounds {
-   typedef const std::array<unsigned, N> indices_type;
-
-   unsigned indexBegin[N];
-   unsigned indexEnd[N];
-
-   typedef IndexIterator<N> const_iterator;
-
-   const_iterator begin() const {
-      return const_iterator(*this, indexBegin);
-   }
-
-   const_iterator end() const {
-      return const_iterator(*this, indexEnd);
-   }
-};
-
-template<> struct IndexBounds<0> {
-   typedef const std::array<unsigned, 0> indices_type;
-   typedef indices_type * const_iterator;
-
-   static const indices_type dummyIndex;
-
-   const_iterator begin() const
-   { return &dummyIndex; }
-   const_iterator end() const
-   { return (begin()+1); }
-};
-IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex{};
-
-@GMuonMinus2_Particles@
-
-template<class P> struct remove_anti { typedef P type; };
-template<class P> struct remove_anti<anti<P>> { typedef P type; };
-
-/**
- * @class EvaluationContext
- * @brief Represents an evaluation context.
- *
- * Actually it simply contains a reference to a model object.
- * All computational functions are forwarded to that object,
- * e.g. mass calculation functions.
- */
-struct EvaluationContext {
-   @ModelName@_mass_eigenstates& model; ///< The model object.
-
-   /**
-    * @fn mass<P>
-    * @brief Returns the mass of a particle.
-    */
-   template<class P> double mass() const {
-      return mass<typename anti<P>::type>();
-   }
-
-   template<class P> double mass(unsigned index) const {
-      return mass<typename anti<P>::type>(index);
-   }
-};
-
-/**
- * @class DiagramEvaluator
- * @brief A template that can calculate disagrams.
- *
- * This template is completely general. The intended use is
- * to have specialisations of the kind:
- *   DiagramEvaluator<DiagramType, Particle1, Particle2, ...>
- * along with a static member function:
- *   static double value( EvaluationContext &context );
- * that calculates the contribution to a_muon
- * for a specific diagram class with specified particles.
- */
-template<class ...Args> struct DiagramEvaluator;
+static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 
 double OneLoopFunctionF1C(double);
 double OneLoopFunctionF2C(double);
 double OneLoopFunctionF1N(double);
 double OneLoopFunctionF2N(double);
 
-double get_QED_2L(EvaluationContext& context);
-
-@GMuonMinus2_MuonFunctionPrototypes@
-
-@GMuonMinus2_Diagrams@
+double get_QED_2L(EvaluationContext&);
 
 /**
- * @class SingleComponentedVertex
- * @brief A vertex whose value can be represented by a single complex number
- */
-class SingleComponentedVertex {
-private:
-   std::complex<double> val; ///< The value
-public:
-   explicit SingleComponentedVertex(std::complex<double> v)
-      : val(v) {}
-
-   /**
-    * @fn value
-    * @brief Returns the value of the vertex.
-    */
-   std::complex<double> value() const {
-      return val;
-   }
-
-   /**
-    * @fn isZero
-    * @brief Tests whether the value is numerically significant
-    */
-   bool isZero() const {
-      return (is_zero(val.real()) && is_zero(val.imag()));
-   }
-};
-
-/**
- * @class LeftAndRightComponentedVertex
- * @brief A vertex whose value can be represented by two complex numbers
- */
-class LeftAndRightComponentedVertex {
-private:
-   std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
-public:
-   LeftAndRightComponentedVertex(const std::complex<double> &left,
-                                 const std::complex<double> &right)
-      : value(left, right) {}
-
-   /**
-    * @fn left
-    * @brief Returns the left component of the vertex.
-    */
-   std::complex<double> left() const {
-      return value.first;
-   }
-
-   /**
-    * @fn right
-    * @brief Returns the left component of the vertex.
-    */
-   std::complex<double> right() const {
-      return value.second;
-   }
-
-   /**
-    * @fn isZero
-    * @brief Tests whether the values are numerically significant
-    */
-   bool isZero() const {
-      return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
-              is_zero(value.second.real()) && is_zero(value.second.imag()));
-   }
-};
-
-/**
- * @class VertexFunctionData<P...>
- * @brief Vertex data for a vertex with the particles specified by P...
+ * @class AMuonVertexCorrectionSF
+ * @brief A template that calculate contributions to the
+ *        anomalous dipole moment of a given particle in
+ *        a one loop diagram specified by a photon emitter
+ *        and an exchange particle.
+ * @tparam Args Specifies in order the field of which to
+ *              calculate the electric dipole moment,
+ *              the photon emitter and the exchange particle
+ *              in a one-loop diagram where the photon emitter
+ *              is a scalar and the exchange particle a fermion.
  *
- * All elements in P... have to be publicly derived from Particle.
- * The data includes the type of the vertex, whether P... is in
- * canonical order or permuted as well as index bounds referring to
- * the specific particles (generation and colour indices, etc).
- * The intention is to have a program generate VertexFunctionData<>
- * specialisations that are then used by the VertexFunction<> template.
+ * This template evaluates the contribution to the electric
+ * dipole moment of a one loop diagram with fields given by
+ * \a Args.
  */
-template<class ...P> struct VertexFunctionData;
-
-/**
- * @class VertexFunctionHelper<bool, P...>
- * @brief A helper template that is used by VertexFunction<P...>
- *
- * You should never have to use this class directly. It is just a
- * helper class.
- */
-template<bool, class ...P> class VertexFunctionHelper;
-
-template<class ...P> class VertexFunctionHelper<false, P...>
-   : public VertexFunctionData<P...> {
-private:
-   typedef VertexFunctionData<P...> Base;
-   typedef typename Base::particleIndexStart particleIndexStart;
-   using Base::indexB;
-public:
-   typedef typename Base::index_bounds index_bounds;
-   typedef typename index_bounds::indices_type indices_type;
-   typedef typename Base::vertex_type vertex_type;
-public:
-   static const index_bounds &indexBounds() {
-      return indexB;
-   }
-
-   template<unsigned particleIndex>
-   static std::vector<unsigned> particleIndices(const indices_type &indices)
-   {
-      auto begin = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex>::type::value;
-      auto end = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex+1>::type::value;
-      return std::vector<unsigned>(begin, end);
-   }
-};
-
-template<class ...P> class VertexFunctionHelper<true, P...>
-   : public VertexFunctionData<P...>::orig_type {
-private:
-   typedef typename VertexFunctionData<P...>::orig_type orig_type;
-   typedef typename VertexFunctionData<P...>::particlePermutation particlePermutation;
-public:
-   typedef typename orig_type::index_bounds index_bounds;
-   typedef typename index_bounds::indices_type indices_type;
-   typedef typename orig_type::vertex_type vertex_type;
-public:
-   template<unsigned particleIndex>
-   static std::vector<unsigned> particleIndices(const indices_type &indices)
-   {
-      return orig_type::template particleIndices<
-                boost::mpl::at_c<particlePermutation, particleIndex>::type::value
-                > (indices);
-   }
+template<class PhotonEmitter, class ExchangeParticle>
+struct AMuonVertexCorrectionSF {
+   static double value(const typename field_indices<Muon>::type& indices,
+                       const EvaluationContext& context);
 };
 
 /**
- * @class VertexFunction<P...>
- * @brief A template that represents a vertex with open particle indices.
+ * @class AMuonVertexCorrectionFS
+ * @brief A template that calculate contributions to the
+ *        anomalous dipole moment of a given particle in
+ *        a one loop diagram specified by a photon emitter
+ *        and an exchange particle.
+ * @tparam Args Specifies in order the field of which to
+ *              calculate the electric dipole moment,
+ *              the photon emitter and the exchange particle
+ *              in a one-loop diagram where the photon emitter
+ *              is a fermion and the exchange particle a scalar.
  *
- * All elements in P... have to be publicly derived from Particle.
- * To obtain a conrete value, use the static member function vertex()
- * along with the desired particle indices.
- * The intention here is to have a program generate the vertex calculation
- * code for a canonically ordered P... and have c++ take care of
- * possible particle permutations.
+ * This template evaluates the contribution to the electric
+ * dipole moment of a one loop diagram with fields given by
+ * \a Args.
  */
-template<class ...P> class VertexFunction
-   : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> {
-private:
-   typedef VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> Base;
-public:
-   typedef typename Base::indices_type indices_type;
-   typedef typename Base::index_bounds index_bounds;
-   typedef typename Base::vertex_type vertex_type;
-
-   /**
-    * @fn indexBounds
-    * @brief Returns the IndexBounds<> object of the VertexFunction.
-    */
-   using Base::indexBounds;
-
-   /**
-    * @fn particleIndices
-    * @brief Returns the subset of indices belonging to
-    *        a particle at a given index.
-    * @param indices The complete set of indices for all particles
-    *
-    * The particle indexing is in the same order as the template arguments
-    * and starts at 0.
-    */
-   using Base::particleIndices;
-
-   /**
-    * @fn vertex
-    * @brief Calculates the vertex for a given set of particle indices.
-    * @param indices The particle indices
-    * @param context The evaluation context
-    *
-    * Q is just used for SFINAE (c++)
-    * This definition only kicks in for permuted P...
-    * For canonical P... the definitions have to be supplied separately.
-    */
-   template<class Q = Base>
-   static vertex_type vertex(const indices_type &indices, EvaluationContext &context)
-   {
-      return Q::vertex(indices, context);
-   }
+template<class PhotonEmitter, class ExchangeParticle>
+struct AMuonVertexCorrectionFS {
+   static double value(const typename field_indices<Muon>::type& indices,
+                       const EvaluationContext& context);
 };
 
-@GMuonMinus2_VertexFunctionData@
-
-double get_MSUSY(const @ModelName@_mass_eigenstates& model)
-{
-@GMuonMinus2_GetMSUSY@
-}
-
-void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
-{
-   const double precision_goal = model.get_precision();
-   const int Nmax = static_cast<int>(-log10(precision_goal) * 10);
-   int it = 0;
-   double precision = 0.;
-   double MSUSY_old = 0., MSUSY_new = 0.;
-
-   VERBOSE_MSG("@ModelName@_a_muon: iterate to run to MSUSY ...");
-
-   do {
-      MSUSY_new = get_MSUSY(model);
-
-      if (MSUSY_new <= 0.)
-         return;
-
-      VERBOSE_MSG("@ModelName@_a_muon:    running to new MSUSY = " << MSUSY_new);
-
-      model.run_to(MSUSY_new);
-      model.calculate_DRbar_masses();
-
-      precision = MaxRelDiff(MSUSY_old, MSUSY_new);
-      MSUSY_old = MSUSY_new;
-   } while (precision > precision_goal && ++it < Nmax);
-
-   VERBOSE_MSG("@ModelName@_a_muon: iteration finished. MSUSY = " << MSUSY_new);
-
-   if (precision > precision_goal) {
-      WARNING("@ModelName@_a_muon: run_to_MSUSY(): "
-              "Iteration did not converge after " << Nmax
-              << " iterations (precision goal: " << precision_goal << ")");
-   }
-}
-
-double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
-{
-   VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
-
-@GMuonMinus2_Calculation@
-}
-
-/// generates array with N scales from mean/factor to mean*factor
-template <int N>
-std::array<double,N> generate_scales(double mean, double factor)
-{
-   static_assert(N > 1, "N must be greater than 1!");
-
-   const double start = mean / factor, stop = mean * factor;
-   std::array<double,N> scales;
-
-   scales[0] = start;
-
-   for (int i = 1; i < (N-1); i++)
-      scales[i] = std::exp(std::log(start) + (std::log(stop) - std::log(start))*i / N);
-
-   scales[N-1] = stop;
-
-   return scales;
-}
-
-/// returns minimum and maximum a_mu when scale is varied by a factor 2
-std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
-{
-   auto scales = generate_scales<7>(model.get_scale(), 2.);
-
-   std::transform(scales.begin(), scales.end(), scales.begin(),
-                  [&model] (double scale) {
-                     double amu = 0.;
-                     try {
-                        auto m = model;
-                        m.run_to(scale);
-                        m.get_physical().clear();
-                        m.calculate_DRbar_masses();
-                        amu = calculate_a_muon_impl(m);
-                     } catch(const Error& e) {
-                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
-                     }
-                     return amu;
-                  });
-
-   const auto minmax = std::minmax_element(scales.cbegin(), scales.cend());
-
-   return std::make_pair(*(minmax.first), *(minmax.second));
-}
-
-} // anonymous namespace
-
-double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
-{
-   @ModelName@_mass_eigenstates model(model_);
-
-   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu ...");
-
-   try {
-      run_to_MSUSY(model);
-      model.get_physical().clear();
-   } catch (const Error& e) {
-      ERROR("@ModelName@_a_muon:" << e.what());
-      return std::numeric_limits<double>::quiet_NaN();
-   }
-
-   return calculate_a_muon_impl(model);
-}
-
-double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
-{
-   @ModelName@_mass_eigenstates model(model_);
-
-   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu uncertainty ...");
-
-   try {
-      run_to_MSUSY(model);
-      model.get_physical().clear();
-   } catch (const Error& e) {
-      ERROR("@ModelName@_a_muon uncertainty: " << e.what());
-      return std::numeric_limits<double>::quiet_NaN();
-   }
-
-   const auto delta_amu_scale_minmax = vary_scale(model);
-   const auto delta_amu_scale = std::abs(delta_amu_scale_minmax.second - delta_amu_scale_minmax.first);
-
-   return delta_amu_scale;
-}
-
-namespace {
 /**
 * @defgroup LoopFunctions LoopFunctions
 * @brief The loop functions necessary for \f$a_\mu\f$ one-loop calculations.
@@ -654,183 +215,284 @@ double OneLoopFunctionF2N(double x)
    return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
 }
 
-@GMuonMinus2_Definitions@
+double get_MSUSY(const @ModelName@_mass_eigenstates& model)
+{
+@AMuon_GetMSUSY@
+}
 
+void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
+{
+   const double precision_goal = model.get_precision();
+   const int Nmax = static_cast<int>(-log10(precision_goal) * 10);
+   int it = 0;
+   double precision = 0.;
+   double MSUSY_old = 0., MSUSY_new = 0.;
+
+   VERBOSE_MSG("@ModelName@_a_muon: iterate to run to MSUSY ...");
+
+   do {
+      MSUSY_new = get_MSUSY(model);
+
+      if (MSUSY_new <= 0.)
+         return;
+
+      VERBOSE_MSG("@ModelName@_a_muon:    running to new MSUSY = " << MSUSY_new);
+
+      model.run_to(MSUSY_new);
+      model.calculate_DRbar_masses();
+
+      precision = MaxRelDiff(MSUSY_old, MSUSY_new);
+      MSUSY_old = MSUSY_new;
+   } while (precision > precision_goal && ++it < Nmax);
+
+   VERBOSE_MSG("@ModelName@_a_muon: iteration finished. MSUSY = " << MSUSY_new);
+
+   if (precision > precision_goal) {
+      WARNING("@ModelName@_a_muon: run_to_MSUSY(): "
+              "Iteration did not converge after " << Nmax
+              << " iterations (precision goal: " << precision_goal << ")");
+   }
+}
+
+double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
+{
+   VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
+
+   EvaluationContext context{ model };
+   double val = 0.0;
+
+@AMuon_Calculation@
+
+   // add 2-loop QED logarithms
+   val *= 1. + get_QED_2L(context);
+
+   return val;
+}
+
+/// generates array with N scales from mean/factor to mean*factor
+template <int N>
+std::array<double,N> generate_scales(double mean, double factor)
+{
+   static_assert(N > 1, "N must be greater than 1!");
+
+   const double start = mean / factor, stop = mean * factor;
+   std::array<double,N> scales;
+
+   scales[0] = start;
+
+   for (int i = 1; i < (N-1); i++)
+      scales[i] = std::exp(std::log(start) + (std::log(stop) - std::log(start))*i / N);
+
+   scales[N-1] = stop;
+
+   return scales;
+}
+
+/// returns minimum and maximum a_mu when scale is varied by a factor 2
+std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model)
+{
+   auto scales = generate_scales<7>(model.get_scale(), 2.);
+
+   std::transform(scales.begin(), scales.end(), scales.begin(),
+                  [&model] (double scale) {
+                     double amu = 0.;
+                     try {
+                        auto m = model;
+                        m.run_to(scale);
+                        m.get_physical().clear();
+                        m.calculate_DRbar_masses();
+                        m.solve_ewsb();
+                        m.calculate_M@AMuon_MuonField@_pole();
+                        amu = calculate_a_muon_impl(m);
+                     }
+                     catch(const Error& e) {
+                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
+                     }
+                     return amu;
+                  });
+
+   const auto minmax = std::minmax_element(scales.cbegin(), scales.cend());
+
+   return std::make_pair(*(minmax.first), *(minmax.second));
+}
+
+double muonPhysicalMass(const EvaluationContext& context)
+{
+@AMuon_MuonPhysicalMass@
+}
+
+} // anonymous namespace
+
+double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& model_)
+{
+   @ModelName@_mass_eigenstates model(model_);
+
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu ...");
+
+   try {
+      run_to_MSUSY(model);
+      model.get_physical().clear();
+   } catch (const Error& e) {
+      ERROR("@ModelName@_a_muon:" << e.what());
+      return std::numeric_limits<double>::quiet_NaN();
+   }
+
+   double m_muon_pole = muonPhysicalMass(EvaluationContext{model});
+
+   if (m_muon_pole == 0.0) {
+      model.solve_ewsb();
+      model.calculate_M@AMuon_MuonField@_pole();
+   }
+
+   return calculate_a_muon_impl(model);
+}
+
+double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_eigenstates& model_)
+{
+   @ModelName@_mass_eigenstates model(model_);
+
+   VERBOSE_MSG("@ModelName@_a_muon: starting calculation of a_mu uncertainty ...");
+
+   try {
+      run_to_MSUSY(model);
+      model.get_physical().clear();
+   } catch (const Error& e) {
+      ERROR("@ModelName@_a_muon uncertainty: " << e.what());
+      return std::numeric_limits<double>::quiet_NaN();
+   }
+
+   const auto delta_amu_scale_minmax = vary_scale(model);
+   const auto delta_amu_scale = std::abs(delta_amu_scale_minmax.second - delta_amu_scale_minmax.first);
+
+   return delta_amu_scale;
+}
+
+namespace {
 double get_QED_2L(EvaluationContext& context)
 {
-@GMuonMinus2_QED_2L@
+   const double MSUSY = Abs(get_MSUSY(context.model));
+   const double m_muon = muonPhysicalMass(context);
+   const double alpha_em = Sqr(Muon::electric_charge * unit_charge(context))/(4*Pi);
+   const double qed_2L = alpha_em/(4*Pi) * 16 * FiniteLog(m_muon/MSUSY);
+
+   return qed_2L;
 }
 
-template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
+template<class PhotonEmitter, class ExchangeField>
+double AMuonVertexCorrectionFS<
+PhotonEmitter, ExchangeField
+>::value(const typename field_indices<Muon>::type& indices, const EvaluationContext& context)
 {
    double res = 0.0;
 
-   typedef VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type> photonVertexFunction;
-   typedef VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type> muonVertexFunction;
+   using MuonVertex = Vertex<
+                      typename Muon::lorentz_conjugate,
+                      ExchangeField,
+                      PhotonEmitter
+                      >;
 
-   for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
-        photonVertexIndexIt != photonVertexFunction::indexBounds().end();
-        ++photonVertexIndexIt) {
-      const auto &photonVertexIndices = *photonVertexIndexIt;
-      const auto &photonVertex = photonVertexFunction::vertex(photonVertexIndices, context);
-      if (photonVertex.isZero())
+   constexpr auto indexBounds = MuonVertex::index_bounds;
+
+   for (const auto& index: indexBounds) {
+      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
+
+      if (muonIndices != indices)
          continue;
 
-      // FIXME: We assume that the photonVertex is symmetric between its left and right parts!
-      const double photonEmitterChargeCount = photonVertex.left().real() / muonCharge(context);
+      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
 
-      const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
+      if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
+          isSMField<ExchangeField>(exchangeFieldIndices))
+         continue;
 
-      for (auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
-           muonVertexIndexIt != muonVertexFunction::indexBounds().end();
-           ++muonVertexIndexIt) {
-         const auto &muonVertexIndices = *muonVertexIndexIt;
-         const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>(muonVertexIndices);
-         if (MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex())
-            continue;
+      auto muonVertex = MuonVertex::evaluate(index, context);
 
-         if (photonEmitterIndices != muonVertexFunction::template particleIndices<1>(muonVertexIndices))
-            continue;
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+      const auto muonMass = context.mass<Muon>(muonIndices);
 
-         const auto &muonVertex = muonVertexFunction::vertex(muonVertexIndices, context);
-         if (muonVertex.isZero())
-            continue;
+      const double photonEmitterChargeCount =
+         PhotonEmitter::electric_charge / Muon::electric_charge;
 
-         const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
+      const std::complex<double> zL = muonVertex.left();
+      const std::complex<double> zR = muonVertex.right();
 
-         // skip diagrams with only Standard Model particles in the loop
-         if (((PhotonEmitter::numberOfGenerations == 1 &&
-               remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
-              (PhotonEmitter::numberOfGenerations > 1 &&
-               remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]])) &&
-             ((ExchangeParticle::numberOfGenerations == 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
-              (ExchangeParticle::numberOfGenerations > 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[exchangeIndices[0]])))
-               continue;
+      const double coeffA = std::norm(zL) + std::norm(zR);
+      const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-         const std::complex<double> zL = muonVertex.left();
-         const std::complex<double> zR = muonVertex.right();
+      const double massRatioSquared = Sqr(photonEmitterMass / exchangeFieldMass);
 
-         const double coeffA = std::norm(zL) + std::norm(zR);
-         const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+      const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
 
-         const double muonMass =
-            MuonFamily::numberOfGenerations == 1 ?
-            context.mass<MuonFamily>() :
-            context.mass<MuonFamily>(muonIndex());
+      const double part2 =
+         is_zero(massRatioSquared) ? 0. :
+         photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
-         const double photonEmitterMass =
-            PhotonEmitter::numberOfGenerations == 1 ?
-            context.mass<PhotonEmitter>() :
-            context.mass<PhotonEmitter>(photonEmitterIndices[0]);
+      const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
+         * muonPhysicalMass(context) / (exchangeFieldMass * exchangeFieldMass);
 
-         const double exchangeMass =
-            ExchangeParticle::numberOfGenerations == 1 ?
-            context.mass<ExchangeParticle>() :
-            context.mass<ExchangeParticle>(exchangeIndices[0]);
-
-         const double massRatioSquared = Sqr(photonEmitterMass / exchangeMass);
-
-         const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
-
-         const double part2 =
-            is_zero(massRatioSquared) ? 0. :
-            photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
-
-         const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
-            * muonPhysicalMass(context) / (exchangeMass * exchangeMass);
-
-         res += preFactor * (part1 + part2);
-      }
+      res += preFactor * (part1 + part2);
    }
 
    return res;
 }
 
-template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
+template<class PhotonEmitter, class ExchangeField>
+double AMuonVertexCorrectionSF<
+PhotonEmitter, ExchangeField
+>::value(const typename field_indices<Muon>::type& indices, const EvaluationContext& context)
 {
    double res = 0.0;
 
-   typedef VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type> photonVertexFunction;
-   typedef VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type> muonVertexFunction;
+   using MuonVertex = Vertex<
+                      typename Muon::lorentz_conjugate,
+                      ExchangeField,
+                      PhotonEmitter
+                      >;
 
-   for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
-        photonVertexIndexIt != photonVertexFunction::indexBounds().end();
-        ++photonVertexIndexIt) {
-      const auto &photonVertexIndices = *photonVertexIndexIt;
-      const auto &photonVertex = photonVertexFunction::vertex(photonVertexIndices, context);
-      if (photonVertex.isZero())
+   constexpr auto indexBounds = MuonVertex::index_bounds;
+
+   for (const auto& index: indexBounds) {
+      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
+
+      if (muonIndices != indices)
          continue;
 
-      const double photonEmitterChargeCount = photonVertex.value().real() / muonCharge(context);
+      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
 
-      const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
+      if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
+          isSMField<ExchangeField>(exchangeFieldIndices))
+         continue;
 
-      for (auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
-           muonVertexIndexIt != muonVertexFunction::indexBounds().end();
-           ++muonVertexIndexIt) {
-         const auto &muonVertexIndices = *muonVertexIndexIt;
-         const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>(muonVertexIndices);
-         if (MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex())
-            continue;
+      const auto muonVertex = MuonVertex::evaluate(index, context);
 
-         if (photonEmitterIndices != muonVertexFunction::template particleIndices<1>(muonVertexIndices))
-            continue;
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+      const auto muonMass = context.mass<Muon>(muonIndices);
 
-         const auto &muonVertex = muonVertexFunction::vertex(muonVertexIndices, context);
-         if (muonVertex.isZero())
-            continue;
+      const double photonEmitterChargeCount =
+         PhotonEmitter::electric_charge / Muon::electric_charge;
 
-         const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
+      const std::complex<double> zL = muonVertex.left();
+      const std::complex<double> zR = muonVertex.right();
 
-         // skip diagrams with only Standard Model particles in the loop
-         if (((PhotonEmitter::numberOfGenerations == 1 &&
-               remove_anti<PhotonEmitter>::type::is_sm_particle[0]) ||
-              (PhotonEmitter::numberOfGenerations > 1 &&
-               remove_anti<PhotonEmitter>::type::is_sm_particle[photonEmitterIndices[0]])) &&
-             ((ExchangeParticle::numberOfGenerations == 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[0]) ||
-              (ExchangeParticle::numberOfGenerations > 1 &&
-               remove_anti<ExchangeParticle>::type::is_sm_particle[exchangeIndices[0]])))
-               continue;
+      const double coeffA = std::norm(zL) + std::norm(zR);
+      const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
-         const std::complex<double> zL = muonVertex.left();
-         const std::complex<double> zR = muonVertex.right();
+      const double massRatioSquared = Sqr(exchangeFieldMass / photonEmitterMass);
 
-         const double coeffA = std::norm(zL) + std::norm(zR);
-         const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+      const double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
+      const double part2 = exchangeFieldMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
-         const double muonMass =
-            MuonFamily::numberOfGenerations == 1 ?
-            context.mass<MuonFamily>() :
-            context.mass<MuonFamily>(muonIndex());
+      const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
+         * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
 
-         const double photonEmitterMass =
-            PhotonEmitter::numberOfGenerations == 1 ?
-            context.mass<PhotonEmitter>() :
-            context.mass<PhotonEmitter>(photonEmitterIndices[0]);
-
-         const double exchangeMass =
-            ExchangeParticle::numberOfGenerations == 1 ?
-            context.mass<ExchangeParticle>() :
-            context.mass<ExchangeParticle>(exchangeIndices[0]);
-
-         const double massRatioSquared = Sqr(exchangeMass / photonEmitterMass);
-
-         const double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
-         const double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
-
-         const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
-            * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
-
-         res += preFactor * (part1 + part2);
-      }
+      res += preFactor * (part1 + part2);
    }
 
    return res;
 }
+
 } // anonymous namespace
-} // namespace flexiblesusy

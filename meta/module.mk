@@ -24,9 +24,6 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/beta_Yd.m \
 		$(DIR)/MSSM/beta_Ye.m \
 		$(DIR)/MSSM/beta_Yu.m \
-		$(DIR)/MSSM/dmtas2.m \
-		$(DIR)/MSSM/extract_MSSM_beta_functions_from_hep-ph-0308231.m \
-		$(DIR)/MSSM/extract_MSSM_Mt_over_mt_from_softsusy.m \
 		$(DIR)/MSSM/gamma_SdR.m \
 		$(DIR)/MSSM/gamma_SeR.m \
 		$(DIR)/MSSM/gamma_SHd.m \
@@ -34,11 +31,15 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/gamma_SlL.m \
 		$(DIR)/MSSM/gamma_SqL.m \
 		$(DIR)/MSSM/gamma_SuR.m \
+		$(DIR)/MSSM/das2.m \
+		$(DIR)/MSSM/dmtauas2.m \
+		$(DIR)/MSSM/bquark_2loop_sqcd_decoupling.m \
+		$(DIR)/MSSM/bquark_2loop_sqcd_pole.m \
 		$(DIR)/MSSM/tquark_1loop_qcd.m \
 		$(DIR)/MSSM/tquark_1loop_strong.m \
 		$(DIR)/MSSM/tquark_2loop_qcd.m \
 		$(DIR)/MSSM/tquark_2loop_strong.m \
-		$(DIR)/MSSM/tquark_to_cpp.m
+		$(DIR)/MSSM/twoloopbubble.m
 
 META_SM_SRC  := \
 		$(DIR)/SM/beta_g1.m \
@@ -59,11 +60,14 @@ META_THDM_SRC:= \
 		$(DIR)/THDM/Thresholds_1L_full.m
 
 META_SRC     := \
+		$(DIR)/AMuon.m \
 		$(DIR)/AnomalousDimension.m \
 		$(DIR)/BetaFunction.m \
 		$(DIR)/CConversion.m \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
+		$(DIR)/CXXDiagrams.m \
+		$(DIR)/EDM.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \
@@ -71,7 +75,6 @@ META_SRC     := \
 		$(DIR)/FlexibleTower.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
-		$(DIR)/GMuonMinus2.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \
@@ -91,9 +94,9 @@ META_SRC     := \
 		$(DIR)/ThresholdCorrectionLoopFunctions.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
-		$(DIR)/TwoLoopSM.m \
 		$(DIR)/TwoLoopMSSM.m \
 		$(DIR)/TwoLoopQCD.m \
+		$(DIR)/TwoLoopSM.m \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WeinbergAngle.m \
