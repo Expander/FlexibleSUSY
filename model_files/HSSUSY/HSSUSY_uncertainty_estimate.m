@@ -115,7 +115,7 @@ LogRange[start_, stop_, steps_] :=
 CalcHSSUSYMh[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List, r___] :=
     CalcHSSUSYMh[a, Sequence @@ s, r];
 
-CalcHSSUSYMh[ytLoops_?NumericQ, Qpole_?NumericQ, Qm_?NumericQ, eft_?NumericQ, args__] :=
+CalcHSSUSYMh[ytLoops_?NumericQ, Qpole_?NumericQ, Qm_?NumericQ, eft_?NumericQ, ytMSSM_?NumericQ, args__] :=
     Module[{handle, spec, tc},
            tc = thresholdCorrections /. { args };
            tc = If[IntegerQ[tc], tc,
@@ -130,6 +130,7 @@ CalcHSSUSYMh[ytLoops_?NumericQ, Qpole_?NumericQ, Qm_?NumericQ, eft_?NumericQ, ar
                },
                fsModelParameters -> {
                    DeltaEFT -> eft,
+                   DeltaYt -> ytMSSM,
                    Qmatch -> Qm
                }
            ];
@@ -144,20 +145,22 @@ CalcHSSUSYDMh[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List,
     CalcHSSUSYDMh[a, Sequence @@ s, r];
 
 CalcHSSUSYDMh[args__] :=
-    Module[{Mh, MhYt3L, MhEFT, varyQpole, varyQmatch,
+    Module[{Mh, MhYt3L, MhEFT, MhYtMSSM, varyQpole, varyQmatch,
             DMhSM, DMhEFT, DMhSUSY,
             MS = MSUSY /. { args }, Mlow = MEWSB /. { args }},
-           Mh         = CalcHSSUSYMh[2, 0, 0, 0, args];
-           MhYt3L     = CalcHSSUSYMh[3, 0, 0, 0, args];
-           MhEFT      = CalcHSSUSYMh[2, 0, 0, 1, args];
-           varyQpole  = CalcHSSUSYMh[2, #, 0, 0, args]& /@
+           Mh         = CalcHSSUSYMh[2, 0, 0, 0, 0, args];
+           MhYt3L     = CalcHSSUSYMh[3, 0, 0, 0, 0, args];
+           MhEFT      = CalcHSSUSYMh[2, 0, 0, 1, 0, args];
+           MhYtMSSM   = CalcHSSUSYMh[2, 0, 0, 0, 1, args];
+           varyQpole  = CalcHSSUSYMh[2, #, 0, 0, 0, args]& /@
                         LogRange[Mlow/2, 2 Mlow, 10];
-           varyQmatch = CalcHSSUSYMh[2, 0, #, 0, args]& /@
+           varyQmatch = CalcHSSUSYMh[2, 0, #, 0, 0, args]& /@
                         LogRange[MS/2, 2 MS, 10];
            (* combine uncertainty estimates *)
            DMhSM   = Abs[Min[varyQpole] - Max[varyQpole]] +
                      Abs[Mh - MhYt3L];
            DMhEFT  = Abs[Mh - MhEFT];
-           DMhSUSY = Abs[Min[varyQmatch] - Max[varyQmatch]];
+           DMhSUSY = Abs[Min[varyQmatch] - Max[varyQmatch]] +
+                     Abs[Mh - MhYtMSSM];
            { Mh, DMhSM + DMhEFT + DMhSUSY }
           ];
