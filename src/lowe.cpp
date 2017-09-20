@@ -111,12 +111,9 @@ Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
 }
 
 QedQcd::QedQcd()
-  : a(2)
-  , mf(9)
-  , input(static_cast<int>(NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS))
-  , mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
+   : mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
 {
-  set_number_of_parameters(11);
+  set_number_of_parameters(a.size() + mf.size());
   mf(0) = flexiblesusy::Electroweak_constants::MUP;
   mf(1) = flexiblesusy::Electroweak_constants::MCHARM;
   mf(2) = getRunMtFromMz(flexiblesusy::Electroweak_constants::PMTOP,
@@ -151,7 +148,7 @@ QedQcd::QedQcd()
 
 Eigen::ArrayXd QedQcd::get() const
 {
-   Eigen::ArrayXd y(11);
+   Eigen::ArrayXd y(a.size() + mf.size());
    y(0) = a(0);
    y(1) = a(1);
    for (int i = 0; i < mf.size(); i++)
@@ -169,7 +166,7 @@ void QedQcd::set(const Eigen::ArrayXd& y)
 
 Eigen::ArrayXd QedQcd::beta() const
 {
-   Eigen::ArrayXd dydx(11);
+   Eigen::ArrayXd dydx(a.size() + mf.size());
    dydx(0) = qedBeta();
    dydx(1) = qcdBeta();
    const auto y = massBeta();
@@ -310,9 +307,8 @@ double QedQcd::qcdBeta() const {
 
 //(See comments for above function). returns a vector x(1..9) of fermion mass
 //beta functions -- been checked!
-Eigen::ArrayXd QedQcd::massBeta() const {
+Eigen::Array<double,9,1> QedQcd::massBeta() const {
   static const double INVPI = 1.0 / M_PI, ZETA3 = 1.202056903159594;
-  Eigen::ArrayXd x(9);
 
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
@@ -329,6 +325,8 @@ Eigen::ArrayXd QedQcd::massBeta() const {
   const double qcd = -2.0 * a(ALPHAS - 1) * (
      qg1  + qg2 * a(ALPHAS - 1) + qg3 * sqr(a(ALPHAS - 1)));
   const double qed = -a(ALPHA - 1) * INVPI / 2;
+
+  Eigen::Array<double,9,1> x(Eigen::Array<double,9,1>::Zero());
 
   for (int i = 0; i < 3; i++)   // up quarks
     x(i) = (qcd + 4.0 * qed / 3.0) * mf(i);
@@ -353,9 +351,7 @@ Eigen::ArrayXd QedQcd::massBeta() const {
 void QedQcd::runGauge(double x1, double x2)
 {
   const double tol = 1.0e-5;
-  Eigen::ArrayXd y(2);
-  y(0) = displayAlpha(ALPHA);
-  y(1) = displayAlpha(ALPHAS);
+  Eigen::ArrayXd y(displayAlphas());
 
   flexiblesusy::Beta_function::Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
      return gaugeDerivs(x, y);
@@ -471,10 +467,10 @@ void QedQcd::to(double scale, double precision_goal, int max_iterations) {
 // thresholds are assumed. Range of validity is electroweak to top scale.
 // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
 // scheme
-Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
+Eigen::Array<double,3,1> QedQcd::getGaugeMu(double m2, double sinth) const {
   using std::log;
   static const double INVPI = 1.0 / M_PI;
-  Eigen::ArrayXd temp(3);
+  Eigen::Array<double,3,1> temp(Eigen::Array<double,3,1>::Zero());
 
   const double aem = displayAlpha(ALPHA), m1 = get_scale();
   // Set alpha1,2 at scale m1 from data:
@@ -482,7 +478,7 @@ Eigen::ArrayXd QedQcd::getGaugeMu(double m2, double sinth) const {
   double a2 = aem / sinth;
 
   const double mtpole = displayPoleMt();
-  QedQcd oneset(*this);
+  auto oneset = *this;
 
   if (m1 < mtpole) {
     // Renormalise a1,a2 to threshold scale assuming topless SM with one
@@ -542,16 +538,6 @@ Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
   call_rk(start, end, y, derivs, tol);
 
   return y;
-}
-
-void QedQcd::set_input(const Eigen::ArrayXd& pars)
-{
-   input = pars;
-}
-
-Eigen::ArrayXd QedQcd::display_input() const
-{
-   return input;
 }
 
 std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd::display_input_parameter_names()

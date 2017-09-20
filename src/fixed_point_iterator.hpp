@@ -29,6 +29,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
 
+#include "logger.hpp"
 #include "wrappers.hpp"
 #include "error.hpp"
 #include "ewsb_solver.hpp"
