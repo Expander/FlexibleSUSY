@@ -691,6 +691,14 @@ Format[Power[b_,0.5 | 1/2],CForm] :=
     Format["Sqrt(" <> ToString[CForm[b]] <> ")", OutputForm];
 Format[Power[b_,1./3 | 1/3],CForm] :=
     Format["Cbrt(" <> ToString[CForm[b]] <> ")", OutputForm];
+Format[Power[b_,1.5 | 3/2],CForm] :=
+    Format["Power3(Sqrt(" <> ToString[CForm[b]] <> "))", OutputForm];
+Format[Power[b_,0.25 | 1/4],CForm] :=
+    Format["Sqrt(Sqrt(" <> ToString[CForm[b]] <> "))", OutputForm];
+Format[Power[b_,0.75 | 3/4],CForm] :=
+    Format["Power3(Sqrt(Sqrt(" <> ToString[CForm[b]] <> ")))", OutputForm];
+Format[Power[b_,1.25 | 5/4],CForm] :=
+    Format["Power5(Sqrt(Sqrt(" <> ToString[CForm[b]] <> ")))", OutputForm];
 Protect[Power];
 
 Unprotect[If];
