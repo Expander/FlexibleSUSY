@@ -522,19 +522,19 @@ Base Power(Base base, Exponent exp) noexcept
 template <typename Base>
 constexpr Base Power2(Base b) noexcept
 {
-   return Sqr(b);
+   return b * b;
 }
 
 template <typename Base>
 constexpr Base Power3(Base b) noexcept
 {
-   return Cube(b);
+   return b * b * b;
 }
 
 template <typename Base>
 constexpr Base Power4(Base b) noexcept
 {
-   return Quad(b);
+   return b * b * b * b;
 }
 
 template <typename Base>
@@ -552,13 +552,45 @@ constexpr Base Power6(Base b) noexcept
 template <typename Base>
 constexpr Base Power7(Base b) noexcept
 {
-   return b * b * b * b * b * b * b;
+   return b * b * b * b * b *
+          b * b;
 }
 
 template <typename Base>
 constexpr Base Power8(Base b) noexcept
 {
-   return b * b * b * b * b * b * b * b;
+   return b * b * b * b * b *
+          b * b * b;
+}
+
+template <typename Base>
+constexpr Base Power9(Base b) noexcept
+{
+   return b * b * b * b * b *
+          b * b * b * b;
+}
+
+template <typename Base>
+constexpr Base Power10(Base b) noexcept
+{
+   return b * b * b * b * b *
+          b * b * b * b * b;
+}
+
+template <typename Base>
+constexpr Base Power11(Base b) noexcept
+{
+   return b * b * b * b * b *
+          b * b * b * b * b *
+          b;
+}
+
+template <typename Base>
+constexpr Base Power12(Base b) noexcept
+{
+   return b * b * b * b * b *
+          b * b * b * b * b *
+          b * b;
 }
 
 inline constexpr double Re(double x) noexcept
