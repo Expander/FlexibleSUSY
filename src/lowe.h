@@ -62,10 +62,13 @@ extern const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQ
 /// Quark and lepton masses and gauge couplings in QEDxQCD effective theory
 class QedQcd: public flexiblesusy::Beta_function
 {
+public:
+  using Input_t = Eigen::Array<double,NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS,1>;
+
 private:
-  Eigen::ArrayXd a; ///< gauge couplings
-  Eigen::ArrayXd mf; ///< fermion running masses
-  Eigen::ArrayXd input; ///< SLHA input parmeters
+  Eigen::Array<double,2,1> a{Eigen::Array<double,2,1>::Zero()};  ///< gauge couplings
+  Eigen::Array<double,9,1> mf{Eigen::Array<double,9,1>::Zero()}; ///< fermion running masses
+  Input_t input{Input_t::Zero()}; ///< SLHA input parmeters
   double mbPole;    ///< pole masses of third family quarks
 
   double qedBeta() const;   ///< QED beta function
@@ -125,10 +128,10 @@ public:
   /// sets Fermi constant
   void setFermiConstant(double gf) { input(GFermi) = gf; }
   /// sets all input parameters
-  void set_input(const Eigen::ArrayXd&);
+  void set_input(const Input_t& i) { input = i; }
 
   /// Displays input parameters
-  Eigen::ArrayXd displayInput() const { return input; }
+  Input_t displayInput() const { return input; }
   /// Display pole top mass
   double displayPoleMt() const { return input(MT_pole); };
   /// Display pole tau mass
@@ -144,7 +147,7 @@ public:
   /// Returns Z boson pole mass
   double displayPoleMZ() const { return input(MZ_pole); }
   /// Returns a vector of running fermion masses
-  const Eigen::ArrayXd& displayMass() const { return mf; }
+  auto displayMass() const -> decltype(mf) { return mf; }
   /// Returns a single running mass
   double displayMass(mass mno) const { return mf(mno - 1); }
   /// Returns a single neutrino pole mass
@@ -152,16 +155,15 @@ public:
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a(ai - 1); };
   /// Returns gauge structure constants
-  Eigen::ArrayXd displayAlphas() const { return a; }
+  auto displayAlphas() const -> decltype(a) { return a; }
   /// Returns input value alpha_em(MZ)
   double displayAlphaEmInput() const { return input(alpha_em_MSbar_at_MZ); }
   /// Returns input value alpha_s(MZ)
   double displayAlphaSInput() const { return input(alpha_s_MSbar_at_MZ); }
   /// Returns Fermi constant
   double displayFermiConstant() const { return input(GFermi); }
-  /// Obgligatory: returns vector of all running parameters
   /// returns vector of all input parameters
-  Eigen::ArrayXd display_input() const;
+  Input_t display_input() const { return input; }
   /// returns vector of all parameter names
   static std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> display_input_parameter_names();
   /// Returns mb(mb) MSbar
@@ -197,7 +199,7 @@ public:
   /// thresholds are assumed. Range of validity is electroweak to top scale.
   // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
   // scheme
-  Eigen::ArrayXd getGaugeMu(double m2, double sinth) const;
+  Eigen::Array<double,3,1> getGaugeMu(double m2, double sinth) const;
 };
 
 /// Formatted output from QedQcd object
