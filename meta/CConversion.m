@@ -153,7 +153,8 @@ Taken from:
   https://stackoverflow.com/questions/3136604/evaluate-beyond-one-level-within-hold-in-mathematica
 ";
 
-{ Sqr, Cube, Quad, Power2, Power3, Power4, Power5, Power6, Power7, Power8 };
+{ Sqr, Cube, Quad, Cbrt, Power2, Power3, Power4, Power5, Power6,
+  Power7, Power8, Power9, Power10, Power11, Power12 };
 
 Begin["`Private`"];
 
@@ -684,6 +685,12 @@ Protect[Complex];
 Unprotect[Power];
 Format[Power[E,z_],CForm] :=
     Format["Exp(" <> ToString[CForm[z]] <> ")", OutputForm];
+Format[Power[b_,2],CForm] :=
+    Format["Sqr(" <> ToString[CForm[b]] <> ")", OutputForm];
+Format[Power[b_,0.5 | 1/2],CForm] :=
+    Format["Sqrt(" <> ToString[CForm[b]] <> ")", OutputForm];
+Format[Power[b_,1/3],CForm] :=
+    Format["Cbrt(" <> ToString[CForm[b]] <> ")", OutputForm];
 Protect[Power];
 
 Unprotect[If];
@@ -884,6 +891,14 @@ RValueToCFormString[expr_] :=
                     Power[a_,-7]             :> 1/Power7[a] /.
                     Power[a_,8]              :> Power8[a] /.
                     Power[a_,-8]             :> 1/Power8[a] /.
+                    Power[a_,9]              :> Power9[a] /.
+                    Power[a_,-9]             :> 1/Power9[a] /.
+                    Power[a_,10]             :> Power10[a] /.
+                    Power[a_,-10]            :> 1/Power10[a] /.
+                    Power[a_,11]             :> Power11[a] /.
+                    Power[a_,-11]            :> 1/Power11[a] /.
+                    Power[a_,12]             :> Power12[a] /.
+                    Power[a_,-12]            :> 1/Power12[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { (p:(Dot | SARAH`MatMul))[a__] :> times @@ p[a],
