@@ -689,7 +689,7 @@ Format[Power[b_,2],CForm] :=
     Format["Sqr(" <> ToString[CForm[b]] <> ")", OutputForm];
 Format[Power[b_,0.5 | 1/2],CForm] :=
     Format["Sqrt(" <> ToString[CForm[b]] <> ")", OutputForm];
-Format[Power[b_,1/3],CForm] :=
+Format[Power[b_,1./3 | 1/3],CForm] :=
     Format["Cbrt(" <> ToString[CForm[b]] <> ")", OutputForm];
 Protect[Power];
 
