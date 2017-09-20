@@ -70,7 +70,7 @@ private:
 
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
-  Eigen::ArrayXd massBeta() const; ///< beta functions of masses
+  Eigen::Array<double,9,1> massBeta() const; ///< beta functions of masses
   Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
   /// Does not run the masses, just gauge couplings from start to end

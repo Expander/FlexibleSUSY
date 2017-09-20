@@ -310,9 +310,8 @@ double QedQcd::qcdBeta() const {
 
 //(See comments for above function). returns a vector x(1..9) of fermion mass
 //beta functions -- been checked!
-Eigen::ArrayXd QedQcd::massBeta() const {
+Eigen::Array<double,9,1> QedQcd::massBeta() const {
   static const double INVPI = 1.0 / M_PI, ZETA3 = 1.202056903159594;
-  Eigen::ArrayXd x(9);
 
   // qcd bits: 1,2,3 loop resp.
   double qg1 = 0., qg2 = 0., qg3 = 0.;
@@ -329,6 +328,8 @@ Eigen::ArrayXd QedQcd::massBeta() const {
   const double qcd = -2.0 * a(ALPHAS - 1) * (
      qg1  + qg2 * a(ALPHAS - 1) + qg3 * sqr(a(ALPHAS - 1)));
   const double qed = -a(ALPHA - 1) * INVPI / 2;
+
+  Eigen::Array<double,9,1> x(Eigen::Array<double,9,1>::Zero());
 
   for (int i = 0; i < 3; i++)   // up quarks
     x(i) = (qcd + 4.0 * qed / 3.0) * mf(i);
