@@ -1039,6 +1039,44 @@ check_addons() {
 }
 
 #_____________________________________________________________________
+check_optional_modules() {
+    if test -z "${OPTIONAL_MODULES}"; then
+        logmsg "No optional modules specified"
+        return 0
+    fi
+
+    checking_msg "optional modules"
+    local optional_modules="$(echo $OPTIONAL_MODULES | tr ',' ' ')"
+    OPTIONAL_MODULES=""
+    for a in ${optional_modules}; do
+        if test -d "$BASEDIR/$a" ; then
+            OPTIONAL_MODULES="$OPTIONAL_MODULES $a"
+            continue
+        else
+            result "not ok"
+            message "Error: module directory \"$BASEDIR/$a\" does not exist!"
+            message "Please create the directory and put a module.mk file in it."
+            exit 1
+        fi
+    done
+
+    # check for Makefile module
+    for m in ${OPTIONAL_MODULES}; do
+        if ! test -r ${m}/module.mk; then
+            result "not ok"
+            message "Error: No Makefile module found in ${m}"
+            message "   Please create ${m}/module.mk !"
+            exit 1
+        fi
+    done
+
+    local module_names="$(echo ${OPTIONAL_MODULES} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//')"
+
+    result "ok (${module_names})"
+    logmsg "   Optional modules: ${OPTIONAL_MODULES}"
+}
+
+#_____________________________________________________________________
 check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
         checking_msg "LibraryLink"
@@ -2788,6 +2826,7 @@ fi
 
 check_models
 check_addons
+check_optional_modules
 
 enable_defines
 
