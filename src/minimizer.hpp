@@ -39,8 +39,8 @@ namespace flexiblesusy {
  * @brief Function minimizer
  *
  * The user has to provide the function to be minimized of the type
- * Function_t.  This function gets as arguments a GSL vector of lenght
- * `dimension' and a pointer to the parameters (of type void*).
+ * Function_t.  This function gets as arguments an Eigen vector of
+ * lenght `dimension' and returns a double.
  *
  * Example:
  * @code
@@ -78,13 +78,13 @@ public:
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Minimizer"; }
    virtual int solve(const Eigen::VectorXd&) override;
-   virtual Eigen::VectorXd get_solution() const override;
+   virtual Eigen::VectorXd get_solution() const override { return minimum_point; }
 
 private:
    std::size_t max_iterations{100};     ///< maximum number of iterations
    double precision{1.e-2};             ///< precision goal
    double minimum_value{0.};            ///< minimum function value found
-   GSL_vector minimum_point{dimension}; ///< GSL vector of minimum point
+   Eigen::VectorXd minimum_point{dimension}; ///< vector of minimum point
    Function_t function{nullptr};        ///< function to minimize
    Solver_type solver_type{GSLSimplex2};///< solver type
 
@@ -132,7 +132,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
    gsl_multimin_fminimizer *minimizer;
    gsl_multimin_function minex_func;
 
-   minimum_point = to_GSL_vector(start);
+   GSL_vector min_point = to_GSL_vector(start);
 
    // Set initial step sizes
    GSL_vector step_size(dimension);
@@ -144,7 +144,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
    minex_func.params = &function;
 
    minimizer = gsl_multimin_fminimizer_alloc(solver_type_to_gsl_pointer(), dimension);
-   gsl_multimin_fminimizer_set(minimizer, &minex_func, minimum_point.raw(), step_size.raw());
+   gsl_multimin_fminimizer_set(minimizer, &minex_func, min_point.raw(), step_size.raw());
 
    size_t iter = 0;
    int status;
@@ -167,7 +167,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
    VERBOSE_MSG("\t\t\tMinimization status = " << gsl_strerror(status));
 
    // save minimum point and function value
-   minimum_point = minimizer->x;
+   minimum_point = to_eigen_vector(minimizer->x);
    minimum_value = minimizer->fval;
 
    gsl_multimin_fminimizer_free(minimizer);
@@ -195,12 +195,6 @@ int Minimizer<dimension>::solve(const Eigen::VectorXd& start)
 {
    return (minimize(start) == GSL_SUCCESS ?
            EWSB_solver::SUCCESS : EWSB_solver::FAIL);
-}
-
-template <std::size_t dimension>
-Eigen::VectorXd Minimizer<dimension>::get_solution() const
-{
-   return to_eigen_vector(minimum_point);
 }
 
 template <std::size_t dimension>

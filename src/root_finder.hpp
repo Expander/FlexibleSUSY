@@ -40,17 +40,16 @@ namespace flexiblesusy {
  * @brief Function root finder
  *
  * The user has to provide the function (of which the root should be
- * found) of the type Function_t.  This function gets as arguments a
- * GSL vector of lenght `dimension', a pointer to the parameters (of
- * type void*) and a GSL vector where the function values must be
- * stored.
+ * found) of the type Function_t.  This function gets as arguments an
+ * Eigen vector of lenght `dimension' and returns an Eigen vector of
+ * the same length.
  *
  * Example:
  * @code
- * auto parabola = [](const Eigen::Matrix<double,2,1>& x) -> Eigen::Matrix<double,2,1> {
+ * auto parabola = [](const Eigen::Matrix<double,2,1>& x) {
  *    const double y = x(0);
  *    const double z = x(1);
- *    EV2_t f;
+ *    Eigen::Matrix<double,2,1> f;
  *    f << y*(y - 5.0), z*(z - 1.0);
  *    return f;
  * };
@@ -82,12 +81,12 @@ public:
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Root_finder<" + solver_type_name() + ">"; }
    virtual int solve(const Eigen::VectorXd&) override;
-   virtual Eigen::VectorXd get_solution() const override;
+   virtual Eigen::VectorXd get_solution() const override { return root; }
 
 private:
    std::size_t max_iterations{100};    ///< maximum number of iterations
    double precision{1.e-2};            ///< precision goal
-   GSL_vector root{dimension};         ///< GSL vector of root
+   Eigen::VectorXd root{dimension};    ///< the root
    Function_t function{nullptr};       ///< function to minimize
    Solver_type solver_type{GSLHybrid}; ///< solver type
 
@@ -150,9 +149,9 @@ int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
    gsl_set_error_handler_off();
 #endif
 
-   root = to_GSL_vector(start);
+   GSL_vector tmp_root = to_GSL_vector(start);
 
-   gsl_multiroot_fsolver_set(solver, &f, root.raw());
+   gsl_multiroot_fsolver_set(solver, &f, tmp_root.raw());
 
 #ifdef ENABLE_VERBOSE
    print_state(solver, iter);
@@ -174,7 +173,7 @@ int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
 
    VERBOSE_MSG("\t\t\tRoot_finder status = " << gsl_strerror(status));
 
-   root = solver->x;
+   root = to_eigen_vector(solver->x);
 
    gsl_multiroot_fsolver_free(solver);
 
@@ -259,12 +258,6 @@ int Root_finder<dimension>::solve(const Eigen::VectorXd& start)
 {
    return (find_root(start) == GSL_SUCCESS ?
            EWSB_solver::SUCCESS : EWSB_solver::FAIL);
-}
-
-template <std::size_t dimension>
-Eigen::VectorXd Root_finder<dimension>::get_solution() const
-{
-   return to_eigen_vector(root);
 }
 
 } // namespace flexiblesusy
