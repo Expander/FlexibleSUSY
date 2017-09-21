@@ -76,7 +76,7 @@ public:
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
-   int find_root(const Eigen::VectorXd&);
+   int find_root(const Vector_t&);
 
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Root_finder<" + solver_type_name() + ">"; }
@@ -86,7 +86,7 @@ public:
 private:
    std::size_t max_iterations{100};    ///< maximum number of iterations
    double precision{1.e-2};            ///< precision goal
-   Eigen::VectorXd root{dimension};    ///< the root
+   Vector_t root{Vector_t::Zero()};    ///< the root
    Function_t function{nullptr};       ///< function to minimize
    Solver_type solver_type{GSLHybrid}; ///< solver type
 
@@ -127,7 +127,7 @@ Root_finder<dimension>::Root_finder(
  * @return GSL error code (GSL_SUCCESS if minimum found)
  */
 template <std::size_t dimension>
-int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
+int Root_finder<dimension>::find_root(const Vector_t& start)
 {
    if (!function)
       throw SetupError("Root_finder: function not callable");
@@ -173,7 +173,7 @@ int Root_finder<dimension>::find_root(const Eigen::VectorXd& start)
 
    VERBOSE_MSG("\t\t\tRoot_finder status = " << gsl_strerror(status));
 
-   root = to_eigen_vector(solver->x);
+   root = to_eigen_vector_fixed<dimension>(solver->x);
 
    gsl_multiroot_fsolver_free(solver);
 
@@ -205,7 +205,7 @@ int Root_finder<dimension>::gsl_function(const gsl_vector* x, void* params, gsl_
 
    Function_t* fun = static_cast<Function_t*>(params);
    int status = GSL_SUCCESS;
-   const Vector_t arg(to_eigen_vector(x));
+   const Vector_t arg(to_eigen_vector_fixed<dimension>(x));
    Vector_t result;
    result.setConstant(std::numeric_limits<double>::max());
 

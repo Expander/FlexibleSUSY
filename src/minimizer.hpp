@@ -73,7 +73,7 @@ public:
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(Solver_type t) { solver_type = t; }
-   int minimize(const Eigen::VectorXd&);
+   int minimize(const Vector_t&);
 
    // EWSB_solver interface methods
    virtual std::string name() const override { return "Minimizer"; }
@@ -84,7 +84,7 @@ private:
    std::size_t max_iterations{100};     ///< maximum number of iterations
    double precision{1.e-2};             ///< precision goal
    double minimum_value{0.};            ///< minimum function value found
-   Eigen::VectorXd minimum_point{dimension}; ///< vector of minimum point
+   Vector_t minimum_point{Vector_t::Zero()}; ///< vector of minimum point
    Function_t function{nullptr};        ///< function to minimize
    Solver_type solver_type{GSLSimplex2};///< solver type
 
@@ -124,7 +124,7 @@ Minimizer<dimension>::Minimizer(
  * @return GSL error code (GSL_SUCCESS if minimum found)
  */
 template <std::size_t dimension>
-int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
+int Minimizer<dimension>::minimize(const Vector_t& start)
 {
    if (!function)
       throw SetupError("Minimizer: function not callable");
@@ -167,7 +167,7 @@ int Minimizer<dimension>::minimize(const Eigen::VectorXd& start)
    VERBOSE_MSG("\t\t\tMinimization status = " << gsl_strerror(status));
 
    // save minimum point and function value
-   minimum_point = to_eigen_vector(minimizer->x);
+   minimum_point = to_eigen_vector_fixed<dimension>(minimizer->x);
    minimum_value = minimizer->fval;
 
    gsl_multimin_fminimizer_free(minimizer);
@@ -204,7 +204,7 @@ double Minimizer<dimension>::gsl_function(const gsl_vector* x, void* params)
       return std::numeric_limits<double>::max();
 
    Function_t* fun = static_cast<Function_t*>(params);
-   const Vector_t arg(to_eigen_vector(x));
+   const Vector_t arg(to_eigen_vector_fixed<dimension>(x));
    double result = std::numeric_limits<double>::max();
 
    try {
