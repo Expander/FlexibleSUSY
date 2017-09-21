@@ -54,8 +54,8 @@ void CKM_parameters::set_from_wolfenstein(double lambdaW, double aCkm,
    theta_12 = ArcSin(lambdaW);
    theta_23 = ArcSin(aCkm * Sqr(lambdaW));
 
-   const double lambdaW3 = Power(lambdaW, 3);
-   const double lambdaW4 = Power(lambdaW, 4);
+   const double lambdaW3 = Power3(lambdaW);
+   const double lambdaW4 = Power4(lambdaW);
 
    const std::complex<double> rpe(rhobar, etabar);
    const std::complex<double> V13conj = aCkm * lambdaW3 * rpe
@@ -89,7 +89,7 @@ void CKM_parameters::get_wolfenstein(double& lambdaW, double& aCkm,
    const double c = Sqrt((1.0 - Sqr(sin_23)) / (1.0 - Sqr(lambdaW)));
    const std::complex<double> eid(std::polar(1.0, delta));
    const std::complex<double> r(sin_13 * eid /
-      (c * aCkm * Power(lambdaW,3) + sin_13 * eid * Sqr(sin_23)));
+      (c * aCkm * Power3(lambdaW) + sin_13 * eid * Sqr(sin_23)));
 
    rhobar = std::isfinite(Re(r)) ? Re(r) : 0.;
    etabar = std::isfinite(Im(r)) ? Im(r) : 0.;
