@@ -19,6 +19,8 @@
 #ifndef GSL_UTILS_H
 #define GSL_UTILS_H
 
+#include "gsl_vector.hpp"
+
 #include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 #include <cassert>
@@ -35,8 +37,49 @@ Eigen::ArrayXd to_eigen_array(const gsl_vector*);
 Eigen::ArrayXd to_eigen_array(const GSL_vector&);
 Eigen::VectorXd to_eigen_vector(const gsl_vector*);
 Eigen::VectorXd to_eigen_vector(const GSL_vector&);
-GSL_vector to_GSL_vector(const Eigen::VectorXd&);
 GSL_vector to_GSL_vector(const gsl_vector*);
+
+template <typename Derived>
+GSL_vector to_GSL_vector(const Eigen::DenseBase<Derived>& v)
+{
+   using Index_t = typename Derived::Index;
+   GSL_vector v2(v.rows());
+
+   for (Index_t i = 0; i < v.rows(); i++)
+      v2[i] = v(i);
+
+   return v2;
+}
+
+template <int Size>
+Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const gsl_vector* v)
+{
+   assert(Size == v->size);
+
+   using Result_t = Eigen::Matrix<double,Size,1>;
+   using Index_t = typename Result_t::Index;
+   Result_t result;
+
+   for (Index_t i = 0; i < Size; i++)
+      result(i) = gsl_vector_get(v, i);
+
+   return result;
+}
+
+template <int Size>
+Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const GSL_vector& v)
+{
+   assert(Size == v.size());
+
+   using Result_t = Eigen::Matrix<double,Size,1>;
+   using Index_t = typename Result_t::Index;
+   Result_t result;
+
+   for (Index_t i = 0; i < Size; i++)
+      result(i) = v[i];
+
+   return result;
+}
 
 /**
  * Copies values from an Eigen array/matrix to a GSL vector.
@@ -47,12 +90,13 @@ GSL_vector to_GSL_vector(const gsl_vector*);
 template <typename Derived>
 void copy(const Eigen::DenseBase<Derived>& src, gsl_vector* dst)
 {
-   const std::size_t dim = src.rows();
+   using Index_t = typename Derived::Index;
+   const auto dim = src.rows();
 
    assert(dst);
    assert(dim == dst->size);
 
-   for (std::size_t i = 0; i < dim; i++)
+   for (Index_t i = 0; i < dim; i++)
       gsl_vector_set(dst, i, src(i));
 }
 
