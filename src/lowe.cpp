@@ -65,9 +65,9 @@ const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_inpu
    "GFermi",
    "MZ_pole", "MW_pole",
    "Mv1_pole", "Mv2_pole", "Mv3_pole",
-   "MElectron_pole", "MMuon_pole", "MTau_pole",
-   "MU_2GeV", "MS_2GeV", "MT_pole",
-   "MD_2GeV", "mc_mc", "mb_mb",
+   "Me_pole", "Mm_pole", "Mtau_pole",
+   "mu_2GeV", "ms_2GeV", "Mt_pole",
+   "md_2GeV", "mc_mc", "mb_mb",
    "CKM_theta_12", "CKM_theta_13", "CKM_theta_23", "CKM_delta",
    "PMNS_theta_12", "PMNS_theta_13", "PMNS_theta_23", "PMNS_delta", "PMNS_alpha_1", "PMNS_alpha_2"
 };
@@ -129,18 +129,18 @@ QedQcd::QedQcd()
   a(1) = flexiblesusy::Electroweak_constants::alpha3;
   input(alpha_em_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::aem;
   input(alpha_s_MSbar_at_MZ) = flexiblesusy::Electroweak_constants::alpha3;
-  input(MT_pole) = flexiblesusy::Electroweak_constants::PMTOP;
+  input(Mt_pole) = flexiblesusy::Electroweak_constants::PMTOP;
   input(mb_mb) = flexiblesusy::Electroweak_constants::MBOTTOM;
-  input(MTau_pole) = flexiblesusy::Electroweak_constants::MTAU;
-  input(MMuon_pole) = flexiblesusy::Electroweak_constants::MMUON;
-  input(MElectron_pole) = flexiblesusy::Electroweak_constants::MELECTRON;
+  input(Mtau_pole) = flexiblesusy::Electroweak_constants::MTAU;
+  input(Mm_pole) = flexiblesusy::Electroweak_constants::MMUON;
+  input(Me_pole) = flexiblesusy::Electroweak_constants::MELECTRON;
   input(MW_pole) = flexiblesusy::Electroweak_constants::MW;
   input(MZ_pole) = flexiblesusy::Electroweak_constants::MZ;
   input(GFermi) = flexiblesusy::Electroweak_constants::gfermi;
   input(mc_mc) = flexiblesusy::Electroweak_constants::MCHARM;
-  input(MU_2GeV) = flexiblesusy::Electroweak_constants::MUP;
-  input(MD_2GeV) = flexiblesusy::Electroweak_constants::MDOWN;
-  input(MS_2GeV) = flexiblesusy::Electroweak_constants::MSTRANGE;
+  input(mu_2GeV) = flexiblesusy::Electroweak_constants::MUP;
+  input(md_2GeV) = flexiblesusy::Electroweak_constants::MDOWN;
+  input(ms_2GeV) = flexiblesusy::Electroweak_constants::MSTRANGE;
   set_scale(flexiblesusy::Electroweak_constants::MZ);
   set_loops(3);
   set_thresholds(1);
