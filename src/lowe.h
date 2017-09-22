@@ -76,8 +76,6 @@ private:
   Eigen::Array<double,9,1> massBeta() const; ///< beta functions of masses
   Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
-  /// Does not run the masses, just gauge couplings from start to end
-  void runGauge(double start, double end);
   Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs
 

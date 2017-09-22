@@ -348,21 +348,6 @@ Eigen::Array<double,9,1> QedQcd::massBeta() const {
   return x;
 }
 
-void QedQcd::runGauge(double x1, double x2)
-{
-  const double tol = 1.0e-5;
-  Eigen::ArrayXd y(displayAlphas());
-
-  flexiblesusy::Beta_function::Derivs derivs = [this] (double x, const Eigen::ArrayXd& y) {
-     return gaugeDerivs(x, y);
-  };
-
-  call_rk(x1, x2, y, derivs, tol);
-
-  setAlpha(ALPHA, y(0));
-  setAlpha(ALPHAS, y(1));
-}
-
 // Supposed to be done at mb(mb) -- MSbar, calculates pole mass
 double QedQcd::extractPoleMb(double alphasMb)
 {
