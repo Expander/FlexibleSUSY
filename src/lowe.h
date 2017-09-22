@@ -99,13 +99,13 @@ public:
   virtual void set(const Eigen::ArrayXd&) override;
   virtual Eigen::ArrayXd beta() const override;
 
-  void setPoleMt(double mt) { input(Mt_pole) = mt; }; ///< set pole top mass
-  void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
-  void setPoleMtau(double mtau) { input(Mtau_pole) = mtau; }; ///< set pole tau mass
+  void setPoleMt(double mt) { input(Mt_pole) = mt; } ///< set pole top mass
+  void setPoleMb(double mb) { mbPole = mb; } ///< set pole bottom mass
+  void setPoleMtau(double mtau) { input(Mtau_pole) = mtau; } ///< set pole tau mass
   void setPoleMmuon(double m) { input(Mm_pole) = m; } ///< set pole muon mass
-  void setPoleMel(double m) { input(Me_pole) = m; } ///< set pole electron mass
-  void setMbMb(double mb)   { input(mb_mb) = mb;   }; ///< set mb(mb)
-  void setMcMc(double mc)   { input(mc_mc) = mc;   }  ///< set mc(mc)
+  void setPoleMel(double m) { input(Me_pole) = m;  } ///< set pole electron mass
+  void setMbMb(double mb)   { input(mb_mb) = mb;   } ///< set mb(mb)
+  void setMcMc(double mc)   { input(mc_mc) = mc;   } ///< set mc(mc)
   void setMu2GeV(double mu) { input(mu_2GeV) = mu; } ///< set mu(2 GeV)
   void setMd2GeV(double md) { input(md_2GeV) = md; } ///< set md(2 GeV)
   void setMs2GeV(double ms) { input(ms_2GeV) = ms; } ///< set ms(2 GeV)
@@ -133,15 +133,15 @@ public:
   /// Displays input parameters
   Input_t displayInput() const { return input; }
   /// Display pole top mass
-  double displayPoleMt() const { return input(Mt_pole); };
+  double displayPoleMt() const { return input(Mt_pole); }
   /// Display pole tau mass
-  double displayPoleMtau() const { return input(Mtau_pole); };
+  double displayPoleMtau() const { return input(Mtau_pole); }
   /// Display pole muon mass
-  double displayPoleMmuon() const { return input(Mm_pole); };
+  double displayPoleMmuon() const { return input(Mm_pole); }
   /// Display pole electron mass
-  double displayPoleMel() const { return input(Me_pole); };
+  double displayPoleMel() const { return input(Me_pole); }
   /// Returns bottom "pole" mass
-  double displayPoleMb() const { return mbPole; };
+  double displayPoleMb() const { return mbPole; }
   /// Returns W boson pole mass
   double displayPoleMW() const { return input(MW_pole); }
   /// Returns Z boson pole mass
@@ -153,7 +153,7 @@ public:
   /// Returns a single neutrino pole mass
   double displayNeutrinoPoleMass(int i) const { return input(Mv1_pole + i - 1); }
   /// Returns a single gauge structure constant
-  double displayAlpha(leGauge ai) const { return a(ai - 1); };
+  double displayAlpha(leGauge ai) const { return a(ai - 1); }
   /// Returns gauge structure constants
   auto displayAlphas() const -> decltype(a) { return a; }
   /// Returns input value alpha_em(MZ)
