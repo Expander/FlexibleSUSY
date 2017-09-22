@@ -70,16 +70,16 @@ public:
   const QedQcd_legacy& operator=(const QedQcd_legacy & m); ///< Sets two objects equal
   virtual ~QedQcd_legacy() {};
   
-  void setPoleMt(double mt) { input(MT_pole) = mt; }; ///< set pole top mass
+  void setPoleMt(double mt) { input(Mt_pole) = mt; }; ///< set pole top mass
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
-  void setPoleMtau(double mtau) { input(MTau_pole) = mtau; }; ///< set pole tau mass
-  void setPoleMmuon(double m) { input(MMuon_pole) = m; } ///< set pole muon mass
-  void setPoleMel(double m) { input(MElectron_pole) = m; } ///< set pole electron mass
+  void setPoleMtau(double mtau) { input(Mtau_pole) = mtau; }; ///< set pole tau mass
+  void setPoleMmuon(double m) { input(Mm_pole) = m; } ///< set pole muon mass
+  void setPoleMel(double m) { input(Me_pole) = m; } ///< set pole electron mass
   void setMbMb(double mb)   { input(mb_mb) = mb;   }; ///< set mb(mb)
   void setMcMc(double mc)   { input(mc_mc) = mc;   }  ///< set mc(mc)
-  void setMu2GeV(double mu) { input(MU_2GeV) = mu; } ///< set mu(2 GeV)
-  void setMd2GeV(double md) { input(MD_2GeV) = md; } ///< set md(2 GeV)
-  void setMs2GeV(double ms) { input(MS_2GeV) = ms; } ///< set ms(2 GeV)
+  void setMu2GeV(double mu) { input(mu_2GeV) = mu; } ///< set mu(2 GeV)
+  void setMd2GeV(double md) { input(md_2GeV) = md; } ///< set md(2 GeV)
+  void setMs2GeV(double ms) { input(ms_2GeV) = ms; } ///< set ms(2 GeV)
   void setPoleMW(double mw) { input(MW_pole) = mw; } ///< set W boson pole mass
   void setPoleMZ(double mz) { input(MZ_pole) = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
@@ -104,13 +104,13 @@ public:
   void set_input(const Eigen::ArrayXd&);
 
   /// Display pole top mass
-  double displayPoleMt() const { return input(MT_pole); };
+  double displayPoleMt() const { return input(Mt_pole); };
   /// Display pole tau mass
-  double displayPoleMtau() const { return input(MTau_pole); };
+  double displayPoleMtau() const { return input(Mtau_pole); };
   /// Display pole muon mass
-  double displayPoleMmuon() const { return input(MMuon_pole); };
+  double displayPoleMmuon() const { return input(Mm_pole); };
   /// Display pole electron mass
-  double displayPoleMel() const { return input(MElectron_pole); };
+  double displayPoleMel() const { return input(Me_pole); };
   /// Returns bottom "pole" mass
   double displayPoleMb() const { return mbPole; };
   /// Returns W boson pole mass
@@ -142,11 +142,11 @@ public:
   /// Returns mc(mc) MSbar
   double displayMcMc() const { return input(mc_mc); }
   /// Returns mu(2 GeV)
-  double displayMu2GeV() const { return input(MU_2GeV); }
+  double displayMu2GeV() const { return input(mu_2GeV); }
   /// Returns md(2 GeV)
-  double displayMd2GeV() const { return input(MD_2GeV); }
+  double displayMd2GeV() const { return input(md_2GeV); }
   /// Returns ms(2 GeV)
-  double displayMs2GeV() const { return input(MS_2GeV); }
+  double displayMs2GeV() const { return input(ms_2GeV); }
   /// returns CKM parameters
   flexiblesusy::CKM_parameters displayCKM() const { return ckm; }
   /// Returns real CKM matrix

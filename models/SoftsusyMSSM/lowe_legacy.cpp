@@ -98,18 +98,18 @@ QedQcd_legacy::QedQcd_legacy()
   mf(3) = getRunMtFromMz(PMTOP, ALPHASMZ);
   input(alpha_em_MSbar_at_MZ) = ALPHAMZ;
   input(alpha_s_MSbar_at_MZ) = ALPHASMZ;
-  input(MT_pole) = PMTOP;
+  input(Mt_pole) = PMTOP;
   input(mb_mb) = MBOTTOM;
-  input(MTau_pole) = MTAU;
-  input(MMuon_pole) = MMUON;
-  input(MElectron_pole) = MELECTRON;
+  input(Mtau_pole) = MTAU;
+  input(Mm_pole) = MMUON;
+  input(Me_pole) = MELECTRON;
   input(MW_pole) = flexiblesusy::Electroweak_constants::MW;
   input(MZ_pole) = flexiblesusy::Electroweak_constants::MZ;
   input(GFermi) = flexiblesusy::Electroweak_constants::gfermi;
   input(mc_mc) = MCHARM;
-  input(MU_2GeV) = MUP;
-  input(MD_2GeV) = MDOWN;
-  input(MS_2GeV) = MSTRANGE;
+  input(mu_2GeV) = MUP;
+  input(md_2GeV) = MDOWN;
+  input(ms_2GeV) = MSTRANGE;
   setMu(MZ);
   setLoops(3);
   setThresholds(1);
@@ -479,7 +479,7 @@ void QedQcd_legacy::toMt() {
 
 // Takes QedQcd_legacy object created at MZ and spits it out at MZ
 void QedQcd_legacy::toMz() {
-  double mt = input(MT_pole), as = a(2);
+  double mt = input(Mt_pole), as = a(2);
   setMass(mTop, getRunMtFromMz(mt, as));
   calcPoleMb();
 
