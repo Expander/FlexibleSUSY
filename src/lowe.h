@@ -74,7 +74,6 @@ private:
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
   Eigen::Array<double,9,1> massBeta() const; ///< beta functions of masses
-  Eigen::ArrayXd gaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
   Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
   void runto_safe(double, double); ///< throws if non-perturbative error occurs

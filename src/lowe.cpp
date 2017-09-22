@@ -72,19 +72,6 @@ const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_inpu
    "PMNS_theta_12", "PMNS_theta_13", "PMNS_theta_23", "PMNS_delta", "PMNS_alpha_1", "PMNS_alpha_2"
 };
 
-Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
-{
-  set_scale(std::exp(x));
-  setAlpha(ALPHA, y(0));
-  setAlpha(ALPHAS, y(1));
-
-  Eigen::ArrayXd dydx(2);
-  dydx(0) = qedBeta();
-  dydx(1) = qcdBeta();
-
-  return dydx;
-}
-
 /// SM beta functions for the gauge couplings, neglecting Yukawa
 /// contributions, from arXiv:1208.3357 [hep-ph].
 Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
