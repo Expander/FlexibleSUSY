@@ -85,8 +85,8 @@ Eigen::ArrayXd QedQcd::gaugeDerivs(double x, const Eigen::ArrayXd& y)
   return dydx;
 }
 
-// SM beta functions for the gauge couplings, neglecting Yukawa
-// contributions, from arXiv:1208.3357 [hep-ph].
+/// SM beta functions for the gauge couplings, neglecting Yukawa
+/// contributions, from arXiv:1208.3357 [hep-ph].
 Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
 {
   const double oneO4Pi = 1.0 / (4.0 * M_PI);
@@ -266,7 +266,7 @@ std::ostream& operator<<(std::ostream &left, const QedQcd &m) {
   return left;
 }
 
-//  returns qed beta function at energy mu < mtop
+/// returns QED beta function in SM(5) (without the top quark)
 double QedQcd::qedBeta() const {
   double x;
   x = 24.0 / 9.0;
@@ -279,9 +279,9 @@ double QedQcd::qedBeta() const {
   return (x * sqr(a(ALPHA - 1)) / M_PI);
 }
 
-//  next routine calculates beta function to 3 loops in qcd for The Standard
-//  Model. Note that if quark masses are running, the number of active quarks
-//  will take this into account. Returns beta
+/// Returns QCD beta function to 3 loops in QCD for the SM(5). Note
+/// that if quark masses are running, the number of active quarks will
+/// be taken into account.
 double QedQcd::qcdBeta() const {
   static const double INVPI = 1.0 / M_PI;
   const int quarkFlavours = flavours(get_scale());
@@ -305,8 +305,7 @@ double QedQcd::qcdBeta() const {
   return beta;
 }
 
-//(See comments for above function). returns a vector x(1..9) of fermion mass
-//beta functions -- been checked!
+/// returns fermion mass beta functions
 Eigen::Array<double,9,1> QedQcd::massBeta() const {
   static const double INVPI = 1.0 / M_PI, ZETA3 = 1.202056903159594;
 
@@ -348,7 +347,7 @@ Eigen::Array<double,9,1> QedQcd::massBeta() const {
   return x;
 }
 
-// Supposed to be done at mb(mb) -- MSbar, calculates pole mass
+/// Supposed to be done at mb(mb) -- MSbar, calculates pole mass
 double QedQcd::extractPoleMb(double alphasMb)
 {
   if (get_scale() != displayMass(mBottom)) {
@@ -371,7 +370,7 @@ double QedQcd::extractPoleMb(double alphasMb)
   return mbPole;
 }
 
-// Takes QedQcd object created at MZ and spits it out at MZ
+/// Takes QedQcd object created at MZ and spits it out at MZ
 void QedQcd::toMz()
 {
    to(displayPoleMZ());
@@ -446,12 +445,19 @@ void QedQcd::to(double scale, double precision_goal, int max_iterations) {
    }
 }
 
-// This will calculate the three gauge couplings of the Standard Model at the
-// scale [scale].
-// It's a simple one-loop calculation only and no
-// thresholds are assumed. Range of validity is electroweak to top scale.
-// alpha1 is in the GUT normalisation. sin2th = sin^2 thetaW(Q) in MSbar
-// scheme
+/**
+ * This will calculate the three gauge couplings of the Standard Model
+ * at the scale [scale].
+ *
+ * It's a simple one-loop calculation only and no thresholds are
+ * assumed. Range of validity is electroweak to top scale.  The
+ * returned alpha_1 is in the GUT normalisation.
+ *
+ * @param scale destination scale
+ * @param sin2th sin^2(thetaW(Q)) in the MS-bar scheme
+ *
+ * @return {alpha_1, alpha_2, alpha_3}
+ */
 Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
   using std::log;
   static const double INVPI = 1.0 / M_PI;
@@ -505,11 +511,11 @@ Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
   return temp;
 }
 
-// Given the values of the SM gauge couplings alpha_i, i = 1, 2, 3, at
-// the current scale, run to the scale end using SM RGEs.
-// Range of validity is for scales greater than or equal to the
-// top quark pole mass.
-Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
+/// Given the values of the SM gauge couplings alpha_i, i = 1, 2, 3, at
+/// the current scale, run to the scale [scale] using SM RGEs.
+/// Range of validity is for scales greater than or equal to the
+/// top quark pole mass.
+Eigen::ArrayXd QedQcd::runSMGauge(double scale, const Eigen::ArrayXd& alphas)
 {
   const double tol = 1.0e-5;
   const double start = get_scale();
@@ -520,7 +526,7 @@ Eigen::ArrayXd QedQcd::runSMGauge(double end, const Eigen::ArrayXd& alphas)
      return qedqcd.smGaugeDerivs(x, y);
   };
 
-  call_rk(start, end, y, derivs, tol);
+  call_rk(start, scale, y, derivs, tol);
 
   return y;
 }
