@@ -803,10 +803,7 @@ void Standard_model::initialise_from_input(const softsusy::QedQcd& qedqcd_)
 
 void Standard_model::initial_guess_for_parameters(const softsusy::QedQcd& qedqcd)
 {
-   const double MZ = qedqcd.displayPoleMZ();
-   const double MW = qedqcd.displayPoleMW();
    const double MH = input.get(Physical_input::mh_pole);
-   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = qedqcd.displayPoleMt();
 
    const double mu_guess = qedqcd.displayMass(softsusy::mUp);
@@ -826,7 +823,7 @@ void Standard_model::initial_guess_for_parameters(const softsusy::QedQcd& qedqcd
    const double mtau_guess = qedqcd.displayMass(softsusy::mTau);
 
    // guess gauge couplings at mt
-   const auto alpha_sm(qedqcd.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(qedqcd.guess_alpha_SM5(mtpole));
 
    g1 = Sqrt(4. * Pi * alpha_sm(0));
    g2 = Sqrt(4. * Pi * alpha_sm(1));

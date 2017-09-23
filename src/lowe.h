@@ -74,9 +74,7 @@ private:
   double qedBeta() const;   ///< QED beta function
   double qcdBeta() const;   ///< QCD beta function
   Eigen::Array<double,9,1> massBeta() const; ///< beta functions of masses
-  Eigen::ArrayXd smGaugeDerivs(double, const Eigen::ArrayXd&);
-  Eigen::ArrayXd runSMGauge(double, const Eigen::ArrayXd&);
-  void runto_safe(double, double); ///< throws if non-perturbative error occurs
+  void runto_safe(double, double eps = -1.0); ///< throws if non-perturbative error occurs
 
   int flavours(double) const;  /// returns number of active flavours
 
@@ -188,15 +186,10 @@ public:
 
   /// Evolves object to MZ
   void toMz();
-  /// Evolves object to given scale.  This implementation can be called multiple times
-  void to(double, double tol = 1e-5, int max_iterations = 20);
-  /// This will calculate the three gauge couplings of the Standard Model at
-  /// the scale m2.
-  /// It's a simple one-loop calculation only and no
-  /// thresholds are assumed. Range of validity is electroweak to top scale.
-  // alpha1 is in the GUT normalisation. sinth = sin^2 thetaW(Q) in MSbar
-  // scheme
-  Eigen::Array<double,3,1> getGaugeMu(double m2, double sinth) const;
+  /// Evolves object to given scale.
+  void to(double scale, double tol = 1e-5, int max_iterations = 20);
+  /// guess coupling constants {alpha_1, alpha_2, alpha_3} in SM(5)
+  Eigen::Array<double,3,1> guess_alpha_SM5(double scale) const;
 };
 
 /// Formatted output from QedQcd object

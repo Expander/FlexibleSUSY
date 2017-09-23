@@ -72,31 +72,6 @@ const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_inpu
    "PMNS_theta_12", "PMNS_theta_13", "PMNS_theta_23", "PMNS_delta", "PMNS_alpha_1", "PMNS_alpha_2"
 };
 
-/// SM beta functions for the gauge couplings, neglecting Yukawa
-/// contributions, from arXiv:1208.3357 [hep-ph].
-Eigen::ArrayXd QedQcd::smGaugeDerivs(double x, const Eigen::ArrayXd& y)
-{
-  const double oneO4Pi = 1.0 / (4.0 * M_PI);
-  const double a1 = y(0);
-  const double a2 = y(1);
-  const double a3 = y(2);
-  const int nG = 3;
-
-  set_scale(std::exp(x));
-
-  Eigen::ArrayXd dydx(3);
-
-  dydx(0) = oneO4Pi * a1 * a1 * (0.2 + 8.0 * nG / 3.0 + oneO4Pi * (0.36 * a1
-    + 1.8 * a2 + nG * (38.0 * a1 / 15.0 + 1.2 * a2 + 88.0 * a3 / 15.0)));
-  dydx(1) = oneO4Pi * a2 * a2 * (-43.0 / 3.0 + 8.0 * nG / 3.0 + oneO4Pi *
-    (0.6 * a1 - 259.0 * a2 / 3.0 + nG * (0.4 * a1 + 98.0 * a2 / 3.0 + 8.0
-    * a3)));
-  dydx(2) = oneO4Pi * a3 * a3 * (-22.0 + 8.0 * nG / 3.0 + oneO4Pi * (-204.0
-    * a3 + nG * (11.0 * a1 / 15.0 + 3.0 * a2 + 152.0 * a3 / 3.0)));
-
-  return dydx;
-}
-
 QedQcd::QedQcd()
    : mbPole(flexiblesusy::Electroweak_constants::PMBOTTOM)
 {
@@ -433,87 +408,32 @@ void QedQcd::to(double scale, double precision_goal, int max_iterations) {
 }
 
 /**
- * This will calculate the three gauge couplings of the Standard Model
- * at the scale [scale].
+ * Returns the three coupling constants of the Standard Model without
+ * the top quark (SM(5)) at the given [scale].
  *
- * It's a simple one-loop calculation only and no thresholds are
- * assumed. Range of validity is electroweak to top scale.  The
- * returned alpha_1 is in the GUT normalisation.
+ * @note The returned alpha_1 is in GUT-normalized.
  *
- * @param scale destination scale
- * @param sin2th sin^2(thetaW(Q)) in the MS-bar scheme
+ * @param scale output scale
  *
  * @return {alpha_1, alpha_2, alpha_3}
  */
-Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
-  using std::log;
-  static const double INVPI = 1.0 / M_PI;
-  Eigen::Array<double,3,1> temp(Eigen::Array<double,3,1>::Zero());
-
-  const double aem = displayAlpha(ALPHA), m1 = get_scale();
-  // Set alpha1,2 at scale m1 from data:
-  const double a1 = 5.0 * aem / (3.0 * (1.0 - sin2th));
-  const double a2 = aem / sin2th;
-
-  const double mtpole = displayPoleMt();
-  auto oneset = *this;
-
-  if (m1 < mtpole) {
-    // Renormalise a1,a2 to threshold scale assuming topless SM with one
-    // light Higgs doublet
-    const double thresh = std::min(scale, mtpole);
-
-    // calculate alphas(scale)
-    if (scale >= 1.0) {
-       oneset.run_to(thresh);
-    } else {
-       oneset.run_to(1.0);
-    }
-
-    // Set alphas(m) to be what's already calculated.
-    temp(0) = 1.0 / (1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2);
-    temp(1) = 1.0 / (1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1);
-    temp(2) = oneset.displayAlpha(ALPHAS);
-
-    if (scale > mtpole) {
-      if (get_thresholds() > 0) {
-        const double mtrun = oneset.displayMass(mTop);
-        const double alphas_5f = oneset.displayAlpha(ALPHAS);
-        const double alphas_sm = alphas_5f / (1.0 + INVPI * alphas_5f *
-                                              log(mtrun / mtpole) / 3.0);
-        oneset.setAlpha(ALPHAS, alphas_sm);
-      }
-      temp = oneset.runSMGauge(scale, temp);
-    }
-  } else {
-    // Above the top threshold use SM RGEs only
-    temp(0) = a1;
-    temp(1) = a2;
-    temp(2) = oneset.displayAlpha(ALPHAS);
-    temp = oneset.runSMGauge(scale, temp);
-  }
-
-  return temp;
-}
-
-/// Given the values of the SM gauge couplings alpha_i, i = 1, 2, 3, at
-/// the current scale, run to the scale [scale] using SM RGEs.
-/// Range of validity is for scales greater than or equal to the
-/// top quark pole mass.
-Eigen::ArrayXd QedQcd::runSMGauge(double scale, const Eigen::ArrayXd& alphas)
+Eigen::Array<double,3,1> QedQcd::guess_alpha_SM5(double scale) const
 {
-  const double tol = 1.0e-5;
-  const double start = get_scale();
-  auto y = alphas;
-  auto qedqcd(*this);
+  auto oneset = *this;
+  oneset.runto_safe(scale);
 
-  flexiblesusy::Beta_function::Derivs derivs = [&qedqcd] (double x, const Eigen::ArrayXd& y) {
-     return qedqcd.smGaugeDerivs(x, y);
-  };
+  const double aem = oneset.displayAlpha(ALPHA);
+  const double MW = oneset.displayPoleMW();
+  const double MZ = oneset.displayPoleMZ();
+  const double sin2th = 1. - sqr(MW / MZ);
 
-  call_rk(start, scale, y, derivs, tol);
+  Eigen::Array<double,3,1> alpha(Eigen::Array<double,3,1>::Zero());
 
-  return y;
+  alpha(0) = 5.0 * aem / (3.0 * (1.0 - sin2th));
+  alpha(1) = aem / sin2th;
+  alpha(2) = oneset.displayAlpha(ALPHAS);
+
+  return alpha;
 }
 
 std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd::display_input_parameter_names()
