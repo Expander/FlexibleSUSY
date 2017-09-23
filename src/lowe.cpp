@@ -452,8 +452,8 @@ Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
 
   const double aem = displayAlpha(ALPHA), m1 = get_scale();
   // Set alpha1,2 at scale m1 from data:
-  double a1 = 5.0 * aem / (3.0 * (1.0 - sin2th));
-  double a2 = aem / sin2th;
+  const double a1 = 5.0 * aem / (3.0 * (1.0 - sin2th));
+  const double a2 = aem / sin2th;
 
   const double mtpole = displayPoleMt();
   auto oneset = *this;
@@ -462,11 +462,6 @@ Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
     // Renormalise a1,a2 to threshold scale assuming topless SM with one
     // light Higgs doublet
     const double thresh = std::min(scale, mtpole);
-    a1 = 1.0 / ( 1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2 );
-    a2 = 1.0 / ( 1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1 );
-
-    temp(0) = a1;
-    temp(1) = a2;
 
     // calculate alphas(scale)
     if (scale >= 1.0) {
@@ -474,7 +469,10 @@ Eigen::Array<double,3,1> QedQcd::getGaugeMu(double scale, double sin2th) const {
     } else {
        oneset.run_to(1.0);
     }
+
     // Set alphas(m) to be what's already calculated.
+    temp(0) = 1.0 / (1.0 / a1 + 4.0 * INVPI * 1.07e2 * log(m1 / thresh) / 2.4e2);
+    temp(1) = 1.0 / (1.0 / a2 - 4.0 * INVPI * 2.50e1 * log(m1 / thresh) / 4.8e1);
     temp(2) = oneset.displayAlpha(ALPHAS);
 
     if (scale > mtpole) {
