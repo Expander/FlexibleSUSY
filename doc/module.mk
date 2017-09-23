@@ -43,8 +43,7 @@ LATEX_TMP       := \
 		$(patsubst %.pdf, %.spl, $(PAPER_PDF))
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PAGE) $(MAN_PAGE) doc doc-html doc-man doc-pdf \
-		release-paper
+		$(INDEX_PAGE) $(MAN_PAGE) doc doc-html doc-man doc-pdf
 
 doc: all-$(MODNAME)
 
@@ -106,7 +105,3 @@ $(MAN_PAGE):
 $(PAPER_PDF): $(PAPER_SRC) $(PAPER_STY)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-
-release-paper: $(PAPER_SRC) $(PAPER_STY)
-		git archive --worktree-attributes --prefix=$(PKGNAME)-paper/ \
-			--output=$(PKGNAME)-paper.tar.gz HEAD:doc $(notdir $^)
