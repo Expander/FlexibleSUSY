@@ -31,8 +31,8 @@ MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
 DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 
-PAPER_PDF       := $(PDF_OUTPUT_DIR)/flexiblesusy-paper.pdf
-PAPER_SRC       := $(DIR)/flexiblesusy-paper.tex
+PAPER_PDF       := $(PDF_OUTPUT_DIR)/flexiblesusy-1.0.pdf
+PAPER_SRC       := $(DIR)/flexiblesusy-1.0.tex
 PAPER_STY       := $(DIR)/tikz-uml.sty
 
 LATEX_TMP       := \
@@ -103,5 +103,6 @@ $(MAN_PAGE):
 		) | doxygen -
 
 $(PAPER_PDF): $(PAPER_SRC) $(PAPER_STY)
+		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<

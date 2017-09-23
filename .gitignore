@@ -33,8 +33,7 @@ doc/*.out
 doc/*.spl
 doc/*.bbl
 doc/*.blg
-doc/flexiblesusy.pdf
-doc/flexiblesusy-paper.pdf
+doc/flexiblesusy-1.0.pdf
 doc/version.tex
 doc/mainpage.dox
 doc/html/
