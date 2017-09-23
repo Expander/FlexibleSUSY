@@ -67,25 +67,32 @@ Alternatively, the Mathematica interface of FlexibleSUSY may be used:
    supersymmetry at both high and low scales" [<a
    href="https://arxiv.org/abs/1609.00371">JHEP 1701 (2017) 079</a>]
 
-If you use FlexibleSUSY in your work please cite [<a
+If you use **FlexibleSUSY** in your work please cite [<a
 href="http://inspirehep.net/record/1299998">CPC 190 (2015)
 139-172</a>].
 
-If you use the FlexibleEFTHiggs approach in your work please cite [<a
+If you use the **FlexibleEFTHiggs** approach in your work please cite [<a
 href="https://inspirehep.net/record/1484857">JHEP 1701 (2017)
 079</a>].
 
-FlexibleSUSY depends on SARAH and contains components from
-SOFTSUSY. Therefore, please also cite the following publications along
-with FlexibleSUSY:
+If you use **FlexibleSUSY+Himalaya** or <a
+href="https://github.com/jklappert/Himalaya">Himalaya</a> in your
+work, please cite [<a
+href="https://arxiv.org/abs/1708.05720">1708.05720</a>, <a
+href="https://arxiv.org/abs/1005.5709">1005.5709</a>]
 
- - SARAH
+FlexibleSUSY depends on <a href="http://sarah.hepforge.org/">SARAH</a>
+and contains components from <a
+href="http://softsusy.hepforge.org/">SOFTSUSY</a>. Therefore, please
+also cite the following publications along with FlexibleSUSY:
+
+ - **SARAH**
    [<a href="http://arxiv.org/abs/0909.2863">CPC 181 (2010) 1077-1086</a>,
     <a href="http://arxiv.org/abs/1002.0840">CPC 182 (2011) 808-833</a>,
     <a href="http://arxiv.org/abs/1207.0906">CPC 184 (2013) 1792-1809</a>,
     <a href="http://arxiv.org/abs/1309.7223">CPC 185 (2014) 1773-1790</a>]
 
- -  SOFTSUSY
+ -  **SOFTSUSY**
     [<a href="http://arxiv.org/abs/hep-ph/0104145">CPC 143 (2002) 305-331</a>,
      <a href="http://arxiv.org/abs/1311.7659">CPC 185 (2014) 2322</a>]
 
