@@ -134,6 +134,13 @@ match_input_blocks $semi_analytic_input $two_scale_input $m0_sol
 # generate point using the two-scale solver
 echo -n "running two-scale solver ..."
 $two_scale_exe --slha-input-file=$two_scale_input --slha-output-file=$two_scale_output
+
+[ "x$?" != "x0" ] && {
+    echo "\nError: two-scale solver failed:"
+    cat $two_scale_output
+    exit 1
+}
+
 echo "done"
 echo "$two_scale_model SLHA input file:  $two_scale_input"
 echo "$two_scale_model SLHA output file: $two_scale_output"
