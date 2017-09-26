@@ -227,8 +227,9 @@ EOF
 scan "$start" "$stop" "$steps" | tee "$scan_data"
 
 cat <<EOF | gnuplot
-set terminal pdf enhanced
+set terminal pdf enhanced size 3in,3in
 set output "$BASEDIR/test_MSSMEFTHiggs.pdf"
+set size square
 set logscale x
 set key box bottom right width 2
 set grid
