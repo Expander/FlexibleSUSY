@@ -258,7 +258,7 @@ FindFixedParametersFromConstraint[settings_List] :=
     DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];
 
 CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_, value_],
-             constraintName_String] :=
+             constraintName_String, __] :=
     Module[{modelParameters, unknownParameters},
            modelParameters = Join[Parameters`GetModelParameters[], Parameters`GetExtraParameters[]];
            If[Head[parameters] =!= List,
@@ -299,7 +299,7 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
           ];
 
 CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
-             constraintName_String] :=
+             constraintName_String, __] :=
     Module[{unknownParameters = Select[parameters, (!Parameters`IsModelParameter[#] &&
                                                     !Parameters`IsExtraParameter[#])&]},
            If[unknownParameters =!= {},
@@ -310,7 +310,7 @@ CheckSetting[patt:FlexibleSUSY`FSSolveEWSBFor[parameters_List],
            True
           ];
 
-CheckSetting[patt:{parameter_[idx_Integer], value_}, constraintName_String] :=
+CheckSetting[patt:{parameter_[idx_Integer], value_}, constraintName_String, __] :=
     Module[{modelParameters, dim},
            modelParameters = Parameters`GetModelParameters[];
            If[!CheckSetting[{parameter, value}],
@@ -333,7 +333,7 @@ CheckSetting[patt:{parameter_[idx_Integer], value_}, constraintName_String] :=
            True
           ];
 
-CheckSetting[patt:{parameter_[idx1_Integer, idx2_Integer], value_}, constraintName_String] :=
+CheckSetting[patt:{parameter_[idx1_Integer, idx2_Integer], value_}, constraintName_String, __] :=
     Module[{modelParameters, dim},
            modelParameters = Parameters`GetModelParameters[];
            If[!CheckSetting[{parameter, value}],
@@ -361,18 +361,25 @@ CheckSetting[patt:{parameter_[idx1_Integer, idx2_Integer], value_}, constraintNa
            True
           ];
 
-CheckSetting[patt:{parameter_, value_}, constraintName_String] :=
-    Module[{outputParameters},
+CheckSetting[patt:{parameter_, value_}, constraintName_String, isInitial_] :=
+    Module[{outputParameters, modelPars},
            outputParameters = Parameters`GetOutputParameters[];
            If[MemberQ[outputParameters, parameter],
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   ", parameter, " is a output parameter!"];
               Return[False];
              ];
+           If[isInitial,
+              modelPars = Parameters`FSModelParameters /. Parameters`FindAllParametersClassified[value];
+              If[Intersection[modelPars, Parameters`GetModelParameters[]] =!= {},
+                 Print["Warning: In constraint ", constraintName, ": ", InputForm[patt]];
+                 Print["   ", modelPars, " on the r.h.s. are model parameters, which may initially be zero!"];
+                ];
+             ];
            True
           ];
 
-CheckSetting[patt_, constraintName_String] :=
+CheckSetting[patt_, constraintName_String, __] :=
     Module[{},
            Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
            Print["   This is not a valid constraint setting!"];
@@ -382,8 +389,8 @@ CheckSetting[patt_, constraintName_String] :=
            False
           ];
 
-CheckConstraint[settings_List, constraintName_String] :=
-    CheckSetting[#,constraintName]& /@ settings;
+CheckConstraint[settings_List, constraintName_String, isInitial_:False] :=
+    CheckSetting[#,constraintName,isInitial]& /@ settings;
 
 SanityCheck[settings_List, constraintName_String:""] :=
     Module[{setParameters, y,
