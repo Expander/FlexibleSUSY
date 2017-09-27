@@ -81,7 +81,7 @@ create_include_directives_for_external_modules() {
 create_flexiblesusy_libs() {
     local flexiblesusylibs=
 
-    for a in $models $addons ; do
+    for a in $addons $models ; do
         flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/lib$(basename $a)${module_lib_ext}"
     done
 
