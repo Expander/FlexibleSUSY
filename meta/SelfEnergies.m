@@ -920,15 +920,15 @@ const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_3LOOP_CORRECTION_AT_AT_AT) {
-   self_energy += self_energy_higgs_3loop_at_at_at_sm(scale, mt, yt, mh);
+   self_energy -= delta_mh_3loop_at_at_at_sm(scale, mt, yt, mh);
 }
 
 if (HIGGS_3LOOP_CORRECTION_AT_AT_AS) {
-   self_energy += self_energy_higgs_3loop_at_at_as_sm(scale, mt, yt, gs);
+   self_energy -= delta_mh_3loop_at_at_as_sm(scale, mt, yt, gs);
 }
 
 if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
-   self_energy += self_energy_higgs_3loop_at_as_as_sm(scale, mt, yt, gs);
+   self_energy -= delta_mh_3loop_at_as_as_sm(scale, mt, yt, gs);
 }
 
 return self_energy;"
@@ -956,7 +956,7 @@ const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
-   self_energy += self_energy_higgs_3loop_gluino_split(scale, mt, yt, gs, mg);
+   self_energy -= delta_mh_3loop_gluino_split(scale, mt, yt, gs, mg);
 }
 
 return self_energy;"
