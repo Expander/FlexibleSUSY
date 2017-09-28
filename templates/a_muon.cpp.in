@@ -95,7 +95,7 @@ struct AMuonVertexCorrectionFS {
 };
 
 /**
-* @defgroup LoopFunctions LoopFunctions
+* @defgroup LoopFunctions Loop functions
 * @brief The loop functions necessary for \f$a_\mu\f$ one-loop calculations.
 *
 * These are OneLoopFunctionF1C(), OneLoopFunctionF2C(),

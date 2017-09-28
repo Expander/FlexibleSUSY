@@ -26,7 +26,8 @@ EXTPAR = {
     {105, TwoLoopAtAt},
     {200, DeltaEFT},
     {201, DeltaYt},
-    {202, Qmatch}
+    {202, DeltaOS},
+    {203, Qmatch}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -115,6 +116,10 @@ HighScaleInput = {
                              ]
                       ), 0]
                     + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
+                    + If[DeltaOS >= 1,
+                         If[TwoLoopAtAs >= 1, lambda2LDRtoOSAtAs, 0] +
+                         If[TwoLoopAtAt >= 1, lambda2LDRtoOSAtAt, 0],
+                         0]
                 )
                 + If[Abs[Qmatch] > 1,
                      Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L,
@@ -168,9 +173,7 @@ UseSMAlphaS3Loop = True;
 ExtraSLHAOutputBlocks = {
    {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
-            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
-            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
-            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon} } }
 };
 
 SARAH`ParameterDefinitions = Append[

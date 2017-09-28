@@ -73,13 +73,10 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
    using namespace softsusy;
 
    QedQcd leAtMt(qedqcd);
-   const double MZ = Electroweak_constants::MZ;
-   const double MW = Electroweak_constants::MW;
-   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = leAtMt.displayPoleMt();
 
    // guess gauge couplings at mt
-   const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(leAtMt.guess_alpha_SM5(mtpole));
 
    model_1->set_g1(sqrt(4.0 * M_PI * alpha_sm(0)));
    model_1->set_g2(sqrt(4.0 * M_PI * alpha_sm(1)));

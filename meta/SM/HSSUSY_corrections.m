@@ -2626,3 +2626,176 @@ lambda2LPhiHSSAlphaBAlphaSDegenerateSquark = With[{
        3*MS2^3*(-g + MS2)*Log[q2])) + 24*g^(3/2)*MS2^3*(Sqrt[g] - 2*sgn*Xb)*
     PolyLog[2, 1 - g/MS2]))/(3*(g - MS2)^2*MS2^3)
 ];
+
+(* convert Piecewise to Which statement *)
+PiecewiseToWhich[conds_List] := 
+    Sequence @@ (Sequence @@@ (Reverse /@ conds));
+
+PiecewiseToWhich[HoldPattern[Piecewise[conds_List, default_]]] :=
+    Which[Evaluate@PiecewiseToWhich[conds], True, default];
+
+PiecewiseToWhich[expr_] := expr;
+
+(* shift DR -> OS at O(at*as), from SUSYHD 1.1 *)
+lambda2LDRtoOSAtAs = With[{
+    gt = Yu[3,3],
+    mtilde = SCALE,
+    mQ3 = Sqrt[Abs[msq2[3,3]]],
+    mU3 = Sqrt[Abs[msu2[3,3]]],
+    Xt = xt,
+    M3 = M3Input
+    },
+    (
+    g3^2 gt^4 With[{\[Delta] = 
+    8.5 10^-2, \[Delta]2 = 1 10^-2}, 
+  Piecewise[{{shiftDROS\[Alpha]t\[Alpha]Sdegenerate[mtilde, mQ3, Xt], 
+     Abs[mQ3/mU3 - 1] < \[Delta]2 && Abs[M3/mU3 - 1] < \[Delta]2 && 
+      Abs[M3/mQ3 - 1] < \[Delta]2}, {Re[
+        shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, 
+         mU3 (1 + \[Delta]), mU3, Xt , M3]] (mQ3 - 
+         mU3 (1 - \[Delta]))/(2 mU3 \[Delta]) + 
+      Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, 
+         mU3 (1 - \[Delta]), mU3, Xt , M3]] (1 - (
+         mQ3 - mU3 (1 - \[Delta]))/(2 mU3 \[Delta])), 
+     Abs[mQ3/mU3 - 1] < \[Delta]},
+    {Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, mQ3, mU3, Xt , 
+         mQ3 (1 + \[Delta])]] (M3 - mQ3 (1 - \[Delta]))/(
+       2 mQ3 \[Delta]) + 
+      Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, mQ3, mU3, Xt , 
+         mQ3 (1 - \[Delta])]] (1 - (M3 - mQ3 (1 - \[Delta]))/(
+         2 mQ3 \[Delta])), Abs[mQ3/M3 - 1] < \[Delta]},
+    {Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, mQ3, mU3, Xt , 
+         mU3 (1 + \[Delta])]] (M3 - mU3 (1 - \[Delta]))/(
+       2 mU3 \[Delta]) + 
+      Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[1. mtilde, mQ3, mU3, Xt , 
+         mU3 (1 - \[Delta])]] (1 - (M3 - mU3 (1 - \[Delta]))/(
+         2 mU3 \[Delta])), Abs[mU3/M3 - 1] < \[Delta]}}, 
+   Re[shiftDROS\[Alpha]t\[Alpha]Sgeneral[mtilde, 1. mQ3, mU3, Xt , 
+     M3]]]]
+    ) /. a:Piecewise[__] :> PiecewiseToWhich[a]
+    ];
+
+(* shift DR -> OS at O(at*as), general expression, from SUSYHD 1.1 *)
+shiftDROS\[Alpha]t\[Alpha]Sgeneral[mtilde_, mQ3_, mU3_, QXt_, M3_] := 
+ Re@ Block[{x1 = (mQ3)^2/M3^2, x2 = (mU3)^2/M3^2, xt = QXt/M3, 
+            xs = mtilde^2/M3^2}, 
+   1/(64 \[Pi]^4) (-((
+       2 ((-1 + x1)^2 Log[1 - x1] + 
+          x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/x1^2) - (
+      2 ((-1 + x2)^2 Log[1 - x2] + 
+         x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/x2^2 + 
+      1/(x1^2 x2^2)
+        xt (1/(x1 - 
+            x2)^3 x1^2 x2^2 (2 (x1 - x2) xt^2 + (2 x1^2 + 
+               x2 (2 x2 - xt^2) - x1 (4 x2 + xt^2)) Log[x1/x2]) (-((
+             4 xt^2 (x1 (-1 + x2) Log[x1] - (-1 + x1) x2 Log[
+                  x2]))/((-1 + x1) (x1 - x2) (-1 + x2))) + 
+            1/(x1 - x2)
+              xt (-7 x1 + x1/(-1 + x1) + x1/(-1 + x2) + 7 x2 + x2/(
+               1 - x1) + x2/(1 - x2) - (4 (-1 + x1)^2 Log[1 - x1])/
+               x1 + ((-x1 + x2) Log[x1])/(-1 + x1)^2 - 
+               8 Log[1 - x2] + (4 Log[1 - x2])/x2 + 
+               4 x2 Log[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
+               x2 Log[x2])/(-1 + x2)^2 + 9 x1 Log[x1/xs] - 
+               x2 Log[x1/xs] + x1 Log[x2/xs] - 9 x2 Log[x2/xs] + 
+               4 x1 Log[xs] - 4 x2 Log[xs]) - (
+            4 ((-1 + x1) x2 Log[1 - x1] + 
+               x1 ((-1 + x2) Log[1 - x2] - 2 x2 (2 + Log[xs]))))/(
+            x1 x2) + (
+            xt ((-1 + x1)^2 Log[1 - x1] + 
+               x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/
+            x1^2 + (
+            xt ((-1 + x2)^2 Log[1 - x2] + 
+               x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/
+            x2^2) + 
+         xt (1/(x1 - x2)^2 2 (-2 x1 + 
+               2 x2 + (x1 + x2) Log[x1/x2]) ((-1 + x1)^2 x2^2 Log[
+                 1 - x1] - 
+               x1 ((-2 + x1) x2^2 Log[x1] + 
+                  x1 (-1 + x2)^2 Log[1 - x2] + 
+                  x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
+                    2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))) + 
+            x1^2 xt (1/(x1^2 (x1 - x2)^3)
+                 2 xt (-x1 + x2 + 
+                  x1 Log[x1/x2]) ((-1 + x1)^2 x2^2 Log[1 - x1] - 
+                  x1 ((-2 + x1) x2^2 Log[x1] + 
+                    x1 (-1 + x2)^2 Log[1 - x2] + 
+                    x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
+                    2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))) - 
+               1/((-1 + x1/x2)^4 x2) (-2 x1 + 
+                  2 x2 + (x1 + x2) Log[x1/
+                    x2]) ((-1 + x1/
+                    x2) (-((
+                    4 xt^2 (x1 (-1 + x2) Log[x1] - (-1 + x1) x2 Log[
+                    x2]))/((-1 + x1) (x1 - x2) (-1 + x2))) + 
+                    1/(x1 - x2)
+                     xt (-7 x1 + x1/(-1 + x1) + x1/(-1 + x2) + 7 x2 + 
+                    x2/(1 - x1) + x2/(1 - x2) - (
+                    4 (-1 + x1)^2 Log[1 - x1])/
+                    x1 + ((-x1 + x2) Log[x1])/(-1 + x1)^2 - 
+                    8 Log[1 - x2] + (4 Log[1 - x2])/x2 + 
+                    4 x2 Log[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
+                    x2 Log[x2])/(-1 + x2)^2 + 9 x1 Log[x1/xs] - 
+                    x2 Log[x1/xs] + x1 Log[x2/xs] - 9 x2 Log[x2/xs] + 
+                    4 x1 Log[xs] - 4 x2 Log[xs]) - (
+                    4 ((-1 + x1) x2 Log[1 - x1] + 
+                    x1 ((-1 + x2) Log[1 - x2] - 
+                    2 x2 (2 + Log[xs]))))/(x1 x2) - (
+                    xt ((-1 + x1)^2 Log[1 - x1] + 
+                    x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/
+                    x1^2 + (
+                    3 xt ((-1 + x2)^2 Log[1 - x2] + 
+                    x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/
+                    x2^2) + 
+                  1/(x1 x2^3)
+                    6 xt ((-1 + x1)^2 x2^2 Log[1 - x1] - 
+                    x1 ((-2 + x1) x2^2 Log[x1] + 
+                    x1 (-1 + x2)^2 Log[1 - x2] + 
+                    x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
+                    2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))))))))];
+
+(* shift DR -> OS at O(at*as), degenerate masses, from SUSYHD 1.1 *)
+shiftDROS\[Alpha]t\[Alpha]Sdegenerate[mtilde_, M3_, Xt_] := 
+ Re@ Block[{xt = Xt/M3, xs = mtilde^2/M3^2},
+           ((2 + xt)^2 (-6 + 18 xt - 9 xt^2 + xt^3) + (-12 + 24 xt - 
+           6 xt^2 - 4 xt^3 + xt^4) Log[xs])/(96 \[Pi]^4)];
+
+(* shift DR -> OS at O(at*at), general expression, from SUSYHD 1.1 *)
+lambda2LDRtoOSAtAt = With[{
+    gt = Yu[3,3],
+    Q = SCALE,
+    mst = Sqrt[Sqrt[msq2[3,3] msu2[3,3]]],
+    \[Mu] = MuInput,
+    tan\[Beta] = TanBeta,
+    Xt = xt,
+    \[Delta] = 10^-5
+    },
+    (
+    gt^6 Block[{\[Beta] = ArcTan[tan\[Beta]], xt = Xt/mst, 
+    yt = Xt/mst + (2 \[Mu])/(mst Sin[2 ArcTan[tan\[Beta]]]), 
+    x\[Mu] = (\[Mu])^2/mst^2, xq = Q^2/mst^2},
+   Sin[\[Beta]]^-2 (1/(
+       1024 \[Pi]^4) (-36 - 36 xt^2 + 6 xt^4 + 72 x\[Mu] - 
+         72 xt^2 x\[Mu] + 12 xt^4 x\[Mu] - 36 x\[Mu]^2 + 
+         108 xt^2 x\[Mu]^2 - 18 xt^4 x\[Mu]^2) log[1 - x\[Mu]] + 
+      1/(1024 \[Pi]^4) (108 - 54 xt^2 + 9 xt^4 - 108 x\[Mu] + 
+         180 xt^2 x\[Mu] - 30 xt^4 x\[Mu] - 
+         6 xt^2 (-6 + xt^2) x\[Mu] f2[Sqrt[x\[Mu]]] + 
+         3 (-24 (-1 + x\[Mu]) + 12 xt^2 (3 + 2 x\[Mu]) - 
+            2 xt^4 (3 + 2 x\[Mu])) Log[xq] + 
+         Cos[\[Beta]]^2 (36 - 48 (-6 + Sqrt[3] \[Pi]) xt yt + 
+            8 (-6 + Sqrt[3] \[Pi]) xt^3 yt + 72 yt^2 - 
+            12 Sqrt[3] \[Pi] yt^2 + 
+            xt^4 (9 - 2 (-6 + Sqrt[3] \[Pi]) yt^2) + 
+            6 xt^2 (-9 + 2 (-6 + Sqrt[3] \[Pi]) yt^2) + 
+            6 (24 xt yt - 4 xt^3 yt + 6 (1 + yt^2) - 
+               6 xt^2 (2 + yt^2) + xt^4 (2 + yt^2)) Log[xq]) + 
+         36 x\[Mu]^2 Log[x\[Mu]] - 108 xt^2 x\[Mu]^2 Log[x\[Mu]] + 
+         18 xt^4 x\[Mu]^2 Log[x\[Mu]] + 
+         6 xt^2 (30 - 10 xt^2 + xt^4) (2 + Log[xq]) Sin[\[Beta]]^2))]
+    ) /. {
+        a:log[_] :> FiniteLog[a],
+        f2[\[Mu]_] :> Piecewise[{{1/2, Abs[\[Mu]^2 - 1] < \[Delta]}}, 
+                                1/(1 - \[Mu]^2) (1 + \[Mu]^2/(1 - \[Mu]^2) Log[\[Mu]^2])]
+    } /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
+    ];

@@ -5,7 +5,7 @@
 \usepackage{booktabs,tabularx}
 \usepackage{rotating}             % for sidewaystable
 \usepackage{xspace}
-\usepackage[usenames]{xcolor}
+\usepackage[usenames]{xcolor}\definecolor{fscolor}{RGB}{44,118,255}
 \usepackage{tikz,tikz-uml}
 \usepackage{listings}
 \usepackage[absolute]{textpos}
@@ -21,7 +21,9 @@
   breakautoindent=false,
   showspaces=false,
   showstringspaces=false,
-  frame=single,
+  frame=shadowbox,
+  rulesepcolor=\color{gray},
+  rulesep=0.1em,
   abovecaptionskip=0em,
   aboveskip=1.5em,
   belowcaptionskip=0.5em,
@@ -30,7 +32,7 @@
 \usepackage[pdftitle={FlexibleSUSY --- A spectrum generator generator for supersymmetric models},
 pdfauthor={Peter Athron,Jae-hyeon Park,Dominik Stockinger,Alexander Voigt},
 pdfkeywords={FlexibleSUSY,supersymmetry,spectrum,generator,MSSM,NMSSM,E6SSM},
-bookmarks=true, linktocpage]{hyperref}
+bookmarks=true, linktocpage, colorlinks=true, allbordercolors=white, allcolors=fscolor]{hyperref}
 
 %macros
 \newcommand{\sarah}{SARAH\@\xspace}
@@ -157,7 +159,7 @@ ADP-14-17/T875
 \clearpage
 \section{Program Summary}
 \noindent{\em Program title:} \fs\\[0.5em] {\em Program obtainable from:}
-         {\tt http://flexiblesusy.hepforge.org/}\\[0.5em] {\em Distribution
+         \url{http://flexiblesusy.hepforge.org/}\\[0.5em] {\em Distribution
            format:}\/ tar.gz\\[0.5em] {\em Programming language:} {\tt
            C++, Wolfram/\mathematica, FORTRAN, Bourne shell}\\[0.5em]
          {\em Computer:}\/ Personal computer\\[0.5em] {\em Operating

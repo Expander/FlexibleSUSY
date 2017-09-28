@@ -222,6 +222,11 @@ inline double Tan(double a) noexcept
    return std::tan(a);
 }
 
+inline double Cot(double a) noexcept
+{
+   return 1./Tan(a);
+}
+
 inline double Cos(double x) noexcept
 {
    return std::cos(x);

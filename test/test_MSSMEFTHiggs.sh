@@ -3,7 +3,7 @@
 BASEDIR="$(dirname $0)"
 MODELDIR="${BASEDIR}/../models"
 
-start=91.1876
+start=173.34
 stop=100000
 steps=60
 
@@ -113,7 +113,7 @@ ${sminputs_tmpl}
 Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
-  100   2                    # LambdaLoopOrder (HSSUSY)
+  100   1                    # LambdaLoopOrder (HSSUSY)
   101   1                    # 2-loop at*as
   102   1                    # 2-loop ab*as
   103   1                    # 2-loop at*ab
@@ -126,6 +126,9 @@ run_sg() {
     local type="$2"
     local calcBSM=$(test "x$type" = xtower ; echo $?)
     local loops=$(if [ "x$type" = xtower ] ; then echo 1; else echo 2; fi)
+    # set loops=2 to have perfect agreement at large MS
+    # (but this spoils agreement at MS < Mt)
+    loops=2
     local MS2=$(echo "scale=5; ${MS}^2" | bc)
     local At=$(echo "scale=10; (1./${TB} + ${Xt}) * ${MS}" | bc)
     local Au=$(echo "scale=10; (1./${TB} + 0) * ${MS}" | bc)
@@ -227,8 +230,9 @@ EOF
 scan "$start" "$stop" "$steps" | tee "$scan_data"
 
 cat <<EOF | gnuplot
-set terminal pdf enhanced
+set terminal pdf enhanced size 3in,3in
 set output "$BASEDIR/test_MSSMEFTHiggs.pdf"
+set size square
 set logscale x
 set key box bottom right width 2
 set grid
@@ -237,7 +241,7 @@ set ylabel "M_h / GeV"
 
 data = "$BASEDIR/test_MSSMEFTHiggs.dat"
 
-plot [0.091:] \
+plot [0.1:] \
      data u (\$1/1000):2 t "MSSMEFTHiggs" w lines dt 1 lw 2 lc rgb '#FF0000', \
      data u (\$1/1000):3 t "MSSMMuBMu" w lines dt 4 lw 2 lc rgb '#00FF00', \
      data u (\$1/1000):4 t "HSSUSY"    w lines dt 2 lw 2 lc rgb '#0000FF'
@@ -246,15 +250,10 @@ EOF
 error=0
 
 # check equality of MSSMEFTHiggs and MSSMuBMu for low MS
-MS=91.1876
-MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
-
 MS=173.34
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
 MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.005" || error=$(expr $error + 1)
+CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.003" || error=$(expr $error + 1)
 
 MS=250.0
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
@@ -265,18 +264,18 @@ CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.01" || error=$(expr $er
 
 MS=1000
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
+MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
+CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.001" || error=$(expr $error + 1)
 
 MS=10000
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
+MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
+CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.0001" || error=$(expr $error + 1)
 
 MS=100000
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
-MhMSSMMuBMu=$(run_sg "$MODELDIR/MSSMMuBMu/run_MSSMMuBMu.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhMSSMMuBMu" "0.02" || error=$(expr $error + 1)
+MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
+CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.0001" || error=$(expr $error + 1)
 
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."

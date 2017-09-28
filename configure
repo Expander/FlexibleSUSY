@@ -222,9 +222,9 @@ cxx_compiler_version="unknown"
 
 # required C++ compiler versions
 required_cxx_compiler_version="unknown"
-required_gpp_compiler_version="4.7.2"
-required_clang_compiler_version="3.1.0"
-required_icpc_compiler_version="12.1.0"
+required_gpp_compiler_version="4.9.2"
+required_clang_compiler_version="3.8.1"
+required_icpc_compiler_version="15.0.0"
 
 # C++ compiler versions accepting `-std=c++11'
 std_cxx11_compiler_version="unknown"
@@ -1291,11 +1291,15 @@ check_std_threads() {
             result "ok"
         else
             result "not available"
-            message "Error: C++ std::thread and std::mutex is not available."
-            message "   Either reconfigure with \`--disable-threads' or use a"
-            message "   C++ compiler which supports C++ std::thread and std::mutex."
+
+            if test "x${enable_threads}" = "xyes" ; then
+                message "Error: C++ std::thread and std::mutex is not available."
+                message "   Either reconfigure with \`--disable-threads' or use a"
+                message "   C++ compiler which supports C++ std::thread and std::mutex."
+                exit 1
+            fi
+
             enable_threads="no"
-            exit 1
         fi
     fi
 }

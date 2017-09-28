@@ -84,9 +84,6 @@ void @ModelName@_initial_guesser<Semi_analytic>::guess_susy_parameters()
 void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_low_scale_parameters()
 {
    softsusy::QedQcd leAtMt(qedqcd);
-   const double MZ = Electroweak_constants::MZ;
-   const double MW = Electroweak_constants::MW;
-   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = leAtMt.displayPoleMt();
 
    mu_guess = leAtMt.displayMass(softsusy::mUp);
@@ -106,7 +103,7 @@ void @ModelName@_initial_guesser<Semi_analytic>::initial_guess_low_scale_paramet
    mtau_guess = leAtMt.displayMass(softsusy::mTau);
 
    // guess gauge couplings at mt
-   const auto alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(leAtMt.guess_alpha_SM5(mtpole));
 
 @initialGuessAtLowScaleGaugeCouplings@
 

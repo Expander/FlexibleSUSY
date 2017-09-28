@@ -55,4 +55,4 @@ Block IMMINPAR
     5   0                    # ImAzero
 Block EXTPAR
   100   0.1                  # etaInput
-  101   300.                 # AbsMu
+  101   310                  # AbsMu

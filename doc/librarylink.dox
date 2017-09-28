@@ -45,7 +45,7 @@ Before running the example Mathematica script, the model parameters in
 the script should be set to reasonable values.
 
 In the following more advanced example the Higgs pole mass is
-calculated in the HSSUSY model (an EFT calculation of the SM-like Higgs
+calculated in the @ref hssusy model (an EFT calculation of the SM-like Higgs
 mass, assuming that the high-energy completion is the MSSM) as a
 function of \f$X_t / M_S\f$ for \f$\tan\beta = 5\f$ and different
 values of the SUSY scale.  The example also illustrates how
