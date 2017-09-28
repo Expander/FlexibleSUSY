@@ -19,7 +19,6 @@
 #include "sm_twoloophiggs.hpp"
 #include "wrappers.hpp"
 #include "pv.hpp"
-#include "logger.hpp"
 
 #include <cmath>
 
