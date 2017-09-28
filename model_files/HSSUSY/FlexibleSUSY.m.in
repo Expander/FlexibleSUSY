@@ -24,7 +24,8 @@ EXTPAR = {
     {103, TwoLoopAtAb},
     {104, TwoLoopAtauAtau},
     {105, TwoLoopAtAt},
-    {200, DeltaEFT}
+    {200, DeltaEFT},
+    {201, DeltaOS}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -113,6 +114,10 @@ HighScaleInput = {
                              ]
                       ), 0]
                     + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
+                    + If[DeltaOS >= 1,
+                         If[TwoLoopAtAs >= 1, lambda2LDRtoOSAtAs, 0] +
+                         If[TwoLoopAtAt >= 1, lambda2LDRtoOSAtAt, 0],
+                         0]
                 )
     }
 };
