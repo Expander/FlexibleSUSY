@@ -2679,10 +2679,11 @@ lambda2LDRtoOSAtAs = With[{
 shiftDROS\[Alpha]t\[Alpha]Sgeneral[mtilde_, mQ3_, mU3_, QXt_, M3_] := 
  Re@ Block[{x1 = (mQ3)^2/M3^2, x2 = (mU3)^2/M3^2, xt = QXt/M3, 
             xs = mtilde^2/M3^2}, 
+    (
    1/(64 \[Pi]^4) (-((
-       2 ((-1 + x1)^2 Log[1 - x1] + 
+       2 ((-1 + x1)^2 ComplexLog[1 - x1] + 
           x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/x1^2) - (
-      2 ((-1 + x2)^2 Log[1 - x2] + 
+      2 ((-1 + x2)^2 ComplexLog[1 - x2] + 
          x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/x2^2 + 
       1/(x1^2 x2^2)
         xt (1/(x1 - 
@@ -2692,34 +2693,34 @@ shiftDROS\[Alpha]t\[Alpha]Sgeneral[mtilde_, mQ3_, mU3_, QXt_, M3_] :=
                   x2]))/((-1 + x1) (x1 - x2) (-1 + x2))) + 
             1/(x1 - x2)
               xt (-7 x1 + x1/(-1 + x1) + x1/(-1 + x2) + 7 x2 + x2/(
-               1 - x1) + x2/(1 - x2) - (4 (-1 + x1)^2 Log[1 - x1])/
+               1 - x1) + x2/(1 - x2) - (4 (-1 + x1)^2 ComplexLog[1 - x1])/
                x1 + ((-x1 + x2) Log[x1])/(-1 + x1)^2 - 
-               8 Log[1 - x2] + (4 Log[1 - x2])/x2 + 
-               4 x2 Log[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
+               8 ComplexLog[1 - x2] + (4 ComplexLog[1 - x2])/x2 + 
+               4 x2 ComplexLog[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
                x2 Log[x2])/(-1 + x2)^2 + 9 x1 Log[x1/xs] - 
                x2 Log[x1/xs] + x1 Log[x2/xs] - 9 x2 Log[x2/xs] + 
                4 x1 Log[xs] - 4 x2 Log[xs]) - (
-            4 ((-1 + x1) x2 Log[1 - x1] + 
-               x1 ((-1 + x2) Log[1 - x2] - 2 x2 (2 + Log[xs]))))/(
+            4 ((-1 + x1) x2 ComplexLog[1 - x1] + 
+               x1 ((-1 + x2) ComplexLog[1 - x2] - 2 x2 (2 + Log[xs]))))/(
             x1 x2) + (
-            xt ((-1 + x1)^2 Log[1 - x1] + 
+            xt ((-1 + x1)^2 ComplexLog[1 - x1] + 
                x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/
             x1^2 + (
-            xt ((-1 + x2)^2 Log[1 - x2] + 
+            xt ((-1 + x2)^2 ComplexLog[1 - x2] + 
                x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/
             x2^2) + 
          xt (1/(x1 - x2)^2 2 (-2 x1 + 
-               2 x2 + (x1 + x2) Log[x1/x2]) ((-1 + x1)^2 x2^2 Log[
+               2 x2 + (x1 + x2) Log[x1/x2]) ((-1 + x1)^2 x2^2 ComplexLog[
                  1 - x1] - 
                x1 ((-2 + x1) x2^2 Log[x1] + 
-                  x1 (-1 + x2)^2 Log[1 - x2] + 
+                  x1 (-1 + x2)^2 ComplexLog[1 - x2] + 
                   x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
                     2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))) + 
             x1^2 xt (1/(x1^2 (x1 - x2)^3)
                  2 xt (-x1 + x2 + 
-                  x1 Log[x1/x2]) ((-1 + x1)^2 x2^2 Log[1 - x1] - 
+                  x1 Log[x1/x2]) ((-1 + x1)^2 x2^2 ComplexLog[1 - x1] - 
                   x1 ((-2 + x1) x2^2 Log[x1] + 
-                    x1 (-1 + x2)^2 Log[1 - x2] + 
+                    x1 (-1 + x2)^2 ComplexLog[1 - x2] + 
                     x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
                     2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))) - 
                1/((-1 + x1/x2)^4 x2) (-2 x1 + 
@@ -2731,28 +2732,30 @@ shiftDROS\[Alpha]t\[Alpha]Sgeneral[mtilde_, mQ3_, mU3_, QXt_, M3_] :=
                     1/(x1 - x2)
                      xt (-7 x1 + x1/(-1 + x1) + x1/(-1 + x2) + 7 x2 + 
                     x2/(1 - x1) + x2/(1 - x2) - (
-                    4 (-1 + x1)^2 Log[1 - x1])/
+                    4 (-1 + x1)^2 ComplexLog[1 - x1])/
                     x1 + ((-x1 + x2) Log[x1])/(-1 + x1)^2 - 
-                    8 Log[1 - x2] + (4 Log[1 - x2])/x2 + 
-                    4 x2 Log[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
+                    8 ComplexLog[1 - x2] + (4 ComplexLog[1 - x2])/x2 + 
+                    4 x2 ComplexLog[1 - x2] - (x1 Log[x2])/(-1 + x2)^2 + (
                     x2 Log[x2])/(-1 + x2)^2 + 9 x1 Log[x1/xs] - 
                     x2 Log[x1/xs] + x1 Log[x2/xs] - 9 x2 Log[x2/xs] + 
                     4 x1 Log[xs] - 4 x2 Log[xs]) - (
-                    4 ((-1 + x1) x2 Log[1 - x1] + 
-                    x1 ((-1 + x2) Log[1 - x2] - 
+                    4 ((-1 + x1) x2 ComplexLog[1 - x1] + 
+                    x1 ((-1 + x2) ComplexLog[1 - x2] - 
                     2 x2 (2 + Log[xs]))))/(x1 x2) - (
-                    xt ((-1 + x1)^2 Log[1 - x1] + 
+                    xt ((-1 + x1)^2 ComplexLog[1 - x1] + 
                     x1 (3 + x1 - (-2 + x1) Log[x1] + 2 Log[xs/x1])))/
                     x1^2 + (
-                    3 xt ((-1 + x2)^2 Log[1 - x2] + 
+                    3 xt ((-1 + x2)^2 ComplexLog[1 - x2] + 
                     x2 (3 + x2 - (-2 + x2) Log[x2] + 2 Log[xs/x2])))/
                     x2^2) + 
                   1/(x1 x2^3)
-                    6 xt ((-1 + x1)^2 x2^2 Log[1 - x1] - 
+                    6 xt ((-1 + x1)^2 x2^2 ComplexLog[1 - x1] - 
                     x1 ((-2 + x1) x2^2 Log[x1] + 
-                    x1 (-1 + x2)^2 Log[1 - x2] + 
+                    x1 (-1 + x2)^2 ComplexLog[1 - x2] + 
                     x2 (3 x1 - 3 x2 - x1 (-2 + x2) Log[x2] - 
-                    2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))))))))];
+                    2 x2 Log[xs/x1] + 2 x1 Log[xs/x2]))))))))
+    )
+];
 
 (* shift DR -> OS at O(at*as), degenerate masses, from SUSYHD 1.1 *)
 shiftDROS\[Alpha]t\[Alpha]Sdegenerate[mtilde_, M3_, Xt_] := 
