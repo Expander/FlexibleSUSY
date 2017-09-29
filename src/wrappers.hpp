@@ -39,6 +39,7 @@
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "if.hpp"
+#include "numerics2.hpp"
 #include "sum.hpp"
 #include "which.hpp"
 
@@ -323,12 +324,12 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 inline std::complex<double> ComplexLog(double a) noexcept
 {
    std::complex<double> z(a,0.);
-   return std::log(z);
+   return fast_log(z);
 }
 
 inline std::complex<double> ComplexLog(const std::complex<double>& z) noexcept
 {
-   return std::log(z);
+   return fast_log(z);
 }
 
 inline double FiniteLog(double a) noexcept
