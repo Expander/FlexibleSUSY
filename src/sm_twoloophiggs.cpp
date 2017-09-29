@@ -19,7 +19,6 @@
 #include "sm_twoloophiggs.hpp"
 #include "wrappers.hpp"
 #include "pv.hpp"
-#include "logger.hpp"
 
 #include <cmath>
 
@@ -146,9 +145,9 @@ double self_energy_higgs_2loop_at_as_sm(
    const double lnt = std::log(t/q);
 
    const double result =
-      - (1./3.) * g32 * yt2 * (240*t + 37*s
-                               - 12*(12*t + 5*s) * lnt
-                               + 36*(12*t - s) * Sqr(lnt));
+      1./135. * g32 * yt2 * (-10800*t - 1665*p2 + (122*Sqr(p2))/t +
+                             540*(12*t + 5*p2) * lnt -
+                             1620*(12*t - p2) * Sqr(lnt));
 
    return result * twoLoop;
 }
