@@ -535,7 +535,7 @@ void CLASSNAME::clear_DRbar_parameters()
 
 void CLASSNAME::clear_problems()
 {
-   problems.unflag_all_tachyons();
+   problems.clear();
 }
 
 void CLASSNAME::clear()

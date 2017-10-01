@@ -67,7 +67,7 @@ void @ModelName@_susy_scale_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();
 
-@temporarySetting@
+@initialSetting@
 
    model->calculate_DRbar_masses();
    update_scale();

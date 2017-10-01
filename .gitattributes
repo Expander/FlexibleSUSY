@@ -71,6 +71,7 @@ model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
 model_files/SMSemiAnalytic      export-ignore
 model_files/SSMSemiAnalytic     export-ignore
+model_files/SMThrow             export-ignore
 model_files/TensorCoupling      export-ignore
 model_files/THDMIIMSSMBCApprox  export-ignore
 model_files/THDMIIEWSBAtMZSemiAnalytic export-ignore

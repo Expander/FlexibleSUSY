@@ -61,7 +61,7 @@ void @ModelName@_soft_parameters_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();
 
-@temporarySetting@
+@initialSetting@
 
    const double boundary_scale = get_boundary_scale();
    model->calculate_semi_analytic_solutions(boundary_scale);
