@@ -61,6 +61,6 @@ double GUT_scale_calculator<T>::calculateGUTScale(const T& rge) const
    return gutScale;
 }
 
-}
+} // namespace flexiblesusy
 
 #endif

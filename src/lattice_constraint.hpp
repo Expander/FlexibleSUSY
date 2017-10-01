@@ -308,6 +308,6 @@ public:
 	{}
 };
 
-}
+} // namespace flexiblesusy
 
 #endif // lattice_constraint_hpp

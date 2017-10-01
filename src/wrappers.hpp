@@ -952,6 +952,6 @@ Derived ZeroSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr([](double a){ return ZeroSqrt(a); });
 }
 
-}
+} // namespace flexiblesusy
 
 #endif

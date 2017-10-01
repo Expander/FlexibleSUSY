@@ -691,4 +691,4 @@ RGFlow<Lattice>::Inner_status RGFlow<Lattice>::iterate()
 	return ENDLESS;
 }
 
-}
+} // namespace flexiblesusy

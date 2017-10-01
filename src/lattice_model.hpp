@@ -95,6 +95,6 @@ private:
     size_t m;
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

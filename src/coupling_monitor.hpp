@@ -275,6 +275,6 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
    std::sort(couplings.begin(), couplings.end(), TScaleComp());
 }
 
-}
+} // namespace flexiblesusy
 
 #endif
