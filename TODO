@@ -63,3 +63,16 @@ parameters between some scales might be useful here.  Maybe like this:
       {vu, LowScale, HighScale},
       {vd, LowScale, HighScale}
   };
+
+
+Spectrum in SLHA convention in Mathematica interface
+----------------------------------------------------
+
+The FS<model>CalculateSpectrum[handle] function could be extended to
+output the masses, mixing matrices and parameters in SLHA-2
+convention.
+
+   FS<model>CalculateSpectrum[handle, Convention -> HK]
+   FS<model>CalculateSpectrum[handle, Convention -> SLHA]
+
+etc.
