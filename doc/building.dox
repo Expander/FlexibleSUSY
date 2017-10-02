@@ -17,6 +17,8 @@
 
 Optional:
 
+ - BLAS                               http://www.netlib.org/blas/
+ - LAPACK                             http://www.netlib.org/lapack/
  - LoopTools (version 2.8 or higher)  http://www.feynarts.de/looptools/
 
 \subsection generation Generating a spectrum generator
