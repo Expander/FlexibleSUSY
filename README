@@ -28,7 +28,7 @@ Requirements
 
 Optional:
 
- * Looptools (version 2.8 or higher)  http://www.feynarts.de/looptools/
+ * LoopTools (version 2.8 or higher)  http://www.feynarts.de/looptools/
 
 
 Installation of SARAH
@@ -293,23 +293,23 @@ the options
 must be used to set LDFLAGS and LDLIBS.
 
 
-Looptools
+LoopTools
 =========
 
-It is possible to use Looptools (http://www.feynarts.de/looptools/)
+It is possible to use LoopTools (http://www.feynarts.de/looptools/)
 for calculating the loop functions, instead of using SOFTSUSY's loop
-functions.  To enable Looptools configure FlexibleSUSY via
+functions.  To enable LoopTools configure FlexibleSUSY via
 
    $ ./configure --enable-looptools
 
-To use the Looptools library and header files from a specific
+To use the LoopTools library and header files from a specific
 directory configure via
 
    $ ./configure --enable-looptools \
      --with-looptools-incdir="/path/to/looptools/build/" \
      --with-looptools-libdir="/path/to/looptools/build/"
 
-Note: Looptools 2.8 or higher is required.
+Note: LoopTools 2.8 or higher is required.
 
 
 Plotting the mass spectrum and RG running
