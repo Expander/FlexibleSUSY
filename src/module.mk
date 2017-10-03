@@ -44,7 +44,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
-		$(DIR)/split_threeloophiggs.cpp \
+		$(DIR)/splitmssm_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
 		$(DIR)/standard_model_effective_couplings.cpp \
@@ -126,7 +126,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sm_threeloop_as.hpp \
 		$(DIR)/sm_threeloophiggs.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
-		$(DIR)/split_threeloophiggs.hpp \
+		$(DIR)/splitmssm_threeloophiggs.hpp \
 		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \

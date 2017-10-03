@@ -946,7 +946,7 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            ytStr   = CConversion`RValueToCFormString[yt];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
-using namespace flexiblesusy::split_threeloophiggs;
+using namespace flexiblesusy::splitmssm_threeloophiggs;
 
 const double mt = " <> mtStr <> ";
 const double mg = " <> mgStr <> ";
