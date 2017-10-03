@@ -109,7 +109,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/physical_input.hpp \
-		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
