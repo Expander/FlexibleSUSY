@@ -989,7 +989,7 @@ FillSpectrumVector[particles_List] :=
                parStr = CConversion`ToValidCSymbolString[par];
                massStr = CConversion`ToValidCSymbolString[FlexibleSUSY`M[par]];
                latexName = StringReplace[SARAH`getLaTeXField[par], "\\" -> "\\\\"];
-               result = result <> "spectrum.push_back(TParticle(\"" <> parStr <>
+               result = result <> "spectrum.emplace_back(TParticle(\"" <> parStr <>
                         "\", \"" <> latexName <> "\", to_valarray(PHYSICAL(" <>
                         massStr <> "))));\n";
               ];
