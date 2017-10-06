@@ -90,10 +90,10 @@ private:
       }
    };
 
-   TData couplings;        ///< all couplings at all scales
+   TData couplings{};      ///< all couplings at all scales
    Model model;            ///< the model
    DataGetter data_getter; ///< hepler class which extracts the model parameters
-   int width;         ///< width of columns in output table
+   int width{16};          ///< width of columns in output table
 
    /// write line with parameter names
    void write_parameter_names_line(std::ofstream&) const;
@@ -103,10 +103,8 @@ private:
 
 template <class Model, class DataGetter>
 Coupling_monitor<Model,DataGetter>::Coupling_monitor(const Model& model_, const DataGetter& data_getter_)
-   : couplings(TData())
-   , model(model_)
+   : model(model_)
    , data_getter(data_getter_)
-   , width(16)
 {
 }
 
