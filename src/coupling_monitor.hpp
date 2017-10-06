@@ -259,7 +259,7 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
 
    // run from q1 to q2
    for (int n = 0; n < number_of_steps + endpoint_offset; ++n) {
-      const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
+      const double scale = std::exp(std::log(q1) + n * (std::log(q2) - std::log(q1)) / number_of_steps);
       try {
          model.run_to(scale);
       } catch (const Error&) {
