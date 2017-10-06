@@ -178,7 +178,7 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
 
    for (std::size_t i = 0; i < parameter_names.size(); ++i) {
       fout << std::left << std::setw(width)
-           << '[' << (i+2) << "] " << parameter_names[i];
+           << '[' + std::to_string(i+2) + "] " + parameter_names[i];
    }
 
    fout << '\n';
