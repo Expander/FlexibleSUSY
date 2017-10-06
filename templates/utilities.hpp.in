@@ -114,6 +114,7 @@ public:
 
 class @ModelName@_spectrum_plotter {
 public:
+   @ModelName@_spectrum_plotter(const @ModelName@_mass_eigenstates&);
    void extract_spectrum(const @ModelName@_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
@@ -135,16 +136,7 @@ private:
    int width{16};
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
-   static std::valarray<double> to_valarray(double);
-   template <class Scalar, int M, int N>
-   static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
-
-template <class Scalar, int M, int N>
-std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
-{
-   return std::valarray<double>(v.data(), v.size());
-}
 
 namespace @ModelName@_database {
 
