@@ -267,7 +267,7 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
                << scale << " failed");
          break;
       }
-      couplings.push_back(TData::value_type(scale, data_getter.get_parameters(model)));
+      couplings.emplace_back(scale, data_getter.get_parameters(model));
    }
 
    std::sort(couplings.begin(), couplings.end(), TScaleComp());
