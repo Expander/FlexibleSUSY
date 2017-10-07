@@ -114,7 +114,8 @@ public:
 
 class @ModelName@_spectrum_plotter {
 public:
-   @ModelName@_spectrum_plotter(const @ModelName@_mass_eigenstates&);
+   @ModelName@_spectrum_plotter() = default;
+   explicit @ModelName@_spectrum_plotter(const @ModelName@_mass_eigenstates&);
    void extract_spectrum(const @ModelName@_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
