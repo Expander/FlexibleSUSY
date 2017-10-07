@@ -120,6 +120,10 @@ HighScaleInput = {
                          If[TwoLoopAtAs >= 1, lambda2LDRtoOSAtAs, 0] +
                          If[TwoLoopAtAt >= 1, lambda2LDRtoOSAtAt, 0],
                          0]
+                    + If[DeltaYt >= 1,
+                         If[TwoLoopAtAs >= 1, lambda2LAtAsYtShift, 0] +
+                         If[TwoLoopAtAt >= 1, lambda2LAtAtYtShift, 0],
+                         0]
                 )
                 + If[Abs[Qmatch] > 1,
                      Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L,

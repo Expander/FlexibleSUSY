@@ -49,26 +49,6 @@ gYd = Sqrt[3/5] g1 Cos[ArcTan[TanBeta]];
 g2u = g2 Sin[ArcTan[TanBeta]];
 g2d = g2 Cos[ArcTan[TanBeta]];
 
-(* arXiv:1407.4081, Eq. (22)-(25) *)
-deltaYtSM = DeltaYt (
-    + 1/(4 Pi)^2 (
-        -4/3 g3^2 (* Eq. (23) *)
-        -4/3 g3^2 (
-            + Log[M3Input^2/SCALE^2]
-            + TCF[6][AbsSqrt[msq2[3,3]]/M3Input]
-            + TCF[6][AbsSqrt[msu2[3,3]]/M3Input]
-            - xt/M3Input TCF[9][AbsSqrt[msq2[3,3]]/M3Input, AbsSqrt[msu2[3,3]]/M3Input]
-        )
-        - Yu[3,3]^2 (
-            + 3/(4 Sin[ArcTan[TanBeta]]^2) Log[MuInput^2/SCALE^2]
-            + 3/8 1/TanBeta^2 (2 Log[mAInput^2/SCALE^2] - 1)
-            - xtt/4 TCF[5][AbsSqrt[msq2[3,3]/msu2[3,3]]]
-            - 1/Sin[ArcTan[TanBeta]]^2 TCF[6][AbsSqrt[msq2[3,3]]/MuInput]
-            + 1/(2 Sin[ArcTan[TanBeta]]^2) TCF[6][AbsSqrt[msu2[3,3]]/MuInput]
-        )
-    )
-);
-
 (* arXiv:1407.4081, Eq. (3) *)
 lambdaTree = 1/4 (g2^2 + 3/5 g1^2) Cos[2 ArcTan[TanBeta]]^2;
 
@@ -218,7 +198,7 @@ lambda1Ltau = With[{
    arXiv:1407.4081, Eq. (36)
    Valid in the limit M3 = MQ[3,3] = MU[3,3] = MSUSY *)
 lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
-    (g3^2 (Yu[3,3] (1 - deltaYtSM))^4)/(96 Pi^4) (
+    (g3^2 Yu[3,3]^4)/(96 Pi^4) (
         -12 r - 6 r^2 + 14 r^3 + 1/2 r^4 - r^5
     )
 ];
@@ -227,7 +207,7 @@ lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
    arXiv:1407.4081, provided by Pietro Slavich,
    in the limit M3 = MQ[3,3] = MU[3,3] != MSUSY *)
 lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
-    htSM = Yu[3,3] (1 - deltaYtSM),
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -248,7 +228,7 @@ lambda2LPhiHSSAlphaTAlphaSMQMUM3Degenerate = With[{
    arXiv:1407.4081, provided by Pietro Slavich,
     General expression. *)
 lambda2LPhiHSSAlphaTAlphaSFull = With[{
-    htSM = Yu[3,3] (1 - deltaYtSM),
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -326,7 +306,7 @@ lambda2LPhiHSSAlphaTAlphaSFull = With[{
    in the limit MQ[3,3]/M3 = MU[3,3]/M3
  *)
 lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate = With[{
-    htSM = Yu[3,3] (1 - deltaYtSM),
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -382,7 +362,7 @@ lambda2LPhiHSSAlphaTAlphaSX1X2Degenerate = With[{
    in the limit MQ[3,3] = M3 (x1 -> 1), MU[3,3] != M3 (x2 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
-    htSM = Yu[3,3] (1 - deltaYtSM),
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -440,7 +420,7 @@ lambda2LPhiHSSAlphaTAlphaSMQM3Degenerate = With[{
    in the limit MU[3,3] = M3 (x2 -> 1), MQ[3,3] != M3 (x1 != 1)
  *)
 lambda2LPhiHSSAlphaTAlphaSMUM3Degenerate = With[{
-    htSM = Yu[3,3] (1 - deltaYtSM),
+    htSM = Yu[3,3],
     CF = 4/3,
     Nc = 3,
     as = g3^2 / (4 Pi),
@@ -511,7 +491,7 @@ lambda2LHSSAlphaT2 = With[{
     \[Mu] = MuInput,
     K = -0.1953256,
     Xt = xt,
-    gt = Yu[3,3] (1 - deltaYtSM) (* SM Yukawa coupling *)
+    gt = Yu[3,3] (* SM Yukawa coupling *)
     },
     (
 (3*(1 + tan\[Beta]^2)*(1/2 - 8.34993159891064/(1 + tan\[Beta]^2) +
@@ -588,7 +568,7 @@ lambda2LHSSAlphaT2Generic = With[{
     U  = msu2[3,3]*(1-0.02),
     mu2 = MuInput^2*(1+0.01),
     q2 = SCALE^2, (* renormalization/matching scale *)
-    gt = Yu[3,3] (1 - deltaYtSM), (* SM Yukawa coupling *)
+    gt = Yu[3,3], (* SM Yukawa coupling *)
     A0 = mAInput^2*(1-0.01),
     Xt = xt,
     Yt = yt
@@ -863,7 +843,7 @@ lambda2LHSSAlphaTAlphaBAllDegenerate = With[{
     cbe = Sqrt[1/(1+TanBeta^2)],
     Nc = 3, (* number of colors *)
     CF = 4/3,
-    gt = Yu[3,3] (1 - deltaYtSM), (* SM Yukawa coupling *)
+    gt = Yu[3,3], (* SM Yukawa coupling *)
     gb = Yd[3,3],
     Xt = xt,
     Yt = yt,
@@ -969,7 +949,7 @@ lambda2LHSSAlphaTAlphaBGeneric = With[{
     sinb = Sin[ArcTan[TanBeta]],
     MA = mAInput,
     CF = 4/3,
-    gt = Yu[3,3] (1 - deltaYtSM), (* SM Yukawa coupling *)
+    gt = Yu[3,3], (* SM Yukawa coupling *)
     gb = Yd[3,3],
     A0 = mAInput^2*(1-0.02),
     Xt = xt,
@@ -2127,7 +2107,7 @@ lambda2LHSSTau = With[{
     R  = mse2[3,3]*(1+0.01),
     mu2 = MuInput^2*(1-0.05),
     q2 = SCALE^2, (* renormalization/matching scale *)
-    gt = Yu[3,3] (1 - deltaYtSM), (* SM Yukawa coupling *)
+    gt = Yu[3,3], (* SM Yukawa coupling *)
     gb = Yd[3,3],
     gtau = Ye[3,3],
     A0 = mAInput^2*(1-0.015),
@@ -2448,7 +2428,7 @@ lambda2LPhiHSSAlphaBAlphaSFull = With[{
     q2 = SCALE^2, (* renormalization/matching scale *)
     g = M3Input^2,
     sgn = M3Input/Abs[M3Input],
-    gt = Yu[3,3] (1 - deltaYtSM), (* SM Yukawa coupling *)
+    gt = Yu[3,3], (* SM Yukawa coupling *)
     gb = Yd[3,3],
     Xt = xt,
     Yt = yt,
@@ -2549,7 +2529,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerate = With[{
     M3 = M3Input,
     Mu = MuInput,
     Q2 = SCALE^2,
-    gt = Yu[3,3] (1 - deltaYtSM),
+    gt = Yu[3,3],
     Xt = xt,
     Xtildet = xtt,
     Xtildeb = xbb,
@@ -2591,7 +2571,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerateSquark = With[{
     sgn = M3Input/Abs[M3Input],  
     Mu = MuInput,
     Q2 = SCALE^2,
-    gt = Yu[3,3] (1 - deltaYtSM),
+    gt = Yu[3,3],
     Xt = xt,
     Xtildet = xtt,
     Xtildeb = xbb,
@@ -2801,4 +2781,64 @@ lambda2LDRtoOSAtAt = With[{
         f2[\[Mu]_] :> Piecewise[{{1/2, Abs[\[Mu]^2 - 1] < \[Delta]}}, 
                                 1/(1 - \[Mu]^2) (1 + \[Mu]^2/(1 - \[Mu]^2) Log[\[Mu]^2])]
     } /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
+    ];
+
+replaceThresholdLoopFunctions = {
+    ftilde1 -> TCF[1],
+    ftilde2 -> TCF[2],
+    ftilde3 -> TCF[3],
+    ftilde4 -> TCF[4],
+    ftilde5 -> TCF[5],
+    ftilde6 -> TCF[6],
+    ftilde7 -> TCF[7],
+    ftilde8 -> TCF[8],
+    ftilde9 -> TCF[9]
+};
+
+(* 2-loop shift O(at*as) when re-parametrizing 1-loop contribution in terms of yt^MSSM *)
+lambda2LAtAsYtShift = With[{
+    gt = Yu[3,3],
+    Q2 = SCALE^2,
+    MQ32 = msq2[3,3],
+    MU32 = msu2[3,3],
+    mu2 = MuInput^2,
+    M32 = M3Input^2,
+    Xt = xt,
+    cosbeta = Cos[ArcTan[TanBeta]],
+    sinbeta = Sin[ArcTan[TanBeta]]
+    },
+    computeStopShift[] := Module[{oneLoopStop,deltagtrengs,oneLoopStopShift,oneloopStopShiftExp,deltagtphigs},
+	oneLoopStop = gt^4/(4*Pi)^2*(3*Log[MQ3^2/Q2]+3*Log[MU3^2/Q2]+6*Xtildet*(ftilde1[MQ3/MU3]-Xtildet/12*ftilde2[MQ3/MU3])) /. {Xtildet-> Xt^2/(MQ3*MU3)};
+	deltagtphigs = 1/(4*Pi)^2*(-4/3)*g3^2*(Log[M3^2/Q2]+ftilde6[MQ3/M3]+ftilde6[MU3/M3]-Xt/M3*ftilde9[MQ3/M3,MU3/M3]);
+	deltagtrengs = -4/3*g3^2*1/(4*Pi)^2;
+	oneLoopStopShift = oneLoopStop /. {gt -> gt*(1+deltagtphigs+deltagtrengs)} /. {MU3->Sqrt[MU32], MQ3-> Sqrt[MQ32], M3-> Sqrt[M32]};
+	oneloopStopShiftExp = g3^2*Collect[Normal[SeriesCoefficient[Series[oneLoopStopShift,{g3,0,2}],2]], gt, (Collect[#,g3, Collect[#,Pi,Collect[#,Log[_],Simplify]&]&])&];
+	oneloopStopShiftExp
+    ];
+    -computeStopShift[] /. replaceThresholdLoopFunctions
+    ];
+
+(* 2-loop shift O(at^2) when re-parametrizing 1-loop contribution in terms of yt^MSSM *)
+lambda2LAtAtYtShift = With[{
+    gt = Yu[3,3],
+    Q2 = SCALE^2,
+    MQ32 = msq2[3,3],
+    MU32 = msu2[3,3],
+    mu2 = MuInput^2,
+    M32 = M3Input^2,
+    ma2 = mAInput^2,
+    Xt = xt,
+    cosbeta = Cos[ArcTan[TanBeta]],
+    sinbeta = Sin[ArcTan[TanBeta]],
+    k = 1/(4 Pi)^2
+    },
+    computegtStopShift[] := Module[{oneLoopStop,oneLoopStopShift,oneloopStopShiftExp,deltagtphigt},
+	oneLoopStop = gt^4*k*(3*Log[MQ3^2/Q2]+3*Log[MU3^2/Q2]+6*Xtildet*(ftilde1[MQ3/MU3]-Xtildet/12*ftilde2[MQ3/MU3])) /. {Xtildet-> Xt^2/(MQ3*MU3)};
+	deltagtphigt = k*(-1)*gt^2*( 3/(4*(sinbeta)^2)*Log[mu2/Q2]+3/8*(cosbeta/sinbeta)^2*(2*Log[ma2/Q2]-1)-Xtildet/4*ftilde5[MQ3/MU3] 
+										 +1/(sinbeta)^2*ftilde6[MQ3/mu]+1/(2*(sinbeta)^2)*ftilde6[MU3/mu]) /. {Xtildet-> Xt^2/(MQ3*MU3)};
+	oneLoopStopShift = oneLoopStop /. {gt -> gt*(1+deltagtphigt)} /. {MU3->Sqrt[MU32], MQ3-> Sqrt[MQ32], M3-> Sqrt[M32],mu->Sqrt[mu2]};
+	oneloopStopShiftExp = gt^6*Collect[Normal[SeriesCoefficient[Series[oneLoopStopShift,{gt,0,6}],6]], gt, (Collect[#,gt, Collect[#,Pi,Collect[#,Log[_],Simplify]&]&])&];
+	oneloopStopShiftExp
+    ];
+    -computegtStopShift[] /. replaceThresholdLoopFunctions
     ];
