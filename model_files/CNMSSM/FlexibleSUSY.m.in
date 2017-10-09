@@ -20,7 +20,7 @@ EXTPAR = {
 
 FSAuxiliaryParameterInfo = {
    {m0Sq,        { ParameterDimensions -> {1},
-                   MassDimension -> 1 } },
+                   MassDimension -> 2 } },
    {LambdaInput, { ParameterDimensions -> {1},
                    MassDimension -> 0 } }
 };
