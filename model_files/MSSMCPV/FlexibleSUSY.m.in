@@ -94,7 +94,7 @@ SUSYScaleInput = {
     {MassWB, ReM2Input + I ImM2Input},
     {MassG, ReM3Input + I ImM3Input},
     {\[Mu], ReMuInput + I ImMuInput},
-    {B[\[Mu]], mA2Input/(TanBeta + 1/TanBeta) + I Im[B[\[Mu]]]},
+    {B[\[Mu]], mA2Input/(vu/vd + vd/vu) + I Im[B[\[Mu]]]},
     {eta, etaInput}
 };
 
